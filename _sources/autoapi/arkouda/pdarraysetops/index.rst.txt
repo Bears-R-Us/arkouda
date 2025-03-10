@@ -18,10 +18,10 @@ Functions
    arkouda.pdarraysetops.union1d
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
-.. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, Sequence[arkouda.categorical.Categorical]]
+.. py:function:: concatenate(arrays: Sequence[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]], ordered: bool = True) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, Sequence[arkouda.categorical.Categorical]]
 
    Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
    one ``pdarray`` or ``Strings`` object, respectively.
@@ -90,7 +90,7 @@ Module Contents
    Only works for pdarrays of int64 dtype, float64, Strings, or Categorical
 
 
-.. py:function:: indexof1d(query: arkouda.groupbyclass.groupable, space: arkouda.groupbyclass.groupable) -> arkouda.pdarrayclass.pdarray
+.. py:function:: indexof1d(query: arkouda.groupbyclass.groupable, space: arkouda.groupbyclass.groupable) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return indices of query items in a search list of items. Items not found will be excluded.
    When duplicate terms are present in search space return indices of all occurrences.
@@ -126,7 +126,7 @@ Module Contents
    :raises RuntimeError: Raised if the dtype of either array is not supported
 
 
-.. py:function:: intersect1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: intersect1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
 
    Find the intersection of two arrays.
 
@@ -169,7 +169,7 @@ Module Contents
    [array([1, 3]), array([1, 3]), array([1, 3])]
 
 
-.. py:function:: setdiff1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: setdiff1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
 
    Find the set difference of two arrays.
 
@@ -212,7 +212,7 @@ Module Contents
    [array([2, 4, 5]), array([2, 4, 5]), array([2, 4, 5])]
 
 
-.. py:function:: setxor1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: setxor1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
 
    Find the set exclusive-or (symmetric difference) of two arrays.
 

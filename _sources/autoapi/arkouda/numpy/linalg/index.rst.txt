@@ -1,0 +1,6 @@
+arkouda.numpy.linalg
+====================
+
+.. py:module:: arkouda.numpy.linalg
+
+

@@ -1,0 +1,55 @@
+arkouda.numpy.pdarraymanipulation
+=================================
+
+.. py:module:: arkouda.numpy.pdarraymanipulation
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   arkouda.numpy.pdarraymanipulation.delete
+   arkouda.numpy.pdarraymanipulation.vstack
+
+
+Module Contents
+---------------
+
+.. py:function:: delete(arr: arkouda.numpy.pdarrayclass.pdarray, obj: Union[arkouda.numpy.pdarrayclass.pdarray, slice, int], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Return a copy of 'arr' with elements along the specified axis removed.
+
+   :param arr: The array to remove elements from
+   :type arr: pdarray
+   :param obj: The indices to remove from 'arr'. If obj is a pdarray, it must
+               have an integer dtype.
+   :type obj: Union[pdarray, slice, int]
+   :param axis: The axis along which to remove elements. If None, the array will
+                be flattened before removing elements. Defaults to None.
+   :type axis: Optional[int], optional
+
+   :returns: A copy of 'arr' with elements removed
+   :rtype: pdarray
+
+
+.. py:function:: vstack(tup: Union[Tuple[arkouda.numpy.pdarrayclass.pdarray], List[arkouda.numpy.pdarrayclass.pdarray]], *, dtype: Optional[Union[type, str]] = None, casting: Literal['no', 'equiv', 'safe', 'same_kind', 'unsafe'] = 'same_kind') -> arkouda.numpy.pdarrayclass.pdarray
+
+   Stack a sequence of arrays vertically (row-wise).
+
+   This is equivalent to concatenation along the first axis after 1-D arrays of
+   shape `(N,)` have been reshaped to `(1,N)`.
+
+   :param tup: The arrays to be stacked
+   :type tup: Tuple[pdarray]
+   :param dtype: The data-type of the output array. If not provided, the output
+                 array will be determined using `np.common_type` on the
+                 input arrays Defaults to None
+   :type dtype: Optional[Union[type, str]], optional
+   :param casting: Controls what kind of data casting may occur - currently unused
+   :type casting: {"no", "equiv", "safe", "same_kind", "unsafe"], optional
+
+   :returns: *
+             * *pdarray* -- The stacked array
+
+

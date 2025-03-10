@@ -1,0 +1,6 @@
+arkouda.numpy.rec
+=================
+
+.. py:module:: arkouda.numpy.rec
+
+

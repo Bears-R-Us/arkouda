@@ -22,12 +22,12 @@ Functions
    arkouda.sorting.sort
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
 .. py:data:: SortingAlgorithm
 
-.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.pdarrayclass.pdarray
+.. py:function:: argsort(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the permutation that sorts the array.
 
@@ -64,7 +64,7 @@ Module Contents
    array([0 2 9 6 8 1 3 5 7 4])
 
 
-.. py:function:: coargsort(arrays: Sequence[Union[arkouda.strings.Strings, arkouda.pdarrayclass.pdarray, arkouda.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
+.. py:function:: coargsort(arrays: Sequence[Union[arkouda.numpy.strings.Strings, arkouda.numpy.pdarrayclass.pdarray, arkouda.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the permutation that groups the rows (left-to-right), if the
    input arrays are treated as columns. The permutation sorts numeric
@@ -106,7 +106,7 @@ Module Contents
    array([0 1 0 1])
 
 
-.. py:function:: sort(pda: arkouda.pdarrayclass.pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = -1) -> arkouda.pdarrayclass.pdarray
+.. py:function:: sort(pda: arkouda.numpy.pdarrayclass.pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = -1) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return a sorted copy of the array. Only sorts numeric arrays;
    for Strings, use argsort.

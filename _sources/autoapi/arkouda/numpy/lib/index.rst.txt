@@ -1,0 +1,15 @@
+arkouda.numpy.lib
+=================
+
+.. py:module:: arkouda.numpy.lib
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/arkouda/numpy/lib/emath/index
+
+

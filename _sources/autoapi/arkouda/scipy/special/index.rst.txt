@@ -15,7 +15,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: xlogy(x: Union[arkouda.pdarrayclass.pdarray, numpy.float64], y: arkouda.pdarrayclass.pdarray)
+.. py:function:: xlogy(x: Union[arkouda.numpy.pdarrayclass.pdarray, numpy.float64], y: arkouda.numpy.pdarrayclass.pdarray)
 
    Computes x * log(y).
 
@@ -24,7 +24,7 @@ Module Contents
    :param y:
    :type y: pdarray
 
-   :rtype: arkouda.pdarrayclass.pdarray
+   :rtype: arkouda.numpy.pdarrayclass.pdarray
 
    .. rubric:: Examples
 

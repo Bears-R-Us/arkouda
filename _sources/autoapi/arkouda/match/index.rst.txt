@@ -15,9 +15,9 @@ Classes
 Module Contents
 ---------------
 
-.. py:class:: Match(matched: arkouda.pdarrayclass.pdarray, starts: arkouda.pdarrayclass.pdarray, lengths: arkouda.pdarrayclass.pdarray, indices: arkouda.pdarrayclass.pdarray, parent_entry_name: str, match_type: MatchType, pattern: str)
+.. py:class:: Match(matched: arkouda.numpy.pdarrayclass.pdarray, starts: arkouda.numpy.pdarrayclass.pdarray, lengths: arkouda.numpy.pdarrayclass.pdarray, indices: arkouda.numpy.pdarrayclass.pdarray, parent_entry_name: str, match_type: MatchType, pattern: str)
 
-   .. py:method:: end() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: end() -> arkouda.numpy.pdarrayclass.pdarray
 
       Returns the ends of matches
 
@@ -95,7 +95,7 @@ Module Contents
 
 
 
-   .. py:method:: matched() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: matched() -> arkouda.numpy.pdarrayclass.pdarray
 
       Returns a boolean array indiciating whether each element matched
 
@@ -113,7 +113,7 @@ Module Contents
    .. py:attribute:: re
 
 
-   .. py:method:: start() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: start() -> arkouda.numpy.pdarrayclass.pdarray
 
       Returns the starts of matches
 

@@ -17,7 +17,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: create_sparse_matrix(size: int, rows: arkouda.pdarrayclass.pdarray, cols: arkouda.pdarrayclass.pdarray, vals: arkouda.pdarrayclass.pdarray, layout: str) -> arkouda.sparrayclass.sparray
+.. py:function:: create_sparse_matrix(size: int, rows: arkouda.numpy.pdarrayclass.pdarray, cols: arkouda.numpy.pdarrayclass.pdarray, vals: arkouda.numpy.pdarrayclass.pdarray, layout: str) -> arkouda.sparrayclass.sparray
 
    Create a sparse matrix from three pdarrays representing the row indices,
    column indices, and values of the non-zero elements of the matrix.

@@ -13,10 +13,10 @@ Functions
    arkouda.pdarraymanipulation.vstack
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
-.. py:function:: delete(arr: arkouda.pdarrayclass.pdarray, obj: Union[arkouda.pdarrayclass.pdarray, slice, int], axis: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: delete(arr: arkouda.numpy.pdarrayclass.pdarray, obj: Union[arkouda.numpy.pdarrayclass.pdarray, slice, int], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return a copy of 'arr' with elements along the specified axis removed.
 
@@ -33,7 +33,7 @@ Module Contents
    :rtype: pdarray
 
 
-.. py:function:: vstack(tup: Union[Tuple[arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], *, dtype: Optional[Union[type, str]] = None, casting: Literal['no', 'equiv', 'safe', 'same_kind', 'unsafe'] = 'same_kind') -> arkouda.pdarrayclass.pdarray
+.. py:function:: vstack(tup: Union[Tuple[arkouda.numpy.pdarrayclass.pdarray], List[arkouda.numpy.pdarrayclass.pdarray]], *, dtype: Optional[Union[type, str]] = None, casting: Literal['no', 'equiv', 'safe', 'same_kind', 'unsafe'] = 'same_kind') -> arkouda.numpy.pdarrayclass.pdarray
 
    Stack a sequence of arrays vertically (row-wise).
 

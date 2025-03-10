@@ -52,8 +52,8 @@ Functions
    arkouda.pdarrayclass.var
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
 .. py:exception:: RegistrationError
 

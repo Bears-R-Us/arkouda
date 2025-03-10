@@ -1,0 +1,6 @@
+arkouda.numpy.exceptions
+========================
+
+.. py:module:: arkouda.numpy.exceptions
+
+

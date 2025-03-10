@@ -64,14 +64,14 @@ Data can also be saved using no compression. Arkouda now supports writting Parqu
 ### Strings
 
 ```{eval-rst}  
-- :py:meth:`arkouda.Strings.to_parquet`
-- :py:meth:`arkouda.Strings.save`
+- :py:meth:`arkouda.numpy.Strings.to_parquet`
+- :py:meth:`arkouda.numpy.Strings.save`
 ```
 
 ### SegArray
 
 ```{eval-rst}  
-- :py:meth:`arkouda.SegArray.to_parquet`
+- :py:meth:`arkouda.numpy.SegArray.to_parquet`
 ```
 
 ### Categorical

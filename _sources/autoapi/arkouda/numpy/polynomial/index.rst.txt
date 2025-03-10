@@ -1,0 +1,6 @@
+arkouda.numpy.polynomial
+========================
+
+.. py:module:: arkouda.numpy.polynomial
+
+

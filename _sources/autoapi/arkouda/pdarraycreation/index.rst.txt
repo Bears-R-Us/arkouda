@@ -29,10 +29,10 @@ Functions
    arkouda.pdarraycreation.zeros_like
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
-.. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arange(*args, **kwargs) -> arkouda.numpy.pdarrayclass.pdarray
 
    arange([start,] stop[, stride,] dtype=int64)
 
@@ -84,7 +84,7 @@ Module Contents
    array([-5 -6 -7 -8 -9])
 
 
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str, None] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: array(a: Union[arkouda.numpy.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str, None] = None, max_bits: int = -1) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
    the corresponding data to the arkouda server.
@@ -132,7 +132,7 @@ Module Contents
 
    >>> strings = ak.array([f'string {i}' for i in range(0,5)])
    >>> type(strings)
-   <class 'arkouda.strings.Strings'>
+   <class 'arkouda.numpy.strings.Strings'>
 
 
 .. py:function:: bigint_from_uint_arrays(arrays, max_bits=-1)
@@ -171,7 +171,7 @@ Module Contents
    True
 
 
-.. py:function:: from_series(series: pandas.Series, dtype: Optional[Union[type, str]] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: from_series(series: pandas.Series, dtype: Optional[Union[type, str]] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
 
    Converts a Pandas Series to an Arkouda pdarray or Strings object. If
    dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
@@ -230,7 +230,7 @@ Module Contents
    contains strings and sets the dtype to str
 
 
-.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
 
    Create a pdarray filled with fill_value.
 
@@ -265,7 +265,7 @@ Module Contents
    array([True True True True True])
 
 
-.. py:function:: full_like(pda: arkouda.pdarrayclass.pdarray, fill_value: arkouda.numpy.dtypes.numeric_scalars) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: full_like(pda: arkouda.numpy.pdarrayclass.pdarray, fill_value: arkouda.numpy.dtypes.numeric_scalars) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
 
    Create a pdarray filled with fill_value of the same size and dtype as an existing
    pdarray.
@@ -300,7 +300,7 @@ Module Contents
    array([False False False False False])
 
 
-.. py:function:: linspace(start: arkouda.numpy.dtypes.numeric_scalars, stop: arkouda.numpy.dtypes.numeric_scalars, length: arkouda.numpy.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+.. py:function:: linspace(start: arkouda.numpy.dtypes.numeric_scalars, stop: arkouda.numpy.dtypes.numeric_scalars, length: arkouda.numpy.dtypes.int_scalars) -> arkouda.numpy.pdarrayclass.pdarray
 
    Create a pdarray of linearly-spaced floats in a closed interval.
 
@@ -335,7 +335,7 @@ Module Contents
    array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000])
 
 
-.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -374,7 +374,7 @@ Module Contents
    Logic for generating the pdarray is delegated to the ak.full method.
 
 
-.. py:function:: ones_like(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones_like(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
 
    Create a one-filled pdarray of the same size and dtype as an existing
    pdarray.
@@ -407,7 +407,7 @@ Module Contents
    array([True True True True True])
 
 
-.. py:function:: promote_to_common_dtype(arrays: List[arkouda.pdarrayclass.pdarray]) -> Tuple[Any, List[arkouda.pdarrayclass.pdarray]]
+.. py:function:: promote_to_common_dtype(arrays: List[arkouda.numpy.pdarrayclass.pdarray]) -> Tuple[Any, List[arkouda.numpy.pdarrayclass.pdarray]]
 
    Promote a list of pdarrays to a common dtype.
 
@@ -432,7 +432,7 @@ Module Contents
    True
 
 
-.. py:function:: randint(low: arkouda.numpy.dtypes.numeric_scalars, high: arkouda.numpy.dtypes.numeric_scalars, size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: Optional[arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: randint(low: arkouda.numpy.dtypes.numeric_scalars, high: arkouda.numpy.dtypes.numeric_scalars, size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: Optional[arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Generate a pdarray of randomized int, float, or bool values in a
    specified range bounded by the low and high parameters.
@@ -475,7 +475,7 @@ Module Contents
    array([False True False True False])
 
 
-.. py:function:: random_strings_lognormal(logmean: arkouda.numpy.dtypes.numeric_scalars, logstd: arkouda.numpy.dtypes.numeric_scalars, size: arkouda.numpy.dtypes.int_scalars, characters: str = 'uppercase', seed: Optional[arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.strings.Strings
+.. py:function:: random_strings_lognormal(logmean: arkouda.numpy.dtypes.numeric_scalars, logstd: arkouda.numpy.dtypes.numeric_scalars, size: arkouda.numpy.dtypes.int_scalars, characters: str = 'uppercase', seed: Optional[arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.strings.Strings
 
    Generate random strings with log-normally distributed lengths and
    with characters drawn from a specified set.
@@ -516,7 +516,7 @@ Module Contents
    array(['eL96<O', ')o-GOe lR', ')PV yHf(', '._b3Yc&K', ',7Wjef'])
 
 
-.. py:function:: random_strings_uniform(minlen: arkouda.numpy.dtypes.int_scalars, maxlen: arkouda.numpy.dtypes.int_scalars, size: arkouda.numpy.dtypes.int_scalars, characters: str = 'uppercase', seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.strings.Strings
+.. py:function:: random_strings_uniform(minlen: arkouda.numpy.dtypes.int_scalars, maxlen: arkouda.numpy.dtypes.int_scalars, size: arkouda.numpy.dtypes.int_scalars, characters: str = 'uppercase', seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.strings.Strings
 
    Generate random strings with lengths uniformly distributed between
    minlen and maxlen, and with characters drawn from a specified set.
@@ -549,7 +549,7 @@ Module Contents
    array(['2 .z', 'aom', '2d|', 'o(', 'M'])
 
 
-.. py:function:: scalar_array(value: arkouda.numpy.dtypes.numeric_scalars, dtype: Optional[Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint]] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: scalar_array(value: arkouda.numpy.dtypes.numeric_scalars, dtype: Optional[Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Create a pdarray from a single scalar value.
 
@@ -570,7 +570,7 @@ Module Contents
    :raises RuntimeError: Raised if value cannot be cast as dtype
 
 
-.. py:function:: standard_normal(size: arkouda.numpy.dtypes.int_scalars, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: standard_normal(size: arkouda.numpy.dtypes.int_scalars, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Draw real numbers from the standard normal distribution.
 
@@ -599,7 +599,7 @@ Module Contents
    array([-0.68586185091150265 1.1723810583573377 0.567584107142031])
 
 
-.. py:function:: uniform(size: arkouda.numpy.dtypes.int_scalars, low: arkouda.numpy.dtypes.numeric_scalars = float(0.0), high: arkouda.numpy.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: uniform(size: arkouda.numpy.dtypes.int_scalars, low: arkouda.numpy.dtypes.numeric_scalars = float(0.0), high: arkouda.numpy.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Generate a pdarray with uniformly distributed random float values
    in a specified range.
@@ -634,7 +634,7 @@ Module Contents
    array([0.30013431967121934 0.47383036230759112 1.0441791878997098])
 
 
-.. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Create a pdarray filled with zeros.
 
@@ -673,7 +673,7 @@ Module Contents
    Logic for generating the pdarray is delegated to the ak.full method.
 
 
-.. py:function:: zeros_like(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros_like(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
 
    Create a zero-filled pdarray of the same size and dtype as an existing
    pdarray.

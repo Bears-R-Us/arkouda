@@ -12,10 +12,10 @@ Classes
    arkouda.strings.Strings
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
-.. py:class:: Strings(strings_pdarray: arkouda.pdarrayclass.pdarray, bytes_size: arkouda.numpy.dtypes.int_scalars)
+.. py:class:: Strings(strings_pdarray: arkouda.numpy.pdarrayclass.pdarray, bytes_size: arkouda.numpy.dtypes.int_scalars)
 
    Represents an array of strings whose data resides on the
    arkouda server. The user should not call this class directly;
@@ -76,7 +76,7 @@ Module Contents
    .. py:attribute:: BinOps
 
 
-   .. py:method:: astype(dtype: Union[numpy.dtype, str]) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: astype(dtype: Union[numpy.dtype, str]) -> arkouda.numpy.pdarrayclass.pdarray
 
       Cast values of Strings object to provided dtype
 
@@ -144,7 +144,7 @@ Module Contents
 
 
 
-   .. py:method:: contains(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: contains(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.numpy.pdarrayclass.pdarray
 
       Check whether each element contains the given substring.
 
@@ -215,7 +215,7 @@ Module Contents
 
 
 
-   .. py:method:: endswith(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: endswith(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.numpy.pdarrayclass.pdarray
 
       Check whether each element ends with the given substring.
 
@@ -251,7 +251,7 @@ Module Contents
 
 
    .. py:attribute:: entry
-      :type:  arkouda.pdarrayclass.pdarray
+      :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
    .. py:method:: equals(other: Any) -> arkouda.numpy.dtypes.bool_scalars
@@ -278,7 +278,7 @@ Module Contents
 
 
 
-   .. py:method:: find_locations(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+   .. py:method:: find_locations(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
 
       Finds pattern matches and returns pdarrays containing the number, start postitions,
       and lengths of matches
@@ -349,7 +349,7 @@ Module Contents
 
 
 
-   .. py:method:: from_parts(offset_attrib: Union[arkouda.pdarrayclass.pdarray, str], bytes_attrib: Union[arkouda.pdarrayclass.pdarray, str]) -> Strings
+   .. py:method:: from_parts(offset_attrib: Union[arkouda.numpy.pdarrayclass.pdarray, str], bytes_attrib: Union[arkouda.numpy.pdarrayclass.pdarray, str]) -> Strings
       :staticmethod:
 
 
@@ -419,7 +419,7 @@ Module Contents
 
 
 
-   .. py:method:: get_bytes() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: get_bytes() -> arkouda.numpy.pdarrayclass.pdarray
 
       Getter for the bytes component (uint8 pdarray) of this Strings.
 
@@ -434,7 +434,7 @@ Module Contents
 
 
 
-   .. py:method:: get_lengths() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: get_lengths() -> arkouda.numpy.pdarrayclass.pdarray
 
       Return the length of each string in the array.
 
@@ -445,7 +445,7 @@ Module Contents
 
 
 
-   .. py:method:: get_offsets() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: get_offsets() -> arkouda.numpy.pdarrayclass.pdarray
 
       Getter for the offsets component (int64 pdarray) of this Strings.
 
@@ -460,7 +460,7 @@ Module Contents
 
 
 
-   .. py:method:: get_prefixes(n: arkouda.numpy.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
+   .. py:method:: get_prefixes(n: arkouda.numpy.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.numpy.pdarrayclass.pdarray]]
 
       Return the n-long prefix of each string, where possible
 
@@ -481,7 +481,7 @@ Module Contents
 
 
 
-   .. py:method:: get_suffixes(n: arkouda.numpy.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
+   .. py:method:: get_suffixes(n: arkouda.numpy.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.numpy.pdarrayclass.pdarray]]
 
       Return the n-long suffix of each string, where possible
 
@@ -502,7 +502,7 @@ Module Contents
 
 
 
-   .. py:method:: group() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: group() -> arkouda.numpy.pdarrayclass.pdarray
 
       Return the permutation that groups the array, placing equivalent
       strings together. All instances of the same string are guaranteed to lie
@@ -527,7 +527,7 @@ Module Contents
 
 
 
-   .. py:method:: hash() -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+   .. py:method:: hash() -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
 
       Compute a 128-bit hash of each string.
 
@@ -575,7 +575,7 @@ Module Contents
 
 
 
-   .. py:method:: isalnum() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: isalnum() -> arkouda.numpy.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is alphanumeric.
@@ -599,7 +599,7 @@ Module Contents
 
 
 
-   .. py:method:: isalpha() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: isalpha() -> arkouda.numpy.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is alphabetic.  This means there is at least one character,
@@ -624,7 +624,7 @@ Module Contents
 
 
 
-   .. py:method:: isdecimal() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: isdecimal() -> arkouda.numpy.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings has all decimal characters.
@@ -656,7 +656,7 @@ Module Contents
 
 
 
-   .. py:method:: isdigit() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: isdigit() -> arkouda.numpy.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings has all digit characters.
@@ -688,7 +688,7 @@ Module Contents
 
 
 
-   .. py:method:: isempty() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: isempty() -> arkouda.numpy.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is empty.
@@ -715,7 +715,7 @@ Module Contents
 
 
 
-   .. py:method:: islower() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: islower() -> arkouda.numpy.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is entirely lowercase
@@ -739,7 +739,7 @@ Module Contents
 
 
 
-   .. py:method:: isspace() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: isspace() -> arkouda.numpy.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i has all
       whitespace characters (‘ ’, ‘\\t’, ‘\\n’, ‘\\v’, ‘\\f’, ‘\\r’).
@@ -763,7 +763,7 @@ Module Contents
 
 
 
-   .. py:method:: istitle() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: istitle() -> arkouda.numpy.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is titlecase
@@ -787,7 +787,7 @@ Module Contents
 
 
 
-   .. py:method:: isupper() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: isupper() -> arkouda.numpy.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
       Strings is entirely uppercase
@@ -1146,6 +1146,10 @@ Module Contents
 
 
 
+   .. py:attribute:: size
+      :type:  arkouda.numpy.dtypes.int_scalars
+
+
    .. py:method:: split(delimiter: str, return_segments: bool = False, regex: bool = False) -> Union[Strings, Tuple]
 
       Unpack delimiter-joined substrings into a flat array.
@@ -1183,7 +1187,7 @@ Module Contents
 
 
 
-   .. py:method:: startswith(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: startswith(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.numpy.pdarrayclass.pdarray
 
       Check whether each element starts with the given substring.
 

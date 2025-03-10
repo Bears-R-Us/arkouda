@@ -33,11 +33,11 @@ Module Contents
 
 
    .. py:attribute:: full_match_bool
-      :type:  arkouda.pdarrayclass.pdarray
+      :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
    .. py:attribute:: full_match_ind
-      :type:  arkouda.pdarrayclass.pdarray
+      :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
    .. py:method:: get_match(match_type: arkouda.match.MatchType, parent: object = None) -> arkouda.match.Match
@@ -47,26 +47,26 @@ Module Contents
 
 
    .. py:attribute:: indices
-      :type:  arkouda.pdarrayclass.pdarray
+      :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
    .. py:attribute:: lengths
-      :type:  arkouda.pdarrayclass.pdarray
+      :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
    .. py:attribute:: logger
 
 
    .. py:attribute:: match_bool
-      :type:  arkouda.pdarrayclass.pdarray
+      :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
    .. py:attribute:: match_ind
-      :type:  arkouda.pdarrayclass.pdarray
+      :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
    .. py:attribute:: num_matches
-      :type:  arkouda.pdarrayclass.pdarray
+      :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
    .. py:attribute:: objType
@@ -83,11 +83,11 @@ Module Contents
 
 
    .. py:attribute:: search_bool
-      :type:  arkouda.pdarrayclass.pdarray
+      :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
    .. py:attribute:: search_ind
-      :type:  arkouda.pdarrayclass.pdarray
+      :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
    .. py:method:: split(maxsplit: int = 0, return_segments: bool = False)
@@ -97,7 +97,7 @@ Module Contents
 
 
    .. py:attribute:: starts
-      :type:  arkouda.pdarrayclass.pdarray
+      :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
    .. py:method:: sub(repl: str, count: int = 0, return_num_subs: bool = False)

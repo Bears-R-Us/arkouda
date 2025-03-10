@@ -1,0 +1,6 @@
+arkouda.numpy.ctypeslib
+=======================
+
+.. py:module:: arkouda.numpy.ctypeslib
+
+

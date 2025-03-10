@@ -16,7 +16,7 @@ Classes
 Module Contents
 ---------------
 
-.. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical, pandas.Index, Index, pandas.Categorical], name: Optional[str] = None, allow_list=False, max_list_size=1000)
+.. py:class:: Index(values: Union[List, arkouda.numpy.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical, pandas.Index, Index, pandas.Categorical], name: Optional[str] = None, allow_list=False, max_list_size=1000)
 
    .. py:method:: argsort(ascending=True)
 
@@ -153,7 +153,7 @@ Module Contents
       :returns: Bytes of memory consumed.
       :rtype: int
 
-      .. seealso:: :obj:`arkouda.pdarrayclass.nbytes`, :obj:`arkouda.index.MultiIndex.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
+      .. seealso:: :obj:`arkouda.numpy.pdarrayclass.nbytes`, :obj:`arkouda.index.MultiIndex.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
 
       .. rubric:: Examples
 
@@ -578,7 +578,7 @@ Module Contents
       :returns: Bytes of memory consumed.
       :rtype: int
 
-      .. seealso:: :obj:`arkouda.pdarrayclass.nbytes`, :obj:`arkouda.index.Index.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
+      .. seealso:: :obj:`arkouda.numpy.pdarrayclass.nbytes`, :obj:`arkouda.index.Index.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
 
       .. rubric:: Examples
 

@@ -1,0 +1,6 @@
+arkouda.numpy.lib.emath
+=======================
+
+.. py:module:: arkouda.numpy.lib.emath
+
+

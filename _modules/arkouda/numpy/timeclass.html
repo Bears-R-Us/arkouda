@@ -1,0 +1,1592 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+        <title>arkouda.numpy.timeclass - arkouda documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">arkouda  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  
+  <span class="sidebar-brand-text">arkouda  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup/MAC_INSTALL.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/MODULAR.html">Modular Server Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/CSV.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/random.html">Random in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/segarray.html">SegArrays in Arkouda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/apply/index.html">arkouda.apply</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html">arkouda.array_api.elementwise_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/indexing_functions/index.html">arkouda.array_api.indexing_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/linalg/index.html">arkouda.array_api.linalg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/manipulation_functions/index.html">arkouda.array_api.manipulation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/searching_functions/index.html">arkouda.array_api.searching_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/set_functions/index.html">arkouda.array_api.set_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/sorting_functions/index.html">arkouda.array_api.sorting_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/statistical_functions/index.html">arkouda.array_api.statistical_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/categorical/index.html">arkouda.categorical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client/index.html">arkouda.client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/dataframe/index.html">arkouda.dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/dtypes/index.html">arkouda.dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/groupbyclass/index.html">arkouda.groupbyclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/history/index.html">arkouda.history</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/index/index.html">arkouda.index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io/index.html">arkouda.io</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io_util/index.html">arkouda.io_util</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/join/index.html">arkouda.join</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/match/index.html">arkouda.match</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/numeric/index.html">arkouda.numeric</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.numpy.dtypes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/dtypes/dtypes/index.html">arkouda.numpy.dtypes.dtypes</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/exceptions/index.html">arkouda.numpy.exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/fft/index.html">arkouda.numpy.fft</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.numpy.lib</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/linalg/index.html">arkouda.numpy.linalg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/ma/index.html">arkouda.numpy.ma</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html">arkouda.numpy.pdarrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html">arkouda.numpy.pdarraycreation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraysetops/index.html">arkouda.numpy.pdarraysetops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/polynomial/index.html">arkouda.numpy.polynomial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/rec/index.html">arkouda.numpy.rec</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/segarray/index.html">arkouda.numpy.segarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/sorting/index.html">arkouda.numpy.sorting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/strings/index.html">arkouda.numpy.strings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/timeclass/index.html">arkouda.numpy.timeclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/util/index.html">arkouda.numpy.util</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/pdarrayclass/index.html">arkouda.pdarrayclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/pdarraycreation/index.html">arkouda.pdarraycreation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/pdarraymanipulation/index.html">arkouda.pdarraymanipulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/pdarraysetops/index.html">arkouda.pdarraysetops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/plotting/index.html">arkouda.plotting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/random/index.html">arkouda.random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/row/index.html">arkouda.row</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/special/index.html">arkouda.scipy.special</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/security/index.html">arkouda.security</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/segarray/index.html">arkouda.segarray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/series/index.html">arkouda.series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sorting/index.html">arkouda.sorting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sparrayclass/index.html">arkouda.sparrayclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sparsematrix/index.html">arkouda.sparsematrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/strings/index.html">arkouda.strings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/timeclass/index.html">arkouda.timeclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/util/index.html">arkouda.util</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/GASNET.html">GASNet Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/RELEASE_PROCESS.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/BENCHMARK.html">PyTest Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/ADDING_FEATURES.html">Adding Your First Feature</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for arkouda.numpy.timeclass</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span> <span class="k">as</span> <span class="n">pdSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">Timedelta</span> <span class="k">as</span> <span class="n">pdTimedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">Timestamp</span> <span class="k">as</span> <span class="n">pdTimestamp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">date_range</span> <span class="k">as</span> <span class="n">pd_date_range</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta_range</span> <span class="k">as</span> <span class="n">pd_timedelta_range</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_datetime</span><span class="p">,</span> <span class="n">to_timedelta</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="nb">abs</span> <span class="k">as</span> <span class="n">akabs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">intTypes</span><span class="p">,</span> <span class="n">isSupportedInt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegistrationError</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_series</span>
+
+<span class="n">_BASE_UNIT</span> <span class="o">=</span> <span class="s2">&quot;ns&quot;</span>
+
+<span class="n">_unit2normunit</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;weeks&quot;</span><span class="p">:</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;days&quot;</span><span class="p">:</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hours&quot;</span><span class="p">:</span> <span class="s2">&quot;h&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hrs&quot;</span><span class="p">:</span> <span class="s2">&quot;h&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;minutes&quot;</span><span class="p">:</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;milliseconds&quot;</span><span class="p">:</span> <span class="s2">&quot;ms&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;l&quot;</span><span class="p">:</span> <span class="s2">&quot;ms&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;microseconds&quot;</span><span class="p">:</span> <span class="s2">&quot;us&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;u&quot;</span><span class="p">:</span> <span class="s2">&quot;us&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nanoseconds&quot;</span><span class="p">:</span> <span class="s2">&quot;ns&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="s2">&quot;ns&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">_unit2factor</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+    <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+    <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+    <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+    <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">,</span>
+    <span class="s2">&quot;ms&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">,</span>
+    <span class="s2">&quot;us&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;ns&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_factor</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">_unit2factor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_unit2factor</span><span class="p">[</span><span class="n">unit</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">normunit</span> <span class="ow">in</span> <span class="n">_unit2normunit</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">unit</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">_unit2factor</span><span class="p">[</span><span class="n">normunit</span><span class="p">]</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Argument must be one of </span><span class="si">{</span><span class="nb">set</span><span class="p">(</span><span class="n">_unit2factor</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">_unit2normunit</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_identity</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_Timescalar</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+            <span class="n">scalar</span> <span class="o">=</span> <span class="n">to_datetime</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">):</span>
+            <span class="n">scalar</span> <span class="o">=</span> <span class="n">to_timedelta</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime_data</span><span class="p">(</span><span class="n">scalar</span><span class="o">.</span><span class="n">dtype</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="c1"># int64 in nanoseconds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">*</span> <span class="n">scalar</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_AbstractBaseTime</span><span class="p">(</span><span class="n">pdarray</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for Datetime and Timedelta; not user-facing. Arkouda handles</span>
+<span class="sd">    time similar to Pandas (albeit with less functionality), in that all absolute</span>
+<span class="sd">    and relative times are represented in nanoseconds as int64 behind the scenes.</span>
+<span class="sd">    Datetime and Timedelta can be constructed from Arkouda, NumPy, or Pandas arrays;</span>
+<span class="sd">    in each case, the input values are normalized to nanoseconds on initialization,</span>
+<span class="sd">    so that all resulting operations are transparent.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">&quot;Time&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pda</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_BASE_UNIT</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Datetime</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Timedelta</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">unit</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">_factor</span>
+            <span class="c1"># Make a copy to avoid unknown symbol errors</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">int64</span><span class="p">)</span>
+        <span class="c1"># Convert the input to int64 pdarray of nanoseconds</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> array must have int64 dtype&quot;</span><span class="p">)</span>
+            <span class="c1"># Already int64 pdarray, just scale</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+            <span class="c1"># This makes a copy of the input array, to leave input unchanged</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">*</span> <span class="n">pda</span><span class="p">,</span> <span class="n">int64</span><span class="p">)</span>  <span class="c1"># Mimics a datetime64[ns] array</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">):</span>
+            <span class="c1"># Handles all pandas and numpy datetime/timedelta arrays</span>
+            <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">):</span>
+                <span class="c1"># M = datetime64, m = timedelta64</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid dtype: </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdSeries</span><span class="p">):</span>
+                <span class="c1"># Pandas Datetime and Timedelta</span>
+                <span class="c1"># Get units of underlying numpy datetime64 array</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime_data</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: ignore [arg-type]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+                <span class="c1"># Create pdarray</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">from_series</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span>
+                <span class="c1"># Scale if necessary</span>
+                <span class="c1"># This is futureproofing; it will not be used unless pandas</span>
+                <span class="c1"># changes its Datetime implementation</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># Scale inplace because we already created a copy</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="c1"># Numpy datetime64 and timedelta64</span>
+                <span class="c1"># Force through pandas.Series</span>
+                <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">to_series</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;to_series&quot;</span><span class="p">):</span>
+                <span class="c1"># Pandas DatetimeIndex</span>
+                <span class="c1"># Force through pandas.Series</span>
+                <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">to_series</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Now that self.values is correct, init self with same metadata</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">itemsize</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_populated</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="c1"># Will be overridden by all children</span>
+        <span class="k">return</span> <span class="n">_identity</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Round times down to the nearest integer of a given frequency.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        freq : str {&#39;d&#39;, &#39;m&#39;, &#39;h&#39;, &#39;s&#39;, &#39;ms&#39;, &#39;us&#39;, &#39;ns&#39;}</span>
+<span class="sd">            Frequency to round to</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self.__class__</span>
+<span class="sd">            Values rounded down to nearest frequency</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">//</span> <span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ceil</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Round times up to the nearest integer of a given frequency.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        freq : str {&#39;d&#39;, &#39;m&#39;, &#39;h&#39;, &#39;s&#39;, &#39;ms&#39;, &#39;us&#39;, &#39;ns&#39;}</span>
+<span class="sd">            Frequency to round to</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self.__class__</span>
+<span class="sd">            Values rounded up to nearest frequency</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="p">(</span><span class="n">f</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">//</span> <span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Round times to the nearest integer of a given frequency. Midpoint</span>
+<span class="sd">        values will be rounded to nearest even integer.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        freq : str {&#39;d&#39;, &#39;m&#39;, &#39;h&#39;, &#39;s&#39;, &#39;ms&#39;, &#39;us&#39;, &#39;ns&#39;}</span>
+<span class="sd">            Frequency to round to</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self.__class__</span>
+<span class="sd">            Values rounded to nearest frequency</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="p">((</span><span class="n">f</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">rounded</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">//</span> <span class="n">f</span>
+        <span class="c1"># Halfway values are supposed to round to the nearest even integer</span>
+        <span class="c1"># Need to figure out which ones ended up odd and fix them</span>
+        <span class="n">decrement</span> <span class="o">=</span> <span class="p">((</span><span class="n">offset</span> <span class="o">%</span> <span class="n">f</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">((</span><span class="n">rounded</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">rounded</span><span class="p">[</span><span class="n">decrement</span><span class="p">]</span> <span class="o">=</span> <span class="n">rounded</span><span class="p">[</span><span class="n">decrement</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">rounded</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_ndarray</span><span class="o">.</span><span class="vm">__doc__</span>  <span class="c1"># noqa</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">(),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">64[ns]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span><span class="o">.</span><span class="vm">__doc__</span>  <span class="c1"># noqa</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
+        <span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;distribute&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override of the pdarray to_hdf to store the special dtype</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">typecast</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">_file_type_to_int</span><span class="p">,</span> <span class="n">_mode_str_to_int</span>
+
+        <span class="k">return</span> <span class="n">typecast</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">,</span>
+            <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;tohdf&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
+                    <span class="s2">&quot;dset&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
+                    <span class="s2">&quot;write_mode&quot;</span><span class="p">:</span> <span class="n">_mode_str_to_int</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span>
+                    <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
+                    <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                    <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
+                    <span class="s2">&quot;file_format&quot;</span><span class="p">:</span> <span class="n">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">),</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override the pdarray implementation so that the special object type will be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">_file_type_to_int</span><span class="p">,</span>
+            <span class="n">_get_hdf_filetype</span><span class="p">,</span>
+            <span class="n">_mode_str_to_int</span><span class="p">,</span>
+            <span class="n">_repack_hdf</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># determine the format (single/distribute) that the file was saved in</span>
+        <span class="n">file_type</span> <span class="o">=</span> <span class="n">_get_hdf_filetype</span><span class="p">(</span><span class="n">prefix_path</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
+
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;tohdf&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
+                <span class="s2">&quot;dset&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
+                <span class="s2">&quot;write_mode&quot;</span><span class="p">:</span> <span class="n">_mode_str_to_int</span><span class="p">(</span><span class="s2">&quot;append&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
+                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
+                <span class="s2">&quot;file_format&quot;</span><span class="p">:</span> <span class="n">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">),</span>
+                <span class="s2">&quot;overwrite&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">repack</span><span class="p">:</span>
+            <span class="n">_repack_hdf</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarrayIterThresh</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">pdarrayIterThresh</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;... &quot;</span><span class="p">)</span>
+            <span class="n">vals</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)])</span>
+        <span class="n">spaces</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">([</span><span class="si">{}</span><span class="s2">],</span><span class="se">\n</span><span class="si">{}</span><span class="s2">dtype=&#39;</span><span class="si">{}</span><span class="s2">64[ns]&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+            <span class="s2">&quot;,</span><span class="se">\n</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spaces</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vals</span><span class="p">),</span>
+            <span class="n">spaces</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="c1"># Need to do 2 things:</span>
+        <span class="c1">#  1) Determine return type, based on other&#39;s class</span>
+        <span class="c1">#  2) Get other&#39;s int64 data to combine with self&#39;s data</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Datetime</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_datetime_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_datetime</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> and Datetime&quot;</span><span class="p">)</span>
+            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">&quot;Datetime&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_datetime_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+                <span class="n">otherdata</span> <span class="o">=</span> <span class="n">_Timescalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Timedelta</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_timedelta_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_timedelta</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> and Timedelta&quot;</span><span class="p">)</span>
+            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">&quot;Timedelta&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_timedelta_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+                <span class="n">otherdata</span> <span class="o">=</span> <span class="n">_Timescalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">)</span> <span class="ow">or</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_pdarray</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> and integer&quot;</span><span class="p">)</span>
+            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">&quot;pdarray&quot;</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="c1"># Determines return type (Datetime, Timedelta, or pdarray)</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_callback</span><span class="p">(</span><span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+        <span class="c1"># Actual operation evaluates on the underlying int64 data</span>
+        <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">otherdata</span><span class="p">,</span> <span class="n">op</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_r_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="c1"># Need to do 2 things:</span>
+        <span class="c1">#  1) Determine return type, based on other&#39;s class</span>
+        <span class="c1">#  2) Get other&#39;s int64 data to combine with self&#39;s data</span>
+
+        <span class="c1"># First case is pdarray &lt;op&gt; self</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">intTypes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_r_pdarray</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between int64 and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_callback</span><span class="p">(</span><span class="s2">&quot;pdarray&quot;</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+            <span class="c1"># Need to use other._binop because self.values._r_binop can only handle scalars</span>
+            <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">op</span><span class="p">))</span>
+        <span class="c1"># All other cases are scalars, so can use self.values._r_binop</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_datetime_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_r_datetime</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between scalar datetime and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">&quot;Datetime&quot;</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">_Timescalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_timedelta_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_r_timedelta</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between scalar timedelta and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">&quot;Timedelta&quot;</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">_Timescalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">elif</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_with_r_pdarray</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported between int64 and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">otherclass</span> <span class="o">=</span> <span class="s2">&quot;pdarray&quot;</span>
+            <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If here, type is not handled</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_callback</span><span class="p">(</span><span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">_r_binop</span><span class="p">(</span><span class="n">otherdata</span><span class="p">,</span> <span class="n">op</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">opeq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Timedelta</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_timedelta_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_opeq</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> Timedelta not supported&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_timedelta_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+                <span class="n">otherdata</span> <span class="o">=</span> <span class="n">_Timescalar</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">otherdata</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">opeq</span><span class="p">(</span><span class="n">otherdata</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Datetime</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_datetime_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> datetime not supported&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_datetime_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">pdTimestamp</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">))</span>
+            <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_timedelta_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">pdTimedelta</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">))</span>
+            <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="c1"># Will be overridden in all children</span>
+        <span class="k">return</span> <span class="n">key</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="c1"># Single integer index will return a pandas scalar</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Slice or array index should return same class</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># RHS can only be vector or scalar of same class</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="c1"># Value.values is already in nanoseconds, so self.values</span>
+            <span class="c1"># can be set directly</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_supported_scalar</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="c1"># _Timescalar takes care of normalization to nanoseconds</span>
+            <span class="n">normval</span> <span class="o">=</span> <span class="n">_Timescalar</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">normval</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">min</span><span class="o">.</span><span class="vm">__doc__</span>  <span class="c1"># noqa</span>
+        <span class="c1"># Return type is pandas scalar</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="o">.</span><span class="vm">__doc__</span>  <span class="c1"># noqa</span>
+        <span class="c1"># Return type is pandas scalar</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">mink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mink</span><span class="o">.</span><span class="vm">__doc__</span>  <span class="c1"># noqa</span>
+        <span class="c1"># Return type is same class</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">mink</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">maxk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">maxk</span><span class="o">.</span><span class="vm">__doc__</span>  <span class="c1"># noqa</span>
+        <span class="c1"># Return type is same class</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">maxk</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="Datetime">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Datetime">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Datetime</span><span class="p">(</span><span class="n">_AbstractBaseTime</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a date and/or time.</span>
+
+<span class="sd">    Datetime is the Arkouda analog to pandas DatetimeIndex and</span>
+<span class="sd">    other timeseries data types.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pda : int64 pdarray, pd.DatetimeIndex, pd.Series, or np.datetime64 array</span>
+<span class="sd">    unit : str, default &#39;ns&#39;</span>
+<span class="sd">        For int64 pdarray, denotes the unit of the input. Ignored for pandas</span>
+<span class="sd">        and numpy arrays, which carry their own unit. Not case-sensitive;</span>
+<span class="sd">        prefixes of full names (like &#39;sec&#39;) are accepted.</span>
+
+<span class="sd">        Possible values:</span>
+
+<span class="sd">        * &#39;weeks&#39; or &#39;w&#39;</span>
+<span class="sd">        * &#39;days&#39; or &#39;d&#39;</span>
+<span class="sd">        * &#39;hours&#39; or &#39;h&#39;</span>
+<span class="sd">        * &#39;minutes&#39;, &#39;m&#39;, or &#39;t&#39;</span>
+<span class="sd">        * &#39;seconds&#39; or &#39;s&#39;</span>
+<span class="sd">        * &#39;milliseconds&#39;, &#39;ms&#39;, or &#39;l&#39;</span>
+<span class="sd">        * &#39;microseconds&#39;, &#39;us&#39;, or &#39;u&#39;</span>
+<span class="sd">        * &#39;nanoseconds&#39;, &#39;ns&#39;, or &#39;n&#39;</span>
+
+<span class="sd">        Unlike in pandas, units cannot be combined or mixed with integers</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The ``.values`` attribute is always in nanoseconds with int64 dtype.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">supported_with_datetime</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">))</span>
+    <span class="n">supported_with_r_datetime</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">))</span>
+    <span class="n">supported_with_timedelta</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">))</span>
+    <span class="n">supported_with_r_timedelta</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;+&quot;</span><span class="p">))</span>
+    <span class="n">supported_opeq</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;+=&quot;</span><span class="p">,</span> <span class="s2">&quot;-=&quot;</span><span class="p">))</span>
+    <span class="n">supported_with_pdarray</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(())</span>  <span class="c1"># type: ignore</span>
+    <span class="n">supported_with_r_pdarray</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(())</span>  <span class="c1"># type: ignore</span>
+
+    <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">&quot;Datetime&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_populated</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="c1"># lazy initialize all attributes in one server call</span>
+        <span class="n">attribute_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;dateTimeAttributes&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ns</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;nanosecond&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_us</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;microsecond&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ms</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;millisecond&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;second&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_min</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;minute&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hour</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;hour&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_day</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;day&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_month</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;month&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iso_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;isoYear&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_day_of_week</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;dayOfWeek&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_week_of_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;weekOfYear&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_day_of_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;dayOfYear&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_leap_year</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;isLeapYear&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_populated</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nanosecond</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ns</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">microsecond</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_us</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">millisecond</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ms</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">second</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">minute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hour</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hour</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">day</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_day</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">month</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_month</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_year</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">day_of_year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_day_of_year</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dayofyear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">day_of_year</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">day_of_week</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_day_of_week</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dayofweek</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">day_of_week</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weekday</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">day_of_week</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">week</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_week_of_year</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weekofyear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">week</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">date</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># no need to call _ensure_components for the date</span>
+        <span class="c1"># if _date has been set, return it. Otherwise set it first</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_date&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_date</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_leap_year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_leap_year</span>
+
+<div class="viewcode-block" id="Datetime.isocalendar">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Datetime.isocalendar">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">isocalendar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iso_year</span><span class="p">,</span>
+                <span class="s2">&quot;week&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_week_of_year</span><span class="p">,</span>
+                <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_day_of_week</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="n">callbacks</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="p">(</span><span class="s2">&quot;Datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">):</span> <span class="n">Timedelta</span><span class="p">,</span>  <span class="c1"># Datetime - Datetime -&gt; Timedelta</span>
+            <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Datetime + Timedelta -&gt; Datetime</span>
+            <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Datetime - Timedelta -&gt; Datetime</span>
+            <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">):</span> <span class="n">Timedelta</span><span class="p">,</span>
+        <span class="p">}</span>  <span class="c1"># Datetime % Timedelta -&gt; Timedelta</span>
+        <span class="c1"># Every other supported op returns an int64 pdarray, so callback is identity</span>
+        <span class="k">return</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">),</span> <span class="n">_identity</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
+        <span class="c1"># Formats a scalar return value as pandas Timestamp</span>
+        <span class="k">return</span> <span class="n">pdTimestamp</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">scalar</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="n">_BASE_UNIT</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_supported_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
+        <span class="c1"># Tests whether scalar has compatible type with self&#39;s elements</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_datetime_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Datetime.to_pandas">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Datetime.to_pandas">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert array to a pandas DatetimeIndex. Note: if the array size</span>
+<span class="sd">        exceeds client.maxTransferBytes, a RuntimeError is raised.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        to_ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">to_datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="Datetime.sum">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Datetime.sum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot sum datetime64 values&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Datetime.register">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Datetime.register">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register this Datetime object and underlying components with the Arkouda server</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        user_defined_name : str</span>
+<span class="sd">            user defined name the Datetime is to be registered under,</span>
+<span class="sd">            this will be the root name for underlying components</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Datetime</span>
+<span class="sd">            The same Datetime which is now registered with the arkouda server and has an updated name.</span>
+<span class="sd">            This is an in-place modification, the original is returned to support</span>
+<span class="sd">            a fluid programming style.</span>
+<span class="sd">            Please note you cannot register two different Datetimes with the same name.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if user_defined_name is not a str</span>
+<span class="sd">        RegistrationError</span>
+<span class="sd">            If the server was unable to register the Datetimes with the user_defined_name</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        unregister, attach, is_registered</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Objects registered with the server are immune to deletion until</span>
+<span class="sd">        they are unregistered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;register&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">user_defined_name</span><span class="p">,</span>
+                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
+                <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="n">user_defined_name</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Datetime.unregister">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Datetime.unregister">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unregister this Datetime object in the arkouda server which was previously</span>
+<span class="sd">        registered using register() and/or attached to using attach()</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RegistrationError</span>
+<span class="sd">            If the object is already unregistered or if there is a server error</span>
+<span class="sd">            when attempting to unregister</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        register, attach, is_registered</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Objects registered with the server are immune to deletion until</span>
+<span class="sd">        they are unregistered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">unregister</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="s2">&quot;This object is not registered&quot;</span><span class="p">)</span>
+        <span class="n">unregister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Datetime.is_registered">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Datetime.is_registered">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         Return True iff the object is contained in the registry or is a component of a</span>
+<span class="sd">         registered object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.bool</span>
+<span class="sd">            Indicates if the object is contained in the registry</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RegistrationError</span>
+<span class="sd">            Raised if there&#39;s a server-side error or a mis-match of registered components</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        register, attach, unregister</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Objects registered with the server are immune to deletion until</span>
+<span class="sd">        they are unregistered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_registered</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">(</span><span class="n">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">as_component</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">(</span><span class="n">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Timedelta">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Timedelta">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Timedelta</span><span class="p">(</span><span class="n">_AbstractBaseTime</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a duration, the difference between two dates or times.</span>
+
+<span class="sd">    Timedelta is the Arkouda equivalent of pandas.TimedeltaIndex.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pda : int64 pdarray, pd.TimedeltaIndex, pd.Series, or np.timedelta64 array</span>
+<span class="sd">    unit : str, default &#39;ns&#39;</span>
+<span class="sd">        For int64 pdarray, denotes the unit of the input. Ignored for pandas</span>
+<span class="sd">        and numpy arrays, which carry their own unit. Not case-sensitive;</span>
+<span class="sd">        prefixes of full names (like &#39;sec&#39;) are accepted.</span>
+
+<span class="sd">        Possible values:</span>
+
+<span class="sd">        * &#39;weeks&#39; or &#39;w&#39;</span>
+<span class="sd">        * &#39;days&#39; or &#39;d&#39;</span>
+<span class="sd">        * &#39;hours&#39; or &#39;h&#39;</span>
+<span class="sd">        * &#39;minutes&#39;, &#39;m&#39;, or &#39;t&#39;</span>
+<span class="sd">        * &#39;seconds&#39; or &#39;s&#39;</span>
+<span class="sd">        * &#39;milliseconds&#39;, &#39;ms&#39;, or &#39;l&#39;</span>
+<span class="sd">        * &#39;microseconds&#39;, &#39;us&#39;, or &#39;u&#39;</span>
+<span class="sd">        * &#39;nanoseconds&#39;, &#39;ns&#39;, or &#39;n&#39;</span>
+
+<span class="sd">        Unlike in pandas, units cannot be combined or mixed with integers</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The ``.values`` attribute is always in nanoseconds with int64 dtype.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">supported_with_datetime</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;+&quot;</span><span class="p">))</span>
+    <span class="n">supported_with_r_datetime</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">))</span>
+    <span class="n">supported_with_timedelta</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">))</span>
+    <span class="n">supported_with_r_timedelta</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">))</span>
+    <span class="n">supported_opeq</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;+=&quot;</span><span class="p">,</span> <span class="s2">&quot;-=&quot;</span><span class="p">,</span> <span class="s2">&quot;%=&quot;</span><span class="p">))</span>
+    <span class="n">supported_with_pdarray</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">))</span>
+    <span class="n">supported_with_r_pdarray</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;*&quot;</span><span class="p">))</span>
+
+    <span class="n">special_objType</span> <span class="o">=</span> <span class="s2">&quot;Timedelta&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_populated</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="c1"># lazy initialize all attributes in one server call</span>
+        <span class="n">attribute_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;timeDeltaAttributes&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ns</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;nanosecond&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_us</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;microsecond&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ms</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;millisecond&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;second&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_m</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;minute&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;hour&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_d</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">attribute_dict</span><span class="p">[</span><span class="s2">&quot;day&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nanoseconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_microseconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ms</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_us</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span> <span class="o">*</span> <span class="mi">3600</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_days</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_total_seconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_days</span> <span class="o">*</span> <span class="p">(</span><span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seconds</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_microseconds</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_populated</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nanoseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nanoseconds</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">microseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_microseconds</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seconds</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">days</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_days</span>
+
+<div class="viewcode-block" id="Timedelta.total_seconds">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Timedelta.total_seconds">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">total_seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_seconds</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_components</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;days&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">,</span>
+                <span class="s2">&quot;hours&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">,</span>
+                <span class="s2">&quot;minutes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="p">,</span>
+                <span class="s2">&quot;seconds&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
+                <span class="s2">&quot;milliseconds&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ms</span><span class="p">,</span>
+                <span class="s2">&quot;microseconds&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_us</span><span class="p">,</span>
+                <span class="s2">&quot;nanoseconds&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ns</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="n">callbacks</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta - Timedelta -&gt; Timedelta</span>
+            <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta + Timedelta -&gt; Timedelta</span>
+            <span class="p">(</span><span class="s2">&quot;Datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">):</span> <span class="n">Datetime</span><span class="p">,</span>  <span class="c1"># Timedelta + Datetime -&gt; Datetime</span>
+            <span class="p">(</span><span class="s2">&quot;Datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">):</span> <span class="n">Datetime</span><span class="p">,</span>  <span class="c1"># Datetime - Timedelta -&gt; Datetime</span>
+            <span class="p">(</span><span class="s2">&quot;Timedelta&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta % Timedelta -&gt; Timedelta</span>
+            <span class="p">(</span><span class="s2">&quot;pdarray&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>  <span class="c1"># Timedelta // pdarray -&gt; Timedelta</span>
+            <span class="p">(</span><span class="s2">&quot;pdarray&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">):</span> <span class="bp">cls</span><span class="p">,</span>
+        <span class="p">}</span>  <span class="c1"># Timedelta * pdarray -&gt; Timedelta</span>
+        <span class="c1"># Every other supported op returns an int64 pdarray, so callback is identity</span>
+        <span class="k">return</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">otherclass</span><span class="p">,</span> <span class="n">op</span><span class="p">),</span> <span class="n">_identity</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
+        <span class="c1"># Formats a returned scalar as a pandas.Timedelta</span>
+        <span class="k">return</span> <span class="n">pdTimedelta</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">scalar</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="n">_BASE_UNIT</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_supported_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_timedelta_scalar</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Timedelta.to_pandas">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Timedelta.to_pandas">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert array to a pandas TimedeltaIndex. Note: if the array size</span>
+<span class="sd">        exceeds client.maxTransferBytes, a RuntimeError is raised.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        to_ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">to_timedelta</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="Timedelta.std">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Timedelta.std">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the standard deviation as a pd.Timedelta object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Timedelta.sum">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Timedelta.sum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Sum as a pd.Timedelta</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="Timedelta.abs">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Timedelta.abs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Absolute value of time interval.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">akabs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="s2">&quot;int64&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Timedelta.register">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Timedelta.register">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register this Timedelta object and underlying components with the Arkouda server</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        user_defined_name : str</span>
+<span class="sd">            user defined name the timedelta is to be registered under,</span>
+<span class="sd">            this will be the root name for underlying components</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Timedelta</span>
+<span class="sd">            The same Timedelta which is now registered with the arkouda server and has an updated name.</span>
+<span class="sd">            This is an in-place modification, the original is returned to support</span>
+<span class="sd">            a fluid programming style.</span>
+<span class="sd">            Please note you cannot register two different Timedeltas with the same name.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if user_defined_name is not a str</span>
+<span class="sd">        RegistrationError</span>
+<span class="sd">            If the server was unable to register the timedelta with the user_defined_name</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        unregister, attach, is_registered</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Objects registered with the server are immune to deletion until</span>
+<span class="sd">        they are unregistered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;register&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">user_defined_name</span><span class="p">,</span>
+                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_objType</span><span class="p">,</span>
+                <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="n">user_defined_name</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Timedelta.unregister">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Timedelta.unregister">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unregister this timedelta object in the arkouda server which was previously</span>
+<span class="sd">        registered using register() and/or attached to using attach()</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RegistrationError</span>
+<span class="sd">            If the object is already unregistered or if there is a server error</span>
+<span class="sd">            when attempting to unregister</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        register, attach, is_registered</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Objects registered with the server are immune to deletion until</span>
+<span class="sd">        they are unregistered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">unregister</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="s2">&quot;This object is not registered&quot;</span><span class="p">)</span>
+        <span class="n">unregister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Timedelta.is_registered">
+<a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.Timedelta.is_registered">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         Return True iff the object is contained in the registry or is a component of a</span>
+<span class="sd">         registered object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.bool</span>
+<span class="sd">            Indicates if the object is contained in the registry</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RegistrationError</span>
+<span class="sd">            Raised if there&#39;s a server-side error or a mis-match of registered components</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        register, attach, unregister</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Objects registered with the server are immune to deletion until</span>
+<span class="sd">        they are unregistered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_registered</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">(</span><span class="n">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">as_component</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">(</span><span class="n">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="date_range">
+<a class="viewcode-back" href="../../../autoapi/arkouda/timeclass/index.html#arkouda.date_range">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">date_range</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">periods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">tz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">closed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a fixed frequency Datetime range. Alias for</span>
+<span class="sd">    ``ak.Datetime(pd.date_range(args))``. Subject to size limit</span>
+<span class="sd">    imposed by client.maxTransferBytes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start : str or datetime-like, optional</span>
+<span class="sd">        Left bound for generating dates.</span>
+<span class="sd">    end : str or datetime-like, optional</span>
+<span class="sd">        Right bound for generating dates.</span>
+<span class="sd">    periods : int, optional</span>
+<span class="sd">        Number of periods to generate.</span>
+<span class="sd">    freq : str or DateOffset, default &#39;D&#39;</span>
+<span class="sd">        Frequency strings can have multiples, e.g. &#39;5H&#39;. See</span>
+<span class="sd">        timeseries.offset_aliases for a list of</span>
+<span class="sd">        frequency aliases.</span>
+<span class="sd">    tz : str or tzinfo, optional</span>
+<span class="sd">        Time zone name for returning localized DatetimeIndex, for example</span>
+<span class="sd">        &#39;Asia/Hong_Kong&#39;. By default, the resulting DatetimeIndex is</span>
+<span class="sd">        timezone-naive.</span>
+<span class="sd">    normalize : bool, default False</span>
+<span class="sd">        Normalize start/end dates to midnight before generating date range.</span>
+<span class="sd">    name : str, default None</span>
+<span class="sd">        Name of the resulting DatetimeIndex.</span>
+<span class="sd">    closed : {None, &#39;left&#39;, &#39;right&#39;}, optional</span>
+<span class="sd">        Make the interval closed with respect to the given frequency to</span>
+<span class="sd">        the &#39;left&#39;, &#39;right&#39;, or both sides (None, the default).</span>
+<span class="sd">        *Deprecated*</span>
+<span class="sd">    inclusive : {&quot;both&quot;, &quot;neither&quot;, &quot;left&quot;, &quot;right&quot;}, default &quot;both&quot;</span>
+<span class="sd">        Include boundaries. Whether to set each bound as closed or open.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For compatibility. Has no effect on the result.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rng : DatetimeIndex</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Of the four parameters ``start``, ``end``, ``periods``, and ``freq``,</span>
+<span class="sd">    exactly three must be specified. If ``freq`` is omitted, the resulting</span>
+<span class="sd">    ``DatetimeIndex`` will have ``periods`` linearly spaced elements between</span>
+<span class="sd">    ``start`` and ``end`` (closed on both sides).</span>
+
+<span class="sd">    To learn more about the frequency strings, please see `this link</span>
+<span class="sd">    &lt;https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases&gt;`__.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">closed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;closed has been deprecated. Please use the inclusive parameter instead.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">inclusive</span> <span class="o">=</span> <span class="n">closed</span>
+
+    <span class="k">return</span> <span class="n">Datetime</span><span class="p">(</span>
+        <span class="n">pd_date_range</span><span class="p">(</span>
+            <span class="n">start</span><span class="p">,</span>
+            <span class="n">end</span><span class="p">,</span>
+            <span class="n">periods</span><span class="p">,</span>
+            <span class="n">freq</span><span class="p">,</span>
+            <span class="n">tz</span><span class="p">,</span>
+            <span class="n">normalize</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">inclusive</span><span class="o">=</span><span class="n">inclusive</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="timedelta_range">
+<a class="viewcode-back" href="../../../autoapi/arkouda/timeclass/index.html#arkouda.timedelta_range">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">timedelta_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">closed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a fixed frequency TimedeltaIndex, with day as the default</span>
+<span class="sd">    frequency. Alias for ``ak.Timedelta(pd.timedelta_range(args))``.</span>
+<span class="sd">    Subject to size limit imposed by client.maxTransferBytes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start : str or timedelta-like, default None</span>
+<span class="sd">        Left bound for generating timedeltas.</span>
+<span class="sd">    end : str or timedelta-like, default None</span>
+<span class="sd">        Right bound for generating timedeltas.</span>
+<span class="sd">    periods : int, default None</span>
+<span class="sd">        Number of periods to generate.</span>
+<span class="sd">    freq : str or DateOffset, default &#39;D&#39;</span>
+<span class="sd">        Frequency strings can have multiples, e.g. &#39;5H&#39;.</span>
+<span class="sd">    name : str, default None</span>
+<span class="sd">        Name of the resulting TimedeltaIndex.</span>
+<span class="sd">    closed : str, default None</span>
+<span class="sd">        Make the interval closed with respect to the given frequency to</span>
+<span class="sd">        the &#39;left&#39;, &#39;right&#39;, or both sides (None).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rng : TimedeltaIndex</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Of the four parameters ``start``, ``end``, ``periods``, and ``freq``,</span>
+<span class="sd">    exactly three must be specified. If ``freq`` is omitted, the resulting</span>
+<span class="sd">    ``TimedeltaIndex`` will have ``periods`` linearly spaced elements between</span>
+<span class="sd">    ``start`` and ``end`` (closed on both sides).</span>
+
+<span class="sd">    To learn more about the frequency strings, please see `this link</span>
+<span class="sd">    &lt;https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases&gt;`__.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Timedelta</span><span class="p">(</span><span class="n">pd_timedelta_range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">periods</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">closed</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020, Michael Merrill and William Reus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>

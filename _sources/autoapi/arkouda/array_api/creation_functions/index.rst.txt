@@ -52,7 +52,7 @@ Module Contents
    - a scalar value (bool, int, float)
    - a sequence of scalar values (not yet implemented)
    - a buffer (not yet implemented)
-   - an arkouda :class:`~arkouda.pdarrayclass.pdarray`
+   - an arkouda :class:`~arkouda.numpy.pdarrayclass.pdarray`
    - a numpy ndarray
 
    :param obj: The object to convert to an Array

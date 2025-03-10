@@ -1,0 +1,469 @@
+arkouda.numpy.timeclass
+=======================
+
+.. py:module:: arkouda.numpy.timeclass
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   arkouda.numpy.timeclass.Datetime
+   arkouda.numpy.timeclass.Timedelta
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   arkouda.numpy.timeclass.date_range
+   arkouda.numpy.timeclass.timedelta_range
+
+
+Module Contents
+---------------
+
+.. py:class:: Datetime(pda, unit: str = _BASE_UNIT)
+
+   Bases: :py:obj:`_AbstractBaseTime`
+
+
+   Represents a date and/or time.
+
+   Datetime is the Arkouda analog to pandas DatetimeIndex and
+   other timeseries data types.
+
+   :param pda:
+   :type pda: int64 pdarray, pd.DatetimeIndex, pd.Series, or np.datetime64 array
+   :param unit: For int64 pdarray, denotes the unit of the input. Ignored for pandas
+                and numpy arrays, which carry their own unit. Not case-sensitive;
+                prefixes of full names (like 'sec') are accepted.
+
+                Possible values:
+
+                * 'weeks' or 'w'
+                * 'days' or 'd'
+                * 'hours' or 'h'
+                * 'minutes', 'm', or 't'
+                * 'seconds' or 's'
+                * 'milliseconds', 'ms', or 'l'
+                * 'microseconds', 'us', or 'u'
+                * 'nanoseconds', 'ns', or 'n'
+
+                Unlike in pandas, units cannot be combined or mixed with integers
+   :type unit: str, default 'ns'
+
+   .. rubric:: Notes
+
+   The ``.values`` attribute is always in nanoseconds with int64 dtype.
+
+
+   .. py:property:: date
+
+
+   .. py:property:: day
+
+
+   .. py:property:: day_of_week
+
+
+   .. py:property:: day_of_year
+
+
+   .. py:property:: dayofweek
+
+
+   .. py:property:: dayofyear
+
+
+   .. py:property:: hour
+
+
+   .. py:property:: is_leap_year
+
+
+   .. py:method:: is_registered() -> numpy.bool_
+
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: numpy.bool
+
+      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+
+   .. py:method:: isocalendar()
+
+
+   .. py:property:: microsecond
+
+
+   .. py:property:: millisecond
+
+
+   .. py:property:: minute
+
+
+   .. py:property:: month
+
+
+   .. py:property:: nanosecond
+
+
+   .. py:method:: register(user_defined_name)
+
+      Register this Datetime object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name the Datetime is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same Datetime which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different Datetimes with the same name.
+      :rtype: Datetime
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the Datetimes with the user_defined_name
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+
+   .. py:property:: second
+
+
+   .. py:attribute:: special_objType
+      :value: 'Datetime'
+
+
+
+   .. py:method:: sum()
+
+      Return the sum of all elements in the array.
+
+
+
+   .. py:attribute:: supported_opeq
+
+
+   .. py:attribute:: supported_with_datetime
+
+
+   .. py:attribute:: supported_with_pdarray
+
+
+   .. py:attribute:: supported_with_r_datetime
+
+
+   .. py:attribute:: supported_with_r_pdarray
+
+
+   .. py:attribute:: supported_with_r_timedelta
+
+
+   .. py:attribute:: supported_with_timedelta
+
+
+   .. py:method:: to_pandas()
+
+      Convert array to a pandas DatetimeIndex. Note: if the array size
+      exceeds client.maxTransferBytes, a RuntimeError is raised.
+
+      .. seealso:: :obj:`to_ndarray`
+
+
+
+   .. py:method:: unregister()
+
+      Unregister this Datetime object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :raises RegistrationError: If the object is already unregistered or if there is a server error
+          when attempting to unregister
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+
+   .. py:property:: week
+
+
+   .. py:property:: weekday
+
+
+   .. py:property:: weekofyear
+
+
+   .. py:property:: year
+
+
+.. py:class:: Timedelta(pda, unit: str = _BASE_UNIT)
+
+   Bases: :py:obj:`_AbstractBaseTime`
+
+
+   Represents a duration, the difference between two dates or times.
+
+   Timedelta is the Arkouda equivalent of pandas.TimedeltaIndex.
+
+   :param pda:
+   :type pda: int64 pdarray, pd.TimedeltaIndex, pd.Series, or np.timedelta64 array
+   :param unit: For int64 pdarray, denotes the unit of the input. Ignored for pandas
+                and numpy arrays, which carry their own unit. Not case-sensitive;
+                prefixes of full names (like 'sec') are accepted.
+
+                Possible values:
+
+                * 'weeks' or 'w'
+                * 'days' or 'd'
+                * 'hours' or 'h'
+                * 'minutes', 'm', or 't'
+                * 'seconds' or 's'
+                * 'milliseconds', 'ms', or 'l'
+                * 'microseconds', 'us', or 'u'
+                * 'nanoseconds', 'ns', or 'n'
+
+                Unlike in pandas, units cannot be combined or mixed with integers
+   :type unit: str, default 'ns'
+
+   .. rubric:: Notes
+
+   The ``.values`` attribute is always in nanoseconds with int64 dtype.
+
+
+   .. py:method:: abs()
+
+      Absolute value of time interval.
+
+
+
+   .. py:property:: components
+
+
+   .. py:property:: days
+
+
+   .. py:method:: is_registered() -> numpy.bool_
+
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: numpy.bool
+
+      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+
+   .. py:property:: microseconds
+
+
+   .. py:property:: nanoseconds
+
+
+   .. py:method:: register(user_defined_name)
+
+      Register this Timedelta object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name the timedelta is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same Timedelta which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different Timedeltas with the same name.
+      :rtype: Timedelta
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the timedelta with the user_defined_name
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+
+   .. py:property:: seconds
+
+
+   .. py:attribute:: special_objType
+      :value: 'Timedelta'
+
+
+
+   .. py:method:: std(ddof: arkouda.numpy.dtypes.int_scalars = 0)
+
+      Returns the standard deviation as a pd.Timedelta object
+
+
+
+   .. py:method:: sum()
+
+      Return the sum of all elements in the array.
+
+
+
+   .. py:attribute:: supported_opeq
+
+
+   .. py:attribute:: supported_with_datetime
+
+
+   .. py:attribute:: supported_with_pdarray
+
+
+   .. py:attribute:: supported_with_r_datetime
+
+
+   .. py:attribute:: supported_with_r_pdarray
+
+
+   .. py:attribute:: supported_with_r_timedelta
+
+
+   .. py:attribute:: supported_with_timedelta
+
+
+   .. py:method:: to_pandas()
+
+      Convert array to a pandas TimedeltaIndex. Note: if the array size
+      exceeds client.maxTransferBytes, a RuntimeError is raised.
+
+      .. seealso:: :obj:`to_ndarray`
+
+
+
+   .. py:method:: total_seconds()
+
+
+   .. py:method:: unregister()
+
+      Unregister this timedelta object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :raises RegistrationError: If the object is already unregistered or if there is a server error
+          when attempting to unregister
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+
+.. py:function:: date_range(start=None, end=None, periods=None, freq=None, tz=None, normalize=False, name=None, closed=None, inclusive='both', **kwargs)
+
+   Creates a fixed frequency Datetime range. Alias for
+   ``ak.Datetime(pd.date_range(args))``. Subject to size limit
+   imposed by client.maxTransferBytes.
+
+   :param start: Left bound for generating dates.
+   :type start: str or datetime-like, optional
+   :param end: Right bound for generating dates.
+   :type end: str or datetime-like, optional
+   :param periods: Number of periods to generate.
+   :type periods: int, optional
+   :param freq: Frequency strings can have multiples, e.g. '5H'. See
+                timeseries.offset_aliases for a list of
+                frequency aliases.
+   :type freq: str or DateOffset, default 'D'
+   :param tz: Time zone name for returning localized DatetimeIndex, for example
+              'Asia/Hong_Kong'. By default, the resulting DatetimeIndex is
+              timezone-naive.
+   :type tz: str or tzinfo, optional
+   :param normalize: Normalize start/end dates to midnight before generating date range.
+   :type normalize: bool, default False
+   :param name: Name of the resulting DatetimeIndex.
+   :type name: str, default None
+   :param closed: Make the interval closed with respect to the given frequency to
+                  the 'left', 'right', or both sides (None, the default).
+                  *Deprecated*
+   :type closed: {None, 'left', 'right'}, optional
+   :param inclusive: Include boundaries. Whether to set each bound as closed or open.
+   :type inclusive: {"both", "neither", "left", "right"}, default "both"
+   :param \*\*kwargs: For compatibility. Has no effect on the result.
+
+   :returns: **rng**
+   :rtype: DatetimeIndex
+
+   .. rubric:: Notes
+
+   Of the four parameters ``start``, ``end``, ``periods``, and ``freq``,
+   exactly three must be specified. If ``freq`` is omitted, the resulting
+   ``DatetimeIndex`` will have ``periods`` linearly spaced elements between
+   ``start`` and ``end`` (closed on both sides).
+
+   To learn more about the frequency strings, please see `this link
+   <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
+
+
+.. py:function:: timedelta_range(start=None, end=None, periods=None, freq=None, name=None, closed=None, **kwargs)
+
+   Return a fixed frequency TimedeltaIndex, with day as the default
+   frequency. Alias for ``ak.Timedelta(pd.timedelta_range(args))``.
+   Subject to size limit imposed by client.maxTransferBytes.
+
+   :param start: Left bound for generating timedeltas.
+   :type start: str or timedelta-like, default None
+   :param end: Right bound for generating timedeltas.
+   :type end: str or timedelta-like, default None
+   :param periods: Number of periods to generate.
+   :type periods: int, default None
+   :param freq: Frequency strings can have multiples, e.g. '5H'.
+   :type freq: str or DateOffset, default 'D'
+   :param name: Name of the resulting TimedeltaIndex.
+   :type name: str, default None
+   :param closed: Make the interval closed with respect to the given frequency to
+                  the 'left', 'right', or both sides (None).
+   :type closed: str, default None
+
+   :returns: **rng**
+   :rtype: TimedeltaIndex
+
+   .. rubric:: Notes
+
+   Of the four parameters ``start``, ``end``, ``periods``, and ``freq``,
+   exactly three must be specified. If ``freq`` is omitted, the resulting
+   ``TimedeltaIndex`` will have ``periods`` linearly spaced elements between
+   ``start`` and ``end`` (closed on both sides).
+
+   To learn more about the frequency strings, please see `this link
+   <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
+
+

@@ -508,7 +508,7 @@ Module Contents
       :returns: Bytes of memory consumed.
       :rtype: int
 
-      .. seealso:: :obj:`arkouda.pdarrayclass.nbytes`, :obj:`arkouda.index.Index.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
+      .. seealso:: :obj:`arkouda.numpy.pdarrayclass.nbytes`, :obj:`arkouda.index.Index.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
 
       .. rubric:: Examples
 

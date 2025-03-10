@@ -89,10 +89,11 @@ Package Contents
 
    Check that 'ak.pdarray' or 'ak.Strings', 'ak.Categorical', or 'ak.SegArray' is equivalent.
 
-   :param left: The two arrays to be compared.
-   :type left: arkouda.pdarray or arkouda.Strings or arkouda.Categorical or arkouda.SegArray
-   :param right: The two arrays to be compared.
-   :type right: arkouda.pdarray or arkouda.Strings or arkouda.Categorical or arkouda.SegArray
+   :param left:
+   :type left: arkouda.pdarray or arkouda.numpy.Strings or arkouda.Categorical or
+   :param right:
+   :type right: arkouda.pdarray or arkouda.numpy.Strings or arkouda.Categorical or
+   :param arkouda.numpy.SegArray: The two arrays to be compared.
    :param check_dtype: Check dtype if both a and b are ak.pdarray.
    :type check_dtype: bool, default True
    :param err_msg: If provided, used as assertion message.
@@ -114,10 +115,11 @@ Package Contents
    np.nparray's and pd.Categorical's will be converted to the arkouda equivalent.
    Then assert_arkouda_pdarray_equal will be applied to the result.
 
-   :param left: The two arrays to be compared.
-   :type left: np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.Strings or arkouda.Categorical
-   :param right: The two arrays to be compared.
-   :type right: np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.Strings or arkouda.Categorical
+   :param left:
+   :type left: np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.numpy.Strings or
+   :param right:
+   :type right: np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.numpy.Strings or
+   :param arkouda.Categorical: The two arrays to be compared.
    :param check_dtype: Check dtype if both a and b are ak.pdarray or np.ndarray.
    :type check_dtype: bool, default True
    :param err_msg: If provided, used as assertion message.
@@ -159,9 +161,9 @@ Package Contents
    Check that the two 'ak.segarray's are equivalent.
 
    :param left: The two segarrays to be compared.
-   :type left: arkouda.segarray
+   :type left: arkouda.numpy.SegArray
    :param right: The two segarrays to be compared.
-   :type right: arkouda.segarray
+   :type right: arkouda.numpy.SegArray
    :param check_dtype: Check dtype if both a and b are ak.pdarray.
    :type check_dtype: bool, default True
    :param err_msg: If provided, used as assertion message.
@@ -178,9 +180,9 @@ Package Contents
    Check that 'ak.Strings' is equivalent.
 
    :param left: The two Strings to be compared.
-   :type left: arkouda.Strings
+   :type left: arkouda.numpy.Strings
    :param right: The two Strings to be compared.
-   :type right: arkouda.Strings
+   :type right: arkouda.numpy.Strings
    :param err_msg: If provided, used as assertion message.
    :type err_msg: str, default None
    :param check_same: Ensure left and right refer/do not refer to the same memory area.

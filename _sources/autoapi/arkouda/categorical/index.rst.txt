@@ -132,7 +132,7 @@ Module Contents
 
 
 
-   .. py:method:: contains(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: contains(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.numpy.pdarrayclass.pdarray
 
       Check whether each element contains the given substring.
 
@@ -163,7 +163,7 @@ Module Contents
    .. py:attribute:: dtype
 
 
-   .. py:method:: endswith(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: endswith(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.numpy.pdarrayclass.pdarray
 
       Check whether each element ends with the given substring.
 
@@ -215,7 +215,7 @@ Module Contents
 
 
 
-   .. py:method:: from_codes(codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, **kwargs) -> Categorical
+   .. py:method:: from_codes(codes: arkouda.numpy.pdarrayclass.pdarray, categories: arkouda.numpy.strings.Strings, permutation=None, segments=None, **kwargs) -> Categorical
       :classmethod:
 
 
@@ -253,7 +253,7 @@ Module Contents
 
 
 
-   .. py:method:: group() -> arkouda.pdarrayclass.pdarray
+   .. py:method:: group() -> arkouda.numpy.pdarrayclass.pdarray
 
       Return the permutation that groups the array, placing equivalent
       categories together. All instances of the same category are guaranteed
@@ -276,7 +276,7 @@ Module Contents
 
 
 
-   .. py:method:: hash() -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+   .. py:method:: hash() -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
 
       Compute a 128-bit hash of each element of the Categorical.
 
@@ -293,7 +293,7 @@ Module Contents
 
 
 
-   .. py:method:: in1d(test: Union[arkouda.strings.Strings, Categorical]) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: in1d(test: Union[arkouda.numpy.strings.Strings, Categorical]) -> arkouda.numpy.pdarrayclass.pdarray
 
       Test whether each element of the Categorical object is
       also present in the test Strings or Categorical object.
@@ -396,7 +396,7 @@ Module Contents
 
 
 
-   .. py:method:: parse_hdf_categoricals(d: Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]) -> Tuple[List[str], Dict[str, Categorical]]
+   .. py:method:: parse_hdf_categoricals(d: Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]]) -> Tuple[List[str], Dict[str, Categorical]]
       :staticmethod:
 
 
@@ -418,7 +418,7 @@ Module Contents
 
 
    .. py:attribute:: permutation
-      :type:  Union[arkouda.pdarrayclass.pdarray, None]
+      :type:  Union[arkouda.numpy.pdarrayclass.pdarray, None]
       :value: None
 
 
@@ -568,7 +568,7 @@ Module Contents
 
 
 
-   .. py:method:: startswith(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: startswith(substr: Union[bytes, arkouda.numpy.dtypes.str_scalars], regex: bool = False) -> arkouda.numpy.pdarrayclass.pdarray
 
       Check whether each element starts with the given substring.
 
@@ -720,7 +720,7 @@ Module Contents
 
       :returns: A Strings object corresponding to the values in
                 this Categorical.
-      :rtype: arkouda.strings.Strings
+      :rtype: arkouda.numpy.strings.Strings
 
       .. rubric:: Examples
 

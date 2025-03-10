@@ -15,7 +15,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: apply(arr: arkouda.pdarrayclass.pdarray, func: Union[Callable, str], result_dtype: Optional[Union[numpy.dtype, str]] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: apply(arr: arkouda.numpy.pdarrayclass.pdarray, func: Union[Callable, str], result_dtype: Optional[Union[numpy.dtype, str]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Apply a python function to a pdarray. The function should take one argument
    and return a new value. The function will then be called on each element in

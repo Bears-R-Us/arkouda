@@ -30,7 +30,7 @@ Module Contents
 
 .. py:class:: BitVector(values, width=64, reverse=False)
 
-   Bases: :py:obj:`arkouda.pdarrayclass.pdarray`
+   Bases: :py:obj:`arkouda.numpy.pdarrayclass.pdarray`
 
 
    Represent integers as bit vectors, e.g. a set of flags.
@@ -233,7 +233,7 @@ Module Contents
 
 .. py:class:: IPv4(values)
 
-   Bases: :py:obj:`arkouda.pdarrayclass.pdarray`
+   Bases: :py:obj:`arkouda.numpy.pdarrayclass.pdarray`
 
 
    Represent integers as IPv4 addresses.
@@ -346,7 +346,7 @@ Module Contents
    for importing Python lists of IP addresses into Arkouda.
 
 
-.. py:function:: is_ipv4(ip: Union[arkouda.pdarrayclass.pdarray, IPv4], ip2: Optional[arkouda.pdarrayclass.pdarray] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: is_ipv4(ip: Union[arkouda.numpy.pdarrayclass.pdarray, IPv4], ip2: Optional[arkouda.numpy.pdarrayclass.pdarray] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Indicate which values are ipv4 when passed data containing IPv4 and IPv6 values.
 
@@ -362,7 +362,7 @@ Module Contents
    .. seealso:: :obj:`ak.is_ipv6`
 
 
-.. py:function:: is_ipv6(ip: Union[arkouda.pdarrayclass.pdarray, IPv4], ip2: Optional[arkouda.pdarrayclass.pdarray] = None) -> arkouda.pdarrayclass.pdarray
+.. py:function:: is_ipv6(ip: Union[arkouda.numpy.pdarrayclass.pdarray, IPv4], ip2: Optional[arkouda.numpy.pdarrayclass.pdarray] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Indicate which values are ipv6 when passed data containing IPv4 and IPv6 values.
 

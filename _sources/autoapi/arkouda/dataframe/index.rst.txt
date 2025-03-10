@@ -474,7 +474,7 @@ Module Contents
       :type ascending: bool, default = True
 
       :returns: The permutation array that sorts the data on `key`.
-      :rtype: arkouda.pdarrayclass.pdarray
+      :rtype: arkouda.numpy.pdarrayclass.pdarray
 
       .. seealso:: :obj:`coargsort`
 
@@ -625,7 +625,7 @@ Module Contents
       :type keys: list of str
 
       :returns: The permutation array that sorts the data on `keys`.
-      :rtype: arkouda.pdarrayclass.pdarray
+      :rtype: arkouda.numpy.pdarrayclass.pdarray
 
       .. rubric:: Example
 
@@ -1076,7 +1076,7 @@ Module Contents
       :type high: int, default=None
 
       :returns: An array of boolean values for qualified rows in this DataFrame.
-      :rtype: arkouda.pdarrayclass.pdarray
+      :rtype: arkouda.numpy.pdarrayclass.pdarray
 
       .. rubric:: Example
 
@@ -1584,7 +1584,7 @@ Module Contents
                 is the memory usage of each column in bytes.
       :rtype: Series
 
-      .. seealso:: :obj:`arkouda.pdarrayclass.nbytes`, :obj:`arkouda.index.Index.memory_usage`, :obj:`arkouda.index.MultiIndex.memory_usage`, :obj:`arkouda.series.Series.memory_usage`
+      .. seealso:: :obj:`arkouda.numpy.pdarrayclass.nbytes`, :obj:`arkouda.index.Index.memory_usage`, :obj:`arkouda.index.MultiIndex.memory_usage`, :obj:`arkouda.series.Series.memory_usage`
 
       .. rubric:: Examples
 
@@ -2291,7 +2291,8 @@ Module Contents
 
       Sort the DataFrame by indexed columns.
 
-      Note: Fails on sort order of arkouda.strings.Strings columns when multiple columns being sorted.
+      Note: Fails on sort order of arkouda.numpy.strings.Strings columns when
+          multiple columns being sorted.
 
       :param ascending: Sort values in ascending (default) or descending order.
       :type ascending: bool, default = True
@@ -2333,7 +2334,7 @@ Module Contents
 
       If no column is specified, all columns are used.
 
-      Note: Fails on order of arkouda.strings.Strings columns when multiple columns being sorted.
+      Note: Fails on order of arkouda.numpy.strings.Strings columns when multiple columns being sorted.
 
       :param by: The name(s) of the column(s) to sort by.
       :type by: str or list/tuple of str, default = None
@@ -3566,9 +3567,9 @@ Module Contents
                   `a` (and `b`), there is a more efficient method to compute the intersection.
    :type unique: bool, default=False
 
-   :returns: The indices of `a` and `b` where any element occurs at least once in both
-             arrays.
-   :rtype: (arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray) or arkouda.pdarrayclass.pdarray
+   :returns: * *(arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray) or*
+             * *arkouda.numpy.pdarrayclass.pdarray* -- The indices of `a` and `b` where any element occurs at least once in both
+               arrays.
 
    .. rubric:: Examples
 
@@ -3659,7 +3660,7 @@ Module Contents
    :type perm: pdarray
 
    :returns: The inverse of the permutation array.
-   :rtype: arkouda.pdarrayclass.pdarray
+   :rtype: arkouda.numpy.pdarrayclass.pdarray
 
    .. rubric:: Examples
 
