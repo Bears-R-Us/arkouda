@@ -51,7 +51,7 @@ class TestClient:
         Tests the ak.shutdown() method
         """
         ak.shutdown()
-        start_arkouda_server(numlocales=pytest.nl)
+        pytest.server, _, _ = start_arkouda_server(numlocales=pytest.nl)
         # reconnect to server so subsequent tests will pass
         ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.timeout)
 
