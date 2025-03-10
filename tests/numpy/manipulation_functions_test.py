@@ -60,66 +60,77 @@ class TestNumpyManipulationFunctions:
         assert_equal(ak.flip(c2), c2[::-1])
 
     @pytest.mark.parametrize("size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64])
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, ak.bigint])
     def test_repeat_pdarray(self, size, dtype):
-        a = ak.arange(size, dtype=dtype)
-        np_a = np.arange(size, dtype=dtype)
+        if dtype == ak.bigint:
+            a = ak.arange(2**200, 2**200 + size, dtype=dtype)
+            np_a = np.arange(2**200, 2**200 + size)
+        else:
+            a = ak.arange(size, dtype=dtype)
+            np_a = np.arange(size, dtype=dtype)
         f = ak.repeat(a, 2)
         np_f = np.repeat(np_a, 2)
-        assert_arkouda_array_equivalent(np_f, f)
+        assert np.array_equal(np_f, f.to_ndarray())
         f = ak.repeat(a, 2, axis=0)
         np_f = np.repeat(np_a, 2, axis=0)
-        assert_arkouda_array_equivalent(np_f, f)
+        assert np.array_equal(np_f, f.to_ndarray())
 
     @pytest.mark.skip_if_rank_not_compiled([3])
-    @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, ak.bigint])
     @pytest.mark.parametrize("shape", [(2, 2, 2), (2, 2, 3), (2, 3, 2), (3, 2, 2)])
     def test_repeat_dim_3(self, dtype, shape: Tuple[int, ...]):
         from arkouda.pdarraycreation import randint as akrandint
-
         shape_prod = 1
         for i in shape:
             shape_prod *= i
-        a = ak.arange(shape_prod, dtype=dtype).reshape(shape)
-        np_a = np.arange(shape_prod, dtype=dtype).reshape(shape)
+        if dtype == ak.bigint:
+            np_a = np.arange(2**200, 2**200 + shape_prod)
+            a = ak.array(np_a, dtype=dtype).reshape(shape)
+            np_a = np_a.reshape(shape)
+        else:
+            a = ak.arange(shape_prod, dtype=dtype).reshape(shape)
+            np_a = np.arange(shape_prod, dtype=dtype).reshape(shape)
         reps = akrandint(0, 10, 1, seed=seed)
         f = ak.repeat(a, reps)
         np_f = np.repeat(np_a, reps.to_ndarray())
-        assert_arkouda_array_equivalent(np_f, f)
+        assert np.array_equal(np_f, f.to_ndarray())
         for axis in range(3):
             reps = akrandint(0, 10, 1, seed=seed)
             f = ak.repeat(a, reps, axis=axis)
             np_f = np.repeat(np_a, reps.to_ndarray(), axis=axis)
-            assert_arkouda_array_equivalent(np_f, f)
+            assert np.array_equal(np_f, f.to_ndarray())
             reps = akrandint(0, 10, size=shape[axis], seed=seed)
             f = ak.repeat(a, reps, axis=axis)
             np_f = np.repeat(np_a, reps.to_ndarray(), axis=axis)
-            assert_arkouda_array_equivalent(np_f, f)
+            assert np.array_equal(np_f, f.to_ndarray())
 
     @pytest.mark.skip_if_rank_not_compiled([2])
-    @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, ak.bigint])
     @pytest.mark.parametrize("shape", [(2, 3), (2, 2), (2, 1), (1, 2)])
     def test_repeat_dim_2(self, dtype, shape: Tuple[int, ...]):
         from arkouda.pdarraycreation import randint as akrandint
-
         shape_prod = 1
         for i in shape:
             shape_prod *= i
-        a = ak.arange(shape_prod, dtype=dtype).reshape(shape)
-        np_a = np.arange(shape_prod, dtype=dtype).reshape(shape)
+        if dtype == ak.bigint:
+            a = ak.arange(2 ** 200, 2 ** 200 + shape_prod, dtype=dtype).reshape(shape)
+            np_a = np.arange(2 ** 200, 2 ** 200 + shape_prod, dtype=dtype).reshape(shape)
+        else:
+            a = ak.arange(shape_prod, dtype=dtype).reshape(shape)
+            np_a = np.arange(shape_prod, dtype=dtype).reshape(shape)
         reps = akrandint(0, 10, 1, seed=seed)
         f = ak.repeat(a, reps)
         np_f = np.repeat(np_a, reps.to_ndarray())
-        assert_arkouda_array_equivalent(np_f, f)
+        assert np.array_equal(np_f, f.to_ndarray())
         for axis in range(2):
             reps = akrandint(0, 10, 1, seed=seed)
             f = ak.repeat(a, reps, axis=axis)
             np_f = np.repeat(np_a, reps.to_ndarray(), axis=axis)
-            assert_arkouda_array_equivalent(np_f, f)
+            assert np.array_equal(np_f, f.to_ndarray())
             reps = akrandint(0, 10, size=shape[axis], seed=seed)
             f = ak.repeat(a, reps, axis=axis)
             np_f = np.repeat(np_a, reps.to_ndarray(), axis=axis)
-            assert_arkouda_array_equivalent(np_f, f)
+            assert np.array_equal(np_f, f.to_ndarray())
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", DTYPES)

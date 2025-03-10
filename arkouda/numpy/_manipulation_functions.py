@@ -186,7 +186,7 @@ def repeat(
             cast(
                 str,
                 generic_msg(
-                    cmd=f"repeat<{a.dtype},{a.ndim},{repeats.dtype},{1}>",
+                    cmd=f"repeat<{a.dtype},{a.ndim},{1}>",
                     args={
                         "eIn": a,
                         "reps": repeats,

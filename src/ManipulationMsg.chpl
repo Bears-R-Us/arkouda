@@ -815,15 +815,14 @@ module ManipulationMsg {
 
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.repeat.html#array_api.repeat
   @arkouda.registerCommand (name="repeat")
-  proc repeat (eIn : [?d] ?t, axis : int, reps : [?d2] ?t2 ) : [] t throws 
-    where ((t2 == int) &&
-           (t == int || t == real || t == bool || t == uint || t == uint(8) || t == bigint) &&
+  proc repeat (eIn: [?d] ?t, axis: int, reps: [?d2] int): [] t throws 
+    where ((t == int || t == real || t == bool || t == uint || t == uint(8) || t == bigint) &&
            (d2.rank == 1)){
     param pn = Reflection.getRoutineName();
 
     var eOut = makeDistArray((...repeatShape(eIn.shape, reps, axis)), t);
 
-    if reps.size == 1{
+    if reps.size == 1 {
       forall idx in eOut.domain with (
         var agg = newSrcAggregator(t)
       ) {
@@ -831,7 +830,20 @@ module ManipulationMsg {
         idx2[axis] = idx2[axis] / reps[0];
         agg.copy(eOut[idx], eIn[if eIn.shape.size == 1 then idx2[0] else idx2]);
       }
-    }else{
+    }else if d.rank == 1 {
+      const outSize = eOut.size;
+      var outStarts: [eIn.domain] int;
+
+      outStarts[1..] = + scan reps[..reps.size - 2];
+      writeln(outStarts);
+      forall (inIdx, outStart, numRepeats) in zip(eIn.domain, outStarts, reps) with (
+        var agg = newDstAggregator(t)
+      ){
+        for destIdx in outStart..#numRepeats {
+          agg.copy(eOut[destIdx], eIn[inIdx]);
+        }
+      }
+    }else {
       var lookup: [0..<eOut.shape[axis]] int;
       var breakpoints: [1..reps.size] int = + scan reps;
       var shiftedBreakpoints: [0..<reps.size] int;
@@ -841,7 +853,7 @@ module ManipulationMsg {
         for j in 0..<l do lookup[i + j] = ind;
       }
       forall idx in eOut.domain with (
-        var agg = newSrcAggregator(t)
+        var agg = newDstAggregator(t)
       ) {
         var inIdx = if eIn.shape.size == 1 then (idx,) else idx;
         inIdx[axis] = lookup[inIdx[axis]];
@@ -855,12 +867,17 @@ module ManipulationMsg {
   proc repeatShape(shape: ?N*int, reps: [] int, axis: int): N*int {
     var shapeOut: N*int;
     for i in 0..<N do shapeOut[i] = shape[i];
-    if reps.size == 1{
+    if reps.size == 1 {
       shapeOut[axis] = shapeOut[axis] * reps[0];
-    }else{
+    }else {
       shapeOut[axis] = + reduce reps;
     }
     return shapeOut;
+  }
+
+  //At some point when issue #4162 clears up we can use this instead in the where clause.
+  proc repeatInputElemTypeCheck(type t) param : bool {
+    return (t == int || t == real || t == bool || t == uint || t == uint(8) || t == bigint);
   }
 
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.unstack.html
