@@ -798,7 +798,7 @@ class pdarray:
         Return a string of the type inferred from the values.
         """
         from arkouda.numpy.dtypes import float_scalars, int_scalars
-        from arkouda.util import _is_dtype_in_union
+        from arkouda.numpy.util import _is_dtype_in_union
 
         if _is_dtype_in_union(self.dtype, int_scalars):
             return "integer"
@@ -1324,7 +1324,7 @@ class pdarray:
         This will return True if the object is registered itself or as a component
         of another object
         """
-        from arkouda.util import is_registered
+        from arkouda.numpy.util import is_registered
 
         if self.registered_name is None:
             return np.bool_(is_registered(self.name, as_component=True))
@@ -2511,7 +2511,7 @@ class pdarray:
         >>> # ...other work...
         >>> b.unregister()
         """
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         if self.registered_name is None:
             raise RegistrationError("This object is not registered")
@@ -2563,7 +2563,7 @@ class pdarray:
         """
         import warnings
 
-        from arkouda.util import attach
+        from arkouda.numpy.util import attach
 
         warnings.warn(
             "ak.pdarray.attach() is deprecated. Please use ak.attach() instead.",
@@ -3380,7 +3380,7 @@ def divmod(
     """
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import where as akwhere
-    from arkouda.pdarraycreation import full
+    from arkouda.numpy.pdarraycreation import full
 
     if not isinstance(x, pdarray) and not isinstance(y, pdarray):
         raise TypeError("At least one entry must be a pdarray.")
@@ -3737,7 +3737,7 @@ def clz(pda: pdarray) -> pdarray:
         if pda.max_bits == -1:
             raise ValueError("max_bits must be set to count leading zeros")
         from arkouda.numpy import where
-        from arkouda.pdarraycreation import zeros
+        from arkouda.numpy.pdarraycreation import zeros
 
         uint_arrs = pda.bigint_to_uint_arrays()
 
@@ -3822,7 +3822,7 @@ def ctz(pda: pdarray) -> pdarray:
         # which is only relevant when ctz(0) which is defined to be 0
 
         from arkouda.numpy import where
-        from arkouda.pdarraycreation import zeros
+        from arkouda.numpy.pdarraycreation import zeros
 
         # reverse the list, so we visit low bits first
 
@@ -4173,7 +4173,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
 
 @typechecked
 def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, bool, bool]:
-    from arkouda.util import broadcast_dims
+    from arkouda.numpy.util import broadcast_dims
 
     if x1.shape == x2.shape:
         return (x1, x2, False, False)
@@ -4266,7 +4266,7 @@ def attach_pdarray(user_defined_name: str) -> pdarray:
     """
     import warnings
 
-    from arkouda.util import attach
+    from arkouda.numpy.util import attach
 
     warnings.warn(
         "ak.attach_pdarray() is deprecated. Please use ak.attach() instead.",
@@ -4317,7 +4317,7 @@ def attach(user_defined_name: str) -> pdarray:
     """
     import warnings
 
-    from arkouda.util import attach
+    from arkouda.numpy.util import attach
 
     warnings.warn(
         "ak.pdarrayclass.attach() is deprecated. Please use ak.attach() instead.",
@@ -4366,7 +4366,7 @@ def unregister_pdarray_by_name(user_defined_name: str) -> None:
     """
     import warnings
 
-    from arkouda.util import unregister
+    from arkouda.numpy.util import unregister
 
     warnings.warn(
         "ak.unregister_pdarray_by_name() is deprecated. Please use ak.unregister() instead.",

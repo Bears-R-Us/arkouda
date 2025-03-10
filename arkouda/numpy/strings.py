@@ -16,9 +16,9 @@ from arkouda.match import Match, MatchType
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, bool_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars
-from arkouda.pdarrayclass import RegistrationError
-from arkouda.pdarrayclass import all as akall
-from arkouda.pdarrayclass import create_pdarray, parse_single_value, pdarray
+from arkouda.numpy.pdarrayclass import RegistrationError
+from arkouda.numpy.pdarrayclass import all as akall
+from arkouda.numpy.pdarrayclass import create_pdarray, parse_single_value, pdarray
 
 __all__ = ["Strings"]
 
@@ -62,6 +62,7 @@ class Strings:
 
     BinOps = frozenset(["==", "!="])
     objType = "Strings"
+    size: int_scalars
 
     @staticmethod
     def from_return_msg(rep_msg: str) -> Strings:
@@ -2760,7 +2761,7 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         if not self.registered_name:
             raise RegistrationError("This object is not registered")
@@ -2785,7 +2786,7 @@ class Strings:
         RuntimeError
             Raised if there's a server-side error thrown
         """
-        from arkouda.util import is_registered
+        from arkouda.numpy.util import is_registered
 
         if self.registered_name is None:
             return np.bool_(is_registered(self.name, as_component=True))
@@ -2825,7 +2826,7 @@ class Strings:
         """
         import warnings
 
-        from arkouda.util import attach
+        from arkouda.numpy.util import attach
 
         warnings.warn(
             "ak.Strings.attach() is deprecated. Please use ak.attach() instead.",
@@ -2850,7 +2851,7 @@ class Strings:
         """
         import warnings
 
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         warnings.warn(
             "ak.Strings.unregister_segarray_by_name() is deprecated. "

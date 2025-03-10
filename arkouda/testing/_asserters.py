@@ -19,8 +19,8 @@ from arkouda import (
     pdarray,
     sort,
 )
-from arkouda.pdarrayclass import sum as aksum
-from arkouda.util import is_numeric
+from arkouda.numpy.pdarrayclass import sum as aksum
+from arkouda.numpy.util import is_numeric
 
 DEBUG = True
 
@@ -614,7 +614,7 @@ def assert_arkouda_segarray_equal(
 
     Parameters
     ----------
-    left, right : arkouda.segarray
+    left, right : arkouda.numpy.SegArray
         The two segarrays to be compared.
     check_dtype : bool, default True
         Check dtype if both a and b are ak.pdarray.
@@ -685,7 +685,7 @@ def assert_arkouda_strings_equal(
 
     Parameters
     ----------
-    left, right : arkouda.Strings
+    left, right : arkouda.numpy.Strings
         The two Strings to be compared.
     err_msg : str, default None
         If provided, used as assertion message.
@@ -748,7 +748,8 @@ def assert_arkouda_array_equal(
 
     Parameters
     ----------
-    left, right : arkouda.pdarray or arkouda.Strings or arkouda.Categorical or arkouda.SegArray
+    left, right : arkouda.pdarray or arkouda.numpy.Strings or arkouda.Categorical or
+    arkouda.numpy.SegArray
         The two arrays to be compared.
     check_dtype : bool, default True
         Check dtype if both a and b are ak.pdarray.

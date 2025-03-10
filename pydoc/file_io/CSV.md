@@ -67,7 +67,7 @@ Due to differences in execution of the CSV format, generic load/read functionali
 ### Strings
 
 ```{eval-rst}  
-- :py:meth:`arkouda.Strings.to_csv`
+- :py:meth:`arkouda.numpy.Strings.to_csv`
 ```
 
 ### Index

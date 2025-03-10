@@ -3,8 +3,8 @@ from typing import Callable, Union, Optional, cast
 import sys
 
 from arkouda.client import generic_msg, get_config
-from arkouda.pdarrayclass import pdarray, parse_single_value
-from arkouda.pdarraycreation import create_pdarray
+from arkouda.numpy.pdarrayclass import pdarray, parse_single_value
+from arkouda.numpy.pdarraycreation import create_pdarray
 import cloudpickle
 import base64
 import numpy as np

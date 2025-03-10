@@ -31,15 +31,15 @@ from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import numeric_scalars
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.pdarrayclass import RegistrationError, pdarray
-from arkouda.pdarraycreation import arange, array, create_pdarray, full, zeros
-from arkouda.pdarraysetops import concatenate, in1d, intersect1d
+from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
+from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, full, zeros
+from arkouda.numpy.pdarraysetops import concatenate, in1d, intersect1d
 from arkouda.row import Row
-from arkouda.segarray import SegArray
+from arkouda.numpy.segarray import SegArray
 from arkouda.series import Series
-from arkouda.sorting import argsort, coargsort
-from arkouda.strings import Strings
-from arkouda.timeclass import Datetime, Timedelta
+from arkouda.numpy.sorting import argsort, coargsort
+from arkouda.numpy.strings import Strings
+from arkouda.numpy.timeclass import Datetime, Timedelta
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -2338,7 +2338,7 @@ class DataFrame(UserDict):
         +----+--------+--------+
 
         """
-        from arkouda.util import generic_concat as util_concatenate
+        from arkouda.numpy.util import generic_concat as util_concatenate
 
         # Do nothing if the other dataframe is empty
         if other.empty:
@@ -2381,7 +2381,7 @@ class DataFrame(UserDict):
         Essentially an append, but different formatting.
 
         """
-        from arkouda.util import generic_concat as util_concatenate
+        from arkouda.numpy.util import generic_concat as util_concatenate
 
         if len(items) == 0:
             return cls()
@@ -2741,7 +2741,7 @@ class DataFrame(UserDict):
 
         See Also
         --------
-        arkouda.pdarrayclass.nbytes
+        arkouda.numpy.pdarrayclass.nbytes
         arkouda.index.Index.memory_usage
         arkouda.index.MultiIndex.memory_usage
         arkouda.series.Series.memory_usage
@@ -2814,7 +2814,7 @@ class DataFrame(UserDict):
         >>>  df.memory_usage(index=True).sum()
 
         """
-        from arkouda.util import convert_bytes
+        from arkouda.numpy.util import convert_bytes
 
         if index:
             sizes = [self.index.memory_usage(unit=unit)]
@@ -2856,7 +2856,7 @@ class DataFrame(UserDict):
         '15 KB'
 
         """
-        from arkouda.util import convert_bytes
+        from arkouda.numpy.util import convert_bytes
 
         data_size = convert_bytes(self.memory_usage(index=True).sum(), unit=unit)
 
@@ -3669,7 +3669,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.pdarrayclass.pdarray
+        arkouda.numpy.pdarrayclass.pdarray
             The permutation array that sorts the data on `key`.
 
         See Also
@@ -3752,7 +3752,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.pdarrayclass.pdarray
+        arkouda.numpy.pdarrayclass.pdarray
             The permutation array that sorts the data on `keys`.
 
         Example
@@ -3802,7 +3802,8 @@ class DataFrame(UserDict):
         """
         Sort the DataFrame by indexed columns.
 
-        Note: Fails on sort order of arkouda.strings.Strings columns when multiple columns being sorted.
+        Note: Fails on sort order of arkouda.numpy.strings.Strings columns when
+            multiple columns being sorted.
 
         Parameters
         ----------
@@ -3851,7 +3852,7 @@ class DataFrame(UserDict):
 
         If no column is specified, all columns are used.
 
-        Note: Fails on order of arkouda.strings.Strings columns when multiple columns being sorted.
+        Note: Fails on order of arkouda.numpy.strings.Strings columns when multiple columns being sorted.
 
         Parameters
         ----------
@@ -4007,7 +4008,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.pdarrayclass.pdarray
+        arkouda.numpy.pdarrayclass.pdarray
             An array of boolean values for qualified rows in this DataFrame.
 
         Example
@@ -4441,7 +4442,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda import full, isnan
-        from arkouda.util import is_numeric
+        from arkouda.numpy.util import is_numeric
 
         if (isinstance(axis, int) and axis == 0) or (isinstance(axis, str) and axis == "index"):
             index_values_list = []
@@ -4752,7 +4753,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda import full, isnan
-        from arkouda.util import is_numeric
+        from arkouda.numpy.util import is_numeric
 
         def is_nan_col(col: str):
             if is_numeric(self[col]):
@@ -4807,7 +4808,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda import full, isnan
-        from arkouda.util import is_numeric
+        from arkouda.numpy.util import is_numeric
 
         def not_nan_col(col: str):
             if is_numeric(self[col]):
@@ -5331,7 +5332,7 @@ class DataFrame(UserDict):
         False
 
         """
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         if not self.registered_name:
             raise RegistrationError("This object is not registered")
@@ -5378,7 +5379,7 @@ class DataFrame(UserDict):
 
 
         """
-        from arkouda.util import is_registered
+        from arkouda.numpy.util import is_registered
 
         if self.registered_name is None:
             return False  # Dataframe cannot be registered as a component
@@ -5424,7 +5425,7 @@ class DataFrame(UserDict):
         """
         import warnings
 
-        from arkouda.util import attach
+        from arkouda.numpy.util import attach
 
         warnings.warn(
             "ak.DataFrame.attach() is deprecated. Please use ak.attach() instead.",
@@ -5473,7 +5474,7 @@ class DataFrame(UserDict):
         """
         import warnings
 
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         warnings.warn(
             "ak.DataFrame.unregister_dataframe_by_name() is deprecated. "
@@ -5733,7 +5734,8 @@ def intersect(a, b, positions=True, unique=False):
 
     Returns
     -------
-    (arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray) or arkouda.pdarrayclass.pdarray
+    (arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray) or
+    arkouda.numpy.pdarrayclass.pdarray
         The indices of `a` and `b` where any element occurs at least once in both
         arrays.
 
@@ -5861,7 +5863,7 @@ def invert_permutation(perm):
 
     Returns
     -------
-    arkouda.pdarrayclass.pdarray
+    arkouda.numpy.pdarrayclass.pdarray
         The inverse of the permutation array.
 
     Examples

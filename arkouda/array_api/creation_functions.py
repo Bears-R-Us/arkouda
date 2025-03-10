@@ -6,7 +6,7 @@ import numpy as np
 
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import resolve_scalar_dtype
-from arkouda.pdarrayclass import _to_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import _to_pdarray, pdarray
 
 if TYPE_CHECKING:
     from ._typing import (
@@ -43,7 +43,7 @@ def asarray(
     - a scalar value (bool, int, float)
     - a sequence of scalar values (not yet implemented)
     - a buffer (not yet implemented)
-    - an arkouda :class:`~arkouda.pdarrayclass.pdarray`
+    - an arkouda :class:`~arkouda.numpy.pdarrayclass.pdarray`
     - a numpy ndarray
 
     Parameters

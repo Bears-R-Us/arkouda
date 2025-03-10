@@ -17,11 +17,11 @@ from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.pdarrayclass import RegistrationError, pdarray
-from arkouda.pdarraycreation import arange, array, create_pdarray, ones
-from arkouda.pdarraysetops import argsort, in1d
-from arkouda.sorting import coargsort
-from arkouda.util import convert_if_categorical, generic_concat, get_callback
+from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
+from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, ones
+from arkouda.numpy.pdarraysetops import argsort, in1d
+from arkouda.numpy.sorting import coargsort
+from arkouda.numpy.util import convert_if_categorical, generic_concat, get_callback
 
 if TYPE_CHECKING:
     from arkouda.series import Series
@@ -66,6 +66,17 @@ class Index:
     Index([1, 2, 3], dtype='int64')
 
     """
+    def _set_dtype(self):
+        from arkouda.numpy.dtypes import dtype as ak_dtype
+        if isinstance(self.values, List):
+            # Infer dtype from first element
+            self.dtype = self[0].dtype
+        elif isinstance(self.values, Strings):
+            self.dtype = ak_dtype(str)
+        elif isinstance(self.values, (pdarray, Categorical, pd.Index)):
+            self.dtype = self.values.dtype
+        else:
+            self.dtype = None
 
     @typechecked
     def __init__(
@@ -84,7 +95,7 @@ class Index:
         if isinstance(values, Index):
             self.values = values.values
             self.size = values.size
-            self.dtype = values.dtype
+            self._set_dtype()
             self.name = name if name else values.name
         elif isinstance(values, pd.Index):
             if isinstance(values.values, pd.Categorical):
@@ -92,7 +103,7 @@ class Index:
             else:
                 self.values = array(values.values)
             self.size = values.size
-            self.dtype = self.values.dtype
+            self._set_dtype()
             self.name = name if name else values.name
         elif isinstance(values, List):
             if allow_list is True:
@@ -112,12 +123,12 @@ class Index:
                 values = array(values)
                 self.values = values
                 self.size = self.values.size
-                self.dtype = self.values.dtype
+                self._set_dtype()
             self.name = name
         elif isinstance(values, (pdarray, Strings, Categorical)):
             self.values = values
             self.size = self.values.size
-            self.dtype = self.values.dtype
+            self._set_dtype()
             self.name = name
         else:
             raise TypeError(f"Unable to create Index from type {type(values)}")
@@ -223,7 +234,7 @@ class Index:
         """
         if isinstance(self.values, list):
             from arkouda.numpy.dtypes import float_scalars, int_scalars
-            from arkouda.util import _is_dtype_in_union
+            from arkouda.numpy.util import _is_dtype_in_union
 
             if _is_dtype_in_union(self.dtype, int_scalars):
                 return "integer"
@@ -341,7 +352,7 @@ class Index:
         if len(self) != len(other):
             return False
 
-        from arkouda.pdarrayclass import all as akall
+        from arkouda.numpy.pdarrayclass import all as akall
 
         if isinstance(self, MultiIndex) and isinstance(other, MultiIndex):
             if self.nlevels != other.nlevels:
@@ -374,7 +385,7 @@ class Index:
 
         See Also
         --------
-        arkouda.pdarrayclass.nbytes
+        arkouda.numpy.pdarrayclass.nbytes
         arkouda.index.MultiIndex.memory_usage
         arkouda.series.Series.memory_usage
         arkouda.dataframe.DataFrame.memory_usage
@@ -389,7 +400,7 @@ class Index:
         24
 
         """
-        from arkouda.util import convert_bytes
+        from arkouda.numpy.util import convert_bytes
 
         return convert_bytes(self.values.nbytes, unit=unit)
 
@@ -525,7 +536,7 @@ class Index:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         if not self.registered_name:
             raise RegistrationError("This object is not registered")
@@ -556,7 +567,7 @@ class Index:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda.util import is_registered
+        from arkouda.numpy.util import is_registered
 
         if self.registered_name is None:
             if not isinstance(self.values, Categorical):
@@ -657,7 +668,7 @@ class Index:
         Index(array(['b', 'b', 'd', 'd', 'a']), dtype='<U0')
 
         """
-        from arkouda.util import map
+        from arkouda.numpy.util import map
 
         return Index(map(self.values, arg))
 
@@ -1244,7 +1255,7 @@ class MultiIndex(Index):
 
         See Also
         --------
-        arkouda.pdarrayclass.nbytes
+        arkouda.numpy.pdarrayclass.nbytes
         arkouda.index.Index.memory_usage
         arkouda.series.Series.memory_usage
         arkouda.dataframe.DataFrame.memory_usage
@@ -1259,7 +1270,7 @@ class MultiIndex(Index):
         48
 
         """
-        from arkouda.util import convert_bytes
+        from arkouda.numpy.util import convert_bytes
 
         nbytes = 0
         for item in self.levels:
@@ -1362,7 +1373,7 @@ class MultiIndex(Index):
         return self
 
     def unregister(self):
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         if not self.registered_name:
             raise RegistrationError("This object is not registered")
@@ -1370,7 +1381,7 @@ class MultiIndex(Index):
         self.registered_name = None
 
     def is_registered(self):
-        from arkouda.util import is_registered
+        from arkouda.numpy.util import is_registered
 
         if self.registered_name is None:
             return False

@@ -219,7 +219,8 @@ def assert_arkouda_array_equivalent(
 
     Parameters
     ----------
-    left, right : np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.Strings or arkouda.Categorical
+    left, right : np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.numpy.Strings or
+    arkouda.Categorical
         The two arrays to be compared.
     check_dtype : bool, default True
         Check dtype if both a and b are ak.pdarray or np.ndarray.

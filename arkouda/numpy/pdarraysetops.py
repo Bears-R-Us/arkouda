@@ -14,10 +14,10 @@ from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import array, ones, zeros, zeros_like
-from arkouda.sorting import argsort
-from arkouda.strings import Strings
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarraycreation import array, ones, zeros, zeros_like
+from arkouda.numpy.sorting import argsort
+from arkouda.numpy.strings import Strings
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -351,7 +351,7 @@ def concatenate(
     """
     from arkouda.categorical import Categorical as Categorical_
     from arkouda.numpy.dtypes import int_scalars
-    from arkouda.util import get_callback
+    from arkouda.numpy.util import get_callback
 
     size: int_scalars = 0
     objtype = None

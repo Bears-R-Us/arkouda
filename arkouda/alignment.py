@@ -12,11 +12,11 @@ from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import arange, full, ones, zeros
-from arkouda.pdarraysetops import concatenate, in1d
-from arkouda.sorting import argsort, coargsort
-from arkouda.strings import Strings
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarraycreation import arange, full, ones, zeros
+from arkouda.numpy.pdarraysetops import concatenate, in1d
+from arkouda.numpy.sorting import argsort, coargsort
+from arkouda.numpy.strings import Strings
 
 
 def unsqueeze(p):
@@ -237,7 +237,7 @@ def find(query, space, all_occurrences=False, remove_missing=False):
             if isinstance(query, Sequence):
                 raise TypeError("finding all_occurrences is not yet supported on sequences of arrays")
 
-            from arkouda.segarray import SegArray
+            from arkouda.numpy.segarray import SegArray
 
             # create a segarray which contains all the indices from query
             # in our search space, instead of just the min for each segment

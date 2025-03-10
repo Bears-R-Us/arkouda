@@ -17,18 +17,18 @@ from arkouda.index import Index, MultiIndex
 from arkouda.numpy import cast as akcast
 from arkouda.numpy import isnan, value_counts
 from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
-from arkouda.pdarrayclass import (
+from arkouda.numpy.pdarrayclass import (
     RegistrationError,
     any,
     argmaxk,
     create_pdarray,
     pdarray,
 )
-from arkouda.pdarraycreation import arange, array, full, zeros
-from arkouda.pdarraysetops import argsort, concatenate, in1d, indexof1d
-from arkouda.segarray import SegArray
-from arkouda.strings import Strings
-from arkouda.util import get_callback, is_float
+from arkouda.numpy.pdarraycreation import arange, array, full, zeros
+from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
+from arkouda.numpy.segarray import SegArray
+from arkouda.numpy.strings import Strings
+from arkouda.numpy.util import get_callback, is_float
 
 # pd.set_option("display.max_colwidth", 65) is being called in DataFrame.py. This will resolve BitVector
 # truncation issues. If issues arise, that's where to look for it.
@@ -314,7 +314,7 @@ class Series:
         if is_supported_scalar(key):
             return self[array([key])]
         assert isinstance(key, (pdarray, Strings))
-        if key.dtype == "bool_":
+        if isinstance(key, pdarray) and key.dtype == "bool_":
             # boolean array indexes without sorting
             return Series(index=self.index[key], data=self.values[key])
         indices = indexof1d(key, self.index.values)
@@ -446,7 +446,7 @@ class Series:
 
         See Also
         --------
-        arkouda.pdarrayclass.nbytes
+        arkouda.numpy.pdarrayclass.nbytes
         arkouda.index.Index.memory_usage
         arkouda.series.Series.memory_usage
         arkouda.dataframe.DataFrame.memory_usage
@@ -471,7 +471,7 @@ class Series:
         46.875
 
         """
-        from arkouda.util import convert_bytes
+        from arkouda.numpy.util import convert_bytes
 
         v = cast(int, convert_bytes(self.values.nbytes, unit=unit))
         if index:
@@ -1007,7 +1007,7 @@ class Series:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda.util import unregister
+        from arkouda.numpy.util import unregister
 
         if not self.registered_name:
             raise RegistrationError("This object is not registered")
@@ -1028,7 +1028,7 @@ class Series:
         """
         import warnings
 
-        from arkouda.util import attach
+        from arkouda.numpy.util import attach
 
         warnings.warn(
             "ak.Series.attach() is deprecated. Please use ak.attach() instead.",
@@ -1061,7 +1061,7 @@ class Series:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda.util import is_registered
+        from arkouda.numpy.util import is_registered
 
         if self.registered_name is None:
             return False
@@ -1270,7 +1270,7 @@ class Series:
 
         """
         from arkouda import Series
-        from arkouda.util import map
+        from arkouda.numpy.util import map
 
         return Series(map(self.values, arg), index=self.index)
 

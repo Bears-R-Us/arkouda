@@ -21,13 +21,13 @@ from arkouda.numpy.dtypes import (
     int_scalars,
     numeric_scalars,
 )
-from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import arange
-from arkouda.pdarraysetops import unique
-from arkouda.segarray import SegArray
-from arkouda.sorting import coargsort
-from arkouda.strings import Strings
-from arkouda.timeclass import Datetime, Timedelta
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarraycreation import arange
+from arkouda.numpy.pdarraysetops import unique
+from arkouda.numpy.segarray import SegArray
+from arkouda.numpy.sorting import coargsort
+from arkouda.numpy.strings import Strings
+from arkouda.numpy.timeclass import Datetime, Timedelta
 
 if TYPE_CHECKING:
     from arkouda.index import Index
@@ -55,7 +55,7 @@ def get_callback(x):
 def concatenate(items, ordered=True):
     warn(
         "This function is deprecated and will be removed in a later version of Arkouda."
-        " Use arkouda.util.generic_concat(items, ordered) instead.",
+        " Use arkouda.numpy.util.generic_concat(items, ordered) instead.",
         DeprecationWarning,
     )
 
@@ -64,7 +64,7 @@ def concatenate(items, ordered=True):
 
 def generic_concat(items, ordered=True):
     # this version can be called with Dataframe and Series (which have Class.concat methods)
-    from arkouda.pdarraysetops import concatenate as pdarrayconcatenate
+    from arkouda.numpy.pdarraysetops import concatenate as pdarrayconcatenate
 
     types = {type(x) for x in items}
     if len(types) != 1:
@@ -201,7 +201,7 @@ def register(obj, name):
 def attach(name: str):
     from arkouda.dataframe import DataFrame
     from arkouda.index import Index, MultiIndex
-    from arkouda.pdarrayclass import pdarray
+    from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.series import Series
 
     rep_msg = json.loads(cast(str, generic_msg(cmd="attach", args={"name": name})))
@@ -562,7 +562,7 @@ def map(
 
     Returns
     -------
-    arkouda.pdarrayclass.pdarray or arkouda.strings.Strings
+    arkouda.numpy.pdarrayclass.pdarray or arkouda.numpy.strings.Strings
         A new array with the values mapped by the mapping correspondence.
         When the input Series has Categorical values,
         the return Series will have Strings values.
@@ -576,6 +576,9 @@ def map(
 
     Examples
     --------
+    >>> import arkouda as ak
+    >>> ak.connect()
+    >>> from arkouda.numpy.util import map
     >>> a = ak.array([2, 3, 2, 3, 4])
     >>> a
     array([2 3 2 3 4])
@@ -591,7 +594,7 @@ def map(
     import numpy as np
 
     from arkouda import Series, array, broadcast, full
-    from arkouda.pdarraysetops import in1d
+    from arkouda.numpy.pdarraysetops import in1d
 
     keys = values
     gb = GroupBy(keys, dropna=False)

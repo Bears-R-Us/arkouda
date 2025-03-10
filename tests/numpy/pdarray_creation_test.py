@@ -10,7 +10,7 @@ import pytest
 import arkouda as ak
 from arkouda.testing import assert_arkouda_array_equal, assert_equivalent
 
-from arkouda.util import _generate_test_shape, _infer_shape_from_size
+from arkouda.numpy.util import _generate_test_shape
 
 INT_SCALARS = list(ak.dtypes.int_scalars.__args__)
 NUMERIC_SCALARS = list(ak.dtypes.numeric_scalars.__args__)
@@ -149,7 +149,7 @@ class TestPdarrayCreation:
         assert_arkouda_array_equal(ak.transpose(ak.array(nda)), ak.array(np.transpose(nda)))
 
     def test_infer_shape_from_size(self):
-
+        from arkouda.numpy.util import _infer_shape_from_size
         for rank in multi_dim_ranks():
             proposed_shape = tuple((rank * [2]))
             proposed_size = 2**rank

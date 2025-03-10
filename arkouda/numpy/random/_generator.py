@@ -9,7 +9,7 @@ from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import float_scalars
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, numeric_scalars
-from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
 
 class Generator:
@@ -194,7 +194,7 @@ class Generator:
         pdarray
             Drawn samples from the standard exponential distribution.
         """
-        from arkouda.util import _infer_shape_from_size
+        from arkouda.numpy.util import _infer_shape_from_size
 
         if size is None:
             # delegate to numpy when return size is 1
@@ -259,7 +259,7 @@ class Generator:
         >>> rng.integers(5, size=10)
         array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random
         """
-        from arkouda.util import _infer_shape_from_size
+        from arkouda.numpy.util import _infer_shape_from_size
 
         # normalize dtype so things like "int" will work
         dtype = to_numpy_dtype(dtype)
@@ -554,7 +554,7 @@ class Generator:
         >>> rng.standard_gamma(1, size=3)
         array([0.4879818539586227 0.6534654349920751 0.40990997253631162]) # random
         """  # noqa: W605
-        from arkouda.util import _infer_shape_from_size
+        from arkouda.numpy.util import _infer_shape_from_size
 
         if size is None:
             # delegate to numpy when return size is 1
@@ -619,7 +619,7 @@ class Generator:
         >>> rng.standard_normal(3)
         array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random
         """
-        from arkouda.util import _infer_shape_from_size
+        from arkouda.numpy.util import _infer_shape_from_size
 
         if size is None:
             # delegate to numpy when return size is 1
@@ -731,7 +731,7 @@ class Generator:
             self._state += size
             return create_pdarray(rep_msg)
         elif method.lower() == "argsort":
-            from arkouda.sorting import argsort
+            from arkouda.numpy.sorting import argsort
 
             perm = argsort(self.random(size))
             if is_domain_perm:
@@ -838,7 +838,7 @@ class Generator:
         >>> rng.uniform(-1, 1, 3)
         array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random
         """
-        from arkouda.util import _infer_shape_from_size
+        from arkouda.numpy.util import _infer_shape_from_size
 
         if size is None:
             # delegate to numpy when return size is 1

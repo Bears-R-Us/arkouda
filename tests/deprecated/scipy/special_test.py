@@ -3,7 +3,7 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 
 from arkouda.scipy.special import xlogy
-from arkouda.pdarrayclass import pdarray
+from arkouda.numpy.pdarrayclass import pdarray
 
 
 class StatsTest(ArkoudaTest):

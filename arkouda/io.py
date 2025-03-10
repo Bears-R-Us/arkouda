@@ -14,11 +14,11 @@ from arkouda.dataframe import DataFrame
 from arkouda.groupbyclass import GroupBy
 from arkouda.index import Index, MultiIndex
 from arkouda.numpy.dtypes import float32, float64, int32, int64
-from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import arange, array
-from arkouda.segarray import SegArray
-from arkouda.strings import Strings
-from arkouda.timeclass import Datetime, Timedelta
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarraycreation import arange, array
+from arkouda.numpy.segarray import SegArray
+from arkouda.numpy.strings import Strings
+from arkouda.numpy.timeclass import Datetime, Timedelta
 
 __all__ = [
     "get_filetype",
