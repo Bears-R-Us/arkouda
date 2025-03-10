@@ -380,7 +380,8 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.manipulation_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">concat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.manipulation_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">concat</span><span class="p">,</span> <span class="n">reshape</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.statistical_functions</span><span class="w"> </span><span class="kn">import</span> <span class="nb">sum</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -557,6 +558,152 @@
             <span class="p">),</span>
         <span class="p">)</span>
     <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="trapz">
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/utility_functions/index.html#arkouda.array_api.utility_functions.trapz">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">trapz</span><span class="p">(</span><span class="n">y</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Integrate along the given axis using the composite trapezoidal rule.</span>
+
+<span class="sd">    If `x` is provided, the integration happens in sequence along its</span>
+<span class="sd">    elements - they are not sorted.</span>
+
+<span class="sd">    Integrate `y` (`x`) along each 1d slice on the given axis, compute</span>
+<span class="sd">    :math:`\int y(x) dx`.</span>
+<span class="sd">    When `x` is specified, this integrates along the parametric curve,</span>
+<span class="sd">    computing :math:`\int_t y(t) dt =</span>
+<span class="sd">    \int_t y(t) \left.\frac{dx}{dt}\right|_{x=x(t)} dt`.</span>
+
+<span class="sd">    See https://numpy.org/doc/1.26/reference/generated/numpy.trapz.html#numpy.trapz</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y : array_like</span>
+<span class="sd">        Input array to integrate.</span>
+<span class="sd">    x : array_like, optional</span>
+<span class="sd">        The sample points corresponding to the `y` values. If `x` is None,</span>
+<span class="sd">        the sample points are assumed to be evenly spaced `dx` apart. The</span>
+<span class="sd">        default is None.</span>
+<span class="sd">    dx : scalar, optional</span>
+<span class="sd">        The spacing between sample points when `x` is None. The default is 1.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        The axis along which to integrate.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    trapezoid : float or pdarray</span>
+<span class="sd">        Definite integral of `y` = n-dimensional array as approximated along</span>
+<span class="sd">        a single axis by the trapezoidal rule. If `y` is a 1-dimensional array,</span>
+<span class="sd">        then the result is a float. If `n` is greater than 1, then the result</span>
+<span class="sd">        is an `n`-1 dimensional array.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Image [2]_ illustrates trapezoidal rule -- y-axis locations of points</span>
+<span class="sd">    will be taken from `y` array, by default x-axis distances between</span>
+<span class="sd">    points will be 1.0, alternatively they can be provided with `x` array</span>
+<span class="sd">    or with `dx` scalar.  Return value will be equal to combined area under</span>
+<span class="sd">    the red lines.</span>
+
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Wikipedia page: https://en.wikipedia.org/wiki/Trapezoidal_rule</span>
+
+<span class="sd">    .. [2] Illustration image:</span>
+<span class="sd">           https://en.wikipedia.org/wiki/File:Composite_trapezoidal_rule_illustration.png</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; y = xp.asarray(ak.array([1, 2, 3]))</span>
+
+<span class="sd">    Use the trapezoidal rule on evenly spaced points:</span>
+<span class="sd">    &gt;&gt;&gt; xp.trapz(y)</span>
+<span class="sd">    4.0</span>
+
+<span class="sd">    The spacing between sample points can be selected by either the</span>
+<span class="sd">    ``x`` or ``dx`` arguments:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = xp.asarray(ak.array([4, 6, 8]))</span>
+<span class="sd">    &gt;&gt;&gt; xp.trapz(y, x)</span>
+<span class="sd">    8.0</span>
+<span class="sd">    &gt;&gt;&gt; xp.trapz(y, dx=2.0)</span>
+<span class="sd">    8.0</span>
+
+<span class="sd">    Using a decreasing ``x`` corresponds to integrating in reverse:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = xp.asarray(ak.array([8, 6, 4]))</span>
+<span class="sd">    &gt;&gt;&gt; xp.trapz(y, x)</span>
+<span class="sd">    -8.0</span>
+
+<span class="sd">    More generally ``x`` is used to integrate along a parametric curve. We can</span>
+<span class="sd">    estimate the integral :math:`\int_0^1 x^2 = 1/3` using:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = xp.linspace(0, 1, num=50)</span>
+<span class="sd">    &gt;&gt;&gt; y = x**2</span>
+<span class="sd">    &gt;&gt;&gt; xp.trapz(y, x)</span>
+<span class="sd">    0.33340274885464394</span>
+
+<span class="sd">    Or estimate the area of a circle, noting we repeat the sample which closes</span>
+<span class="sd">    the curve:</span>
+
+<span class="sd">    &gt;&gt;&gt; theta = xp.linspace(0, 2 * xp.pi, num=1000, endpoint=True)</span>
+<span class="sd">    &gt;&gt;&gt; xp.trapz(xp.cos(theta), x=xp.sin(theta))</span>
+<span class="sd">    3.141571941375841</span>
+
+<span class="sd">    ``np.trapz`` can be applied along a specified axis to do multiple</span>
+<span class="sd">    computations in one call:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = xp.asarray(ak.arange(6).reshape(2, 3))</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    [[0, 1, 2], [3, 4, 5]]</span>
+<span class="sd">    &gt;&gt;&gt; xp.trapz(a, axis=0)</span>
+<span class="sd">    [1.5, 2.5, 3.5]</span>
+<span class="sd">    &gt;&gt;&gt; xp.trapz(a, axis=1)</span>
+<span class="sd">    [2.0,  8.0]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Implementation is the same as Numpy&#39;s implementation of trapezoid</span>
+    <span class="c1"># Modified slightly to fit Arkouda</span>
+    <span class="c1"># https://github.com/numpy/numpy/blob/d35cd07ea997f033b2d89d349734c61f5de54b0d/numpy/lib/function_base.py#L4857-L4984</span>
+
+    <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error executing command: trapz does not support dtype </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">nd</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">nd</span> <span class="o">+</span> <span class="n">axis</span>
+
+    <span class="n">slice1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span><span class="o">*</span><span class="n">nd</span>
+    <span class="n">slice2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span><span class="o">*</span><span class="n">nd</span>
+    <span class="n">slice1</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">slice2</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;dx cannot be None when x is None for trapz&quot;</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">dx</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)])</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error executing command: trapz does not support dtype </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span>
+            <span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">reshape</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)])</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ret</span></div>
+
+
+
+<div class="viewcode-block" id="trapezoid">
+<a class="viewcode-back" href="../../../autoapi/arkouda/array_api/utility_functions/index.html#arkouda.array_api.utility_functions.trapezoid">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">trapezoid</span><span class="p">(</span><span class="n">y</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">trapz</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span></div>
 
 
 
