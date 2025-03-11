@@ -2148,6 +2148,13 @@ class pdarray:
 
         if dt == bigint:
             # convert uint pdarrays into object ndarrays and recombine
+            if self.ndim > 1:
+                shape = self.shape
+                temp = self.reshape(self.size)
+                arrs = [n.to_ndarray().astype("O") for n in temp.bigint_to_uint_arrays()]
+                return builtins.sum(n << (64 * (len(arrs) - i - 1)) for i, n in enumerate(arrs)).reshape(
+                    shape
+                )
             arrs = [n.to_ndarray().astype("O") for n in self.bigint_to_uint_arrays()]
             return builtins.sum(n << (64 * (len(arrs) - i - 1)) for i, n in enumerate(arrs))
 
