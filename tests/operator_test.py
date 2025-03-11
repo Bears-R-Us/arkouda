@@ -40,7 +40,12 @@ class TestOperator:
             "bool": (np.arange(0, size, 1) % 2) == 0,
         }
         global scalars
-        scalars = {"int64": 5, "uint64": np.uint64(2**63 + 1), "float64": -3.14159, "bool": True}
+        scalars = {
+            "int64": 5,
+            "uint64": np.uint64(2**63 + 1),
+            "float64": -3.14159,
+            "bool": True,
+        }
         dtypes = pdarrays.keys()
         if verbose:
             print("Operators: ", ak.pdarray.BinOps)
@@ -222,7 +227,8 @@ class TestOperator:
 
     def test_fixed_concatenate(self):
         for pda1, pda2 in zip(
-            (ak.arange(4), ak.linspace(0, 3, 4)), (ak.arange(4, 7), ak.linspace(4, 6, 3))
+            (ak.arange(4), ak.linspace(0, 3, 4)),
+            (ak.arange(4, 7), ak.linspace(4, 6, 3)),
         ):
             ans = list(range(7))
             assert ak.concatenate([pda1, pda2]).to_list() == ans
@@ -411,24 +417,30 @@ class TestOperator:
         assert np.allclose((ak_bool[0] >> ak_int).to_ndarray(), np_bool[0] >> np_int)
         assert np.allclose((ak_bool[0] << ak_int).to_ndarray(), np_bool[0] << np_int)
 
-    def test_shift_equals_scalar_binops(self):
-        vector_pairs = [
-            (ak.arange(0, 5, dtype=ak.int64), np.arange(5, dtype=np.int64)),
-            (ak.arange(0, 5, dtype=ak.uint64), np.arange(5, dtype=np.uint64)),
+    @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64])
+    def test_shift_equals_scalar_binops(self, dtype):
+
+        ak_vector = ak.arange(0, 5, dtype=dtype)
+        np_vector = np.arange(5, dtype=dtype)
+        shift_scalars = [
+            dtype(1),
+            dtype(5),
+            1,
+            5,
+            True,
+            False,
         ]
-        shift_scalars = [np.int64(1), np.int64(5), np.uint64(1), np.uint64(5), True, False]
 
-        for ak_vector, np_vector in vector_pairs:
-            for x in shift_scalars:
-                assert ak_vector.to_list() == np_vector.tolist()
+        for x in shift_scalars:
+            assert ak_vector.to_list() == np_vector.tolist()
 
-                ak_vector <<= x
-                np_vector <<= x
-                assert ak_vector.to_list() == np_vector.tolist()
+            ak_vector <<= x
+            np_vector <<= x
+            assert ak_vector.to_list() == np_vector.tolist()
 
-                ak_vector >>= x
-                np_vector >>= x
-                assert ak_vector.to_list() == np_vector.tolist()
+            ak_vector >>= x
+            np_vector >>= x
+            assert ak_vector.to_list() == np_vector.tolist()
 
     def test_shift_equals_vector_binops(self):
         vector_pairs = [
@@ -475,7 +487,10 @@ class TestOperator:
             # test single and empty
             assert isinstance(ak.concatenate([special_one]), special_type)
             assert special_one.to_list() == ak.concatenate([special_one]).to_list()
-            assert isinstance(ak.concatenate([special_type(ak.array([], dtype=ak.int64))]), special_type)
+            assert isinstance(
+                ak.concatenate([special_type(ak.array([], dtype=ak.int64))]),
+                special_type,
+            )
 
             # verify ak.util.concatenate still works
             special_aku_concat = akuconcat([special_one, special_two])
@@ -499,10 +514,14 @@ class TestOperator:
             n_vect = np.full(len(scalar_edge_cases), s)
             a_vect = ak.array(n_vect)
             assert np.allclose(
-                (ak_edge_cases // a_vect).to_ndarray(), np_edge_cases // n_vect, equal_nan=True
+                (ak_edge_cases // a_vect).to_ndarray(),
+                np_edge_cases // n_vect,
+                equal_nan=True,
             )
             assert np.allclose(
-                (a_vect // ak_edge_cases).to_ndarray(), n_vect // np_edge_cases, equal_nan=True
+                (a_vect // ak_edge_cases).to_ndarray(),
+                n_vect // np_edge_cases,
+                equal_nan=True,
             )
 
     def test_pda_power(self):
@@ -828,7 +847,18 @@ class TestOperator:
         assert right_rot.to_list() == ans
 
     def test_float_mods(self):
-        edge_cases = [np.nan, -np.inf, -7.0, -3.14, -0.0, 0.0, 3.14, 7.0, np.inf, np.nan]
+        edge_cases = [
+            np.nan,
+            -np.inf,
+            -7.0,
+            -3.14,
+            -0.0,
+            0.0,
+            3.14,
+            7.0,
+            np.inf,
+            np.nan,
+        ]
 
         # get 2 random permutations of edgecases
         rand_edge_cases1 = np.random.permutation(edge_cases)
@@ -842,7 +872,15 @@ class TestOperator:
         uint_arr = np.arange(2**64 - 10, 2**64, dtype=np.uint64)
         u_scal = np.uint(2**63 + 1)
 
-        args = [rand_edge_cases1, rand_edge_cases2, float_arr, int_arr, uint_arr, i_scal, u_scal]
+        args = [
+            rand_edge_cases1,
+            rand_edge_cases2,
+            float_arr,
+            int_arr,
+            uint_arr,
+            i_scal,
+            u_scal,
+        ]
         # add all the float edge cases as scalars
         args.extend(edge_cases)
 
