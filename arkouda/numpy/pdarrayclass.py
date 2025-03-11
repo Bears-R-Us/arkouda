@@ -20,9 +20,15 @@ from arkouda.numpy.dtypes import (
     bigint,
 )
 from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import bool_scalars, dtype
+from arkouda.numpy.dtypes import (
+    bool_scalars,
+    dtype,
+)
 from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import get_byteorder, get_server_byteorder
+from arkouda.numpy.dtypes import (
+    get_byteorder,
+    get_server_byteorder,
+)
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import (
     int_scalars,
@@ -3355,7 +3361,7 @@ def dot(
     array([4 6])
     """
 
-    def resolve(pda) :  # get type, either of pda or scalar
+    def resolve(pda):  # get type, either of pda or scalar
         return pda.dtype.name if isinstance(pda, pdarray) else resolve_scalar_dtype(pda)
 
     t1 = resolve(pda1)
@@ -4480,8 +4486,8 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
     if isinstance(dividend, pdarray) and isinstance(divisor, pdarray):
         if not (dividend.dtype.name == "float64" or divisor.dtype.name == "float64"):
             raise TypeError(
-                "At least one arg to fmod must be float. " +
-                f"Got f{dividend.dtype.name} and {divisor.dtype.name}"
+                "At least one arg to fmod must be float. "
+                + f"Got f{dividend.dtype.name} and {divisor.dtype.name}"
             )
         cmdstring = f"fmod2vv<{dividend.dtype},{dividend.ndim},{divisor.dtype}>"
 
@@ -4493,8 +4499,8 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
             raise TypeError(f"Scalar divisor type {scalar_dtype} not allowed in fmod")
         if not (dividend.dtype.name == "float64" or scalar_dtype == "float64"):
             raise TypeError(
-                "At least one arg to fmod must be float. " +
-                f"Got {dividend.dtype.name} and {scalar_dtype}"
+                "At least one arg to fmod must be float. "
+                + f"Got {dividend.dtype.name} and {scalar_dtype}"
             )
         cmdstring = f"{acmd}<{dividend.dtype},{dividend.ndim}>"
 
@@ -4504,11 +4510,12 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
             acmd = "fmod2sv_" + scalar_dtype
         else:  # this condition *should* be impossible because of the isSupportedNumber check
             raise TypeError(f"Scalar dividend type {scalar_dtype} not allowed in fmod")
-        if not (divisor.dtype.name == "float64" or  # type: ignore[union-attr]
-                scalar_dtype == "float64"):  # type: ignore[union-attr]
+        if not (
+            divisor.dtype.name == "float64" or scalar_dtype == "float64"  # type: ignore[union-attr]
+        ):  # type: ignore[union-attr]
             raise TypeError(
-                "At least one arg to fmod must be float. " +
-                f"Got {scalar_dtype} and {divisor.dtype.name}"  # type: ignore[union-attr]
+                "At least one arg to fmod must be float. "
+                + f"Got {scalar_dtype} and {divisor.dtype.name}"  # type: ignore[union-attr]
             )
         cmdstring = f"{acmd}<{divisor.dtype},{divisor.ndim}>"  # type: ignore[union-attr]
 

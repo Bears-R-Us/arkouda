@@ -20,14 +20,15 @@ __all__ = [
 from typing import (
     Any,
     Literal,
-    Union,
-    TypeVar,
     Protocol,
+    TypeVar,
+    Union,
 )
 
-from .array_object import Array
 from numpy import (
     dtype,
+    float32,
+    float64,
     int8,
     int16,
     int32,
@@ -36,9 +37,9 @@ from numpy import (
     uint16,
     uint32,
     uint64,
-    float32,
-    float64,
 )
+
+from .array_object import Array
 
 _T_co = TypeVar("_T_co", covariant=True)
 

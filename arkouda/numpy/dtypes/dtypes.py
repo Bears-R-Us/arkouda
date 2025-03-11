@@ -317,9 +317,7 @@ ARKOUDA_SUPPORTED_DTYPES = (
 
 DTypes = frozenset([member.value for _, member in DType.__members__.items()])
 DTypeObjects = frozenset([bool_, float, float64, int, int64, str, str_, uint8, uint64])
-NumericDTypes = frozenset(
-    ["bool_", "bool", "float", "float64", "int", "int64", "uint64", "bigint"]
-)
+NumericDTypes = frozenset(["bool_", "bool", "float", "float64", "int", "int64", "uint64", "bigint"])
 SeriesDTypes = {
     "string": np.str_,
     "<class 'str'>": np.str_,
@@ -485,9 +483,7 @@ def resolve_scalar_dtype(val: object) -> str:
     ):
         return "bool"
     # Python int or np.int* or np.uint*
-    elif isinstance(val, int) or (
-        hasattr(val, "dtype") and cast(np.uint, val).dtype.kind in "ui"
-    ):
+    elif isinstance(val, int) or (hasattr(val, "dtype") and cast(np.uint, val).dtype.kind in "ui"):
         # we've established these are int, uint, or bigint,
         # so we can do comparisons
         if isSupportedInt(val) and val >= 2**64:  # type: ignore
@@ -497,13 +493,9 @@ def resolve_scalar_dtype(val: object) -> str:
         else:
             return "int64"
     # Python float or np.float*
-    elif isinstance(val, float) or (
-        hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "f"
-    ):
+    elif isinstance(val, float) or (hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "f"):
         return "float64"
-    elif isinstance(val, complex) or (
-        hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "c"
-    ):
+    elif isinstance(val, complex) or (hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "c"):
         return "float64"  # TODO: actually support complex values in the backend
     elif isinstance(val, builtins.str) or isinstance(val, np.str_):
         return "str"

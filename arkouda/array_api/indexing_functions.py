@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from .array_object import Array
 from typing import Optional
 
 from arkouda.client import generic_msg
 from arkouda.numpy.pdarrayclass import create_pdarray
+
+from .array_object import Array
 
 
 def take(x: Array, indices: Array, /, *, axis: Optional[int] = None) -> Array:

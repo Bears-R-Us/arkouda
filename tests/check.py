@@ -4,7 +4,6 @@ import sys
 
 import numpy as np
 
-
 import arkouda as ak
 
 N = 1_000_000
