@@ -1098,13 +1098,13 @@
     <span class="k">return</span> <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_generate_test_shape</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_test_shape</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
     <span class="c1"># used to generate shapes of the form (2,2,...n) for testing multi-dim creation</span>
     <span class="n">last_dim</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span> <span class="o">//</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">rank</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))</span>  <span class="c1"># such that 2*2*..*n is close to size,</span>
-    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">rank</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>                      <span class="c1"># and with the final dim at least 2.</span>
-    <span class="n">shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">last_dim</span><span class="p">)</span>                        <span class="c1"># building &quot;shape&quot; really does take</span>
-    <span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>                          <span class="c1"># multiple steps because .append doesn&#39;t</span>
-    <span class="n">local_size</span> <span class="o">=</span> <span class="n">maprod</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>                    <span class="c1"># have a return value</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">rank</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># and with the final dim at least 2.</span>
+    <span class="n">shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">last_dim</span><span class="p">)</span>  <span class="c1"># building &quot;shape&quot; really does take</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># multiple steps because .append doesn&#39;t</span>
+    <span class="n">local_size</span> <span class="o">=</span> <span class="n">maprod</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># have a return value</span>
     <span class="k">return</span> <span class="n">shape</span><span class="p">,</span> <span class="n">local_size</span>
 </pre></div>
         </article>

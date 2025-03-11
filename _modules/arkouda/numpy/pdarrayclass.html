@@ -399,9 +399,15 @@
     <span class="n">bigint</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_</span> <span class="k">as</span> <span class="n">akbool</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_scalars</span><span class="p">,</span> <span class="n">dtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">bool_scalars</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_byteorder</span><span class="p">,</span> <span class="n">get_server_byteorder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_byteorder</span><span class="p">,</span>
+    <span class="n">get_server_byteorder</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">int_scalars</span><span class="p">,</span>
@@ -3892,7 +3898,7 @@
 <span class="sd">    array([4 6])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span> <span class="p">:</span>  <span class="c1"># get type, either of pda or scalar</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span><span class="n">pda</span><span class="p">):</span>  <span class="c1"># get type, either of pda or scalar</span>
         <span class="k">return</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span>
 
     <span class="n">t1</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span>
@@ -5080,8 +5086,8 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">divisor</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">or</span> <span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;At least one arg to fmod must be float. &quot;</span> <span class="o">+</span>
-                <span class="sa">f</span><span class="s2">&quot;Got f</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;At least one arg to fmod must be float. &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;Got f</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="n">cmdstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;fmod2vv&lt;</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
@@ -5093,8 +5099,8 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scalar divisor type </span><span class="si">{</span><span class="n">scalar_dtype</span><span class="si">}</span><span class="s2"> not allowed in fmod&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">or</span> <span class="n">scalar_dtype</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;At least one arg to fmod must be float. &quot;</span> <span class="o">+</span>
-                <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">scalar_dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;At least one arg to fmod must be float. &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">scalar_dtype</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="n">cmdstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">acmd</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">dividend</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
@@ -5104,11 +5110,12 @@
             <span class="n">acmd</span> <span class="o">=</span> <span class="s2">&quot;fmod2sv_&quot;</span> <span class="o">+</span> <span class="n">scalar_dtype</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># this condition *should* be impossible because of the isSupportedNumber check</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scalar dividend type </span><span class="si">{</span><span class="n">scalar_dtype</span><span class="si">}</span><span class="s2"> not allowed in fmod&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">or</span>  <span class="c1"># type: ignore[union-attr]</span>
-                <span class="n">scalar_dtype</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore[union-attr]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">or</span> <span class="n">scalar_dtype</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span>  <span class="c1"># type: ignore[union-attr]</span>
+        <span class="p">):</span>  <span class="c1"># type: ignore[union-attr]</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;At least one arg to fmod must be float. &quot;</span> <span class="o">+</span>
-                <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">scalar_dtype</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># type: ignore[union-attr]</span>
+                <span class="s2">&quot;At least one arg to fmod must be float. &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">scalar_dtype</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># type: ignore[union-attr]</span>
             <span class="p">)</span>
         <span class="n">cmdstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">acmd</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">divisor</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>  <span class="c1"># type: ignore[union-attr]</span>
 

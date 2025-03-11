@@ -393,7 +393,11 @@
     <span class="n">bigint</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span><span class="p">,</span> <span class="n">get_byteorder</span><span class="p">,</span> <span class="n">get_server_byteorder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">float64</span><span class="p">,</span>
+    <span class="n">get_byteorder</span><span class="p">,</span>
+    <span class="n">get_server_byteorder</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">int_scalars</span><span class="p">,</span>
@@ -1359,7 +1363,7 @@
     <span class="c1"># the requested dtype.</span>
     <span class="c1"># This matters for several tests in tests/series_test.py</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">start</span> <span class="o">==</span> <span class="n">stop</span><span class="p">)</span> <span class="o">|</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">stride</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">start</span> <span class="o">==</span> <span class="n">stop</span><span class="p">)</span> <span class="o">|</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">stride</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">akcast</span><span class="p">(</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="ow">and</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span> <span class="ow">and</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">stride</span><span class="p">):</span>

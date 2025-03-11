@@ -379,26 +379,28 @@
           <h1>Source code for arkouda.array_api.data_type_functions</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span><span class="p">,</span> <span class="n">implements_numpy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">_all_dtypes</span><span class="p">,</span>
-    <span class="n">_boolean_dtypes</span><span class="p">,</span>
-    <span class="n">_signed_integer_dtypes</span><span class="p">,</span>
-    <span class="n">_unsigned_integer_dtypes</span><span class="p">,</span>
-    <span class="n">_integer_dtypes</span><span class="p">,</span>
-    <span class="n">_real_floating_dtypes</span><span class="p">,</span>
-    <span class="n">_complex_floating_dtypes</span><span class="p">,</span>
-    <span class="n">_numeric_dtypes</span><span class="p">,</span>
-    <span class="n">_result_type</span><span class="p">,</span>
-<span class="p">)</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_all_dtypes</span><span class="p">,</span>
+    <span class="n">_boolean_dtypes</span><span class="p">,</span>
+    <span class="n">_complex_floating_dtypes</span><span class="p">,</span>
+    <span class="n">_integer_dtypes</span><span class="p">,</span>
+    <span class="n">_numeric_dtypes</span><span class="p">,</span>
+    <span class="n">_real_floating_dtypes</span><span class="p">,</span>
+    <span class="n">_result_type</span><span class="p">,</span>
+    <span class="n">_signed_integer_dtypes</span><span class="p">,</span>
+    <span class="n">_unsigned_integer_dtypes</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span><span class="p">,</span> <span class="n">implements_numpy</span>
+
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">._typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dtype</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 
 
 <div class="viewcode-block" id="astype">
@@ -485,9 +487,7 @@
 
 <div class="viewcode-block" id="isdtype">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html#arkouda.array_api.data_type_functions.isdtype">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">isdtype</span><span class="p">(</span>
-    <span class="n">dtype</span><span class="p">:</span> <span class="n">Dtype</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">...</span><span class="p">]]</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">:</span> <span class="n">Dtype</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">...</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a boolean indicating whether a provided dtype is of a specified data type ``kind``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
