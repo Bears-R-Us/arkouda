@@ -20,7 +20,7 @@ def value_array(dtype, size):
     elif dtype is ak.bool_:
         return (ak.randint(0, size, size) % 2) == 0
     elif dtype is ak.bigint:
-        return ak.randint(0, size, size, dtype=ak.uint64) + 2**200
+        return ak.arange(2**200, 2**200 + size, dtype=ak.bigint)
     elif dtype is ak.str_:
         return ak.random_strings_uniform(1, 16, size=size)
     return None
