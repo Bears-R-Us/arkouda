@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Sequence, TypeVar, Union, cast
+from typing import Sequence, TypeVar, Union, cast
 
 import numpy as np
 from typeguard import typechecked
+
 
 from arkouda.client import generic_msg
 from arkouda.client_dtypes import BitVector
@@ -17,6 +18,7 @@ from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import array, ones, zeros, zeros_like
 from arkouda.numpy.sorting import argsort
 from arkouda.numpy.strings import Strings
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
@@ -26,6 +28,8 @@ else:
 __all__ = ["in1d", "concatenate", "union1d", "intersect1d", "setdiff1d", "setxor1d", "indexof1d"]
 
 logger = getArkoudaLogger(name="pdarraysetops")
+
+# TODO: combine in1d and _in1d_single into one function
 
 
 def _in1d_single(
@@ -61,6 +65,7 @@ def _in1d_single(
     ------
     TypeError
         Raised if either pda1 or pda2 is not a pdarray, Strings, or
+        if both are pdarrays and either has rank > 1, or if either is a
         Categorical object or if invert is not a bool
     RuntimeError
         Raised if the dtype of either array is not supported
@@ -81,10 +86,10 @@ def _in1d_single(
     Examples
     --------
     >>> ak.in1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
-    array([False, True, False])
+    array([False True False])
 
     >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
-    array([False, True])
+    array([False True])
     """
     from arkouda.categorical import Categorical as Categorical_
 
@@ -100,6 +105,8 @@ def _in1d_single(
         x = cast(Categorical_, pda1).in1d(pda2)
         return x if not invert else ~x
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.ndim > 1 or pda2.ndim > 1 :
+            raise TypeError("in1d does not support multi-dim inputs")
         if pda1.dtype == bigint and pda2.dtype == bigint:
             return in1d(pda1.bigint_to_uint_arrays(), pda2.bigint_to_uint_arrays(), invert=invert)
         repMsg = generic_msg(
@@ -129,8 +136,8 @@ def _in1d_single(
 
 @typechecked
 def in1d(
-    pda1: groupable,
-    pda2: groupable,
+    A: groupable,
+    B: groupable,
     assume_unique: bool = False,
     symmetric: bool = False,
     invert: bool = False,
@@ -138,69 +145,94 @@ def in1d(
     """
     Test whether each element of a 1-D array is also present in a second array.
 
-    Returns a boolean array the same length as `pda1` that is True
-    where an element of `pda1` is in `pda2` and False otherwise.
+    Returns a boolean array the same length as `A` that is True
+    where an element of `A` is in `B` and False otherwise.
 
-    Support multi-level -- test membership of rows of a in the set of rows of b.
+    Supports multi-level, i.e. test if rows of a are in the set of rows of b.
+    But note that multi-dimensional pdarrays are not supported.
 
     Parameters
     ----------
-    a : list of pdarrays, pdarray, Strings, or Categorical
-        Rows are elements for which to test membership in b
-    b : list of pdarrays, pdarray, Strings, or Categorical
-        Rows are elements of the set in which to test membership
-    assume_unique : bool
+    A : list of pdarrays, pdarray, Strings, or Categorical
+        Entries will be tested for membership in B
+    B : list of pdarrays, pdarray, Strings, or Categorical
+        The set of elements in which to test membership
+    assume_unique : bool, optional, defaults to False
         If true, assume rows of a and b are each unique and sorted.
         By default, sort and unique them explicitly.
-    symmetric: bool
-        Return in1d(pda1, pda2), in1d(pda2, pda1) when pda1 and 2 are single items.
-    invert : bool, optional
+    symmetric: bool, optional, defaults to False
+        Return in1d(A, B), in1d(B, A) when A and B are single items.
+    invert : bool, optional, defaults to False
         If True, the values in the returned array are inverted (that is,
-        False where an element of `pda1` is in `pda2` and True otherwise).
+        False where an element of `A` is in `B` and True otherwise).
         Default is False. ``ak.in1d(a, b, invert=True)`` is equivalent
         to (but is faster than) ``~ak.in1d(a, b)``.
+
     Returns
     -------
+    pdarray, bool
         True for each row in a that is contained in b
 
-    Return Type
-    ------------
-        pdarray, bool
+    Raises
+    ------
+    TypeError
+        Raised if either A or B is not a pdarray, Strings, or Categorical
+        object, or if both are pdarrays and either has rank > 1,
+        or if invert is not a bool
+    RuntimeError
+        Raised if the dtype of either array is not supported
+
+    Examples
+    --------
+    >>> ak.in1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
+    array([False True False])
+
+    >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
+    array([False True])
+
+    See Also
+    --------
+    arkouda.groupbyclass.unique, intersect1d, union1d
 
     Notes
     ------
-        Only works for pdarrays of int64 dtype, float64, Strings, or Categorical
+    `in1d` can be considered as an element-wise function version of the
+    python keyword `in`, for 1-D sequences. ``in1d(a, b)`` is logically
+    equivalent to ``ak.array([item in b for item in a])``, but is much
+    faster and scales to arbitrarily large ``a``.
+
+    ak.in1d is not supported for bool or float64 pdarrays
     """
     from arkouda.alignment import NonUniqueError
     from arkouda.categorical import Categorical as Categorical_
 
-    if isinstance(pda1, (pdarray, Strings, Categorical_)):
-        if isinstance(pda1, (Strings, Categorical_)) and not isinstance(pda2, (Strings, Categorical_)):
+    if isinstance(A, (pdarray, Strings, Categorical_)):
+        if isinstance(A, (Strings, Categorical_)) and not isinstance(B, (Strings, Categorical_)):
             raise TypeError("Arguments must have compatible types, Strings/Categorical")
-        elif isinstance(pda1, pdarray) and not isinstance(pda2, pdarray):
-            raise TypeError("If pda1 is pdarray, pda2 must also be pda2")
-        elif isinstance(pda2, (pdarray, Strings, Categorical_)):
+        elif isinstance(A, pdarray) and not isinstance(B, pdarray):
+            raise TypeError("If A is pdarray, B must also be pdarray")
+        elif isinstance(B, (pdarray, Strings, Categorical_)):
             if symmetric:
-                return _in1d_single(pda1, pda2), _in1d_single(pda2, pda1, invert)
-            return _in1d_single(pda1, pda2, invert)
+                return _in1d_single(A, B), _in1d_single(B, A, invert)
+            return _in1d_single(A, B, invert)
         else:
             raise TypeError(
                 "Inputs should both be Union[pdarray, Strings, Categorical] or both be "
                 "Sequence[pdarray, Strings, Categorical]."
                 "  (Do not mix and match.)"
             )
-    atypes = np.array([ai.dtype for ai in pda1])
-    btypes = np.array([bi.dtype for bi in pda2])
+    atypes = np.array([ai.dtype for ai in A])
+    btypes = np.array([bi.dtype for bi in B])
     if not (atypes == btypes).all():
         raise TypeError("Array dtypes of arguments must match")
     if not assume_unique:
-        ag = GroupBy(pda1)
+        ag = GroupBy(A)
         ua = ag.unique_keys
-        bg = GroupBy(pda2)
+        bg = GroupBy(B)
         ub = bg.unique_keys
     else:
-        ua = pda1
-        ub = pda2
+        ua = A
+        ub = B
     # Key for deinterleaving result
     isa = concatenate((ones(ua[0].size, dtype=akbool), zeros(ub[0].size, dtype=akbool)), ordered=False)
     c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
@@ -255,7 +287,7 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
     Returns
     -------
     indices : pdarray, int64
-        For each item in query, its index in space.
+        For each item in query that is found in space, its index in space.
 
     Notes
     -----
@@ -265,20 +297,22 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
     Examples
     --------
     >>> select_from = ak.arange(10)
-    >>> arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]
-    >>> arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]
-    # remove some values to ensure we have some values
-    # which don't appear in the search space
-    >>> arr2 = arr2[arr2 != 9]
-    >>> arr2 = arr2[arr2 != 3]
+    >>> query = select_from[ak.randint(0, select_from.size, 20, seed=10)]
+    >>> space = select_from[ak.randint(0, select_from.size, 20, seed=11)]
 
-    >>> ak.indexof1d(arr1, arr2)
+    remove some values to ensure that query has entries
+    which don't appear in space
+
+    >>> space = space[arr2 != 9]
+    >>> space = space[arr2 != 3]
+
+    >>> ak.indexof1d(query, space)
     array([0 4 1 3 10 2 6 12 13 5 7 8 9 14 5 7 11 15 5 7 0 4])
 
     Raises
     ------
     TypeError
-        Raised if either `keys` or `arr` is not a pdarray, Strings, or
+        Raised if either `query` or `space` is not a pdarray, Strings, or
         Categorical object
     RuntimeError
         Raised if the dtype of either array is not supported
@@ -289,7 +323,7 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
         if isinstance(query, (Strings, Categorical_)) and not isinstance(space, (Strings, Categorical_)):
             raise TypeError("Arguments must have compatible types, Strings/Categorical")
         elif isinstance(query, pdarray) and not isinstance(space, pdarray):
-            raise TypeError("If keys is pdarray, arr must also be pdarray")
+            raise TypeError("If query is pdarray, space must also be pdarray")
 
     from arkouda.alignment import find as akfind
 
@@ -326,22 +360,21 @@ def concatenate(
     Raises
     ------
     ValueError
-        Raised if arrays is empty or if 1..n pdarrays have
-        differing dtypes
+        Raised if arrays is empty or if pdarrays have differing dtypes
     TypeError
         Raised if arrays is not a pdarrays or Strings python Sequence such as a
         list or tuple
     RuntimeError
-        Raised if 1..n array elements are dtypes for which
+        Raised if any array elements are dtypes for which
         concatenate has not been implemented.
 
     Examples
     --------
     >>> ak.concatenate([ak.array([1, 2, 3]), ak.array([4, 5, 6])])
-    array([1, 2, 3, 4, 5, 6])
+    array([1 2 3 4 5 6])
 
     >>> ak.concatenate([ak.array([True,False,True]),ak.array([False,True,True])])
-    array([True, False, True, False, True, True])
+    array([True False True False True True])
 
     >>> ak.concatenate([ak.array(['one','two']),ak.array(['three','four','five'])])
     array(['one', 'two', 'three', 'four', 'five'])
@@ -443,11 +476,11 @@ def multiarray_setop_validation(
         raise TypeError("Array dtypes of arguments must match")
 
 
-# (A1 | A2) Set Union: elements are in one or the other or both
+# (A | B) Set Union: elements are in one or the other or both
 @typechecked
 def union1d(
-    pda1: groupable,
-    pda2: groupable,
+    A: groupable,
+    B: groupable,
 ) -> groupable:
     """
     Find the union of two arrays/List of Arrays.
@@ -457,10 +490,8 @@ def union1d(
 
     Parameters
     ----------
-    pda1 : pdarray/Sequence[pdarray, Strings, Categorical]
-        Input array/Sequence of groupable objects
-    pda2 : pdarray/List
-        Input array/sequence of groupable objects
+    A : list of pdarrays, pdarray, Strings, or Categorical
+    B : list of pdarrays, pdarray, Strings, or Categorical
 
     Returns
     -------
@@ -470,25 +501,24 @@ def union1d(
     Raises
     ------
     TypeError
-        Raised if either pda1 or pda2 is not a pdarray
+        Raised if either A or B is not a groupable
     RuntimeError
-        Raised if the dtype of either array is not supported
+        Raised if the dtype of either input is not supported
 
     See Also
     --------
     intersect1d, arkouda.groupbyclass.unique
 
-    Notes
-    -----
-    ak.union1d is not supported for bool or float64 pdarrays
-
     Examples
     --------
-    >>>
-    # 1D Example
+
+    1D Example
+
     >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
-    array([-2, -1, 0, 1, 2])
-    #Multi-Array Example
+    array([-2 -1 0 1 2])
+
+    Multi-Array Example
+
     >>> a = ak.arange(1, 6)
     >>> b = ak.array([1, 5, 3, 4, 2])
     >>> c = ak.array([1, 4, 3, 2, 5])
@@ -496,35 +526,35 @@ def union1d(
     >>> multia = [a, a, a]
     >>> multib = [b, c, d]
     >>> ak.union1d(multia, multib)
-    [array[1, 2, 2, 3, 4, 4, 5, 5], array[1, 2, 5, 3, 2, 4, 4, 5], array[1, 2, 4, 3, 5, 4, 2, 5]]
+    [array([1 2 2 3 4 4 5 5]), array([1 2 5 3 2 4 4 5]), array([1 2 4 3 5 4 2 5])]
     """
     from arkouda.categorical import Categorical as Categorical_
 
     if (
-        isinstance(pda1, (pdarray, Strings, Categorical_))
-        and isinstance(pda2, (pdarray, Strings, Categorical_))
-        and type(pda1) is type(pda2)
+        isinstance(A, (pdarray, Strings, Categorical_))
+        and isinstance(B, (pdarray, Strings, Categorical_))
+        and type(A) is type(B)
     ):
-        if pda1.size == 0:
-            return pda2  # union is pda2
-        if pda2.size == 0:
-            return pda1  # union is pda1
+        if A.size == 0:
+            return B  # union is B
+        if B.size == 0:
+            return A  # union is A
         if (
-            pda1.dtype == int
-            and pda2.dtype == int
-            or (pda1.dtype == akuint64 and pda2.dtype == akuint64)
+            A.dtype == int
+            and B.dtype == int
+            or (A.dtype == akuint64 and B.dtype == akuint64)
         ):
-            repMsg = generic_msg(cmd="union1d", args={"arg1": pda1, "arg2": pda2})
+            repMsg = generic_msg(cmd="union1d", args={"arg1": A, "arg2": B})
             return cast(pdarray, create_pdarray(repMsg))
         x = cast(
-            pdarray, unique(cast(pdarray, concatenate((unique(pda1), unique(pda2)), ordered=False)))
+            pdarray, unique(cast(pdarray, concatenate((unique(A), unique(B)), ordered=False)))
         )
         return x[argsort(x)]
-    elif isinstance(pda1, Sequence) and isinstance(pda2, Sequence):
-        multiarray_setop_validation(pda1, pda2)
-        ag = GroupBy(pda1)
+    elif isinstance(A, Sequence) and isinstance(B, Sequence):
+        multiarray_setop_validation(A, B)
+        ag = GroupBy(A)
         ua = ag.unique_keys
-        bg = GroupBy(pda2)
+        bg = GroupBy(B)
         ub = bg.unique_keys
 
         c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
@@ -533,14 +563,14 @@ def union1d(
         return list(k)
     else:
         raise TypeError(
-            f"Both pda1 and pda2 must be pdarray, List, or Tuple. Received {type(pda1)} and {type(pda2)}"
+            f"Both A and B must be pdarray, List, or Tuple. Received {type(A)} and {type(B)}"
         )
 
 
-# (A1 & A2) Set Intersection: elements have to be in both arrays
+# (A & B) Set Intersection: elements have to be in both arrays
 @typechecked
 def intersect1d(
-    pda1: groupable, pda2: groupable, assume_unique: bool = False
+    A: groupable, B: groupable, assume_unique: bool = False
 ) -> Union[pdarray, groupable]:
     """
     Find the intersection of two arrays.
@@ -549,10 +579,8 @@ def intersect1d(
 
     Parameters
     ----------
-    pda1 : pdarray/Sequence[pdarray, Strings, Categorical]
-        Input array/Sequence of groupable objects
-    pda2 : pdarray/List
-        Input array/sequence of groupable objects
+    A : list of pdarrays, pdarray, Strings, or Categorical
+    B : list of pdarrays, pdarray, Strings, or Categorical
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
@@ -565,7 +593,7 @@ def intersect1d(
     Raises
     ------
     TypeError
-        Raised if either pda1 or pda2 is not a pdarray
+        Raised if either A or B is not a groupable
     RuntimeError
         Raised if the dtype of either pdarray is not supported
 
@@ -573,17 +601,16 @@ def intersect1d(
     --------
     arkouda.groupbyclass.unique, union1d
 
-    Notes
-    -----
-    ak.intersect1d is not supported for bool or float64 pdarrays
-
     Examples
     --------
-    >>>
-    # 1D Example
-    >>> ak.intersect1d([1, 3, 4, 3], [3, 1, 2, 1])
-    array([1, 3])
-    # Multi-Array Example
+
+    1D Example
+
+    >>> ak.intersect1d(ak.array([1, 3, 4, 3]), ak.array([3, 1, 2, 1]))
+    array([1 3])
+
+    Multi-Array Example
+
     >>> a = ak.arange(5)
     >>> b = ak.array([1, 5, 3, 4, 2])
     >>> c = ak.array([1, 4, 3, 2, 5])
@@ -591,48 +618,48 @@ def intersect1d(
     >>> multia = [a, a, a]
     >>> multib = [b, c, d]
     >>> ak.intersect1d(multia, multib)
-    [array([1, 3]), array([1, 3]), array([1, 3])]
+    [array([1 3]), array([1 3]), array([1 3])]
     """
     from arkouda.categorical import Categorical as Categorical_
 
     if (
-        isinstance(pda1, (pdarray, Strings, Categorical_))
-        and isinstance(pda2, (pdarray, Strings, Categorical_))
-        and type(pda1) is type(pda2)
+        isinstance(A, (pdarray, Strings, Categorical_))
+        and isinstance(B, (pdarray, Strings, Categorical_))
+        and type(A) is type(B)
     ):
-        if pda1.size == 0:
-            return pda1  # nothing in the intersection
-        if pda2.size == 0:
-            return pda2  # nothing in the intersection
-        if (pda1.dtype == int and pda2.dtype == int) or (
-            pda1.dtype == akuint64 and pda2.dtype == akuint64
+        if A.size == 0:
+            return A  # nothing in the intersection
+        if B.size == 0:
+            return B  # nothing in the intersection
+        if (A.dtype == int and B.dtype == int) or (
+            A.dtype == akuint64 and B.dtype == akuint64
         ):
             repMsg = generic_msg(
-                cmd="intersect1d", args={"arg1": pda1, "arg2": pda2, "assume_unique": assume_unique}
+                cmd="intersect1d", args={"arg1": A, "arg2": B, "assume_unique": assume_unique}
             )
             return create_pdarray(cast(str, repMsg))
         if not assume_unique:
-            pda1 = cast(pdarray, unique(pda1))
-            pda2 = cast(pdarray, unique(pda2))
-        aux = concatenate((pda1, pda2), ordered=False)
+            A = cast(pdarray, unique(A))
+            B = cast(pdarray, unique(B))
+        aux = concatenate((A, B), ordered=False)
         aux_sort_indices = argsort(aux)
         aux = aux[aux_sort_indices]
         mask = aux[1:] == aux[:-1]
         int1d = aux[:-1][mask]
         return int1d
-    elif (isinstance(pda1, list) or isinstance(pda1, tuple)) and (
-        isinstance(pda2, list) or isinstance(pda2, tuple)
+    elif (isinstance(A, list) or isinstance(A, tuple)) and (
+        isinstance(B, list) or isinstance(B, tuple)
     ):
-        multiarray_setop_validation(pda1, pda2)
+        multiarray_setop_validation(A, B)
 
         if not assume_unique:
-            ag = GroupBy(pda1)
+            ag = GroupBy(A)
             ua = ag.unique_keys
-            bg = GroupBy(pda2)
+            bg = GroupBy(B)
             ub = bg.unique_keys
         else:
-            ua = pda1
-            ub = pda2
+            ua = A
+            ub = B
 
         # Key for deinterleaving result
         isa = concatenate(
@@ -651,26 +678,24 @@ def intersect1d(
         return [x[in_union] for x in k]
     else:
         raise TypeError(
-            f"Both pda1 and pda2 must be pdarray, List, or Tuple. Received {type(pda1)} and {type(pda2)}"
+            f"Both A and B must be pdarray, List, or Tuple. Received {type(A)} and {type(B)}"
         )
 
 
-# (A1 - A2) Set Difference: elements have to be in first array but not second
+# (A - B) Set Difference: elements have to be in first array but not second
 @typechecked
 def setdiff1d(
-    pda1: groupable, pda2: groupable, assume_unique: bool = False
+    A: groupable, B: groupable, assume_unique: bool = False
 ) -> Union[pdarray, groupable]:
     """
     Find the set difference of two arrays.
 
-    Return the sorted, unique values in `pda1` that are not in `pda2`.
+    Return the sorted, unique values in `A` that are not in `B`.
 
     Parameters
     ----------
-    pda1 : pdarray/Sequence[pdarray, Strings, Categorical]
-        Input array/Sequence of groupable objects
-    pda2 : pdarray/List
-        Input array/sequence of groupable objects
+    A : list of pdarrays, pdarray, Strings, or Categorical
+    B : list of pdarrays, pdarray, Strings, or Categorical
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
@@ -678,12 +703,12 @@ def setdiff1d(
     Returns
     -------
     pdarray/groupable
-        Sorted 1D array/List of sorted pdarrays of values in `pda1` that are not in `pda2`.
+        Sorted 1D array/List of sorted pdarrays of values in `A` that are not in `B`.
 
     Raises
     ------
     TypeError
-        Raised if either pda1 or pda2 is not a pdarray
+        Raised if either A or B is not a pdarray
     RuntimeError
         Raised if the dtype of either pdarray is not supported
 
@@ -693,15 +718,17 @@ def setdiff1d(
 
     Notes
     -----
-    ak.setdiff1d is not supported for bool or float64 pdarrays
+    ak.setdiff1d is not supported for bool pdarrays
 
     Examples
     --------
     >>> a = ak.array([1, 2, 3, 2, 4, 1])
     >>> b = ak.array([3, 4, 5, 6])
     >>> ak.setdiff1d(a, b)
-    array([1, 2])
-    #Multi-Array Example
+    array([1 2])
+
+    Multi-Array Example
+
     >>> a = ak.arange(1, 6)
     >>> b = ak.array([1, 5, 3, 4, 2])
     >>> c = ak.array([1, 4, 3, 2, 5])
@@ -709,44 +736,44 @@ def setdiff1d(
     >>> multia = [a, a, a]
     >>> multib = [b, c, d]
     >>> ak.setdiff1d(multia, multib)
-    [array([2, 4, 5]), array([2, 4, 5]), array([2, 4, 5])]
+    [array([2 4 5]), array([2 4 5]), array([2 4 5])]
     """
     from arkouda.categorical import Categorical as Categorical_
 
     if (
-        isinstance(pda1, (pdarray, Strings, Categorical_))
-        and isinstance(pda2, (pdarray, Strings, Categorical_))
-        and type(pda1) is type(pda2)
+        isinstance(A, (pdarray, Strings, Categorical_))
+        and isinstance(B, (pdarray, Strings, Categorical_))
+        and type(A) is type(B)
     ):
-        if pda1.size == 0:
-            return pda1  # return a zero length pdarray
-        if pda2.size == 0:
-            return pda1  # subtracting nothing return orig pdarray
-        if (pda1.dtype == int and pda2.dtype == int) or (
-            pda1.dtype == akuint64 and pda2.dtype == akuint64
+        if A.size == 0:
+            return A  # return a zero length pdarray
+        if B.size == 0:
+            return A  # subtracting nothing return orig pdarray
+        if (A.dtype == int and B.dtype == int) or (
+            A.dtype == akuint64 and B.dtype == akuint64
         ):
             repMsg = generic_msg(
-                cmd="setdiff1d", args={"arg1": pda1, "arg2": pda2, "assume_unique": assume_unique}
+                cmd="setdiff1d", args={"arg1": A, "arg2": B, "assume_unique": assume_unique}
             )
             return create_pdarray(cast(str, repMsg))
         if not assume_unique:
-            pda1 = cast(pdarray, unique(pda1))
-            pda2 = cast(pdarray, unique(pda2))
-        x = pda1[in1d(pda1, pda2, invert=True)]
+            A = cast(pdarray, unique(A))
+            B = cast(pdarray, unique(B))
+        x = A[in1d(A, B, invert=True)]
         return x[argsort(x)]
-    elif (isinstance(pda1, list) or isinstance(pda1, tuple)) and (
-        isinstance(pda2, list) or isinstance(pda2, tuple)
+    elif (isinstance(A, list) or isinstance(A, tuple)) and (
+        isinstance(B, list) or isinstance(B, tuple)
     ):
-        multiarray_setop_validation(pda1, pda2)
+        multiarray_setop_validation(A, B)
 
         if not assume_unique:
-            ag = GroupBy(pda1)
+            ag = GroupBy(A)
             ua = ag.unique_keys
-            bg = GroupBy(pda2)
+            bg = GroupBy(B)
             ub = bg.unique_keys
         else:
-            ua = pda1
-            ub = pda2
+            ua = A
+            ub = B
 
         # Key for deinterleaving result
         isa = concatenate(
@@ -766,13 +793,13 @@ def setdiff1d(
         return [x[atruth] for x in ua]
     else:
         raise TypeError(
-            f"Both pda1 and pda2 must be pdarray, List, or Tuple. Received {type(pda1)} and {type(pda2)}"
+            f"Both A and B must be pdarray, List, or Tuple. Received {type(A)} and {type(B)}"
         )
 
 
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
 @typechecked
-def setxor1d(pda1: groupable, pda2: groupable, assume_unique: bool = False) -> Union[pdarray, groupable]:
+def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set exclusive-or (symmetric difference) of two arrays.
 
@@ -781,10 +808,8 @@ def setxor1d(pda1: groupable, pda2: groupable, assume_unique: bool = False) -> U
 
     Parameters
     ----------
-    pda1 : pdarray/Sequence[pdarray, Strings, Categorical]
-        Input array/Sequence of groupable objects
-    pda2 : pdarray/List
-        Input array/sequence of groupable objects
+    A : list of pdarrays, pdarray, Strings, or Categorical
+    B : list of pdarrays, pdarray, Strings, or Categorical
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
@@ -798,21 +823,19 @@ def setxor1d(pda1: groupable, pda2: groupable, assume_unique: bool = False) -> U
     Raises
     ------
     TypeError
-        Raised if either pda1 or pda2 is not a pdarray
+        Raised if either A or B is not a groupable
     RuntimeError
         Raised if the dtype of either pdarray is not supported
-
-    Notes
-    -----
-    ak.setxor1d is not supported for bool or float64 pdarrays
 
     Examples
     --------
     >>> a = ak.array([1, 2, 3, 2, 4])
     >>> b = ak.array([2, 3, 5, 7, 5])
     >>> ak.setxor1d(a,b)
-    array([1, 4, 5, 7])
-    #Multi-Array Example
+    array([1 4 5 7])
+
+    Multi-Array Example
+
     >>> a = ak.arange(1, 6)
     >>> b = ak.array([1, 5, 3, 4, 2])
     >>> c = ak.array([1, 4, 3, 2, 5])
@@ -820,47 +843,47 @@ def setxor1d(pda1: groupable, pda2: groupable, assume_unique: bool = False) -> U
     >>> multia = [a, a, a]
     >>> multib = [b, c, d]
     >>> ak.setxor1d(multia, multib)
-    [array([2, 2, 4, 4, 5, 5]), array([2, 5, 2, 4, 4, 5]), array([2, 4, 5, 4, 2, 5])]
+    [array([2 2 4 4 5 5]), array([2 5 2 4 4 5]), array([2 4 5 4 2 5])]
     """
     from arkouda.categorical import Categorical as Categorical_
 
     if (
-        isinstance(pda1, (pdarray, Strings, Categorical_))
-        and isinstance(pda2, (pdarray, Strings, Categorical_))
-        and type(pda1) is type(pda2)
+        isinstance(A, (pdarray, Strings, Categorical_))
+        and isinstance(B, (pdarray, Strings, Categorical_))
+        and type(A) is type(B)
     ):
-        if pda1.size == 0:
-            return pda2  # return other pdarray if pda1 is empty
-        if pda2.size == 0:
-            return pda1  # return other pdarray if pda2 is empty
-        if (pda1.dtype == int and pda2.dtype == int) or (
-            pda1.dtype == akuint64 and pda2.dtype == akuint64
+        if A.size == 0:
+            return B  # return other pdarray if A is empty
+        if B.size == 0:
+            return A  # return other pdarray if B is empty
+        if (A.dtype == int and B.dtype == int) or (
+            A.dtype == akuint64 and B.dtype == akuint64
         ):
             repMsg = generic_msg(
-                cmd="setxor1d", args={"arg1": pda1, "arg2": pda2, "assume_unique": assume_unique}
+                cmd="setxor1d", args={"arg1": A, "arg2": B, "assume_unique": assume_unique}
             )
             return create_pdarray(cast(str, repMsg))
         if not assume_unique:
-            pda1 = cast(pdarray, unique(pda1))
-            pda2 = cast(pdarray, unique(pda2))
-        aux = concatenate((pda1, pda2), ordered=False)
+            A = cast(pdarray, unique(A))
+            B = cast(pdarray, unique(B))
+        aux = concatenate((A, B), ordered=False)
         aux_sort_indices = argsort(aux)
         aux = aux[aux_sort_indices]
         flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
         return aux[flag[1:] & flag[:-1]]
-    elif (isinstance(pda1, list) or isinstance(pda1, tuple)) and (
-        isinstance(pda2, list) or isinstance(pda2, tuple)
+    elif (isinstance(A, list) or isinstance(A, tuple)) and (
+        isinstance(B, list) or isinstance(B, tuple)
     ):
-        multiarray_setop_validation(pda1, pda2)
+        multiarray_setop_validation(A, B)
 
         if not assume_unique:
-            ag = GroupBy(pda1)
+            ag = GroupBy(A)
             ua = ag.unique_keys
-            bg = GroupBy(pda2)
+            bg = GroupBy(B)
             ub = bg.unique_keys
         else:
-            ua = pda1
-            ub = pda2
+            ua = A
+            ub = B
 
         # Key for deinterleaving result
         isa = concatenate(
@@ -879,5 +902,5 @@ def setxor1d(pda1: groupable, pda2: groupable, assume_unique: bool = False) -> U
         return [x[single] for x in k]
     else:
         raise TypeError(
-            f"Both pda1 and pda2 must be pdarray, List, or Tuple. Received {type(pda1)} and {type(pda2)}"
+            f"Both A and B must be pdarray, List, or Tuple. Received {type(A)} and {type(B)}"
         )
