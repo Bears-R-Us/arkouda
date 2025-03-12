@@ -11,6 +11,7 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
+from arkouda.dtypes import uint64 as ak_uint64
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import (
@@ -185,6 +186,16 @@ def parse_single_value(msg: str) -> Union[numpy_scalars, int]:
         if mydtype == akstr_:
             # String value will always be surrounded with double quotes, so remove them
             return mydtype.type(unescape(value[1:-1]))
+
+        #   This is a work-around to deal with the fact that the server
+        #   sometimes returns a negative value when it should return a uint.
+        #   It can be removed when issue #4157 is resolved.
+        if mydtype == ak_uint64:
+            if value.startswith("-"):
+                value = value.strip("-")
+                uint_value = np.uint64(np.iinfo(np.uint64).max) - ak_uint64(value) + ak_uint64(1)
+                return uint_value
+            return ak_uint64(value)
         return mydtype.type(value)
     except Exception:
         raise ValueError(f"unsupported value from server {mydtype.name} {value}")
@@ -589,11 +600,11 @@ class pdarray:
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
+
         if self.dtype != bigint and np.can_cast(other, self.dtype):
-            # If scalar can be losslessly cast to array dtype,
-            # do the cast so that return array will have same dtype
             dt = self.dtype.name
             other = self.dtype.type(other)
+
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
@@ -634,6 +645,7 @@ class pdarray:
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
+
         if self.dtype != bigint and np.can_cast(other, self.dtype):
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
