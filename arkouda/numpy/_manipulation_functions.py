@@ -1,17 +1,17 @@
 # from __future__ import annotations
 
-from typing import Optional, Tuple, Union, cast
+from typing import Optional, Sequence, Tuple, Union, cast
 
 from typeguard import typechecked
 
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
-from arkouda.numpy.dtypes import numeric_scalars, bool_scalars
+from arkouda.numpy.dtypes import bool_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.numpy.strings import Strings
 
-__all__ = ["flip", "squeeze", "tile"]
+__all__ = ["flip", "repeat", "squeeze", "tile"]
 
 
 def flip(
@@ -85,6 +85,127 @@ def flip(
         return Strings.from_return_msg(cast(str, rep_msg))
     else:
         raise TypeError("flip only accepts type pdarray, Strings, or Categorical.")
+
+
+def repeat(
+    a: Union[int, Sequence[int], pdarray],
+    repeats: Union[int, Sequence[int], pdarray],
+    axis: Union[None, int] = None,
+) -> pdarray:
+    """
+    Repeat each element of an array after themselves
+
+    Parameters
+    ----------
+    a : int, Sequence of int, or pdarray
+        Input array.
+    repeats: int, Sequence of int, or pdarray
+        The number of repetitions for each element.
+        `repeats` is broadcasted to fit the shape of the given axis.
+    axis : int, optional
+        The axis along which to repeat values.
+        By default, use the flattened input array, and return a flat output array.
+
+    Returns
+    -------
+    pdarray
+        Output array which has the same shape as `a`, except along the given axis.
+
+    Examples
+    --------
+    >>> ak.repeat(3, 4)
+    array([3 3 3 3])
+    >>> x = ak.array([[1,2],[3,4]])
+    >>> ak.repeat(x, 2)
+    array([1 1 2 2 3 3 4 4])
+    >>> ak.repeat(x, 3, axis=1)
+    array([array([1 1 1 2 2 2]) array([3 3 3 4 4 4])])
+    >>> ak.repeat(x, [1, 2], axis=0)
+    array([array([1 2]) array([3 4]) array([3 4])])
+    """
+    from arkouda.pdarrayclass import any as akany
+
+    if isinstance(repeats, int):
+        ak_repeats = ak_array([repeats], int)
+        if isinstance(ak_repeats, pdarray):
+            repeats = ak_repeats
+        else:
+            raise TypeError("This should never happen because repeats was an int.")
+    elif isinstance(repeats, Sequence):
+        ak_repeats = ak_array(repeats, int)
+        if isinstance(ak_repeats, pdarray):
+            repeats = ak_repeats
+        else:
+            raise TypeError("This should never happen because repeats was a Sequence of int.")
+    if isinstance(a, int):
+        ak_a = ak_array([a], int)
+        if isinstance(ak_a, pdarray):
+            a = ak_a
+        else:
+            raise TypeError("This should never happen because a was an int.")
+    elif isinstance(a, Sequence):
+        ak_a = ak_array(a, int)
+        if isinstance(ak_a, pdarray):
+            a = ak_a
+        else:
+            raise TypeError("This should never happen because a was a Sequence of int.")
+    if repeats.ndim > 1:
+        raise ValueError(
+            f"Expected repeats to be a 1-dimensional array or constant, but "
+            f"received {repeats.ndim}-dimensional array instead."
+        )
+    if akany(repeats < 0):
+        raise ValueError("repeats may not contain negative values.")
+    if not akany(repeats > 0):
+        temp = cast(pdarray, ak_array([], a.dtype))
+        temp_shape = list(a.shape)
+        if axis is None:
+            return temp
+        elif isinstance(axis, int):
+            temp_shape[axis] = 0
+            temp = temp.reshape(temp_shape)
+            return temp
+        else:
+            raise TypeError("Axis should have been None or an int")
+    if axis is None:
+        try:
+            return create_pdarray(
+                cast(
+                    str,
+                    generic_msg(
+                        cmd=f"repeatFlat<{a.dtype},{a.ndim}>",
+                        args={
+                            "name": a,
+                            "repeats": repeats,
+                        },
+                    ),
+                )
+            )
+
+        except RuntimeError as e:
+            raise ValueError(f"Failed to repeat array: {e}")
+    if repeats.size != 1 and repeats.size != a.shape[axis]:
+        raise ValueError(
+            f"repeats must either be a constant or match the length of a in axis. "
+            f"Instead, repeats size of {repeats.size} != {a.shape[axis]}"
+        )
+    try:
+        return create_pdarray(
+            cast(
+                str,
+                generic_msg(
+                    cmd=f"repeat<{a.dtype},{a.ndim},{repeats.dtype},{1}>",
+                    args={
+                        "eIn": a,
+                        "reps": repeats,
+                        "axis": axis,
+                    },
+                ),
+            )
+        )
+
+    except RuntimeError as e:
+        raise ValueError(f"Failed to repeat array: {e}")
 
 
 @typechecked

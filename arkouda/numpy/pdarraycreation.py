@@ -14,11 +14,7 @@ from arkouda.numpy.dtypes import (
     bigint,
 )
 from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import (
-    float64,
-    get_byteorder,
-    get_server_byteorder,
-)
+from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import (
     int_scalars,
@@ -238,7 +234,7 @@ def array(
         # We need this array whether the number of dimensions is 1 or greater.
         uint_arrays: List[Union[pdarray, Strings]] = []
 
-    if a.size != 0 and a.dtype == bigint and a.ndim in get_array_ranks() and a.ndim > 1:
+    if (a.dtype == bigint or dtype == bigint) and a.ndim in get_array_ranks() and a.ndim > 1:
         sh = a.shape
         try:
             a = a.reshape(a.size)
@@ -263,7 +259,7 @@ def array(
 
     # Check if array of strings
     # if a.dtype == numpy.object_ need to check first element
-    if "U" in a.dtype.kind or (a.dtype == np.object_ and isinstance(a[0], str)):
+    if "U" in a.dtype.kind or (a.dtype == np.object_ and a.size > 0 and isinstance(a[0], str)):
         # encode each string and add a null byte terminator
         encoded = [i for i in itertools.chain.from_iterable(map(lambda x: x.encode() + b"\x00", a))]
         nbytes = len(encoded)
@@ -437,6 +433,18 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
     >>> all(a[i] == 2**64 + i for i in range(5))
     True
     """
+    if not arrays:
+        return create_pdarray(
+            generic_msg(
+                cmd="big_int_creation",
+                args={
+                    "arrays": arrays,
+                    "num_arrays": len(arrays),
+                    "len": 0,
+                    "max_bits": max_bits,
+                },
+            )
+        )
     if not all(isinstance(a, pdarray) and a.dtype == akuint64 for a in arrays):
         raise TypeError("Sequence must contain only uint pdarrays")
     if len({a.size for a in arrays}) != 1:
