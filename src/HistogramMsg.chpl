@@ -190,7 +190,7 @@ module HistogramMsg
                 // each task gets it's own copy of the histogram and they're reduced
                 hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                             "%? <= %?".format(bins,sBound));
-                forall (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) with (+ reduce indices) {
+                for (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) {
                     var e = toSymEntry(gEnt,t);
                     var aMin = min reduce e.a;
                     var aMax = max reduce e.a;
@@ -220,7 +220,7 @@ module HistogramMsg
                 use PrivateDist;
                 var atomicIdx: [PrivateSpace] [0..#numSamples] atomic int;
 
-                forall (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) {
+                for (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) {
                     var e = toSymEntry(gEnt,t);
                     var aMin = min reduce e.a;
                     var aMax = max reduce e.a;
@@ -264,7 +264,7 @@ module HistogramMsg
                 use PrivateDist;
                 var atomicIdx: [makeDistDom(numSamples)] atomic int;
 
-                forall (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) {
+                for (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) {
                     var e = toSymEntry(gEnt,t);
                     var aMin = min reduce e.a;
                     var aMax = max reduce e.a;
