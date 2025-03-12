@@ -38,11 +38,16 @@ diagnostic_stats_functions = [
 
 class TestCommDiagnostics:
 
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_verbose_comm(self, size):
+        start_verbose_comm()
+        ak.zeros(size)
+        stop_verbose_comm()
+
     @pytest.mark.parametrize("op", diagnostic_stats_functions)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_comm_diagnostics_single_locale(self, op, size):
         start_comm_diagnostics()
-        start_verbose_comm()
 
         ak.sort(ak.arange(size) * -1.0)
         comm_diagnostic_function = getattr(ak.comm_diagnostics, op)
@@ -52,7 +57,6 @@ class TestCommDiagnostics:
         if pytest.nl == 1:
             assert result.sum() == 0
 
-        stop_verbose_comm()
         print_comm_diagnostics_table()
         reset_comm_diagnostics()
         stop_comm_diagnostics()
