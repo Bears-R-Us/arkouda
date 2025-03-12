@@ -78,7 +78,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: install libc6
-      command: |   
+      run: |   
         apt-get update && apt-get install -y -V ca-certificates lsb-release wget libc6      
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
