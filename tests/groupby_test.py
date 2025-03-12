@@ -48,9 +48,7 @@ def make_sorted_and_unsorted_data(sample):
 def to_tuple_dict(labels, values):
     # transforms labels from list of arrays into a list of tuples by index and builds a dictionary
     # labels: [array(['b', 'a', 'c']), array(['b', 'a', 'c'])] -> [('b', 'b'), ('a', 'a'), ('c', 'c')]
-    return dict(
-        zip(list(zip(*[pda.to_ndarray() for pda in labels])), values.to_ndarray())
-    )
+    return dict(zip(list(zip(*[pda.to_ndarray() for pda in labels])), values.to_ndarray()))
 
 
 class TestGroupBy:
@@ -132,9 +130,7 @@ class TestGroupBy:
             for lvl in range(levels):
                 assert np.allclose(pdkeys[lvl], akkeys[lvl].to_ndarray())
 
-        assert np.allclose(
-            pdvals, akvals.to_ndarray(), equal_nan=True
-        )  # value validation
+        assert np.allclose(pdvals, akvals.to_ndarray(), equal_nan=True)  # value validation
 
     # For pandas equivalency tests, the standard problem size of 10**8 is much too large, especially
     # in the case of "aggregate by product."  For large vectors of random integers from 0 through N,
@@ -169,9 +165,7 @@ class TestGroupBy:
                 print("Pandas does not implement")
                 do_check = False
             try:
-                akkeys, akvals = (
-                    akg.size() if op == "count" else akg.aggregate(akdf[vname], op)
-                )
+                akkeys, akvals = akg.size() if op == "count" else akg.aggregate(akdf[vname], op)
             except Exception as E:
                 print("Arkouda error: ", E)
                 continue  # skip check
@@ -181,9 +175,7 @@ class TestGroupBy:
                     akextrema = akdf[vname][akvals].to_ndarray()
                     # check so we can get meaningful output if needed
                     if not np.allclose(pdextrema, akextrema):
-                        print(
-                            "Different argmin/argmax: Arkouda failed to find an extremum"
-                        )
+                        print("Different argmin/argmax: Arkouda failed to find an extremum")
                         print("pd: ", pdextrema)
                         print("ak: ", akextrema)
                     assert np.allclose(pdextrema, akextrema)
@@ -303,9 +295,7 @@ class TestGroupBy:
             ak.array([np.nan, 5.0, 25.0]),
             permutation=ak.array([0, 1, 2, 3, 4]),
         )
-        assert np.allclose(
-            res.to_ndarray(), np.array([np.nan, np.nan, 5.0, 5.0, 25.0]), equal_nan=True
-        )
+        assert np.allclose(res.to_ndarray(), np.array([np.nan, np.nan, 5.0, 5.0, 25.0]), equal_nan=True)
 
     def test_count(self):
         keys, counts = self.igb.size()
@@ -352,12 +342,8 @@ class TestGroupBy:
         assert i_results.to_list() == u_results.to_list()
 
         # test uint Groupby.broadcast with and without permute
-        u_results = self.ugb.broadcast(
-            ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False
-        )
-        i_results = self.igb.broadcast(
-            ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False
-        )
+        u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False)
+        i_results = self.igb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False)
         assert i_results.to_list() == u_results.to_list()
         u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64))
         i_results = self.igb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64))
@@ -386,12 +372,8 @@ class TestGroupBy:
         assert i_results.to_list() == s_results.to_list()
 
         # test str Groupby.broadcast with and without permute
-        s_results = self.sgb.broadcast(
-            ak.array(["1", "2", "6", "8", "9"]), permute=False
-        )
-        i_results = self.igb.broadcast(
-            ak.array(["1", "2", "6", "8", "9"]), permute=False
-        )
+        s_results = self.sgb.broadcast(ak.array(["1", "2", "6", "8", "9"]), permute=False)
+        i_results = self.igb.broadcast(ak.array(["1", "2", "6", "8", "9"]), permute=False)
         assert i_results.to_list() == s_results.to_list()
         s_results = self.sgb.broadcast(ak.array(["1", "2", "6", "8", "9"]))
         i_results = self.igb.broadcast(ak.array(["1", "2", "6", "8", "9"]))
@@ -431,17 +413,13 @@ class TestGroupBy:
         assert bi_results.to_list() == u_results.to_list()
 
         # test bigint Groupby.broadcast with and without permute with > 64 bit values
-        u_results = self.ugb.broadcast(
-            ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False
-        )
+        u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False)
         bi_results = self.bigb.broadcast(
             ak.array([1, 2, 6, 8, 9], dtype=ak.bigint) + 2**200, permute=False
         )
         assert (bi_results - 2**200).to_list() == u_results.to_list()
         u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64))
-        bi_results = self.bigb.broadcast(
-            ak.array([1, 2, 6, 8, 9], dtype=ak.bigint) + 2**200
-        )
+        bi_results = self.bigb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.bigint) + 2**200)
         assert (bi_results - 2**200).to_list() == u_results.to_list()
 
         # test bigint broadcast
@@ -520,10 +498,7 @@ class TestGroupBy:
         grouping = ak.GroupBy(s)
         labels, values = grouping.nunique(i)
 
-        actual = {
-            label: value
-            for (label, value) in zip(labels.to_ndarray(), values.to_ndarray())
-        }
+        actual = {label: value for (label, value) in zip(labels.to_ndarray(), values.to_ndarray())}
         assert {"a": 2, "b": 2, "c": 1} == actual
 
     def test_multi_level_categorical(self):
@@ -609,13 +584,9 @@ class TestGroupBy:
             assert np.allclose(keys.to_ndarray(), np.array([-1, 0, 1]), equal_nan=True)
 
             if dt == "float64":
-                assert np.allclose(
-                    counts.to_ndarray(), np.array([1, 0, 2]), equal_nan=True
-                )
+                assert np.allclose(counts.to_ndarray(), np.array([1, 0, 2]), equal_nan=True)
             else:
-                assert np.allclose(
-                    counts.to_ndarray(), np.array([3, 1, 2]), equal_nan=True
-                )
+                assert np.allclose(counts.to_ndarray(), np.array([3, 1, 2]), equal_nan=True)
 
         #   Test BigInt separately
         b = ak.array(np.array([1, 0, 1, 1, 0, 0]), dtype="bigint")
@@ -709,9 +680,7 @@ class TestGroupBy:
         This tests groupby boundary condition on a zero length pdarray, see Issue #900 for details
         """
         g = ak.GroupBy(ak.zeros(0, dtype=ak.int64))
-        str(
-            g.segments
-        )  # passing condition, if this was deleted it will cause the test to fail
+        str(g.segments)  # passing condition, if this was deleted it will cause the test to fail
 
     @pytest.mark.parametrize("dtype", ["bool", "str_", "int64", "float64"])
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -973,9 +942,7 @@ class TestGroupBy:
             rng.integers(0, 1, size=12, dtype="bool"),
             rng.integers(-(2**32), 2**32, size=12, dtype="int"),
         ]
-        grouping_keys = ak.concatenate(
-            [ak.zeros(4, int), ak.ones(4, int), ak.full(4, 2, int)]
-        )
+        grouping_keys = ak.concatenate([ak.zeros(4, int), ak.ones(4, int), ak.full(4, 2, int)])
         rng.shuffle(grouping_keys)
 
         choice_arrays = []
@@ -987,9 +954,7 @@ class TestGroupBy:
                     for p in [None, weights]:
                         g = ak.GroupBy(grouping_keys)
                         choice_arrays.append(
-                            g.sample(
-                                a, n=size, replace=replace, weights=p, random_state=rng
-                            )
+                            g.sample(a, n=size, replace=replace, weights=p, random_state=rng)
                         )
                         choice_arrays.append(
                             g.sample(
@@ -1010,9 +975,7 @@ class TestGroupBy:
                         previous1 = choice_arrays.pop(0)
                         previous2 = choice_arrays.pop(0)
                         g = ak.GroupBy(grouping_keys)
-                        current1 = g.sample(
-                            a, n=size, replace=replace, weights=p, random_state=rng
-                        )
+                        current1 = g.sample(a, n=size, replace=replace, weights=p, random_state=rng)
                         current2 = g.sample(
                             a,
                             frac=(size / 4),
@@ -1021,9 +984,9 @@ class TestGroupBy:
                             random_state=rng,
                         )
 
-                        res = np.allclose(
-                            previous1.to_list(), current1.to_list()
-                        ) and np.allclose(previous2.to_list(), current2.to_list())
+                        res = np.allclose(previous1.to_list(), current1.to_list()) and np.allclose(
+                            previous2.to_list(), current2.to_list()
+                        )
                         if not res:
                             print(f"\nnum locales: {cfg['numLocales']}")
                             print(f"Failure with seed:\n{seed}")

@@ -49,50 +49,50 @@ String-Specific Methods
 Substring search
 ----------------
   
-#  .. automethod:: arkouda.numpy.Strings.contains
+  .. automethod:: arkouda.numpy.Strings.contains
                     
-#  .. automethod:: arkouda.numpy.Strings.startswith
+  .. automethod:: arkouda.numpy.Strings.startswith
                     
-#  .. automethod:: arkouda.numpy.Strings.endswith
+  .. automethod:: arkouda.numpy.Strings.endswith
 
 Splitting and joining
 ---------------------
 
-#  .. automethod:: arkouda.numpy.Strings.peel
+  .. automethod:: arkouda.numpy.Strings.peel
                   
-#  .. automethod:: arkouda.numpy.Strings.rpeel
+  .. automethod:: arkouda.numpy.Strings.rpeel
 
-#  .. automethod:: arkouda.numpy.Strings.stick
+  .. automethod:: arkouda.numpy.Strings.stick
 
-#  .. automethod:: arkouda.numpy.Strings.lstick
+  .. automethod:: arkouda.numpy.Strings.lstick
 
 Flattening
 ----------
 
 Given an array of strings where each string encodes a variable-length sequence delimited by a common substring, flattening offers a method for unpacking the sequences into a flat array of individual elements. A mapping between original strings and new array elements can be preserved, if desired. This method can be used in pipe
   
-#  .. automethod:: arkouda.numpy.Strings.flatten
+  .. automethod:: arkouda.numpy.Strings.flatten
 
 Regular Expressions
 -------------------
 
 ``Strings`` implements behavior similar to the re python library applied to every element. This functionality is based on Chapel's regex module which is built on google's re2. re2 sacrifices some functionality (notably lookahead/lookbehind) in exchange for guarantees that searches complete in linear time and in a fixed amount of stack space
 
-#  .. automethod:: arkouda.numpy.Strings.search
+  .. automethod:: arkouda.numpy.Strings.search
 
-#  .. automethod:: arkouda.numpy.Strings.match
+  .. automethod:: arkouda.numpy.Strings.match
 
-#  .. automethod:: arkouda.numpy.Strings.fullmatch
+  .. automethod:: arkouda.numpy.Strings.fullmatch
 
-#  .. automethod:: arkouda.numpy.Strings.split
+  .. automethod:: arkouda.numpy.Strings.split
 
-#  .. automethod:: arkouda.numpy.Strings.findall
+  .. automethod:: arkouda.numpy.Strings.findall
 
-#  .. automethod:: arkouda.numpy.Strings.sub
+  .. automethod:: arkouda.numpy.Strings.sub
 
-#  .. automethod:: arkouda.numpy.Strings.subn
+  .. automethod:: arkouda.numpy.Strings.subn
 
-#  .. automethod:: arkouda.numpy.Strings.find_locations
+  .. automethod:: arkouda.numpy.Strings.find_locations
 
 Match Object
 ____________

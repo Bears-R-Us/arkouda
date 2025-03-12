@@ -11,8 +11,8 @@ import arkouda as ak
 from arkouda.numpy.util import _generate_test_shape
 from arkouda.testing import assert_arkouda_array_equal, assert_equivalent
 
-INT_SCALARS = list(ak.dtypes.int_scalars.__args__)
-NUMERIC_SCALARS = list(ak.dtypes.numeric_scalars.__args__)
+INT_SCALARS = list(ak.numpy.dtypes.int_scalars.__args__)
+NUMERIC_SCALARS = list(ak.numpy.dtypes.numeric_scalars.__args__)
 
 DTYPES = [
     bool,

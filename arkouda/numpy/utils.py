@@ -38,9 +38,9 @@ def shape(a: Union[pdarray, Strings, all_scalars]) -> Tuple:
 
     """
     if isinstance(a, (pdarray, Strings, ndarray, Iterable)) and not isinstance(a, str):
-        try:
+        if isinstance(a, (pdarray, Strings, ndarray)):
             result = a.shape
-        except AttributeError:
+        else:
             from arkouda import array
 
             result = array(a).shape

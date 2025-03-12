@@ -63,6 +63,7 @@ class Strings:
     BinOps = frozenset(["==", "!="])
     objType = "Strings"
     size: int_scalars
+    shape: Tuple[int]
 
     @staticmethod
     def from_return_msg(rep_msg: str) -> Strings:

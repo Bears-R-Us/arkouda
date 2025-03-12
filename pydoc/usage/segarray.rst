@@ -36,51 +36,51 @@ SegArray Specific Methods
 
 Prefix & Suffix
 -----------
-#.. autofunction:: arkouda.numpy.SegArray.get_prefixes
+.. autofunction:: arkouda.numpy.SegArray.get_prefixes
 
-#.. autofunction:: arkouda.numpy.SegArray.get_suffixes
+.. autofunction:: arkouda.numpy.SegArray.get_suffixes
 
 NGrams
 ----------
-#.. autofunction:: arkouda.numpy.SegArray.get_ngrams
+.. autofunction:: arkouda.numpy.SegArray.get_ngrams
 
 Sub-array of Size
 ----------
-#.. autofunction:: arkouda.numpy.SegArray.get_length_n
+.. autofunction:: arkouda.numpy.SegArray.get_length_n
 
 Access/Set Specific Elements in Sub-Array
 ----------
-#.. autofunction:: arkouda.numpy.SegArray.get_jth
+.. autofunction:: arkouda.numpy.SegArray.get_jth
 
-#.. autofunction:: arkouda.numpy.SegArray.set_jth
+.. autofunction:: arkouda.numpy.SegArray.set_jth
 
 Append & Prepend
 ----------
-#.. autofunction:: arkouda.numpy.SegArray.append
+.. autofunction:: arkouda.numpy.SegArray.append
 
-#.. autofunction:: arkouda.numpy.SegArray.append_single
+.. autofunction:: arkouda.numpy.SegArray.append_single
 
-#.. autofunction:: arkouda.numpy.SegArray.prepend_single
+.. autofunction:: arkouda.numpy.SegArray.prepend_single
 
 Deduplication
 ----------
-#.. autofunction:: arkouda.numpy.SegArray.remove_repeats
+.. autofunction:: arkouda.numpy.SegArray.remove_repeats
 
 SegArray SetOps
 ===============
 
 Union
 -----
-#.. autofunction:: arkouda.numpy.SegArray.union
+.. autofunction:: arkouda.numpy.SegArray.union
 
 Intersect
 ---------
-#.. autofunction:: arkouda.numpy.SegArray.intersect
+.. autofunction:: arkouda.numpy.SegArray.intersect
 
 Set Difference
 --------------
-#.. autofunction:: arkouda.numpy.SegArray.setdiff
+.. autofunction:: arkouda.numpy.SegArray.setdiff
 
 Symmetric Difference
 --------------------
-#.. autofunction:: arkouda.numpy.SegArray.setxor
+.. autofunction:: arkouda.numpy.SegArray.setxor
