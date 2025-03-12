@@ -12,7 +12,10 @@ jobs:
       matrix:
         python-version: ['3.12']
     container:
-      image: chapel/chapel:2.3.0
+      image: ghcr.io/${{ github.repository_owner }}/chapel-github-ci:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - uses: actions/checkout@v3  
     - name: Set up Python ${{ matrix.python-version }}
