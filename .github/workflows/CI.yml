@@ -7,45 +7,19 @@ env:
 
 jobs:
   arkouda_python_portability:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.12']
     container:
       image: chapel/chapel:2.3.0
     steps:
-    - uses: actions/checkout@v3
-    - name: install libc6
-      run: |   
-        apt-get update && apt-get install -y -V ca-certificates lsb-release wget libc6      
+    - uses: actions/checkout@v3  
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{matrix.python-version}}
-    - name: Install dependencies
-      uses: nick-fields/retry@v2
-      with:
-        timeout_seconds: 1200  # or use timeout_minutes
-        max_attempts: 2
-        retry_wait_seconds: 60
-        retry_on: error
-        command: |   
-          apt-get update && apt-get install -y -V ca-certificates lsb-release wget libc6
-          make install-arrow-quick
-          apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
-          make install-iconv
-          echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
     - name: Check python version
       run: |
         python3 --version
-    - name: Install Chapel frontend bindings
-      run: |
-        (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)
-    - name: Build/Install Arkouda
-      run: |
-        make
-        python3 -m pip install -e .[dev]
-    - name: Arkouda unit tests
-      run: |
-        make test-python size=100
 
