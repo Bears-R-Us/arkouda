@@ -468,31 +468,34 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.dtype" title="arkouda.numpy.dtypes.dtypes.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a>(dtype)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.can_cast" title="arkouda.numpy.dtypes.dtypes.can_cast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">can_cast</span></code></a>(→ bool)</p></td>
+<td><p>Returns True if cast between data types can occur according to the casting rule.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.dtype" title="arkouda.numpy.dtypes.dtypes.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a>(dtype)</p></td>
 <td><p>Create a data type object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.get_byteorder" title="arkouda.numpy.dtypes.dtypes.get_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_byteorder</span></code></a>(→ str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.get_byteorder" title="arkouda.numpy.dtypes.dtypes.get_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_byteorder</span></code></a>(→ str)</p></td>
 <td><p>Get a concrete byteorder (turns '=' into '&lt;' or '&gt;') on the client.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.get_server_byteorder" title="arkouda.numpy.dtypes.dtypes.get_server_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_server_byteorder</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.get_server_byteorder" title="arkouda.numpy.dtypes.dtypes.get_server_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_server_byteorder</span></code></a>(→ str)</p></td>
 <td><p>Get the server's byteorder</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.isSupportedBool" title="arkouda.numpy.dtypes.dtypes.isSupportedBool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedBool</span></code></a>(num)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.isSupportedBool" title="arkouda.numpy.dtypes.dtypes.isSupportedBool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedBool</span></code></a>(num)</p></td>
 <td><p>Whether a scalar is an arkouda supported boolean dtype.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.isSupportedDType" title="arkouda.numpy.dtypes.dtypes.isSupportedDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedDType</span></code></a>(→ bool)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.isSupportedDType" title="arkouda.numpy.dtypes.dtypes.isSupportedDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedDType</span></code></a>(→ bool)</p></td>
 <td><p>Whether a scalar is an arkouda supported dtype.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.isSupportedFloat" title="arkouda.numpy.dtypes.dtypes.isSupportedFloat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedFloat</span></code></a>(num)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.isSupportedFloat" title="arkouda.numpy.dtypes.dtypes.isSupportedFloat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedFloat</span></code></a>(num)</p></td>
 <td><p>Whether a scalar is an arkouda supported float dtype.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.isSupportedInt" title="arkouda.numpy.dtypes.dtypes.isSupportedInt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedInt</span></code></a>(num)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.isSupportedInt" title="arkouda.numpy.dtypes.dtypes.isSupportedInt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedInt</span></code></a>(num)</p></td>
 <td><p>Whether a scalar is an arkouda supported integer dtype.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.isSupportedNumber" title="arkouda.numpy.dtypes.dtypes.isSupportedNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedNumber</span></code></a>(num)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.isSupportedNumber" title="arkouda.numpy.dtypes.dtypes.isSupportedNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedNumber</span></code></a>(num)</p></td>
 <td><p>Whether a scalar is an arkouda supported numeric dtype.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.resolve_scalar_dtype" title="arkouda.numpy.dtypes.dtypes.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.resolve_scalar_dtype" title="arkouda.numpy.dtypes.dtypes.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
 <td><p>Try to infer what dtype arkouda_server should treat val as.</p></td>
 </tr>
 </tbody>
@@ -691,6 +694,26 @@
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.dtypes.bool_scalars">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.dtypes.</span></span><span class="sig-name descname"><span class="pre">bool_scalars</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.dtypes.bool_scalars" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.dtypes.can_cast">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.dtypes.</span></span><span class="sig-name descname"><span class="pre">can_cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../../../_modules/arkouda/numpy/dtypes/dtypes.html#can_cast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.dtypes.can_cast" title="Link to this definition">¶</a></dt>
+<dd><p>Returns True if cast between data types can occur according to the casting rule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from</strong> (<em>dtype</em><em>, </em><em>dtype specifier</em><em>, </em><em>NumPy scalar</em><em>, or </em><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Data type, NumPy scalar, or array to cast from.</p></li>
+<li><p><strong>to</strong> (<em>dtype</em><em> or </em><em>dtype specifier</em>) – Data type to cast to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if cast can occur according to the casting rule.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.dtypes.dtype">
@@ -1036,6 +1059,7 @@
 </li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.bitType"><code class="docutils literal notranslate"><span class="pre">bitType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.bool_scalars"><code class="docutils literal notranslate"><span class="pre">bool_scalars</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.can_cast"><code class="docutils literal notranslate"><span class="pre">can_cast()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.dtype"><code class="docutils literal notranslate"><span class="pre">dtype()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.float_scalars"><code class="docutils literal notranslate"><span class="pre">float_scalars</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.dtypes.get_byteorder"><code class="docutils literal notranslate"><span class="pre">get_byteorder()</span></code></a></li>

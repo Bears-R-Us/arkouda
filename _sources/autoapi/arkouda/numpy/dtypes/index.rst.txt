@@ -53,6 +53,7 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.numpy.dtypes.can_cast
    arkouda.numpy.dtypes.dtype
    arkouda.numpy.dtypes.get_byteorder
    arkouda.numpy.dtypes.get_server_byteorder
@@ -226,6 +227,19 @@ Package Contents
 .. py:data:: bitType
 
 .. py:data:: bool_scalars
+
+.. py:function:: can_cast(from_, to) -> bool
+
+   Returns True if cast between data types can occur according to the casting rule.
+
+   :param from_: Data type, NumPy scalar, or array to cast from.
+   :type from_: dtype, dtype specifier, NumPy scalar, or pdarray
+   :param to: Data type to cast to.
+   :type to: dtype or dtype specifier
+
+   :returns: True if cast can occur according to the casting rule.
+   :rtype: bool
+
 
 .. py:function:: dtype(dtype)
 

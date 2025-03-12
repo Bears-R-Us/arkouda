@@ -127,6 +127,7 @@ Functions
    arkouda.numpy.broadcast
    arkouda.numpy.broadcast_dims
    arkouda.numpy.broadcast_to_shape
+   arkouda.numpy.can_cast
    arkouda.numpy.cast
    arkouda.numpy.clear
    arkouda.numpy.clz
@@ -10816,6 +10817,19 @@ Package Contents
    array([array([array([5 19]) array([5 19])]) array([array([5 19]) array([5 19])])])
 
    :raises RuntimeError: raised if the pda can't be broadcast to the given shape
+
+
+.. py:function:: can_cast(from_, to) -> bool
+
+   Returns True if cast between data types can occur according to the casting rule.
+
+   :param from_: Data type, NumPy scalar, or array to cast from.
+   :type from_: dtype, dtype specifier, NumPy scalar, or pdarray
+   :param to: Data type to cast to.
+   :type to: dtype or dtype specifier
+
+   :returns: True if cast can occur according to the casting rule.
+   :rtype: bool
 
 
 .. py:function:: cast(typ, val)
