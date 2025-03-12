@@ -601,7 +601,11 @@ class pdarray:
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
 
-        if self.dtype != bigint and np.can_cast(other, self.dtype):
+        from arkouda.numpy.dtypes import can_cast as ak_can_cast
+
+        if self.dtype != bigint and ak_can_cast(other, self.dtype):
+            # If scalar can be losslessly cast to array dtype,
+            # do the cast so that return array will have same dtype
             dt = self.dtype.name
             other = self.dtype.type(other)
 
@@ -646,7 +650,9 @@ class pdarray:
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
 
-        if self.dtype != bigint and np.can_cast(other, self.dtype):
+        from arkouda.numpy.dtypes import can_cast as ak_can_cast
+
+        if self.dtype != bigint and ak_can_cast(other, self.dtype):
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
             dt = self.dtype.name

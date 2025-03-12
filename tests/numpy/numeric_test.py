@@ -1185,3 +1185,14 @@ class TestNumeric:
                 sample = sample.reshape(local_shape)  # reshape only needed if rank > 1
             aksample = ak.array(sample)
             assert np.all(npfunc(sample) == akfunc(aksample).to_ndarray())
+
+    def test_can_cast(self):
+        from arkouda.numpy import can_cast
+
+        assert can_cast(np.int64(5), "uint64")
+        assert can_cast(ak.int64, ak.int64)
+        assert not can_cast(ak.int64, ak.uint64)
+
+        assert can_cast(5, ak.uint64)
+        assert not can_cast(-5, ak.uint64)
+        assert not can_cast(2**200, ak.uint64)
