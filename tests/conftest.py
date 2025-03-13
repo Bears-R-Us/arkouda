@@ -48,6 +48,12 @@ def pytest_addoption(parser):
         default="",
         help="Value to initialize random number generator.",
     )
+    parser.addoption(
+        "--temp-directory",
+        action="store",
+        default=os.getcwd(),
+        help="Directory to store temporary files.",
+    )
 
 
 def pytest_collection_modifyitems(config, items):
@@ -80,6 +86,8 @@ def pytest_configure(config):
     pytest.prob_size = [eval(x) for x in config.getoption("size").split(",")]
     pytest.test_running_mode = TestRunningMode(os.getenv("ARKOUDA_RUNNING_MODE", "CLASS_SERVER"))
     pytest.host = subprocess.check_output("hostname").decode("utf-8").strip()
+
+    pytest.temp_directory = config.getoption("--temp-directory")
 
 
 @pytest.fixture(scope="session", autouse=True)

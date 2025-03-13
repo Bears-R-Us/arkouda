@@ -23,7 +23,7 @@ NUMERIC_AND_STR_TYPES = NUMERIC_TYPES + ["str"]
 
 @pytest.fixture
 def par_test_base_tmp(request):
-    par_test_base_tmp = "{}/.par_io_test".format(os.getcwd())
+    par_test_base_tmp = "{}/.par_io_test".format(pytest.temp_directory)
     io_util.get_directory(par_test_base_tmp)
 
     # Define a finalizer function for teardown
@@ -38,7 +38,7 @@ def par_test_base_tmp(request):
 
 @pytest.fixture
 def hdf_test_base_tmp(request):
-    hdf_test_base_tmp = "{}/.hdf_test".format(os.getcwd())
+    hdf_test_base_tmp = "{}/.hdf_test".format(pytest.temp_directory)
     io_util.get_directory(hdf_test_base_tmp)
 
     with open("{}/not-a-file_LOCALE0000".format(hdf_test_base_tmp), "w"):
@@ -56,7 +56,7 @@ def hdf_test_base_tmp(request):
 
 @pytest.fixture
 def csv_test_base_tmp(request):
-    csv_test_base_tmp = "{}/.csv_test".format(os.getcwd())
+    csv_test_base_tmp = "{}/.csv_test".format(pytest.temp_directory)
     io_util.get_directory(csv_test_base_tmp)
 
     # Define a finalizer function for teardown
@@ -71,7 +71,7 @@ def csv_test_base_tmp(request):
 
 @pytest.fixture
 def zarr_test_base_tmp(request):
-    zarr_test_base_tmp = "{}/.zarr_test".format(os.getcwd())
+    zarr_test_base_tmp = "{}/.zarr_test".format(pytest.temp_directory)
     io_util.get_directory(zarr_test_base_tmp)
 
     # Define a finalizer function for teardown
@@ -86,7 +86,7 @@ def zarr_test_base_tmp(request):
 
 @pytest.fixture
 def import_export_base_tmp(request):
-    import_export_base_tmp = "{}/import_export_test".format(os.getcwd())
+    import_export_base_tmp = "{}/import_export_test".format(pytest.temp_directory)
     io_util.get_directory(import_export_base_tmp)
 
     # Define a finalizer function for teardown

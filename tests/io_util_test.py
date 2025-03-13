@@ -1,5 +1,6 @@
 import os
 import tempfile
+import pytest
 
 from arkouda import io_util
 
@@ -7,7 +8,7 @@ from arkouda import io_util
 class TestIOUtil:
     @classmethod
     def setup_class(cls):
-        cls.io_test_dir_base = f"{os.getcwd()}/io_test_dir"
+        cls.io_test_dir_base = f"{pytest.temp_directory}/io_test_dir"
         io_util.get_directory(cls.io_test_dir_base)
 
     def test_write_line_to_file(self):
@@ -28,7 +29,7 @@ class TestIOUtil:
             assert "6ky3i91l17" == values["127.0.0.1:5556"]
 
     def test_delete_directory(self):
-        path = "{}/test_dir".format(os.getcwd())
+        path = f"{pytest.temp_directory}/test_dir"
         io_util.get_directory(path)
 
         from os.path import isdir
