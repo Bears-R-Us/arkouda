@@ -1,4 +1,3 @@
-import os
 import tempfile
 from logging import DEBUG, INFO, WARN, FileHandler, StreamHandler
 
