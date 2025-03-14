@@ -5,7 +5,7 @@ from pandas.testing import assert_frame_equal as pd_assert_frame_equal
 from pandas.testing import assert_series_equal as pd_assert_series_equal
 
 import arkouda as ak
-from arkouda.series import Series
+from arkouda.pandas.series import Series
 from arkouda.testing import assert_series_equal as ak_assert_series_equal
 
 DTYPES = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint, ak.str_]
