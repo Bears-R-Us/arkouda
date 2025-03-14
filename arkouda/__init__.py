@@ -13,8 +13,6 @@ from arkouda.join import *
 from arkouda.categorical import *
 from arkouda.logger import *
 from arkouda.infoclass import *
-from arkouda.sparrayclass import *
-from arkouda.sparsematrix import *
 from arkouda.dataframe import *
 from arkouda.row import *
 from arkouda.index import *

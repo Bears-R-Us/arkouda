@@ -92,7 +92,7 @@ autoapi_ignore = [
     "*arkouda/numpy/_manipulation_functions.py",
     "*arkouda/numpy/_numeric.py",
     "*arkouda/numpy/_utils.py",
-    "*arkouda/scipy/*py",
+    "*arkouda/scipy/_stats_py.py",
     "*arkouda/scipy/stats/*py",
     "*arkouda/scipy/special/*py",
 ]
