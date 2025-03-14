@@ -9,7 +9,7 @@ from warnings import warn
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.groupbyclass import GroupBy, broadcast

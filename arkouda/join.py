@@ -4,7 +4,7 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.alignment import right_align
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.numpy import cumsum

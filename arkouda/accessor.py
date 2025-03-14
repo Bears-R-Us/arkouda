@@ -1,4 +1,4 @@
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime
 

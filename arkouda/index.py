@@ -739,7 +739,7 @@ class Index:
         """
         from typing import cast as typecast
 
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
         from arkouda.io import _file_type_to_int, _mode_str_to_int
 
@@ -827,7 +827,7 @@ class Index:
         - Because HDF5 deletes do not release memory, this will create a copy of the
           file with the new data
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
         from arkouda.io import (
             _file_type_to_int,
@@ -1482,7 +1482,7 @@ class MultiIndex(Index):
         """
         from typing import cast as typecast
 
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
         from arkouda.io import _file_type_to_int, _mode_str_to_int
 
@@ -1562,7 +1562,7 @@ class MultiIndex(Index):
         - Because HDF5 deletes do not release memory, this will create a copy of the
           file with the new data
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
         from arkouda.io import (
             _file_type_to_int,

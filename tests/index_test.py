@@ -210,7 +210,7 @@ class TestIndex:
         i3 = ak.Index(["a", "b", "c"], allow_list=True)
         assert i3.inferred_type == "string"
 
-        from arkouda.categorical import Categorical
+        from arkouda.pandas.categorical import Categorical
 
         i4 = ak.Index(Categorical(ak.array(["a", "b", "c"])))
         assert i4.inferred_type == "categorical"

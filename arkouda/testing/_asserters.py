@@ -748,7 +748,7 @@ def assert_arkouda_array_equal(
 
     Parameters
     ----------
-    left, right : arkouda.pdarray or arkouda.numpy.Strings or arkouda.Categorical or
+    left, right : arkouda.pdarray or arkouda.numpy.Strings or arkouda.pandas.Categorical or
     arkouda.numpy.SegArray
         The two arrays to be compared.
     check_dtype : bool, default True

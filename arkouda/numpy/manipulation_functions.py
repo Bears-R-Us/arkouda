@@ -4,7 +4,7 @@ from typing import Optional, Sequence, Tuple, Union, cast
 
 from typeguard import typechecked
 
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.numpy.dtypes import bool_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray

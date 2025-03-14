@@ -4,7 +4,12 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+<<<<<<< HEAD
 from arkouda.categorical import Categorical
+=======
+import numpy as np
+from arkouda.pandas.categorical import Categorical
+>>>>>>> 0624204b5 (categorical reorg)
 from arkouda.testing import assert_arkouda_array_equivalent, assert_equal
 
 seed = pytest.seed

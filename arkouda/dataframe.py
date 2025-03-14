@@ -15,7 +15,7 @@ from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
 from typeguard import typechecked
 
 from arkouda import sort as aksort
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
@@ -3136,7 +3136,7 @@ class DataFrame(UserDict):
         RuntimeError
             Raised if a server-side error is thrown saving the pdarray
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.io import _file_type_to_int, _mode_str_to_int
 
         column_data = [
@@ -5236,7 +5236,7 @@ class DataFrame(UserDict):
 
 
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -5529,7 +5529,7 @@ class DataFrame(UserDict):
         arkouda.dataframe.DataFrame
 
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
 
         data = json.loads(rep_msg)
         idx = None

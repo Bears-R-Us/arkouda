@@ -148,6 +148,7 @@ def main():
     import arkouda.dataframe as akDataframe
     import arkouda.groupbyclass as akGroupbyclass
     import arkouda.numpy as aknp
+    import arkouda.pandas as akpd
     import arkouda.scipy as akscipy
     import arkouda.scipy.special as akscipySpecial
     import arkouda.scipy.stats as akscipyStats
@@ -166,13 +167,8 @@ def main():
     write_stub(akDataframe, "arkouda/dataframe.pyi", all_only=True, allow_arkouda=True)
     write_stub(akGroupbyclass, "arkouda/groupbyclass.pyi", all_only=True, allow_arkouda=True)
     write_stub(akSeries, "arkouda/series.pyi", all_only=True, allow_arkouda=True)
-    write_stub(
-        aknp.pdarrayclass,
-        "arkouda/numpy/pdarrayclass.pyi",
-        all_only=True,
-        allow_arkouda=True,
-    )
-
+    write_stub(aknp.pdarrayclass, "arkouda/numpy/pdarrayclass.pyi", all_only=True, allow_arkouda=True)
+    write_stub(akpd.categorical, "arkouda/pandas/categorical.pyi", all_only=True, allow_arkouda=True)
 
 if __name__ == "__main__":
     main()

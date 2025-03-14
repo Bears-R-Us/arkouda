@@ -9,7 +9,7 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 
 from arkouda import Strings, io, io_util
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 
 
 class CategoricalTest(ArkoudaTest):

@@ -4,7 +4,7 @@ from warnings import warn
 
 import numpy as np
 
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.groupbyclass import GroupBy, broadcast, unique
 from arkouda.numpy import cumsum, where
