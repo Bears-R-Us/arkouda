@@ -36,7 +36,7 @@ from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, full, z
 from arkouda.numpy.pdarraysetops import concatenate, in1d, intersect1d
 from arkouda.pandas.row import Row
 from arkouda.numpy.segarray import SegArray
-from arkouda.series import Series
+from arkouda.pandas.series import Series
 from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
@@ -211,13 +211,13 @@ class DataFrameGroupBy:
 
         as_series : bool, default=None
             Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
-            arkouda.series.Series (if as_series = True)
+            arkouda.pandas.series.Series (if as_series = True)
         sort_index : bool, default=True
             If True, results will be returned with index values sorted in ascending order.
 
         Returns
         -------
-        arkouda.dataframe.DataFrame or arkouda.series.Series
+        arkouda.dataframe.DataFrame or arkouda.pandas.series.Series
 
         Examples
         --------
@@ -659,7 +659,7 @@ class DataFrameGroupBy:
 
         Returns
         -------
-        arkouda.series.Series
+        arkouda.pandas.series.Series
             A Series with the Index of the original frame and the values of the broadcast.
 
         Examples
@@ -719,7 +719,7 @@ class DiffAggregate:
     ----------
     gb : arkouda.groupbyclass.GroupBy
         GroupBy object, where the aggregation keys are values of column(s) of a dataframe.
-    values : arkouda.series.Series.
+    values : arkouda.pandas.series.Series.
         A column to compute the difference on.
     """
 
@@ -1711,7 +1711,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        dtypes :  arkouda.row.Row
+        dtypes :  arkouda.pandas.row.Row
             The dtypes of the dataframe.
 
         Examples
@@ -2744,7 +2744,7 @@ class DataFrame(UserDict):
         arkouda.numpy.pdarrayclass.nbytes
         arkouda.index.Index.memory_usage
         arkouda.index.MultiIndex.memory_usage
-        arkouda.series.Series.memory_usage
+        arkouda.pandas.series.Series.memory_usage
 
         Examples
         --------
@@ -4378,7 +4378,7 @@ class DataFrame(UserDict):
 
         Returns
         _______
-        arkouda.series.Series
+        arkouda.pandas.series.Series
             For each column/row the number of non-NA/null entries.
 
         Raises
@@ -4843,7 +4843,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.series.Series or bool
+        arkouda.pandas.series.Series or bool
 
         Raises
         ------
@@ -4941,7 +4941,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.series.Series or bool
+        arkouda.pandas.series.Series or bool
 
         Raises
         ------

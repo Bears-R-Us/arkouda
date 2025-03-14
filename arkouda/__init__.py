@@ -17,7 +17,6 @@ from arkouda.sparrayclass import *
 from arkouda.sparsematrix import *
 from arkouda.dataframe import *
 from arkouda.index import *
-from arkouda.series import *
 from arkouda.alignment import *
 from arkouda.plotting import *
 from arkouda.accessor import *
