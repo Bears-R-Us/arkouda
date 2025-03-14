@@ -435,7 +435,7 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
     >>> ak.search_intervals(bi_vals, (bi_starts, bi_ends))
     array([0 0 0 0 1 1 1 -1])
     """
-    from arkouda.join import gen_ranges
+    from arkouda.pandas.join import gen_ranges
 
     if len(intervals) != 2:
         raise ValueError("intervals must be 2-tuple of (lower_bound_inclusive, upper_bounds_inclusive)")

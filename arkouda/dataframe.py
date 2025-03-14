@@ -22,7 +22,7 @@ from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index, MultiIndex
-from arkouda.join import inner_join
+from arkouda.pandas.join import inner_join
 from arkouda.numpy import cast as akcast
 from arkouda.numpy import cumsum, where
 from arkouda.numpy.dtypes import _is_dtype_in_union, bigint
@@ -34,7 +34,7 @@ from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, full, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d, intersect1d
-from arkouda.row import Row
+from arkouda.pandas.row import Row
 from arkouda.numpy.segarray import SegArray
 from arkouda.series import Series
 from arkouda.numpy.sorting import argsort, coargsort
