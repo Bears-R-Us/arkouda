@@ -24,17 +24,18 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange
 from arkouda.numpy.pdarraysetops import unique
-from arkouda.numpy.segarray import SegArray
 from arkouda.numpy.sorting import coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
 
 if TYPE_CHECKING:
     from arkouda.index import Index
-    from arkouda.series import Series
+    from arkouda.numpy.segarray import SegArray
+    from arkouda.pandas.series import Series
 else:
     Index = TypeVar("Index")
     Series = TypeVar("Series")
+    SegArray = TypeVar("SegArray")
 
 
 def identity(x):
@@ -202,7 +203,8 @@ def attach(name: str):
     from arkouda.dataframe import DataFrame
     from arkouda.index import Index, MultiIndex
     from arkouda.numpy.pdarrayclass import pdarray
-    from arkouda.series import Series
+    from arkouda.numpy.segarray import SegArray
+    from arkouda.pandas.series import Series
 
     rep_msg = json.loads(cast(str, generic_msg(cmd="attach", args={"name": name})))
     rtn_obj = None
@@ -471,7 +473,7 @@ def is_numeric(arry: Union[pdarray, Strings, Categorical, Series, Index]) -> bui
 
     """
     from arkouda.index import Index
-    from arkouda.series import Series
+    from arkouda.pandas.series import Series
 
     if isinstance(arry, (pdarray, Series, Index)):
         return _is_dtype_in_union(dtype(arry.dtype), numeric_scalars)
@@ -505,7 +507,7 @@ def is_float(arry: Union[pdarray, Strings, Categorical, Series, Index]) -> built
 
     """
     from arkouda.index import Index
-    from arkouda.series import Series
+    from arkouda.pandas.series import Series
 
     if isinstance(arry, (pdarray, Series, Index)):
         return _is_dtype_in_union(dtype(arry.dtype), float_scalars)
@@ -539,7 +541,7 @@ def is_int(arry: Union[pdarray, Strings, Categorical, Series, Index]) -> builtin
 
     """
     from arkouda.index import Index
-    from arkouda.series import Series
+    from arkouda.pandas.series import Series
 
     if isinstance(arry, (pdarray, Series, Index)):
         return _is_dtype_in_union(dtype(arry.dtype), int_scalars)

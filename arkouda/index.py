@@ -10,7 +10,7 @@ from numpy import array as ndarray
 from numpy import dtype as npdtype
 from typeguard import typechecked
 
-from arkouda import Categorical, Strings
+from arkouda.categorical import Categorical
 from arkouda.groupbyclass import GroupBy, unique
 from arkouda.numpy import cast as akcast
 from arkouda.numpy.dtypes import bool_ as akbool
@@ -21,10 +21,11 @@ from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, ones
 from arkouda.numpy.pdarraysetops import argsort, in1d
 from arkouda.numpy.sorting import coargsort
+from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import convert_if_categorical, generic_concat, get_callback
 
 if TYPE_CHECKING:
-    from arkouda.series import Series
+    from arkouda.pandas.series import Series
 
 
 class Index:
@@ -136,7 +137,7 @@ class Index:
             raise TypeError(f"Unable to create Index from type {type(values)}")
 
     def __getitem__(self, key):
-        from arkouda.series import Series
+        from arkouda.pandas.series import Series
 
         allow_list = False
         if isinstance(self.values, list):
@@ -389,7 +390,7 @@ class Index:
         --------
         arkouda.numpy.pdarrayclass.nbytes
         arkouda.index.MultiIndex.memory_usage
-        arkouda.series.Series.memory_usage
+        arkouda.pandas.series.Series.memory_usage
         arkouda.dataframe.DataFrame.memory_usage
 
         Examples
@@ -652,7 +653,7 @@ class Index:
         Raises
         ------
         TypeError
-            Raised if arg is not of type dict or arkouda.Series.
+            Raised if arg is not of type dict or arkouda.pandas.Series.
             Raised if index values not of type pdarray, Categorical, or Strings.
 
         Examples
@@ -1134,7 +1135,7 @@ class MultiIndex(Index):
             self._names = [None for _i in range(len(self.levels))]
 
     def __getitem__(self, key):
-        from arkouda.series import Series
+        from arkouda.pandas.series import Series
 
         if isinstance(key, Series):
             key = key.levels
@@ -1261,7 +1262,7 @@ class MultiIndex(Index):
         --------
         arkouda.numpy.pdarrayclass.nbytes
         arkouda.index.Index.memory_usage
-        arkouda.series.Series.memory_usage
+        arkouda.pandas.series.Series.memory_usage
         arkouda.dataframe.DataFrame.memory_usage
 
         Examples

@@ -10,7 +10,6 @@ import numpy as np
 
 from arkouda.client import generic_msg
 from arkouda.groupbyclass import GroupBy, broadcast
-from arkouda.join import gen_ranges
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy import cumsum
 from arkouda.numpy.dtypes import bool_ as akbool
@@ -26,6 +25,7 @@ from arkouda.numpy.pdarrayclass import (
 from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate
 from arkouda.numpy.strings import Strings
+from arkouda.pandas.join import gen_ranges
 
 SEG_SUFFIX = "_segments"
 VAL_SUFFIX = "_values"

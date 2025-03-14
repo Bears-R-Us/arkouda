@@ -5,7 +5,17 @@ import os
 import random
 from collections import UserDict
 from functools import reduce
-from typing import Callable, Dict, List, Optional, Tuple, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 from warnings import warn
 
 import numpy as np  # type: ignore
@@ -14,7 +24,6 @@ from numpy import ndarray
 from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
 from typeguard import typechecked
 
-from arkouda import sort as aksort
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
@@ -22,7 +31,6 @@ from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index, MultiIndex
-from arkouda.join import inner_join
 from arkouda.numpy import cast as akcast
 from arkouda.numpy import cumsum, where
 from arkouda.numpy.dtypes import _is_dtype_in_union, bigint
@@ -34,12 +42,19 @@ from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, full, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d, intersect1d
-from arkouda.numpy.segarray import SegArray
+from arkouda.numpy.sorting import sort as aksort
+from arkouda.pandas.join import inner_join
+from arkouda.pandas.row import Row
+
+if TYPE_CHECKING:
+    from arkouda.numpy.segarray import SegArray
+    from arkouda.pandas.series import Series
+else:
+    Series = TypeVar("Series")
+    SegArray = TypeVar("SegArray")
 from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
-from arkouda.row import Row
-from arkouda.series import Series
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -210,13 +225,13 @@ class DataFrameGroupBy:
 
         as_series : bool, default=None
             Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
-            arkouda.series.Series (if as_series = True)
+            arkouda.pandas.series.Series (if as_series = True)
         sort_index : bool, default=True
             If True, results will be returned with index values sorted in ascending order.
 
         Returns
         -------
-        arkouda.dataframe.DataFrame or arkouda.series.Series
+        arkouda.dataframe.DataFrame or arkouda.pandas.series.Series
 
         Examples
         --------
@@ -526,6 +541,8 @@ class DataFrameGroupBy:
         ]
 
     def _return_agg_series(self, values, sort_index=True):
+        from arkouda.pandas.series import Series
+
         if self.as_index is True:
             if isinstance(self.gb_key_names, str):
                 # handle when values is a tuple/list containing data and index
@@ -562,6 +579,8 @@ class DataFrameGroupBy:
         return series
 
     def _return_agg_dataframe(self, values, name, sort_index=True):
+        from arkouda.pandas.series import Series
+
         if isinstance(self.gb_key_names, str):
             if self.as_index is True:
                 df = DataFrame(
@@ -658,7 +677,7 @@ class DataFrameGroupBy:
 
         Returns
         -------
-        arkouda.series.Series
+        arkouda.pandas.series.Series
             A Series with the Index of the original frame and the values of the broadcast.
 
         Examples
@@ -700,6 +719,7 @@ class DataFrameGroupBy:
         +----+-----+-----+-----+
 
         """
+        from arkouda.pandas.series import Series
 
         if isinstance(x, Series):
             data = self.gb.broadcast(x.values, permute=permute)
@@ -718,7 +738,7 @@ class DiffAggregate:
     ----------
     gb : arkouda.groupbyclass.GroupBy
         GroupBy object, where the aggregation keys are values of column(s) of a dataframe.
-    values : arkouda.series.Series.
+    values : arkouda.pandas.series.Series.
         A column to compute the difference on.
     """
 
@@ -902,6 +922,10 @@ class DataFrame(UserDict):
         super().__init__()
         self.registered_name = None
 
+        from arkouda.numpy.segarray import SegArray
+
+        self._COLUMN_CLASSES = (pdarray, Strings, Categorical, SegArray)
+
         if isinstance(initialdata, DataFrame):
             # Copy constructor
             self._nrows = initialdata._nrows
@@ -1015,6 +1039,8 @@ class DataFrame(UserDict):
             self.update_nrows()
 
     def __getattr__(self, key):
+        from arkouda.pandas.series import Series
+
         if key not in self.columns.values:
             raise AttributeError(f"Attribute {key} not found")
         # Should this be cached?
@@ -1037,6 +1063,8 @@ class DataFrame(UserDict):
         self.update_nrows()
 
     def __getitem__(self, key):
+        from arkouda.pandas.series import Series
+
         # convert series to underlying values
         # Should check for index alignment
         if isinstance(key, Series):
@@ -1097,6 +1125,8 @@ class DataFrame(UserDict):
             raise IndexError("Invalid selector: unknown error.")
 
     def __setitem__(self, key, value):
+        from arkouda.pandas.series import Series
+
         self.update_nrows()
 
         # If this is the first column added, we must create an index column.
@@ -1224,6 +1254,8 @@ class DataFrame(UserDict):
         return newdf.to_pandas(retain_index=True)
 
     def _get_head_tail_server(self):
+        from arkouda.numpy.segarray import SegArray
+
         if self._empty:
             return pd.DataFrame()
         self.update_nrows()
@@ -1710,7 +1742,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        dtypes :  arkouda.row.Row
+        dtypes :  arkouda.pandas.row.Row
             The dtypes of the dataframe.
 
         Examples
@@ -1740,6 +1772,8 @@ class DataFrame(UserDict):
         +----+--------+
 
         """
+        from arkouda.numpy.segarray import SegArray
+
         dtypes = []
         keys = []
         for key, val in self.items():
@@ -2743,7 +2777,7 @@ class DataFrame(UserDict):
         arkouda.numpy.pdarrayclass.nbytes
         arkouda.index.Index.memory_usage
         arkouda.index.MultiIndex.memory_usage
-        arkouda.series.Series.memory_usage
+        arkouda.pandas.series.Series.memory_usage
 
         Examples
         --------
@@ -2814,6 +2848,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.numpy.util import convert_bytes
+        from arkouda.pandas.series import Series
 
         if index:
             sizes = [self.index.memory_usage(unit=unit)]
@@ -2914,6 +2949,7 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
+        from arkouda.numpy.segarray import SegArray
 
         self.update_nrows()
 
@@ -3138,6 +3174,7 @@ class DataFrame(UserDict):
         """
         from arkouda.categorical import Categorical as Categorical_
         from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.numpy.segarray import SegArray
 
         column_data = [
             (
@@ -4312,6 +4349,8 @@ class DataFrame(UserDict):
         +----+---------+---------+
 
         """
+        from arkouda.pandas.series import Series
+
         if isinstance(values, pdarray):
             # flatten the DataFrame so single in1d can be used.
             flat_in1d = in1d(concatenate(list(self.data.values())), values)
@@ -4377,7 +4416,7 @@ class DataFrame(UserDict):
 
         Returns
         _______
-        arkouda.series.Series
+        arkouda.pandas.series.Series
             For each column/row the number of non-NA/null entries.
 
         Raises
@@ -4442,6 +4481,7 @@ class DataFrame(UserDict):
         """
         from arkouda import full, isnan
         from arkouda.numpy.util import is_numeric
+        from arkouda.pandas.series import Series
 
         if (isinstance(axis, int) and axis == 0) or (isinstance(axis, str) and axis == "index"):
             index_values_list = []
@@ -4842,7 +4882,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.series.Series or bool
+        arkouda.pandas.series.Series or bool
 
         Raises
         ------
@@ -4886,6 +4926,7 @@ class DataFrame(UserDict):
         """
         from arkouda import any as akany
         from arkouda import array, full
+        from arkouda.pandas.series import Series
 
         if self.empty:
             if axis is None:
@@ -4940,7 +4981,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.series.Series or bool
+        arkouda.pandas.series.Series or bool
 
         Raises
         ------
@@ -4983,6 +5024,7 @@ class DataFrame(UserDict):
         """
         from arkouda import all as akall
         from arkouda import array, full
+        from arkouda.pandas.series import Series
 
         if self.empty:
             if axis is None:
@@ -5136,6 +5178,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda import all as akall
+        from arkouda.pandas.series import Series
 
         if (how is not None) and (thresh is not None):
             raise TypeError("You cannot set both the how and thresh arguments at the same time.")
@@ -5237,6 +5280,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.categorical import Categorical as Categorical_
+        from arkouda.numpy.segarray import SegArray
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -5530,6 +5574,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.categorical import Categorical as Categorical_
+        from arkouda.numpy.segarray import SegArray
 
         data = json.loads(rep_msg)
         idx = None

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import operator
-from typing import List, Literal, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, TypeVar, Union, cast
 
 import numpy as np
 import pandas as pd
@@ -27,7 +27,11 @@ from arkouda.numpy.pdarrayclass import (
 )
 from arkouda.numpy.pdarraycreation import arange, array, full, zeros
 from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
-from arkouda.numpy.segarray import SegArray
+
+if TYPE_CHECKING:
+    from arkouda.numpy.segarray import SegArray
+else:
+    SegArray = TypeVar("SegArray")
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import get_callback, is_float
 
@@ -772,6 +776,8 @@ class Series:
     def to_pandas(self) -> pd.Series:
         """Convert the series to a local PANDAS series"""
         import copy
+
+        from arkouda.numpy.segarray import SegArray
 
         idx = self.index.to_pandas()
 

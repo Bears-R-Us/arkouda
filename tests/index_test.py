@@ -4,6 +4,7 @@ import tempfile
 
 import pandas as pd
 import pytest
+from numpy import dtype as npdtype
 from pandas import Categorical as pd_Categorical
 from pandas import Index as pd_Index
 from pandas.testing import assert_index_equal as pd_assert_index_equal
@@ -198,7 +199,7 @@ class TestIndex:
         assert i.dtype == dtype("float64")
 
         m = ak.MultiIndex([ak.arange(size), ak.arange(size) * -1])
-        assert m.dtype == dtype("O")
+        assert m.dtype == npdtype("O")
 
     def test_inferred_type(self):
         i = ak.Index([1, 2, 3])
@@ -327,12 +328,7 @@ class TestIndex:
         assert m.equal_levels(m2)
 
         m3 = ak.MultiIndex(
-            [
-                ak.arange(3),
-                ak.arange(3) * -1,
-                ak.array(["a", "b", "c"]),
-                2 * ak.arange(3),
-            ],
+            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", "b", "c"]), 2 * ak.arange(3)],
             names=["col1", "col2", "col3"],
         )
 
