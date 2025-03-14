@@ -11,7 +11,7 @@ from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64
 from arkouda.numpy.dtypes.dtypes import NumericDTypes
 from arkouda.numpy.pdarrayclass import pdarray
-from arkouda.sparrayclass import create_sparray, sparray
+from arkouda.scipy.sparrayclass import create_sparray, sparray
 
 __all__ = ["random_sparse_matrix", "sparse_matrix_matrix_mult", "create_sparse_matrix"]
 
