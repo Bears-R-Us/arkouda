@@ -54,7 +54,9 @@ __all__ = [
 
 
 @typechecked
-def from_series(series: pd.Series, dtype: Optional[Union[type, str]] = None) -> Union[pdarray, Strings]:
+def from_series(
+    series: pd.Series, dtype: Optional[Union[type, str]] = None
+) -> Union[pdarray, Strings]:
     """
     Converts a Pandas Series to an Arkouda pdarray or Strings object. If
     dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
@@ -223,7 +225,9 @@ def array(
             if dtype is not None and dtype != bigint:
                 # if the user specified dtype, use that dtype
                 a = np.array(a, dtype=dtype)
-            elif all(isSupportedInt(i) for i in a) and any(2**64 > i > 2**63 for i in a):
+            elif all(isSupportedInt(i) for i in a) and any(
+                2**64 > i > 2**63 for i in a
+            ):
                 # all supportedInt values but some >2**63, default to uint (see #1297)
                 # iterating shouldn't be too expensive since
                 # this is after the `isinstance(a, pdarray)` check
@@ -232,7 +236,9 @@ def array(
                 # let numpy decide the type
                 a = np.array(a)
         except (RuntimeError, TypeError, ValueError):
-            raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
+            raise TypeError(
+                "a must be a pdarray, np.ndarray, or convertible to a numpy array"
+            )
 
     # Return multi-dimensional pdarray if a.ndim <= get_max_array_rank()
     # otherwise raise an error
@@ -241,13 +247,20 @@ def array(
         raise TypeError("Must be an iterable or have a numeric DType")
 
     if a.ndim not in get_array_ranks():
-        raise ValueError(f"array rank {a.ndim} not in compiled ranks {get_array_ranks()}")
+        raise ValueError(
+            f"array rank {a.ndim} not in compiled ranks {get_array_ranks()}"
+        )
 
     # Check if array of strings
     # if a.dtype == numpy.object_ need to check first element
     if "U" in a.dtype.kind or (a.dtype == np.object_ and isinstance(a[0], str)):
         # encode each string and add a null byte terminator
-        encoded = [i for i in itertools.chain.from_iterable(map(lambda x: x.encode() + b"\x00", a))]
+        encoded = [
+            i
+            for i in itertools.chain.from_iterable(
+                map(lambda x: x.encode() + b"\x00", a)
+            )
+        ]
         nbytes = len(encoded)
         if nbytes > maxTransferBytes:
             raise RuntimeError(
@@ -277,7 +290,11 @@ def array(
             # attempt to break bigint into multiple uint64 arrays
             uint_arrays: List[Union[pdarray, Strings]] = []
             # early out if we would have more uint arrays than can fit in max_bits
-            early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
+            early_out = (
+                (max_bits // 64) + (max_bits % 64 != 0)
+                if max_bits != -1
+                else float("inf")
+            )
             while any(a != 0) and len(uint_arrays) < early_out:
                 low, a = a % 2**64, a // 2**64
                 uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
@@ -306,11 +323,19 @@ def array(
         aview = _array_memview(a_)
         rep_msg = generic_msg(
             cmd=f"array<{a_.dtype.name},{ndim}>",
-            args={"dtype": a_.dtype.name, "shape": tuple(a_.shape), "seg_string": False},
+            args={
+                "dtype": a_.dtype.name,
+                "shape": tuple(a_.shape),
+                "seg_string": False,
+            },
             payload=aview,
             send_binary=True,
         )
-        return create_pdarray(rep_msg) if dtype is None else akcast(create_pdarray(rep_msg), dtype)
+        return (
+            create_pdarray(rep_msg)
+            if dtype is None
+            else akcast(create_pdarray(rep_msg), dtype)
+        )
 
 
 @typechecked
@@ -496,7 +521,9 @@ def zeros(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
 
-    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
+    from arkouda.numpy.util import (
+        _infer_shape_from_size,
+    )  # placed here to avoid circ import
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
@@ -508,7 +535,22 @@ def zeros(
 
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
-    return create_pdarray(repMsg, max_bits=max_bits)
+    # the code below is meant as a temporary workaround to the problem of crashes
+    # when using max_bits with ak.zeros, ak.ones and ak.full
+    # the crash happens if max_bits is included in the create_pdarray arguments,
+    # and also happens if tmp.max_bits is set rather than tmp._max_bits.
+    # this may be related to Issue #4175
+
+    if max_bits is None:
+        return create_pdarray(repMsg)
+    else:
+        tmp = create_pdarray(repMsg)
+        tmp._max_bits = max_bits
+        return tmp
+
+    # the line below was the original code
+
+    # return create_pdarray(repMsg, max_bits=max_bits)
 
 
 @typechecked
@@ -631,7 +673,9 @@ def full(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
+    from arkouda.numpy.util import (
+        _infer_shape_from_size,
+    )  # placed here to avoid circ import
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
@@ -643,12 +687,23 @@ def full(
 
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
+    # the code below is meant as a temporary workaround to the problem of crashes
+    # when using max_bits with ak.zeros, ak.ones and ak.full
+    # the crash happens if max_bits is included in the create_pdarray arguments,
+    # and also happens if a.max_bits is set rather than a._max_bits.
+    # this may be related to Issue #4175
+
     a = create_pdarray(repMsg)
+    if max_bits is not None:
+        a._max_bits = max_bits
     a.fill(fill_value)
 
-    if max_bits:
-        a.max_bits = max_bits
     return a
+
+    # this was the original code
+    # a = create_pdarray(repMsg, max_bits=max_bits)
+    # a.fill(fill_value)
+    # return a
 
 
 @typechecked
@@ -715,7 +770,9 @@ def _full_string(
     Strings
         array of the requested size and dtype filled with fill_value
     """
-    repMsg = generic_msg(cmd="segmentedFull", args={"size": size, "fill_value": fill_value})
+    repMsg = generic_msg(
+        cmd="segmentedFull", args={"size": size, "fill_value": fill_value}
+    )
     return Strings.from_return_msg(cast(str, repMsg))
 
 
@@ -964,7 +1021,8 @@ def arange(*args, **kwargs) -> pdarray:
         if stride < 0:
             stop = stop + 2
         repMsg = generic_msg(
-            cmd="arange", args={"start": start, "stop": stop, "stride": stride, "dtype": arg_dtype}
+            cmd="arange",
+            args={"start": start, "stop": stop, "stride": stride, "dtype": arg_dtype},
         )
         return cast(
             pdarray,
@@ -981,7 +1039,9 @@ def arange(*args, **kwargs) -> pdarray:
 
 
 @typechecked
-def linspace(start: numeric_scalars, stop: numeric_scalars, length: int_scalars) -> pdarray:
+def linspace(
+    start: numeric_scalars, stop: numeric_scalars, length: int_scalars
+) -> pdarray:
     """
     Create a pdarray of linearly-spaced floats in a closed interval.
 
@@ -1025,10 +1085,14 @@ def linspace(start: numeric_scalars, stop: numeric_scalars, length: int_scalars)
     array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000])
     """
     if not isSupportedNumber(start) or not isSupportedNumber(stop):
-        raise TypeError("both start and stop must be an int, np.int64, float, or np.float64")
+        raise TypeError(
+            "both start and stop must be an int, np.int64, float, or np.float64"
+        )
     if not isSupportedNumber(length):
         raise TypeError("length must be an int or int64")
-    repMsg = generic_msg(cmd="linspace", args={"start": start, "stop": stop, "len": length})
+    repMsg = generic_msg(
+        cmd="linspace", args={"start": start, "stop": stop, "len": length}
+    )
     return create_pdarray(repMsg)
 
 
@@ -1147,7 +1211,9 @@ def uniform(
 
 
 @typechecked
-def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) -> pdarray:
+def standard_normal(
+    size: int_scalars, seed: Union[None, int_scalars] = None
+) -> pdarray:
     """
     Draw real numbers from the standard normal distribution.
 
@@ -1239,7 +1305,9 @@ def random_strings_uniform(
     array(['2 .z', 'aom', '2d|', 'o(', 'M'])
     """
     if minlen < 0 or maxlen <= minlen or size < 0:
-        raise ValueError("Incompatible arguments: minlen < 0, maxlen " + "<= minlen, or size < 0")
+        raise ValueError(
+            "Incompatible arguments: minlen < 0, maxlen " + "<= minlen, or size < 0"
+        )
 
     repMsg = generic_msg(
         cmd="randomStrings",
@@ -1313,7 +1381,9 @@ def random_strings_lognormal(
     array(['eL96<O', ')o-GOe lR', ')PV yHf(', '._b3Yc&K', ',7Wjef'])
     """
     if not isSupportedNumber(logmean) or not isSupportedNumber(logstd):
-        raise TypeError("both logmean and logstd must be an int, np.int64, float, or np.float64")
+        raise TypeError(
+            "both logmean and logstd must be an int, np.int64, float, or np.float64"
+        )
     if logstd <= 0 or size < 0:
         raise ValueError("Incompatible arguments: logstd <= 0 or size < 0")
 
