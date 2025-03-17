@@ -1,4 +1,3 @@
-import os
 import tempfile
 from logging import DEBUG, INFO, WARN, FileHandler, StreamHandler
 
@@ -10,7 +9,7 @@ from arkouda.logger import LogLevel, getArkoudaClientLogger, getArkoudaLogger
 
 
 class TestLogger:
-    logger_test_base_tmp = f"{os.getcwd()}/logger_io_test"
+    logger_test_base_tmp = f"{pytest.temp_directory}/logger_io_test"
     io_util.get_directory(logger_test_base_tmp)
 
     def test_log_level(self):
