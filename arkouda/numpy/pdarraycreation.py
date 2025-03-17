@@ -234,11 +234,29 @@ def array(
         except (RuntimeError, TypeError, ValueError):
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
 
-    # Return multi-dimensional pdarray if a.ndim <= get_max_array_rank()
-    # otherwise raise an error
+    if a.dtype == bigint or a.dtype.name not in DTypes or dtype == bigint:
+        # We need this array whether the number of dimensions is 1 or greater.
+        uint_arrays: List[Union[pdarray, Strings]] = []
+
+    if a.size != 0 and a.dtype == bigint and a.ndim in get_array_ranks() and a.ndim > 1:
+        sh = a.shape
+        try:
+            a = a.reshape(a.size)
+            # attempt to break bigint into multiple uint64 arrays
+            # early out if we would have more uint arrays than can fit in max_bits
+            early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
+            while (a != 0).any() and len(uint_arrays) < early_out:
+                low, a = a % 2**64, a // 2**64
+                uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
+            return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits).reshape(sh)
+        except TypeError:
+            raise RuntimeError(f"Unhandled dtype {a.dtype}")
 
     if a.ndim != 1 and a.dtype.name not in NumericDTypes:
         raise TypeError("Must be an iterable or have a numeric DType")
+
+    # Return multi-dimensional pdarray if a.ndim in get_array_ranks()
+    # otherwise raise an error
 
     if a.ndim not in get_array_ranks():
         raise ValueError(f"array rank {a.ndim} not in compiled ranks {get_array_ranks()}")
@@ -275,7 +293,6 @@ def array(
         # 2. too big to fit into other numpy types (dtype = object)
         try:
             # attempt to break bigint into multiple uint64 arrays
-            uint_arrays: List[Union[pdarray, Strings]] = []
             # early out if we would have more uint arrays than can fit in max_bits
             early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
             while any(a != 0) and len(uint_arrays) < early_out:
@@ -496,7 +513,9 @@ def zeros(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
 
-    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
+    from arkouda.numpy.util import (
+        _infer_shape_from_size,  # placed here to avoid circ import
+    )
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
@@ -631,7 +650,9 @@ def full(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
+    from arkouda.numpy.util import (
+        _infer_shape_from_size,  # placed here to avoid circ import
+    )
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
