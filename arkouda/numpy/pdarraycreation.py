@@ -497,6 +497,7 @@ def zeros(
 
     ValueError
         Raised if the rank of the given shape is not in get_array_ranks() or is empty
+        Raised if max_bits is not NONE and ndim does not equal 1
 
     See Also
     --------
@@ -533,24 +534,14 @@ def zeros(
     if isinstance(shape, tuple) and len(shape) == 0:
         raise ValueError("size () not currently supported in ak.zeros.")
 
+    if ndim != 1 and max_bits is not None:
+        raise ValueError(
+            f"max_bits is not currently supported for {ndim}D pdarrays in ak.zeros, ak.ones, ak.full."
+        )
+
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
-    # the code below is meant as a temporary workaround to the problem of crashes
-    # when using max_bits with ak.zeros, ak.ones and ak.full
-    # the crash happens if max_bits is included in the create_pdarray arguments,
-    # and also happens if tmp.max_bits is set rather than tmp._max_bits.
-    # this may be related to Issue #4175
-
-    if max_bits is None:
-        return create_pdarray(repMsg)
-    else:
-        tmp = create_pdarray(repMsg)
-        tmp._max_bits = max_bits
-        return tmp
-
-    # the line below was the original code
-
-    # return create_pdarray(repMsg, max_bits=max_bits)
+    return create_pdarray(repMsg, max_bits=max_bits)
 
 
 @typechecked
@@ -588,6 +579,7 @@ def ones(
 
     ValueError
         Raised if the rank of the given shape is not in get_array_ranks() or is empty
+        Raised if max_bits is not NONE and ndim does not equal 1
 
     See Also
     --------
@@ -648,6 +640,7 @@ def full(
 
     ValueError
         Raised if the rank of the given shape is not in get_array_ranks() or is empty
+        Raised if max_bits is not NONE and ndim does not equal 1
 
     See Also
     --------
@@ -685,25 +678,19 @@ def full(
     if isinstance(shape, tuple) and len(shape) == 0:
         raise ValueError("size () not currently supported in ak.full.")
 
+    if ndim != 1 and max_bits is not None:
+        raise ValueError(
+            f"max_bits is not currently supported for {ndim}D pdarrays in ak.zeros, ak.ones, ak.full."
+        )
+
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
-    # the code below is meant as a temporary workaround to the problem of crashes
-    # when using max_bits with ak.zeros, ak.ones and ak.full
-    # the crash happens if max_bits is included in the create_pdarray arguments,
-    # and also happens if a.max_bits is set rather than a._max_bits.
-    # this may be related to Issue #4175
-
     a = create_pdarray(repMsg)
-    if max_bits is not None:
-        a._max_bits = max_bits
     a.fill(fill_value)
 
+    if max_bits:
+        a.max_bits = max_bits
     return a
-
-    # this was the original code
-    # a = create_pdarray(repMsg, max_bits=max_bits)
-    # a.fill(fill_value)
-    # return a
 
 
 @typechecked
