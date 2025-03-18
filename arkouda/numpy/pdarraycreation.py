@@ -499,6 +499,7 @@ def zeros(
 
     ValueError
         Raised if the rank of the given shape is not in get_array_ranks() or is empty
+        Raised if max_bits is not NONE and ndim does not equal 1
 
     See Also
     --------
@@ -534,6 +535,11 @@ def zeros(
 
     if isinstance(shape, tuple) and len(shape) == 0:
         raise ValueError("size () not currently supported in ak.zeros.")
+
+    if ndim != 1 and max_bits is not None:
+        raise ValueError(
+            f"max_bits is not currently supported for {ndim}D pdarrays in ak.zeros, ak.ones, ak.full."
+        )
 
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
@@ -635,6 +641,7 @@ def full(
 
     ValueError
         Raised if the rank of the given shape is not in get_array_ranks() or is empty
+        Raised if max_bits is not NONE and ndim does not equal 1
 
     See Also
     --------
@@ -671,6 +678,11 @@ def full(
 
     if isinstance(shape, tuple) and len(shape) == 0:
         raise ValueError("size () not currently supported in ak.full.")
+
+    if ndim != 1 and max_bits is not None:
+        raise ValueError(
+            f"max_bits is not currently supported for {ndim}D pdarrays in ak.zeros, ak.ones, ak.full."
+        )
 
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
