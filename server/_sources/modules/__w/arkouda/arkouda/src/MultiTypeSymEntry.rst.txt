@@ -116,7 +116,7 @@ or
       * :returns: s (string) containing the array data
       
 
-.. function:: proc toSymEntry(gse: borrowed GenSymEntry, type etype, param dimensions = 1)
+.. function:: proc toSymEntry(gse: borrowed GenSymEntry, type etype, param dimensions = 1) throws
 
    Casts a GenSymEntry to the specified type and returns it.
    
@@ -155,7 +155,7 @@ or
 
    .. method:: override proc getSizeEstimate(): int
 
-   .. method:: proc toSymEntry(type etype, param dimensions = 1)
+   .. method:: proc toSymEntry(type etype, param dimensions = 1) throws
 
       Cast this `GenSymEntry` to `borrowed SymEntry(etype)`
       
