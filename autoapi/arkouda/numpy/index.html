@@ -14339,22 +14339,21 @@ the original order</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – Raised if arrays is empty or if 1..n pdarrays have
-differing dtypes</p></li>
+<li><p><strong>ValueError</strong> – Raised if arrays is empty or if pdarrays have differing dtypes</p></li>
 <li><p><strong>TypeError</strong> – Raised if arrays is not a pdarrays or Strings python Sequence such as a
 list or tuple</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if 1..n array elements are dtypes for which
+<li><p><strong>RuntimeError</strong> – Raised if any array elements are dtypes for which
 concatenate has not been implemented.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])])</span>
-<span class="go">array([1, 2, 3, 4, 5, 6])</span>
+<span class="go">array([1 2 3 4 5 6])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">]),</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">])])</span>
-<span class="go">array([True, False, True, False, True, True])</span>
+<span class="go">array([True False True False True True])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;one&#39;</span><span class="p">,</span><span class="s1">&#39;two&#39;</span><span class="p">]),</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;three&#39;</span><span class="p">,</span><span class="s1">&#39;four&#39;</span><span class="p">,</span><span class="s1">&#39;five&#39;</span><span class="p">])])</span>
@@ -14387,22 +14386,21 @@ the original order</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – Raised if arrays is empty or if 1..n pdarrays have
-differing dtypes</p></li>
+<li><p><strong>ValueError</strong> – Raised if arrays is empty or if pdarrays have differing dtypes</p></li>
 <li><p><strong>TypeError</strong> – Raised if arrays is not a pdarrays or Strings python Sequence such as a
 list or tuple</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if 1..n array elements are dtypes for which
+<li><p><strong>RuntimeError</strong> – Raised if any array elements are dtypes for which
 concatenate has not been implemented.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])])</span>
-<span class="go">array([1, 2, 3, 4, 5, 6])</span>
+<span class="go">array([1 2 3 4 5 6])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">]),</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">,</span><span class="kc">True</span><span class="p">])])</span>
-<span class="go">array([True, False, True, False, True, True])</span>
+<span class="go">array([True False True False True True])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;one&#39;</span><span class="p">,</span><span class="s1">&#39;two&#39;</span><span class="p">]),</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;three&#39;</span><span class="p">,</span><span class="s1">&#39;four&#39;</span><span class="p">,</span><span class="s1">&#39;five&#39;</span><span class="p">])])</span>
@@ -15168,36 +15166,60 @@ and updates for the specified handler.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.in1d">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">in1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">arkouda.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraysetops.html#in1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.in1d" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">in1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">arkouda.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraysetops.html#in1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.in1d" title="Link to this definition">¶</a></dt>
 <dd><p>Test whether each element of a 1-D array is also present in a second array.</p>
-<p>Returns a boolean array the same length as <cite>pda1</cite> that is True
-where an element of <cite>pda1</cite> is in <cite>pda2</cite> and False otherwise.</p>
-<p>Support multi-level – test membership of rows of a in the set of rows of b.</p>
+<p>Returns a boolean array the same length as <cite>A</cite> that is True
+where an element of <cite>A</cite> is in <cite>B</cite> and False otherwise.</p>
+<p>Supports multi-level, i.e. test if rows of a are in the set of rows of b.
+But note that multi-dimensional pdarrays are not supported.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a>) – Rows are elements for which to test membership in b</p></li>
-<li><p><strong>b</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a>) – Rows are elements of the set in which to test membership</p></li>
-<li><p><strong>assume_unique</strong> (<em>bool</em>) – If true, assume rows of a and b are each unique and sorted.
+<li><p><strong>A</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a>) – Entries will be tested for membership in B</p></li>
+<li><p><strong>B</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a>) – The set of elements in which to test membership</p></li>
+<li><p><strong>assume_unique</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>defaults to False</em>) – If true, assume rows of a and b are each unique and sorted.
 By default, sort and unique them explicitly.</p></li>
-<li><p><strong>symmetric</strong> (<em>bool</em>) – Return in1d(pda1, pda2), in1d(pda2, pda1) when pda1 and 2 are single items.</p></li>
-<li><p><strong>invert</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the values in the returned array are inverted (that is,
-False where an element of <cite>pda1</cite> is in <cite>pda2</cite> and True otherwise).
+<li><p><strong>symmetric</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>defaults to False</em>) – Return in1d(A, B), in1d(B, A) when A and B are single items.</p></li>
+<li><p><strong>invert</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>defaults to False</em>) – If True, the values in the returned array are inverted (that is,
+False where an element of <cite>A</cite> is in <cite>B</cite> and True otherwise).
 Default is False. <code class="docutils literal notranslate"><span class="pre">ak.in1d(a,</span> <span class="pre">b,</span> <span class="pre">invert=True)</span></code> is equivalent
 to (but is faster than) <code class="docutils literal notranslate"><span class="pre">~ak.in1d(a,</span> <span class="pre">b)</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p>True for each row in a that is contained in b</p></li>
-<li><p><em>Return Type</em></p></li>
-<li><p><em>————</em> – pdarray, bool</p></li>
+<dd class="field-even"><p>True for each row in a that is contained in b</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray">pdarray</a>, bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if either A or B is not a pdarray, Strings, or Categorical
+object, or if both are pdarrays and either has rank &gt; 1,
+or if invert is not a bool</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if the dtype of either array is not supported</p></li>
 </ul>
-</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+<span class="go">array([False True False])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;one&#39;</span><span class="p">,</span><span class="s1">&#39;two&#39;</span><span class="p">]),</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="s1">&#39;three&#39;</span><span class="p">,</span><span class="s1">&#39;four&#39;</span><span class="p">,</span><span class="s1">&#39;five&#39;</span><span class="p">]))</span>
+<span class="go">array([False True])</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../groupbyclass/index.html#arkouda.groupbyclass.unique" title="arkouda.groupbyclass.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.groupbyclass.unique</span></code></a>, <a class="reference internal" href="#arkouda.numpy.intersect1d" title="arkouda.numpy.intersect1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersect1d</span></code></a>, <a class="reference internal" href="#arkouda.numpy.union1d" title="arkouda.numpy.union1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union1d</span></code></a></p>
+</div>
 <p class="rubric">Notes</p>
-<p>Only works for pdarrays of int64 dtype, float64, Strings, or Categorical</p>
+<p><cite>in1d</cite> can be considered as an element-wise function version of the
+python keyword <cite>in</cite>, for 1-D sequences. <code class="docutils literal notranslate"><span class="pre">in1d(a,</span> <span class="pre">b)</span></code> is logically
+equivalent to <code class="docutils literal notranslate"><span class="pre">ak.array([item</span> <span class="pre">in</span> <span class="pre">b</span> <span class="pre">for</span> <span class="pre">item</span> <span class="pre">in</span> <span class="pre">a])</span></code>, but is much
+faster and scales to arbitrarily large <code class="docutils literal notranslate"><span class="pre">a</span></code>.</p>
+<p>ak.in1d is not supported for bool or float64 pdarrays</p>
 </dd></dl>
 
 <dl class="py function">
@@ -15213,7 +15235,7 @@ When duplicate terms are present in search space return indices of all occurrenc
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>indices</strong> – For each item in query, its index in space.</p>
+<dd class="field-even"><p><strong>indices</strong> – For each item in query that is found in space, its index in space.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray">pdarray</a>, int64</p>
@@ -15224,22 +15246,24 @@ When duplicate terms are present in search space return indices of all occurrenc
 <cite>ak.find(query, space, all_occurrences=True, remove_missing=True).values</cite></p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">select_from</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span> <span class="o">=</span> <span class="n">select_from</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">select_from</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">select_from</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">select_from</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">11</span><span class="p">)]</span>
-<span class="go"># remove some values to ensure we have some values</span>
-<span class="go"># which don&#39;t appear in the search space</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr2</span><span class="p">[</span><span class="n">arr2</span> <span class="o">!=</span> <span class="mi">9</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr2</span><span class="p">[</span><span class="n">arr2</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="n">select_from</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">select_from</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">space</span> <span class="o">=</span> <span class="n">select_from</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">select_from</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">11</span><span class="p">)]</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">indexof1d</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">)</span>
+<p>remove some values to ensure that query has entries
+which don’t appear in space</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">space</span> <span class="o">=</span> <span class="n">space</span><span class="p">[</span><span class="n">arr2</span> <span class="o">!=</span> <span class="mi">9</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">space</span> <span class="o">=</span> <span class="n">space</span><span class="p">[</span><span class="n">arr2</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">indexof1d</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">space</span><span class="p">)</span>
 <span class="go">array([0 4 1 3 10 2 6 12 13 5 7 8 9 14 5 7 11 15 5 7 0 4])</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if either <cite>keys</cite> or <cite>arr</cite> is not a pdarray, Strings, or
+<li><p><strong>TypeError</strong> – Raised if either <cite>query</cite> or <cite>space</cite> is not a pdarray, Strings, or
 Categorical object</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if the dtype of either array is not supported</p></li>
 </ul>
@@ -15274,14 +15298,14 @@ Categorical object</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.intersect1d">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">intersect1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraysetops.html#intersect1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.intersect1d" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">intersect1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraysetops.html#intersect1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.intersect1d" title="Link to this definition">¶</a></dt>
 <dd><p>Find the intersection of two arrays.</p>
 <p>Return the sorted, unique values that are in both of the input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda1</strong> (<em>pdarray/Sequence</em><em>[</em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a><em>]</em>) – Input array/Sequence of groupable objects</p></li>
-<li><p><strong>pda2</strong> (<em>pdarray/List</em>) – Input array/sequence of groupable objects</p></li>
+<li><p><strong>A</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>B</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a>)</p></li>
 <li><p><strong>assume_unique</strong> (<em>bool</em>) – If True, the input arrays are both assumed to be unique, which
 can speed up the calculation.  Default is False.</p></li>
 </ul>
@@ -15294,7 +15318,7 @@ can speed up the calculation.  Default is False.</p></li>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if either pda1 or pda2 is not a pdarray</p></li>
+<li><p><strong>TypeError</strong> – Raised if either A or B is not a groupable</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if the dtype of either pdarray is not supported</p></li>
 </ul>
 </dd>
@@ -15303,22 +15327,21 @@ can speed up the calculation.  Default is False.</p></li>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="../groupbyclass/index.html#arkouda.groupbyclass.unique" title="arkouda.groupbyclass.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.groupbyclass.unique</span></code></a>, <a class="reference internal" href="#arkouda.numpy.union1d" title="arkouda.numpy.union1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union1d</span></code></a></p>
 </div>
-<p class="rubric">Notes</p>
-<p>ak.intersect1d is not supported for bool or float64 pdarrays</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt;</span>
-<span class="go"># 1D Example</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="go">array([1, 3])</span>
-<span class="go"># Multi-Array Example</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<p>1D Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="go">array([1 3])</span>
+</pre></div>
+</div>
+<p>Multi-Array Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multia</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multib</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">multia</span><span class="p">,</span> <span class="n">multib</span><span class="p">)</span>
-<span class="go">[array([1, 3]), array([1, 3]), array([1, 3])]</span>
+<span class="go">[array([1 3]), array([1 3]), array([1 3])]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -25539,27 +25562,27 @@ DEPRECATED</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.setdiff1d">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">setdiff1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraysetops.html#setdiff1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.setdiff1d" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">setdiff1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraysetops.html#setdiff1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.setdiff1d" title="Link to this definition">¶</a></dt>
 <dd><p>Find the set difference of two arrays.</p>
-<p>Return the sorted, unique values in <cite>pda1</cite> that are not in <cite>pda2</cite>.</p>
+<p>Return the sorted, unique values in <cite>A</cite> that are not in <cite>B</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda1</strong> (<em>pdarray/Sequence</em><em>[</em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a><em>]</em>) – Input array/Sequence of groupable objects</p></li>
-<li><p><strong>pda2</strong> (<em>pdarray/List</em>) – Input array/sequence of groupable objects</p></li>
+<li><p><strong>A</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>B</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a>)</p></li>
 <li><p><strong>assume_unique</strong> (<em>bool</em>) – If True, the input arrays are both assumed to be unique, which
 can speed up the calculation.  Default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Sorted 1D array/List of sorted pdarrays of values in <cite>pda1</cite> that are not in <cite>pda2</cite>.</p>
+<dd class="field-even"><p>Sorted 1D array/List of sorted pdarrays of values in <cite>A</cite> that are not in <cite>B</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pdarray/groupable</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if either pda1 or pda2 is not a pdarray</p></li>
+<li><p><strong>TypeError</strong> – Raised if either A or B is not a pdarray</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if the dtype of either pdarray is not supported</p></li>
 </ul>
 </dd>
@@ -25569,36 +25592,38 @@ can speed up the calculation.  Default is False.</p></li>
 <p><a class="reference internal" href="../groupbyclass/index.html#arkouda.groupbyclass.unique" title="arkouda.groupbyclass.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.groupbyclass.unique</span></code></a>, <a class="reference internal" href="#arkouda.numpy.setxor1d" title="arkouda.numpy.setxor1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setxor1d</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>ak.setdiff1d is not supported for bool or float64 pdarrays</p>
+<p>ak.setdiff1d is not supported for bool pdarrays</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-<span class="go">array([1, 2])</span>
-<span class="go">#Multi-Array Example</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="go">array([1 2])</span>
+</pre></div>
+</div>
+<p>Multi-Array Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multia</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multib</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">multia</span><span class="p">,</span> <span class="n">multib</span><span class="p">)</span>
-<span class="go">[array([2, 4, 5]), array([2, 4, 5]), array([2, 4, 5])]</span>
+<span class="go">[array([2 4 5]), array([2 4 5]), array([2 4 5])]</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.setxor1d">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">setxor1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraysetops.html#setxor1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.setxor1d" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">setxor1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraysetops.html#setxor1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.setxor1d" title="Link to this definition">¶</a></dt>
 <dd><p>Find the set exclusive-or (symmetric difference) of two arrays.</p>
 <p>Return the sorted, unique values that are in only one (not both) of the
 input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda1</strong> (<em>pdarray/Sequence</em><em>[</em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a><em>]</em>) – Input array/Sequence of groupable objects</p></li>
-<li><p><strong>pda2</strong> (<em>pdarray/List</em>) – Input array/sequence of groupable objects</p></li>
+<li><p><strong>A</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>B</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a>)</p></li>
 <li><p><strong>assume_unique</strong> (<em>bool</em>) – If True, the input arrays are both assumed to be unique, which
 can speed up the calculation.  Default is False.</p></li>
 </ul>
@@ -25612,27 +25637,27 @@ arrays.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if either pda1 or pda2 is not a pdarray</p></li>
+<li><p><strong>TypeError</strong> – Raised if either A or B is not a groupable</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if the dtype of either pdarray is not supported</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>ak.setxor1d is not supported for bool or float64 pdarrays</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">setxor1d</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
-<span class="go">array([1, 4, 5, 7])</span>
-<span class="go">#Multi-Array Example</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="go">array([1 4 5 7])</span>
+</pre></div>
+</div>
+<p>Multi-Array Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multia</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multib</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">setxor1d</span><span class="p">(</span><span class="n">multia</span><span class="p">,</span> <span class="n">multib</span><span class="p">)</span>
-<span class="go">[array([2, 2, 4, 4, 5, 5]), array([2, 5, 2, 4, 4, 5]), array([2, 4, 5, 4, 2, 5])]</span>
+<span class="go">[array([2 2 4 4 5 5]), array([2 5 2 4 4 5]), array([2 4 5 4 2 5])]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -26033,15 +26058,15 @@ is invoked with a dtype of float64</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.union1d">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">union1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">arkouda.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraysetops.html#union1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.union1d" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">union1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.groupbyclass.groupable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">arkouda.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraysetops.html#union1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.union1d" title="Link to this definition">¶</a></dt>
 <dd><p>Find the union of two arrays/List of Arrays.</p>
 <p>Return the unique, sorted array of values that are in either
 of the two input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda1</strong> (<em>pdarray/Sequence</em><em>[</em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a><em>]</em>) – Input array/Sequence of groupable objects</p></li>
-<li><p><strong>pda2</strong> (<em>pdarray/List</em>) – Input array/sequence of groupable objects</p></li>
+<li><p><strong>A</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>B</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#id471" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id153" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.Categorical" title="arkouda.numpy.Categorical"><em>Categorical</em></a>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -26052,8 +26077,8 @@ of the two input arrays.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if either pda1 or pda2 is not a pdarray</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if the dtype of either array is not supported</p></li>
+<li><p><strong>TypeError</strong> – Raised if either A or B is not a groupable</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if the dtype of either input is not supported</p></li>
 </ul>
 </dd>
 </dl>
@@ -26061,22 +26086,21 @@ of the two input arrays.</p>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#arkouda.numpy.intersect1d" title="arkouda.numpy.intersect1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersect1d</span></code></a>, <a class="reference internal" href="../groupbyclass/index.html#arkouda.groupbyclass.unique" title="arkouda.groupbyclass.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.groupbyclass.unique</span></code></a></p>
 </div>
-<p class="rubric">Notes</p>
-<p>ak.union1d is not supported for bool or float64 pdarrays</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt;</span>
-<span class="go"># 1D Example</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">union1d</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
-<span class="go">array([-2, -1, 0, 1, 2])</span>
-<span class="go">#Multi-Array Example</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<p>1D Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">union1d</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+<span class="go">array([-2 -1 0 1 2])</span>
+</pre></div>
+</div>
+<p>Multi-Array Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multia</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multib</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">union1d</span><span class="p">(</span><span class="n">multia</span><span class="p">,</span> <span class="n">multib</span><span class="p">)</span>
-<span class="go">[array[1, 2, 2, 3, 4, 4, 5, 5], array[1, 2, 5, 3, 2, 4, 4, 5], array[1, 2, 4, 3, 5, 4, 2, 5]]</span>
+<span class="go">[array([1 2 2 3 4 4 5 5]), array([1 2 5 3 2 4 4 5]), array([1 2 4 3 5 4 2 5])]</span>
 </pre></div>
 </div>
 </dd></dl>

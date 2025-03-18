@@ -3777,20 +3777,19 @@ Package Contents
              the original order
    :rtype: Union[pdarray,Strings,Categorical]
 
-   :raises ValueError: Raised if arrays is empty or if 1..n pdarrays have
-       differing dtypes
+   :raises ValueError: Raised if arrays is empty or if pdarrays have differing dtypes
    :raises TypeError: Raised if arrays is not a pdarrays or Strings python Sequence such as a
        list or tuple
-   :raises RuntimeError: Raised if 1..n array elements are dtypes for which
+   :raises RuntimeError: Raised if any array elements are dtypes for which
        concatenate has not been implemented.
 
    .. rubric:: Examples
 
    >>> ak.concatenate([ak.array([1, 2, 3]), ak.array([4, 5, 6])])
-   array([1, 2, 3, 4, 5, 6])
+   array([1 2 3 4 5 6])
 
    >>> ak.concatenate([ak.array([True,False,True]),ak.array([False,True,True])])
-   array([True, False, True, False, True, True])
+   array([True False True False True True])
 
    >>> ak.concatenate([ak.array(['one','two']),ak.array(['three','four','five'])])
    array(['one', 'two', 'three', 'four', 'five'])

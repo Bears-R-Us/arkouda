@@ -379,10 +379,11 @@
           <h1>Source code for arkouda.numpy.pdarraysetops</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
+
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client_dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitVector</span>
@@ -396,6 +397,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">zeros_like</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">argsort</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
@@ -405,6 +407,8 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;in1d&quot;</span><span class="p">,</span> <span class="s2">&quot;concatenate&quot;</span><span class="p">,</span> <span class="s2">&quot;union1d&quot;</span><span class="p">,</span> <span class="s2">&quot;intersect1d&quot;</span><span class="p">,</span> <span class="s2">&quot;setdiff1d&quot;</span><span class="p">,</span> <span class="s2">&quot;setxor1d&quot;</span><span class="p">,</span> <span class="s2">&quot;indexof1d&quot;</span><span class="p">]</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pdarraysetops&quot;</span><span class="p">)</span>
+
+<span class="c1"># TODO: combine in1d and _in1d_single into one function</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_in1d_single</span><span class="p">(</span>
@@ -440,6 +444,7 @@
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
 <span class="sd">        Raised if either pda1 or pda2 is not a pdarray, Strings, or</span>
+<span class="sd">        if both are pdarrays and either has rank &gt; 1, or if either is a</span>
 <span class="sd">        Categorical object or if invert is not a bool</span>
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if the dtype of either array is not supported</span>
@@ -460,10 +465,10 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.in1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))</span>
-<span class="sd">    array([False, True, False])</span>
+<span class="sd">    array([False True False])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.in1d(ak.array([&#39;one&#39;,&#39;two&#39;]),ak.array([&#39;two&#39;, &#39;three&#39;,&#39;four&#39;,&#39;five&#39;]))</span>
-<span class="sd">    array([False, True])</span>
+<span class="sd">    array([False True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
@@ -479,6 +484,8 @@
         <span class="n">x</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Categorical_</span><span class="p">,</span> <span class="n">pda1</span><span class="p">)</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">x</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">invert</span> <span class="k">else</span> <span class="o">~</span><span class="n">x</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">pda1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">pda2</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;in1d does not support multi-dim inputs&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">pda1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">in1d</span><span class="p">(</span><span class="n">pda1</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">(),</span> <span class="n">pda2</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">(),</span> <span class="n">invert</span><span class="o">=</span><span class="n">invert</span><span class="p">)</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
@@ -510,8 +517,8 @@
 <a class="viewcode-back" href="../../../usage/setops.html#arkouda.in1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">in1d</span><span class="p">(</span>
-    <span class="n">pda1</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
-    <span class="n">pda2</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
+    <span class="n">A</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
+    <span class="n">B</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
     <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">symmetric</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">invert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -519,69 +526,94 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test whether each element of a 1-D array is also present in a second array.</span>
 
-<span class="sd">    Returns a boolean array the same length as `pda1` that is True</span>
-<span class="sd">    where an element of `pda1` is in `pda2` and False otherwise.</span>
+<span class="sd">    Returns a boolean array the same length as `A` that is True</span>
+<span class="sd">    where an element of `A` is in `B` and False otherwise.</span>
 
-<span class="sd">    Support multi-level -- test membership of rows of a in the set of rows of b.</span>
+<span class="sd">    Supports multi-level, i.e. test if rows of a are in the set of rows of b.</span>
+<span class="sd">    But note that multi-dimensional pdarrays are not supported.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : list of pdarrays, pdarray, Strings, or Categorical</span>
-<span class="sd">        Rows are elements for which to test membership in b</span>
-<span class="sd">    b : list of pdarrays, pdarray, Strings, or Categorical</span>
-<span class="sd">        Rows are elements of the set in which to test membership</span>
-<span class="sd">    assume_unique : bool</span>
+<span class="sd">    A : list of pdarrays, pdarray, Strings, or Categorical</span>
+<span class="sd">        Entries will be tested for membership in B</span>
+<span class="sd">    B : list of pdarrays, pdarray, Strings, or Categorical</span>
+<span class="sd">        The set of elements in which to test membership</span>
+<span class="sd">    assume_unique : bool, optional, defaults to False</span>
 <span class="sd">        If true, assume rows of a and b are each unique and sorted.</span>
 <span class="sd">        By default, sort and unique them explicitly.</span>
-<span class="sd">    symmetric: bool</span>
-<span class="sd">        Return in1d(pda1, pda2), in1d(pda2, pda1) when pda1 and 2 are single items.</span>
-<span class="sd">    invert : bool, optional</span>
+<span class="sd">    symmetric: bool, optional, defaults to False</span>
+<span class="sd">        Return in1d(A, B), in1d(B, A) when A and B are single items.</span>
+<span class="sd">    invert : bool, optional, defaults to False</span>
 <span class="sd">        If True, the values in the returned array are inverted (that is,</span>
-<span class="sd">        False where an element of `pda1` is in `pda2` and True otherwise).</span>
+<span class="sd">        False where an element of `A` is in `B` and True otherwise).</span>
 <span class="sd">        Default is False. ``ak.in1d(a, b, invert=True)`` is equivalent</span>
 <span class="sd">        to (but is faster than) ``~ak.in1d(a, b)``.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
+<span class="sd">    pdarray, bool</span>
 <span class="sd">        True for each row in a that is contained in b</span>
 
-<span class="sd">    Return Type</span>
-<span class="sd">    ------------</span>
-<span class="sd">        pdarray, bool</span>
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if either A or B is not a pdarray, Strings, or Categorical</span>
+<span class="sd">        object, or if both are pdarrays and either has rank &gt; 1,</span>
+<span class="sd">        or if invert is not a bool</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if the dtype of either array is not supported</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.in1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))</span>
+<span class="sd">    array([False True False])</span>
+
+<span class="sd">    &gt;&gt;&gt; ak.in1d(ak.array([&#39;one&#39;,&#39;two&#39;]),ak.array([&#39;two&#39;, &#39;three&#39;,&#39;four&#39;,&#39;five&#39;]))</span>
+<span class="sd">    array([False True])</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    arkouda.groupbyclass.unique, intersect1d, union1d</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    ------</span>
-<span class="sd">        Only works for pdarrays of int64 dtype, float64, Strings, or Categorical</span>
+<span class="sd">    `in1d` can be considered as an element-wise function version of the</span>
+<span class="sd">    python keyword `in`, for 1-D sequences. ``in1d(a, b)`` is logically</span>
+<span class="sd">    equivalent to ``ak.array([item in b for item in a])``, but is much</span>
+<span class="sd">    faster and scales to arbitrarily large ``a``.</span>
+
+<span class="sd">    ak.in1d is not supported for bool or float64 pdarrays</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.alignment</span><span class="w"> </span><span class="kn">import</span> <span class="n">NonUniqueError</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Arguments must have compatible types, Strings/Categorical&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;If pda1 is pdarray, pda2 must also be pda2&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;If A is pdarray, B must also be pdarray&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">symmetric</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">_in1d_single</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">),</span> <span class="n">_in1d_single</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="n">pda1</span><span class="p">,</span> <span class="n">invert</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">_in1d_single</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">,</span> <span class="n">invert</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">_in1d_single</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">),</span> <span class="n">_in1d_single</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">invert</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_in1d_single</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">invert</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">&quot;Inputs should both be Union[pdarray, Strings, Categorical] or both be &quot;</span>
                 <span class="s2">&quot;Sequence[pdarray, Strings, Categorical].&quot;</span>
                 <span class="s2">&quot;  (Do not mix and match.)&quot;</span>
             <span class="p">)</span>
-    <span class="n">atypes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ai</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">ai</span> <span class="ow">in</span> <span class="n">pda1</span><span class="p">])</span>
-    <span class="n">btypes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">bi</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">bi</span> <span class="ow">in</span> <span class="n">pda2</span><span class="p">])</span>
+    <span class="n">atypes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ai</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">ai</span> <span class="ow">in</span> <span class="n">A</span><span class="p">])</span>
+    <span class="n">btypes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">bi</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">bi</span> <span class="ow">in</span> <span class="n">B</span><span class="p">])</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">atypes</span> <span class="o">==</span> <span class="n">btypes</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Array dtypes of arguments must match&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">assume_unique</span><span class="p">:</span>
-        <span class="n">ag</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span>
+        <span class="n">ag</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
         <span class="n">ua</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">unique_keys</span>
-        <span class="n">bg</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span>
+        <span class="n">bg</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
         <span class="n">ub</span> <span class="o">=</span> <span class="n">bg</span><span class="o">.</span><span class="n">unique_keys</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">ua</span> <span class="o">=</span> <span class="n">pda1</span>
-        <span class="n">ub</span> <span class="o">=</span> <span class="n">pda2</span>
+        <span class="n">ua</span> <span class="o">=</span> <span class="n">A</span>
+        <span class="n">ub</span> <span class="o">=</span> <span class="n">B</span>
     <span class="c1"># Key for deinterleaving result</span>
     <span class="n">isa</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">ones</span><span class="p">(</span><span class="n">ua</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akbool</span><span class="p">),</span> <span class="n">zeros</span><span class="p">(</span><span class="n">ub</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akbool</span><span class="p">)),</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="n">concatenate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ua</span><span class="p">,</span> <span class="n">ub</span><span class="p">)]</span>
@@ -639,7 +671,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    indices : pdarray, int64</span>
-<span class="sd">        For each item in query, its index in space.</span>
+<span class="sd">        For each item in query that is found in space, its index in space.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -649,20 +681,22 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; select_from = ak.arange(10)</span>
-<span class="sd">    &gt;&gt;&gt; arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]</span>
-<span class="sd">    &gt;&gt;&gt; arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]</span>
-<span class="sd">    # remove some values to ensure we have some values</span>
-<span class="sd">    # which don&#39;t appear in the search space</span>
-<span class="sd">    &gt;&gt;&gt; arr2 = arr2[arr2 != 9]</span>
-<span class="sd">    &gt;&gt;&gt; arr2 = arr2[arr2 != 3]</span>
+<span class="sd">    &gt;&gt;&gt; query = select_from[ak.randint(0, select_from.size, 20, seed=10)]</span>
+<span class="sd">    &gt;&gt;&gt; space = select_from[ak.randint(0, select_from.size, 20, seed=11)]</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.indexof1d(arr1, arr2)</span>
+<span class="sd">    remove some values to ensure that query has entries</span>
+<span class="sd">    which don&#39;t appear in space</span>
+
+<span class="sd">    &gt;&gt;&gt; space = space[arr2 != 9]</span>
+<span class="sd">    &gt;&gt;&gt; space = space[arr2 != 3]</span>
+
+<span class="sd">    &gt;&gt;&gt; ak.indexof1d(query, space)</span>
 <span class="sd">    array([0 4 1 3 10 2 6 12 13 5 7 8 9 14 5 7 11 15 5 7 0 4])</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if either `keys` or `arr` is not a pdarray, Strings, or</span>
+<span class="sd">        Raised if either `query` or `space` is not a pdarray, Strings, or</span>
 <span class="sd">        Categorical object</span>
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if the dtype of either array is not supported</span>
@@ -673,7 +707,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Arguments must have compatible types, Strings/Categorical&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;If keys is pdarray, arr must also be pdarray&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;If query is pdarray, space must also be pdarray&quot;</span><span class="p">)</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.alignment</span><span class="w"> </span><span class="kn">import</span> <span class="n">find</span> <span class="k">as</span> <span class="n">akfind</span>
 
@@ -713,22 +747,21 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if arrays is empty or if 1..n pdarrays have</span>
-<span class="sd">        differing dtypes</span>
+<span class="sd">        Raised if arrays is empty or if pdarrays have differing dtypes</span>
 <span class="sd">    TypeError</span>
 <span class="sd">        Raised if arrays is not a pdarrays or Strings python Sequence such as a</span>
 <span class="sd">        list or tuple</span>
 <span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if 1..n array elements are dtypes for which</span>
+<span class="sd">        Raised if any array elements are dtypes for which</span>
 <span class="sd">        concatenate has not been implemented.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; ak.concatenate([ak.array([1, 2, 3]), ak.array([4, 5, 6])])</span>
-<span class="sd">    array([1, 2, 3, 4, 5, 6])</span>
+<span class="sd">    array([1 2 3 4 5 6])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.concatenate([ak.array([True,False,True]),ak.array([False,True,True])])</span>
-<span class="sd">    array([True, False, True, False, True, True])</span>
+<span class="sd">    array([True False True False True True])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.concatenate([ak.array([&#39;one&#39;,&#39;two&#39;]),ak.array([&#39;three&#39;,&#39;four&#39;,&#39;five&#39;])])</span>
 <span class="sd">    array([&#39;one&#39;, &#39;two&#39;, &#39;three&#39;, &#39;four&#39;, &#39;five&#39;])</span>
@@ -831,13 +864,13 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Array dtypes of arguments must match&quot;</span><span class="p">)</span>
 
 
-<span class="c1"># (A1 | A2) Set Union: elements are in one or the other or both</span>
+<span class="c1"># (A | B) Set Union: elements are in one or the other or both</span>
 <div class="viewcode-block" id="union1d">
 <a class="viewcode-back" href="../../../usage/setops.html#arkouda.union1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">union1d</span><span class="p">(</span>
-    <span class="n">pda1</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
-    <span class="n">pda2</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
+    <span class="n">A</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
+    <span class="n">B</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">groupable</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the union of two arrays/List of Arrays.</span>
@@ -847,10 +880,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pda1 : pdarray/Sequence[pdarray, Strings, Categorical]</span>
-<span class="sd">        Input array/Sequence of groupable objects</span>
-<span class="sd">    pda2 : pdarray/List</span>
-<span class="sd">        Input array/sequence of groupable objects</span>
+<span class="sd">    A : list of pdarrays, pdarray, Strings, or Categorical</span>
+<span class="sd">    B : list of pdarrays, pdarray, Strings, or Categorical</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -860,25 +891,24 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if either pda1 or pda2 is not a pdarray</span>
+<span class="sd">        Raised if either A or B is not a groupable</span>
 <span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if the dtype of either array is not supported</span>
+<span class="sd">        Raised if the dtype of either input is not supported</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    intersect1d, arkouda.groupbyclass.unique</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    ak.union1d is not supported for bool or float64 pdarrays</span>
-
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt;</span>
-<span class="sd">    # 1D Example</span>
+
+<span class="sd">    1D Example</span>
+
 <span class="sd">    &gt;&gt;&gt; ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))</span>
-<span class="sd">    array([-2, -1, 0, 1, 2])</span>
-<span class="sd">    #Multi-Array Example</span>
+<span class="sd">    array([-2 -1 0 1 2])</span>
+
+<span class="sd">    Multi-Array Example</span>
+
 <span class="sd">    &gt;&gt;&gt; a = ak.arange(1, 6)</span>
 <span class="sd">    &gt;&gt;&gt; b = ak.array([1, 5, 3, 4, 2])</span>
 <span class="sd">    &gt;&gt;&gt; c = ak.array([1, 4, 3, 2, 5])</span>
@@ -886,35 +916,35 @@
 <span class="sd">    &gt;&gt;&gt; multia = [a, a, a]</span>
 <span class="sd">    &gt;&gt;&gt; multib = [b, c, d]</span>
 <span class="sd">    &gt;&gt;&gt; ak.union1d(multia, multib)</span>
-<span class="sd">    [array[1, 2, 2, 3, 4, 4, 5, 5], array[1, 2, 5, 3, 2, 4, 4, 5], array[1, 2, 4, 3, 5, 4, 2, 5]]</span>
+<span class="sd">    [array([1 2 2 3 4 4 5 5]), array([1 2 5 3 2 4 4 5]), array([1 2 4 3 5 4 2 5])]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
     <span class="k">if</span> <span class="p">(</span>
-        <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
-        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
-        <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
+        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
+        <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="n">pda1</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pda2</span>  <span class="c1"># union is pda2</span>
-        <span class="k">if</span> <span class="n">pda2</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pda1</span>  <span class="c1"># union is pda1</span>
+        <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">B</span>  <span class="c1"># union is B</span>
+        <span class="k">if</span> <span class="n">B</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">A</span>  <span class="c1"># union is A</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="n">pda1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span>
-            <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span>
-            <span class="ow">or</span> <span class="p">(</span><span class="n">pda1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span><span class="p">)</span>
+            <span class="n">A</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span>
+            <span class="ow">and</span> <span class="n">B</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span>
+            <span class="ow">or</span> <span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span> <span class="ow">and</span> <span class="n">B</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span><span class="p">)</span>
         <span class="p">):</span>
-            <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;union1d&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span><span class="p">:</span> <span class="n">pda1</span><span class="p">,</span> <span class="s2">&quot;arg2&quot;</span><span class="p">:</span> <span class="n">pda2</span><span class="p">})</span>
+            <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;union1d&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="s2">&quot;arg2&quot;</span><span class="p">:</span> <span class="n">B</span><span class="p">})</span>
             <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">))</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
-            <span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">unique</span><span class="p">(</span><span class="n">pda1</span><span class="p">),</span> <span class="n">unique</span><span class="p">(</span><span class="n">pda2</span><span class="p">)),</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span>
+            <span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">unique</span><span class="p">(</span><span class="n">A</span><span class="p">),</span> <span class="n">unique</span><span class="p">(</span><span class="n">B</span><span class="p">)),</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="n">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
-        <span class="n">multiarray_setop_validation</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">)</span>
-        <span class="n">ag</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+        <span class="n">multiarray_setop_validation</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+        <span class="n">ag</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
         <span class="n">ua</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">unique_keys</span>
-        <span class="n">bg</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span>
+        <span class="n">bg</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
         <span class="n">ub</span> <span class="o">=</span> <span class="n">bg</span><span class="o">.</span><span class="n">unique_keys</span>
 
         <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="n">concatenate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ua</span><span class="p">,</span> <span class="n">ub</span><span class="p">)]</span>
@@ -923,17 +953,17 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Both pda1 and pda2 must be pdarray, List, or Tuple. Received </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Both A and B must be pdarray, List, or Tuple. Received </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span></div>
 
 
 
-<span class="c1"># (A1 &amp; A2) Set Intersection: elements have to be in both arrays</span>
+<span class="c1"># (A &amp; B) Set Intersection: elements have to be in both arrays</span>
 <div class="viewcode-block" id="intersect1d">
 <a class="viewcode-back" href="../../../usage/setops.html#arkouda.intersect1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">intersect1d</span><span class="p">(</span>
-    <span class="n">pda1</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">pda2</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">A</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">groupable</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the intersection of two arrays.</span>
@@ -942,10 +972,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pda1 : pdarray/Sequence[pdarray, Strings, Categorical]</span>
-<span class="sd">        Input array/Sequence of groupable objects</span>
-<span class="sd">    pda2 : pdarray/List</span>
-<span class="sd">        Input array/sequence of groupable objects</span>
+<span class="sd">    A : list of pdarrays, pdarray, Strings, or Categorical</span>
+<span class="sd">    B : list of pdarrays, pdarray, Strings, or Categorical</span>
 <span class="sd">    assume_unique : bool</span>
 <span class="sd">        If True, the input arrays are both assumed to be unique, which</span>
 <span class="sd">        can speed up the calculation.  Default is False.</span>
@@ -958,7 +986,7 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if either pda1 or pda2 is not a pdarray</span>
+<span class="sd">        Raised if either A or B is not a groupable</span>
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if the dtype of either pdarray is not supported</span>
 
@@ -966,17 +994,16 @@
 <span class="sd">    --------</span>
 <span class="sd">    arkouda.groupbyclass.unique, union1d</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    ak.intersect1d is not supported for bool or float64 pdarrays</span>
-
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt;</span>
-<span class="sd">    # 1D Example</span>
-<span class="sd">    &gt;&gt;&gt; ak.intersect1d([1, 3, 4, 3], [3, 1, 2, 1])</span>
-<span class="sd">    array([1, 3])</span>
-<span class="sd">    # Multi-Array Example</span>
+
+<span class="sd">    1D Example</span>
+
+<span class="sd">    &gt;&gt;&gt; ak.intersect1d(ak.array([1, 3, 4, 3]), ak.array([3, 1, 2, 1]))</span>
+<span class="sd">    array([1 3])</span>
+
+<span class="sd">    Multi-Array Example</span>
+
 <span class="sd">    &gt;&gt;&gt; a = ak.arange(5)</span>
 <span class="sd">    &gt;&gt;&gt; b = ak.array([1, 5, 3, 4, 2])</span>
 <span class="sd">    &gt;&gt;&gt; c = ak.array([1, 4, 3, 2, 5])</span>
@@ -984,48 +1011,48 @@
 <span class="sd">    &gt;&gt;&gt; multia = [a, a, a]</span>
 <span class="sd">    &gt;&gt;&gt; multib = [b, c, d]</span>
 <span class="sd">    &gt;&gt;&gt; ak.intersect1d(multia, multib)</span>
-<span class="sd">    [array([1, 3]), array([1, 3]), array([1, 3])]</span>
+<span class="sd">    [array([1 3]), array([1 3]), array([1 3])]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
     <span class="k">if</span> <span class="p">(</span>
-        <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
-        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
-        <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
+        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
+        <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="n">pda1</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pda1</span>  <span class="c1"># nothing in the intersection</span>
-        <span class="k">if</span> <span class="n">pda2</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pda2</span>  <span class="c1"># nothing in the intersection</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">pda1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="n">pda1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span>
+        <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">A</span>  <span class="c1"># nothing in the intersection</span>
+        <span class="k">if</span> <span class="n">B</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">B</span>  <span class="c1"># nothing in the intersection</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">B</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">A</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span> <span class="ow">and</span> <span class="n">B</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span>
         <span class="p">):</span>
             <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;intersect1d&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span><span class="p">:</span> <span class="n">pda1</span><span class="p">,</span> <span class="s2">&quot;arg2&quot;</span><span class="p">:</span> <span class="n">pda2</span><span class="p">,</span> <span class="s2">&quot;assume_unique&quot;</span><span class="p">:</span> <span class="n">assume_unique</span><span class="p">}</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;intersect1d&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="s2">&quot;arg2&quot;</span><span class="p">:</span> <span class="n">B</span><span class="p">,</span> <span class="s2">&quot;assume_unique&quot;</span><span class="p">:</span> <span class="n">assume_unique</span><span class="p">}</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">assume_unique</span><span class="p">:</span>
-            <span class="n">pda1</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">pda1</span><span class="p">))</span>
-            <span class="n">pda2</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">pda2</span><span class="p">))</span>
-        <span class="n">aux</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">),</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+            <span class="n">B</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">B</span><span class="p">))</span>
+        <span class="n">aux</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">),</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">aux_sort_indices</span> <span class="o">=</span> <span class="n">argsort</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
         <span class="n">aux</span> <span class="o">=</span> <span class="n">aux</span><span class="p">[</span><span class="n">aux_sort_indices</span><span class="p">]</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">aux</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">==</span> <span class="n">aux</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">int1d</span> <span class="o">=</span> <span class="n">aux</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">int1d</span>
-    <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span>
-        <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
     <span class="p">):</span>
-        <span class="n">multiarray_setop_validation</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">)</span>
+        <span class="n">multiarray_setop_validation</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">assume_unique</span><span class="p">:</span>
-            <span class="n">ag</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span>
+            <span class="n">ag</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
             <span class="n">ua</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">unique_keys</span>
-            <span class="n">bg</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span>
+            <span class="n">bg</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
             <span class="n">ub</span> <span class="o">=</span> <span class="n">bg</span><span class="o">.</span><span class="n">unique_keys</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">ua</span> <span class="o">=</span> <span class="n">pda1</span>
-            <span class="n">ub</span> <span class="o">=</span> <span class="n">pda2</span>
+            <span class="n">ua</span> <span class="o">=</span> <span class="n">A</span>
+            <span class="n">ub</span> <span class="o">=</span> <span class="n">B</span>
 
         <span class="c1"># Key for deinterleaving result</span>
         <span class="n">isa</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span>
@@ -1044,29 +1071,27 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">in_union</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">k</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Both pda1 and pda2 must be pdarray, List, or Tuple. Received </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Both A and B must be pdarray, List, or Tuple. Received </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span></div>
 
 
 
-<span class="c1"># (A1 - A2) Set Difference: elements have to be in first array but not second</span>
+<span class="c1"># (A - B) Set Difference: elements have to be in first array but not second</span>
 <div class="viewcode-block" id="setdiff1d">
 <a class="viewcode-back" href="../../../usage/setops.html#arkouda.setdiff1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">setdiff1d</span><span class="p">(</span>
-    <span class="n">pda1</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">pda2</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">A</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">groupable</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the set difference of two arrays.</span>
 
-<span class="sd">    Return the sorted, unique values in `pda1` that are not in `pda2`.</span>
+<span class="sd">    Return the sorted, unique values in `A` that are not in `B`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pda1 : pdarray/Sequence[pdarray, Strings, Categorical]</span>
-<span class="sd">        Input array/Sequence of groupable objects</span>
-<span class="sd">    pda2 : pdarray/List</span>
-<span class="sd">        Input array/sequence of groupable objects</span>
+<span class="sd">    A : list of pdarrays, pdarray, Strings, or Categorical</span>
+<span class="sd">    B : list of pdarrays, pdarray, Strings, or Categorical</span>
 <span class="sd">    assume_unique : bool</span>
 <span class="sd">        If True, the input arrays are both assumed to be unique, which</span>
 <span class="sd">        can speed up the calculation.  Default is False.</span>
@@ -1074,12 +1099,12 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pdarray/groupable</span>
-<span class="sd">        Sorted 1D array/List of sorted pdarrays of values in `pda1` that are not in `pda2`.</span>
+<span class="sd">        Sorted 1D array/List of sorted pdarrays of values in `A` that are not in `B`.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if either pda1 or pda2 is not a pdarray</span>
+<span class="sd">        Raised if either A or B is not a pdarray</span>
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if the dtype of either pdarray is not supported</span>
 
@@ -1089,15 +1114,17 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    ak.setdiff1d is not supported for bool or float64 pdarrays</span>
+<span class="sd">    ak.setdiff1d is not supported for bool pdarrays</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = ak.array([1, 2, 3, 2, 4, 1])</span>
 <span class="sd">    &gt;&gt;&gt; b = ak.array([3, 4, 5, 6])</span>
 <span class="sd">    &gt;&gt;&gt; ak.setdiff1d(a, b)</span>
-<span class="sd">    array([1, 2])</span>
-<span class="sd">    #Multi-Array Example</span>
+<span class="sd">    array([1 2])</span>
+
+<span class="sd">    Multi-Array Example</span>
+
 <span class="sd">    &gt;&gt;&gt; a = ak.arange(1, 6)</span>
 <span class="sd">    &gt;&gt;&gt; b = ak.array([1, 5, 3, 4, 2])</span>
 <span class="sd">    &gt;&gt;&gt; c = ak.array([1, 4, 3, 2, 5])</span>
@@ -1105,44 +1132,44 @@
 <span class="sd">    &gt;&gt;&gt; multia = [a, a, a]</span>
 <span class="sd">    &gt;&gt;&gt; multib = [b, c, d]</span>
 <span class="sd">    &gt;&gt;&gt; ak.setdiff1d(multia, multib)</span>
-<span class="sd">    [array([2, 4, 5]), array([2, 4, 5]), array([2, 4, 5])]</span>
+<span class="sd">    [array([2 4 5]), array([2 4 5]), array([2 4 5])]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
     <span class="k">if</span> <span class="p">(</span>
-        <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
-        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
-        <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
+        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
+        <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="n">pda1</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pda1</span>  <span class="c1"># return a zero length pdarray</span>
-        <span class="k">if</span> <span class="n">pda2</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pda1</span>  <span class="c1"># subtracting nothing return orig pdarray</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">pda1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="n">pda1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span>
+        <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">A</span>  <span class="c1"># return a zero length pdarray</span>
+        <span class="k">if</span> <span class="n">B</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">A</span>  <span class="c1"># subtracting nothing return orig pdarray</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">B</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">A</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span> <span class="ow">and</span> <span class="n">B</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span>
         <span class="p">):</span>
             <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;setdiff1d&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span><span class="p">:</span> <span class="n">pda1</span><span class="p">,</span> <span class="s2">&quot;arg2&quot;</span><span class="p">:</span> <span class="n">pda2</span><span class="p">,</span> <span class="s2">&quot;assume_unique&quot;</span><span class="p">:</span> <span class="n">assume_unique</span><span class="p">}</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;setdiff1d&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="s2">&quot;arg2&quot;</span><span class="p">:</span> <span class="n">B</span><span class="p">,</span> <span class="s2">&quot;assume_unique&quot;</span><span class="p">:</span> <span class="n">assume_unique</span><span class="p">}</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">assume_unique</span><span class="p">:</span>
-            <span class="n">pda1</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">pda1</span><span class="p">))</span>
-            <span class="n">pda2</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">pda2</span><span class="p">))</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">pda1</span><span class="p">[</span><span class="n">in1d</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+            <span class="n">B</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">B</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">in1d</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="n">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
-    <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span>
-        <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
     <span class="p">):</span>
-        <span class="n">multiarray_setop_validation</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">)</span>
+        <span class="n">multiarray_setop_validation</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">assume_unique</span><span class="p">:</span>
-            <span class="n">ag</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span>
+            <span class="n">ag</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
             <span class="n">ua</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">unique_keys</span>
-            <span class="n">bg</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span>
+            <span class="n">bg</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
             <span class="n">ub</span> <span class="o">=</span> <span class="n">bg</span><span class="o">.</span><span class="n">unique_keys</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">ua</span> <span class="o">=</span> <span class="n">pda1</span>
-            <span class="n">ub</span> <span class="o">=</span> <span class="n">pda2</span>
+            <span class="n">ua</span> <span class="o">=</span> <span class="n">A</span>
+            <span class="n">ub</span> <span class="o">=</span> <span class="n">B</span>
 
         <span class="c1"># Key for deinterleaving result</span>
         <span class="n">isa</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span>
@@ -1162,7 +1189,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">atruth</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ua</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Both pda1 and pda2 must be pdarray, List, or Tuple. Received </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Both A and B must be pdarray, List, or Tuple. Received </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span></div>
 
 
@@ -1171,7 +1198,7 @@
 <div class="viewcode-block" id="setxor1d">
 <a class="viewcode-back" href="../../../usage/setops.html#arkouda.setxor1d">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">setxor1d</span><span class="p">(</span><span class="n">pda1</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">pda2</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">groupable</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">setxor1d</span><span class="p">(</span><span class="n">A</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">groupable</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the set exclusive-or (symmetric difference) of two arrays.</span>
 
@@ -1180,10 +1207,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pda1 : pdarray/Sequence[pdarray, Strings, Categorical]</span>
-<span class="sd">        Input array/Sequence of groupable objects</span>
-<span class="sd">    pda2 : pdarray/List</span>
-<span class="sd">        Input array/sequence of groupable objects</span>
+<span class="sd">    A : list of pdarrays, pdarray, Strings, or Categorical</span>
+<span class="sd">    B : list of pdarrays, pdarray, Strings, or Categorical</span>
 <span class="sd">    assume_unique : bool</span>
 <span class="sd">        If True, the input arrays are both assumed to be unique, which</span>
 <span class="sd">        can speed up the calculation.  Default is False.</span>
@@ -1197,21 +1222,19 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if either pda1 or pda2 is not a pdarray</span>
+<span class="sd">        Raised if either A or B is not a groupable</span>
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if the dtype of either pdarray is not supported</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    ak.setxor1d is not supported for bool or float64 pdarrays</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = ak.array([1, 2, 3, 2, 4])</span>
 <span class="sd">    &gt;&gt;&gt; b = ak.array([2, 3, 5, 7, 5])</span>
 <span class="sd">    &gt;&gt;&gt; ak.setxor1d(a,b)</span>
-<span class="sd">    array([1, 4, 5, 7])</span>
-<span class="sd">    #Multi-Array Example</span>
+<span class="sd">    array([1 4 5 7])</span>
+
+<span class="sd">    Multi-Array Example</span>
+
 <span class="sd">    &gt;&gt;&gt; a = ak.arange(1, 6)</span>
 <span class="sd">    &gt;&gt;&gt; b = ak.array([1, 5, 3, 4, 2])</span>
 <span class="sd">    &gt;&gt;&gt; c = ak.array([1, 4, 3, 2, 5])</span>
@@ -1219,47 +1242,47 @@
 <span class="sd">    &gt;&gt;&gt; multia = [a, a, a]</span>
 <span class="sd">    &gt;&gt;&gt; multib = [b, c, d]</span>
 <span class="sd">    &gt;&gt;&gt; ak.setxor1d(multia, multib)</span>
-<span class="sd">    [array([2, 2, 4, 4, 5, 5]), array([2, 5, 2, 4, 4, 5]), array([2, 4, 5, 4, 2, 5])]</span>
+<span class="sd">    [array([2 2 4 4 5 5]), array([2 5 2 4 4 5]), array([2 4 5 4 2 5])]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
     <span class="k">if</span> <span class="p">(</span>
-        <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
-        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
-        <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
+        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
+        <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="n">pda1</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pda2</span>  <span class="c1"># return other pdarray if pda1 is empty</span>
-        <span class="k">if</span> <span class="n">pda2</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pda1</span>  <span class="c1"># return other pdarray if pda2 is empty</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">pda1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="n">pda1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span>
+        <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">B</span>  <span class="c1"># return other pdarray if A is empty</span>
+        <span class="k">if</span> <span class="n">B</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">A</span>  <span class="c1"># return other pdarray if B is empty</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">B</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">A</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span> <span class="ow">and</span> <span class="n">B</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akuint64</span>
         <span class="p">):</span>
             <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;setxor1d&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span><span class="p">:</span> <span class="n">pda1</span><span class="p">,</span> <span class="s2">&quot;arg2&quot;</span><span class="p">:</span> <span class="n">pda2</span><span class="p">,</span> <span class="s2">&quot;assume_unique&quot;</span><span class="p">:</span> <span class="n">assume_unique</span><span class="p">}</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;setxor1d&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="s2">&quot;arg2&quot;</span><span class="p">:</span> <span class="n">B</span><span class="p">,</span> <span class="s2">&quot;assume_unique&quot;</span><span class="p">:</span> <span class="n">assume_unique</span><span class="p">}</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">assume_unique</span><span class="p">:</span>
-            <span class="n">pda1</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">pda1</span><span class="p">))</span>
-            <span class="n">pda2</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">pda2</span><span class="p">))</span>
-        <span class="n">aux</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">),</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+            <span class="n">B</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">unique</span><span class="p">(</span><span class="n">B</span><span class="p">))</span>
+        <span class="n">aux</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">),</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">aux_sort_indices</span> <span class="o">=</span> <span class="n">argsort</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
         <span class="n">aux</span> <span class="o">=</span> <span class="n">aux</span><span class="p">[</span><span class="n">aux_sort_indices</span><span class="p">]</span>
         <span class="n">flag</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">array</span><span class="p">([</span><span class="kc">True</span><span class="p">]),</span> <span class="n">aux</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">!=</span> <span class="n">aux</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">array</span><span class="p">([</span><span class="kc">True</span><span class="p">])))</span>
         <span class="k">return</span> <span class="n">aux</span><span class="p">[</span><span class="n">flag</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">&amp;</span> <span class="n">flag</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
-    <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span>
-        <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
     <span class="p">):</span>
-        <span class="n">multiarray_setop_validation</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">)</span>
+        <span class="n">multiarray_setop_validation</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">assume_unique</span><span class="p">:</span>
-            <span class="n">ag</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span>
+            <span class="n">ag</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
             <span class="n">ua</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">unique_keys</span>
-            <span class="n">bg</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span>
+            <span class="n">bg</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
             <span class="n">ub</span> <span class="o">=</span> <span class="n">bg</span><span class="o">.</span><span class="n">unique_keys</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">ua</span> <span class="o">=</span> <span class="n">pda1</span>
-            <span class="n">ub</span> <span class="o">=</span> <span class="n">pda2</span>
+            <span class="n">ua</span> <span class="o">=</span> <span class="n">A</span>
+            <span class="n">ub</span> <span class="o">=</span> <span class="n">B</span>
 
         <span class="c1"># Key for deinterleaving result</span>
         <span class="n">isa</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span>
@@ -1278,7 +1301,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">single</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">k</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Both pda1 and pda2 must be pdarray, List, or Tuple. Received </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Both A and B must be pdarray, List, or Tuple. Received </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span></div>
 
 </pre></div>
