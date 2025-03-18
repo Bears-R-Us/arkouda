@@ -677,7 +677,7 @@ module AryUtil
       var curDigit = numDigits - totalDigits;
       for (name, nBits, neg) in zip(names, bitWidths, negs) {
         var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-        proc mergeArray(type t) {
+        proc mergeArray(type t) throws {
           var e = toSymEntry(g, t);
           ref A = e.a;
 
