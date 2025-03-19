@@ -62,9 +62,12 @@ def _convert_to_arkouda(obj):
         return obj
 
     if not isinstance(
-        obj, (pd.MultiIndex, pd.Index, pd.Series, pd.DataFrame, pd.Categorical, np.ndarray)
+        obj,
+        (pd.MultiIndex, pd.Index, pd.Series, pd.DataFrame, pd.Categorical, np.ndarray),
     ):
-        raise TypeError(f"obj must be an arkouda, numpy or pandas object, but was type: {type(obj)}")
+        raise TypeError(
+            f"obj must be an arkouda, numpy or pandas object, but was type: {type(obj)}"
+        )
 
     if isinstance(obj, pd.MultiIndex):
         return MultiIndex(obj)
@@ -77,7 +80,7 @@ def _convert_to_arkouda(obj):
     elif isinstance(obj, pd.Categorical):
         return Categorical(obj)
     elif isinstance(obj, np.ndarray):
-        return array(obj)
+        return array(np.ascontiguousarray(obj))  # required for some multi-dim cases
     return None
 
 
@@ -181,7 +184,9 @@ def assert_index_equivalent(
     """
     __tracebackhide__ = not DEBUG
 
-    if not isinstance(left, (Index, pd.Index)) or not isinstance(right, (Index, pd.Index)):
+    if not isinstance(left, (Index, pd.Index)) or not isinstance(
+        right, (Index, pd.Index)
+    ):
         raise TypeError(
             f"left and right must be type arkouda.Index, or pandas.Index.  "
             f"Instead types were {type(left)} and {type(right)}"
@@ -242,7 +247,9 @@ def assert_arkouda_array_equivalent(
 
     if not isinstance(
         left, (np.ndarray, pd.Categorical, pdarray, Strings, Categorical, SegArray)
-    ) or not isinstance(right, (np.ndarray, pd.Categorical, pdarray, Strings, Categorical, SegArray)):
+    ) or not isinstance(
+        right, (np.ndarray, pd.Categorical, pdarray, Strings, Categorical, SegArray)
+    ):
         raise TypeError(
             f"left and right must be type np.ndarray, pdarray, Strings, "
             f"Categorical, or SegArray.  "
@@ -329,7 +336,9 @@ def assert_series_equivalent(
     """
     __tracebackhide__ = not DEBUG
 
-    if not isinstance(left, (Series, pd.Series)) or not isinstance(right, (Series, pd.Series)):
+    if not isinstance(left, (Series, pd.Series)) or not isinstance(
+        right, (Series, pd.Series)
+    ):
         raise TypeError(
             f"left and right must be type arkouda.Series or pandas.Series.  "
             f"Instead types were {type(left)} and {type(right)}."
@@ -478,7 +487,9 @@ def assert_equivalent(left, right, **kwargs) -> None:
         assert_series_equivalent(left, right, **kwargs)
     elif isinstance(left, (DataFrame, pd.DataFrame)):
         assert_frame_equivalent(left, right, **kwargs)
-    elif isinstance(left, (pdarray, np.ndarray, Strings, Categorical, pd.Categorical, SegArray)):
+    elif isinstance(
+        left, (pdarray, np.ndarray, Strings, Categorical, pd.Categorical, SegArray)
+    ):
         assert_arkouda_array_equivalent(left, right, **kwargs)
     elif isinstance(left, str):
         assert kwargs == {}
