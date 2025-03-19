@@ -80,7 +80,9 @@ def _convert_to_arkouda(obj):
     elif isinstance(obj, pd.Categorical):
         return Categorical(obj)
     elif isinstance(obj, np.ndarray):
-        return array(np.ascontiguousarray(obj))  # required for some multi-dim cases
+        return array(
+            obj if obj.flags.c_contiguous else np.ascontiguousarray(obj)
+        )  # required for some multi-dim cases
     return None
 
 
