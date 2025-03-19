@@ -572,7 +572,9 @@
         <span class="k">if</span> <span class="n">mydtype</span> <span class="o">==</span> <span class="n">ak_uint64</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">):</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
-                <span class="n">uint_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">)</span> <span class="o">-</span> <span class="n">ak_uint64</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="n">ak_uint64</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">uint_value</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">)</span> <span class="o">-</span> <span class="n">ak_uint64</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="n">ak_uint64</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="p">)</span>
                 <span class="k">return</span> <span class="n">uint_value</span>
             <span class="k">return</span> <span class="n">ak_uint64</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mydtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -594,7 +596,9 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_slice_index</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">starts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">stops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">strides</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_slice_index</span><span class="p">(</span>
+    <span class="n">array</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">starts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">stops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">strides</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Slice a pdarray with a set of start, stop and stride values</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -633,7 +637,9 @@
                 <span class="c1"># Interpret negative key as offset from end of array</span>
                 <span class="n">k</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]):</span>
-                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is out of bounds in dimension </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2"> with size </span><span class="si">{</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is out of bounds in dimension </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2"> with size </span><span class="si">{</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># treat this as a single-element slice</span>
                 <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -783,7 +789,9 @@
             <span class="s2">&quot;**&quot;</span><span class="p">,</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">OpEqOps</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">&quot;+=&quot;</span><span class="p">,</span> <span class="s2">&quot;-=&quot;</span><span class="p">,</span> <span class="s2">&quot;*=&quot;</span><span class="p">,</span> <span class="s2">&quot;/=&quot;</span><span class="p">,</span> <span class="s2">&quot;%=&quot;</span><span class="p">,</span> <span class="s2">&quot;//=&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;=&quot;</span><span class="p">,</span> <span class="s2">&quot;|=&quot;</span><span class="p">,</span> <span class="s2">&quot;^=&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;**=&quot;</span><span class="p">])</span>
+    <span class="n">OpEqOps</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+        <span class="p">[</span><span class="s2">&quot;+=&quot;</span><span class="p">,</span> <span class="s2">&quot;-=&quot;</span><span class="p">,</span> <span class="s2">&quot;*=&quot;</span><span class="p">,</span> <span class="s2">&quot;/=&quot;</span><span class="p">,</span> <span class="s2">&quot;%=&quot;</span><span class="p">,</span> <span class="s2">&quot;//=&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;=&quot;</span><span class="p">,</span> <span class="s2">&quot;|=&quot;</span><span class="p">,</span> <span class="s2">&quot;^=&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&lt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt;=&quot;</span><span class="p">,</span> <span class="s2">&quot;**=&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
     <span class="n">objType</span> <span class="o">=</span> <span class="s2">&quot;pdarray&quot;</span>
 
     <span class="n">__array_priority__</span> <span class="o">=</span> <span class="mi">1000</span>
@@ -830,12 +838,16 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarrayIterThresh</span>
 
-        <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;printThresh&quot;</span><span class="p">:</span> <span class="n">pdarrayIterThresh</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;printThresh&quot;</span><span class="p">:</span> <span class="n">pdarrayIterThresh</span><span class="p">}</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarrayIterThresh</span>
 
-        <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;repr&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;printThresh&quot;</span><span class="p">:</span> <span class="n">pdarrayIterThresh</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;repr&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;printThresh&quot;</span><span class="p">:</span> <span class="n">pdarrayIterThresh</span><span class="p">}</span>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -852,17 +864,29 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">max_bits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_max_bits&quot;</span><span class="p">):</span>
-                <span class="c1"># if _max_bits hasn&#39;t been set, fetch value from server</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_max_bits</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;get_max_bits&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">})</span>
-            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_bits</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_max_bits&quot;</span><span class="p">):</span>
+                    <span class="c1"># if _max_bits hasn&#39;t been set, fetch value from server</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_max_bits</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;get_max_bits&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">})</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_bits</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;max_bits cannot currently be fetched for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D pdarrays&quot;</span>
+                <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@max_bits</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">max_bits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_bits</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
-            <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;set_max_bits&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="n">max_bits</span><span class="p">})</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_max_bits</span> <span class="o">=</span> <span class="n">max_bits</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">generic_msg</span><span class="p">(</span>
+                    <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;set_max_bits&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="n">max_bits</span><span class="p">}</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_max_bits</span> <span class="o">=</span> <span class="n">max_bits</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;max_bits cannot currently be set for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D pdarrays&quot;</span>
+                <span class="p">)</span>
 
 <div class="viewcode-block" id="pdarray.equals">
 <a class="viewcode-back" href="../../../autoapi/arkouda/util/index.html#arkouda.pdarray.equals">[docs]</a>
@@ -1198,13 +1222,17 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool_&quot;</span><span class="p">)):</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool_&quot;</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="o">~</span><span class="p">(</span><span class="bp">self</span> <span class="o">^</span> <span class="n">other</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool_&quot;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool_&quot;</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span> <span class="o">^</span> <span class="n">other</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">)</span>
@@ -1327,7 +1355,11 @@
 
     <span class="c1"># overload a[] to treat like list</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">])</span>
+        <span class="p">):</span>
             <span class="n">orig_key</span> <span class="o">=</span> <span class="n">key</span>
             <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="c1"># Interpret negative key as offset from end of array</span>
@@ -1342,7 +1374,9 @@
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[int] </span><span class="si">{</span><span class="n">orig_key</span><span class="si">}</span><span class="s2"> is out of bounds with size </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;[int] </span><span class="si">{</span><span class="n">orig_key</span><span class="si">}</span><span class="s2"> is out of bounds with size </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
             <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
@@ -1360,7 +1394,9 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="c1"># handle None and Ellipsis in the key tuple</span>
-            <span class="p">(</span><span class="n">clean_key</span><span class="p">,</span> <span class="n">num_none</span><span class="p">,</span> <span class="n">key_with_none</span><span class="p">)</span> <span class="o">=</span> <span class="n">_parse_none_and_ellipsis_keys</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">clean_key</span><span class="p">,</span> <span class="n">num_none</span><span class="p">,</span> <span class="n">key_with_none</span><span class="p">)</span> <span class="o">=</span> <span class="n">_parse_none_and_ellipsis_keys</span><span class="p">(</span>
+                <span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span>
+            <span class="p">)</span>
 
             <span class="c1"># parse the tuple key into slices, scalars, and pdarrays</span>
             <span class="p">((</span><span class="n">starts</span><span class="p">,</span> <span class="n">stops</span><span class="p">,</span> <span class="n">strides</span><span class="p">),</span> <span class="n">scalar_axes</span><span class="p">,</span> <span class="n">pdarray_axes</span><span class="p">)</span> <span class="o">=</span> <span class="n">_parse_index_tuple</span><span class="p">(</span>
@@ -1500,11 +1536,15 @@
                             <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                             <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
                             <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
-                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">),</span>
+                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+                            <span class="p">),</span>
                         <span class="p">},</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">orig_key</span><span class="si">}</span><span class="s2"> is out of bounds with size </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">orig_key</span><span class="si">}</span><span class="s2"> is out of bounds with size </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_value</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
                     <span class="n">generic_msg</span><span class="p">(</span>
@@ -1544,7 +1584,9 @@
                             <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span>
                             <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="n">stride</span><span class="p">,</span>
                             <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
-                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">),</span>
+                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+                            <span class="p">),</span>
                         <span class="p">},</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1564,7 +1606,9 @@
                         <span class="n">starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
                         <span class="n">stops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span>
                         <span class="n">strides</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stride</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">]):</span>
+                    <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                        <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">]</span>
+                    <span class="p">):</span>
                         <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                             <span class="c1"># Interpret negative key as offset from end of array</span>
                             <span class="n">k</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">])</span>
@@ -1583,7 +1627,9 @@
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">starts</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
                         <span class="c1"># TODO: correctly handle non-unit strides when determining whether the</span>
                         <span class="c1"># value shape matches the slice shape</span>
-                        <span class="n">slice_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">stops</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">starts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+                        <span class="n">slice_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+                            <span class="p">[</span><span class="n">stops</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">starts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]</span>
+                        <span class="p">)</span>
 
                         <span class="c1"># check that the slice is within the bounds of the array</span>
                         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
@@ -1646,7 +1692,9 @@
                             <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                             <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
                             <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
-                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">),</span>
+                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+                            <span class="p">),</span>
                         <span class="p">},</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -1658,7 +1706,9 @@
                             <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">stops</span><span class="p">),</span>
                             <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">strides</span><span class="p">),</span>
                             <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
-                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">),</span>
+                            <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+                            <span class="p">),</span>
                         <span class="p">},</span>
                     <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
@@ -1684,13 +1734,19 @@
                                 <span class="s2">&quot;stops&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
                                 <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]),</span>
                                 <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">_value</span><span class="p">),</span>
-                                <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">),</span>
+                                <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="p">(</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+                                <span class="p">),</span>
                             <span class="p">},</span>
                         <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incompatable slice for multidimensional array: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Incompatable slice for multidimensional array: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unhandled key type for ND arrays: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Unhandled key type for ND arrays: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nbytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2403,7 +2459,9 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">value_counts</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;value_counts is only implemented for 1D arrays; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;value_counts is only implemented for 1D arrays; got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">value_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
@@ -2523,7 +2581,9 @@
 <span class="sd">        &gt;&gt;&gt; a.bigint_to_uint_arrays()</span>
 <span class="sd">        [array([1 1 1 1 1]), array([0 1 2 3 4])]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ret_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;bigint_to_uint_list&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}))</span>
+        <span class="n">ret_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+            <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;bigint_to_uint_list&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">})</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">([</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ret_list</span><span class="p">]))</span></div>
 
 
@@ -2659,7 +2719,9 @@
                     <span class="n">shape</span>
                 <span class="p">)</span>
             <span class="n">arrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">()]</span>
-            <span class="k">return</span> <span class="n">builtins</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">n</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">64</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arrs</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">arrs</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">builtins</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="n">n</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">64</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arrs</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">arrs</span><span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="c1"># Total number of bytes in the array data</span>
         <span class="n">arraybytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span>
@@ -3207,9 +3269,13 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Allowed modes are &#39;truncate&#39; and &#39;append&#39;&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">file_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="n">file_type</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span>
+                <span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="n">file_type</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">file_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;parquet&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span>
+                <span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Valid file types are HDF5 or Parquet&quot;</span><span class="p">)</span></div>
 
@@ -3266,7 +3332,9 @@
 <span class="sd">        &gt;&gt;&gt; b.unregister()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;register&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
@@ -3402,7 +3470,9 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Grouping is only supported on numeric data (integral types) and bools.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Grouping is only supported on numeric data (integral types) and bools.&quot;</span>
+            <span class="p">)</span></div>
 
 
 
@@ -4157,7 +4227,9 @@
 <span class="sd">    ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
-        <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cov&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">})</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cov&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">}</span>
+        <span class="p">)</span>
     <span class="p">)</span></div>
 
 
@@ -4207,7 +4279,9 @@
 <span class="sd">    cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
-        <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;corr&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">})</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;corr&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">}</span>
+        <span class="p">)</span>
     <span class="p">)</span></div>
 
 
@@ -4595,7 +4669,9 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;BitOps only supported on int64, uint64, and bigint arrays&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
         <span class="c1"># XOR the parity of the underlying uint array to get the parity of the bigint array</span>
-        <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="o">^</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">parity</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">()])</span>
+        <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="o">^</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">parity</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">()]</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;parity&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -4805,11 +4881,17 @@
 <span class="sd">    array([0, 2, 8, 24, 64, 160, 384, 896, 2048, 4608])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">])</span> <span class="ow">or</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">rot</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">]</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">rot</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="s2">&quot;&lt;&lt;&lt;&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Rotations only supported on integers&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">]:</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">]</span>
+    <span class="p">):</span>
         <span class="k">return</span> <span class="n">rot</span><span class="o">.</span><span class="n">_r_binop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;&lt;&lt;&lt;&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Rotations only supported on integers&quot;</span><span class="p">)</span></div>
@@ -4846,11 +4928,17 @@
 <span class="sd">    array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">])</span> <span class="ow">or</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">rot</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">]</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">rot</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt;&gt;&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Rotations only supported on integers&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">]:</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">]</span>
+    <span class="p">):</span>
         <span class="k">return</span> <span class="n">rot</span><span class="o">.</span><span class="n">_r_binop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt;&gt;&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Rotations only supported on integers&quot;</span><span class="p">)</span></div>
@@ -5068,7 +5156,9 @@
 <div class="viewcode-block" id="fmod">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pdarrayclass/index.html#arkouda.fmod">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">fmod</span><span class="p">(</span><span class="n">dividend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">],</span> <span class="n">divisor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fmod</span><span class="p">(</span>
+    <span class="n">dividend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">],</span> <span class="n">divisor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the element-wise remainder of division.</span>
 
@@ -5093,7 +5183,8 @@
 <span class="sd">        or if any scalar or pdarray element is not one of int, uint, float, bigint</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">builtins</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
-        <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dividend</span><span class="p">,</span> <span class="n">divisor</span><span class="p">]</span>
+        <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dividend</span><span class="p">,</span> <span class="n">divisor</span><span class="p">]</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Unsupported types </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">dividend</span><span class="p">)</span><span class="si">}</span><span class="s2"> and/or </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">divisor</span><span class="p">)</span><span class="si">}</span><span class="s2">. Supported &quot;</span>
@@ -5160,7 +5251,9 @@
 
 
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">broadcast_if_needed</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">broadcast_if_needed</span><span class="p">(</span>
+    <span class="n">x1</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">pdarray</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">broadcast_dims</span>
 
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
