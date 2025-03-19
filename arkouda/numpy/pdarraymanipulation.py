@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional, Tuple, Union
+from typing import List, Literal, Optional, Sequence, Tuple, Union, cast
 
 import numpy as np
 from typeguard import typechecked
@@ -6,6 +6,7 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarraycreation import arange, array
 
 __all__ = ["vstack", "delete"]
 
@@ -76,7 +77,7 @@ def vstack(
 @typechecked
 def delete(
     arr: pdarray,
-    obj: Union[pdarray, slice, int],
+    obj: Union[slice, int, Sequence[int], Sequence[bool], pdarray],
     axis: Optional[int] = None,
 ) -> pdarray:
     """
@@ -86,9 +87,9 @@ def delete(
     ----------
     arr : pdarray
         The array to remove elements from
-    obj : Union[pdarray, slice, int]
+    obj : slice, int, Sequence of int, Sequence of bool, or pdarray
         The indices to remove from 'arr'. If obj is a pdarray, it must
-        have an integer dtype.
+        have an integer or bool dtype.
     axis : Optional[int], optional
         The axis along which to remove elements. If None, the array will
         be flattened before removing elements. Defaults to None.
@@ -97,37 +98,41 @@ def delete(
     -------
     pdarray
         A copy of 'arr' with elements removed
+
+    Examples
+    --------
+    >>> arr = ak.array([[1,2,3,4], [5,6,7,8], [9,10,11,12]])
+    >>> arr
+    array([array([1 2 3 4]) array([5 6 7 8]) array([9 10 11 12])])
+    >>> ak.delete(arr, 1, 0)
+    array([array([1 2 3 4]) array([9 10 11 12])])
+
+    >>> ak.delete(arr, slice(0, 4, 2), 1)
+    array([array([2 4]) array([6 8]) array([10 12])])
+    >>> ak.delete(arr, [1, 3, 5], None)
+    array([1 3 5 7 8 9 10 11 12])
     """
 
-    if axis is None:
+    shape = arr.shape
+
+    if axis is None and arr.ndim != 1:
         # flatten the array if axis is None
-        _arr = create_pdarray(
-            generic_msg(
-                cmd=f"reshape{arr.ndim}Dx1D",
-                args={
-                    "name": arr,
-                    "shape": (arr.size,),
-                },
-            )
-        )
+        _arr = arr.flatten()
         _axis = 0
+        shape = _arr.shape
+    elif axis is None:
+        _axis = 0
+        _arr = arr
     else:
         _arr = arr
         _axis = axis
-
+    slice_weight = 1
+    for i in range(_axis + 1, len(shape)):
+        slice_weight *= shape[i]
     if isinstance(obj, pdarray):
-        return create_pdarray(
-            generic_msg(
-                cmd=f"delete{_arr.ndim}D",
-                args={
-                    "arr": _arr,
-                    "obj": obj,
-                    # TODO: maybe expose this as an optional argument? Or sort the array first?
-                    "obj_sorted": False,
-                    "axis": _axis,
-                },
-            )
-        )
+        _del = obj
+    elif isinstance(obj, Sequence):
+        _del = cast(pdarray, array(obj))
     else:
         if isinstance(obj, int):
             start = obj
@@ -136,17 +141,19 @@ def delete(
         elif isinstance(obj, slice):
             start, stop, stride = obj.indices(_arr.shape[_axis])
         else:
-            raise ValueError("obj must be an integer, pdarray, or slice")
-
-        return create_pdarray(
-            generic_msg(
-                cmd=f"deleteSlice{_arr.ndim}D",
-                args={
-                    "arr": _arr,
-                    "start": start,
-                    "stop": stop,
-                    "stride": stride,
-                    "axis": _axis,
-                },
-            )
+            raise ValueError("obj must be a slice, int, Sequence of int, Sequence of bool, or pdarray")
+        _del = arange(start, stop, stride)
+    if _del.dtype == int and (shape[_axis] / max(_del.size, 1)) * slice_weight >= 100:
+        alg_choice = "BulkCopy"
+    else:
+        alg_choice = "AggCopy"
+    return create_pdarray(
+        generic_msg(
+            cmd=f"delete{alg_choice}<{_arr.dtype},{_arr.ndim},{_del.dtype},{_del.ndim}>",
+            args={
+                "eIn": _arr,
+                "axis": _axis,
+                "del": _del,
+            },
         )
+    )
