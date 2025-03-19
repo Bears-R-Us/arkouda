@@ -73,9 +73,9 @@ class TestStats:
         # pairs.
         if get_max_array_rank() > 1:
             for n in range(2, get_max_array_rank() + 1):
-                np_f_obs = bumpup(np_f_obs)  #
+                np_f_obs = np.ascontiguousarray(bumpup(np_f_obs))  #
                 if np_f_exp is not None:  # conversion to pdarray
-                    np_f_exp = bumpup(np_f_exp)
+                    np_f_exp = np.ascontiguousarray(bumpup(np_f_exp))
                 # Note the the "bumpup" is done whether or not this rank is in get_array_ranks
                 # so that the rank at each iteration will be correct.
                 # But the test is only applied for ranks that are in get_array_ranks
