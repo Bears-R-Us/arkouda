@@ -379,7 +379,7 @@
           <h1>Source code for arkouda.numpy._numeric</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">no_type_check</span>
 
@@ -593,7 +593,9 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">errors</span> <span class="o">==</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">return_validity</span><span class="p">:</span>
                 <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">a</span><span class="p">)),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">a</span><span class="p">)),</span> <span class="n">create_pdarray</span><span class="p">(</span>
+                    <span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
@@ -1478,7 +1480,9 @@
 <span class="sd">        | Raised if both num and denom are scalars</span>
 <span class="sd">        | Raised if where is neither boolean nor a pdarray of boolean</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">num</span><span class="p">,</span> <span class="n">denom</span><span class="p">]):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
+        <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">num</span><span class="p">,</span> <span class="n">denom</span><span class="p">]</span>
+    <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Unsupported types </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">num</span><span class="p">)</span><span class="si">}</span><span class="s2"> and/or </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">denom</span><span class="p">)</span><span class="si">}</span><span class="s2">. Supported &quot;</span>
             <span class="s2">&quot;types are numeric scalars and pdarrays. At least one argument must be a pdarray.&quot;</span>
@@ -1709,7 +1713,9 @@
     <span class="k">return</span> <span class="n">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arctanh&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_trig_helper</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the result of the input trig function acting element-wise on the array.</span>
 
@@ -1910,7 +1916,10 @@
         <span class="k">return</span> <span class="n">_hash_single</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">full</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">pda</span><span class="o">.</span><span class="n">hash</span><span class="p">()</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">List</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
-            <span class="n">wrong_type</span> <span class="o">:=</span> <span class="p">[</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray_</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">pda</span><span class="p">]</span>
+            <span class="n">wrong_type</span> <span class="o">:=</span> <span class="p">[</span>
+                <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray_</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">pda</span>
+            <span class="p">]</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Unsupported type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">wrong_type</span><span class="p">)])</span><span class="si">}</span><span class="s2">. Supported types are pdarray,&quot;</span>
@@ -1993,16 +2002,22 @@
             <span class="n">new_categories</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">B</span><span class="p">])])</span>
             <span class="n">b_code</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">new_codes</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">b_code</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">new_codes</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">NAvalue</span><span class="p">)</span><span class="o">.</span><span class="n">reset_categories</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span>
+            <span class="n">new_codes</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">NAvalue</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">reset_categories</span><span class="p">()</span>
 
     <span class="c1"># both cat</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">B</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Categoricals must be same length&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">B</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">ak_all</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">categories</span> <span class="o">==</span> <span class="n">B</span><span class="o">.</span><span class="n">categories</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">B</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">ak_all</span><span class="p">(</span>
+            <span class="n">A</span><span class="o">.</span><span class="n">categories</span> <span class="o">==</span> <span class="n">B</span><span class="o">.</span><span class="n">categories</span>
+        <span class="p">):</span>
             <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">standardize_categories</span><span class="p">([</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>
         <span class="n">new_codes</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">B</span><span class="o">.</span><span class="n">codes</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">new_codes</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">NAvalue</span><span class="p">)</span><span class="o">.</span><span class="n">reset_categories</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span>
+            <span class="n">new_codes</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">NAvalue</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">reset_categories</span><span class="p">()</span>
 
     <span class="c1"># one strings and one str</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -2148,14 +2163,18 @@
             <span class="n">ltr</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
             <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;wherevs_&quot;</span> <span class="o">+</span> <span class="n">ltr</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># *should* be impossible because of the IsSupportedNumber check</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where does not accept scalar type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;where does not accept scalar type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
             <span class="n">ltr</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
             <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;wheresv_&quot;</span> <span class="o">+</span> <span class="n">ltr</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">B</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># *should* be impossible because of the IsSupportedNumber check</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where does not accept scalar type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;where does not accept scalar type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># both are scalars</span>
         <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
@@ -2163,9 +2182,13 @@
             <span class="k">if</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
                 <span class="n">tb</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where does not accept scalar type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;where does not accept scalar type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where does not accept scalar type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;where does not accept scalar type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;wheress_&quot;</span> <span class="o">+</span> <span class="n">ta</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">tb</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
@@ -2319,13 +2342,17 @@
         <span class="n">x_bins</span><span class="p">,</span> <span class="n">y_bins</span> <span class="o">=</span> <span class="n">bins</span><span class="p">,</span> <span class="n">bins</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sequences of bins must contain two elements (num_x_bins, num_y_bins)&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Sequences of bins must contain two elements (num_x_bins, num_y_bins)&quot;</span>
+            <span class="p">)</span>
         <span class="n">x_bins</span><span class="p">,</span> <span class="n">y_bins</span> <span class="o">=</span> <span class="n">bins</span>
     <span class="k">if</span> <span class="n">x_bins</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">y_bins</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;bins must be 1 or greater&quot;</span><span class="p">)</span>
     <span class="n">x_bin_boundaries</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">x_bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">y_bin_boundaries</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">y_bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;histogram2D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;xBins&quot;</span><span class="p">:</span> <span class="n">x_bins</span><span class="p">,</span> <span class="s2">&quot;yBins&quot;</span><span class="p">:</span> <span class="n">y_bins</span><span class="p">})</span>
+    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;histogram2D&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;xBins&quot;</span><span class="p">:</span> <span class="n">x_bins</span><span class="p">,</span> <span class="s2">&quot;yBins&quot;</span><span class="p">:</span> <span class="n">y_bins</span><span class="p">}</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x_bins</span><span class="p">,</span> <span class="n">y_bins</span><span class="p">),</span>
         <span class="n">x_bin_boundaries</span><span class="p">,</span>
@@ -2404,7 +2431,9 @@
         <span class="n">bins</span> <span class="o">=</span> <span class="p">[</span><span class="n">bins</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_dims</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">!=</span> <span class="n">num_dims</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sequences of bins must contain same number of elements as the sample&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Sequences of bins must contain same number of elements as the sample&quot;</span>
+            <span class="p">)</span>
     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">b</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;bins must be 1 or greater&quot;</span><span class="p">)</span>
 
@@ -2609,9 +2638,9 @@
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pda_srtd</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pda_srtd</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">pda_srtd</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">((</span><span class="n">pda_srtd</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">pda_srtd</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">pda_srtd</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">pda_srtd</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">pda_srtd</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">pda_srtd</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">pda_srtd</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">pda_srtd</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">count_nonzero</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">:</span>
@@ -2714,7 +2743,9 @@
 <span class="sd">    &gt;&gt;&gt; ak.array_equal(a,b,True)</span>
 <span class="sd">    True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">pda_a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">pda_b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="ow">or</span> <span class="p">((</span><span class="n">pda_a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akstr_</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">pda_b</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akstr_</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pda_a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">pda_b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">pda_a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akstr_</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">pda_b</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akstr_</span><span class="p">)</span>
+    <span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">elif</span> <span class="n">equal_nan</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ak_all</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">pda_a</span><span class="p">),</span> <span class="n">isnan</span><span class="p">(</span><span class="n">pda_b</span><span class="p">),</span> <span class="n">pda_a</span> <span class="o">==</span> <span class="n">pda_b</span><span class="p">)))</span>
@@ -2787,7 +2818,9 @@
     <span class="p">]</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="p">((</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">Values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ALLOWED_PUTMASK_PAIRS</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Types </span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">Values</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> are not compatible in putmask.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Types </span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">Values</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> are not compatible in putmask.&quot;</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">A</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;mask and A must be same size in putmask&quot;</span><span class="p">)</span>
     <span class="n">generic_msg</span><span class="p">(</span>
@@ -2801,7 +2834,9 @@
     <span class="k">return</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">eye</span><span class="p">(</span><span class="n">rows</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">diag</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">ak_int64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">eye</span><span class="p">(</span>
+    <span class="n">rows</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">diag</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">ak_int64</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a pdarray with zeros everywhere except along a diagonal, which is all ones.</span>
 <span class="sd">    The matrix need not be square.</span>
@@ -2967,39 +3002,60 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">transpose</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">transpose</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">axes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the transpose of a matrix.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
+<span class="sd">    axes: Tuple[int,...] Optional, defaults to None</span>
+<span class="sd">        If specified, must be a tuple which contains a permutation of the axes of pda.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
 <span class="sd">        the transpose of the input matrix</span>
+<span class="sd">        For a 1-D array, this is the original array.</span>
+<span class="sd">        For a 2-D array, this is the standard matrix transpose.</span>
+<span class="sd">        For an n-D array, if axes are given, their order indicates how the axes are permuted.</span>
+<span class="sd">        If axes is None, the axes are reversed.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])</span>
 <span class="sd">    &gt;&gt;&gt; ak.transpose(a)</span>
 <span class="sd">    array([array([1 1]) array([2 2]) array([3 3]) array([4 4]) array([5 5])])</span>
+<span class="sd">    &gt;&gt;&gt; z = ak.array(np.arange(27).reshape(3,3,3))</span>
+<span class="sd">    &gt;&gt;&gt; ak.transpose(z,axes=(1,0,2))</span>
+<span class="sd">    array([array([array([0 1 2]) array([9 10 11]) array([18 19 20])]) array([array([3 4 5])</span>
+<span class="sd">      array([12 13 14]) array([21 22 23])]) array([array([6 7 8]) array([15 16 17]) array([24 25 26])])])</span>
 
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    Server returns an error if rank of pda &lt; 2</span>
-
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if axes is not a legitimate permutation of the axes of pda</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if pda is not a pdarray, or if axes is neither a tuple nor None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;transpose&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-    <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
-    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># if axes was supplied, check that it&#39;s valid</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">==</span> <span class="n">r</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axes</span><span class="si">}</span><span class="s2"> is not a valid set of axes for pdarray of rank </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># if axes is None, create a tuple of the axes in reverse order</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(((</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="p">)))</span>
+
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;permuteDims&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
+                <span class="s2">&quot;axes&quot;</span><span class="p">:</span> <span class="n">axes</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span>
 
