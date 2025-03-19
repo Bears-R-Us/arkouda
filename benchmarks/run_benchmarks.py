@@ -196,9 +196,10 @@ def create_parser():
         help="run each benchmark in its own server instance",
     )
     parser.add_argument(
-        "--within-slrum-alloc",
+        "--within-slurm-alloc",
         default=False,
-        help="whether this script was launched from within a slurm allocation (for use with --isolated only)",
+        help="whether this script was launched from within a slurm allocation "
+        + "(for use with --isolated only)",
     )
     return parser
 

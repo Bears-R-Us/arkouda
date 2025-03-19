@@ -5,6 +5,9 @@ import argparse
 import shutil
 import pandas as pd
 
+from server_util.test.server_test_util import get_default_temp_directory
+
+
 str_length = 2
 test_dir = ''
 test_results = {
@@ -121,7 +124,7 @@ def print_performance_table(test_results):
     df = pd.DataFrame(data, columns=["test", "sec"])
     df["sec"] = df["sec"].apply(lambda x: f"{x:.3f}")
     print(df.to_markdown(index=False))
-                
+
 def create_parser():
     parser = argparse.ArgumentParser(
         description="Measure performance of writing and reading random arrays from disk."
@@ -140,7 +143,7 @@ def create_parser():
     parser.add_argument(
         "-p",
         "--path",
-        default=os.path.join(os.getcwd(), "ak-io-test/"),
+        default=os.path.join(get_default_temp_directory(), "ak-io-test"),
         help="Target path for measuring read/write rates",
     )
     return parser
@@ -156,7 +159,7 @@ if __name__ == "__main__":
     size = args.size
 
     write_files()
-        
+
     read_files_fixed()
     read_files()
 

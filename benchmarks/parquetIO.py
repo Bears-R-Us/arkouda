@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 
 from IO import *
+from server_util.test.server_test_util import get_default_temp_directory
+
 
 TYPES = (
     "int64",
@@ -37,7 +40,7 @@ def create_parser():
     parser.add_argument(
         "-p",
         "--path",
-        default=os.getcwd() + "ak-io-test",
+        default=os.path.join(get_default_temp_directory(), "ak-io-test"),
         help="Target path for measuring read/write rates",
     )
     parser.add_argument(
