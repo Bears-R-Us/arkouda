@@ -14,6 +14,15 @@ jobs:
       run: |
         ! git --no-pager grep -n $'\t' -- '*.chpl'
         
+  isort:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - uses: isort/isort-action@master 
+        
   mypy:
     runs-on: ubuntu-latest
     container:

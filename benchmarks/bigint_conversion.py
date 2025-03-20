@@ -1,6 +1,7 @@
 import argparse
-import arkouda as ak
 import time
+
+import arkouda as ak
 
 
 def time_bigint_conversion(N_per_locale, trials, seed, max_bits):

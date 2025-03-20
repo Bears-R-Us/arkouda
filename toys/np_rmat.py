@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
+import gc
+import math
+import sys
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import math
-import gc
-import sys
-import matplotlib.pyplot as plt
+
 
 def gen_rmat_edges(lgNv, Ne_per_v, p):
     # number of vertices

@@ -14,9 +14,9 @@ from server_util.test.server_test_util import (
 )
 from server_util.test.server_test_util import (
     TestRunningMode,
+    get_default_temp_directory,
     start_arkouda_server,
     stop_arkouda_server,
-    get_default_temp_directory,
 )
 
 os.environ["ARKOUDA_CLIENT_MODE"] = "API"

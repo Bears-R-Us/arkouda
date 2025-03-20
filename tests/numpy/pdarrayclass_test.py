@@ -4,10 +4,9 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+from arkouda.client import get_array_ranks, get_max_array_rank
 from arkouda.testing import assert_equal as ak_assert_equal
 from arkouda.testing import assert_equivalent as ak_assert_equivalent
-
-from arkouda.client import get_max_array_rank, get_array_ranks
 
 SEED = 314159
 

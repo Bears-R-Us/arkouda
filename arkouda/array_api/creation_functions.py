@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast
 
 import numpy as np
 
+import arkouda as ak
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import resolve_scalar_dtype
 from arkouda.numpy.pdarrayclass import _to_pdarray, pdarray
@@ -16,8 +17,6 @@ if TYPE_CHECKING:
         NestedSequence,
         SupportsBufferProtocol,
     )
-
-import arkouda as ak
 
 
 def asarray(

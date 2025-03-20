@@ -11,10 +11,11 @@ import logging
 import os
 import subprocess
 import sys
+
 from server_util.test.server_test_util import (
     get_arkouda_numlocales,
-    start_arkouda_server,
     run_client,
+    start_arkouda_server,
     stop_arkouda_server,
 )
 

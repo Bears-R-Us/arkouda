@@ -23,7 +23,6 @@ from numpy import (
     uint32,
     uint64,
 )
-
 from numpy.dtypes import (
     BoolDType,
     ByteDType,
