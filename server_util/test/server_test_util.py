@@ -261,21 +261,24 @@ def start_arkouda_server(
         ]
         env = None
 
-    cmd = launch_prefix.split() + raw_server_cmd + [
-        "--trace={}".format("true" if trace else "false"),
-        "--serverConnectionInfo={}".format(connection_file),
-        "-nl",
-        "{}".format(numlocales),
-        "--ServerPort={}".format(port),
-        "--logChannel=LogChannel.FILE"
-    ]
+    cmd = (
+        launch_prefix.split()
+        + raw_server_cmd
+        + [
+            "--trace={}".format("true" if trace else "false"),
+            "--serverConnectionInfo={}".format(connection_file),
+            "-nl",
+            "{}".format(numlocales),
+            "--ServerPort={}".format(port),
+            "--logChannel=LogChannel.FILE",
+        ]
+    )
 
     if server_args:
         cmd += server_args
 
     logging.info('Starting "{}"'.format(cmd))
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT, env=env)
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
     atexit.register(kill_server, process)
 
     if not host:

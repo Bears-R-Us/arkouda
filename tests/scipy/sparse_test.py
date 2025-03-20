@@ -9,7 +9,6 @@ from arkouda.scipy.sparsematrix import (
 
 
 class TestSparse:
-
     def test_utils(self):
         csc = random_sparse_matrix(10, 0.2, "CSC")
         csr = random_sparse_matrix(10, 0.2, "CSR")

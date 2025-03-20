@@ -685,7 +685,6 @@ class TestGroupBy:
     @pytest.mark.parametrize("dtype", ["bool", "str_", "int64", "float64"])
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_head_aggregation(self, size, dtype):
-
         if np.issubdtype(dtype, np.number):
             a = ak.arange(size, dtype=dtype) % 3
         else:
@@ -735,7 +734,6 @@ class TestGroupBy:
     @pytest.mark.parametrize("dtype", ["bool", "str_", "int64", "float64"])
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_tail_aggregation(self, size, dtype):
-
         if np.issubdtype(dtype, np.number):
             a = ak.arange(size, dtype=dtype) % 3
         else:

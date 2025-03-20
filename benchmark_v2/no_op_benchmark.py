@@ -16,7 +16,7 @@ def bench_ak_noop(benchmark):
     )
     benchmark.extra_info["problem_size"] = "N/A"
     benchmark.extra_info["transfer_rate"] = (
-        f"{benchmark.stats['rounds'] / benchmark.stats['total']:.4f} " f"operations per second"
+        f"{benchmark.stats['rounds'] / benchmark.stats['total']:.4f} operations per second"
     )
 
 
@@ -32,5 +32,5 @@ def bench_np_noop(benchmark):
         )
         benchmark.extra_info["problem_size"] = "N/A"
         benchmark.extra_info["transfer_rate"] = (
-            f"{benchmark.stats['rounds'] / benchmark.stats['total']:.4f} " f"operations per second"
+            f"{benchmark.stats['rounds'] / benchmark.stats['total']:.4f} operations per second"
         )

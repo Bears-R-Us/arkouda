@@ -9,13 +9,11 @@ from arkouda.testing import assert_almost_equivalent
 
 
 class TestLinalg:
-
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type1", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("data_type2", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_matmul(self, data_type1, data_type2, prob_size):
-
         size = int(sqrt(prob_size))
 
         # test on one square and two non-square products
@@ -33,7 +31,6 @@ class TestLinalg:
     @pytest.mark.parametrize("data_type", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_transpose(self, data_type, prob_size):
-
         size = int(sqrt(prob_size))
 
         # test on one square and two non-square matrices
@@ -50,7 +47,6 @@ class TestLinalg:
     @pytest.mark.parametrize("data_type2", [ak.int64, ak.float64])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_vecdot(self, data_type1, data_type2, prob_size):
-
         depth = np.random.randint(2, 10)
         width = prob_size // depth
 

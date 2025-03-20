@@ -390,8 +390,7 @@ class Array:
             return bool(s)
         else:
             raise ValueError(
-                "The truth value of an array with more than one element is ambiguous. "
-                "Use 'any' or 'all'"
+                "The truth value of an array with more than one element is ambiguous. Use 'any' or 'all'"
             )
 
     def __complex__(self: Array, /) -> complex:

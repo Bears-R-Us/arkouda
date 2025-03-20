@@ -34,7 +34,6 @@ def bumpup(a):
 
 
 class TestPdarrayClass:
-
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_reshape(self, dtype):
@@ -86,7 +85,6 @@ class TestPdarrayClass:
     @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.parametrize("axis", [0, (0,), None])
     def test_is_sorted(self, size, dtype, axis):
-
         a = ak.arange(size, dtype=dtype)
         assert ak.is_sorted(a, axis=axis)
 
@@ -100,7 +98,6 @@ class TestPdarrayClass:
     @pytest.mark.parametrize("dtype", list(set(DTYPES) - set(["bool"])))
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 2), (0, 1, 2)])
     def test_is_sorted_multidim(self, dtype, axis):
-
         a = ak.array(ak.randint(0, 100, (5, 7, 4), dtype=dtype, seed=SEED))
         sorted = ak.is_sorted(a, axis=axis)
         if isinstance(sorted, np.bool_):
@@ -168,7 +165,6 @@ class TestPdarrayClass:
         pda: ak.pdarray,
         axis: Optional[Union[int, Tuple[int, ...]]] = None,
     ):
-
         ak_op = getattr(ak.pdarrayclass, op)
         np_op = getattr(np, op)
         nda = pda.to_ndarray()

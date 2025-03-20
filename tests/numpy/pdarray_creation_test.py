@@ -74,7 +74,6 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_array_creation_error(self, dtype):
-
         rank = ak.client.get_max_array_rank() + 1
         shape, local_size = _generate_test_shape(rank, 2**rank)
         with pytest.raises(ValueError):  # try to make a too-large array ; it should raise this error
@@ -107,7 +106,6 @@ class TestPdarrayCreation:
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_large_array_creation_multi_dim(self, size):
-
         # similar to the test above, but functions that are specifically 1D (arange,
         # linspace, uniform, standard_normal, random_strings_uniform, random_string.lognormal
         # from_series and bigint_from_uint_arrays) are not included.
@@ -128,7 +126,6 @@ class TestPdarrayCreation:
                 assert len(pda) == local_size
 
     def test_array_creation_misc(self):
-
         with pytest.raises(TypeError):
             ak.array({range(0, 10)})
 
@@ -140,7 +137,6 @@ class TestPdarrayCreation:
 
     @pytest.mark.skip_if_rank_not_compiled([2])
     def test_array_creation_transpose_bug_reproducer(self):
-
         rows = 5
         cols = 5
         nda = np.random.randint(1, 10, (rows, cols))
@@ -167,7 +163,6 @@ class TestPdarrayCreation:
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_generate_shape_from_rank(self, size):
-
         for rank in multi_dim_ranks():
             local_shape, local_size = _generate_test_shape(rank, size)
             assert len(local_shape) == rank
@@ -334,7 +329,6 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("array_type", [ak.int64, ak.float64, bool])
     def test_randint_array_dtype_multi_dim(self, size, array_type):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             test_array = ak.randint(0, size, shape, array_type)
@@ -360,7 +354,6 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("dtype", NUMERIC_SCALARS)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_randint_num_dtype_multi_dim(self, size, dtype):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             for test_array in ak.randint(dtype(0), 100, shape), ak.randint(0, dtype(100), shape):
@@ -372,7 +365,6 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_randint_misc(self, size):
-
         # Test that int_scalars covers uint8, uint16, uint32
         ak.randint(low=np.uint8(1), high=np.uint16(100), size=np.uint32(100))
 
@@ -484,7 +476,6 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
     def test_zeros_dtype_multi_dim(self, size, dtype):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             zeros = ak.zeros(shape, dtype)
@@ -497,14 +488,12 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_])
     def test_zeros_match_numpy(self, size, dtype):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             assert_equivalent(ak.zeros(shape, dtype=dtype), np.zeros(shape, dtype=dtype))
 
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_zeros_error(self, dtype):
-
         rank = ak.client.get_max_array_rank() + 1
         shape, local_size = _generate_test_shape(rank, 2**rank)
         with pytest.raises(ValueError):
@@ -539,7 +528,6 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_zeros_like_multi_dim(self, size, dtype):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             ran_arr = ak.array(ak.arange(local_size, dtype=dtype)).reshape(shape)
@@ -561,7 +549,6 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
     def test_ones_dtype_multi_dim(self, size, dtype):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             ones = ak.ones(shape, dtype)
@@ -574,14 +561,12 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_])
     def test_ones_match_numpy(self, size, dtype):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             assert_equivalent(ak.ones(shape, dtype=dtype), np.ones(shape, dtype=dtype))
 
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_ones_error(self, dtype):
-
         rank = ak.client.get_max_array_rank() + 1
         shape, local_size = _generate_test_shape(rank, 2**rank)
         with pytest.raises(ValueError):
@@ -616,7 +601,6 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_ones_like_multi_dim(self, size, dtype):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             ran_arr = ak.array(ak.arange(local_size, dtype=dtype)).reshape(shape)
@@ -638,7 +622,6 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.int64, float, ak.float64, bool, ak.bool_, ak.bigint])
     def test_full_dtype_multi_dim(self, size, dtype):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             type_full = ak.full(shape, 1, dtype)
@@ -651,7 +634,6 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_])
     def test_full_match_numpy(self, size, dtype):
-
         for rank in ak.client.get_array_ranks():
             if rank == 1:
                 continue
@@ -663,7 +645,6 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_full_error(self, dtype):
-
         rank = ak.client.get_max_array_rank() + 1
         shape, local_size = _generate_test_shape(rank, 2**rank)
         with pytest.raises(ValueError):
@@ -712,7 +693,6 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_full_like_multi_dim(self, size, dtype):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             ran_arr = ak.full(shape, 5, dtype)
@@ -1014,7 +994,6 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("dtype", NUMERIC_SCALARS)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_fill_multi_dim(self, size, dtype):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             ones = ak.ones(shape)
@@ -1040,7 +1019,6 @@ class TestPdarrayCreation:
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_endian_multi_dim(self, size):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             a = np.random.randint(1, 100, shape)
@@ -1086,7 +1064,6 @@ class TestPdarrayCreation:
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_clobber_multi_dim(self, size):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             n_arrs = 10
@@ -1172,7 +1149,6 @@ class TestPdarrayCreation:
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_inferred_type_multi_dim(self, size):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             a = ak.arange(local_size).reshape(shape)
@@ -1195,7 +1171,6 @@ class TestPdarrayCreation:
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_to_ndarray_multi_dim(self, size):
-
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             ones = ak.ones(shape)

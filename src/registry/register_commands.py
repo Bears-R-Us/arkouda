@@ -33,12 +33,14 @@ chapel_scalar_types = {
     "bigint": "bigint",
 }
 
+
 class formalKind(Enum):
     ARRAY = 1
     LIST = 2
     BORROWED_CLASS = 3
     HOMOG_TUPLE = 4
     SCALAR = 5
+
 
 # type and variable names from arkouda infrastructure that could conceivable be changed in the future:
 ARGS_FORMAL_INTENT = "<default-intent>"
@@ -707,9 +709,9 @@ def gen_signature(user_proc_name, generic_args=None):
 
     Return the signature and the name of the procedure
     """
-    args_formal_kind = "borrowed" if ARGS_FORMAL_KIND == formalKind.BORROWED_CLASS else ''
+    args_formal_kind = "borrowed" if ARGS_FORMAL_KIND == formalKind.BORROWED_CLASS else ""
     args_formal_type = f"{args_formal_kind} {ARGS_FORMAL_TYPE}"
-    symtab_formal_kind = "borrowed" if SYMTAB_FORMAL_KIND == formalKind.BORROWED_CLASS else ''
+    symtab_formal_kind = "borrowed" if SYMTAB_FORMAL_KIND == formalKind.BORROWED_CLASS else ""
     symtab_formal_type = f"{symtab_formal_kind} {SYMTAB_FORMAL_TYPE}"
 
     cmd_plus_args_plus_symtab = f"cmd: string, {ARGS_FORMAL_NAME}: {args_formal_type}, {SYMTAB_FORMAL_NAME}: {symtab_formal_type}"

@@ -50,3 +50,4 @@ dependencies:
     - furo # sphinx theme
     - myst-parser
     - linkify-it-py
+    - ruff==0.11.2

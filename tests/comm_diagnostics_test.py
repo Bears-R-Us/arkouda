@@ -37,7 +37,6 @@ diagnostic_stats_functions = [
 
 
 class TestCommDiagnostics:
-
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_verbose_comm(self, size):
         start_verbose_comm()

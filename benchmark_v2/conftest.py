@@ -183,8 +183,9 @@ def startup_teardown():
             nl = get_arkouda_numlocales()
             server, _, _ = start_arkouda_server(numlocales=nl, port=port)
             print(
-                "Started arkouda_server in TEST_CLASS mode with "
-                "host: {} port: {} locales: {}".format(server, port, nl)
+                "Started arkouda_server in TEST_CLASS mode with host: {} port: {} locales: {}".format(
+                    server, port, nl
+                )
             )
         except Exception as e:
             raise RuntimeError(

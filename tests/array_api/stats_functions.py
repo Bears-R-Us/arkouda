@@ -10,7 +10,6 @@ SEED = 314159
 
 
 class TestStatsFunction:
-
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_max(self):
         a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))

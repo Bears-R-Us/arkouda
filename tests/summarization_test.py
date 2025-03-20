@@ -9,7 +9,6 @@ summarized values via reduction methods
 
 
 class TestSummarization:
-
     @classmethod
     def setup_class(cls):
         cls.na = np.linspace(1, 10, 10)

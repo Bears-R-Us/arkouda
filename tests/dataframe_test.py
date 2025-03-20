@@ -270,7 +270,6 @@ class TestDataFrame:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_round_trip_dataframe_conversion2(self, size):
-
         a = ak.arange(size, dtype="float64") + 0.001
 
         idx = ak.Index(a)
@@ -1409,7 +1408,6 @@ class TestDataFrame:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_head_tail(self, size):
-
         bool_col = ak.full(size, False, dtype=ak.bool_)
         bool_col[::2] = True
 

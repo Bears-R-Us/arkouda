@@ -539,14 +539,14 @@ def assert_arkouda_pdarray_equal(
     # both classes must be an ak.pdarray
     _check_isinstance(left, right, pdarray)
 
-    assert (
-        left.ndim == right.ndim
-    ), f"left dimension {left.ndim} does not match right dimension {right.ndim}."
+    assert left.ndim == right.ndim, (
+        f"left dimension {left.ndim} does not match right dimension {right.ndim}."
+    )
     assert left.size == right.size, f"left size {left.size} does not match right size {right.size}."
     if left.shape:
-        assert (
-            left.shape == right.shape
-        ), f"left shape {left.shape} does not match right shape {right.shape}."
+        assert left.shape == right.shape, (
+            f"left shape {left.shape} does not match right shape {right.shape}."
+        )
     else:
         assert (
             isinstance(left.shape, tuple)
@@ -555,9 +555,9 @@ def assert_arkouda_pdarray_equal(
             and len(right.shape) == 0
         ), f"left shape {left.shape} does not match right shape {right.shape}."
 
-    assert len(left) == len(
-        right
-    ), f"Arrays were not same size.  left had length {len(left)} and right had length {len(right)}"
+    assert len(left) == len(right), (
+        f"Arrays were not same size.  left had length {len(left)} and right had length {len(right)}"
+    )
 
     def _get_base(obj):
         return obj.base if getattr(obj, "base", None) is not None else obj
