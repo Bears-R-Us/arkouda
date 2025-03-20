@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>arkouda.scipy._stats_py - arkouda documentation</title>
+        <title>arkouda.scipy.sparrayclass - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
@@ -312,6 +312,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/random/index.html">arkouda.random</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/row/index.html">arkouda.row</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparrayclass/index.html">arkouda.scipy.sparrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparsematrix/index.html">arkouda.scipy.sparsematrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
@@ -376,227 +378,219 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for arkouda.scipy._stats_py</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+          <h1>Source code for arkouda.scipy.sparrayclass</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">asarray</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">chi2</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">xlogy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">getArkoudaLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">NumericDTypes</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">int_scalars</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarrays</span><span class="p">,</span> <span class="n">pdarray</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;power_divergence&quot;</span><span class="p">,</span> <span class="s2">&quot;chisquare&quot;</span><span class="p">,</span> <span class="s2">&quot;Power_divergenceResult&quot;</span><span class="p">]</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sparrayclass&quot;</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;sparray&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;create_sparray&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
 
-<div class="viewcode-block" id="Power_divergenceResult">
-<a class="viewcode-back" href="../../../autoapi/arkouda/scipy/index.html#arkouda.Power_divergenceResult">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Power_divergenceResult</span><span class="p">(</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Power_divergenceResult&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;statistic&quot;</span><span class="p">,</span> <span class="s2">&quot;pvalue&quot;</span><span class="p">))):</span>
+<div class="viewcode-block" id="sparray">
+<a class="viewcode-back" href="../../../autoapi/arkouda/sparrayclass/index.html#arkouda.scipy.sparrayclass.sparray">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">sparray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The results of a power divergence statistical test.</span>
+<span class="sd">    The class for sparse arrays. This class contains only the</span>
+<span class="sd">    attributies of the array; the data resides on the arkouda</span>
+<span class="sd">    server. When a server operation results in a new array, arkouda</span>
+<span class="sd">    will create a sparray instance that points to the array data on</span>
+<span class="sd">    the server. As such, the user should not initialize sparray</span>
+<span class="sd">    instances directly.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    statistic :    numpy.float64</span>
-<span class="sd">    pvalue :    numpy.float64</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
-
-
-
-<span class="c1"># Map from names to lambda_ values used in power_divergence().</span>
-<span class="n">_power_div_lambda_names</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;pearson&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;log-likelihood&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;freeman-tukey&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span>
-    <span class="s2">&quot;mod-log-likelihood&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;neyman&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span>
-    <span class="s2">&quot;cressie-read&quot;</span><span class="p">:</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span>
-<span class="p">}</span>
-
-
-<div class="viewcode-block" id="power_divergence">
-<a class="viewcode-back" href="../../../autoapi/arkouda/scipy/index.html#arkouda.power_divergence">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">power_divergence</span><span class="p">(</span><span class="n">f_obs</span><span class="p">,</span> <span class="n">f_exp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lambda_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the power divergence statistic and p-value.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    f_obs : pdarray</span>
-<span class="sd">        The observed frequency.</span>
-<span class="sd">    f_exp : pdarray, default = None</span>
-<span class="sd">        The expected frequency.</span>
-<span class="sd">    ddof : int</span>
-<span class="sd">        The delta degrees of freedom.</span>
-<span class="sd">    lambda_ : string, default = &quot;pearson&quot;</span>
-<span class="sd">        The power in the Cressie-Read power divergence statistic.</span>
-<span class="sd">        Allowed values: &quot;pearson&quot;, &quot;log-likelihood&quot;, &quot;freeman-tukey&quot;, &quot;mod-log-likelihood&quot;,</span>
-<span class="sd">        &quot;neyman&quot;, &quot;cressie-read&quot;</span>
-
-<span class="sd">        Powers correspond as follows:</span>
-
-<span class="sd">        &quot;pearson&quot;: 1</span>
-
-<span class="sd">        &quot;log-likelihood&quot;: 0</span>
-
-<span class="sd">        &quot;freeman-tukey&quot;: -0.5</span>
-
-<span class="sd">        &quot;mod-log-likelihood&quot;: -1</span>
-
-<span class="sd">        &quot;neyman&quot;: -2</span>
-
-<span class="sd">        &quot;cressie-read&quot;: 2 / 3</span>
-
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    arkouda.akstats.Power_divergenceResult</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; ak.connect()</span>
-<span class="sd">    &gt;&gt;&gt; from arkouda.stats import power_divergence</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.array([10, 20, 30, 10])</span>
-<span class="sd">    &gt;&gt;&gt; y = ak.array([10, 30, 20, 10])</span>
-<span class="sd">    &gt;&gt;&gt; power_divergence(x, y, lambda_=&quot;pearson&quot;)</span>
-<span class="sd">    Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)</span>
-<span class="sd">    &gt;&gt;&gt; power_divergence(x, y, lambda_=&quot;log-likelihood&quot;)</span>
-<span class="sd">    Power_divergenceResult(statistic=8.109302162163285, pvalue=0.04380595350226197)</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    -------</span>
-<span class="sd">    scipy.stats.power_divergence</span>
-<span class="sd">    arkouda.akstats.chisquare</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-
-<span class="sd">    This is a modified version of scipy.stats.power_divergence [2]</span>
-<span class="sd">    in order to scale using arkouda pdarrays.</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-
-<span class="sd">        [1] &quot;scipy.stats.power_divergence&quot;,</span>
-<span class="sd">        https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.power_divergence.html</span>
-
-<span class="sd">        [2] Scipy contributors (2024) scipy (Version v1.12.0) [Source code].</span>
-<span class="sd">        https://github.com/scipy/scipy</span>
-
+<span class="sd">    name : str</span>
+<span class="sd">        The server-side identifier for the array</span>
+<span class="sd">    dtype : dtype</span>
+<span class="sd">        The element type of the array</span>
+<span class="sd">    size : int_scalars</span>
+<span class="sd">        The size of any one dimension of the array (all dimensions are assumed to be equal sized for now)</span>
+<span class="sd">    nnz: int_scalars</span>
+<span class="sd">        The number of non-zero elements in the array</span>
+<span class="sd">    ndim : int_scalars</span>
+<span class="sd">        The rank of the array (currently only rank 2 arrays supported)</span>
+<span class="sd">    shape : Sequence[int]</span>
+<span class="sd">        A list or tuple containing the sizes of each dimension of the array</span>
+<span class="sd">    layout: str</span>
+<span class="sd">        The layout of the array (&quot;CSR&quot; or &quot;CSC&quot; are the only valid values)</span>
+<span class="sd">    itemsize : int_scalars</span>
+<span class="sd">        The size in bytes of each element</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lambda_</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">lambda_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_power_div_lambda_names</span><span class="p">:</span>
-            <span class="n">names</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">_power_div_lambda_names</span><span class="o">.</span><span class="n">keys</span><span class="p">()))[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;invalid string for lambda_: </span><span class="si">{</span><span class="n">lambda_</span><span class="si">!r}</span><span class="s2">. &quot;</span> <span class="sa">f</span><span class="s2">&quot;Valid strings are </span><span class="si">{</span><span class="n">names</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">lambda_</span> <span class="o">=</span> <span class="n">_power_div_lambda_names</span><span class="p">[</span><span class="n">lambda_</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">lambda_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">lambda_</span> <span class="o">=</span> <span class="mi">1</span>
 
-    <span class="n">f_obs_float</span> <span class="o">=</span> <span class="n">f_obs</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">akfloat64</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">mydtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">size</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span>
+        <span class="n">nnz</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span>
+        <span class="n">ndim</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span>
+        <span class="n">shape</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">layout</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">itemsize</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span>
+        <span class="n">max_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">(</span><span class="n">mydtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nnz</span> <span class="o">=</span> <span class="n">nnz</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="n">ndim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">=</span> <span class="n">itemsize</span>
+        <span class="k">if</span> <span class="n">max_bits</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="o">=</span> <span class="n">max_bits</span>
 
-    <span class="k">if</span> <span class="n">f_exp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">rtol</span> <span class="o">=</span> <span class="mf">1e-8</span>
-        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
-            <span class="n">f_obs_sum</span> <span class="o">=</span> <span class="n">f_obs_float</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="n">f_exp_sum</span> <span class="o">=</span> <span class="n">f_exp</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="n">relative_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f_obs_sum</span> <span class="o">-</span> <span class="n">f_exp_sum</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">f_obs_sum</span><span class="p">,</span> <span class="n">f_exp_sum</span><span class="p">)</span>
-            <span class="n">diff_gt_tol</span> <span class="o">=</span> <span class="p">(</span><span class="n">relative_diff</span> <span class="o">&gt;</span> <span class="n">rtol</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">diff_gt_tol</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;For each axis slice, the sum of the observed &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;frequencies must agree with the sum of the &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;expected frequencies to a relative tolerance &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;of </span><span class="si">{</span><span class="n">rtol</span><span class="si">}</span><span class="s2">, but the percent differences are:</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">relative_diff</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;deleting sparray with name </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">})</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The truth value of an array with more than one element is ambiguous.&quot;</span>
+                <span class="s2">&quot;Use a.any() or a.all()&quot;</span>
             <span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Ignore &#39;invalid&#39; errors so the edge case of a data set with length 0</span>
-        <span class="c1"># is handled without spurious warnings.</span>
-        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
-            <span class="n">f_exp</span> <span class="o">=</span> <span class="n">f_obs</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nnz</span>  <span class="c1"># This is the number of non-zero elements in the matrix</span>
 
-    <span class="c1"># `terms` is the array of terms that are summed along `axis` to create</span>
-    <span class="c1"># the test statistic.  We use some specialized code for a few special</span>
-    <span class="c1"># cases of lambda_.</span>
-    <span class="k">if</span> <span class="n">lambda_</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="c1"># Pearson&#39;s chi-squared statistic</span>
-        <span class="n">terms</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_obs_float</span> <span class="o">-</span> <span class="n">f_exp</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">f_exp</span>
-    <span class="k">elif</span> <span class="n">lambda_</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c1"># Log-likelihood ratio (i.e. G-test)</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;sparray does not support __getitem__&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">f_exp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">terms</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">xlogy</span><span class="p">(</span><span class="n">f_obs</span><span class="p">,</span> <span class="n">f_obs</span> <span class="o">/</span> <span class="n">f_exp</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">terms</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">f_obs</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">lambda_</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-        <span class="c1"># Modified log-likelihood ratio</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">f_obs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">f_exp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">terms</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">xlogy</span><span class="p">(</span><span class="n">f_exp</span><span class="p">,</span> <span class="n">f_exp</span> <span class="o">/</span> <span class="n">f_obs</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">terms</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">sparrayIterThresh</span>
 
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># General Cressie-Read power divergence.</span>
-        <span class="n">terms</span> <span class="o">=</span> <span class="n">f_obs</span> <span class="o">*</span> <span class="p">((</span><span class="n">f_obs</span> <span class="o">/</span> <span class="n">f_exp</span><span class="p">)</span> <span class="o">**</span> <span class="n">lambda_</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">terms</span> <span class="o">/=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">lambda_</span> <span class="o">*</span> <span class="p">(</span><span class="n">lambda_</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;printThresh&quot;</span><span class="p">:</span> <span class="n">sparrayIterThresh</span><span class="p">})</span>
 
-    <span class="n">stat</span> <span class="o">=</span> <span class="n">terms</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">num_obs</span> <span class="o">=</span> <span class="n">terms</span><span class="o">.</span><span class="n">size</span>
-    <span class="n">ddof</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">ddof</span><span class="p">)</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">chi2</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="n">stat</span><span class="p">,</span> <span class="n">num_obs</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">ddof</span><span class="p">)</span>
+    <span class="c1"># def __repr__(self):</span>
+    <span class="c1">#     from arkouda.client import sparrayIterThresh</span>
+    <span class="c1">#     print(&quot;Called repr&quot;)</span>
+    <span class="c1">#     return generic_msg(cmd=&quot;repr&quot;, args={&quot;array&quot;: self, &quot;printThresh&quot;: sparrayIterThresh})</span>
 
-    <span class="k">return</span> <span class="n">Power_divergenceResult</span><span class="p">(</span><span class="n">stat</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="chisquare">
-<a class="viewcode-back" href="../../../autoapi/arkouda/scipy/index.html#arkouda.chisquare">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">chisquare</span><span class="p">(</span><span class="n">f_obs</span><span class="p">,</span> <span class="n">f_exp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the chi square statistic and p-value.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    f_obs : pdarray</span>
-<span class="sd">        The observed frequency.</span>
-<span class="sd">    f_exp : pdarray, default = None</span>
-<span class="sd">        The expected frequency.</span>
-<span class="sd">    ddof : int</span>
-<span class="sd">        The delta degrees of freedom.</span>
+<span class="sd">    Converts the sparse matrix to a list of 3 pdarrays (rows, cols, vals)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    arkouda.akstats.Power_divergenceResult</span>
-
+<span class="sd">    List[ak.pdarray]</span>
+<span class="sd">        A list of 3 pdarrays which contain the row indices, the column indices,</span>
+<span class="sd">        and the values at the respective indices within the sparse matrix.</span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; ak.connect()</span>
-<span class="sd">    &gt;&gt;&gt; from arkouda.stats import chisquare</span>
-<span class="sd">    &gt;&gt;&gt; chisquare(ak.array([10, 20, 30, 10]), ak.array([10, 30, 20, 10]))</span>
-<span class="sd">    Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)</span>
-
-
-<span class="sd">    See Also</span>
-<span class="sd">    -------</span>
-<span class="sd">    scipy.stats.chisquare</span>
-<span class="sd">    arkouda.akstats.power_divergence</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">        [1] “Chi-squared test”, https://en.wikipedia.org/wiki/Chi-squared_test</span>
-
-<span class="sd">        [2] &quot;scipy.stats.chisquare&quot;,</span>
-<span class="sd">        https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chisquare.html</span>
-
+<span class="sd">    &gt;&gt;&gt; a = ak.random_sparse_matrix(100,0.2,&quot;CSR&quot;);</span>
+<span class="sd">    &gt;&gt;&gt; a.to_pdarray()</span>
+<span class="sd">    [array([1 1 1 ... 100 100 100]), array([17 21 29 ... 75 77 85]), array([0 0 0 ... 0 0 0])]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">power_divergence</span><span class="p">(</span><span class="n">f_obs</span><span class="p">,</span> <span class="n">f_exp</span><span class="o">=</span><span class="n">f_exp</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span> <span class="n">lambda_</span><span class="o">=</span><span class="s2">&quot;pearson&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="sparray.to_pdarray">
+<a class="viewcode-back" href="../../../autoapi/arkouda/sparrayclass/index.html#arkouda.scipy.sparrayclass.sparray.to_pdarray">[docs]</a>
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pdarray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="n">dtype_name</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+        <span class="c1"># check dtype for error</span>
+        <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">responseArrays</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sparse_to_pdarrays&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">array_list</span> <span class="o">=</span> <span class="n">create_pdarrays</span><span class="p">(</span><span class="n">responseArrays</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">array_list</span></div>
+
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="sparray.fill_vals">
+<a class="viewcode-back" href="../../../autoapi/arkouda/sparrayclass/index.html#arkouda.scipy.sparrayclass.sparray.fill_vals">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fill_vals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sparray and pdarray must have the same dtype for fill_vals&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;pdarray must be 1D for fill_vals&quot;</span><span class="p">)</span>
+
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;fill_sparse_vals&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,2,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;vals&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">},</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># creates sparray object</span>
+<span class="c1">#   only after:</span>
+<span class="c1">#       all values have been checked by python module and...</span>
+<span class="c1">#       server has created pdarray already before this is called</span>
+<div class="viewcode-block" id="create_sparray">
+<a class="viewcode-back" href="../../../autoapi/arkouda/sparrayclass/index.html#arkouda.scipy.sparrayclass.create_sparray">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_sparray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sparray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a sparray instance pointing to an array created by the arkouda server.</span>
+<span class="sd">    The user should not call this function directly.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    repMsg : str</span>
+<span class="sd">        space-delimited string containing the sparray name, datatype, size</span>
+<span class="sd">        dimension, shape,and itemsize</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sparray</span>
+<span class="sd">        A sparray with the same attributes as on the server</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    -----</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If there&#39;s an error in parsing the repMsg parameter into the six</span>
+<span class="sd">        values needed to create the pdarray instance</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if a server-side error is thrown in the process of creating</span>
+<span class="sd">        the pdarray instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">mydtype</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">nnz</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+        <span class="n">ndim</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;[]&quot;</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">trailing_comma_offset</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="k">if</span> <span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;,&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="n">trailing_comma_offset</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+        <span class="n">itemsize</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">8</span><span class="p">])</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;created Chapel sparse array with name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> dtype: </span><span class="si">{</span><span class="n">mydtype</span><span class="si">}</span><span class="s2"> ndim: </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;nnz:</span><span class="si">{</span><span class="n">nnz</span><span class="si">}</span><span class="s2"> shape: </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2"> layout: </span><span class="si">{</span><span class="n">layout</span><span class="si">}</span><span class="s2"> itemsize: </span><span class="si">{</span><span class="n">itemsize</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">sparray</span><span class="p">(</span>
+        <span class="n">name</span><span class="p">,</span> <span class="n">dtype</span><span class="p">(</span><span class="n">mydtype</span><span class="p">),</span> <span class="n">size</span><span class="p">,</span> <span class="n">nnz</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">layout</span><span class="p">,</span> <span class="n">itemsize</span><span class="p">,</span> <span class="n">max_bits</span>  <span class="c1"># type: ignore</span>
+    <span class="p">)</span></div>
 
 </pre></div>
         </article>

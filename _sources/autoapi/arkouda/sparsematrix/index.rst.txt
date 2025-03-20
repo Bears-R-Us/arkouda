@@ -14,10 +14,10 @@ Functions
    arkouda.sparsematrix.sparse_matrix_matrix_mult
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
-.. py:function:: create_sparse_matrix(size: int, rows: arkouda.numpy.pdarrayclass.pdarray, cols: arkouda.numpy.pdarrayclass.pdarray, vals: arkouda.numpy.pdarrayclass.pdarray, layout: str) -> arkouda.sparrayclass.sparray
+.. py:function:: create_sparse_matrix(size: int, rows: arkouda.numpy.pdarrayclass.pdarray, cols: arkouda.numpy.pdarrayclass.pdarray, vals: arkouda.numpy.pdarrayclass.pdarray, layout: str) -> arkouda.scipy.sparrayclass.sparray
 
    Create a sparse matrix from three pdarrays representing the row indices,
    column indices, and values of the non-zero elements of the matrix.
@@ -33,7 +33,7 @@ Module Contents
    :rtype: sparray
 
 
-.. py:function:: random_sparse_matrix(size: int, density: float, layout: str, dtype: Union[type, str] = int64) -> arkouda.sparrayclass.sparray
+.. py:function:: random_sparse_matrix(size: int, density: float, layout: str, dtype: Union[type, str] = int64) -> arkouda.scipy.sparrayclass.sparray
 
    Create a random sparse matrix with the specified number of rows and columns
    and the specified density. The density is the fraction of non-zero elements
@@ -54,7 +54,7 @@ Module Contents
    :raises ValueError: Raised if density is not in the range [0,1]
 
 
-.. py:function:: sparse_matrix_matrix_mult(A, B: arkouda.sparrayclass.sparray) -> arkouda.sparrayclass.sparray
+.. py:function:: sparse_matrix_matrix_mult(A, B: arkouda.scipy.sparrayclass.sparray) -> arkouda.scipy.sparrayclass.sparray
 
    Multiply two sparse matrices.
 

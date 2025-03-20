@@ -20,8 +20,8 @@ Functions
    arkouda.sparrayclass.create_sparray
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
 .. py:function:: create_sparray(repMsg: str, max_bits=None) -> sparray
 

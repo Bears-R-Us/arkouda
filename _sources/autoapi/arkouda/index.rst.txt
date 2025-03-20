@@ -126,7 +126,6 @@ Classes
    arkouda.LogLevel
    arkouda.MultiIndex
    arkouda.Optional
-   arkouda.Power_divergenceResult
    arkouda.Properties
    arkouda.Row
    arkouda.SegArray
@@ -144,7 +143,6 @@ Classes
    arkouda.pdarray
    arkouda.pdarray
    arkouda.pdarray
-   arkouda.sparray
 
 
 Functions
@@ -200,7 +198,6 @@ Functions
    arkouda.broadcast_to_shape
    arkouda.can_cast
    arkouda.cast
-   arkouda.chisquare
    arkouda.clear
    arkouda.clz
    arkouda.coargsort
@@ -212,8 +209,6 @@ Functions
    arkouda.create_pdarray
    arkouda.create_pdarray
    arkouda.create_pdarray
-   arkouda.create_sparray
-   arkouda.create_sparse_matrix
    arkouda.ctz
    arkouda.date_operators
    arkouda.date_range
@@ -280,11 +275,9 @@ Functions
    arkouda.plot_dist
    arkouda.popcount
    arkouda.power
-   arkouda.power_divergence
    arkouda.pretty_print_information
    arkouda.promote_to_common_dtype
    arkouda.randint
-   arkouda.random_sparse_matrix
    arkouda.random_strings_lognormal
    arkouda.random_strings_uniform
    arkouda.read
@@ -310,7 +303,6 @@ Functions
    arkouda.skew
    arkouda.snapshot
    arkouda.sort
-   arkouda.sparse_matrix_matrix_mult
    arkouda.sqrt
    arkouda.squeeze
    arkouda.standard_normal
@@ -15088,26 +15080,6 @@ Package Contents
 
 
 
-.. py:class:: Power_divergenceResult
-
-   Bases: :py:obj:`Power_divergenceResult`
-
-
-   The results of a power divergence statistical test.
-
-   .. attribute:: statistic
-
-
-
-      :type: numpy.float64
-
-   .. attribute:: pvalue
-
-
-
-      :type: numpy.float64
-
-
 .. py:class:: Properties
 
 .. py:data:: RegisteredSymbols
@@ -23735,37 +23707,6 @@ Package Contents
 
 
 
-.. py:function:: chisquare(f_obs, f_exp=None, ddof=0)
-
-   Computes the chi square statistic and p-value.
-
-   :param f_obs: The observed frequency.
-   :type f_obs: pdarray
-   :param f_exp: The expected frequency.
-   :type f_exp: pdarray, default = None
-   :param ddof: The delta degrees of freedom.
-   :type ddof: int
-
-   :rtype: arkouda.akstats.Power_divergenceResult
-
-   .. rubric:: Examples
-
-   >>> import arkouda as ak
-   >>> ak.connect()
-   >>> from arkouda.stats import chisquare
-   >>> chisquare(ak.array([10, 20, 30, 10]), ak.array([10, 30, 20, 10]))
-   Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)
-
-   .. seealso:: :obj:`scipy.stats.chisquare`, :obj:`arkouda.akstats.power_divergence`
-
-   .. rubric:: References
-
-   [1] “Chi-squared test”, https://en.wikipedia.org/wiki/Chi-squared_test
-
-   [2] "scipy.stats.chisquare",
-   https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chisquare.html
-
-
 .. py:function:: clear() -> None
 
    Send a clear message to clear all unregistered data from the server symbol table
@@ -24034,40 +23975,6 @@ Package Contents
        values needed to create the pdarray instance
    :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
        the pdarray instance
-
-
-.. py:function:: create_sparray(repMsg: str, max_bits=None) -> sparray
-
-   Return a sparray instance pointing to an array created by the arkouda server.
-   The user should not call this function directly.
-
-   :param repMsg: space-delimited string containing the sparray name, datatype, size
-                  dimension, shape,and itemsize
-   :type repMsg: str
-
-   :returns: A sparray with the same attributes as on the server
-   :rtype: sparray
-
-   :raises ValueError: If there's an error in parsing the repMsg parameter into the six
-       values needed to create the pdarray instance
-   :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
-       the pdarray instance
-
-
-.. py:function:: create_sparse_matrix(size: int, rows: arkouda.numpy.pdarrayclass.pdarray, cols: arkouda.numpy.pdarrayclass.pdarray, vals: arkouda.numpy.pdarrayclass.pdarray, layout: str) -> arkouda.sparrayclass.sparray
-
-   Create a sparse matrix from three pdarrays representing the row indices,
-   column indices, and values of the non-zero elements of the matrix.
-
-   :param rows: The row indices of the non-zero elements
-   :type rows: pdarray
-   :param cols: The column indices of the non-zero elements
-   :type cols: pdarray
-   :param vals: The values of the non-zero elements
-   :type vals: pdarray
-
-   :returns: A sparse matrix with the specified row and column indices and values
-   :rtype: sparray
 
 
 .. py:function:: ctz(pda: pdarray) -> pdarray
@@ -31853,65 +31760,6 @@ Package Contents
    :raises ValueError: raised if pda and power are of incompatible dimensions
 
 
-.. py:function:: power_divergence(f_obs, f_exp=None, ddof=0, lambda_=None)
-
-   Computes the power divergence statistic and p-value.
-
-   :param f_obs: The observed frequency.
-   :type f_obs: pdarray
-   :param f_exp: The expected frequency.
-   :type f_exp: pdarray, default = None
-   :param ddof: The delta degrees of freedom.
-   :type ddof: int
-   :param lambda_: The power in the Cressie-Read power divergence statistic.
-                   Allowed values: "pearson", "log-likelihood", "freeman-tukey", "mod-log-likelihood",
-                   "neyman", "cressie-read"
-
-                   Powers correspond as follows:
-
-                   "pearson": 1
-
-                   "log-likelihood": 0
-
-                   "freeman-tukey": -0.5
-
-                   "mod-log-likelihood": -1
-
-                   "neyman": -2
-
-                   "cressie-read": 2 / 3
-   :type lambda_: string, default = "pearson"
-
-   :rtype: arkouda.akstats.Power_divergenceResult
-
-   .. rubric:: Examples
-
-   >>> import arkouda as ak
-   >>> ak.connect()
-   >>> from arkouda.stats import power_divergence
-   >>> x = ak.array([10, 20, 30, 10])
-   >>> y = ak.array([10, 30, 20, 10])
-   >>> power_divergence(x, y, lambda_="pearson")
-   Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)
-   >>> power_divergence(x, y, lambda_="log-likelihood")
-   Power_divergenceResult(statistic=8.109302162163285, pvalue=0.04380595350226197)
-
-   .. seealso:: :obj:`scipy.stats.power_divergence`, :obj:`arkouda.akstats.chisquare`
-
-   .. rubric:: Notes
-
-   This is a modified version of scipy.stats.power_divergence [2]
-   in order to scale using arkouda pdarrays.
-
-   .. rubric:: References
-
-   [1] "scipy.stats.power_divergence",
-   https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.power_divergence.html
-
-   [2] Scipy contributors (2024) scipy (Version v1.12.0) [Source code].
-   https://github.com/scipy/scipy
-
-
 .. py:function:: pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -> None
 
    Prints verbose information for each object in names in a human readable format
@@ -31993,27 +31841,6 @@ Package Contents
 
    >>> ak.randint(0, 1, 5, seed=1701, dtype=ak.bool_)
    array([False True False True False])
-
-
-.. py:function:: random_sparse_matrix(size: int, density: float, layout: str, dtype: Union[type, str] = int64) -> arkouda.sparrayclass.sparray
-
-   Create a random sparse matrix with the specified number of rows and columns
-   and the specified density. The density is the fraction of non-zero elements
-   in the matrix. The non-zero elements are uniformly distributed random
-   numbers in the range [0,1).
-
-   :param size: The number of rows in the matrix, columns are equal to rows right now
-   :type size: int
-   :param density: The fraction of non-zero elements in the matrix
-   :type density: float
-   :param dtype: The dtype of the elements in the matrix (default is int64)
-   :type dtype: Union[DTypes, str]
-
-   :returns: A sparse matrix with the specified number of rows and columns
-             and the specified density
-   :rtype: sparray
-
-   :raises ValueError: Raised if density is not in the range [0,1]
 
 
 .. py:function:: random_strings_lognormal(logmean: arkouda.numpy.dtypes.numeric_scalars, logstd: arkouda.numpy.dtypes.numeric_scalars, size: arkouda.numpy.dtypes.int_scalars, characters: str = 'uppercase', seed: Optional[arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.strings.Strings
@@ -32861,107 +32688,6 @@ Package Contents
    >>> sorted = ak.sort(a)
    >>> sorted
    array([0 1 1 3 4 5 7 8 8 9])
-
-
-.. py:class:: sparray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.numpy.dtypes.int_scalars, nnz: arkouda.numpy.dtypes.int_scalars, ndim: arkouda.numpy.dtypes.int_scalars, shape: Sequence[int], layout: str, itemsize: arkouda.numpy.dtypes.int_scalars, max_bits: Optional[int] = None)
-
-   The class for sparse arrays. This class contains only the
-   attributies of the array; the data resides on the arkouda
-   server. When a server operation results in a new array, arkouda
-   will create a sparray instance that points to the array data on
-   the server. As such, the user should not initialize sparray
-   instances directly.
-
-   .. attribute:: name
-
-      The server-side identifier for the array
-
-      :type: str
-
-   .. attribute:: dtype
-
-      The element type of the array
-
-      :type: dtype
-
-   .. attribute:: size
-
-      The size of any one dimension of the array (all dimensions are assumed to be equal sized for now)
-
-      :type: int_scalars
-
-   .. attribute:: nnz
-
-      The number of non-zero elements in the array
-
-      :type: int_scalars
-
-   .. attribute:: ndim
-
-      The rank of the array (currently only rank 2 arrays supported)
-
-      :type: int_scalars
-
-   .. attribute:: shape
-
-      A list or tuple containing the sizes of each dimension of the array
-
-      :type: Sequence[int]
-
-   .. attribute:: layout
-
-      The layout of the array ("CSR" or "CSC" are the only valid values)
-
-      :type: str
-
-   .. attribute:: itemsize
-
-      The size in bytes of each element
-
-      :type: int_scalars
-
-
-   .. py:attribute:: dtype
-
-
-   .. py:method:: fill_vals(a: arkouda.numpy.pdarrayclass.pdarray)
-
-
-   .. py:attribute:: itemsize
-
-
-   .. py:attribute:: layout
-
-
-   .. py:attribute:: name
-
-
-   .. py:attribute:: ndim
-
-
-   .. py:attribute:: nnz
-
-
-   .. py:attribute:: shape
-
-
-   .. py:attribute:: size
-
-
-   .. py:method:: to_pdarray() -> List[arkouda.numpy.pdarrayclass.pdarray]
-
-
-.. py:function:: sparse_matrix_matrix_mult(A, B: arkouda.sparrayclass.sparray) -> arkouda.sparrayclass.sparray
-
-   Multiply two sparse matrices.
-
-   :param A: The left-hand sparse matrix
-   :type A: sparray
-   :param B: The right-hand sparse matrix
-   :type B: sparray
-
-   :returns: The product of the two sparse matrices
-   :rtype: sparray
 
 
 .. py:function:: sqrt(pda: pdarray, where: Union[arkouda.numpy.dtypes.bool_scalars, pdarray] = True) -> pdarray
