@@ -9,10 +9,7 @@ from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.groupbyclass import GroupBy, groupable
-from arkouda.numpy.dtypes import (
-    _datatype_check,
-    bigint,
-)
+from arkouda.numpy.dtypes import _datatype_check, bigint
 from arkouda.numpy.dtypes import bool_ as ak_bool
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as ak_float64
@@ -212,9 +209,7 @@ def cast(
             )
             if errors == ErrorMode.return_validity:
                 a, b = type_cast(str, repMsg).split("+")
-                return create_pdarray(type_cast(str, a)), create_pdarray(
-                    type_cast(str, b)
-                )
+                return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
             else:
                 return create_pdarray(type_cast(str, repMsg))
     elif isinstance(pda, Categorical):  # type: ignore
@@ -1077,9 +1072,7 @@ def arctan2(
         | Raised if both num and denom are scalars
         | Raised if where is neither boolean nor a pdarray of boolean
     """
-    if not all(
-        isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]
-    ):
+    if not all(isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
         raise TypeError(
             f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
@@ -1310,9 +1303,7 @@ def arctanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     return _trig_helper(pda, "arctanh", where)
 
 
-def _trig_helper(
-    pda: pdarray, func: str, where: Union[bool, pdarray] = True
-) -> pdarray:
+def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Returns the result of the input trig function acting element-wise on the array.
 
@@ -1513,10 +1504,7 @@ def hash(
         return _hash_single(pda, full) if isinstance(pda, pdarray) else pda.hash()
     elif isinstance(pda, List):
         if any(
-            wrong_type := [
-                not isinstance(a, (pdarray, Strings, SegArray_, Categorical_))
-                for a in pda
-            ]
+            wrong_type := [not isinstance(a, (pdarray, Strings, SegArray_, Categorical_)) for a in pda]
         ):
             raise TypeError(
                 f"Unsupported type {type(pda[np.argmin(wrong_type)])}. Supported types are pdarray,"
@@ -1599,22 +1587,16 @@ def _str_cat_where(
             new_categories = concatenate([A.categories, array([B])])
             b_code = A.codes.size + 1
         new_codes = where(condition, A.codes, b_code)
-        return Categorical.from_codes(
-            new_codes, new_categories, NAvalue=A.NAvalue
-        ).reset_categories()
+        return Categorical.from_codes(new_codes, new_categories, NAvalue=A.NAvalue).reset_categories()
 
     # both cat
     if isinstance(A, Categorical) and isinstance(B, Categorical):
         if A.codes.size != B.codes.size:
             raise TypeError("Categoricals must be same length")
-        if A.categories.size != B.categories.size or not ak_all(
-            A.categories == B.categories
-        ):
+        if A.categories.size != B.categories.size or not ak_all(A.categories == B.categories):
             A, B = A.standardize_categories([A, B])
         new_codes = where(condition, A.codes, B.codes)
-        return Categorical.from_codes(
-            new_codes, A.categories, NAvalue=A.NAvalue
-        ).reset_categories()
+        return Categorical.from_codes(new_codes, A.categories, NAvalue=A.NAvalue).reset_categories()
 
     # one strings and one str
     if isinstance(A, Strings) and isinstance(B, str):
@@ -1758,18 +1740,14 @@ def where(
             ltr = resolve_scalar_dtype(B)
             cmdstring = "wherevs_" + ltr + f"<{condition.ndim},{A.dtype}>"
         else:  # *should* be impossible because of the IsSupportedNumber check
-            raise TypeError(
-                f"where does not accept scalar type {resolve_scalar_dtype(B)}"
-            )
+            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(B)}")
 
     elif isinstance(B, pdarray) and np.isscalar(A):
         if resolve_scalar_dtype(A) in ["float64", "int64", "uint64", "bool"]:
             ltr = resolve_scalar_dtype(A)
             cmdstring = "wheresv_" + ltr + f"<{condition.ndim},{B.dtype}>"
         else:  # *should* be impossible because of the IsSupportedNumber check
-            raise TypeError(
-                f"where does not accept scalar type {resolve_scalar_dtype(A)}"
-            )
+            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
 
     else:  # both are scalars
         if resolve_scalar_dtype(A) in ["float64", "int64", "uint64", "bool"]:
@@ -1777,13 +1755,9 @@ def where(
             if resolve_scalar_dtype(B) in ["float64", "int64", "uint64", "bool"]:
                 tb = resolve_scalar_dtype(B)
             else:
-                raise TypeError(
-                    f"where does not accept scalar type {resolve_scalar_dtype(B)}"
-                )
+                raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(B)}")
         else:
-            raise TypeError(
-                f"where does not accept scalar type {resolve_scalar_dtype(A)}"
-            )
+            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
         cmdstring = "wheress_" + ta + "_" + tb + f"<{condition.ndim}>"
 
     repMsg = generic_msg(
@@ -1933,17 +1907,13 @@ def histogram2d(
         x_bins, y_bins = bins, bins
     else:
         if len(bins) != 2:
-            raise ValueError(
-                "Sequences of bins must contain two elements (num_x_bins, num_y_bins)"
-            )
+            raise ValueError("Sequences of bins must contain two elements (num_x_bins, num_y_bins)")
         x_bins, y_bins = bins
     if x_bins < 1 or y_bins < 1:
         raise ValueError("bins must be 1 or greater")
     x_bin_boundaries = linspace(x.min(), x.max(), x_bins + 1)
     y_bin_boundaries = linspace(y.min(), y.max(), y_bins + 1)
-    repMsg = generic_msg(
-        cmd="histogram2D", args={"x": x, "y": y, "xBins": x_bins, "yBins": y_bins}
-    )
+    repMsg = generic_msg(cmd="histogram2D", args={"x": x, "y": y, "xBins": x_bins, "yBins": y_bins})
     return (
         create_pdarray(type_cast(str, repMsg)).reshape(x_bins, y_bins),
         x_bin_boundaries,
@@ -2022,9 +1992,7 @@ def histogramdd(
         bins = [bins] * num_dims
     else:
         if len(bins) != num_dims:
-            raise ValueError(
-                "Sequences of bins must contain same number of elements as the sample"
-            )
+            raise ValueError("Sequences of bins must contain same number of elements as the sample")
     if any(b < 1 for b in bins):
         raise ValueError("bins must be 1 or greater")
 
@@ -2226,9 +2194,9 @@ def median(pda: pdarray) -> np.float64:
     if len(pda_srtd) % 2 == 1:
         return pda_srtd[len(pda_srtd) // 2].astype(np.float64)
     else:
-        return (
-            (pda_srtd[len(pda_srtd) // 2] + pda_srtd[len(pda_srtd) // 2 - 1]) / 2.0
-        ).astype(np.float64)
+        return ((pda_srtd[len(pda_srtd) // 2] + pda_srtd[len(pda_srtd) // 2 - 1]) / 2.0).astype(
+            np.float64
+        )
 
 
 def count_nonzero(pda: pdarray) -> np.int64:
@@ -2331,9 +2299,7 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False) -> bool
     >>> ak.array_equal(a,b,True)
     True
     """
-    if (pda_a.shape != pda_b.shape) or (
-        (pda_a.dtype == akstr_) ^ (pda_b.dtype == akstr_)
-    ):
+    if (pda_a.shape != pda_b.shape) or ((pda_a.dtype == akstr_) ^ (pda_b.dtype == akstr_)):
         return False
     elif equal_nan:
         return bool(ak_all(where(isnan(pda_a), isnan(pda_b), pda_a == pda_b)))
@@ -2406,9 +2372,7 @@ def putmask(
     ]
 
     if not ((A.dtype, Values.dtype) in ALLOWED_PUTMASK_PAIRS):
-        raise RuntimeError(
-            f"Types {A.dtype} and {Values.dtype} are not compatible in putmask."
-        )
+        raise RuntimeError(f"Types {A.dtype} and {Values.dtype} are not compatible in putmask.")
     if mask.size != A.size:
         raise RuntimeError("mask and A must be same size in putmask")
     generic_msg(
@@ -2422,9 +2386,7 @@ def putmask(
     return
 
 
-def eye(
-    rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = ak_int64
-) -> pdarray:
+def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = ak_int64) -> pdarray:
     """
     Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
     The matrix need not be square.
@@ -2631,9 +2593,7 @@ def transpose(pda: pdarray, axes: Optional[Tuple[int, ...]] = None) -> pdarray:
     if axes is not None:  # if axes was supplied, check that it's valid
         r = tuple(np.arange(pda.ndim))
         if not (np.sort(axes) == r).all():
-            raise ValueError(
-                f"{axes} is not a valid set of axes for pdarray of rank {pda.ndim}"
-            )
+            raise ValueError(f"{axes} is not a valid set of axes for pdarray of rank {pda.ndim}")
     else:  # if axes is None, create a tuple of the axes in reverse order
         axes = tuple(((pda.ndim - 1) - np.arange(pda.ndim)))
 

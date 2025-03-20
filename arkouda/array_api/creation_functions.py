@@ -10,13 +10,7 @@ from arkouda.numpy.dtypes import resolve_scalar_dtype
 from arkouda.numpy.pdarrayclass import _to_pdarray, pdarray
 
 if TYPE_CHECKING:
-    from ._typing import (
-        Array,
-        Device,
-        Dtype,
-        NestedSequence,
-        SupportsBufferProtocol,
-    )
+    from ._typing import Array, Device, Dtype, NestedSequence, SupportsBufferProtocol
 
 
 def asarray(

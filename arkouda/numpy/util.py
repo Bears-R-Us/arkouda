@@ -84,7 +84,7 @@ def generic_concat(items, ordered=True):
 def report_mem(pre=""):
     cfg = get_config()
     used = get_mem_used() / (cfg["numLocales"] * cfg["physicalMemory"])
-    print(f"{pre} mem use: {get_mem_used()/(1024**4): .2f} TB ({used:.1%})")
+    print(f"{pre} mem use: {get_mem_used() / (1024**4): .2f} TB ({used:.1%})")
 
 
 def enrich_inplace(data, keynames, aggregations, **kwargs):

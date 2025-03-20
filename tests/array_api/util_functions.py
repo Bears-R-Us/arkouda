@@ -12,14 +12,12 @@ DTYPES_WITH_BOOL = [ak.int64, ak.float64, ak.uint64, ak.uint8, ak.bool_]
 
 
 def randArr(shape, dtype):
-
     global s
     s += 2
     return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=s), dtype=dtype)
 
 
 class TestUtilFunctions:
-
     @pytest.mark.skip_if_rank_not_compiled([2])
     def test_all(self):
         a = xp.ones((10, 10), dtype=ak.bool_)

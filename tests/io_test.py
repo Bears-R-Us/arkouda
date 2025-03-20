@@ -296,7 +296,6 @@ class TestParquet:
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
     @pytest.mark.parametrize("comp", COMPRESSIONS)
     def test_edge_case_read_write(self, par_test_base_tmp, dtype, comp):
-
         np_edge_case = make_edge_case_arrays(dtype)
         ak_edge_case = ak.array(np_edge_case)
         with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
@@ -309,7 +308,6 @@ class TestParquet:
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_large_parquet_io(self, par_test_base_tmp, prob_size):
-
         with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             filename = f"{tmp_dirname}/pq_test_large_parquet"
             size = max(
@@ -805,7 +803,6 @@ class TestParquet:
 
     @pytest.mark.skip_if_nl_eq(2)
     def test_bug_4076_reproducer(self, par_test_base_tmp):
-
         with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             source_dir = "{}/resources/parquet-testing/bug_4076_reproducer".format(os.getcwd())
             for filename in os.listdir(source_dir):
@@ -879,7 +876,6 @@ class TestParquet:
 class TestHDF5:
     @pytest.fixture(autouse=True)
     def set_attributes(self):
-
         self.int_tens_pdarray = ak.array(np.random.randint(-100, 100, 1000))
         self.int_tens_ndarray = self.int_tens_pdarray.to_ndarray()
         self.int_tens_ndarray.sort()
@@ -2327,7 +2323,6 @@ class TestHDF5:
 
 
 class TestCSV:
-
     def test_csv_read_write(self, csv_test_base_tmp):
         # first test that can read csv with no header not written by Arkouda
         cols = ["ColA", "ColB", "ColC"]
@@ -2401,7 +2396,6 @@ class TestCSV:
 
 
 class TestImportExport:
-
     @classmethod
     def setup_class(cls):
         cls.pddf = pd.DataFrame(
@@ -2510,7 +2504,6 @@ class TestImportExport:
 
 
 class TestZarr:
-
     @pytest.mark.skip
     def test_zarr_read_write(self, zarr_test_base_tmp):
         import arkouda.array_api as Array

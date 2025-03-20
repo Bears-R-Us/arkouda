@@ -5,6 +5,7 @@ directory and optionally graph the results. Graphing requires that $CHPL_HOME
 points to a valid Chapel directory. This will start and stop the Arkouda server
 automatically.
 """
+
 import argparse
 import csv
 import json
@@ -302,7 +303,6 @@ def gen_lookup_map(write=False, out_file="field_lookup_map.json"):
         "or",
         "nunique",
     ]:
-
         field_lookup_map["aggregate"][f"Aggregate {op} Average rate ="] = get_lookup_dict(
             group="GroupBy.aggregate",
             name=f"bench_aggregate[{op}]",
@@ -324,7 +324,6 @@ def gen_lookup_map(write=False, out_file="field_lookup_map.json"):
         )
 
     for num in [1, 2, 8, 16]:
-
         field_lookup_map["coargsort"][f"{num}-array Average rate ="] = get_lookup_dict(
             group="Arkouda_CoArgSort",
             benchmark_name="coargsort",

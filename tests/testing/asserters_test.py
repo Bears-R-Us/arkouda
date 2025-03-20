@@ -110,7 +110,6 @@ class TestDataFrame:
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
     def test_assert_almost_equal(self, size, left_as_arkouda, right_as_arkouda):
-
         both_ak = left_as_arkouda and right_as_arkouda
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
@@ -175,7 +174,6 @@ class TestDataFrame:
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
     def test_assert_almost_equal_multi_dim(self, size, left_as_arkouda, right_as_arkouda):
-
         both_ak = left_as_arkouda and right_as_arkouda
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
@@ -224,7 +222,6 @@ class TestDataFrame:
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
     def test_assert_index_equal(self, size, left_as_arkouda, right_as_arkouda):
-
         both_ak = left_as_arkouda and right_as_arkouda
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
@@ -264,7 +261,6 @@ class TestDataFrame:
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
     def test_assert_index_equal_categorical(self, size, left_as_arkouda, right_as_arkouda):
-
         both_ak = left_as_arkouda and right_as_arkouda
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
@@ -309,7 +305,6 @@ class TestDataFrame:
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
     def test_assert_index_equal_check_exact(self, size, left_as_arkouda, right_as_arkouda):
-
         both_ak = left_as_arkouda and right_as_arkouda
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
@@ -980,7 +975,6 @@ class TestDataFrame:
             assert_equivalent(convert_left(a), convert_right(a2))
 
     def test_assert_equal_scalars(self):
-
         st = "string1"
         st2 = "string2"
 
@@ -1110,7 +1104,6 @@ class TestDataFrame:
             assert_arkouda_array_equivalent(convert_left(a), convert_right(b))
 
     def test_assert_arkouda_segarray_equal(self):
-
         seg = ak.SegArray(ak.array([0, 3, 9]), ak.arange(10))
         seg_cpy = ak.SegArray(ak.array([0, 3, 9]), ak.arange(10))
         seg_float = ak.SegArray(ak.array([0, 3, 9]), ak.arange(10, dtype="float64"))
