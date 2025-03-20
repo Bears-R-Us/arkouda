@@ -9,6 +9,9 @@ from glob import glob
 import arkouda as ak
 import numpy as np
 
+from server_util.test.server_test_util import get_default_temp_directory
+
+
 TYPES = (
     "int64",
     "float64",
@@ -237,7 +240,7 @@ def create_parser():
     parser.add_argument(
         "-p",
         "--path",
-        default=os.path.join(os.getcwd(), "ak-io-test"),
+        default=os.path.join(get_default_temp_directory(), "ak-io-test"),
         help="Target path for measuring read/write rates",
     )
     parser.add_argument(

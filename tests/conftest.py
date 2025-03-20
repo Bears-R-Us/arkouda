@@ -16,6 +16,7 @@ from server_util.test.server_test_util import (
     TestRunningMode,
     start_arkouda_server,
     stop_arkouda_server,
+    get_default_temp_directory,
 )
 
 os.environ["ARKOUDA_CLIENT_MODE"] = "API"
@@ -51,7 +52,7 @@ def pytest_addoption(parser):
     parser.addoption(
         "--temp-directory",
         action="store",
-        default=os.getcwd(),
+        default=get_default_temp_directory(),
         help="Directory to store temporary files.",
     )
 

@@ -127,6 +127,14 @@ def read_server_and_port_from_file(server_connection_info):
             continue
 
 
+def get_default_temp_directory():
+    """
+    Get the default temporary directory for arkouda server and client
+    """
+    dflt = os.getcwd()
+    return os.getenv("ARKOUDA_DEFAULT_TEMP_DIRECTORY", dflt)
+
+
 ####################
 # Server utilities #
 ####################
