@@ -259,7 +259,7 @@ class ParameterObject:
         ParameterObject - The parameter object formatted to be parsed by the chapel server
         """
         from arkouda.numpy.pdarrayclass import pdarray
-        from arkouda.sparrayclass import sparray
+        from arkouda.scipy.sparrayclass import sparray
 
         dispatch = ParameterObject.generate_dispatch()
         if isinstance(

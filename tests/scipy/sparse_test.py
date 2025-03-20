@@ -1,13 +1,18 @@
 import numpy as np
 
 import arkouda as ak
+from arkouda.scipy.sparsematrix import (
+    random_sparse_matrix,
+    sparse_matrix_matrix_mult,
+    create_sparse_matrix,
+)
 
 
 class TestSparse:
 
     def test_utils(self):
-        csc = ak.random_sparse_matrix(10, 0.2, "CSC")
-        csr = ak.random_sparse_matrix(10, 0.2, "CSR")
+        csc = random_sparse_matrix(10, 0.2, "CSC")
+        csr = random_sparse_matrix(10, 0.2, "CSR")
         vals_csc = csc.to_pdarray()[2].to_ndarray()
         vals_csr = csr.to_pdarray()[2].to_ndarray()
         assert np.all(vals_csc == 0)
@@ -73,8 +78,8 @@ class TestSparse:
 
             return list(result_rows), list(result_cols), list(result_vals)
 
-        matA = ak.random_sparse_matrix(10, 1, "CSC")  # Make it fully dense to make testing easy
-        matB = ak.random_sparse_matrix(10, 1, "CSR")  # Make it fully dense to make testing easy
+        matA = random_sparse_matrix(10, 1, "CSC")  # Make it fully dense to make testing easy
+        matB = random_sparse_matrix(10, 1, "CSR")  # Make it fully dense to make testing easy
         fill_vals_a = ak.randint(0, 10, matA.nnz)
         fill_vals_b = ak.randint(0, 10, matB.nnz)
         matA.fill_vals(fill_vals_a)
@@ -85,7 +90,7 @@ class TestSparse:
         assert np.all(valsB == fill_vals_b.to_ndarray())
         ans_rows, ans_cols, ans_vals = matmatmult(rowsA, colsA, valsA, rowsB, colsB, valsB)
 
-        result = ak.sparse_matrix_matrix_mult(matA, matB)
+        result = sparse_matrix_matrix_mult(matA, matB)
         result_rows, result_cols, result_vals = (arr.to_ndarray() for arr in result.to_pdarray())
 
         # Check the result is correct
@@ -122,7 +127,7 @@ class TestSparse:
             ]
         )
         layout = "CSC"
-        mat = ak.create_sparse_matrix(10, rows, cols, vals, layout)
+        mat = create_sparse_matrix(10, rows, cols, vals, layout)
         # Convert back to pdarrays
         rows_, cols_, vals_ = (arr.to_ndarray() for arr in mat.to_pdarray())
         # Check the values are correct
@@ -165,7 +170,7 @@ class TestSparse:
             ]
         )
         layout = "CSR"
-        mat = ak.create_sparse_matrix(10, rows, cols, vals, layout)
+        mat = create_sparse_matrix(10, rows, cols, vals, layout)
         # Convert back to pdarrays
         rows_, cols_, vals_ = (arr.to_ndarray() for arr in mat.to_pdarray())
         # Check the values are correct
