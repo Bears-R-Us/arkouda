@@ -1,6 +1,7 @@
 import argparse
-import arkouda as ak
 import time
+
+import arkouda as ak
 
 
 def time_bigint_conversion(N_per_locale, trials, seed, max_bits):
@@ -43,9 +44,7 @@ def time_bigint_conversion(N_per_locale, trials, seed, max_bits):
 
     print("bigint_to_uint_arrays Average time = {:.4f} sec".format(avg_conversion))
     print(
-        "bigint_to_uint_arrays Average rate = {:.4f} GiB/sec".format(
-            tot_bytes / 2**30 / avg_conversion
-        )
+        "bigint_to_uint_arrays Average rate = {:.4f} GiB/sec".format(tot_bytes / 2**30 / avg_conversion)
     )
     if max_bits == -1 or max_bits > 128:
         assert ak.all(a == u_arrays[0])

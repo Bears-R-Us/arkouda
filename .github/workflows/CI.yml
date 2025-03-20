@@ -9,10 +9,28 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+    - uses: psf/black@stable
+      with:
+        options: "--check --verbose"
+        src: "./arkouda"
+        version: "~= 25.0"
     - name: Check for tabs
       run: |
         ! git --no-pager grep -n $'\t' -- '*.chpl'
+        
+  isort:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - uses: isort/isort-action@master
+        with:
+          isort-version: 5.13.2
+
+
         
   mypy:
     runs-on: ubuntu-latest
@@ -39,6 +57,8 @@ jobs:
       run: |
         apt-get update && apt-get install -y python3-pip libhdf5-dev hdf5-tools libzmq3-dev libcurl4-openssl-dev
         python3 -m pip install versioneer
+    - name: Install arkouda
+      run: |        
         python3 -m pip install -e .[dev]
     - name: Arkouda make doc
       run: |

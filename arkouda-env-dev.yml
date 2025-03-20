@@ -35,8 +35,8 @@ dependencies:
   - sphinx-autodoc-typehints
   - flake8
   - mypy>=0.931
-  - black
-  - isort
+  - black==25.1.0
+  - isort==5.13.2
   - pytest-json-report
   - pytest-benchmark
   - mathjax

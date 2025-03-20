@@ -4,10 +4,9 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+from arkouda.client import get_array_ranks, get_max_array_rank
 from arkouda.testing import assert_equal as ak_assert_equal
 from arkouda.testing import assert_equivalent as ak_assert_equivalent
-
-from arkouda.client import get_max_array_rank, get_array_ranks
 
 SEED = 314159
 
@@ -24,10 +23,10 @@ NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
 #  Given an array of shape(m1,m2,...m), it will broadcast it to shape (2,m1,m2,...,m).
 
 
-def bumpup(a) :
-    if a.ndim == 1 :
+def bumpup(a):
+    if a.ndim == 1:
         blob = (2, a.size)
-    else :
+    else:
         blob = list(a.shape)
         blob.insert(0, 2)
         blob = tuple(blob)
@@ -241,23 +240,23 @@ class TestPdarrayClass:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
-    def test_dot(self, size, dtype) :
+    def test_dot(self, size, dtype):
         nda1 = np.array([1, 2, 3])
         nda2 = np.array([4, 5, 6])
         factor = 3
         pda1 = ak.array(nda1)
         pda2 = ak.array(nda2)
-        assert (ak.dot(pda1, pda2) == np.dot(nda1, nda2))
-        assert ((ak.dot(pda1, factor).to_ndarray() == np.dot(nda1, factor)).all())
-        assert ((ak.dot(factor, pda2).to_ndarray() == np.dot(factor, nda2)).all())
+        assert ak.dot(pda1, pda2) == np.dot(nda1, nda2)
+        assert (ak.dot(pda1, factor).to_ndarray() == np.dot(nda1, factor)).all()
+        assert (ak.dot(factor, pda2).to_ndarray() == np.dot(factor, nda2)).all()
         # above is single-dim ; below is multi-dim
-        if get_max_array_rank() > 1 :
-            for n in range(2, get_max_array_rank()) :
+        if get_max_array_rank() > 1:
+            for n in range(2, get_max_array_rank()):
                 nda1 = np.ascontiguousarray(bumpup(nda1))  # contiguous is needed
                 nda2 = np.ascontiguousarray(bumpup(nda2))  # for conversion to pdarray
-                if n in get_array_ranks() :
+                if n in get_array_ranks():
                     pda1 = ak.array(nda1)
                     pda2 = ak.array(nda2)
-                    assert (ak.dot(pda1, pda2) == np.sum(nda1*nda2))
-                    assert ((ak.dot(pda1, factor).to_ndarray() == np.dot(nda1, factor)).all())
-                    assert ((ak.dot(factor, pda2).to_ndarray() == np.dot(factor, nda2)).all())
+                    assert ak.dot(pda1, pda2) == np.sum(nda1 * nda2)
+                    assert (ak.dot(pda1, factor).to_ndarray() == np.dot(nda1, factor)).all()
+                    assert (ak.dot(factor, pda2).to_ndarray() == np.dot(factor, nda2)).all()

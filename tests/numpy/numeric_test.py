@@ -126,9 +126,7 @@ def _trig_and_hyp_test_helper(np_func, na, ak_func, pda):
     assert np.allclose(np_func(na), ak_func(pda).to_ndarray(), equal_nan=True)
     truth_np = alternate(True, False, len(na))
     truth_ak = ak.array(truth_np)
-    assert np.allclose(
-        np_func(na, where=True), ak_func(pda, where=True).to_ndarray(), equal_nan=True
-    )
+    assert np.allclose(np_func(na, where=True), ak_func(pda, where=True).to_ndarray(), equal_nan=True)
     assert np.allclose(na, ak_func(pda, where=False).to_ndarray(), equal_nan=True)
     assert np.allclose(
         [np_func(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
@@ -172,23 +170,17 @@ class TestNumeric:
         seed = pytest.seed if pytest.seed is not None else 8675309
         # Uniform
         assert not (ak.uniform(prob_size) == ak.uniform(prob_size)).all()
-        assert (
-            ak.uniform(prob_size, seed=seed) == ak.uniform(prob_size, seed=seed)
-        ).all()
+        assert (ak.uniform(prob_size, seed=seed) == ak.uniform(prob_size, seed=seed)).all()
 
         # Standard Normal
-        assert not (
-            ak.standard_normal(prob_size) == ak.standard_normal(prob_size)
-        ).all()
+        assert not (ak.standard_normal(prob_size) == ak.standard_normal(prob_size)).all()
         assert (
-            ak.standard_normal(prob_size, seed=seed)
-            == ak.standard_normal(prob_size, seed=seed)
+            ak.standard_normal(prob_size, seed=seed) == ak.standard_normal(prob_size, seed=seed)
         ).all()
 
         # Strings (uniformly distributed length)
         assert not (
-            ak.random_strings_uniform(1, 10, prob_size)
-            == ak.random_strings_uniform(1, 10, prob_size)
+            ak.random_strings_uniform(1, 10, prob_size) == ak.random_strings_uniform(1, 10, prob_size)
         ).all()
 
         assert (
@@ -198,8 +190,7 @@ class TestNumeric:
 
         # Strings (log-normally distributed length)
         assert not (
-            ak.random_strings_lognormal(2, 1, prob_size)
-            == ak.random_strings_lognormal(2, 1, prob_size)
+            ak.random_strings_lognormal(2, 1, prob_size) == ak.random_strings_lognormal(2, 1, prob_size)
         ).all()
         assert (
             ak.random_strings_lognormal(2, 1, prob_size, seed=seed)
@@ -220,9 +211,7 @@ class TestNumeric:
         }
 
         for t1, orig in arrays.items():
-            if (t1 == ak.float64 and cast_to == ak.bigint) or (
-                t1 == ak.str_ and cast_to == ak.bool_
-            ):
+            if (t1 == ak.float64 and cast_to == ak.bigint) or (t1 == ak.str_ and cast_to == ak.bool_):
                 # we don't support casting a float to a bigint
                 # we do support str to bool, but it's expected to contain "true/false" not numerics
                 continue
@@ -238,15 +227,11 @@ class TestNumeric:
         ans = None
         if num_type == ak.int64:
             intNAN = -(2**63)
-            strarr = ak.array(
-                ["1", "2 ", "3?", "!4", "  5", "-45", "0b101", "0x30", "N/A"]
-            )
+            strarr = ak.array(["1", "2 ", "3?", "!4", "  5", "-45", "0b101", "0x30", "N/A"])
             ans = np.array([1, 2, intNAN, intNAN, 5, -45, 0b101, 0x30, intNAN])
         elif num_type == ak.uint64:
             uintNAN = 0
-            strarr = ak.array(
-                ["1", "2 ", "3?", "-4", "  5", "45", "0b101", "0x30", "N/A"]
-            )
+            strarr = ak.array(["1", "2 ", "3?", "-4", "  5", "45", "0b101", "0x30", "N/A"])
             ans = np.array([1, 2, uintNAN, uintNAN, 5, 45, 0b101, 0x30, uintNAN])
         elif num_type == ak.float64:
             strarr = ak.array(
@@ -262,9 +247,7 @@ class TestNumeric:
                     "N/A",
                 ]
             )
-            ans = np.array(
-                [1.1, 2.2, np.nan, np.nan, 5.5, 6.6e-6, 78.91e4, 6.0, np.nan]
-            )
+            ans = np.array([1.1, 2.2, np.nan, np.nan, 5.5, 6.6e-6, 78.91e4, 6.0, np.nan])
         elif num_type == ak.bool_:
             strarr = ak.array(
                 [
@@ -484,11 +467,7 @@ class TestNumeric:
 
         assert np.allclose(
             [
-                (
-                    np.arctan2(na_num[i], na_denom[i])
-                    if truth_np[i]
-                    else na_num[i] / na_denom[i]
-                )
+                (np.arctan2(na_num[i], na_denom[i]) if truth_np[i] else na_num[i] / na_denom[i])
                 for i in range(len(na_num))
             ],
             ak.arctan2(pda_num, pda_denom, where=truth_ak).to_ndarray(),
@@ -496,11 +475,7 @@ class TestNumeric:
         )
         assert np.allclose(
             [
-                (
-                    np.arctan2(na_num[0], na_denom[i])
-                    if truth_np[i]
-                    else na_num[0] / na_denom[i]
-                )
+                (np.arctan2(na_num[0], na_denom[i]) if truth_np[i] else na_num[0] / na_denom[i])
                 for i in range(len(na_denom))
             ],
             ak.arctan2(pda_num[0], pda_denom, where=truth_ak).to_ndarray(),
@@ -508,11 +483,7 @@ class TestNumeric:
         )
         assert np.allclose(
             [
-                (
-                    np.arctan2(na_num[i], na_denom[0])
-                    if truth_np[i]
-                    else na_num[i] / na_denom[0]
-                )
+                (np.arctan2(na_num[i], na_denom[0]) if truth_np[i] else na_num[i] / na_denom[0])
                 for i in range(len(na_num))
             ],
             ak.arctan2(pda_num, pda_denom[0], where=truth_ak).to_ndarray(),
@@ -538,18 +509,10 @@ class TestNumeric:
             ak.arctan2(pda2, pda1).to_ndarray(),
             equal_nan=True,
         )
-        assert np.allclose(
-            np.arctan2(na1, 5), ak.arctan2(pda1, 5).to_ndarray(), equal_nan=True
-        )
-        assert np.allclose(
-            np.arctan2(5, na1), ak.arctan2(5, pda1).to_ndarray(), equal_nan=True
-        )
-        assert np.allclose(
-            np.arctan2(na1, 0), ak.arctan2(pda1, 0).to_ndarray(), equal_nan=True
-        )
-        assert np.allclose(
-            np.arctan2(0, na1), ak.arctan2(0, pda1).to_ndarray(), equal_nan=True
-        )
+        assert np.allclose(np.arctan2(na1, 5), ak.arctan2(pda1, 5).to_ndarray(), equal_nan=True)
+        assert np.allclose(np.arctan2(5, na1), ak.arctan2(5, pda1).to_ndarray(), equal_nan=True)
+        assert np.allclose(np.arctan2(na1, 0), ak.arctan2(pda1, 0).to_ndarray(), equal_nan=True)
+        assert np.allclose(np.arctan2(0, na1), ak.arctan2(0, pda1).to_ndarray(), equal_nan=True)
 
         with pytest.raises(TypeError):
             ak.arctan2(
@@ -627,9 +590,7 @@ class TestNumeric:
             ak.array([f"str {i}" for i in range(101)]),
             ak.array([f"str {i % 3}" for i in range(101)]),
         ]
-        for test_str, test_cat in zip(
-            test_strs, [ak.Categorical(s) for s in test_strs]
-        ):
+        for test_str, test_cat in zip(test_strs, [ak.Categorical(s) for s in test_strs]):
             cast_str = ak.cast(test_cat, ak.Strings)
             assert (cast_str == test_str).all()
             cast_cat = ak.cast(test_str, ak.Categorical)
@@ -732,9 +693,7 @@ class TestNumeric:
         assert h2[0] != h2[1]
 
         # test categorical hash
-        categories, codes = ak.array([f"str {i}" for i in range(3)]), ak.randint(
-            0, 3, 10**5
-        )
+        categories, codes = ak.array([f"str {i}" for i in range(3)]), ak.randint(0, 3, 10**5)
         my_cat = ak.Categorical.from_codes(codes=codes, categories=categories)
         h1, h2 = ak.hash(my_cat)
         rev = ak.arange(10**5)[::-1]
@@ -1015,9 +974,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist())
-            if akdtype(t) == "float64"
-            else (a == b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
         )
 
         # test on one square and two non-square matrices
@@ -1042,9 +999,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist())
-            if akdtype(t) == "float64"
-            else (a == b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
         )
 
         # test on one square and two non-square matrices
@@ -1099,9 +1054,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist())
-            if akdtype(t) == "float64"
-            else (a == b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
         )
 
         # test on one square and two non-square matrices
@@ -1125,9 +1078,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist())
-            if akdtype(t) == "float64"
-            else (a == b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
         )
 
         # test on one square and two non-square products
@@ -1156,9 +1107,7 @@ class TestNumeric:
         # ints and bools are checked for equality; floats are checked for closeness
 
         check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist())
-            if akdtype(t) == "float64"
-            else (a == b).all()
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
         )
 
         pda_a = ak.randint(0, 10, (depth, width), dtype=data_type1)
@@ -1192,9 +1141,7 @@ class TestNumeric:
             pda_b = ak.array(temp)
             assert ak.array_equal(pda_a, pda_b)  # matching string arrays
             pda_c = pda_b[:-1]
-            assert not (
-                ak.array_equal(pda_a, pda_c)
-            )  # matching except c is shorter by 1
+            assert not (ak.array_equal(pda_a, pda_c))  # matching except c is shorter by 1
             temp = np.random.choice(VOWELS_AND_SUCH, prob_size)
             pda_b = ak.array(temp)
             assert not (ak.array_equal(pda_a, pda_b))  # mismatching string arrays
@@ -1209,9 +1156,7 @@ class TestNumeric:
             nda_b = nda_a.copy() if matching else np.random.uniform(0, 100, prob_size)
             pda_a = ak.array(nda_a)
             pda_b = ak.array(nda_b) if same_size else ak.array(nda_b[:-1])
-            assert ak.array_equal(pda_a, pda_b, nan_handling) == (
-                matching and same_size
-            )
+            assert ak.array_equal(pda_a, pda_b, nan_handling) == (matching and same_size)
         else:  # other types have simpler tests
             pda_a = ak.random.randint(0, 100, prob_size, dtype=data_type)
             if matching:  # known to match?

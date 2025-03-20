@@ -1,0 +1,15 @@
+[tool.black]
+  line-length = 105
+  extend-exclude = '''
+/(
+  tests/deprecated/
+  | versioneer.py
+  | toys
+  | server_util
+  | examples
+  | runs
+)
+'''
+[tool.isort]
+  profile = "black"
+  extend_skip_glob = ["*__init__.py", "*deprecated*", "*versioneer.py", "*toys*", "*examples*", "*server_util*"]

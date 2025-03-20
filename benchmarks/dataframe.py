@@ -32,9 +32,7 @@ def generate_dataframe(N, seed):
         elif d == ak.Strings:
             df_dict[key] = ak.random_strings_uniform(minlen=5, maxlen=6, size=N, seed=seed)
         elif d == ak.SegArray:
-            df_dict[key] = ak.segarray(
-                ak.arange(0, N), ak.array(np.random.randint(0, 2**32, N))
-            )
+            df_dict[key] = ak.segarray(ak.arange(0, N), ak.array(np.random.randint(0, 2**32, N)))
     return ak.DataFrame(df_dict)
 
 
@@ -74,8 +72,9 @@ def time_ak_df_display(N_per_locale, trials, seed):
         elif isinstance(col_obj, ak.Strings):
             nbytes += col_obj.nbytes * col_obj.entry.itemsize
         elif isinstance(col_obj, ak.SegArray):
-            nbytes += col_obj.values.size * col_obj.values.itemsize + \
-                      (col_obj.segments.size * col_obj.segments.itemsize)
+            nbytes += col_obj.values.size * col_obj.values.itemsize + (
+                col_obj.segments.size * col_obj.segments.itemsize
+            )
 
     for op, t in tavg.items():
         print("  {} Average time = {:.4f} sec".format(op, t))

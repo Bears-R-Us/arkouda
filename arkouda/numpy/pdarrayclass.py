@@ -21,15 +21,9 @@ from arkouda.numpy.dtypes import (
     bigint,
 )
 from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import (
-    bool_scalars,
-    dtype,
-)
+from arkouda.numpy.dtypes import bool_scalars, dtype
 from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import (
-    get_byteorder,
-    get_server_byteorder,
-)
+from arkouda.numpy.dtypes import get_byteorder, get_server_byteorder
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import (
     int_scalars,
@@ -193,9 +187,7 @@ def parse_single_value(msg: str) -> Union[numpy_scalars, int]:
         if mydtype == ak_uint64:
             if value.startswith("-"):
                 value = value.strip("-")
-                uint_value = (
-                    np.uint64(np.iinfo(np.uint64).max) - ak_uint64(value) + ak_uint64(1)
-                )
+                uint_value = np.uint64(np.iinfo(np.uint64).max) - ak_uint64(value) + ak_uint64(1)
                 return uint_value
             return ak_uint64(value)
         return mydtype.type(value)
@@ -217,9 +209,7 @@ def _create_scalar_array(value):
     )
 
 
-def _slice_index(
-    array: pdarray, starts: List[int], stops: List[int], strides: List[int]
-):
+def _slice_index(array: pdarray, starts: List[int], stops: List[int], strides: List[int]):
     """
     Slice a pdarray with a set of start, stop and stride values
     """
@@ -258,9 +248,7 @@ def _parse_index_tuple(key, shape):
                 # Interpret negative key as offset from end of array
                 k += int(shape[dim])
             if k < 0 or k >= int(shape[dim]):
-                raise IndexError(
-                    f"index {k} is out of bounds in dimension {dim} with size {shape[dim]}"
-                )
+                raise IndexError(f"index {k} is out of bounds in dimension {dim} with size {shape[dim]}")
             else:
                 # treat this as a single-element slice
                 slices.append((k, k + 1, 1))
@@ -408,9 +396,7 @@ class pdarray:
             "**",
         ]
     )
-    OpEqOps = frozenset(
-        ["+=", "-=", "*=", "/=", "%=", "//=", "&=", "|=", "^=", "<<=", ">>=", "**="]
-    )
+    OpEqOps = frozenset(["+=", "-=", "*=", "/=", "%=", "//=", "&=", "|=", "^=", "<<=", ">>=", "**="])
     objType = "pdarray"
 
     __array_priority__ = 1000
@@ -457,16 +443,12 @@ class pdarray:
     def __str__(self):
         from arkouda.client import pdarrayIterThresh
 
-        return generic_msg(
-            cmd="str", args={"array": self, "printThresh": pdarrayIterThresh}
-        )
+        return generic_msg(cmd="str", args={"array": self, "printThresh": pdarrayIterThresh})
 
     def __repr__(self):
         from arkouda.client import pdarrayIterThresh
 
-        return generic_msg(
-            cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh}
-        )
+        return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
 
     @property
     def shape(self):
@@ -489,23 +471,17 @@ class pdarray:
                     self._max_bits = generic_msg(cmd="get_max_bits", args={"array": self})
                 return int(self._max_bits)
             else:
-                raise ValueError(
-                    f"max_bits cannot currently be fetched for {self.ndim}D pdarrays"
-                )
+                raise ValueError(f"max_bits cannot currently be fetched for {self.ndim}D pdarrays")
         return None
 
     @max_bits.setter
     def max_bits(self, max_bits):
         if self.dtype == bigint:
             if self.ndim == 1:
-                generic_msg(
-                    cmd="set_max_bits", args={"array": self, "max_bits": max_bits}
-                )
+                generic_msg(cmd="set_max_bits", args={"array": self, "max_bits": max_bits})
                 self._max_bits = max_bits
             else:
-                raise ValueError(
-                    f"max_bits cannot currently be set for {self.ndim}D pdarrays"
-                )
+                raise ValueError(f"max_bits cannot currently be set for {self.ndim}D pdarrays")
 
     def equals(self, other) -> bool_scalars:
         """
@@ -832,17 +808,13 @@ class pdarray:
     def __eq__(self, other):  # type: ignore
         if other is None:
             return False
-        elif (self.dtype == "bool_") and (
-            isinstance(other, pdarray) and (other.dtype == "bool_")
-        ):
+        elif (self.dtype == "bool_") and (isinstance(other, pdarray) and (other.dtype == "bool_")):
             return ~(self ^ other)
         else:
             return self._binop(other, "==")
 
     def __ne__(self, other):  # type: ignore
-        if (self.dtype == "bool_") and (
-            isinstance(other, pdarray) and (other.dtype == "bool_")
-        ):
+        if (self.dtype == "bool_") and (isinstance(other, pdarray) and (other.dtype == "bool_")):
             return self ^ other
         else:
             return self._binop(other, "!=")
@@ -962,11 +934,7 @@ class pdarray:
 
     # overload a[] to treat like list
     def __getitem__(self, key):
-        if (
-            self.ndim == 1
-            and np.isscalar(key)
-            and (resolve_scalar_dtype(key) in ["int64", "uint64"])
-        ):
+        if self.ndim == 1 and np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
             orig_key = key
             if key < 0:
                 # Interpret negative key as offset from end of array
@@ -981,9 +949,7 @@ class pdarray:
                 )
                 return parse_single_value(repMsg)
             else:
-                raise IndexError(
-                    f"[int] {orig_key} is out of bounds with size {self.size}"
-                )
+                raise IndexError(f"[int] {orig_key} is out of bounds with size {self.size}")
 
         if self.ndim == 1 and isinstance(key, slice):
             (start, stop, stride) = key.indices(self.size)
@@ -1001,9 +967,7 @@ class pdarray:
 
         if isinstance(key, tuple):
             # handle None and Ellipsis in the key tuple
-            (clean_key, num_none, key_with_none) = _parse_none_and_ellipsis_keys(
-                key, self.ndim
-            )
+            (clean_key, num_none, key_with_none) = _parse_none_and_ellipsis_keys(key, self.ndim)
 
             # parse the tuple key into slices, scalars, and pdarrays
             ((starts, stops, strides), scalar_axes, pdarray_axes) = _parse_index_tuple(
@@ -1143,15 +1107,11 @@ class pdarray:
                             "array": self,
                             "idx": key,
                             "value": self.format_other(_value),
-                            "max_bits": (
-                                self.max_bits if self.max_bits is not None else 0
-                            ),
+                            "max_bits": (self.max_bits if self.max_bits is not None else 0),
                         },
                     )
                 else:
-                    raise IndexError(
-                        f"index {orig_key} is out of bounds with size {self.size}"
-                    )
+                    raise IndexError(f"index {orig_key} is out of bounds with size {self.size}")
             elif isinstance(key, pdarray):
                 if isinstance(_value, pdarray):
                     generic_msg(
@@ -1191,9 +1151,7 @@ class pdarray:
                             "stops": stop,
                             "strides": stride,
                             "value": self.format_other(_value),
-                            "max_bits": (
-                                self.max_bits if self.max_bits is not None else 0
-                            ),
+                            "max_bits": (self.max_bits if self.max_bits is not None else 0),
                         },
                     )
             else:
@@ -1213,9 +1171,7 @@ class pdarray:
                         starts.append(start)
                         stops.append(stop)
                         strides.append(stride)
-                    elif np.isscalar(k) and (
-                        resolve_scalar_dtype(k) in ["int64", "uint64"]
-                    ):
+                    elif np.isscalar(k) and (resolve_scalar_dtype(k) in ["int64", "uint64"]):
                         if k < 0:
                             # Interpret negative key as offset from end of array
                             k += int(self.shape[dim])
@@ -1234,9 +1190,7 @@ class pdarray:
                     if len(starts) == self.ndim:
                         # TODO: correctly handle non-unit strides when determining whether the
                         # value shape matches the slice shape
-                        slice_shape = tuple(
-                            [stops[i] - starts[i] for i in range(self.ndim)]
-                        )
+                        slice_shape = tuple([stops[i] - starts[i] for i in range(self.ndim)])
 
                         # check that the slice is within the bounds of the array
                         for i in range(self.ndim):
@@ -1299,9 +1253,7 @@ class pdarray:
                             "array": self,
                             "idx": key,
                             "value": self.format_other(_value),
-                            "max_bits": (
-                                self.max_bits if self.max_bits is not None else 0
-                            ),
+                            "max_bits": (self.max_bits if self.max_bits is not None else 0),
                         },
                     )
                 else:
@@ -1313,9 +1265,7 @@ class pdarray:
                             "stops": tuple(stops),
                             "strides": tuple(strides),
                             "value": self.format_other(_value),
-                            "max_bits": (
-                                self.max_bits if self.max_bits is not None else 0
-                            ),
+                            "max_bits": (self.max_bits if self.max_bits is not None else 0),
                         },
                     )
             elif isinstance(key, slice):
@@ -1341,19 +1291,13 @@ class pdarray:
                                 "stops": tuple(self.shape),
                                 "strides": tuple([1 for _ in range(self.ndim)]),
                                 "value": self.format_other(_value),
-                                "max_bits": (
-                                    self.max_bits if self.max_bits is not None else 0
-                                ),
+                                "max_bits": (self.max_bits if self.max_bits is not None else 0),
                             },
                         )
                 else:
-                    raise ValueError(
-                        f"Incompatable slice for multidimensional array: {key}"
-                    )
+                    raise ValueError(f"Incompatable slice for multidimensional array: {key}")
             else:
-                raise TypeError(
-                    f"Unhandled key type for ND arrays: {key} ({type(key)})"
-                )
+                raise TypeError(f"Unhandled key type for ND arrays: {key} ({type(key)})")
 
     @property
     def nbytes(self):
@@ -1980,9 +1924,7 @@ class pdarray:
         from arkouda.numpy import value_counts
 
         if self.ndim > 1:
-            raise ValueError(
-                f"value_counts is only implemented for 1D arrays; got {self.ndim}"
-            )
+            raise ValueError(f"value_counts is only implemented for 1D arrays; got {self.ndim}")
 
         return value_counts(self)
 
@@ -2093,9 +2035,7 @@ class pdarray:
         >>> a.bigint_to_uint_arrays()
         [array([1 1 1 1 1]), array([0 1 2 3 4])]
         """
-        ret_list = json.loads(
-            generic_msg(cmd="bigint_to_uint_list", args={"array": self})
-        )
+        ret_list = json.loads(generic_msg(cmd="bigint_to_uint_list", args={"array": self}))
         return list(reversed([create_pdarray(a) for a in ret_list]))
 
     def reshape(self, *shape):
@@ -2222,9 +2162,7 @@ class pdarray:
                     shape
                 )
             arrs = [n.to_ndarray().astype("O") for n in self.bigint_to_uint_arrays()]
-            return builtins.sum(
-                n << (64 * (len(arrs) - i - 1)) for i, n in enumerate(arrs)
-            )
+            return builtins.sum(n << (64 * (len(arrs) - i - 1)) for i, n in enumerate(arrs))
 
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
@@ -2751,13 +2689,9 @@ class pdarray:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
 
         if file_format.lower() == "hdf5":
-            return self.to_hdf(
-                prefix_path, dataset=dataset, mode=mode, file_type=file_type
-            )
+            return self.to_hdf(prefix_path, dataset=dataset, mode=mode, file_type=file_type)
         elif file_format.lower() == "parquet":
-            return self.to_parquet(
-                prefix_path, dataset=dataset, mode=mode, compression=compression
-            )
+            return self.to_parquet(prefix_path, dataset=dataset, mode=mode, compression=compression)
         else:
             raise ValueError("Valid file types are HDF5 or Parquet")
 
@@ -2811,9 +2745,7 @@ class pdarray:
         >>> b.unregister()
         """
         if self.registered_name is not None and self.is_registered():
-            raise RegistrationError(
-                f"This object is already registered as {self.registered_name}"
-            )
+            raise RegistrationError(f"This object is already registered as {self.registered_name}")
         generic_msg(
             cmd="register",
             args={
@@ -2942,9 +2874,7 @@ class pdarray:
         elif self.dtype == bigint:
             return self.bigint_to_uint_arrays()
         else:
-            raise TypeError(
-                "Grouping is only supported on numeric data (integral types) and bools."
-            )
+            raise TypeError("Grouping is only supported on numeric data (integral types) and bools.")
 
 
 # end pdarray class def
@@ -3678,9 +3608,7 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
     ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.
     """
     return parse_single_value(
-        generic_msg(
-            cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y}
-        )
+        generic_msg(cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
     )
 
 
@@ -3727,9 +3655,7 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
     """
     return parse_single_value(
-        generic_msg(
-            cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y}
-        )
+        generic_msg(cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
     )
 
 
@@ -4096,9 +4022,7 @@ def parity(pda: pdarray) -> pdarray:
         raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
     if pda.dtype == bigint:
         # XOR the parity of the underlying uint array to get the parity of the bigint array
-        return reduce(
-            lambda x, y: x ^ y, [parity(a) for a in pda.bigint_to_uint_arrays()]
-        )
+        return reduce(lambda x, y: x ^ y, [parity(a) for a in pda.bigint_to_uint_arrays()])
     else:
         repMsg = generic_msg(
             cmd=f"parity<{pda.dtype},{pda.ndim}>",
@@ -4299,17 +4223,11 @@ def rotl(x, rot) -> pdarray:
     array([0, 2, 8, 24, 64, 160, 384, 896, 2048, 4608])
     """
     if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
-        if (
-            isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]
-        ) or isSupportedInt(rot):
+        if (isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]) or isSupportedInt(rot):
             return x._binop(rot, "<<<")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif (
-        isSupportedInt(x)
-        and isinstance(rot, pdarray)
-        and rot.dtype in [akint64, akuint64]
-    ):
+    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
         return rot._r_binop(x, "<<<")
     else:
         raise TypeError("Rotations only supported on integers")
@@ -4343,17 +4261,11 @@ def rotr(x, rot) -> pdarray:
     array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
     """
     if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
-        if (
-            isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]
-        ) or isSupportedInt(rot):
+        if (isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]) or isSupportedInt(rot):
             return x._binop(rot, ">>>")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif (
-        isSupportedInt(x)
-        and isinstance(rot, pdarray)
-        and rot.dtype in [akint64, akuint64]
-    ):
+    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
         return rot._r_binop(x, ">>>")
     else:
         raise TypeError("Rotations only supported on integers")
@@ -4556,9 +4468,7 @@ def mod(dividend, divisor) -> pdarray:
 
 
 @typechecked
-def fmod(
-    dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, numeric_scalars]
-) -> pdarray:
+def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, numeric_scalars]) -> pdarray:
     """
     Returns the element-wise remainder of division.
 
@@ -4583,8 +4493,7 @@ def fmod(
         or if any scalar or pdarray element is not one of int, uint, float, bigint
     """
     if not builtins.all(
-        isSupportedNumber(arg) or isinstance(arg, pdarray)
-        for arg in [dividend, divisor]
+        isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [dividend, divisor]
     ):
         raise TypeError(
             f"Unsupported types {type(dividend)} and/or {type(divisor)}. Supported "
@@ -4650,9 +4559,7 @@ def fmod(
 
 
 @typechecked
-def broadcast_if_needed(
-    x1: pdarray, x2: pdarray
-) -> Tuple[pdarray, pdarray, bool, bool]:
+def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, bool, bool]:
     from arkouda.numpy.util import broadcast_dims
 
     if x1.shape == x2.shape:

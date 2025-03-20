@@ -131,7 +131,7 @@ setup(
         "pyarrow",
         "scipy<=1.13.1; python_version<='3.12'",
         "scipy; python_version>'3.12'",
-        "cloudpickle"
+        "cloudpickle",
         # chapel-py
     ],
     # List additional groups of dependencies here (e.g. development
@@ -151,8 +151,8 @@ setup(
             "sphinx-argparse",
             "sphinx-autoapi",
             "mypy>=0.931",
-            "black",
-            "isort",
+            "black==25.1.0",
+            "isort==5.13.2",
             "flake8",
             "furo",
             "myst-parser",

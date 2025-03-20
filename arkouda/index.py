@@ -66,8 +66,10 @@ class Index:
     Index([1, 2, 3], dtype='int64')
 
     """
+
     def _set_dtype(self):
         from arkouda.numpy.dtypes import dtype as ak_dtype
+
         if isinstance(self.values, List):
             # Infer dtype from first element
             self.dtype = self[0].dtype
