@@ -44,6 +44,7 @@ def bumpup(a):
 
 
 class TestStats:
+    @pytest.mark.skip_if_scipy_version_greater_than("1.13.1")
     @pytest.mark.parametrize(
         "lambda_",
         [
@@ -93,6 +94,7 @@ class TestStats:
 
                     assert np.allclose(ak_power_div, scipy_power_div, equal_nan=True)
 
+    @pytest.mark.skip_if_scipy_version_greater_than("1.13.1")
     @pytest.mark.parametrize("ddof", DDOF)
     @pytest.mark.parametrize("pair", PAIRS)
     def test_chisquare(self, ddof, pair):
