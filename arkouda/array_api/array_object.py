@@ -178,7 +178,7 @@ class Array:
 
 #       return permute_dims(self, _axes)
 
-        return asarray(ak.transpose(self._array,axes))
+        return asarray(ak.transpose(self._array, axes))
 
     def __str__(self: Array, /) -> str:
         """
@@ -594,7 +594,7 @@ class Array:
         ak.matmul()
         """
 #       raise ValueError("Not implemented")
-        return asarray(ak.matmul(self._array,other._array))
+        return asarray(ak.matmul(self._array, other._array))
 
     def __mod__(self: Array, other: Union[int, float, Array], /) -> Array:
         """
