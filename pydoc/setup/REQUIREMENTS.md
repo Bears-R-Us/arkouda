@@ -30,7 +30,7 @@ The following python packages are required by the Arkouda client package.
 - `hdf5>=1.12.2`
 - `pip`
 - `types-tabulate`
-- `pytables>=3.8.0`
+- `pytables>=3.9.0`
 - `pyarrow`
 - `libiconv`
 - `libidn2`
