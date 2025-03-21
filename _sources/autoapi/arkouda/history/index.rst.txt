@@ -62,6 +62,16 @@ Module Contents
       :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
       :rtype: List[str]
 
+      .. rubric:: Examples
+
+      >>> from arkouda.history import NotebookHistoryRetriever
+      >>> h = NotebookHistoryRetriever()
+      >>> 1+2
+      >>> 4*6
+      >>> 2**3
+      >>> h.retrieve(num_commands=3)
+      ['1+2', '4*6', '2**3']
+
 
 
 .. py:class:: ShellHistoryRetriever
@@ -85,6 +95,17 @@ Module Contents
 
       :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
       :rtype: List[str]
+
+      .. rubric:: Examples
+
+      >>> from arkouda.history import ShellHistoryRetriever
+      >>> import readline
+      >>> h = ShellHistoryRetriever()
+      >>> readline.clear_history()
+      >>> 1 + 2
+      3
+      >>> h.retrieve()
+      [' 1 + 2', 'h.retrieve()']
 
 
 
