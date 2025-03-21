@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional, Tuple, Union
+from typing import List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from typeguard import typechecked
@@ -6,6 +6,7 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarraycreation import arange, array
 
 __all__ = ["vstack", "delete"]
 
@@ -76,7 +77,7 @@ def vstack(
 @typechecked
 def delete(
     arr: pdarray,
-    obj: Union[pdarray, slice, int],
+    obj: Union[slice, int, Sequence[int], Sequence[bool], pdarray],
     axis: Optional[int] = None,
 ) -> pdarray:
     """
@@ -86,9 +87,9 @@ def delete(
     ----------
     arr : pdarray
         The array to remove elements from
-    obj : Union[pdarray, slice, int]
+    obj : slice, int, Sequence of int, Sequence of bool, or pdarray
         The indices to remove from 'arr'. If obj is a pdarray, it must
-        have an integer dtype.
+        have an integer or bool dtype.
     axis : Optional[int], optional
         The axis along which to remove elements. If None, the array will
         be flattened before removing elements. Defaults to None.
@@ -99,31 +100,57 @@ def delete(
         A copy of 'arr' with elements removed
     """
 
-    if axis is None:
+    shape = arr.shape
+
+    if axis is None and arr.ndim != 1:
         # flatten the array if axis is None
         _arr = create_pdarray(
             generic_msg(
-                cmd=f"reshape{arr.ndim}Dx1D",
+                cmd=f"reshape<{arr.dtype},{arr.ndim},1>",
                 args={
-                    "name": arr,
-                    "shape": (arr.size,),
+                    "name": arr.name,
+                    "shape": arr.size,
                 },
-            )
+            ),
         )
         _axis = 0
+        shape = _arr.shape
+    elif axis is None:
+        _axis = 0
+        _arr = arr
     else:
         _arr = arr
         _axis = axis
-
+    slice_weight = 1
+    for i in range(_axis + 1, len(shape)):
+        slice_weight *= shape[i]
     if isinstance(obj, pdarray):
+        if obj.dtype == int and (shape[_axis] / max(obj.size, 1)) * slice_weight >= 100:
+            alg_choice = "BulkCopy"
+        else:
+            alg_choice = "AggCopy"
         return create_pdarray(
             generic_msg(
-                cmd=f"delete{_arr.ndim}D",
+                cmd=f"delete{alg_choice}<{_arr.dtype},{_arr.ndim},{obj.dtype},{obj.ndim}>",
                 args={
-                    "arr": _arr,
-                    "obj": obj,
-                    # TODO: maybe expose this as an optional argument? Or sort the array first?
-                    "obj_sorted": False,
+                    "eIn": _arr,
+                    "del": obj,
+                    "axis": _axis,
+                },
+            )
+        )
+    elif isinstance(obj, Sequence):
+        obj2 = array(obj)
+        if obj2.dtype == int and (shape[_axis] / max(obj2.size, 1)) * slice_weight >= 100:
+            alg_choice = "BulkCopy"
+        else:
+            alg_choice = "AggCopy"
+        return create_pdarray(
+            generic_msg(
+                cmd=f"delete{alg_choice}<{_arr.dtype},{_arr.ndim},{obj2.dtype},{obj2.ndim}>",
+                args={
+                    "eIn": _arr,
+                    "del": obj2,
                     "axis": _axis,
                 },
             )
@@ -136,17 +163,19 @@ def delete(
         elif isinstance(obj, slice):
             start, stop, stride = obj.indices(_arr.shape[_axis])
         else:
-            raise ValueError("obj must be an integer, pdarray, or slice")
-
+            raise ValueError("obj must be a slice, int, Sequence of int, or Sequence of bool")
+        del_slice = arange(start, stop, stride)
+        if del_slice.dtype == int and (shape[_axis] / max(del_slice.size, 1)) * slice_weight >= 100:
+            alg_choice = "BulkCopy"
+        else:
+            alg_choice = "AggCopy"
         return create_pdarray(
             generic_msg(
-                cmd=f"deleteSlice{_arr.ndim}D",
+                cmd=f"delete{alg_choice}<{_arr.dtype},{_arr.ndim},{del_slice.dtype},{del_slice.ndim}>",
                 args={
-                    "arr": _arr,
-                    "start": start,
-                    "stop": stop,
-                    "stride": stride,
+                    "eIn": _arr,
                     "axis": _axis,
+                    "del": del_slice,
                 },
             )
         )
