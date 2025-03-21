@@ -19,9 +19,9 @@ Using `pip install`, the following applications can be downloaded to your arkoud
 cd <path_to_arkouda>/arkouda
 
 # Download each of the following applications
-pip install black==25.1.0
+pip install black
 pip install flake8
-pip install isort==5.13.2
+pip install isort
 ```
 
 ### Add a local external tool 

@@ -664,12 +664,6 @@ doc-clean: stub-clean
 
 check:
 	@$(ARKOUDA_PROJECT_DIR)/server_util/test/checkInstall
-	
-black:
-	black .
-
-isort:
-	isort --gitignore --float-to-top .
 
 #################
 #### Test.mk ####
