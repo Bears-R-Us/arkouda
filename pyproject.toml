@@ -10,6 +10,6 @@
   | runs
 )
 '''
-[tool.isort]
-  profile = "black"
-  extend_skip_glob = ["*__init__.py", "*deprecated*", "*versioneer.py", "*toys*", "*examples*", "*server_util*"]
+#tool.isort]
+# profile = "black"
+# extend_skip_glob = ["*__init__.py", "*deprecated*", "*versioneer.py", "*toys*", "*examples*", "*server_util*"]
