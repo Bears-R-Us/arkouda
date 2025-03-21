@@ -1,3 +1,3 @@
 # flake8: noqa
 
-from arkouda.numpy._numeric import *
+from arkouda.numpy.numeric import *

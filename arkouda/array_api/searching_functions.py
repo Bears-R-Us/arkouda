@@ -84,7 +84,7 @@ def where(condition: Array, x1: Array, x2: Array, /) -> Array:
 
     a = broadcasted[1]._array
     b = broadcasted[2]._array
-    c = akcast(broadcasted[0]._array, ak.dtypes.bool_)
+    c = akcast(broadcasted[0]._array, ak.bool_)
 
     return Array._new(
         create_pdarray(

@@ -68,12 +68,12 @@ class TestDTypes:
     @pytest.mark.parametrize(
         "dtype",
         [
-            ak.dtypes.uint8,
-            ak.dtypes.uint64,
-            ak.dtypes.int64,
-            ak.dtypes.float64,
-            ak.dtypes.bool_,
-            ak.dtypes.bigint,
+            ak.numpy.dtypes.uint8,
+            ak.numpy.dtypes.uint64,
+            ak.numpy.dtypes.int64,
+            ak.numpy.dtypes.float64,
+            ak.numpy.dtypes.bool_,
+            ak.numpy.dtypes.bigint,
         ],
     )
     def test_nbytes(self, size, dtype):
@@ -163,7 +163,8 @@ class TestDTypes:
             )
             == ak.DTypes
         )
-        from arkouda.dtypes import bigint, bool_, float64, int64, uint8, uint64
+
+        from arkouda.numpy import bigint, bool_, float64, int64, uint8, uint64
 
         assert (
             bool_,

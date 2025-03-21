@@ -95,9 +95,9 @@ from arkouda.numpy.ma import *
 from arkouda.numpy.polynomial import *
 from arkouda.numpy.rec import *
 
-from ._numeric import *
-from ._utils import *
-from ._manipulation_functions import *
+from .numeric import *
+from .utils import *
+from .manipulation_functions import *
 from .pdarrayclass import *
 from .pdarraycreation import *
 from .pdarraymanipulation import *

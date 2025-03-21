@@ -1888,7 +1888,7 @@ class TestHDF5:
         # int64 test
         flat = a + b + c
         segments = ak.array([0, len(a), len(a) + len(b)])
-        dtype = ak.dtypes.int64
+        dtype = ak.numpy.dtypes.int64
         akflat = ak.array(flat, dtype)
         segarr = ak.SegArray(segments, akflat)
 
@@ -1900,7 +1900,7 @@ class TestHDF5:
             assert segarr.values.to_list() == seg2.values.to_list()
 
         # uint64 test
-        dtype = ak.dtypes.uint64
+        dtype = ak.numpy.dtypes.uint64
         akflat = ak.array(flat, dtype)
         segarr = ak.SegArray(segments, akflat)
 
@@ -1912,7 +1912,7 @@ class TestHDF5:
             assert segarr.values.to_list() == seg2.values.to_list()
 
         # float64 test
-        dtype = ak.dtypes.float64
+        dtype = ak.numpy.dtypes.float64
         akflat = ak.array(flat, dtype)
         segarr = ak.SegArray(segments, akflat)
 
@@ -1924,7 +1924,7 @@ class TestHDF5:
             assert segarr.values.to_list() == seg2.values.to_list()
 
         # bool test
-        dtype = ak.dtypes.bool_
+        dtype = ak.numpy.dtypes.bool_
         akflat = ak.array(flat, dtype)
         segarr = ak.SegArray(segments, akflat)
 
@@ -1943,7 +1943,7 @@ class TestHDF5:
         # int64 test
         flat = a + b + c
         segments = ak.array([0, len(a), len(a) + len(b)])
-        dtype = ak.dtypes.int64
+        dtype = ak.numpy.dtypes.int64
         akflat = ak.array(flat, dtype)
         segarr = ak.SegArray(segments, akflat)
 
