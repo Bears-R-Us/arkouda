@@ -34,12 +34,12 @@ from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, full, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d, intersect1d
+from arkouda.row import Row
 from arkouda.numpy.segarray import SegArray
+from arkouda.series import Series
 from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
-from arkouda.row import Row
-from arkouda.series import Series
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits

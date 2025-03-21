@@ -29,12 +29,6 @@ from typing import (
     cast,
 )
 
-import numpy as np
-
-import arkouda as ak
-from arkouda import array_api
-from arkouda.numpy.pdarraycreation import scalar_array
-
 from ._dtypes import (  # _all_dtypes,; _integer_or_boolean_dtypes,; _numeric_dtypes,
     _boolean_dtypes,
     _complex_floating_dtypes,
@@ -48,6 +42,11 @@ from .creation_functions import asarray
 if TYPE_CHECKING:
     from ._typing import Device, Dtype
 
+import numpy as np
+
+import arkouda as ak
+from arkouda import array_api
+from arkouda.numpy.pdarraycreation import scalar_array
 
 HANDLED_FUNCTIONS: Dict[str, Callable] = {}
 

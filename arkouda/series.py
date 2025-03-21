@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import operator
 from typing import List, Optional, Tuple, Union, cast
 
 import numpy as np
@@ -38,6 +37,7 @@ __all__ = [
     "Series",
 ]
 
+import operator
 
 supported_scalars = Union[int, float, bool, str, np.int64, np.float64, np.bool_, np.str_]
 

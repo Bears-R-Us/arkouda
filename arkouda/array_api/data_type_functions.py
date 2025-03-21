@@ -3,10 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Tuple, Union
 
-import numpy as np
-
-import arkouda as ak
-
 from ._dtypes import (
     _all_dtypes,
     _boolean_dtypes,
@@ -22,6 +18,10 @@ from .array_object import Array, implements_numpy
 
 if TYPE_CHECKING:
     from ._typing import Dtype
+
+import numpy as np
+
+import arkouda as ak
 
 
 def astype(x: Array, dtype: Dtype, /, *, copy: bool = True) -> Array:

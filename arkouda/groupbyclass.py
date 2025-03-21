@@ -14,32 +14,27 @@ from typing import (
     no_type_check,
 )
 
+from arkouda.numpy.dtypes import dtype as akdtype
+
+if TYPE_CHECKING:
+    from arkouda.categorical import Categorical
+
 import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import _val_isinstance_of_union, bigint
-from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import float_scalars
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.numpy.pdarrayclass import (
-    RegistrationError,
-    create_pdarray,
-    is_sorted,
-    pdarray,
-)
-from arkouda.numpy.pdarraycreation import arange, full
 from arkouda.numpy.random import default_rng
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
+from arkouda.numpy.pdarraycreation import arange, full
 from arkouda.numpy.sorting import argsort, sort
 from arkouda.numpy.strings import Strings
-
-if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
-
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
 

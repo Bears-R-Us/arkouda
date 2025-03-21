@@ -8,7 +8,22 @@ valid for inputs that match the given type annotations.
 
 from __future__ import annotations
 
-from typing import Any, Literal, Protocol, TypeVar, Union
+__all__ = [
+    "Array",
+    "Device",
+    "Dtype",
+    "SupportsDLPack",
+    "SupportsBufferProtocol",
+    "PyCapsule",
+]
+
+from typing import (
+    Any,
+    Literal,
+    Protocol,
+    TypeVar,
+    Union,
+)
 
 from numpy import (
     dtype,
@@ -25,16 +40,6 @@ from numpy import (
 )
 
 from .array_object import Array
-
-__all__ = [
-    "Array",
-    "Device",
-    "Dtype",
-    "SupportsDLPack",
-    "SupportsBufferProtocol",
-    "PyCapsule",
-]
-
 
 _T_co = TypeVar("_T_co", covariant=True)
 

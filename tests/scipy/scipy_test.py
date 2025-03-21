@@ -4,18 +4,25 @@ from scipy.stats import chisquare as scipy_chisquare
 from scipy.stats import power_divergence as scipy_power_divergence
 
 import arkouda as ak
-from arkouda.client import get_array_ranks, get_max_array_rank
 from arkouda.scipy import chisquare as ak_chisquare
 from arkouda.scipy import power_divergence as ak_power_divergence
+
+from arkouda.client import get_max_array_rank, get_array_ranks
 
 DDOF = [0, 1, 2, 3, 4, 5]
 PAIRS = [
     (
-        np.array([10000000, 20000000, 30000000, 40000000, 50000000, 60000000, 70000000]),
-        np.array([10000000, 20000000, 30000000, 40000001, 50000000, 60000000, 70000000]),
+        np.array(
+            [10000000, 20000000, 30000000, 40000000, 50000000, 60000000, 70000000]
+        ),
+        np.array(
+            [10000000, 20000000, 30000000, 40000001, 50000000, 60000000, 70000000]
+        ),
     ),
     (
-        np.array([10000000, 20000000, 30000000, 40000000, 50000000, 60000000, 70000000]),
+        np.array(
+            [10000000, 20000000, 30000000, 40000000, 50000000, 60000000, 70000000]
+        ),
         None,
     ),
     (np.array([44, 24, 29, 3]) / 100 * 189, np.array([43, 52, 54, 40])),
@@ -57,7 +64,9 @@ class TestStats:
         f_exp = ak.array(np_f_exp) if np_f_exp is not None else None
 
         ak_power_div = ak_power_divergence(f_obs, f_exp, ddof=ddof, lambda_=lambda_)
-        scipy_power_div = scipy_power_divergence(np_f_obs, np_f_exp, ddof=ddof, axis=0, lambda_=lambda_)
+        scipy_power_div = scipy_power_divergence(
+            np_f_obs, np_f_exp, ddof=ddof, axis=0, lambda_=lambda_
+        )
 
         assert np.allclose(ak_power_div, scipy_power_div, equal_nan=True)
 
@@ -76,7 +85,9 @@ class TestStats:
                     f_exp = ak.array(np_f_exp) if np_f_exp is not None else None
                     # ak_power_div does not have an axis arg, so the comparison is made
                     # to scipy_power_div with axis=None
-                    ak_power_div = ak_power_divergence(f_obs, f_exp, ddof=ddof, lambda_=lambda_)
+                    ak_power_div = ak_power_divergence(
+                        f_obs, f_exp, ddof=ddof, lambda_=lambda_
+                    )
                     scipy_power_div = scipy_power_divergence(
                         np_f_obs, np_f_exp, ddof=ddof, axis=None, lambda_=lambda_
                     )
@@ -114,6 +125,8 @@ class TestStats:
                     # ak_chisq does not have an axis arg, so the comparison is made
                     # to scipy_chisq with axis=None
                     ak_chisq = ak_chisquare(f_obs, f_exp, ddof=ddof)
-                    scipy_chisq = scipy_chisquare(np_f_obs, np_f_exp, ddof=ddof, axis=None)
+                    scipy_chisq = scipy_chisquare(
+                        np_f_obs, np_f_exp, ddof=ddof, axis=None
+                    )
 
                     assert np.allclose(ak_chisq, scipy_chisq, equal_nan=True)

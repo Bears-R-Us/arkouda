@@ -11,11 +11,10 @@ import logging
 import os
 import subprocess
 import sys
-
 from server_util.test.server_test_util import (
     get_arkouda_numlocales,
-    run_client,
     start_arkouda_server,
+    run_client,
     stop_arkouda_server,
 )
 
@@ -96,7 +95,9 @@ def add_to_dat(benchmark, output, dat_dir, graph_infra):
     benchmark_out = "{}.exec.out.tmp".format(benchmark)
     with open(benchmark_out, "w") as f:
         f.write(output)
-    subprocess.check_output([computePerfStats, benchmark, dat_dir, perfkeys, benchmark_out])
+    subprocess.check_output(
+        [computePerfStats, benchmark, dat_dir, perfkeys, benchmark_out]
+    )
     os.remove(benchmark_out)
 
 
@@ -145,9 +146,15 @@ def create_parser():
         default=get_arkouda_numlocales(),
         help="Number of locales to use for the server",
     )
-    parser.add_argument("-sp", "--server-port", default="5555", help="Port number to use for the server")
-    parser.add_argument("--server-args", action="append", help="Additional server arguments")
-    parser.add_argument("--numtrials", default=1, type=int, help="Number of trials to run")
+    parser.add_argument(
+        "-sp", "--server-port", default="5555", help="Port number to use for the server"
+    )
+    parser.add_argument(
+        "--server-args", action="append", help="Additional server arguments"
+    )
+    parser.add_argument(
+        "--numtrials", default=1, type=int, help="Number of trials to run"
+    )
     parser.add_argument(
         "benchmarks",
         nargs="*",
@@ -177,7 +184,9 @@ def create_parser():
         help="Directory containing graph infrastructure",
     )
     parser.add_argument("--platform-name", default="", help="Test platform name")
-    parser.add_argument("--description", default="", help="Description of this configuration")
+    parser.add_argument(
+        "--description", default="", help="Description of this configuration"
+    )
     parser.add_argument("--annotations", default="", help="File containing annotations")
     parser.add_argument("--configs", help="comma seperate list of configurations")
     parser.add_argument("--start-date", help="graph start date")
@@ -206,7 +215,9 @@ def main():
         os.makedirs(config_dat_dir, exist_ok=True)
 
     if not run_isolated:
-        start_arkouda_server(args.num_locales, port=args.server_port, server_args=args.server_args)
+        start_arkouda_server(
+            args.num_locales, port=args.server_port, server_args=args.server_args
+        )
 
     args.benchmarks = args.benchmarks or BENCHMARKS
     for benchmark in args.benchmarks:

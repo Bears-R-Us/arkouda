@@ -4,10 +4,15 @@ import argparse
 import os
 
 from multiIO import *
-
 from server_util.test.server_test_util import get_default_temp_directory
 
-TYPES = ("int64", "float64", "uint64", "str")
+
+TYPES = (
+    "int64",
+    "float64",
+    "uint64",
+    "str"
+)
 
 
 def create_parser():
@@ -73,7 +78,7 @@ def create_parser():
         default="",
         action="store",
         help="Compression types to run Parquet benchmarks against. Comma delimited list (NO SPACES) allowing "
-        "for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4",
+             "for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4"
     )
     return parser
 
@@ -108,19 +113,10 @@ if __name__ == "__main__":
             args.seed,
             FileFormat.PARQUET,
             comp_types,
-            args.fixed_size,
+            args.fixed_size
         )
     elif args.only_read:
-        time_ak_read(
-            args.size,
-            args.files_per_loc,
-            args.trials,
-            args.dtype,
-            args.path,
-            FileFormat.PARQUET,
-            comp_types,
-            args.fixed_size,
-        )
+        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, FileFormat.PARQUET, comp_types, args.fixed_size)
     elif args.only_delete:
         remove_files(args.path)
     else:
@@ -133,18 +129,9 @@ if __name__ == "__main__":
             args.seed,
             FileFormat.PARQUET,
             comp_types,
-            args.fixed_size,
+            args.fixed_size
         )
-        time_ak_read(
-            args.size,
-            args.files_per_loc,
-            args.trials,
-            args.dtype,
-            args.path,
-            FileFormat.PARQUET,
-            comp_types,
-            args.fixed_size,
-        )
+        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, FileFormat.PARQUET, comp_types, args.fixed_size)
         remove_files(args.path)
 
     sys.exit(0)
