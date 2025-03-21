@@ -1146,6 +1146,10 @@ Module Contents
 
 
 
+   .. py:attribute:: shape
+      :type:  Tuple[int]
+
+
    .. py:attribute:: size
       :type:  arkouda.numpy.dtypes.int_scalars
 

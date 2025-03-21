@@ -1,0 +1,142 @@
+arkouda.numpy.manipulation_functions
+====================================
+
+.. py:module:: arkouda.numpy.manipulation_functions
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   arkouda.numpy.manipulation_functions.flip
+   arkouda.numpy.manipulation_functions.repeat
+   arkouda.numpy.manipulation_functions.squeeze
+   arkouda.numpy.manipulation_functions.tile
+
+
+Module Contents
+---------------
+
+.. py:function:: flip(x: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]
+
+   Reverse an array's values along a particular axis or axes.
+
+   :param x: Reverse the order of elements in an array along the given axis.
+
+             The shape of the array is preserved, but the elements are reordered.
+   :type x: pdarray, Strings, or Categorical
+   :param axis: The axis or axes along which to flip the array. If None, flip the array along all axes.
+   :type axis: int or Tuple[int, ...], optional
+
+   :returns: An array with the entries of axis reversed.
+   :rtype: pdarray, Strings, or Categorical
+
+   .. note:: This differs from numpy as it actually reverses the data, rather than presenting a view.
+
+
+.. py:function:: repeat(a: Union[int, Sequence[int], arkouda.numpy.pdarrayclass.pdarray], repeats: Union[int, Sequence[int], arkouda.numpy.pdarrayclass.pdarray], axis: Union[None, int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Repeat each element of an array after themselves
+
+   :param a: Input array.
+   :type a: int, Sequence of int, or pdarray
+   :param repeats: The number of repetitions for each element.
+                   `repeats` is broadcasted to fit the shape of the given axis.
+   :type repeats: int, Sequence of int, or pdarray
+   :param axis: The axis along which to repeat values.
+                By default, use the flattened input array, and return a flat output array.
+   :type axis: int, optional
+
+   :returns: Output array which has the same shape as `a`, except along the given axis.
+   :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.repeat(3, 4)
+   array([3 3 3 3])
+   >>> x = ak.array([[1,2],[3,4]])
+   >>> ak.repeat(x, 2)
+   array([1 1 2 2 3 3 4 4])
+   >>> ak.repeat(x, 3, axis=1)
+   array([array([1 1 1 2 2 2]) array([3 3 3 4 4 4])])
+   >>> ak.repeat(x, [1, 2], axis=0)
+   array([array([1 2]) array([3 4]) array([3 4])])
+
+
+.. py:function:: squeeze(x: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.bool_scalars], /, axis: Union[None, int, Tuple[int, Ellipsis]] = None) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Remove degenerate (size one) dimensions from an array.
+
+   :param x: The array to squeeze
+   :type x: pdarray
+   :param axis: The axis or axes to squeeze (must have a size of one).
+                If axis = None, all dimensions of size 1 will be squeezed.
+   :type axis: int or Tuple[int, ...]
+
+   :returns: A copy of x with the dimensions specified in the axis argument removed.
+   :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.connect()
+   >>> x = ak.arange(10).reshape((1, 10, 1))
+   >>> x
+   array([array([array([0]) array([1]) array([2]) array([3])....
+    array([4]) array([5]) array([6]) array([7]) array([8]) array([9])])])
+   >>> x.shape
+   (1, 10, 1)
+   >>> ak.squeeze(x,axis=None)
+   array([0 1 2 3 4 5 6 7 8 9])
+   >>> ak.squeeze(x,axis=None).shape
+   (10,)
+   >>> ak.squeeze(x,axis=2)
+   array([array([0 1 2 3 4 5 6 7 8 9])])
+   >>> ak.squeeze(x,axis=2).shape
+   (1, 10)
+   >>> ak.squeeze(x,axis=(0,2))
+   array([0 1 2 3 4 5 6 7 8 9])
+   >>> ak.squeeze(x,axis=(0,2)).shape
+   (10,)
+
+
+.. py:function:: tile(A: arkouda.numpy.pdarrayclass.pdarray, /, reps: Union[int, Tuple[int, Ellipsis]]) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Construct an array by repeating A the number of times given by reps.
+
+   If reps has length ``d``, the result will have dimension of ``max(d, A.ndim)``.
+
+   If ``A.ndim < d``, A is promoted to be d-dimensional by prepending new axes. So a shape (3,) array is promoted to (1, 3) for 2-D replication, or shape (1, 1, 3) for 3-D replication. If this is not the desired behavior, promote A to d-dimensions manually before calling this function.
+
+   If ``A.ndim > d``, reps is promoted to A.ndim by prepending 1’s to it. Thus for an A of shape (2, 3, 4, 5), a reps of (2, 2) is treated as (1, 1, 2, 2).
+
+   :param A: The input pdarray to be tiled
+   :type A: pdarray
+   :param reps: The number of repetitions of A along each axis.
+   :type reps: int or Tuple of int
+
+   :returns: A new pdarray with the tiled data.
+   :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([0, 1, 2])
+   >>> ak.tile(a, 2)
+   array([0 1 2 0 1 2])
+   >>> ak.tile(a, (2, 2))
+   array([array([0 1 2 0 1 2]) array([0 1 2 0 1 2])])
+   >>> ak.tile(a, (2, 1, 2))
+   array([array([array([0 1 2 0 1 2])]) array([array([0 1 2 0 1 2])])])
+
+   >>> b = ak.array([[1, 2], [3, 4]])
+   >>> ak.tile(b, 2)
+   array([array([1 2 1 2]) array([3 4 3 4])])
+   >>> ak.tile(b, (2, 1))
+   array([array([1 2]) array([3 4]) array([1 2]) array([3 4])])
+
+   >>> c = ak.array([1, 2, 3, 4])
+   >>> ak.tile(c, (4, 1))
+   array([array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4])])
+
+

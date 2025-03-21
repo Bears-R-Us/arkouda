@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.dtypes" href="../dtypes/index.html" /><link rel="prev" title="arkouda.comm_diagnostics" href="../comm_diagnostics/index.html" />
+<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.groupbyclass" href="../groupbyclass/index.html" /><link rel="prev" title="arkouda.comm_diagnostics" href="../comm_diagnostics/index.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>arkouda.dataframe - arkouda documentation</title>
@@ -264,7 +264,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html">arkouda.dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../history/index.html">arkouda.history</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index/index.html">arkouda.index</a></li>
@@ -275,22 +274,20 @@
 <li class="toctree-l3"><a class="reference internal" href="../logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../match/index.html">arkouda.match</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../numeric/index.html">arkouda.numeric</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../numpy/dtypes/index.html">arkouda.numpy.dtypes</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.numpy.dtypes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../numpy/dtypes/dtypes/index.html">arkouda.numpy.dtypes.dtypes</a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/exceptions/index.html">arkouda.numpy.exceptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/fft/index.html">arkouda.numpy.fft</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../numpy/lib/index.html">arkouda.numpy.lib</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.numpy.lib</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../numpy/lib/index.html">arkouda.numpy.lib</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.numpy.lib</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../numpy/lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/linalg/index.html">arkouda.numpy.linalg</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/ma/index.html">arkouda.numpy.ma</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/manipulation_functions/index.html">arkouda.numpy.manipulation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/numeric/index.html">arkouda.numpy.numeric</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/pdarrayclass/index.html">arkouda.numpy.pdarrayclass</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/pdarraycreation/index.html">arkouda.numpy.pdarraycreation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
@@ -303,39 +300,28 @@
 <li class="toctree-l4"><a class="reference internal" href="../numpy/strings/index.html">arkouda.numpy.strings</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/timeclass/index.html">arkouda.numpy.timeclass</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/util/index.html">arkouda.numpy.util</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/utils/index.html">arkouda.numpy.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../pdarrayclass/index.html">arkouda.pdarrayclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../pdarraycreation/index.html">arkouda.pdarraycreation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../pdarraymanipulation/index.html">arkouda.pdarraymanipulation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../pdarraysetops/index.html">arkouda.pdarraysetops</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plotting/index.html">arkouda.plotting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../random/index.html">arkouda.random</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../scipy/sparrayclass/index.html">arkouda.scipy.sparrayclass</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../scipy/sparsematrix/index.html">arkouda.scipy.sparsematrix</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../security/index.html">arkouda.security</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../segarray/index.html">arkouda.segarray</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../series/index.html">arkouda.series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../sorting/index.html">arkouda.sorting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sparrayclass/index.html">arkouda.sparrayclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sparsematrix/index.html">arkouda.sparsematrix</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../strings/index.html">arkouda.strings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../testing/index.html">arkouda.testing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../timeclass/index.html">arkouda.timeclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../util/index.html">arkouda.util</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -439,8 +425,8 @@
 <li><p><strong>initialdata</strong> (<em>List</em><em> or </em><em>dictionary</em><em> of </em><em>lists</em><em>, </em><em>tuples</em><em>, or </em><em>pdarrays</em>) – Each list/dictionary entry corresponds to one column of the data and
 should be a homogenous type. Different columns may have different
 types. If using a dictionary, keys should be strings.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id393" title="arkouda.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
-<li><p><strong>columns</strong> (<em>List</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id393" title="arkouda.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
+<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id402" title="arkouda.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
+<li><p><strong>columns</strong> (<em>List</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../index.html#id402" title="arkouda.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
 be strings. Defaults to an stringified integer range.</p></li>
 </ul>
 </dd>
@@ -1800,7 +1786,7 @@ duplicated row will be returned (keep determines which row).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>subset</strong> (<a class="reference internal" href="../index.html#arkouda.Iterable" title="arkouda.Iterable"><em>Iterable</em></a>) – Iterable of column names to use to dedupe.</p></li>
+<li><p><strong>subset</strong> (<em>Iterable</em>) – Iterable of column names to use to dedupe.</p></li>
 <li><p><strong>keep</strong> (<em>{'first'</em><em>, </em><em>'last'}</em><em>, </em><em>default='first'</em>) – Determines which duplicates (if any) to keep.</p></li>
 </ul>
 </dd>
@@ -3290,7 +3276,7 @@ the merge condition (based on the “how” and “on” parameters).</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>right</strong> (<a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><em>DataFrame</em></a>) – The Right DataFrame to be joined.</p></li>
-<li><p><strong>on</strong> (<a class="reference internal" href="../index.html#arkouda.Optional" title="arkouda.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="../index.html#arkouda.Union" title="arkouda.Union"><em>Union</em></a><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>] </em><em>= None</em>) – The name or list of names of the DataFrame column(s) to join on.
+<li><p><strong>on</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../index.html#arkouda.Union" title="arkouda.Union"><em>Union</em></a><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>] </em><em>= None</em>) – The name or list of names of the DataFrame column(s) to join on.
 If on is None, this defaults to the intersection of the columns in both DataFrames.</p></li>
 <li><p><strong>how</strong> (<em>{&quot;inner&quot;</em><em>, </em><em>&quot;left&quot;</em><em>, </em><em>&quot;right}</em><em>, </em><em>default = &quot;inner&quot;</em>) – The merge condition.
 Must be “inner”, “left”, or “right”.</p></li>
@@ -3778,14 +3764,14 @@ in attached copies.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mapper</strong> (<em>callable</em><em> or </em><em>dict-like</em><em>, </em><a class="reference internal" href="../index.html#arkouda.Optional" title="arkouda.Optional"><em>Optional</em></a>) – Function or dictionary mapping existing values to new values.
+<li><p><strong>mapper</strong> (<em>callable</em><em> or </em><em>dict-like</em><em>, </em><em>Optional</em>) – Function or dictionary mapping existing values to new values.
 Nonexistent names will not raise an error.
 Uses the value of axis to determine if renaming column or index</p></li>
-<li><p><strong>column</strong> (<em>callable</em><em> or </em><em>dict-like</em><em>, </em><a class="reference internal" href="../index.html#arkouda.Optional" title="arkouda.Optional"><em>Optional</em></a>) – Function or dictionary mapping existing column names to
+<li><p><strong>column</strong> (<em>callable</em><em> or </em><em>dict-like</em><em>, </em><em>Optional</em>) – Function or dictionary mapping existing column names to
 new column names. Nonexistent names will not raise an
 error.
 When this is set, axis is ignored.</p></li>
-<li><p><strong>index</strong> (<em>callable</em><em> or </em><em>dict-like</em><em>, </em><a class="reference internal" href="../index.html#arkouda.Optional" title="arkouda.Optional"><em>Optional</em></a>) – Function or dictionary mapping existing index names to
+<li><p><strong>index</strong> (<em>callable</em><em> or </em><em>dict-like</em><em>, </em><em>Optional</em>) – Function or dictionary mapping existing index names to
 new index names. Nonexistent names will not raise an
 error.
 When this is set, axis is ignored.</p></li>
@@ -4132,7 +4118,7 @@ Save DataFrame to disk, preserving column names.</p>
 <li><p><strong>file_format</strong> (<em>str</em><em>, </em><em>default='HDF5'</em>) – ‘HDF5’ or ‘Parquet’. Defaults to ‘HDF5’</p></li>
 <li><p><strong>file_type</strong> (<em>str</em><em>, </em><em>default=distribute</em>) – “single” or “distribute”
 If single, will right a single file to locale 0.</p></li>
-<li><p><strong>compression</strong> (<em>str</em><em> (</em><a class="reference internal" href="../index.html#arkouda.Optional" title="arkouda.Optional"><em>Optional</em></a><em>)</em>) – (None | “snappy” | “gzip” | “brotli” | “zstd” | “lz4”)
+<li><p><strong>compression</strong> (<em>str</em><em> (</em><em>Optional</em><em>)</em>) – (None | “snappy” | “gzip” | “brotli” | “zstd” | “lz4”)
 Compression type. Only used for Parquet</p></li>
 </ul>
 </dd>
@@ -4637,7 +4623,7 @@ bytes as uint(8).</p>
 when they are written to disk.</p></li>
 <li><p><strong>index</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If True, the index of the DataFrame will be written to the file
 as a column.</p></li>
-<li><p><strong>columns</strong> (<em>list</em><em> of </em><em>str</em><em> (</em><a class="reference internal" href="../index.html#arkouda.Optional" title="arkouda.Optional"><em>Optional</em></a><em>)</em>) – Column names to assign when writing data.</p></li>
+<li><p><strong>columns</strong> (<em>list</em><em> of </em><em>str</em><em> (</em><em>Optional</em><em>)</em>) – Column names to assign when writing data.</p></li>
 <li><p><strong>col_delim</strong> (<em>str</em><em>, </em><em>default=&quot;</em><em>,</em><em>&quot;</em>) – Value to be used to separate columns within the file.
 Please be sure that the value used DOES NOT appear in your dataset.</p></li>
 <li><p><strong>overwrite</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If True, any existing files matching your provided prefix_path will
@@ -4908,7 +4894,7 @@ to keep the index column, set this to True.</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – File path to save data.</p></li>
 <li><p><strong>index</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If True, save the index column. By default, do not save the index.</p></li>
 <li><p><strong>columns</strong> (<em>list</em>) – List of columns to include in the file. If None, writes out all columns.</p></li>
-<li><p><strong>compression</strong> (<em>str</em><em> (</em><a class="reference internal" href="../index.html#arkouda.Optional" title="arkouda.Optional"><em>Optional</em></a><em>)</em><em>, </em><em>default=None</em>) – Provide the compression type to use when writing the file.
+<li><p><strong>compression</strong> (<em>str</em><em> (</em><em>Optional</em><em>)</em><em>, </em><em>default=None</em>) – Provide the compression type to use when writing the file.
 Supported values: snappy, gzip, brotli, zstd, lz4</p></li>
 <li><p><strong>convert_categoricals</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Parquet requires all columns to be the same size and Categoricals
 don’t satisfy that requirement.
@@ -4975,7 +4961,7 @@ locale number.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>hostname</strong> (<em>str</em>) – The hostname where the Arkouda server intended to
 receive the DataFrame is running.</p></li>
-<li><p><strong>port</strong> (<em>int_scalars</em>) – The port to send the array over. This needs to be an
+<li><p><strong>port</strong> (<a class="reference internal" href="../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The port to send the array over. This needs to be an
 open port (i.e., not one that the Arkouda server is
 running on). This will open up <cite>numLocales</cite> ports,
 each of which in succession, so will use ports of the
@@ -6214,8 +6200,8 @@ that the caller gets the indices of values present in both arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<a class="reference internal" href="../index.html#id393" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
-<li><p><strong>b</strong> (<a class="reference internal" href="../index.html#id393" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
+<li><p><strong>a</strong> (<a class="reference internal" href="../index.html#id402" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
+<li><p><strong>b</strong> (<a class="reference internal" href="../index.html#id402" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – An array of strings.</p></li>
 <li><p><strong>positions</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Return tuple of boolean pdarrays that indicate positions in <cite>a</cite> and <cite>b</cite>
 of the intersection values.</p></li>
 <li><p><strong>unique</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If the number of distinct values in <cite>a</cite> (and <cite>b</cite>) is equal to the size of
@@ -6410,7 +6396,7 @@ the merge condition (based on the “how” and “on” parameters).</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>left</strong> (<a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><em>DataFrame</em></a>) – The Left DataFrame to be joined.</p></li>
 <li><p><strong>right</strong> (<a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><em>DataFrame</em></a>) – The Right DataFrame to be joined.</p></li>
-<li><p><strong>on</strong> (<a class="reference internal" href="../index.html#arkouda.Optional" title="arkouda.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="../index.html#arkouda.Union" title="arkouda.Union"><em>Union</em></a><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>] </em><em>= None</em>) – The name or list of names of the DataFrame column(s) to join on.
+<li><p><strong>on</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../index.html#arkouda.Union" title="arkouda.Union"><em>Union</em></a><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>] </em><em>= None</em>) – The name or list of names of the DataFrame column(s) to join on.
 If on is None, this defaults to the intersection of the columns in both DataFrames.</p></li>
 <li><p><strong>how</strong> (<em>str</em><em>, </em><em>default = &quot;inner&quot;</em>) – The merge condition.
 Must be one of “inner”, “left”, “right”, or “outer”.</p></li>
@@ -6687,12 +6673,12 @@ Otherwise, the DataFrame is not sorted.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../dtypes/index.html">
+          <a class="next-page" href="../groupbyclass/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">arkouda.dtypes</div>
+                <div class="title">arkouda.groupbyclass</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

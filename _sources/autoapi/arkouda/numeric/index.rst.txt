@@ -1,6 +1,0 @@
-arkouda.numeric
-===============
-
-.. py:module:: arkouda.numeric
-
-
