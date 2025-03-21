@@ -152,6 +152,7 @@ def main():
     import arkouda.scipy.special as akscipySpecial
     import arkouda.scipy.stats as akscipyStats
     import arkouda.series as akSeries
+    import arkouda as ak
 
     write_stub(
         aknp._manipulation_functions,
@@ -162,7 +163,9 @@ def main():
     # write_stub(
     #     aknp._numeric, "arkouda/numpy/_numeric.pyi", all_only=False, allow_arkouda=True
     # )
-    write_stub(aknp._utils, "arkouda/numpy/_utils.pyi", all_only=False, allow_arkouda=True)
+    write_stub(
+        aknp._utils, "arkouda/numpy/_utils.pyi", all_only=False, allow_arkouda=True
+    )
     # write_stub(aknp, "arkouda/numpy.pyi", all_only=False, allow_arkouda=True)
     write_stub(aknp.dtypes, "arkouda/numpy/dtypes.pyi", all_only=False, allow_arkouda=True)
     write_stub(aknp.random, "arkouda/numpy/random.pyi", all_only=False, allow_arkouda=True)
@@ -173,7 +176,6 @@ def main():
     write_stub(akGroupbyclass, "arkouda/groupbyclass.pyi", all_only=True, allow_arkouda=True)
     write_stub(akSeries, "arkouda/series.pyi", all_only=True, allow_arkouda=True)
     write_stub(aknp.pdarrayclass, "arkouda/numpy/pdarrayclass.pyi", all_only=True, allow_arkouda=True)
-
 
 if __name__ == "__main__":
     main()

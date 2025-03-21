@@ -2,7 +2,7 @@ import sys
 
 
 def getModules(config):
-    with open(config, "r") as cfg_file:
+    with open(config, 'r') as cfg_file:
         mods = []
         for line in cfg_file.readlines():
             mod = line.split("#")[0].strip()
@@ -12,7 +12,9 @@ def getModules(config):
 
 
 def getModuleFiles(mods, src_dir):
-    return " ".join([f"{mod}.chpl" if mod[0] == "/" else f"{src_dir}/{mod}.chpl" for mod in mods])
+    return " ".join([
+        f"{mod}.chpl" if mod[0] == '/' else f"{src_dir}/{mod}.chpl" for mod in mods
+        ])
 
 
 def parseServerConfig(config_filename, src_dir):
