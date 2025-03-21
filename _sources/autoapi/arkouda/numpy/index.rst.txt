@@ -86,6 +86,7 @@ Classes
    arkouda.numpy.Iterable
    arkouda.numpy.Optional
    arkouda.numpy.SegArray
+   arkouda.numpy.Sequence
    arkouda.numpy.Strings
    arkouda.numpy.Strings
    arkouda.numpy.Strings
@@ -183,6 +184,7 @@ Functions
    arkouda.numpy.random_strings_lognormal
    arkouda.numpy.random_strings_uniform
    arkouda.numpy.register_all
+   arkouda.numpy.repeat
    arkouda.numpy.resolve_scalar_dtype
    arkouda.numpy.rotl
    arkouda.numpy.rotr
@@ -3314,6 +3316,18 @@ Package Contents
 
 
    .. py:attribute:: values
+
+
+.. py:class:: Sequence(origin, *, inst=True, name=None)
+
+   Bases: :py:obj:`_BaseGenericAlias`
+
+
+   A generic version of collections.abc.Sequence.
+
+
+
+   .. py:method:: copy_with(params)
 
 
 .. py:data:: SeriesDTypes
@@ -20724,6 +20738,35 @@ Package Contents
    :type data: dict
 
    :rtype: None
+
+
+.. py:function:: repeat(a: Union[int, Sequence[int], arkouda.numpy.pdarrayclass.pdarray], repeats: Union[int, Sequence[int], arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Repeat each element of an array after themselves
+
+   :param a: Input array.
+   :type a: int, Sequence of int, or pdarray
+   :param repeats: The number of repetitions for each element.
+                   `repeats` is broadcasted to fit the shape of the given axis.
+   :type repeats: int, Sequence of int, or pdarray
+   :param axis: The axis along which to repeat values.
+                By default, use the flattened input array, and return a flat output array.
+   :type axis: int, optional
+
+   :returns: Output array which has the same shape as `a`, except along the given axis.
+   :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.repeat(3, 4)
+   array([3 3 3 3])
+   >>> x = ak.array([[1,2],[3,4]])
+   >>> ak.repeat(x, 2)
+   array([1 1 2 2 3 3 4 4])
+   >>> ak.repeat(x, 3, axis=1)
+   array([array([1 1 1 2 2 2]) array([3 3 3 4 4 4])])
+   >>> ak.repeat(x, [1, 2], axis=0)
+   array([array([1 2]) array([3 4]) array([3 4])])
 
 
 .. py:function:: resolve_scalar_dtype(val: object) -> str

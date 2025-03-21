@@ -381,18 +381,18 @@
           <h1>Source code for arkouda.numpy._manipulation_functions</h1><div class="highlight"><pre>
 <span></span><span class="c1"># from __future__ import annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">bool_scalars</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_scalars</span><span class="p">,</span> <span class="n">numeric_scalars</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;flip&quot;</span><span class="p">,</span> <span class="s2">&quot;squeeze&quot;</span><span class="p">,</span> <span class="s2">&quot;tile&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;flip&quot;</span><span class="p">,</span> <span class="s2">&quot;repeat&quot;</span><span class="p">,</span> <span class="s2">&quot;squeeze&quot;</span><span class="p">,</span> <span class="s2">&quot;tile&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="flip">
@@ -468,6 +468,130 @@
         <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;flip only accepts type pdarray, Strings, or Categorical.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="repeat">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.repeat">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">repeat</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">pdarray</span><span class="p">],</span>
+    <span class="n">repeats</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">pdarray</span><span class="p">],</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Repeat each element of an array after themselves</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : int, Sequence of int, or pdarray</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    repeats: int, Sequence of int, or pdarray</span>
+<span class="sd">        The number of repetitions for each element.</span>
+<span class="sd">        `repeats` is broadcasted to fit the shape of the given axis.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        The axis along which to repeat values.</span>
+<span class="sd">        By default, use the flattened input array, and return a flat output array.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        Output array which has the same shape as `a`, except along the given axis.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.repeat(3, 4)</span>
+<span class="sd">    array([3 3 3 3])</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.array([[1,2],[3,4]])</span>
+<span class="sd">    &gt;&gt;&gt; ak.repeat(x, 2)</span>
+<span class="sd">    array([1 1 2 2 3 3 4 4])</span>
+<span class="sd">    &gt;&gt;&gt; ak.repeat(x, 3, axis=1)</span>
+<span class="sd">    array([array([1 1 1 2 2 2]) array([3 3 3 4 4 4])])</span>
+<span class="sd">    &gt;&gt;&gt; ak.repeat(x, [1, 2], axis=0)</span>
+<span class="sd">    array([array([1 2]) array([3 4]) array([3 4])])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="nb">any</span> <span class="k">as</span> <span class="n">akany</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repeats</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">ak_repeats</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">([</span><span class="n">repeats</span><span class="p">],</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ak_repeats</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="n">repeats</span> <span class="o">=</span> <span class="n">ak_repeats</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;This should never happen because repeats was an int.&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repeats</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+        <span class="n">ak_repeats</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">repeats</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ak_repeats</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="n">repeats</span> <span class="o">=</span> <span class="n">ak_repeats</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;This should never happen because repeats was a Sequence of int.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">ak_a</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">([</span><span class="n">a</span><span class="p">],</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ak_a</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">ak_a</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;This should never happen because a was an int.&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+        <span class="n">ak_a</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ak_a</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">ak_a</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;This should never happen because a was a Sequence of int.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">repeats</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected repeats to be a 1-dimensional array or constant, but &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;received </span><span class="si">{</span><span class="n">repeats</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">-dimensional array instead.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">akany</span><span class="p">(</span><span class="n">repeats</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;repeats may not contain negative values.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">akany</span><span class="p">(</span><span class="n">repeats</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">ak_array</span><span class="p">([],</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+        <span class="n">temp_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">temp</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">temp_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">temp_shape</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">temp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Axis should have been None or an int&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+                <span class="n">cast</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">generic_msg</span><span class="p">(</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;repeatFlat&lt;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span>
+                            <span class="s2">&quot;repeats&quot;</span><span class="p">:</span> <span class="n">repeats</span><span class="p">,</span>
+                        <span class="p">},</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to repeat array: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">repeats</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">repeats</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;repeats must either be a constant or match the length of a in axis. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Instead, repeats size of </span><span class="si">{</span><span class="n">repeats</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> != </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+            <span class="n">cast</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">,</span>
+                <span class="n">generic_msg</span><span class="p">(</span>
+                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;repeat&lt;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">repeats</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                        <span class="s2">&quot;eIn&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span>
+                        <span class="s2">&quot;reps&quot;</span><span class="p">:</span> <span class="n">repeats</span><span class="p">,</span>
+                        <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to repeat array: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 
