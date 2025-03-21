@@ -162,20 +162,10 @@ def empty_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[D
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
-    t = x.dtype if dtype is None else akdtype(dtype)
-
-    return Array._new(
-        pdarray(
-            "__empty__",
-            t,
-            x._array.size,
-            x._array.ndim,
-            x._array.shape,
-            x._array.itemsize,
-            x._array.max_bits,
-        ),
-        empty=True,
-    )
+    pda = ak.zeros_like(x._array)
+    if dtype is not None:
+        pda = pda.astype(akdtype(dtype))
+    return Array._new(pda)
 
 
 def eye(
