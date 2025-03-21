@@ -1,5 +1,9 @@
 """
-Wrapper class around the ndarray object for the array API standard.
+Wrapper class around the pdarray object for the array API standard.
+
+The information below can be found online here:
+
+https://pydoc.dev/numpy/latest/numpy.array_api._array_object.html
 
 The array API standard defines some behaviors differently than ndarray, in
 particular, type promotion rules are different (the standard has no
@@ -54,12 +58,12 @@ HANDLED_FUNCTIONS: Dict[str, Callable] = {}
 
 class Array:
     """
-    n-d array object for the array API namespace.
+    n-dimensional array object for the array API namespace.
 
     See the docstring of :py:obj:`np.ndarray <numpy.ndarray>` for more
     information.
 
-    This is a wrapper around numpy.ndarray that restricts the usage to only
+    This is a wrapper around ak.pdarray that restricts the usage to only
     those things that are required by the array API namespace. Note,
     attributes on this object that start with a single underscore are not part
     of the API specification and should only be used internally. This object
@@ -72,7 +76,7 @@ class Array:
     _empty: bool
 
     # Use a custom constructor instead of __init__, as manually initializing
-    # this class is not supported API.
+    # this class is not supported by the API.
     @classmethod
     def _new(cls, x, /, empty: bool = False):
         """
@@ -98,11 +102,17 @@ class Array:
 
     def tolist(self):
         """
-        Convert the array to a Python list or nested lists
+        Convert the array to a Python list or nested lists, using the pdarray
+        method to_list.
 
         This involves copying the data from the server to the client, and thus
         will fail if the array is too large (see:
         :func:`~arkouda.client.maxTransferBytes`)
+
+        See also
+        --------
+        pdarray.to_list()
+
         """
         x = self._array.to_list()
         if self.shape == ():
@@ -113,11 +123,16 @@ class Array:
 
     def to_ndarray(self):
         """
-        Convert the array to a numpy ndarray
+        Convert the array to a numpy ndarray, using the pdarray method to_ndarray.
 
         This involves copying the data from the server to the client, and thus
         will fail if the array is too large (see:
         :func:`~arkouda.client.maxTransferBytes`)
+
+        See also
+        --------
+        pdarray.to_ndarray()
+
         """
         return self._array.to_ndarray()
 
@@ -137,23 +152,14 @@ class Array:
         Return a view of the array with the specified axes transposed.
 
         For axes=None, reverse all the dimensions of the array.
+
+        See also
+        --------
+        ak.transpose()
+
         """
-        from .manipulation_functions import permute_dims
 
-        if axes is None:
-            _axes = tuple(range(self.ndim - 1, -1, -1))
-        else:
-            if len(axes) < self.ndim:
-                _axes_list = list(range(0, self.ndim))
-                for i, j in enumerate(axes):
-                    _axes_list[i] = j
-                _axes = tuple(_axes_list)
-            elif len(axes) == self.ndim:
-                _axes = tuple(axes)
-            else:
-                raise ValueError("number of axes don't match array dimensions")
-
-        return permute_dims(self, _axes)
+        return asarray(ak.transpose(self._array, axes))
 
     def __str__(self: Array, /) -> str:
         """
@@ -352,7 +358,15 @@ class Array:
     def __abs__(self: Array, /) -> Array:
         """
         Take the element-wise absolute value of the array.
+
+        See also
+        --------
+        ak.abs()
+
         """
+        # TODO -- this must be fixed.  It doesn't return abs.  However, fixing it causes
+        # tests/array_api/stats_functions test_std and test_var to fail.
+
         return self
 
     def __add__(self: Array, other: Union[int, float, Array], /) -> Array:
@@ -558,9 +572,12 @@ class Array:
         """
         Compute the matrix multiplication of this array with another array.
 
-        Warning: Not implemented.
+        See also
+        --------
+        ak.matmul()
         """
-        raise ValueError("Not implemented")
+        #       raise ValueError("Not implemented")
+        return asarray(ak.matmul(self._array, other._array))
 
     def __mod__(self: Array, other: Union[int, float, Array], /) -> Array:
         """
@@ -573,7 +590,7 @@ class Array:
 
     def __mul__(self: Array, other: Union[int, float, Array], /) -> Array:
         """
-        Compute the product of this array and another array or scalar.
+        Compute the element-wise product of this array and another array or scalar.
         """
         if isinstance(other, (int, float)):
             return Array._new(self._array * other)
