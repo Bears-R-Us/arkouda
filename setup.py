@@ -127,7 +127,7 @@ setup(
         "h5py>=3.7.0",
         "pip",
         "types-tabulate",
-        "tables>=3.8.0",
+        "tables>=3.10.0",
         "pyarrow",
         "scipy<=1.13.1; python_version<='3.12'",
         "scipy; python_version>'3.12'",
