@@ -9,6 +9,7 @@ module ManipulationMsg {
   use ServerErrorStrings;
   use CommAggregation;
   use AryUtil;
+  use BigInteger;
 
   use Reflection;
 
@@ -812,8 +813,89 @@ module ManipulationMsg {
     return shapeOut;
   }
 
-  // // https://data-apis.org/array-api/latest/API_specification/generated/array_api.unstack.html
-  // // unstack an array into multiple arrays along a specified axis
+  // https://data-apis.org/array-api/latest/API_specification/generated/array_api.repeat.html#array_api.repeat
+  @arkouda.registerCommand (name="repeat")
+  proc repeat (eIn: [?d] ?t, axis: int, ref reps: [?d2] ?t2): [] t throws 
+    where ((t == int || t == real || t == bool || t == uint || t == uint(8) || t == bigint) &&
+           (t2 == int || t2 == uint) &&
+           (d2.rank == 1)) {
+    param pn = Reflection.getRoutineName();
+
+    var eOut = makeDistArray((...repeatShape(eIn.shape, reps, axis)), t);
+
+    // In this case, every element of eIn gets repeated the same number of times along the axis.
+    if reps.size == 1 {
+      forall idx in eOut.domain with (
+        var agg = newSrcAggregator(t)
+      ) {
+        var idx2 = if eIn.shape.size == 1 then (idx,) else idx;
+
+        // The integer division means that the index gets incremented in the axis every reps[0] times
+        idx2[axis] = idx2[axis] / (reps[0]: int);
+
+        agg.copy(eOut[idx], eIn[if eIn.shape.size == 1 then idx2[0] else idx2]);
+      }
+    } else if d.rank == 1 {
+      // We can shortcut things a little bit if eIn is a one dimensional array
+      const outSize = eOut.size;
+
+      // Distribute the domain the same way as eIn
+      var outStarts: [eIn.domain] int;
+
+      // The running sum of repeats gives us the starting points of where we need to start repeating each element
+      outStarts[1..] = (+ scan reps[..reps.size - 2]): int;
+      forall (inIdx, outStart, numRepeats) in zip(eIn.domain, outStarts, reps) with (
+        var agg = newDstAggregator(t)
+      ) {
+        for destIdx in outStart..#numRepeats {
+          agg.copy(eOut[destIdx], eIn[inIdx]);
+        }
+      }
+    } else {
+      // Fundamentally this works the same way as above but we can't do zipped iteration
+      // This is because eIn may be much larger.
+      const outSize = eOut.shape[axis];
+
+      // Can't distribute the domain because we don't know how eIn is distributed
+      var outStarts: [0..<eIn.shape[axis]] int;
+
+      outStarts[1..] = (+ scan reps[..reps.size - 2]): int;
+      forall inIdx in eIn.domain with (
+        var agg = newDstAggregator(t)
+      ) {
+        const outStart = outStarts[inIdx[axis]];
+        const numRepeats = reps[inIdx[axis]];
+        var destIdx = inIdx;
+        for destIdxComponent in outStart..#numRepeats {
+          destIdx[axis] = destIdxComponent;
+          agg.copy(eOut[destIdx], eIn[inIdx]);
+        }
+      }
+
+    }
+
+    return eOut;
+  }
+
+  proc repeatShape(shape: ?N*int, ref reps: [] ?t, axis: int): N*int 
+    where (t == int || t == uint) {
+    var shapeOut: N*int;
+    for i in 0..<N do shapeOut[i] = shape[i];
+    if reps.size == 1 {
+      shapeOut[axis] = shapeOut[axis] * (reps[0]: int);
+    } else {
+      shapeOut[axis] = + reduce (reps: int);
+    }
+    return shapeOut;
+  }
+
+  //At some point when issue #4162 clears up we can use this instead in the where clause.
+  proc repeatInputElemTypeCheck(type t) param: bool {
+    return (t == int || t == real || t == bool || t == uint || t == uint(8) || t == bigint);
+  }
+
+  // https://data-apis.org/array-api/latest/API_specification/generated/array_api.unstack.html
+  // unstack an array into multiple arrays along a specified axis
   @arkouda.instantiateAndRegister(prefix='unstack')
   proc unstackMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
