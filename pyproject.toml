@@ -1,0 +1,87 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "arkouda"
+dynamic = ["version"]
+description = "Parallel, distributed NumPy-like arrays backed by Chapel"
+readme = "README.md"
+license = ""
+requires-python = ">=3.9"
+authors = [
+    { name = "U.S. Government", email = "" },
+]
+keywords = [
+    "Chapel",
+    "HPC",
+    "analysis",
+    "arrays",
+    "distribute",
+    "exploratory",
+    "parallel",
+    "workflow",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "cloudpickle",
+    "h5py>=3.7.0",
+    "matplotlib>=3.3.2",
+    "numpy>=1.24.1,<2.0",
+    "pandas>=1.4.0,!=2.2.0",
+    "pip",
+    "pyarrow",
+    "pyfiglet",
+    "pyzmq>=20.0.0",
+    "scipy; python_version>'3.12'",
+    "scipy<=1.13.1; python_version<='3.12'",
+    "tables>=3.8.0",
+    "tabulate",
+    "typeguard==2.10.0",
+    "types-tabulate",
+    "versioneer",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "flake8",
+    "furo",
+    "ipython",
+    "isort",
+    "linkify-it-py",
+    "mathjax",
+    "mypy>=0.931",
+    "myst-parser",
+    "pandas-stubs",
+    "pexpect",
+    "pytest-env",
+    "pytest>=6.0",
+    "sphinx-argparse",
+    "sphinx-autoapi",
+    "sphinx-autodoc-typehints",
+    "sphinx-autopackagesummary",
+    "sphinx-design",
+    "Sphinx>=5.1.1",
+    "types-python-dateutil",
+]
+
+[project.urls]
+"Bug Reports" = "https://github.com/Bears-R-Us/arkouda/issues"
+Chapel = "https://chapel-lang.org"
+Homepage = "https://github.com/Bears-R-Us/arkouda"
+Source = "https://github.com/Bears-R-Us/arkouda"
+
+[tool.hatch.version]
+path = "arkouda/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/arkouda",
+]
