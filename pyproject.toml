@@ -1,7 +1,7 @@
 
 [project]
 name = "arkouda"
-version = "v2025.01.13+74.gc5791be2c.dirty"
+dynamic = ["version"]
 description = "Parallel, distributed NumPy-like arrays backed by Chapel"
 keywords = ["HPC workflow exploratory analysis parallel distribute arrays Chapel"]
 readme = "README.md"
@@ -35,6 +35,10 @@ dependencies = [
     "versioneer",
     "setuptools",
 ]
+
+
+[tool.setuptools.dynamic]
+version = {attr = "versioneer.get_version"}
 
 [project.urls]
 Homepage = "https://github.com/Bears-R-Us/arkouda"
@@ -71,7 +75,7 @@ requires = ["setuptools>=61.0"]
 #build-backend = "setuptools.build_meta"
 
 
-#[tool.setuptools.packages]
-#find = {}
+[tool.setuptools.packages]
+find = {}
 
 
