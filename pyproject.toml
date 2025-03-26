@@ -6,7 +6,7 @@ description = "Parallel, distributed NumPy-like arrays backed by Chapel"
 keywords = ["HPC workflow exploratory analysis parallel distribute arrays Chapel"]
 readme = "README.md"
 authors = [
-    {name = "U.S. Government", email = ""},
+    {name = "U.S. Government"},
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -33,6 +33,7 @@ dependencies = [
     "typeguard==2.10.0",
     "types-tabulate",
     "versioneer",
+    "setuptools",
 ]
 
 [project.urls]
@@ -67,10 +68,10 @@ dev = [
 
 [build-system]
 requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+#build-backend = "setuptools.build_meta"
 
 
-[tool.setuptools.packages]
-find = {}
+#[tool.setuptools.packages]
+#find = {}
 
 
