@@ -51,7 +51,7 @@ dev = [
     "isort",
     "linkify-it-py",
     "mathjax",
-    "mypy>=0.931",
+    "mypy>=1.15.0",
     "myst-parser",
     "pandas-stubs",
     "pexpect",
@@ -66,5 +66,11 @@ dev = [
 ]
 
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+
+[tool.setuptools.packages]
+find = {}
+
+
