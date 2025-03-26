@@ -2,6 +2,7 @@ from collections import UserDict
 
 from tabulate import tabulate
 
+
 __all__ = [
     "Row",
 ]

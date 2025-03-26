@@ -3,6 +3,7 @@ import pytest
 import arkouda as ak
 from arkouda.numpy.pdarrayclass import RegistrationError
 
+
 N = 100
 UNIQUE = N // 4
 

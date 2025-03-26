@@ -5,6 +5,7 @@ import sys
 
 import chapel
 
+
 DEFAULT_MODS = ["MsgProcessing", "GenSymIO"]
 
 registerAttr = ("arkouda.registerCommand", ["name", "ignoreWhereClause"])

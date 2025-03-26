@@ -1,13 +1,4 @@
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Optional,
-    Sequence,
-    Tuple,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Callable, Optional, Sequence, Tuple, TypeVar, Union, cast
 
 import numpy as np
 from typeguard import typechecked
@@ -21,6 +12,7 @@ from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
+
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg

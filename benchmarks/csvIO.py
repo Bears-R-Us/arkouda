@@ -3,17 +3,11 @@
 import argparse
 import os
 
-from IO import (
-    COMPRESSIONS,
-    FileFormat,
-    check_correctness,
-    remove_files,
-    time_ak_read,
-    time_ak_write,
-)
+from IO import COMPRESSIONS, FileFormat, check_correctness, remove_files, time_ak_read, time_ak_write
 
 import arkouda as ak
 from server_util.test.server_test_util import get_default_temp_directory
+
 
 TYPES = ("int64", "float64", "uint64", "str")
 

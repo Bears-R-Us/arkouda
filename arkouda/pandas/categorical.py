@@ -50,17 +50,7 @@ from __future__ import annotations
 from collections import defaultdict
 import itertools
 import json
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Tuple, TypeVar, Union
 from typing import cast as type_cast
 
 import numpy as np
@@ -84,6 +74,7 @@ from arkouda.numpy.sorting import argsort
 from arkouda.numpy.sorting import sort as pda_sort
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, unique
+
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
@@ -1286,12 +1277,7 @@ class Categorical:
 
         """
         from arkouda.client import generic_msg
-        from arkouda.pandas.io import (
-            _file_type_to_int,
-            _get_hdf_filetype,
-            _mode_str_to_int,
-            _repack_hdf,
-        )
+        from arkouda.pandas.io import _file_type_to_int, _get_hdf_filetype, _mode_str_to_int, _repack_hdf
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")

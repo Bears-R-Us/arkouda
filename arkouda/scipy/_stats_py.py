@@ -9,6 +9,7 @@ from arkouda.numpy import float64
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.scipy.special import xlogy
 
+
 __all__ = ["power_divergence", "chisquare", "Power_divergenceResult"]
 
 

@@ -6,6 +6,7 @@ import time
 
 import arkouda as ak
 
+
 if __name__ == "__main__":
     ak.verbose = False
     parser = argparse.ArgumentParser()

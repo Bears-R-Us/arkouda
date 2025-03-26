@@ -6,6 +6,7 @@ import string
 import sys
 import time
 
+
 NINPUTS = 1_000_000
 INPUTSIZE = 8
 

@@ -49,17 +49,7 @@ import json
 import os
 import random
 import sys
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple, TypeVar, Union, cast
 from warnings import warn
 
 import numpy as np  # type: ignore
@@ -87,6 +77,7 @@ from arkouda.numpy.timeclass import Datetime, Timedelta
 from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.pandas.join import inner_join
 from arkouda.pandas.row import Row
+
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
@@ -2052,14 +2043,14 @@ class DataFrame(UserDict):
             Function or dictionary mapping existing values to new values.
             Nonexistent names will not raise an error.
             Uses the value of axis to determine if renaming column or index
-        column : callable or dict-like, Optional
-            Function or dictionary mapping existing column names to
-            new column names. Nonexistent names will not raise an
-            error.
-            When this is set, axis is ignored.
         index : callable or dict-like, Optional
             Function or dictionary mapping existing index names to
             new index names. Nonexistent names will not raise an
+            error.
+            When this is set, axis is ignored.
+        column : callable or dict-like, Optional
+            Function or dictionary mapping existing column names to
+            new column names. Nonexistent names will not raise an
             error.
             When this is set, axis is ignored.
         axis: int or str, default=0
@@ -2749,7 +2740,11 @@ class DataFrame(UserDict):
 
         """
         return self.to_pandas().to_markdown(
-            mode=mode, index=index, tablefmt=tablefmt, storage_options=storage_options, **kwargs
+            mode=mode,
+            index=index,
+            tablefmt=tablefmt,
+            storage_options=storage_options,
+            **kwargs,
         )
 
     def _prep_data(self, index=False, columns=None):
@@ -3231,11 +3226,7 @@ class DataFrame(UserDict):
         4 -4  4 (5 rows x 2 columns)
 
         """
-        from arkouda.pandas.io import (
-            _dict_recombine_segarrays_categoricals,
-            get_filetype,
-            load_all,
-        )
+        from arkouda.pandas.io import _dict_recombine_segarrays_categoricals, get_filetype, load_all
 
         prefix, extension = os.path.splitext(prefix_path)
         first_file = f"{prefix}_LOCALE0000{extension}"
@@ -5259,11 +5250,25 @@ def _right_join_merge(
     right_on_ = [right_on] if isinstance(right_on, str) else right_on
     if actually_left_join:
         in_left = _inner_join_merge(
-            right, left, right_on_, left_on_, col_intersect, right_suffix, left_suffix, sort=False
+            right,
+            left,
+            right_on_,
+            left_on_,
+            col_intersect,
+            right_suffix,
+            left_suffix,
+            sort=False,
         )
     else:
         in_left = _inner_join_merge(
-            left, right, left_on_, right_on_, col_intersect, left_suffix, right_suffix, sort=False
+            left,
+            right,
+            left_on_,
+            right_on_,
+            col_intersect,
+            left_suffix,
+            right_suffix,
+            sort=False,
         )
     in_left_cols, left_cols = in_left.columns.values.copy(), left.columns.values.copy()
     right_cols = right.columns.values.copy()
@@ -5356,7 +5361,14 @@ def _outer_join_merge(
 
     """
     inner = _inner_join_merge(
-        left, right, left_on, right_on, col_intersect, left_suffix, right_suffix, sort=False
+        left,
+        right,
+        left_on,
+        right_on,
+        col_intersect,
+        left_suffix,
+        right_suffix,
+        sort=False,
     )
     left_cols, right_cols = (
         left.columns.values.copy(),
@@ -5444,7 +5456,8 @@ def __nulls_like(
         return full(size, "nan")
     elif isinstance(arry, Categorical):
         return Categorical.from_codes(
-            categories=arry.categories, codes=full(size, len(arry.categories) - 1, dtype=akint64)
+            categories=arry.categories,
+            codes=full(size, len(arry.categories) - 1, dtype=akint64),
         )
     else:
         return full(size, np.nan, arry.dtype)

@@ -3,6 +3,7 @@ import pytest
 
 import arkouda as ak
 
+
 OPS = ("sum", "prod", "min", "max", "argmin", "argmax")
 TYPES = ("int64", "float64")
 

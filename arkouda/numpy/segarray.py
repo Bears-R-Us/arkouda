@@ -11,17 +11,13 @@ from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, isSupportedInt, str_
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.numpy.pdarrayclass import (
-    RegistrationError,
-    create_pdarray,
-    is_sorted,
-    pdarray,
-)
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.pandas.join import gen_ranges
+
 
 __all__ = [
     "SegArray",
@@ -936,12 +932,7 @@ class SegArray:
           file with the new data
         """
         from arkouda.client import generic_msg
-        from arkouda.pandas.io import (
-            _file_type_to_int,
-            _get_hdf_filetype,
-            _mode_str_to_int,
-            _repack_hdf,
-        )
+        from arkouda.pandas.io import _file_type_to_int, _get_hdf_filetype, _mode_str_to_int, _repack_hdf
 
         if self.dtype == str_:
             # Support will be added by Issue #2443

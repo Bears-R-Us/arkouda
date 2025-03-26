@@ -63,6 +63,7 @@ import warnings
 
 from arkouda.logger import getArkoudaLogger
 
+
 __all__ = [
     "geterr",
     "seterr",

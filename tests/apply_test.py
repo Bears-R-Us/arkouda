@@ -4,6 +4,7 @@ import pytest
 
 import arkouda as ak
 
+
 """
 Encapsulates a variety of arkouda apply test cases.
 """

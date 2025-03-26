@@ -4,6 +4,7 @@ import pytest
 
 import arkouda as ak
 
+
 DTYPES = ["int64", "float64", "bigint"]
 
 
