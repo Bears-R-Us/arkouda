@@ -1,0 +1,81 @@
+
+[project]
+name = "arkouda"
+dynamic = ["version"]
+description = "Parallel, distributed NumPy-like arrays backed by Chapel"
+keywords = ["HPC workflow exploratory analysis parallel distribute arrays Chapel"]
+readme = "README.md"
+authors = [
+    {name = "U.S. Government"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "cloudpickle",
+    "h5py>=3.7.0",
+    "matplotlib>=3.3.2",
+    "numpy>=1.24.1,<2.0",
+    "pandas>=1.4.0,!=2.2.0",
+    "pip",
+    "pyarrow",
+    "pyfiglet",
+    "pyzmq>=20.0.0",
+    "scipy; python_version>'3.12'",
+    "scipy<=1.13.1; python_version<='3.12'",
+    "tables>=3.8.0",
+    "tabulate",
+    "typeguard==2.10.0",
+    "types-tabulate",
+    "versioneer",
+    "setuptools",
+]
+
+
+[tool.setuptools.dynamic]
+version = {attr = "versioneer.get_version"}
+
+[project.urls]
+Homepage = "https://github.com/Bears-R-Us/arkouda"
+"Bug Reports" = "https://github.com/Bears-R-Us/arkouda/issues"
+Source = "https://github.com/Bears-R-Us/arkouda"
+Chapel = "https://chapel-lang.org"
+
+[project.optional-dependencies]
+dev = [
+    "Sphinx>=5.1.1",
+    "black",
+    "flake8",
+    "furo",
+    "ipython",
+    "isort",
+    "linkify-it-py",
+    "mathjax",
+    "mypy>=1.15.0",
+    "myst-parser",
+    "pandas-stubs",
+    "pexpect",
+    "pytest-env",
+    "pytest>=6.0",
+    "sphinx-argparse",
+    "sphinx-autoapi",
+    "sphinx-autodoc-typehints",
+    "sphinx-autopackagesummary",
+    "sphinx-design",
+    "types-python-dateutil",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+#build-backend = "setuptools.build_meta"
+
+
+[tool.setuptools.packages]
+find = {}
+
+
