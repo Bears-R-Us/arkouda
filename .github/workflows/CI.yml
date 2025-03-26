@@ -23,7 +23,7 @@ jobs:
     - name: Install dependencies
       run: |
         apt-get update && apt-get install -y python3-pip
-        python3 -m pip install -e .[dev]
+        python3 -m pip install .[dev]
     - name: Arkouda mypy
       run: |
         python3 -m mypy arkouda
@@ -37,7 +37,7 @@ jobs:
     - name: Install dependencies
       run: |
         apt-get update && apt-get install -y python3-pip
-        python3 -m pip install -e .[dev]
+        python3 -m pip install .[dev]
     - name: Arkouda make doc
       run: |
         make doc
@@ -57,7 +57,7 @@ jobs:
           retry_on: error
           command: |
             apt-get update && apt-get install -y python3-pip
-            python3 -m pip install -e .[dev]
+            python3 -m pip install .[dev]
       - name: flake8 version
         run: | 
           flake8 --version
@@ -141,7 +141,7 @@ jobs:
     - name: Build/Install Arkouda
       run: |
         make
-        python3 -m pip install -e .[dev]
+        python3 -m pip install .[dev]
     - name: Arkouda unit tests
       run: |
         make test-python size=100
@@ -425,7 +425,7 @@ jobs:
     - name: Build/Install Arkouda
       run: |
         make
-        python3 -m pip install -e .[dev]
+        python3 -m pip install .[dev]
     - name: Arkouda unit tests
       run: |
         make test-python size=100
@@ -464,7 +464,7 @@ jobs:
     - name: Build/Install Arkouda
       run: |
         make
-        python3 -m pip install -e .[dev]
+        python3 -m pip install .[dev]
     - name: Arkouda unit tests
       run: |
         make test-python size=100
@@ -503,7 +503,7 @@ jobs:
     - name: Build/Install Arkouda
       run: |
         make
-        python3 -m pip install -e .[dev]
+        python3 -m pip install .[dev]
     - name: Arkouda make check
       run: |
         make check
@@ -555,7 +555,7 @@ jobs:
     - name: Build/Install Arkouda
       run: |
         make
-        python3 -m pip install -e .[dev]
+        python3 -m pip install .[dev]
     - name: Arkouda make check
       run: |
         make check
