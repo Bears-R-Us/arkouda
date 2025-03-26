@@ -2,6 +2,7 @@ import re
 
 import chapel
 
+
 # simple regex for “lowerCamelCase”: starts with lowercase, then zero or more groups
 # of an uppercase letter + letters/digits, with no underscores
 _camel_re = re.compile(r"^[a-z][a-z0-9]*(?:[A-Z][a-z0-9]+)*$")

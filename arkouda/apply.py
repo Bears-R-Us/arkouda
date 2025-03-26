@@ -64,6 +64,7 @@ from arkouda.numpy.dtypes import dtype
 from arkouda.numpy.pdarrayclass import parse_single_value, pdarray
 from arkouda.numpy.pdarraycreation import create_pdarray
 
+
 __all__ = [
     "apply",
 ]

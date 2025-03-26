@@ -7,6 +7,7 @@ import arkouda as ak
 import arkouda.array_api as xp
 from arkouda.testing import assert_almost_equivalent, assert_equivalent
 
+
 # requires the server to be built with 2D array support
 SHAPES = [(0,), (0, 0), (1,), (5,), (2, 2), (5, 10)]
 SIZES = [0, 0, 0, 1, 5, 4, 50]

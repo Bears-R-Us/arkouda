@@ -55,6 +55,7 @@ from typing import TYPE_CHECKING, TypeVar
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime
 
+
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 else:
@@ -210,7 +211,7 @@ class Properties:
 
 @date_operators
 class DatetimeAccessor(Properties):
-    """
+    r"""
     Accessor for datetime-like operations on Arkouda Series.
 
     Provides datetime methods such as `.floor()`, `.ceil()`, and `.round()`,

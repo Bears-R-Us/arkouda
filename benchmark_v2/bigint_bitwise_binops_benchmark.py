@@ -2,6 +2,7 @@ import pytest
 
 import arkouda as ak
 
+
 OPS = ["and", "or", "shift"]
 
 
@@ -21,7 +22,7 @@ def compute_nbytes(N):
 @pytest.mark.parametrize("op", OPS)
 def bench_bitwise_binops(benchmark, op):
     """
-    Measures the performance of bigint bitwise binops
+    Measures the performance of bigint bitwise binops.
     """
     N = pytest.N
     num_bytes = compute_nbytes(N)

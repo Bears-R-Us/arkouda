@@ -55,6 +55,7 @@ from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.numpy.pdarraysetops import concatenate as ak_concat
 from arkouda.numpy.strings import Strings
 
+
 __all__ = ["_ensure_numpy", "ArkoudaBaseArray"]
 
 

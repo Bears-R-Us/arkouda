@@ -4,6 +4,7 @@ import pytest
 
 import arkouda as ak
 
+
 OPS = ("cumsum", "cumprod")
 TYPES = ("int64", "float64")
 

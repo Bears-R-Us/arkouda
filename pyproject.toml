@@ -1,0 +1,162 @@
+[build-system]
+requires = ["setuptools>=64", "wheel", "versioneer[toml]>=0.22"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arkouda"
+dynamic = ["version"]                # <-- Versioneer will supply this
+description = "Parallel, distributed NumPy-like arrays backed by Chapel"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "U.S. Government" }]
+keywords = ["HPC","workflow","exploratory","analysis","parallel","distribute","arrays","Chapel"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+]
+
+# keep your dependencies/optional-dependencies blocks here;
+# importantly: DO NOT list "versioneer" as a runtime dependency
+
+
+dependencies = [
+  "numpy>=2.0",
+  "pandas>=1.4.0,!=2.2.0",
+  "pyzmq>=20.0.0",
+  "typeguard==2.10.0",
+  "tabulate",
+  "pyfiglet",
+  "matplotlib>=3.3.2",
+  "h5py>=3.7.0",
+  "types-tabulate",
+  "tables>=3.10.0",
+  "pyarrow<21.0.0,>=6.0.1",
+  "scipy",
+  "cloudpickle",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pexpect",
+  "pytest>=6.0",
+  "pytest-env",
+  "pytest-timeout",
+  "pytest-html",
+  "pytest-benchmark",
+  "pytest-json-report",
+  "pytest-subtests",
+  "Sphinx>=5.1.1",
+  "sphinx-argparse",
+  "sphinx-autoapi",
+  "mypy>=0.931",
+  "black==25.1.0",
+  "ruff==0.11.2",
+  "isort==5.13.2",
+  "flake8",
+  "furo",
+  "myst-parser",
+  "linkify-it-py",
+  "mathjax",
+  "sphinx-autopackagesummary",
+  "sphinx-design",
+  "sphinx-autodoc-typehints",
+  "pandas-stubs",
+  "types-python-dateutil",
+  "ipython",
+  "pydocstyle>=6.3.0",
+  "pre-commit",
+  "darglint>=1.8.1",
+  "pydoclint[flake8]==0.6.10",
+  "numba",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/Bears-R-Us/arkouda"
+"Bug Reports" = "https://github.com/Bears-R-Us/arkouda/issues"
+Source = "https://github.com/Bears-R-Us/arkouda"
+Chapel = "https://chapel-lang.org"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+# Versioneer 0.22+ reads config from TOML:
+[tool.versioneer]
+VCS = "git"
+style = "pep440"
+versionfile_source = "arkouda/_version.py"
+versionfile_build  = "arkouda/_version.py"
+tag_prefix = "v"                     # "" if your tags look like v1.2.3 or 1.2.3; set "v" if needed
+parentdir_prefix = "arkouda-"
+
+
+[tool.isort]
+profile = "black"
+line_length = 105
+known_first_party = ["arkouda"]
+
+force_sort_within_sections = true
+lines_after_imports = 2
+#force_single_line = true
+lines_between_types = 1
+
+# Prefer stable one-per-line *only when there are several names*
+multi_line_output = 3            # vertical hanging indent
+#use_parentheses = true
+#include_trailing_comma = true
+#force_grid_wrap = 0     #   Force wrapping at N imports, N=0 means do not force
+
+# Keep these always on a single line
+single_line_exclusions = [
+  "__future__",
+  "typing",
+  "typing_extensions",
+]
+
+skip = [
+  "build",
+  ".bzr",
+  "node_modules",
+  "buck-out",
+  ".pytype",
+  "__pypackages__",
+  ".svn",
+  ".tox",
+  ".mypy_cache",
+  ".git",
+  ".hg",
+  ".direnv",
+  ".pants.d",
+  ".venv",
+  ".nox",
+  "dist",
+  ".eggs",
+  "venv",
+  "_build",
+  "runs",
+  "toys",
+  "versioneer.py",
+]
+extend_skip_glob = [
+  ".venv/*",
+  "*.pyi",
+  "dep/*",
+  "*__init__.py",
+  "*deprecated*",
+  "arkouda/versioneer.py",
+  "arkouda/toys/*",
+  "arkouda/benchmark_v2/*",
+  "arkouda/server_util/test/*",
+]
+    
+[tool.pydocstyle]
+convention = "numpy"
+match-dir = "arkouda"
+

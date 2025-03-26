@@ -1,16 +1,5 @@
 import itertools
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Iterable,
-    List,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-    cast,
-    overload,
-)
+from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Tuple, TypeVar, Union, cast, overload
 
 import numpy as np
 import pandas as pd
@@ -38,6 +27,7 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import broadcast_to_shape, create_pdarray, pdarray
 from arkouda.numpy.strings import Strings
+
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg, get_array_ranks
@@ -395,7 +385,11 @@ def array(
 
         rep_msg = generic_msg(
             cmd=f"array<{a_.dtype.name},{ndim}>",
-            args={"dtype": a_.dtype.name, "shape": tuple(a_.shape), "seg_string": False},
+            args={
+                "dtype": a_.dtype.name,
+                "shape": tuple(a_.shape),
+                "seg_string": False,
+            },
             payload=aview,
             send_binary=True,
         )
@@ -605,9 +599,7 @@ def zeros(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
 
-    from arkouda.numpy.util import (
-        _infer_shape_from_size,  # placed here to avoid circ import
-    )
+    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
@@ -752,9 +744,7 @@ def full(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    from arkouda.numpy.util import (
-        _infer_shape_from_size,  # placed here to avoid circ import
-    )
+    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
@@ -1134,7 +1124,8 @@ def arange(
             stop = stop + 2
 
         repMsg = generic_msg(
-            cmd=f"arange<{arg_dtype},1>", args={"start": start, "stop": stop, "step": step}
+            cmd=f"arange<{arg_dtype},1>",
+            args={"start": start, "stop": stop, "step": step},
         )
         arr = create_pdarray(repMsg, max_bits=max_bits)
         return arr if aktype == akint64 else akcast(arr, dt=aktype)
@@ -1471,12 +1462,12 @@ def uniform(
 
     Parameters
     ----------
+    size : int_scalars
+        The length of the returned array
     low : float_scalars
         The low value (inclusive) of the range, defaults to 0.0
     high : float_scalars
         The high value (inclusive) of the range, defaults to 1.0
-    size : int_scalars
-        The length of the returned array
     seed : int_scalars, optional
         Value used to initialize the random number generator
 

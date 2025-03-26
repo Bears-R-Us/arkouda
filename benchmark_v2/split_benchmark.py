@@ -3,6 +3,7 @@ import pytest
 
 import arkouda as ak
 
+
 SPLIT_MODES = [
     ("nonregex", "_", False),
     ("regex_literal", "_", True),

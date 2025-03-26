@@ -1,6 +1,7 @@
 import importlib
 import importlib.util
 import os
+import sys
 from typing import Iterable, Iterator
 
 import pytest
@@ -13,6 +14,7 @@ from server_util.test.server_test_util import (
     start_arkouda_server,
     stop_arkouda_server,
 )
+
 
 default_dtype = ["int64", "uint64", "float64", "bool", "str", "bigint", "mixed"]
 default_encoding = ["ascii", "idna"]
@@ -28,7 +30,7 @@ def pytest_addoption(parser):
         help="arkouda server host for CLIENT running mode",
     )
 
-    default_port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
+    default_port = int(os.getenv("ARKOUDA_SERVER_PORT", "5555"))
     parser.addoption(
         "--port",
         action="store",
@@ -55,7 +57,7 @@ def pytest_addoption(parser):
         help="arkouda running mode",
     )
 
-    default_client_timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 0))
+    default_client_timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", "0"))
     parser.addoption(
         "--client_timeout",
         action="store",
@@ -255,7 +257,7 @@ def _global_server() -> Iterator[None]:
         nl = pytest.nl
         host, port, proc = start_arkouda_server(numlocales=nl, port=pytest.port)
         pytest.host = host
-        print(f"Started arkouda_server in GLOBAL_SERVER mode on {host}:{port} ({nl} locales)")
+        sys.stdout.write(f"Started arkouda_server in GLOBAL_SERVER mode on {host}:{port} ({nl} locales)")
 
         try:
             yield
@@ -286,7 +288,7 @@ def _module_server() -> Iterator[None]:
         nl = pytest.nl
         host, port, proc = start_arkouda_server(numlocales=nl, port=pytest.port)
         pytest.host = host
-        print(f"Started arkouda_server in CLASS_SERVER mode on {host}:{port} ({nl} locales)")
+        sys.stdout.write(f"Started arkouda_server in CLASS_SERVER mode on {host}:{port} ({nl} locales)")
 
         try:
             yield

@@ -4,6 +4,7 @@ import pytest
 
 import arkouda as ak
 
+
 TYPES = ("int64", "uint64", "float64", "str")
 
 
@@ -11,11 +12,11 @@ TYPES = ("int64", "uint64", "float64", "str")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_argsort(benchmark, dtype):
     """
-    Measure ArgSort performance. Runs for each dtype in TYPES
+    Measure ArgSort performance. Runs for each dtype in TYPES.
 
     Note
     -----
-    str dtype is significantly slower than numerics
+    str dtype is significantly slower than numerics.
     """
     N = pytest.N
 
