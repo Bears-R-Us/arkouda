@@ -1,26 +1,12 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
 
 [project]
 name = "arkouda"
-dynamic = ["version"]
+version = "v2025.01.13+74.gc5791be2c.dirty"
 description = "Parallel, distributed NumPy-like arrays backed by Chapel"
+keywords = ["HPC workflow exploratory analysis parallel distribute arrays Chapel"]
 readme = "README.md"
-license = ""
-requires-python = ">=3.9"
 authors = [
-    { name = "U.S. Government", email = "" },
-]
-keywords = [
-    "Chapel",
-    "HPC",
-    "analysis",
-    "arrays",
-    "distribute",
-    "exploratory",
-    "parallel",
-    "workflow",
+    {name = "U.S. Government", email = ""},
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -29,6 +15,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Scientific/Engineering",
 ]
+requires-python = ">=3.9"
 dependencies = [
     "cloudpickle",
     "h5py>=3.7.0",
@@ -48,8 +35,15 @@ dependencies = [
     "versioneer",
 ]
 
+[project.urls]
+Homepage = "https://github.com/Bears-R-Us/arkouda"
+"Bug Reports" = "https://github.com/Bears-R-Us/arkouda/issues"
+Source = "https://github.com/Bears-R-Us/arkouda"
+Chapel = "https://chapel-lang.org"
+
 [project.optional-dependencies]
 dev = [
+    "Sphinx>=5.1.1",
     "black",
     "flake8",
     "furo",
@@ -68,20 +62,9 @@ dev = [
     "sphinx-autodoc-typehints",
     "sphinx-autopackagesummary",
     "sphinx-design",
-    "Sphinx>=5.1.1",
     "types-python-dateutil",
 ]
 
-[project.urls]
-"Bug Reports" = "https://github.com/Bears-R-Us/arkouda/issues"
-Chapel = "https://chapel-lang.org"
-Homepage = "https://github.com/Bears-R-Us/arkouda"
-Source = "https://github.com/Bears-R-Us/arkouda"
-
-[tool.hatch.version]
-path = "arkouda/__init__.py"
-
-[tool.hatch.build.targets.sdist]
-include = [
-    "/arkouda",
-]
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
