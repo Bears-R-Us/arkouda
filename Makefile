@@ -236,13 +236,28 @@ install-arrow: arrow-download-source
 	cd $(ARROW_BUILD_DIR)/cpp/build-release && make install
     
 	echo '$$(eval $$(call add-path,$(ARROW_INSTALL_DIR)))' >> Makefile.paths   
- 
 
 arrow-clean:
 	rm -rf $(DEP_BUILD_DIR)/apache-arrow*
 	rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*	
 	rm -rf $(ARROW_DEP_DIR)
 	rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
+
+pytables-download-source:
+	mkdir -p $(DEP_BUILD_DIR)
+
+    #   If the PyTables directory does not exist, fetch it
+    ifeq (,$(wildcard ${DEP_BUILD_DIR}/PyTables))
+		cd $(DEP_BUILD_DIR) && git clone https://github.com/PyTables/PyTables.git
+		cd $(DEP_BUILD_DIR)/PyTables && git submodule update --init --recursive
+    endif
+
+install-pytables: pytables-download-source
+	@echo "Installing PyTables"
+	cd $(DEP_BUILD_DIR) && python3 -m pip install PyTables/
+
+pytables-clean:
+	rm -rf $(DEP_BUILD_DIR)/PyTables
 
 
 ICONV_VER := 1.17
@@ -307,7 +322,7 @@ install-idn2: idn2-download-source
 idn2-clean:
 	rm -rf $(LIBIDN_BUILD_DIR)
 
-BLOSC_BUILD_DIR := $(DEP_BUILD_DIR)/c-blosc
+BLOSC_BUILD_DIR := $(DEP_BUILD_DIR)/c-blosc2
 BLOSC_INSTALL_DIR := $(DEP_INSTALL_DIR)/c-blosc-install
 
 blosc-download-source:
@@ -315,7 +330,7 @@ blosc-download-source:
 	
     #If the build directory does not exist,  create it
     ifeq (,$(wildcard $(BLOSC_BUILD_DIR)/.*))
-		cd $(DEP_BUILD_DIR) && git clone https://github.com/Blosc/c-blosc.git
+		cd $(DEP_BUILD_DIR) && git clone https://github.com/Blosc/c-blosc2.git
     endif
 
 install-blosc: blosc-download-source
