@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
-import arkouda as ak
 import math
+
+import arkouda as ak
+
 
 # dot product or two arkouda pdarrays
 def ak_dot(u, v):
@@ -27,9 +29,13 @@ def ak_cos_dist(u, v):
 
 
 if __name__ == "__main__":
-    from scipy.spatial import distance
+    import argparse
+    import gc
+    import sys
+    import time
+
     import numpy as np
-    import argparse, sys, gc, time
+    from scipy.spatial import distance
 
     parser = argparse.ArgumentParser(description="Example of cosine distance/similarity in arkouda")
     parser.add_argument('--server', default="localhost", help='server/Hostname of arkouda server')
@@ -59,5 +65,3 @@ if __name__ == "__main__":
     assert (np.allclose(d3, distance.cosine(u3,v1)))
 
     ak.disconnect()
-    
-    

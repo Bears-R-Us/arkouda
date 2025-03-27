@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
 import argparse
-from enum import Enum
 import os
 import time
+from enum import Enum
 from glob import glob
 
-import arkouda as ak
 import numpy as np
 
+import arkouda as ak
 from server_util.test.server_test_util import get_default_temp_directory
-
 
 TYPES = (
     "int64",

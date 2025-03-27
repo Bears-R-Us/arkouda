@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import random
-import sys
-import string
-import time
 import argparse
+import random
+import string
+import sys
+import time
 
 NINPUTS = 1_000_000
 INPUTSIZE = 8
