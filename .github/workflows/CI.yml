@@ -14,6 +14,15 @@ jobs:
       run: |
         ! git --no-pager grep -n $'\t' -- '*.chpl'
         
+  isort:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - uses: isort/isort-action@master 
+        
   mypy:
     runs-on: ubuntu-latest
     container:
@@ -161,15 +170,6 @@ jobs:
         retry_on: error
         command: |
           make install-arrow        
-    - name: Make install-hdf5
-      uses: nick-fields/retry@v2
-      with:
-        timeout_seconds: 1200  # or use timeout_minutes
-        max_attempts: 2
-        retry_wait_seconds: 60
-        retry_on: error
-        command: |  
-          make install-hdf5
     - name: Make install-zmq
       uses: nick-fields/retry@v2
       with:
@@ -206,6 +206,60 @@ jobs:
         retry_on: error
         command: |
           make install-blosc
+
+  arkouda_makefile_almalinux_install_pytables:
+    runs-on: ubuntu-24.04    
+    strategy:
+      matrix:
+        python-version: ['3.12']
+    container:
+      image: ajpotts/almalinux-with-arkouda-deps:1.0.0
+    steps:
+    - uses: actions/checkout@v3
+
+    # Install dependencies to build Python from source
+    - name: Install dependencies
+      run: |
+        dnf update -y
+        dnf install -y zlib-devel gcc gcc-c++ make zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl openssl-devel libffi-devel xz-devel zlib-devel
+
+    # Download and install Python from source (updated URL for Python 3.12)
+    - name: Download Python ${matrix.python-version} source
+      run: |
+        curl -O https://www.python.org/ftp/python/${{ matrix.python-version }}.0/Python-${{ matrix.python-version }}.0.tgz
+        file Python-${{ matrix.python-version }}.0.tgz  # Check the file type
+
+    - name: Extract Python ${matrix.python-version} source
+      run: |
+        tar -xvf Python-${{ matrix.python-version }}.0.tgz
+        cd Python-${{ matrix.python-version }}.0 && ./configure --enable-optimizations && make -j$(nproc) && make altinstall && cd ..
+        update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python${{ matrix.python-version }} 1
+
+    # Install pip for Python from the get-pip.py script
+    - name: Install pip for Python ${{ matrix.python-version }}
+      run: |
+        curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python${{ matrix.python-version }} get-pip.py
+    - name: Check python version
+      run: |
+        python3 --version
+    - name: Make install-hdf5
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |  
+          make install-hdf5
+    - name: Make install-pytables
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          HDF5_DIR=$(pwd)/dep/hdf5-install/ make install-pytables
 
   arkouda_makefile:
     runs-on: ubuntu-24.04
@@ -296,6 +350,58 @@ jobs:
         retry_on: error
         command: |
           make install-blosc
+
+
+  arkouda_makefile_install_pytables:
+    runs-on: ubuntu-24.04 
+    strategy:
+      matrix:
+        python-version: ['3.12']
+    container:
+      image: chapel/chapel:2.3.0   
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          apt-get update
+          apt-get install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libssl-dev libsqlite3-dev libreadline-dev libbz2-dev libffi-dev curl liblzma-dev tk-dev
+          apt-get install -y libhdf5-dev
+
+    # Download and install Python from source (updated URL for Python 3.12)
+    - name: Download Python ${matrix.python-version} source
+      run: |
+        curl -O https://www.python.org/ftp/python/${{ matrix.python-version }}.0/Python-${{ matrix.python-version }}.0.tgz
+        file Python-${{ matrix.python-version }}.0.tgz  # Check the file type
+
+    - name: Extract Python ${matrix.python-version} source
+      run: |
+        tar -xvf Python-${{ matrix.python-version }}.0.tgz
+        cd Python-${{ matrix.python-version }}.0 && ./configure --enable-optimizations && make -j$(nproc) && make altinstall && cd ..
+        update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python${{ matrix.python-version }} 1
+
+    # Install pip for Python from the get-pip.py script
+    - name: Install pip for Python ${{ matrix.python-version }}
+      run: |
+        curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python${{ matrix.python-version }} get-pip.py
+    - name: Check python version
+      run: |
+        python3 --version
+    - name: Make install-pytables
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          make install-pytables
+
 
   arkouda_chpl_portability:
     runs-on: ubuntu-latest
@@ -465,4 +571,4 @@ jobs:
     - name: Arkouda benchmark
       run: |
         make benchmark size_bm=10
-
+          

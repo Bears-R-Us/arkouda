@@ -10,6 +10,7 @@
 
 import arkouda as ak
 
+
 def gen_rmat_edges(lgNv, Ne_per_v, p, perm=False):
     # number of vertices
     Nv = 2**lgNv
@@ -94,8 +95,13 @@ def conn_comp(src, dst, printCComp=False, printLayers=False):
     return components
 
 if __name__ == "__main__":
+    import argparse
+    import gc
+    import math
+    import sys
+    import time
+
     import matplotlib.pyplot as plt
-    import argparse, sys, gc, math, time
     
     parser = argparse.ArgumentParser(description="Generates an rmat structured spare matrix as tuples(ii,jj)")
     parser.add_argument('hostname', help='Hostname of arkouda server')

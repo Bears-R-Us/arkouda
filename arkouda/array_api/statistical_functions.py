@@ -2,6 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional, Tuple, Union
 
+import numpy as np
+
+from arkouda.client import generic_msg
+from arkouda.numpy import cast as akcast
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.pdarrayclass import create_pdarray
+
 from ._dtypes import (  # _complex_floating_dtypes,; complex128,
     _numeric_dtypes,
     _real_floating_dtypes,
@@ -16,13 +23,6 @@ from .manipulation_functions import squeeze
 
 if TYPE_CHECKING:
     from ._typing import Dtype
-
-import numpy as np
-
-from arkouda.client import generic_msg
-from arkouda.numpy import cast as akcast
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.pdarrayclass import create_pdarray
 
 
 def max(

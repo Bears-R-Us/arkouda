@@ -56,8 +56,8 @@ The dependencies listed here are only required if you will be doing development 
 - `linkify-it-py`
 - `flake8`
 - `mypy>=0.931`
-- `black`
-- `isort`
+- `black==25.1.0`
+- `isort==5.13.2`
 - `pytest-json-report`
 - `pytest-benchmark`
 - `mathjax`

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import arkouda as ak
 
+
 # generate rmat graph edge-list as two pdarrays
 def gen_rmat_edges(lgNv, Ne_per_v, p, perm=False):
     # number of vertices

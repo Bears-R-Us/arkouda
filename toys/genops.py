@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from string import Template
 import os
+from string import Template
 
 OPEQUAL = ['+=', '-=', '*=', '/=']
 BINOP = ['+', '-', '*', '/']

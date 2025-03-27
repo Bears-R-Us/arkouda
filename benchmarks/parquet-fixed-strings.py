@@ -1,12 +1,12 @@
-import time
-import arkouda as ak
-import os
 import argparse
+import os
 import shutil
+import time
+
 import pandas as pd
 
+import arkouda as ak
 from server_util.test.server_test_util import get_default_temp_directory
-
 
 str_length = 2
 test_dir = ''
@@ -166,5 +166,3 @@ if __name__ == "__main__":
     delete_folder_contents(test_dir)
 
     print_performance_table(test_results)
-
-import pandas as pd

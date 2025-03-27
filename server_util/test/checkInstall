@@ -5,8 +5,8 @@ Run check.py, automatically starting/stopping the server.
 """
 
 import logging
-import sys
 import os
+import sys
 
 from server_test_util import *
 

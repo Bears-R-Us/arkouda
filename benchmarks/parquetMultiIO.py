@@ -4,8 +4,8 @@ import argparse
 import os
 
 from multiIO import *
-from server_util.test.server_test_util import get_default_temp_directory
 
+from server_util.test.server_test_util import get_default_temp_directory
 
 TYPES = (
     "int64",
