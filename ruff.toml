@@ -1,0 +1,8 @@
+# Set the maximum line length to 105.
+line-length = 105
+extend-exclude = ["tests/deprecated","*.ipynb","*.rst","runs","tests/deprecated"]
+
+[lint]
+# Add the `line-too-long` rule to the enforced rule set.
+extend-select = ["E501"]
+

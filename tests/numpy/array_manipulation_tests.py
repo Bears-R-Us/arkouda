@@ -7,7 +7,6 @@ from arkouda.testing import assert_arkouda_array_equivalent
 
 
 class TestManipulationFunctions:
-
     @pytest.mark.skip_if_rank_not_compiled([2])
     def test_vstack(self):
         # These tests will be implemented soon, hopefully.

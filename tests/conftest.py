@@ -101,8 +101,9 @@ def startup_teardown():
         try:
             pytest.server, _, _ = start_arkouda_server(numlocales=pytest.nl, port=pytest.port)
             print(
-                "Started arkouda_server in TEST_CLASS mode with "
-                "host: {} port: {} locales: {}".format(pytest.server, pytest.port, pytest.nl)
+                "Started arkouda_server in TEST_CLASS mode with host: {} port: {} locales: {}".format(
+                    pytest.server, pytest.port, pytest.nl
+                )
             )
         except Exception as e:
             raise RuntimeError(

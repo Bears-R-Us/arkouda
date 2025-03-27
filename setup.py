@@ -152,6 +152,7 @@ setup(
             "sphinx-autoapi",
             "mypy>=0.931",
             "black==25.1.0",
+            "ruff==0.11.2",
             "isort==5.13.2",
             "flake8",
             "furo",

@@ -66,8 +66,10 @@ class Index:
     Index([1, 2, 3], dtype='int64')
 
     """
+
     def _set_dtype(self):
         from arkouda.numpy.dtypes import dtype as ak_dtype
+
         if isinstance(self.values, List):
             # Infer dtype from first element
             self.dtype = self[0].dtype
@@ -861,21 +863,23 @@ class Index:
             )
         ]
 
-        generic_msg(
-            cmd="tohdf",
-            args={
-                "filename": prefix_path,
-                "dset": dataset,
-                "file_format": _file_type_to_int(file_type),
-                "write_mode": _mode_str_to_int("append"),
-                "objType": self.objType,
-                "num_idx": 1,
-                "idx": index_data,
-                "idx_objTypes": [self.values.objType],  # this will be pdarray, strings, or cat
-                "idx_dtypes": [str(self.values.dtype)],
-                "overwrite": True,
-            },
-        ),
+        (
+            generic_msg(
+                cmd="tohdf",
+                args={
+                    "filename": prefix_path,
+                    "dset": dataset,
+                    "file_format": _file_type_to_int(file_type),
+                    "write_mode": _mode_str_to_int("append"),
+                    "objType": self.objType,
+                    "num_idx": 1,
+                    "idx": index_data,
+                    "idx_objTypes": [self.values.objType],  # this will be pdarray, strings, or cat
+                    "idx_dtypes": [str(self.values.dtype)],
+                    "overwrite": True,
+                },
+            ),
+        )
 
         if repack:
             _repack_hdf(prefix_path)
@@ -1590,21 +1594,23 @@ class MultiIndex(Index):
             for obj in self.levels
         ]
 
-        generic_msg(
-            cmd="tohdf",
-            args={
-                "filename": prefix_path,
-                "dset": dataset,
-                "file_format": _file_type_to_int(file_type),
-                "write_mode": _mode_str_to_int("append"),
-                "objType": self.objType,
-                "num_idx": len(self.levels),
-                "idx": index_data,
-                "idx_objTypes": [obj.objType for obj in self.levels],
-                "idx_dtypes": [str(obj.dtype) for obj in self.levels],
-                "overwrite": True,
-            },
-        ),
+        (
+            generic_msg(
+                cmd="tohdf",
+                args={
+                    "filename": prefix_path,
+                    "dset": dataset,
+                    "file_format": _file_type_to_int(file_type),
+                    "write_mode": _mode_str_to_int("append"),
+                    "objType": self.objType,
+                    "num_idx": len(self.levels),
+                    "idx": index_data,
+                    "idx_objTypes": [obj.objType for obj in self.levels],
+                    "idx_dtypes": [str(obj.dtype) for obj in self.levels],
+                    "overwrite": True,
+                },
+            ),
+        )
 
         if repack:
             _repack_hdf(prefix_path)

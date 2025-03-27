@@ -12,7 +12,6 @@ def supports_apply():
 
 
 class TestApply:
-
     @classmethod
     def setup_class(cls):
         if not supports_apply():

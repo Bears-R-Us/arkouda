@@ -9,6 +9,7 @@ import arkouda as ak
 
 ENCODINGS = ("idna", "ascii")
 
+
 def time_ak_encode(N_per_locale, trials, seed):
     print(">>> arkouda string encode")
     cfg = ak.get_config()
@@ -28,6 +29,7 @@ def time_ak_encode(N_per_locale, trials, seed):
         print("Average {} encode time = {:.4f} sec".format(encoding, tavg))
         bytes_per_sec = nbytes / tavg
         print("Average {} encode rate = {:.4f} GiB/sec".format(encoding, bytes_per_sec / 2**30))
+
 
 def time_ak_decode(N_per_locale, trials, seed):
     print(">>> arkouda string encode")
@@ -49,11 +51,11 @@ def time_ak_decode(N_per_locale, trials, seed):
         bytes_per_sec = nbytes / tavg
         print("Average {} decode rate = {:.4f} GiB/sec".format(encoding, bytes_per_sec / 2**30))
 
-        
+
 def check_correctness(encoding, seed):
     N = 10
     # IDNA converts all characters to lowercase
-    a = ak.random_strings_uniform(1, 16, N, seed=seed, characters='lowercase')
+    a = ak.random_strings_uniform(1, 16, N, seed=seed, characters="lowercase")
 
     # Do round trip encode/decode
     encoded = a.encode(encoding)
@@ -62,7 +64,7 @@ def check_correctness(encoding, seed):
     # If value is not roundtrippable, it will be empty string
     for i in range(len(decoded)):
         if decoded[i] != " ":
-            assert(decoded[i] == a[i])
+            assert decoded[i] == a[i]
 
 
 def create_parser():
@@ -104,7 +106,7 @@ if __name__ == "__main__":
         for encoding in ENCODINGS:
             check_correctness(encoding, args.seed)
         sys.exit(0)
-    
+
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
     time_ak_encode(args.size, args.trials, args.seed)

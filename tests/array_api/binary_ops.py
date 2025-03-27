@@ -17,7 +17,6 @@ class TestArrayCreation:
     @pytest.mark.parametrize("op", ["+", "-", "*", "/"])
     @pytest.mark.parametrize("dtype", SCALAR_TYPES)
     def test_binops(self, op, dtype):
-
         for shape_a, shape_b in zip(SHAPE_A, SHAPE_B):
             x = xp.asarray(ak.randint(0, 100, shape_a, dtype=dtype, seed=SEED))  # noqa F841
             y = xp.asarray(ak.randint(0, 100, shape_b, dtype=dtype, seed=SEED))

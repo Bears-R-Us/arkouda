@@ -757,7 +757,7 @@ class TestString:
             assert s == str_lit
 
         # 2 SegStr
-        s2 = ak.array([f"str {i*2}" for i in range(10)])
+        s2 = ak.array([f"str {i * 2}" for i in range(10)])
         ans = ak.where(revs, s1, s2)
         assert s1[revs].to_list() == ans[revs].to_list()
         assert s2[~revs].to_list() == ans[~revs].to_list()

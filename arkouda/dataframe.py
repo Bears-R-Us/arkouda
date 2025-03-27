@@ -107,7 +107,6 @@ class DataFrameGroupBy:
     """
 
     def __init__(self, gb, df, gb_key_names=None, as_index=True):
-
         self.gb = gb
         self.df = df
         self.gb_key_names = gb_key_names

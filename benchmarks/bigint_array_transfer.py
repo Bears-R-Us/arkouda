@@ -2,7 +2,9 @@ from array_transfer import *
 
 
 def create_parser():
-    parser = argparse.ArgumentParser(description="Measure the performance of transferring bigint arrays.")
+    parser = argparse.ArgumentParser(
+        description="Measure the performance of transferring bigint arrays."
+    )
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
     parser.add_argument("-n", "--size", type=int, default=10**6, help="Problem size: length of array")

@@ -56,7 +56,7 @@ def check_correctness(alpha, max_bits, random, seed):
         ak.array(a, dtype=ak.bigint, max_bits=max_bits)
         + ak.array(b, dtype=ak.bigint, max_bits=max_bits) * alpha
     )
-    np_ans = (npc % (2 ** max_bits)).astype(np.uint) if max_bits != -1 else npc
+    np_ans = (npc % (2**max_bits)).astype(np.uint) if max_bits != -1 else npc
     ak_ans = akc.to_ndarray().astype(np.uint)
     assert np.all(np_ans == ak_ans)
 
