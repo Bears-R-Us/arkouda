@@ -465,23 +465,19 @@ class pdarray:
     @property
     def max_bits(self):
         if self.dtype == bigint:
-            if self.ndim == 1:
-                if not hasattr(self, "_max_bits"):
-                    # if _max_bits hasn't been set, fetch value from server
-                    self._max_bits = generic_msg(cmd="get_max_bits", args={"array": self})
-                return int(self._max_bits)
-            else:
-                raise ValueError(f"max_bits cannot currently be fetched for {self.ndim}D pdarrays")
+            if not hasattr(self, "_max_bits"):
+                # if _max_bits hasn't been set, fetch value from server
+                cmd = f"get_max_bits<{self.dtype},{self.ndim}>"
+                self._max_bits = generic_msg(cmd=cmd, args={"array": self})
+            return int(self._max_bits)
         return None
 
     @max_bits.setter
     def max_bits(self, max_bits):
         if self.dtype == bigint:
-            if self.ndim == 1:
-                generic_msg(cmd="set_max_bits", args={"array": self, "max_bits": max_bits})
-                self._max_bits = max_bits
-            else:
-                raise ValueError(f"max_bits cannot currently be set for {self.ndim}D pdarrays")
+            cmd = f"set_max_bits<{self.dtype},{self.ndim}>"
+            generic_msg(cmd=cmd, args={"array": self, "max_bits": max_bits})
+            self._max_bits = max_bits
 
     def equals(self, other) -> bool_scalars:
         """
@@ -2035,7 +2031,8 @@ class pdarray:
         >>> a.bigint_to_uint_arrays()
         [array([1 1 1 1 1]), array([0 1 2 3 4])]
         """
-        ret_list = json.loads(generic_msg(cmd="bigint_to_uint_list", args={"array": self}))
+        cmd = f"bigint_to_uint_list<{self.dtype},{self.ndim}>"
+        ret_list = json.loads(generic_msg(cmd=cmd, args={"array": self}))
         return list(reversed([create_pdarray(a) for a in ret_list]))
 
     def reshape(self, *shape):
@@ -2155,12 +2152,8 @@ class pdarray:
         if dt == bigint:
             # convert uint pdarrays into object ndarrays and recombine
             if self.ndim > 1:
-                shape = self.shape
-                temp = self.reshape(self.size)
-                arrs = [n.to_ndarray().astype("O") for n in temp.bigint_to_uint_arrays()]
-                return builtins.sum(n << (64 * (len(arrs) - i - 1)) for i, n in enumerate(arrs)).reshape(
-                    shape
-                )
+                arrs = [n.to_ndarray().astype("O") for n in self.bigint_to_uint_arrays()]
+                return builtins.sum(n << (64 * (len(arrs) - i - 1)) for i, n in enumerate(arrs))
             arrs = [n.to_ndarray().astype("O") for n in self.bigint_to_uint_arrays()]
             return builtins.sum(n << (64 * (len(arrs) - i - 1)) for i, n in enumerate(arrs))
 
