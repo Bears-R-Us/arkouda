@@ -365,7 +365,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.numpy.pdarraymanipulation</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
@@ -373,6 +373,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vstack&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">]</span>
 
@@ -448,7 +449,7 @@
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span>
     <span class="n">arr</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
-    <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="nb">slice</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">slice</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">pdarray</span><span class="p">],</span>
     <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -458,9 +459,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    arr : pdarray</span>
 <span class="sd">        The array to remove elements from</span>
-<span class="sd">    obj : Union[pdarray, slice, int]</span>
+<span class="sd">    obj : slice, int, Sequence of int, Sequence of bool, or pdarray</span>
 <span class="sd">        The indices to remove from &#39;arr&#39;. If obj is a pdarray, it must</span>
-<span class="sd">        have an integer dtype.</span>
+<span class="sd">        have an integer or bool dtype.</span>
 <span class="sd">    axis : Optional[int], optional</span>
 <span class="sd">        The axis along which to remove elements. If None, the array will</span>
 <span class="sd">        be flattened before removing elements. Defaults to None.</span>
@@ -469,37 +470,41 @@
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
 <span class="sd">        A copy of &#39;arr&#39; with elements removed</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; arr = ak.array([[1,2,3,4], [5,6,7,8], [9,10,11,12]])</span>
+<span class="sd">    &gt;&gt;&gt; arr</span>
+<span class="sd">    array([array([1 2 3 4]) array([5 6 7 8]) array([9 10 11 12])])</span>
+<span class="sd">    &gt;&gt;&gt; ak.delete(arr, 1, 0)</span>
+<span class="sd">    array([array([1 2 3 4]) array([9 10 11 12])])</span>
+
+<span class="sd">    &gt;&gt;&gt; ak.delete(arr, slice(0, 4, 2), 1)</span>
+<span class="sd">    array([array([2 4]) array([6 8]) array([10 12])])</span>
+<span class="sd">    &gt;&gt;&gt; ak.delete(arr, [1, 3, 5], None)</span>
+<span class="sd">    array([1 3 5 7 8 9 10 11 12])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># flatten the array if axis is None</span>
-        <span class="n">_arr</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span>
-            <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;reshape</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">Dx1D&quot;</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">arr</span><span class="p">,</span>
-                    <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">size</span><span class="p">,),</span>
-                <span class="p">},</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">_arr</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
         <span class="n">_axis</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">_arr</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">elif</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_axis</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">_arr</span> <span class="o">=</span> <span class="n">arr</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">_arr</span> <span class="o">=</span> <span class="n">arr</span>
         <span class="n">_axis</span> <span class="o">=</span> <span class="n">axis</span>
-
+    <span class="n">slice_weight</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_axis</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)):</span>
+        <span class="n">slice_weight</span> <span class="o">*=</span> <span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
-            <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;delete</span><span class="si">{</span><span class="n">_arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;arr&quot;</span><span class="p">:</span> <span class="n">_arr</span><span class="p">,</span>
-                    <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span>
-                    <span class="c1"># TODO: maybe expose this as an optional argument? Or sort the array first?</span>
-                    <span class="s2">&quot;obj_sorted&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-                    <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">_axis</span><span class="p">,</span>
-                <span class="p">},</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">_del</span> <span class="o">=</span> <span class="n">obj</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+        <span class="n">_del</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">array</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">start</span> <span class="o">=</span> <span class="n">obj</span>
@@ -508,20 +513,22 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
             <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">stride</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">_axis</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;obj must be an integer, pdarray, or slice&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
-            <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;deleteSlice</span><span class="si">{</span><span class="n">_arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;arr&quot;</span><span class="p">:</span> <span class="n">_arr</span><span class="p">,</span>
-                    <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
-                    <span class="s2">&quot;stop&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span>
-                    <span class="s2">&quot;stride&quot;</span><span class="p">:</span> <span class="n">stride</span><span class="p">,</span>
-                    <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">_axis</span><span class="p">,</span>
-                <span class="p">},</span>
-            <span class="p">)</span>
-        <span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;obj must be a slice, int, Sequence of int, Sequence of bool, or pdarray&quot;</span><span class="p">)</span>
+        <span class="n">_del</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">_del</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">and</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">_axis</span><span class="p">]</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">_del</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">slice_weight</span> <span class="o">&gt;=</span> <span class="mi">100</span><span class="p">:</span>
+        <span class="n">alg_choice</span> <span class="o">=</span> <span class="s2">&quot;BulkCopy&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">alg_choice</span> <span class="o">=</span> <span class="s2">&quot;AggCopy&quot;</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;delete</span><span class="si">{</span><span class="n">alg_choice</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">_arr</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">_arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">_del</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">_del</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;eIn&quot;</span><span class="p">:</span> <span class="n">_arr</span><span class="p">,</span>
+                <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">_axis</span><span class="p">,</span>
+                <span class="s2">&quot;del&quot;</span><span class="p">:</span> <span class="n">_del</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
 
 </pre></div>
         </article>

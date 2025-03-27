@@ -25341,21 +25341,34 @@ Package Contents
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: delete(arr: arkouda.numpy.pdarrayclass.pdarray, obj: Union[arkouda.numpy.pdarrayclass.pdarray, slice, int], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: delete(arr: arkouda.numpy.pdarrayclass.pdarray, obj: Union[slice, int, Sequence[int], Sequence[bool], arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return a copy of 'arr' with elements along the specified axis removed.
 
    :param arr: The array to remove elements from
    :type arr: pdarray
    :param obj: The indices to remove from 'arr'. If obj is a pdarray, it must
-               have an integer dtype.
-   :type obj: Union[pdarray, slice, int]
+               have an integer or bool dtype.
+   :type obj: slice, int, Sequence of int, Sequence of bool, or pdarray
    :param axis: The axis along which to remove elements. If None, the array will
                 be flattened before removing elements. Defaults to None.
    :type axis: Optional[int], optional
 
    :returns: A copy of 'arr' with elements removed
    :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> arr = ak.array([[1,2,3,4], [5,6,7,8], [9,10,11,12]])
+   >>> arr
+   array([array([1 2 3 4]) array([5 6 7 8]) array([9 10 11 12])])
+   >>> ak.delete(arr, 1, 0)
+   array([array([1 2 3 4]) array([9 10 11 12])])
+
+   >>> ak.delete(arr, slice(0, 4, 2), 1)
+   array([array([2 4]) array([6 8]) array([10 12])])
+   >>> ak.delete(arr, [1, 3, 5], None)
+   array([1 3 5 7 8 9 10 11 12])
 
 
 .. py:function:: disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None
