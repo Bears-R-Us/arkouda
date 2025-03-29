@@ -4,6 +4,7 @@ import itertools
 import json
 from collections import defaultdict
 from typing import (
+    Any,
     DefaultDict,
     Dict,
     List,
@@ -426,7 +427,7 @@ class Categorical:
             codes=self.codes.to_ndarray(), categories=self.categories.to_ndarray()
         )
 
-    def to_list(self) -> List:
+    def to_list(self) -> Any:
         """
         Convert the Categorical to a list, transferring data from
         the arkouda server to Python. This conversion discards category
