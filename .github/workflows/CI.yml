@@ -45,7 +45,12 @@ jobs:
     - name: Install Chapel frontend bindings
       run: |
         (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)
-
+    - name: make chpldoc
+      run: |    
+        (cd $CHPL_HOME && make chpldoc)
+    - name: check chpldoc version
+      run: |  
+        chpldoc --version
 
 
   lint:
@@ -88,7 +93,7 @@ jobs:
       uses: actions/checkout@v4
     - name: make chpldoc
       run: |    
-        cd $CHPL_HOME && make chpldoc
+        (cd $CHPL_HOME && make chpldoc)
     - name: check chpldoc version
       run: |  
         chpldoc --version
