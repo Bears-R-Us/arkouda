@@ -30,7 +30,7 @@ def pack_strings(column):
     offsets = lengths.cumsum() + np.arange(lengths.shape[0]) - lengths
     totalbytes = lengths.sum() + lengths.shape[0]
     packed = np.zeros(shape=(totalbytes,), dtype=np.uint8)
-    for (o, s) in zip(offsets, column.values):
+    for o, s in zip(offsets, column.values):
         for i, b in enumerate(s.encode()):
             packed[o + i] = b
     return packed, offsets

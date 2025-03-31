@@ -137,7 +137,6 @@ class Series:
         name=None,
         index: Optional[Union[pdarray, Strings, Tuple, List, Index]] = None,
     ):
-
         if isinstance(data, pd.Categorical):
             data = Categorical(data)
 

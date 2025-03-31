@@ -263,7 +263,7 @@ class TestCategorical:
         # 2 categorical, same and different categories
         for cat2 in (
             ak.Categorical(ak.array([f"str {i}" for i in range(9, -1, -1)])),
-            ak.Categorical(ak.array([f"str {i*2}" for i in range(10)])),
+            ak.Categorical(ak.array([f"str {i * 2}" for i in range(10)])),
         ):
             ans = ak.where(revs, cat1, cat2)
             assert cat1[revs].to_list() == ans[revs].to_list()

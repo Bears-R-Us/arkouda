@@ -87,8 +87,8 @@ class TestOperator:
             for lscalar, rscalar in ((False, False), (False, True), (True, False)):
                 tests += 1
                 expression = (
-                    f'{ltype}({("array", "scalar")[lscalar]}) '
-                    f'{op} {rtype}({("array", "scalar")[rscalar]})'
+                    f"{ltype}({('array', 'scalar')[lscalar]}) "
+                    f"{op} {rtype}({('array', 'scalar')[rscalar]})"
                 )
                 try:
                     npres = do_op(ltype, rtype, lscalar, rscalar, False, op)
@@ -143,15 +143,15 @@ class TestOperator:
                 # Finally, both numpy and arkouda agree on result
                 results["both_implement"].append((expression, "", False, False, False))
 
-        print(f'# ops not implemented by numpy or arkouda: {len(results["neither_implement"])}')
+        print(f"# ops not implemented by numpy or arkouda: {len(results['neither_implement'])}")
         if verbose:
             for expression, err in results["neither_implement"]:
                 print(expression)
-        print(f'# ops implemented by numpy but not arkouda: {len(results["numpy_minus_arkouda"])}')
+        print(f"# ops implemented by numpy but not arkouda: {len(results['numpy_minus_arkouda'])}")
         if verbose:
             for expression, err, flag in results["numpy_minus_arkouda"]:
                 print(expression)
-        print(f'# ops implemented by arkouda but not numpy: {len(results["arkouda_minus_numpy"])}')
+        print(f"# ops implemented by arkouda but not numpy: {len(results['arkouda_minus_numpy'])}")
         if verbose:
             for expression, res, flag in results["arkouda_minus_numpy"]:
                 print(expression, " -> ", res)
@@ -419,7 +419,6 @@ class TestOperator:
 
     @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64])
     def test_shift_equals_scalar_binops(self, dtype):
-
         ak_vector = ak.arange(0, 5, dtype=dtype)
         np_vector = np.arange(5, dtype=dtype)
         shift_scalars = [

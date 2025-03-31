@@ -103,7 +103,7 @@ def _in1d_single(
         x = cast(Categorical_, pda1).in1d(pda2)
         return x if not invert else ~x
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        if pda1.ndim > 1 or pda2.ndim > 1 :
+        if pda1.ndim > 1 or pda2.ndim > 1:
             raise TypeError("in1d does not support multi-dim inputs")
         if pda1.dtype == bigint and pda2.dtype == bigint:
             return in1d(pda1.bigint_to_uint_arrays(), pda2.bigint_to_uint_arrays(), invert=invert)
@@ -537,16 +537,10 @@ def union1d(
             return B  # union is B
         if B.size == 0:
             return A  # union is A
-        if (
-            A.dtype == int
-            and B.dtype == int
-            or (A.dtype == akuint64 and B.dtype == akuint64)
-        ):
+        if A.dtype == int and B.dtype == int or (A.dtype == akuint64 and B.dtype == akuint64):
             repMsg = generic_msg(cmd="union1d", args={"arg1": A, "arg2": B})
             return cast(pdarray, create_pdarray(repMsg))
-        x = cast(
-            pdarray, unique(cast(pdarray, concatenate((unique(A), unique(B)), ordered=False)))
-        )
+        x = cast(pdarray, unique(cast(pdarray, concatenate((unique(A), unique(B)), ordered=False))))
         return x[argsort(x)]
     elif isinstance(A, Sequence) and isinstance(B, Sequence):
         multiarray_setop_validation(A, B)
@@ -567,9 +561,7 @@ def union1d(
 
 # (A & B) Set Intersection: elements have to be in both arrays
 @typechecked
-def intersect1d(
-    A: groupable, B: groupable, assume_unique: bool = False
-) -> Union[pdarray, groupable]:
+def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the intersection of two arrays.
 
@@ -629,9 +621,7 @@ def intersect1d(
             return A  # nothing in the intersection
         if B.size == 0:
             return B  # nothing in the intersection
-        if (A.dtype == int and B.dtype == int) or (
-            A.dtype == akuint64 and B.dtype == akuint64
-        ):
+        if (A.dtype == int and B.dtype == int) or (A.dtype == akuint64 and B.dtype == akuint64):
             repMsg = generic_msg(
                 cmd="intersect1d", args={"arg1": A, "arg2": B, "assume_unique": assume_unique}
             )
@@ -645,9 +635,7 @@ def intersect1d(
         mask = aux[1:] == aux[:-1]
         int1d = aux[:-1][mask]
         return int1d
-    elif (isinstance(A, list) or isinstance(A, tuple)) and (
-        isinstance(B, list) or isinstance(B, tuple)
-    ):
+    elif (isinstance(A, list) or isinstance(A, tuple)) and (isinstance(B, list) or isinstance(B, tuple)):
         multiarray_setop_validation(A, B)
 
         if not assume_unique:
@@ -682,9 +670,7 @@ def intersect1d(
 
 # (A - B) Set Difference: elements have to be in first array but not second
 @typechecked
-def setdiff1d(
-    A: groupable, B: groupable, assume_unique: bool = False
-) -> Union[pdarray, groupable]:
+def setdiff1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set difference of two arrays.
 
@@ -747,9 +733,7 @@ def setdiff1d(
             return A  # return a zero length pdarray
         if B.size == 0:
             return A  # subtracting nothing return orig pdarray
-        if (A.dtype == int and B.dtype == int) or (
-            A.dtype == akuint64 and B.dtype == akuint64
-        ):
+        if (A.dtype == int and B.dtype == int) or (A.dtype == akuint64 and B.dtype == akuint64):
             repMsg = generic_msg(
                 cmd="setdiff1d", args={"arg1": A, "arg2": B, "assume_unique": assume_unique}
             )
@@ -759,9 +743,7 @@ def setdiff1d(
             B = cast(pdarray, unique(B))
         x = A[in1d(A, B, invert=True)]
         return x[argsort(x)]
-    elif (isinstance(A, list) or isinstance(A, tuple)) and (
-        isinstance(B, list) or isinstance(B, tuple)
-    ):
+    elif (isinstance(A, list) or isinstance(A, tuple)) and (isinstance(B, list) or isinstance(B, tuple)):
         multiarray_setop_validation(A, B)
 
         if not assume_unique:
@@ -854,9 +836,7 @@ def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[p
             return B  # return other pdarray if A is empty
         if B.size == 0:
             return A  # return other pdarray if B is empty
-        if (A.dtype == int and B.dtype == int) or (
-            A.dtype == akuint64 and B.dtype == akuint64
-        ):
+        if (A.dtype == int and B.dtype == int) or (A.dtype == akuint64 and B.dtype == akuint64):
             repMsg = generic_msg(
                 cmd="setxor1d", args={"arg1": A, "arg2": B, "assume_unique": assume_unique}
             )
@@ -869,9 +849,7 @@ def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[p
         aux = aux[aux_sort_indices]
         flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
         return aux[flag[1:] & flag[:-1]]
-    elif (isinstance(A, list) or isinstance(A, tuple)) and (
-        isinstance(B, list) or isinstance(B, tuple)
-    ):
+    elif (isinstance(A, list) or isinstance(A, tuple)) and (isinstance(B, list) or isinstance(B, tuple)):
         multiarray_setop_validation(A, B)
 
         if not assume_unique:

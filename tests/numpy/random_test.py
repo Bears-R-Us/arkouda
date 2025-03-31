@@ -60,7 +60,6 @@ class TestRandom:
 
     @pytest.mark.parametrize("data_type", INT_FLOAT)
     def test_shuffle(self, data_type):
-
         # ints are checked for equality; floats are checked for closeness
 
         def check(a, b, t):
@@ -88,7 +87,6 @@ class TestRandom:
     @pytest.mark.parametrize("data_type", INT_FLOAT)
     @pytest.mark.parametrize("method", ["FisherYates", "Argsort"])
     def test_permutation(self, data_type, method):
-
         # ints are checked for equality; floats are checked for closeness
 
         def check(a, b, t):

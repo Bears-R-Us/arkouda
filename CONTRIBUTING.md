@@ -60,7 +60,7 @@ Our Continuous Integration workflow has a linter (`flake8`) to verify all our py
 
 We use `isort`, `black`, and `flake8` (typically in that order) to ensure our code is consistent.
 We utilize a line length of 105. When running `black`, be sure to to use the `--line-length 105` parameter.
-Please use `make isort` to ensure consistency across contributors.
+Please use `make ruff-format` and `make isort` to ensure consistency across contributors.
 
 ```bash
 $ make isort

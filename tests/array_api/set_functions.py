@@ -23,7 +23,6 @@ def rand_arr(shape):
 
 
 class TestSetFunction:
-
     def test_set_functions(self):
         for shape in ret_shapes():
             r = rand_arr(shape)

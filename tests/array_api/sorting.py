@@ -11,7 +11,6 @@ SCALAR_TYPES.remove("bool_")
 
 
 class TestArrayCreation:
-
     @pytest.mark.skip_if_rank_not_compiled([2])
     def test_argsort(self):
         for shape in SHAPES:

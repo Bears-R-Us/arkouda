@@ -13,7 +13,6 @@ DTYPES = ["uint64", "uint8", "int64", "float64", "bigint", "bool"]
 
 
 class TestNumpyManipulationFunctions:
-
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_flip_pdarray(self, size, dtype):
@@ -150,7 +149,6 @@ class TestNumpyManipulationFunctions:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_squeeze(self, size, dtype):
-
         if dtype == "bigint":
             pytest.skip("Skip until #3870 is resolved.")
 

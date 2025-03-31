@@ -14,14 +14,42 @@ jobs:
       run: |
         ! git --no-pager grep -n $'\t' -- '*.chpl'
         
+
   isort:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.12
-      - uses: isort/isort-action@master 
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install isort==5.13.2
+      # Update output format to enable automatic inline annotations.
+      - name: Run isort
+        run: isort --check-only --diff .
+
+  ruff-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff==0.11.2
+      # Update output format to enable automatic inline annotations.
+      - name: ruff version
+        run: | 
+          ruff --version
+      - name: Run Ruff
+        run: ruff format --check --diff
+
         
   mypy:
     runs-on: ubuntu-latest
@@ -45,8 +73,9 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install dependencies
       run: |
-        apt-get update && apt-get install -y python3-pip
-        python3 -m pip install -e .[dev]
+        apt-get update && apt-get install -y python3-pip libhdf5-dev hdf5-tools libzmq3-dev libcurl4-openssl-dev
+        python3 -m pip install versioneer
+        python3 -m pip install .[dev]
     - name: Arkouda make doc
       run: |
         make doc

@@ -7,7 +7,6 @@ from arkouda.testing import assert_arkouda_array_equivalent
 
 
 class TestManipulationFunctions:
-
     @pytest.mark.skip_if_rank_not_compiled([2])
     def test_vstack(self):
         # These tests will be implemented soon, hopefully.
@@ -25,9 +24,7 @@ class TestManipulationFunctions:
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, ak.bigint])
     @pytest.mark.parametrize("num_dims", [1, 2, 3])
     def test_delete(self, size, dtype, num_dims):
-
         if num_dims in get_array_ranks():
-
             test_dims = [None] + list(range(num_dims))
 
             dim_size = int(size ** (1 / num_dims)) + 1
@@ -42,7 +39,6 @@ class TestManipulationFunctions:
             a_size = a.size
 
             for i in test_dims:
-
                 axis_dim_size = a_size if i is None else a.shape[i]
 
                 ind = int(ak.randint(-axis_dim_size, axis_dim_size)[0])

@@ -22,7 +22,6 @@ def np_is_sorted(arr):
 
 
 class TestSort:
-
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.float64, ak.uint64, ak.float64])
     def test_compare_argsort(self, size, dtype):

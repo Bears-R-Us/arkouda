@@ -8,13 +8,7 @@ valid for inputs that match the given type annotations.
 
 from __future__ import annotations
 
-from typing import (
-    Any,
-    Literal,
-    Protocol,
-    TypeVar,
-    Union,
-)
+from typing import Any, Literal, Protocol, TypeVar, Union
 
 from numpy import (
     dtype,

@@ -60,9 +60,7 @@ def time_substring_search(N_per_locale, trials, seed):
             nbytes / 2**30 / avg_regex_literal
         )
     )
-    print(
-        "regex with pattern Average rate = {:.4f} GiB/sec".format(nbytes / 2**30 / avg_regex_pattern)
-    )
+    print("regex with pattern Average rate = {:.4f} GiB/sec".format(nbytes / 2**30 / avg_regex_pattern))
 
 
 def check_correctness(seed):

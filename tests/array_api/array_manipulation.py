@@ -15,7 +15,6 @@ def randArr(shape):
 
 
 class TestManipulation:
-
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_broadcast(self):
         a = xp.ones((1, 6, 1))

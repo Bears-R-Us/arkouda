@@ -679,9 +679,16 @@ doc-clean: stub-clean
 
 check:
 	@$(ARKOUDA_PROJECT_DIR)/server_util/test/checkInstall
-	
+
+ruff-format:
+	ruff format .
+	#  Verify if it will pass the CI check:
+	ruff format --check --diff
+
 isort:
 	isort --gitignore --float-to-top .
+	#  Verify if it will pass the CI check:
+	isort --check-only --diff .
 
 #################
 #### Test.mk ####

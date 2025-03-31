@@ -30,7 +30,6 @@ def generate_reduction_functions():
     ret = ""
 
     for func, ret_type, allowed_types in BOOLEAN_FUNCS:
-
         where_statement = ""
 
         if len(allowed_types) > 0:
@@ -76,7 +75,6 @@ def generate_index_reduction_functions():
     ret = ""
 
     for func, ret_type, allowed_types in INDEX_FUNCS:
-
         where_statement = ""
 
         if len(allowed_types) > 0:
@@ -119,7 +117,6 @@ def generate_index_reduction_functions():
 
 
 def main():
-
     outfile = "src/ReductionMsgFunctions.chpl"
 
     with open(outfile, "w") as text_file:
