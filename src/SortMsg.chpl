@@ -17,6 +17,7 @@ module SortMsg
     use Message;
     private use ArgSortMsg;
     use NumPyDType only whichDtype;
+    use BigInteger;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -97,8 +98,9 @@ module SortMsg
 
     // https://data-apis.org/array-api/latest/API_specification/generated/array_api.searchsorted.html#array_api.searchsorted
     @arkouda.registerCommand
-    proc searchSorted(x1: [?d1] real, x2: [?d2] real, side: string): [d2] int throws
-      where d1.rank == 1
+    proc searchSorted(x1: [?d1] ?t, x2: [?d2] t, side: string): [d2] int throws
+      where ((d1.rank == 1) &&
+             (t == int || t == real || t == uint || t == uint(8) || t == bigint))
     {
       if side != "left" && side != "right" {
           throw new Error("searchSorted side must be a string with value 'left' or 'right'.");
@@ -106,7 +108,7 @@ module SortMsg
 
       var ret = makeDistArray((...x2.shape), int);
 
-      proc doSearch(const ref a1: [] real, const ref a2: [?d] real, cmp) {
+      proc doSearch(const ref a1: [] t, const ref a2: [?d] t, cmp) {
         forall idx in ret.domain {
           const (_, i) = Search.binarySearch(a1, a2[idx], cmp);
           ret[idx] = i;
@@ -123,15 +125,19 @@ module SortMsg
     }
 
     record leftCmp: relativeComparator {
-      proc compare(a: real, b: real): int {
-        if a < b then return -1;
+      proc compare(a: ?t, b: t): int
+        where (t == int || t == real || t == uint || t == uint(8) || t == bigint)
+      {
+        if a <= b then return -1;
         else return 1;
       }
     }
 
     record rightCmp: relativeComparator {
-      proc compare(a: real, b: real): int {
-        if a <= b then return -1;
+      proc compare(a: ?t, b: t): int
+        where (t == int || t == real || t == uint || t == uint(8) || t == bigint)
+      {
+        if a < b then return -1;
         else return 1;
       }
     }

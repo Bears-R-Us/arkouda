@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Sequence, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Literal, Sequence, TypeVar, Union, cast
 
 import numpy as np
 from typeguard import check_type, typechecked
@@ -17,12 +17,12 @@ from arkouda.numpy.dtypes import (
     uint64,
 )
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import zeros
+from arkouda.numpy.pdarraycreation import array, zeros
 from arkouda.numpy.strings import Strings
 
 numeric_dtypes = {dtype(int64), dtype(uint64), dtype(float64)}
 
-__all__ = ["argsort", "coargsort", "sort", "SortingAlgorithm"]
+__all__ = ["argsort", "coargsort", "sort", "SortingAlgorithm", "searchsorted"]
 
 SortingAlgorithm = Enum("SortingAlgorithm", ["RadixSortLSD", "TwoArrayRadixSort"])
 
@@ -282,3 +282,79 @@ def sort(
         args={"alg": algorithm.name, "array": pda, "axis": axis},
     )
     return create_pdarray(cast(str, repMsg))
+
+
+@typechecked
+def searchsorted(
+    a: pdarray, v: Union[int_scalars, float64, bigint, pdarray], side: Literal["left", "right"] = "left"
+) -> Union[int, pdarray]:
+    """
+    Find indices where elements should be inserted to maintain order.
+
+    Find the indices into a sorted array `a` such that, if the corresponding
+    elements in `v` were inserted before the indices, the order of `a` would be preserved.
+
+    Parameters
+    ----------
+    a : pdarray
+        1-D input array. Must be sorted in ascending order. `sorter` is not currently supported.
+    v : int_scalars, float64, bigint, or pdarray
+        Values to insert into `a`. Can be a scalar or array-like.
+    side : {'left', 'right'}, default='left'
+        If 'left', the index of the first suitable location found is given.
+        If 'right', return the last such index.
+
+    Returns
+    -------
+    indices : int or pdarray
+        If `v` is an array, returns an array of insertion points with the same shape.
+        If `v` is a scalar, returns a single integer index.
+
+    Raises
+    ------
+    ValueError
+        If `a` has more than one dimension.
+    TypeError
+        If `a` has an unsupported dtype (i.e., not int64, uint64, bigint, or float64).
+
+
+    Examples
+    --------
+    >>> a = ak.array([11, 12, 13, 14, 15])
+    >>> ak.searchsorted(a, 13)
+    2
+    >>> ak.searchsorted(a, 13, side='right')
+    3
+    >>> v = ak.array([-10, 20, 12, 13])
+    >>> ak.searchsorted(a, v)
+    array([0 5 1 2])
+    """
+
+    if a.ndim > 1:
+        raise ValueError(f"a must be one dimensional, but has {a.ndim} dimensions.")
+    if a.dtype not in numeric_dtypes and a.dtype != bigint:
+        raise TypeError(f"ak.searchsorted supports int64, uint64, bigint, or float64, not {a.dtype}")
+
+    # Normalize v to array
+    scalar_input = False
+    v_: pdarray
+    if isinstance(v, pdarray):
+        v_ = v
+    else:
+        scalar_input = True
+        v_ = cast(pdarray, array([v]))
+
+    repMsg = generic_msg(
+        cmd=f"searchSorted<{a.dtype},{a.ndim},{v_.ndim}>",
+        args={
+            "x1": a,
+            "x2": v_,
+            "side": side,
+        },
+    )
+
+    out = create_pdarray(cast(str, repMsg))
+
+    if scalar_input:
+        return int(out[0])
+    return out
