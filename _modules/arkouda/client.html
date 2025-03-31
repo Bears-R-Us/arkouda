@@ -1076,7 +1076,7 @@
 <span class="sd">    On success, prints the connected address, as seen by the server. If called</span>
 <span class="sd">    with an existing connection, the socket will be re-initialized.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">connected</span><span class="p">,</span> <span class="n">serverConfig</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">regexMaxCaptures</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">registrationConfig</span>
+    <span class="k">global</span> <span class="n">connected</span><span class="p">,</span> <span class="n">serverConfig</span><span class="p">,</span> <span class="n">regexMaxCaptures</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">registrationConfig</span>
 
     <span class="c1"># send the connect message</span>
     <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;connect&quot;</span>
@@ -1227,7 +1227,7 @@
 <span class="sd">    ConnectionError</span>
 <span class="sd">        Raised if there&#39;s an error disconnecting from the Arkouda server</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">connected</span><span class="p">,</span> <span class="n">serverConfig</span><span class="p">,</span> <span class="n">verbose</span>
+    <span class="k">global</span> <span class="n">connected</span><span class="p">,</span> <span class="n">serverConfig</span>
 
     <span class="k">if</span> <span class="n">connected</span><span class="p">:</span>
         <span class="c1"># send disconnect message to server</span>
@@ -1268,7 +1268,7 @@
 <span class="sd">        Raised if the client is not connected to the Arkouda server or</span>
 <span class="sd">        there is an error in disconnecting from the server</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">socket</span><span class="p">,</span> <span class="n">pspStr</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">serverConfig</span><span class="p">,</span> <span class="n">verbose</span>
+    <span class="k">global</span> <span class="n">connected</span><span class="p">,</span> <span class="n">serverConfig</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">connected</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;not connected, cannot shutdown server&quot;</span><span class="p">)</span>
@@ -1370,7 +1370,6 @@
 <span class="sd">    confirmation, warn message, or error message. A memoryview response</span>
 <span class="sd">    corresponds to an Arkouda array output as a numpy array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">socket</span><span class="p">,</span> <span class="n">pspStr</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">verbose</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">connected</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;client is not connected to a server&quot;</span><span class="p">)</span>

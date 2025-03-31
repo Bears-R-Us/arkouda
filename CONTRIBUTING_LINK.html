@@ -433,7 +433,7 @@ on their own fork.</p>
 Our Continuous Integration workflow has a linter (<code class="docutils literal notranslate"><span class="pre">flake8</span></code>) to verify all our python code meets these requirements.</p>
 <p>We use <code class="docutils literal notranslate"><span class="pre">isort</span></code>, <code class="docutils literal notranslate"><span class="pre">black</span></code>, and <code class="docutils literal notranslate"><span class="pre">flake8</span></code> (typically in that order) to ensure our code is consistent.
 We utilize a line length of 105. When running <code class="docutils literal notranslate"><span class="pre">black</span></code>, be sure to to use the <code class="docutils literal notranslate"><span class="pre">--line-length</span> <span class="pre">105</span></code> parameter.
-Please use <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">isort</span></code> to ensure consistency across contributors.</p>
+Please use <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">ruff-format</span></code> and <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">isort</span></code> to ensure consistency across contributors.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>make<span class="w"> </span>isort
 isort<span class="w"> </span>--gitignore<span class="w"> </span>--float-to-top<span class="w"> </span>arkouda
 Skipped<span class="w"> </span><span class="m">34</span><span class="w"> </span>files
