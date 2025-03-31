@@ -707,7 +707,7 @@ def connect(
     On success, prints the connected address, as seen by the server. If called
     with an existing connection, the socket will be re-initialized.
     """
-    global connected, serverConfig, verbose, regexMaxCaptures, channel, registrationConfig
+    global connected, serverConfig, regexMaxCaptures, channel, registrationConfig
 
     # send the connect message
     cmd = "connect"
@@ -855,7 +855,7 @@ def disconnect() -> None:
     ConnectionError
         Raised if there's an error disconnecting from the Arkouda server
     """
-    global connected, serverConfig, verbose
+    global connected, serverConfig
 
     if connected:
         # send disconnect message to server
@@ -893,7 +893,7 @@ def shutdown() -> None:
         Raised if the client is not connected to the Arkouda server or
         there is an error in disconnecting from the server
     """
-    global socket, pspStr, connected, serverConfig, verbose
+    global connected, serverConfig
 
     if not connected:
         raise RuntimeError("not connected, cannot shutdown server")
@@ -994,7 +994,6 @@ def generic_msg(
     confirmation, warn message, or error message. A memoryview response
     corresponds to an Arkouda array output as a numpy array.
     """
-    global socket, pspStr, connected, verbose
 
     if not connected:
         raise RuntimeError("client is not connected to a server")
