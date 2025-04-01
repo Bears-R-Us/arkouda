@@ -276,11 +276,10 @@ class Channel:
         """
         user : str
             Arkouda user who will use the Channel to connect to the arkouda_server
-        server : str, optional
+        server : str, default='localhost'
             The hostname of the server (must be visible to the current machine).
-            Defaults to `localhost`.
-        port : int, optional
-            The port of the server. Defaults to 5555.
+        port : int, default=5555
+            The port of the server.
         token : str, optional
             Token used to connect to the arkouda_server if authentication is enabled
         connect_url : str, optional
@@ -331,8 +330,6 @@ class Channel:
             The hostname of the server (must be visible to the current machine)
         port : int
             The port of the server
-        username : str
-            The username retrieved from the user's home directory
         token : str, optional
             The token supplied by the user, which is required if authentication
             is enabled, defaults to None
@@ -388,14 +385,13 @@ class Channel:
         ----------
         cmd : str
             The name of the command to be executed by the Arkouda server
-        recv_binary : bool, defaults to False
+        recv_binary : bool, default=False
             Indicates if the return message will be a string or binary data
-        args : str, defaults to None
+        args : str, default=None
             A delimited string containing 1..n command arguments
-        size : int
-            Default -1
+        size : int, default=-1
             Number of parameters contained in args. Only set if args is json.
-        request_id: str, defaults to None
+        request_id : str, default=None
             Specifies an identifier for each request submitted to Arkouda
 
         Returns
@@ -439,11 +435,13 @@ class Channel:
         payload : memoryview
             The binary data to be converted to a pdarray, Strings, or Categorical
             object on the Arkouda server
-        recv_binary : bool, defaults to False
+        recv_binary : bool, default=False
             Indicates if the return message will be a string or binary data
         args : str, default=None
             A delimited string containing 1..n command arguments
-        request_id: str, defaults to None
+        size : int, default=-1
+            Number of parameters contained in args. Only set if args is json.
+        request_id : str, default=None
             Specifies an identifier for each request submitted to Arkouda
 
         Returns
@@ -468,7 +466,7 @@ class Channel:
 
         Parameters
         ----------
-        timeout : int
+        timeout : int, default=0
             Connection timeout
 
         Raises
@@ -630,11 +628,11 @@ def get_channel(
 
     Parameters
     ----------
-    server : str
+    server : str, default="localhost"
         The hostname of the server (must be visible to the current
-        machine). Defaults to `localhost`.
-    port : int
-        The port of the server. Defaults to 5555.
+        machine).
+    port : int, default=5555
+        The port of the server.
     token : str, optional
         The token used to connect to an existing socket to enable access to
         an Arkouda server where authentication is enabled. Defaults to None.
@@ -672,14 +670,14 @@ def connect(
 
     Parameters
     ----------
-    server : str, optional
+    server : str, default="localhost"
         The hostname of the server (must be visible to the current
-        machine). Defaults to `localhost`.
-    port : int, optional
-        The port of the server. Defaults to 5555.
-    timeout : int, optional
+        machine).
+    port : int, default=5555
+        The port of the server.
+    timeout : int, default=0
         The timeout in seconds for client send and receive operations.
-        Defaults to 0 seconds, whicn is interpreted as no timeout.
+        Defaults to 0 seconds, which is interpreted as no timeout.
     access_token : str, optional
         The token used to connect to an existing socket to enable access to
         an Arkouda server where authentication is enabled. Defaults to None.
@@ -808,6 +806,8 @@ def _start_tunnel(addr: str, tunnel_server: str) -> Tuple[str, object]:
 
     Parameters
     ----------
+    addr : str
+        The address (host:port) of the Arkouda server to which the tunnel should connect
     tunnel_server : str
         The ssh server url
 
@@ -919,7 +919,7 @@ def _json_args_to_str(json_obj: Optional[Dict] = None) -> Tuple[int, str]:
 
     Parameters
     ----------
-    json_obj : dict = None
+    json_obj : dict, optional
         Python dictionary of key:val representing command arguments
 
     Return
@@ -966,13 +966,13 @@ def generic_msg(
     ----------
     cmd : str
         The server-side command to be executed
-    args : str
-        A space-delimited list of command arguments
-    payload : memoryview
+    args : dict, optional
+        Python dictionary of key:val representing command arguments
+    payload : memoryview, optional
         The payload when sending binary data
-    send_binary : bool
+    send_binary : bool, default=False
         Indicates if the message to be sent is a string or binary
-    recv_binary : bool
+    recv_binary : bool, default=False
         Indicates if the return message will be a string or binary
 
     Returns
@@ -1301,14 +1301,14 @@ def generate_history(
     num_commands: Optional[int] = None, command_filter: Optional[str] = None
 ) -> List[str]:
     """
-    Generates list of commands executed within the the Python shell, Jupyter notebook,
+    Generates list of commands executed within the Python shell, Jupyter notebook,
     or IPython notebook, with an optional cmd_filter and number of commands to return.
 
     Parameters
     ----------
-    num_commands : int
+    num_commands : int, optional
         The number of commands from history to retrieve
-    command_filter : str
+    command_filter : str, optional
         String containing characters used to select a subset of commands.
 
     Returns
@@ -1321,13 +1321,13 @@ def generate_history(
     >>> ak.connect()
     connected to arkouda server tcp://*:5555
     >>> ak.get_config()
-    >>> ak.ones(10000)
+    >>> ak.ones(10000, dtype=int)
     array([1 1 1 ... 1 1 1])
     >>> nums = ak.randint(0,500,10000)
     >>> ak.argsort(nums)
     array([105 457 647 ... 9362 9602 9683])
     >>> ak.generate_history(num_commands=5, command_filter='ak.')
-    ['ak.connect()', 'ak.get_config()', 'ak.ones(10000)', 'nums = ak.randint(0,500,10000)',
+    ['ak.connect()', 'ak.get_config()', 'ak.ones(10000, dtype=int)', 'nums = ak.randint(0,500,10000)',
     'ak.argsort(nums)']
     """
     shell_mode = get_shell_mode()
