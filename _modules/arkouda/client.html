@@ -643,11 +643,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        user : str</span>
 <span class="sd">            Arkouda user who will use the Channel to connect to the arkouda_server</span>
-<span class="sd">        server : str, optional</span>
+<span class="sd">        server : str, default=&#39;localhost&#39;</span>
 <span class="sd">            The hostname of the server (must be visible to the current machine).</span>
-<span class="sd">            Defaults to `localhost`.</span>
-<span class="sd">        port : int, optional</span>
-<span class="sd">            The port of the server. Defaults to 5555.</span>
+<span class="sd">        port : int, default=5555</span>
+<span class="sd">            The port of the server.</span>
 <span class="sd">        token : str, optional</span>
 <span class="sd">            Token used to connect to the arkouda_server if authentication is enabled</span>
 <span class="sd">        connect_url : str, optional</span>
@@ -698,8 +697,6 @@
 <span class="sd">            The hostname of the server (must be visible to the current machine)</span>
 <span class="sd">        port : int</span>
 <span class="sd">            The port of the server</span>
-<span class="sd">        username : str</span>
-<span class="sd">            The username retrieved from the user&#39;s home directory</span>
 <span class="sd">        token : str, optional</span>
 <span class="sd">            The token supplied by the user, which is required if authentication</span>
 <span class="sd">            is enabled, defaults to None</span>
@@ -755,14 +752,13 @@
 <span class="sd">        ----------</span>
 <span class="sd">        cmd : str</span>
 <span class="sd">            The name of the command to be executed by the Arkouda server</span>
-<span class="sd">        recv_binary : bool, defaults to False</span>
+<span class="sd">        recv_binary : bool, default=False</span>
 <span class="sd">            Indicates if the return message will be a string or binary data</span>
-<span class="sd">        args : str, defaults to None</span>
+<span class="sd">        args : str, default=None</span>
 <span class="sd">            A delimited string containing 1..n command arguments</span>
-<span class="sd">        size : int</span>
-<span class="sd">            Default -1</span>
+<span class="sd">        size : int, default=-1</span>
 <span class="sd">            Number of parameters contained in args. Only set if args is json.</span>
-<span class="sd">        request_id: str, defaults to None</span>
+<span class="sd">        request_id : str, default=None</span>
 <span class="sd">            Specifies an identifier for each request submitted to Arkouda</span>
 
 <span class="sd">        Returns</span>
@@ -806,11 +802,13 @@
 <span class="sd">        payload : memoryview</span>
 <span class="sd">            The binary data to be converted to a pdarray, Strings, or Categorical</span>
 <span class="sd">            object on the Arkouda server</span>
-<span class="sd">        recv_binary : bool, defaults to False</span>
+<span class="sd">        recv_binary : bool, default=False</span>
 <span class="sd">            Indicates if the return message will be a string or binary data</span>
 <span class="sd">        args : str, default=None</span>
 <span class="sd">            A delimited string containing 1..n command arguments</span>
-<span class="sd">        request_id: str, defaults to None</span>
+<span class="sd">        size : int, default=-1</span>
+<span class="sd">            Number of parameters contained in args. Only set if args is json.</span>
+<span class="sd">        request_id : str, default=None</span>
 <span class="sd">            Specifies an identifier for each request submitted to Arkouda</span>
 
 <span class="sd">        Returns</span>
@@ -835,7 +833,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        timeout : int</span>
+<span class="sd">        timeout : int, default=0</span>
 <span class="sd">            Connection timeout</span>
 
 <span class="sd">        Raises</span>
@@ -997,11 +995,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    server : str</span>
+<span class="sd">    server : str, default=&quot;localhost&quot;</span>
 <span class="sd">        The hostname of the server (must be visible to the current</span>
-<span class="sd">        machine). Defaults to `localhost`.</span>
-<span class="sd">    port : int</span>
-<span class="sd">        The port of the server. Defaults to 5555.</span>
+<span class="sd">        machine).</span>
+<span class="sd">    port : int, default=5555</span>
+<span class="sd">        The port of the server.</span>
 <span class="sd">    token : str, optional</span>
 <span class="sd">        The token used to connect to an existing socket to enable access to</span>
 <span class="sd">        an Arkouda server where authentication is enabled. Defaults to None.</span>
@@ -1041,14 +1039,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    server : str, optional</span>
+<span class="sd">    server : str, default=&quot;localhost&quot;</span>
 <span class="sd">        The hostname of the server (must be visible to the current</span>
-<span class="sd">        machine). Defaults to `localhost`.</span>
-<span class="sd">    port : int, optional</span>
-<span class="sd">        The port of the server. Defaults to 5555.</span>
-<span class="sd">    timeout : int, optional</span>
+<span class="sd">        machine).</span>
+<span class="sd">    port : int, default=5555</span>
+<span class="sd">        The port of the server.</span>
+<span class="sd">    timeout : int, default=0</span>
 <span class="sd">        The timeout in seconds for client send and receive operations.</span>
-<span class="sd">        Defaults to 0 seconds, whicn is interpreted as no timeout.</span>
+<span class="sd">        Defaults to 0 seconds, which is interpreted as no timeout.</span>
 <span class="sd">    access_token : str, optional</span>
 <span class="sd">        The token used to connect to an existing socket to enable access to</span>
 <span class="sd">        an Arkouda server where authentication is enabled. Defaults to None.</span>
@@ -1178,6 +1176,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    addr : str</span>
+<span class="sd">        The address (host:port) of the Arkouda server to which the tunnel should connect</span>
 <span class="sd">    tunnel_server : str</span>
 <span class="sd">        The ssh server url</span>
 
@@ -1295,7 +1295,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    json_obj : dict = None</span>
+<span class="sd">    json_obj : dict, optional</span>
 <span class="sd">        Python dictionary of key:val representing command arguments</span>
 
 <span class="sd">    Return</span>
@@ -1342,13 +1342,13 @@
 <span class="sd">    ----------</span>
 <span class="sd">    cmd : str</span>
 <span class="sd">        The server-side command to be executed</span>
-<span class="sd">    args : str</span>
-<span class="sd">        A space-delimited list of command arguments</span>
-<span class="sd">    payload : memoryview</span>
+<span class="sd">    args : dict, optional</span>
+<span class="sd">        Python dictionary of key:val representing command arguments</span>
+<span class="sd">    payload : memoryview, optional</span>
 <span class="sd">        The payload when sending binary data</span>
-<span class="sd">    send_binary : bool</span>
+<span class="sd">    send_binary : bool, default=False</span>
 <span class="sd">        Indicates if the message to be sent is a string or binary</span>
-<span class="sd">    recv_binary : bool</span>
+<span class="sd">    recv_binary : bool, default=False</span>
 <span class="sd">        Indicates if the return message will be a string or binary</span>
 
 <span class="sd">    Returns</span>
@@ -1703,14 +1703,14 @@
     <span class="n">num_commands</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">command_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generates list of commands executed within the the Python shell, Jupyter notebook,</span>
+<span class="sd">    Generates list of commands executed within the Python shell, Jupyter notebook,</span>
 <span class="sd">    or IPython notebook, with an optional cmd_filter and number of commands to return.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    num_commands : int</span>
+<span class="sd">    num_commands : int, optional</span>
 <span class="sd">        The number of commands from history to retrieve</span>
-<span class="sd">    command_filter : str</span>
+<span class="sd">    command_filter : str, optional</span>
 <span class="sd">        String containing characters used to select a subset of commands.</span>
 
 <span class="sd">    Returns</span>
@@ -1723,13 +1723,13 @@
 <span class="sd">    &gt;&gt;&gt; ak.connect()</span>
 <span class="sd">    connected to arkouda server tcp://*:5555</span>
 <span class="sd">    &gt;&gt;&gt; ak.get_config()</span>
-<span class="sd">    &gt;&gt;&gt; ak.ones(10000)</span>
+<span class="sd">    &gt;&gt;&gt; ak.ones(10000, dtype=int)</span>
 <span class="sd">    array([1 1 1 ... 1 1 1])</span>
 <span class="sd">    &gt;&gt;&gt; nums = ak.randint(0,500,10000)</span>
 <span class="sd">    &gt;&gt;&gt; ak.argsort(nums)</span>
 <span class="sd">    array([105 457 647 ... 9362 9602 9683])</span>
 <span class="sd">    &gt;&gt;&gt; ak.generate_history(num_commands=5, command_filter=&#39;ak.&#39;)</span>
-<span class="sd">    [&#39;ak.connect()&#39;, &#39;ak.get_config()&#39;, &#39;ak.ones(10000)&#39;, &#39;nums = ak.randint(0,500,10000)&#39;,</span>
+<span class="sd">    [&#39;ak.connect()&#39;, &#39;ak.get_config()&#39;, &#39;ak.ones(10000, dtype=int)&#39;, &#39;nums = ak.randint(0,500,10000)&#39;,</span>
 <span class="sd">    &#39;ak.argsort(nums)&#39;]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">shell_mode</span> <span class="o">=</span> <span class="n">get_shell_mode</span><span class="p">()</span>

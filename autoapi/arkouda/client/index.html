@@ -385,7 +385,7 @@
 <td><p>Disconnects the client from the Arkouda server</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client.generate_history" title="arkouda.client.generate_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_history</span></code></a>(→ List[str])</p></td>
-<td><p>Generates list of commands executed within the the Python shell, Jupyter notebook,</p></td>
+<td><p>Generates list of commands executed within the Python shell, Jupyter notebook,</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client.get_config" title="arkouda.client.get_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_config</span></code></a>(→ Mapping[str, Union[str, int, float]])</p></td>
 <td><p>Get runtime information about the server.</p></td>
@@ -427,11 +427,11 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>server</strong> (<em>str</em><em>, </em><em>optional</em>) – The hostname of the server (must be visible to the current
-machine). Defaults to <cite>localhost</cite>.</p></li>
-<li><p><strong>port</strong> (<em>int</em><em>, </em><em>optional</em>) – The port of the server. Defaults to 5555.</p></li>
-<li><p><strong>timeout</strong> (<em>int</em><em>, </em><em>optional</em>) – The timeout in seconds for client send and receive operations.
-Defaults to 0 seconds, whicn is interpreted as no timeout.</p></li>
+<li><p><strong>server</strong> (<em>str</em><em>, </em><em>default=&quot;localhost&quot;</em>) – The hostname of the server (must be visible to the current
+machine).</p></li>
+<li><p><strong>port</strong> (<em>int</em><em>, </em><em>default=5555</em>) – The port of the server.</p></li>
+<li><p><strong>timeout</strong> (<em>int</em><em>, </em><em>default=0</em>) – The timeout in seconds for client send and receive operations.
+Defaults to 0 seconds, which is interpreted as no timeout.</p></li>
 <li><p><strong>access_token</strong> (<em>str</em><em>, </em><em>optional</em>) – The token used to connect to an existing socket to enable access to
 an Arkouda server where authentication is enabled. Defaults to None.</p></li>
 <li><p><strong>connect_url</strong> (<em>str</em><em>, </em><em>optional</em>) – The complete url in the format of <a class="reference external" href="tcp://server:port">tcp://server:port</a>?token=&lt;token_value&gt;
@@ -472,13 +472,13 @@ with an existing connection, the socket will be re-initialized.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.client.generate_history">
 <span class="sig-prename descclassname"><span class="pre">arkouda.client.</span></span><span class="sig-name descname"><span class="pre">generate_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_commands</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/client.html#generate_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.client.generate_history" title="Link to this definition">¶</a></dt>
-<dd><p>Generates list of commands executed within the the Python shell, Jupyter notebook,
+<dd><p>Generates list of commands executed within the Python shell, Jupyter notebook,
 or IPython notebook, with an optional cmd_filter and number of commands to return.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num_commands</strong> (<em>int</em>) – The number of commands from history to retrieve</p></li>
-<li><p><strong>command_filter</strong> (<em>str</em>) – String containing characters used to select a subset of commands.</p></li>
+<li><p><strong>num_commands</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of commands from history to retrieve</p></li>
+<li><p><strong>command_filter</strong> (<em>str</em><em>, </em><em>optional</em>) – String containing characters used to select a subset of commands.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -492,13 +492,13 @@ or IPython notebook, with an optional cmd_filter and number of commands to retur
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 <span class="go">connected to arkouda server tcp://*:5555</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
 <span class="go">array([1 1 1 ... 1 1 1])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">nums</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
 <span class="go">array([105 457 647 ... 9362 9602 9683])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">generate_history</span><span class="p">(</span><span class="n">num_commands</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">command_filter</span><span class="o">=</span><span class="s1">&#39;ak.&#39;</span><span class="p">)</span>
-<span class="go">[&#39;ak.connect()&#39;, &#39;ak.get_config()&#39;, &#39;ak.ones(10000)&#39;, &#39;nums = ak.randint(0,500,10000)&#39;,</span>
+<span class="go">[&#39;ak.connect()&#39;, &#39;ak.get_config()&#39;, &#39;ak.ones(10000, dtype=int)&#39;, &#39;nums = ak.randint(0,500,10000)&#39;,</span>
 <span class="go">&#39;ak.argsort(nums)&#39;]</span>
 </pre></div>
 </div>

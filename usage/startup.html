@@ -403,11 +403,11 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>server</strong> (<em>str</em><em>, </em><em>optional</em>) – The hostname of the server (must be visible to the current
-machine). Defaults to <cite>localhost</cite>.</p></li>
-<li><p><strong>port</strong> (<em>int</em><em>, </em><em>optional</em>) – The port of the server. Defaults to 5555.</p></li>
-<li><p><strong>timeout</strong> (<em>int</em><em>, </em><em>optional</em>) – The timeout in seconds for client send and receive operations.
-Defaults to 0 seconds, whicn is interpreted as no timeout.</p></li>
+<li><p><strong>server</strong> (<em>str</em><em>, </em><em>default=&quot;localhost&quot;</em>) – The hostname of the server (must be visible to the current
+machine).</p></li>
+<li><p><strong>port</strong> (<em>int</em><em>, </em><em>default=5555</em>) – The port of the server.</p></li>
+<li><p><strong>timeout</strong> (<em>int</em><em>, </em><em>default=0</em>) – The timeout in seconds for client send and receive operations.
+Defaults to 0 seconds, which is interpreted as no timeout.</p></li>
 <li><p><strong>access_token</strong> (<em>str</em><em>, </em><em>optional</em>) – The token used to connect to an existing socket to enable access to
 an Arkouda server where authentication is enabled. Defaults to None.</p></li>
 <li><p><strong>connect_url</strong> (<em>str</em><em>, </em><em>optional</em>) – The complete url in the format of <a class="reference external" href="tcp://server:port">tcp://server:port</a>?token=&lt;token_value&gt;

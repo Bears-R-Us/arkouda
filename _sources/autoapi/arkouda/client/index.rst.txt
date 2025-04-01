@@ -31,13 +31,13 @@ Module Contents
    Connect to a running arkouda server.
 
    :param server: The hostname of the server (must be visible to the current
-                  machine). Defaults to `localhost`.
-   :type server: str, optional
-   :param port: The port of the server. Defaults to 5555.
-   :type port: int, optional
+                  machine).
+   :type server: str, default="localhost"
+   :param port: The port of the server.
+   :type port: int, default=5555
    :param timeout: The timeout in seconds for client send and receive operations.
-                   Defaults to 0 seconds, whicn is interpreted as no timeout.
-   :type timeout: int, optional
+                   Defaults to 0 seconds, which is interpreted as no timeout.
+   :type timeout: int, default=0
    :param access_token: The token used to connect to an existing socket to enable access to
                         an Arkouda server where authentication is enabled. Defaults to None.
    :type access_token: str, optional
@@ -70,13 +70,13 @@ Module Contents
 
 .. py:function:: generate_history(num_commands: Optional[int] = None, command_filter: Optional[str] = None) -> List[str]
 
-   Generates list of commands executed within the the Python shell, Jupyter notebook,
+   Generates list of commands executed within the Python shell, Jupyter notebook,
    or IPython notebook, with an optional cmd_filter and number of commands to return.
 
    :param num_commands: The number of commands from history to retrieve
-   :type num_commands: int
+   :type num_commands: int, optional
    :param command_filter: String containing characters used to select a subset of commands.
-   :type command_filter: str
+   :type command_filter: str, optional
 
    :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
    :rtype: List[str]
@@ -86,13 +86,13 @@ Module Contents
    >>> ak.connect()
    connected to arkouda server tcp://*:5555
    >>> ak.get_config()
-   >>> ak.ones(10000)
+   >>> ak.ones(10000, dtype=int)
    array([1 1 1 ... 1 1 1])
    >>> nums = ak.randint(0,500,10000)
    >>> ak.argsort(nums)
    array([105 457 647 ... 9362 9602 9683])
    >>> ak.generate_history(num_commands=5, command_filter='ak.')
-   ['ak.connect()', 'ak.get_config()', 'ak.ones(10000)', 'nums = ak.randint(0,500,10000)',
+   ['ak.connect()', 'ak.get_config()', 'ak.ones(10000, dtype=int)', 'nums = ak.randint(0,500,10000)',
    'ak.argsort(nums)']
 
 
