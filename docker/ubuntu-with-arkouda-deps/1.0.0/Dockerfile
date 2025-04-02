@@ -68,7 +68,7 @@ RUN rm get-pip.py
 #   Install arkouda dependencies
 RUN apt-get update && apt-get install -y -V ca-certificates lsb-release wget libhdf5-dev
 RUN apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libcurl4-openssl-dev libidn2-dev libzmq3-dev
-RUN python3 -m pip install scikit-build   
+RUN python3 -m pip install scikit-build versioneer
 
 #Install Chapel frontend bindings
 RUN cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .
