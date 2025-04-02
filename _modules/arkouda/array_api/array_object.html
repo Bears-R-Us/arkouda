@@ -366,7 +366,11 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.array_api.array_object</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Wrapper class around the ndarray object for the array API standard.</span>
+<span class="sd">Wrapper class around the pdarray object for the array API standard.</span>
+
+<span class="sd">The information below can be found online here:</span>
+
+<span class="sd">https://pydoc.dev/numpy/latest/numpy.array_api._array_object.html</span>
 
 <span class="sd">The array API standard defines some behaviors differently than ndarray, in</span>
 <span class="sd">particular, type promotion rules are different (the standard has no</span>
@@ -423,12 +427,12 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/index.html#arkouda.array_api.array_object.Array">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    n-d array object for the array API namespace.</span>
+<span class="sd">    n-dimensional array object for the array API namespace.</span>
 
 <span class="sd">    See the docstring of :py:obj:`np.ndarray &lt;numpy.ndarray&gt;` for more</span>
 <span class="sd">    information.</span>
 
-<span class="sd">    This is a wrapper around numpy.ndarray that restricts the usage to only</span>
+<span class="sd">    This is a wrapper around ak.pdarray that restricts the usage to only</span>
 <span class="sd">    those things that are required by the array API namespace. Note,</span>
 <span class="sd">    attributes on this object that start with a single underscore are not part</span>
 <span class="sd">    of the API specification and should only be used internally. This object</span>
@@ -441,7 +445,7 @@
     <span class="n">_empty</span><span class="p">:</span> <span class="nb">bool</span>
 
     <span class="c1"># Use a custom constructor instead of __init__, as manually initializing</span>
-    <span class="c1"># this class is not supported API.</span>
+    <span class="c1"># this class is not supported by the API.</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_new</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">empty</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -469,11 +473,17 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/index.html#arkouda.array_api.array_object.Array.tolist">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert the array to a Python list or nested lists</span>
+<span class="sd">        Convert the array to a Python list or nested lists, using the pdarray</span>
+<span class="sd">        method to_list.</span>
 
 <span class="sd">        This involves copying the data from the server to the client, and thus</span>
 <span class="sd">        will fail if the array is too large (see:</span>
 <span class="sd">        :func:`~arkouda.client.maxTransferBytes`)</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        pdarray.to_list()</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
@@ -487,11 +497,16 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/index.html#arkouda.array_api.array_object.Array.to_ndarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert the array to a numpy ndarray</span>
+<span class="sd">        Convert the array to a numpy ndarray, using the pdarray method to_ndarray.</span>
 
 <span class="sd">        This involves copying the data from the server to the client, and thus</span>
 <span class="sd">        will fail if the array is too large (see:</span>
 <span class="sd">        :func:`~arkouda.client.maxTransferBytes`)</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        pdarray.to_ndarray()</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span></div>
 
@@ -517,23 +532,14 @@
 <span class="sd">        Return a view of the array with the specified axes transposed.</span>
 
 <span class="sd">        For axes=None, reverse all the dimensions of the array.</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        ak.transpose()</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">.manipulation_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">permute_dims</span>
 
-        <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_axes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
-                <span class="n">_axes_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
-                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axes</span><span class="p">):</span>
-                    <span class="n">_axes_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
-                <span class="n">_axes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_axes_list</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
-                <span class="n">_axes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;number of axes don&#39;t match array dimensions&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">permute_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_axes</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">axes</span><span class="p">))</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -736,7 +742,15 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__abs__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Take the element-wise absolute value of the array.</span>
+
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        ak.abs()</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO -- this must be fixed.  It doesn&#39;t return abs.  However, fixing it causes</span>
+        <span class="c1"># tests/array_api/stats_functions test_std and test_var to fail.</span>
+
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Array</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
@@ -942,9 +956,12 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the matrix multiplication of this array with another array.</span>
 
-<span class="sd">        Warning: Not implemented.</span>
+<span class="sd">        See also</span>
+<span class="sd">        --------</span>
+<span class="sd">        ak.matmul()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not implemented&quot;</span><span class="p">)</span>
+        <span class="c1">#       raise ValueError(&quot;Not implemented&quot;)</span>
+        <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__mod__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Array</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -957,7 +974,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Array</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute the product of this array and another array or scalar.</span>
+<span class="sd">        Compute the element-wise product of this array and another array or scalar.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
             <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array</span> <span class="o">*</span> <span class="n">other</span><span class="p">)</span>

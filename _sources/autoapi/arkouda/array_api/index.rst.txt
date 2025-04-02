@@ -37,12 +37,12 @@ Package Contents
 
 .. py:class:: Array
 
-   n-d array object for the array API namespace.
+   n-dimensional array object for the array API namespace.
 
    See the docstring of :py:obj:`np.ndarray <numpy.ndarray>` for more
    information.
 
-   This is a wrapper around numpy.ndarray that restricts the usage to only
+   This is a wrapper around ak.pdarray that restricts the usage to only
    those things that are required by the array API namespace. Note,
    attributes on this object that start with a single underscore are not part
    of the API specification and should only be used internally. This object
@@ -119,21 +119,26 @@ Package Contents
 
    .. py:method:: to_ndarray()
 
-      Convert the array to a numpy ndarray
+      Convert the array to a numpy ndarray, using the pdarray method to_ndarray.
 
       This involves copying the data from the server to the client, and thus
       will fail if the array is too large (see:
       :func:`~arkouda.client.maxTransferBytes`)
+
+      .. seealso:: :obj:`pdarray.to_ndarray`
 
 
 
    .. py:method:: tolist()
 
-      Convert the array to a Python list or nested lists
+      Convert the array to a Python list or nested lists, using the pdarray
+      method to_list.
 
       This involves copying the data from the server to the client, and thus
       will fail if the array is too large (see:
       :func:`~arkouda.client.maxTransferBytes`)
+
+      .. seealso:: :obj:`pdarray.to_list`
 
 
 
@@ -142,6 +147,8 @@ Package Contents
       Return a view of the array with the specified axes transposed.
 
       For axes=None, reverse all the dimensions of the array.
+
+      .. seealso:: :obj:`ak.transpose`
 
 
 
