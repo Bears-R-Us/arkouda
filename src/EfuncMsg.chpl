@@ -16,6 +16,8 @@ module EfuncMsg
     private use SipHash;
     use UniqueMsg;
     use AryUtil;
+    use CTypes;
+    use OS.POSIX;
 
     use CommAggregation;
 
@@ -27,127 +29,127 @@ module EfuncMsg
 
     // These ops are functions which take an array and produce an array.
 
-    @arkouda.registerCommand (name="sin")
-    proc sine (x : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand(name="sin")
+    proc ak_sin (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     { 
         return sin(x);
     }
        
-    @arkouda.registerCommand (name="cos")
-    proc cosine (x : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand(name="cos")
+    proc ak_cos (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return cos(x);
     }
        
-    @arkouda.registerCommand (name="tan")
-    proc tangent (x : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand(name="tan")
+    proc ak_tan (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return tan(x);
     }
        
-    @arkouda.registerCommand (name="arcsin")
-    proc arcsine (x : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand()
+    proc arcsin (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return asin(x);
     }
        
-    @arkouda.registerCommand (name="arccos")
-    proc arccosine (x : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand()
+    proc arccos (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return acos(x);
     }
        
-    @arkouda.registerCommand (name="arctan")
-    proc arctangent (x : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand()
+    proc arctan (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return atan(x);
     }
        
-    @arkouda.registerCommand (name="sinh")
-    proc hypsine (x : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand(name="sinh")
+    proc ak_sinh (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return sinh(x);
     }
        
-    @arkouda.registerCommand (name="cosh")
-    proc hypcosine (x : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand(name="cosh")
+    proc ak_cosh (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return cosh(x);
     }
        
-    @arkouda.registerCommand (name="tanh")
-    proc hyptangent (x : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand(name="tanh")
+    proc ak_tanh (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return tanh(x);
     }
        
-    @arkouda.registerCommand (name="arcsinh")
-    proc archypsine (x : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand()
+    proc arcsinh (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return asinh(x);
     }
        
-    @arkouda.registerCommand (name="arccosh")
-    proc archypcosine (x : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand()
+    proc arccosh (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return acosh(x);
     }
        
-    @arkouda.registerCommand (name="arctanh")
-    proc archyptangent (x : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand()
+    proc arctanh (x : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return atanh(x);
     }
        
     @arkouda.registerCommand(name="abs")
-    proc absolut (const ref pda : [?d] ?t) : [d] t throws
+    proc ak_abs (const ref pda : [?d] ?t) : [d] t throws
         where (t==int || t==real) // TODO maybe: allow uint also
     {
         return abs(pda);
     }
 
     @arkouda.registerCommand(name="square")
-    proc boxy (const ref pda : [?d] ?t) : [d] t throws
+    proc ak_square (const ref pda : [?d] ?t) : [d] t throws
         where (t==int || t==real || t==uint)
     {
         return square(pda);
     }
 
     @arkouda.registerCommand(name="exp")
-    proc expo (const ref pda : [?d] ?t) : [d] real throws
+    proc ak_exp (const ref pda : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return exp(pda);
     }
 
     @arkouda.registerCommand(name="expm1")
-    proc expom (const ref pda : [?d] ?t) : [d] real throws
+    proc ak_expm1 (const ref pda : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return expm1(pda);
     }
 
     @arkouda.registerCommand(name="log")
-    proc log_e (const ref pda : [?d] ?t) : [d] real throws
+    proc ak_log (const ref pda : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return log(pda);
     }
 
     @arkouda.registerCommand(name="log1p")
-    proc log_1p (const ref pda : [?d] ?t) : [d] real throws
+    proc ak_log1p (const ref pda : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return log1p(pda);
@@ -156,98 +158,134 @@ module EfuncMsg
     //  chapel log2 returns ints when given ints, so the input has been cast to real.
 
     @arkouda.registerCommand(name="log2")
-    proc log_2 (const ref pda : [?d] ?t) : [d] real throws
+    proc ak_log2 (const ref pda : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return log2(pda:real);
     }
 
     @arkouda.registerCommand(name="log10")
-    proc log_10 (const ref pda : [?d] ?t) : [d] real throws
+    proc ak_log10 (const ref pda : [?d] ?t) : [d] real throws
         where (t==int || t==real || t==uint)
     {
         return log10(pda);
     }
 
-    @arkouda.registerCommand(name="isinf")
-    proc isinf_ (pda : [?d] real) : [d] bool
+    @arkouda.registerCommand()
+    proc isinf (pda : [?d] real) : [d] bool
     {
         return (isInf(pda));
     }
 
-    @arkouda.registerCommand(name="isnan")
-    proc isnan_ (pda : [?d] real) : [d] bool
+    @arkouda.registerCommand()
+    proc isnan (pda : [?d] real) : [d] bool
     {
         return (isNan(pda));
     }
 
-    @arkouda.registerCommand(name="isfinite")
-    proc isfinite_ (pda : [?d] real) : [d] bool
+    @arkouda.registerCommand()
+    proc isfinite (pda : [?d] real) : [d] bool
     {
         return (isFinite(pda));
     }
 
-    @arkouda.registerCommand (name="floor")
-    proc floor_ (pda : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand(name="floor")
+    proc ak_floor (pda : [?d] ?t) : [d] real throws
         where (t==real)
     {
         return floor(pda);
     }
 
-    @arkouda.registerCommand (name="ceil")
-    proc ceil_ (pda : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand(name="ceil")
+    proc ak_ceil (pda : [?d] ?t) : [d] real throws
         where (t==real)
     {
         return ceil(pda);
     }
 
-    @arkouda.registerCommand (name="round")
-    proc round_ (pda : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand(name="round")
+    proc ak_round (pda : [?d] ?t) : [d] real throws
         where (t==real)
     {
         return round(pda);
     }
 
-    @arkouda.registerCommand (name="trunc")
-    proc trunc_ (pda : [?d] ?t) : [d] real throws
+    @arkouda.registerCommand(name="trunc")
+    proc ak_trunc (pda : [?d] ?t) : [d] real throws
         where (t==real)
     {
         return trunc(pda);
     }
 
-    @arkouda.registerCommand (name="popcount")
-    proc popcount_ (pda : [?d] ?t) : [d] t throws
+    @arkouda.registerCommand()
+    proc popcount (pda : [?d] ?t) : [d] t throws
         where (t==int || t==uint)
     {
         return popCount(pda);
     }
 
-    @arkouda.registerCommand (name="parity")
-    proc parity_ (pda : [?d] ?t) : [d] t throws
+    @arkouda.registerCommand(name="parity")
+    proc ak_parity (pda : [?d] ?t) : [d] t throws
         where (t==int || t==uint)
     {
         return parity(pda);
     }
 
-    @arkouda.registerCommand (name="clz")
-    proc clz_ (pda : [?d] ?t) : [d] t throws
+    @arkouda.registerCommand(name="clz")
+    proc ak_clz (pda : [?d] ?t) : [d] t throws
         where (t==int || t==uint)
     {
         return clz(pda);
     }
 
-    @arkouda.registerCommand (name="ctz")
-    proc ctz_ (pda : [?d] ?t) : [d] t throws
+    @arkouda.registerCommand(name="ctz")
+    proc ak_ctz (pda : [?d] ?t) : [d] t throws
         where (t==int || t==uint)
     {
         return ctz(pda);
     }
 
-    @arkouda.registerCommand(name="not")
-    proc not_ (pda : [?d] ?t) : [d] bool throws
+    @arkouda.registerCommand()
+    proc not (pda : [?d] ?t) : [d] bool throws
         where (t==int || t==uint || t==bool)
     {
         return (!pda);
+    }
+
+    @arkouda.registerCommand()
+    proc nextafter (x1: [?d] real(64), x2: [d] real(64)): [d] real(64) throws
+    {
+        var outArray: [d] real;
+        forall outIdx in outArray.domain {
+            if isNan(x1[outIdx]) || isNan(x2[outIdx]) {
+                outArray[outIdx] = nan;
+                continue;
+            }
+            if x1[outIdx] == 0.0 && x2[outIdx] != 0.0 {
+                outArray[outIdx] = if x2[outIdx] > 0.0 then 5e-324 else -5e-324;
+                continue;
+            }
+
+            // You might say, "Well, this looks silly." But really, I'm handling positive and negative zero here.
+            if x1[outIdx] == 0.0 && x2[outIdx] == 0.0 {
+                outArray[outIdx] = x2[outIdx];
+                continue;
+            }
+            var intValue: int(64);
+            var realValueRef = x1[outIdx];
+            memcpy(c_ptrTo(intValue), c_ptrTo(realValueRef), c_sizeof(real(64)));
+            if ((x1[outIdx] > 0 && x1[outIdx] < x2[outIdx]) || (x1[outIdx] < 0 && x1[outIdx] > x2[outIdx])) {
+                intValue += 1;
+            }
+            if ((x1[outIdx] > 0 && x1[outIdx] > x2[outIdx]) || (x1[outIdx] < 0 && x1[outIdx] < x2[outIdx])) {
+                intValue -= 1;
+            }
+            var nextRealValue: real(64);
+            var intValueRef = intValue;
+            memcpy(c_ptrTo(nextRealValue), c_ptrTo(intValueRef), c_sizeof(int(64)));
+            outArray[outIdx] = nextRealValue;
+        }
+        return outArray;
     }
 
     //  cumsum and cumprod -- the below helper function gives return type
@@ -270,7 +308,7 @@ module EfuncMsg
         proc clone()       do return new unmanaged PlusIntReduceOp(eltType=eltType);
     }
 
-    @arkouda.registerCommand(name="cumsum")
+    @arkouda.registerCommand()
     proc cumsum(x : [?d] ?t) : [d] cumspReturnType(t) throws
         where (t==int || t==real || t==uint || t==bool) && (d.rank==1)
     {
@@ -282,7 +320,7 @@ module EfuncMsg
         }
     }
 
-    @arkouda.registerCommand(name="cumprod")
+    @arkouda.registerCommand()
     proc cumprod(x : [?d] ?t) : [d] cumspReturnType(t) throws
         where (t==int || t==real || t==uint || t==bool) && (d.rank==1)
     {
@@ -297,7 +335,7 @@ module EfuncMsg
     // sgn is a special case.  It is the only thing that returns int(8).
 
     @arkouda.registerCommand(name="sgn")
-    proc sign (pda : [?d] ?t) : [d] int(8) throws
+    proc ak_sgn (pda : [?d] ?t) : [d] int(8) throws
         where (t==int || t==real)
     {
         return (sgn(pda));
@@ -348,7 +386,7 @@ module EfuncMsg
 
     //  with two 2 vector inputs, both types can be unknown.
 
-    @arkouda.registerCommand(name="fmod2vv")
+    @arkouda.registerCommand()
     proc fmod2vv ( a: [?d] ?ta, b : [d] ?tb) : [d] real throws
         where ((ta==real && (tb==int || tb == uint || tb==real)) ||
                (ta==int  && tb==real) ||
@@ -404,8 +442,8 @@ module EfuncMsg
 
     //  The above comment re scalar types applies to arctan2 as well.
 
-    @arkouda.registerCommand(name="arctan2vv")
-    proc arctangent2vv (a : [?d] ?ta, b : [d] ?tb) : [d] real throws
+    @arkouda.registerCommand()
+    proc arctan2vv (a : [?d] ?ta, b : [d] ?tb) : [d] real throws
         where ( (ta==real && (tb==real || tb==int || tb==uint)) ||
                 (ta==int  && (tb==real || tb==int || tb==uint)) ||
                 (ta==uint && (tb==real || tb==int || tb==uint)) ) {
@@ -413,37 +451,37 @@ module EfuncMsg
         }
 
     @arkouda.registerCommand(name="arctan2vs_float64")
-    proc arctangent2vsr (a : [?d] ?ta, b : real) : [d] real throws
+    proc arctan2vsr (a : [?d] ?ta, b : real) : [d] real throws
         where (ta==int || ta==uint || ta==real) {
             return (atan2(a,b));
         }
 
     @arkouda.registerCommand(name="arctan2vs_int64")
-    proc arctangent2vsi (a : [?d] ?ta, b : int) : [d] real throws
+    proc arctan2vsi (a : [?d] ?ta, b : int) : [d] real throws
         where (ta==int || ta==uint || ta==real) {
             return (atan2(a,b));
         }
 
     @arkouda.registerCommand(name="arctan2vs_uint64")
-    proc arctangent2vsu (a : [?d] ?ta, b : uint) : [d] real throws
+    proc arctan2vsu (a : [?d] ?ta, b : uint) : [d] real throws
         where (ta==int || ta==uint || ta==real) {
             return (atan2(a,b));
         }
 
     @arkouda.registerCommand(name="arctan2sv_float64")
-    proc arctangent2svr (a : real, b : [?d] ?tb) : [d] real throws
+    proc arctan2svr (a : real, b : [?d] ?tb) : [d] real throws
         where (tb==int || tb==uint || tb==real) {
             return (atan2(a,b));
         }
 
     @arkouda.registerCommand(name="arctan2sv_int64")
-    proc arctangent2svi (a : int, b : [?d] ?tb) : [d] real throws
+    proc arctan2svi (a : int, b : [?d] ?tb) : [d] real throws
         where (tb==int || tb==uint || tb==real) {
             return (atan2(a,b));
         }
 
     @arkouda.registerCommand(name="arctan2sv_uint64")
-    proc arctangent2svu (a : uint, b : [?d] ?tb) : [d] real throws
+    proc arctan2svu (a : uint, b : [?d] ?tb) : [d] real throws
         where (tb==int || tb==uint || tb==real) {
             return (atan2(a,b));
         }
@@ -467,8 +505,8 @@ module EfuncMsg
         }
     }
 
-    @arkouda.registerCommand(name="wherevv")
-    proc wherevv_ ( condition: [?d] bool, a : [d] ?ta, b : [d] ?tb) : [d] whereReturnType(ta,tb) throws
+    @arkouda.registerCommand()
+    proc wherevv ( condition: [?d] bool, a : [d] ?ta, b : [d] ?tb) : [d] whereReturnType(ta,tb) throws
     where ((ta==real || ta==int || ta==uint || ta==bool) && (tb==real || tb==int || tb==uint || tb==bool))
     {
          var c = makeDistArray(d, whereReturnType(ta,tb));
@@ -483,7 +521,7 @@ module EfuncMsg
     // arkouda interface requires the scalar types to be specified, but the helper functions,
     // since they're not registered as commands, can be more generic.
 
-    proc wherevs_helper (condition: [?d] bool, a : [d] ?ta, b : ?tb) : [d] whereReturnType(ta,tb) throws
+    proc wherevsHelper (condition: [?d] bool, a : [d] ?ta, b : ?tb) : [d] whereReturnType(ta,tb) throws
     {
         var c = makeDistArray(d, whereReturnType(ta,tb));
         forall (ch, A, C) in zip(condition, a, c) {
@@ -493,34 +531,34 @@ module EfuncMsg
     }
 
     @arkouda.registerCommand(name="wherevs_float64")
-    proc wherevsr_ ( condition: [?d] bool, a : [d] ?ta, b : real) : [d] real throws
+    proc wherevsr ( condition: [?d] bool, a : [d] ?ta, b : real) : [d] real throws
     where (ta==real || ta==int || ta==uint || ta==bool)
     {
-        return wherevs_helper (condition, a, b);
+        return wherevsHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wherevs_int64")
-    proc wherevsi_ ( condition: [?d] bool, a : [d] ?ta, b : int) : [d] whereReturnType(ta,int) throws 
+    proc wherevsi ( condition: [?d] bool, a : [d] ?ta, b : int) : [d] whereReturnType(ta,int) throws 
     where (ta==real || ta==int || ta==uint || ta==bool)
     {
-        return wherevs_helper (condition, a, b);
+        return wherevsHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wherevs_uint64")
-    proc wherevsu_ ( condition: [?d] bool, a : [d] ?ta, b : uint) : [d] whereReturnType(ta,uint) throws 
+    proc wherevsu ( condition: [?d] bool, a : [d] ?ta, b : uint) : [d] whereReturnType(ta,uint) throws 
     where (ta==real || ta==int || ta==uint || ta==bool)
     {
-        return wherevs_helper (condition, a, b);
+        return wherevsHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wherevs_bool")
-    proc wherevsb_ ( condition: [?d] bool, a : [d] ?ta, b : bool) : [d] whereReturnType(ta,bool) throws 
+    proc wherevsb ( condition: [?d] bool, a : [d] ?ta, b : bool) : [d] whereReturnType(ta,bool) throws 
     where (ta==real || ta==int || ta==uint || ta==bool)
     {
-        return wherevs_helper (condition, a, b);
+        return wherevsHelper (condition, a, b);
     }
 
-    proc wheresv_helper (condition: [?d] bool, a : ?ta, b : [d] ?tb) : [d] whereReturnType(ta,tb) throws
+    proc wheresvHelper (condition: [?d] bool, a : ?ta, b : [d] ?tb) : [d] whereReturnType(ta,tb) throws
     {
         var c = makeDistArray(d, whereReturnType(ta,tb));
         forall (ch, B, C) in zip(condition, b, c) {
@@ -530,34 +568,34 @@ module EfuncMsg
     }
 
     @arkouda.registerCommand(name="wheresv_float64")
-    proc wheresvr_ ( condition: [?d] bool, a : real, b : [d] ?tb) : [d] real throws 
+    proc wheresvr ( condition: [?d] bool, a : real, b : [d] ?tb) : [d] real throws 
     where (tb==real || tb==int || tb==uint || tb==bool)
     {
-        return wheresv_helper (condition, a, b);
+        return wheresvHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheresv_int64")
-    proc wheresvi_ ( condition: [?d] bool, a : int, b : [d] ?tb) : [d] whereReturnType(tb,int) throws 
+    proc wheresvi ( condition: [?d] bool, a : int, b : [d] ?tb) : [d] whereReturnType(tb,int) throws 
     where (tb==real || tb==int || tb==uint || tb==bool)
     {
-        return wheresv_helper (condition, a, b);
+        return wheresvHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheresv_uint64")
-    proc wheresvu_ ( condition: [?d] bool, a : uint, b : [d] ?tb) : [d] whereReturnType(tb,uint) throws 
+    proc wheresvu ( condition: [?d] bool, a : uint, b : [d] ?tb) : [d] whereReturnType(tb,uint) throws 
     where (tb==real || tb==int || tb==uint || tb==bool)
     {
-        return wheresv_helper (condition, a, b);
+        return wheresvHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheresv_bool")
-    proc wheresvb_ ( condition: [?d] bool, a : bool, b : [d] ?tb) : [d] whereReturnType(tb,bool) throws 
+    proc wheresvb ( condition: [?d] bool, a : bool, b : [d] ?tb) : [d] whereReturnType(tb,bool) throws 
     where (tb==real || tb==int || tb==uint || tb==bool)
     {
-        return wheresv_helper (condition, a, b);
+        return wheresvHelper (condition, a, b);
     }
 
-    proc wheress_helper (condition: [?d] bool, a : ?ta, b : ?tb) : [d] whereReturnType(ta,tb) throws
+    proc wheressHelper (condition: [?d] bool, a : ?ta, b : ?tb) : [d] whereReturnType(ta,tb) throws
     {
         var c = makeDistArray(d, whereReturnType(ta,tb));
         forall (ch, C) in zip(condition, c) {
@@ -567,106 +605,106 @@ module EfuncMsg
     }
 
     @arkouda.registerCommand(name="wheress_float64_float64")
-    proc wheress_rr ( condition: [?d] bool, a : real, b : real) : [d] real throws
+    proc wheressrr ( condition: [?d] bool, a : real, b : real) : [d] real throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_float64_int64")
-    proc wheress_ri ( condition: [?d] bool, a : real, b : int) : [d] real throws
+    proc wheressri ( condition: [?d] bool, a : real, b : int) : [d] real throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_float64_uint64")
-    proc wheress_ru ( condition: [?d] bool, a : real, b : uint) : [d] real throws
+    proc wheressru ( condition: [?d] bool, a : real, b : uint) : [d] real throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_float64_bool")
-    proc wheress_rb ( condition: [?d] bool, a : real, b : bool) : [d] real throws
+    proc wheressrb ( condition: [?d] bool, a : real, b : bool) : [d] real throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_int64_float64")
-    proc wheress_ir ( condition: [?d] bool, a : int, b : real) : [d] real throws
+    proc wheressir ( condition: [?d] bool, a : int, b : real) : [d] real throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_int64_int64") 
-    proc wheress_ii ( condition: [?d] bool, a : int, b : int) : [d] int throws
+    proc wheressii ( condition: [?d] bool, a : int, b : int) : [d] int throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_int64_uint64") 
-    proc wheress_iu ( condition: [?d] bool, a : int, b : uint) : [d] real throws
+    proc wheressiu ( condition: [?d] bool, a : int, b : uint) : [d] real throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_int64_bool") 
-    proc wheress_ib ( condition: [?d] bool, a : int, b : bool) : [d] int throws
+    proc wheressib ( condition: [?d] bool, a : int, b : bool) : [d] int throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_uint64_float64") 
-    proc wheress_ur ( condition: [?d] bool, a : uint, b : real) : [d] real throws
+    proc wheressur ( condition: [?d] bool, a : uint, b : real) : [d] real throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_uint64_int64")
-    proc wheress_ui ( condition: [?d] bool, a : uint, b : int) : [d] real throws
+    proc wheressui ( condition: [?d] bool, a : uint, b : int) : [d] real throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_uint64_uint64")
-    proc wheress_uu ( condition: [?d] bool, a : uint, b : uint) : [d] uint throws
+    proc wheressuu ( condition: [?d] bool, a : uint, b : uint) : [d] uint throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_uint64_bool")
-    proc wheress_ub ( condition: [?d] bool, a : uint, b : bool) : [d] uint throws
+    proc wheressub ( condition: [?d] bool, a : uint, b : bool) : [d] uint throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_bool_float64")
-    proc wheress_br ( condition: [?d] bool, a : bool, b : real) : [d] real throws
+    proc wheressbr ( condition: [?d] bool, a : bool, b : real) : [d] real throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_bool_int64")
-    proc wheress_bi ( condition: [?d] bool, a : bool, b : int) : [d] int throws
+    proc wheressbi ( condition: [?d] bool, a : bool, b : int) : [d] int throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_bool_uint64")
-    proc wheress_bu ( condition: [?d] bool, a : bool, b : uint) : [d] uint throws
+    proc wheressbu ( condition: [?d] bool, a : bool, b : uint) : [d] uint throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     @arkouda.registerCommand(name="wheress_bool_bool")
-    proc wheress_bb ( condition: [?d] bool, a : bool, b : bool) : [d] bool throws
+    proc wheressbb ( condition: [?d] bool, a : bool, b : bool) : [d] bool throws
     {
-        return wheress_helper (condition, a, b);
+        return wheressHelper (condition, a, b);
     }
 
     //  putmask has been rewritten for both the new interface and the multi-dimensional case.
     //  The specifics are based on the observation that np.putmask behaves as if multi-dim
     //  inputs were flattened before the operation, and then de-flattened after.
 
-   @arkouda.registerCommand(name="putmask")
+   @arkouda.registerCommand()
    proc putmask (mask : [?d1] bool, ref a : [d1] ?ta, v : [?d2] ?tv ) throws
        where   (ta==real ||
                (ta==int  && (tv==int  || tv==uint || tv==bool)) ||

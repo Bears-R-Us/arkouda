@@ -1177,3 +1177,68 @@ class TestNumeric:
         assert can_cast(5, ak.uint64)
         assert not can_cast(-5, ak.uint64)
         assert not can_cast(2**200, ak.uint64)
+
+    @pytest.mark.parametrize("dtype", [ak.int64, ak.float64, ak.uint64])
+    @pytest.mark.parametrize("ndims", [0, 1, 2, 3])
+    def test_nextafter_multidim(self, dtype, ndims):
+        if ndims != 0 and ndims not in get_array_ranks():
+            pytest.skip(f"Server not compiled for rank {ndims}")
+
+        x1_rank = ndims
+        min_value = -100 if dtype != ak.uint64 else 0
+        for x2_rank in range(ndims + 1):
+            bcast_shape = tuple(np.random.randint(1, 10, size=max(x1_rank, x2_rank)))
+            if x1_rank != 0:
+                x1_shape = bcast_shape[-x1_rank:]
+                if dtype == ak.bigint:
+                    x1 = ak.randint(min_value, 100, dtype=ak.int64, size=x1_shape)
+                    x1 = ak.cast(x1, ak.bigint)
+                else:
+                    x1 = ak.randint(min_value, 100, dtype=dtype, size=x1_shape)
+                n_x1 = x1.to_ndarray()
+            else:
+                if dtype == ak.bigint:
+                    x1 = ak.randint(min_value, 100, dtype=ak.int64, size=1)
+                    x1 = ak.cast(x1, ak.bigint)[0]
+                else:
+                    x1 = ak.randint(min_value, 100, dtype=dtype, size=1)[0]
+                n_x1 = x1
+            if x2_rank != 0:
+                x2_shape = bcast_shape[-x2_rank:]
+                if dtype == ak.bigint:
+                    x2 = ak.randint(min_value, 100, dtype=ak.int64, size=x2_shape)
+                    x2 = ak.cast(x2, ak.bigint)
+                else:
+                    x2 = ak.randint(min_value, 100, dtype=dtype, size=x2_shape)
+                n_x2 = x2.to_ndarray()
+            else:
+                if dtype == ak.bigint:
+                    x2 = ak.randint(min_value, 100, dtype=ak.int64, size=1)
+                    x2 = ak.cast(x2, ak.bigint)[0]
+                else:
+                    x2 = ak.randint(min_value, 100, dtype=dtype, size=1)[0]
+                n_x2 = x2
+            if x1_rank == 0 and x2_rank == 0:
+                assert ak.nextafter(x1, x2) == np.nextafter(n_x1, n_x2)
+            else:
+                assert_arkouda_array_equivalent(ak.nextafter(x1, x2), np.nextafter(n_x1, n_x2))
+
+    def test_nextafter_boundary(self):
+        from itertools import combinations
+
+        boundary_values = [ak.nan, -ak.inf, -1.0, -0.0, 0.0, 1.0, ak.inf]
+
+        for x1, x2 in combinations(boundary_values, 2):
+            x1 = ak.array([x1])
+            x2 = ak.array([x2])
+            n_x1 = x1.to_ndarray()
+            n_x2 = x2.to_ndarray()
+            assert np.array_equal(
+                ak.nextafter(x1, x2).to_ndarray(), np.nextafter(n_x1, n_x2), equal_nan=True
+            )
+            assert np.array_equal(
+                ak.nextafter(x2, x1).to_ndarray(), np.nextafter(n_x2, n_x1), equal_nan=True
+            )
+            assert np.array_equal(
+                ak.nextafter(x1, x1).to_ndarray(), np.nextafter(n_x1, n_x1), equal_nan=True
+            )
