@@ -16,6 +16,8 @@ module EfuncMsg
     private use SipHash;
     use UniqueMsg;
     use AryUtil;
+    use CTypes;
+    use OS.POSIX;
 
     use CommAggregation;
 
@@ -248,6 +250,42 @@ module EfuncMsg
         where (t==int || t==uint || t==bool)
     {
         return (!pda);
+    }
+
+    @arkouda.registerCommand(name="nextafter")
+    proc nextafter_ (x1: [?d] real, x2: [d] real): [d] real throws
+    {
+        var outArray: [d] real;
+        forall outIdx in outArray.domain {
+            if isNan(x1[outIdx]) || isNan(x2[outIdx]) {
+                outArray[outIdx] = nan;
+                continue;
+            }
+            if x1[outIdx] == 0.0 && x2[outIdx] != 0.0 {
+                outArray[outIdx] = if x2[outIdx] > 0.0 then 5e-324 else -5e-324;
+                continue;
+            }
+
+            // You might say, "Well, this looks silly." But really, I'm handling positive and negative zero here.
+            if x1[outIdx] == 0.0 && x2[outIdx] == 0.0 {
+                outArray[outIdx] = x2[outIdx];
+                continue;
+            }
+            var intValue: int(64);
+            var realValueRef = x1[outIdx];
+            memcpy(c_ptrTo(intValue), c_ptrTo(realValueRef), c_sizeof(real(64)));
+            if ((x1[outIdx] > 0 && x1[outIdx] < x2[outIdx]) || (x1[outIdx] < 0 && x1[outIdx] > x2[outIdx])) {
+                intValue += 1;
+            }
+            if ((x1[outIdx] > 0 && x1[outIdx] > x2[outIdx]) || (x1[outIdx] < 0 && x1[outIdx] < x2[outIdx])) {
+                intValue -= 1;
+            }
+            var nextRealValue: real(64);
+            var intValueRef = intValue;
+            memcpy(c_ptrTo(nextRealValue), c_ptrTo(intValueRef), c_sizeof(int(64)));
+            outArray[outIdx] = nextRealValue;
+        }
+        return outArray;
     }
 
     //  cumsum and cumprod -- the below helper function gives return type

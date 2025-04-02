@@ -68,6 +68,7 @@ __all__ = [
     "expm1",
     "square",
     "matmul",
+    "nextafter",
     "triu",
     "tril",
     "transpose",
@@ -673,6 +674,74 @@ def log1p(pda: pdarray) -> pdarray:
         },
     )
     return create_pdarray(repMsg)
+
+
+@typechecked
+def nextafter(
+    x1: Union[pdarray, numeric_scalars, bigint], x2: Union[pdarray, numeric_scalars, bigint]
+) -> Union[pdarray, float]:
+    """
+    Return the next floating-point value after `x1` towards `x2`, element-wise.
+    Accuracy only guaranteed for 64 bit values.
+
+    Parameters
+    ----------
+    x1 : pdarray, numeric_scalars, or bigint
+        Values to find the next representable value of.
+    x2 : pdarray, numeric_scalars, or bigint
+        The direction where to look for the next representable value of `x1`.
+        If `x1.shape != x2.shape`, they must be broadcastable to a common shape
+        (which becomes the shape of the output).
+
+    Returns
+    -------
+    pdarray or float
+        The next representable values of `x1` in the direction of `x2`.
+        This is a scalar if both `x1` and `x2` are scalars.
+
+    Examples
+    --------
+    >>> eps = np.finfo(np.float64).eps
+    >>> ak.nextafter(1, 2) == 1 + eps
+    True
+    >>> a = ak.array([1, 2])
+    >>> b = ak.array([2, 1])
+    >>> ak.nextafter(a, b) == ak.array([eps + 1, 2 - eps])
+    array([True True])
+    """
+    return_scalar = True
+    x1_: pdarray
+    x2_: pdarray
+    if isinstance(x1, pdarray):
+        return_scalar = False
+        if x1.dtype != ak_float64:
+            x1_ = cast(x1, ak_float64)
+        else:
+            x1_ = x1
+    else:
+        x1_ = type_cast(pdarray, array([x1], ak_float64))
+    if isinstance(x2, pdarray):
+        return_scalar = False
+        if x2.dtype != ak_float64:
+            x2_ = cast(x2, ak_float64)
+        else:
+            x2_ = x2
+    else:
+        x2_ = type_cast(pdarray, array([x2], ak_float64))
+
+    x1_, x2_, _, _ = broadcast_if_needed(x1_, x2_)
+
+    repMsg = generic_msg(
+        cmd=f"nextafter<{x1_.ndim}>",
+        args={
+            "x1": x1_,
+            "x2": x2_,
+        },
+    )
+    return_array = create_pdarray(repMsg)
+    if return_scalar:
+        return return_array[0]
+    return return_array
 
 
 @typechecked
