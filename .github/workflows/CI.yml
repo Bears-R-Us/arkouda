@@ -327,18 +327,6 @@ jobs:
         retry_on: error
         command: |
           make install-blosc
-
-
-  arkouda_makefile_install_pytables:
-    runs-on: ubuntu-24.04 
-    container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.0
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-    - name: Check python version
-      run: |
-        python3 --version
     - name: Make install-hdf5
       uses: nick-fields/retry@v2
       with:
