@@ -5,7 +5,7 @@ import json
 from functools import reduce
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, List, Optional, Sequence, Tuple, Union, cast
 
 import numpy as np
 from typeguard import typechecked
@@ -601,12 +601,22 @@ class pdarray:
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
 
+        from arkouda.dtypes import float64 as ak_float64
+        from arkouda.dtypes import int64 as ak_int64
+
+        if self.dtype == ak_uint64 and dtype(other) == ak_int64:
+            dt = "float64"
+            other = ak_float64(other)
+
         from arkouda.numpy.dtypes import can_cast as ak_can_cast
 
         if self.dtype != bigint and ak_can_cast(other, self.dtype):
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
-            dt = self.dtype.name
+
+            from arkouda.dtypes import dtype as ak_dtype
+
+            dt = ak_dtype(self.dtype).name
             other = self.dtype.type(other)
 
         if dt not in DTypes:
@@ -2202,7 +2212,7 @@ class pdarray:
         else:
             return x.reshape(self.shape)
 
-    def to_list(self) -> List:
+    def to_list(self) -> Any:
         """
         Convert the array to a list, transferring array data from the
         Arkouda server to client-side Python. Note: if the pdarray size exceeds
