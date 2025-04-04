@@ -3,14 +3,13 @@ FROM ubuntu:24.04
 
 USER root
 
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/opt/chapel-2.3.0/bin/linux64-x86_64:/opt/chapel-2.3.0/util:/opt/chapel-2.1.0:/opt/chapel-2.1.0/bin/linux64-x86_64:/opt/chapel-2.1.0/util
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/opt/chapel-2.4.0/bin/linux64-x86_64:/opt/chapel-2.4.0/util:/opt/chapel-2.3.0/bin/linux64-x86_64:/opt/chapel-2.3.0/util:/opt/chapel-2.2.0/bin/linux64-x86_64:/opt/chapel-2.2.0/util:/opt/chapel-2.1.0/bin/linux64-x86_64:/opt/chapel-2.1.0/util:/opt/chapel-2.0.0/bin/linux64-x86_64:/opt/chapel-2.0.0/util
 ENV PATH="/venv/bin:$PATH"
 
 ENV CHPL_HOME=/opt/chapel-2.3.0
 ENV CHPL_RE2=bundled 
 ENV CHPL_GMP=bundled 
 ENV CHPL_COMM=none 
-#ENV CHPL_TARGET_COMPILER=gnu 
 ENV CHPL_TARGET_CPU=native 
 ENV CHPL_LLVM=system
 ENV CHPL_HOST_MEM=jemalloc 
@@ -26,13 +25,14 @@ RUN ln -snf /usr/share/zoneinfo/$CONTAINER_TIMEZONE /etc/localtime && echo $CONT
 
 WORKDIR /opt
 
-RUN echo "test"
 #   Set up environment variables
 COPY bashrc.chpl /opt/
 RUN mv /opt/bashrc.chpl ~/.bashrc.chpl && echo 'source ~/.bashrc.chpl' >> ~/.bashrc
 
 RUN apt-get -y update && apt-get -y upgrade
-RUN apt-get install -y python3.12 python3.12-venv python3-pip python3-virtualenv
+RUN apt-get install -y software-properties-common && add-apt-repository ppa:deadsnakes/ppa
+RUN apt-get install -y python3.10 python3.10-venv python3.10-dev python3.11 python3.11-venv python3.11-dev python3.12 python3.12-venv python3.12-dev python3.13 python3.13-venv python3.13-dev
+RUN apt-get install -y python3-pip python3-virtualenv
 
 #   Install arkouda dependencies
 RUN apt-get update && apt-get install -y -V ca-certificates lsb-release wget libhdf5-dev
@@ -121,7 +121,7 @@ RUN apt-get install -y llvm-dev llvm clang libclang-dev libclang-cpp-dev libedit
 #   Download Chapel source
 #RUN wget https://github.com/chapel-lang/chapel/releases/download/2.0.0/chapel-2.0.0.tar.gz && tar -xvf chapel-2.0.0.tar.gz && cd /opt/chapel-2.0.0 && CHPL_HOME=/opt/chapel-2.0.0 make
 #RUN wget https://github.com/chapel-lang/chapel/releases/download/2.1.0/chapel-2.1.0.tar.gz && tar -xvf chapel-2.1.0.tar.gz && cd /opt/chapel-2.1.0 && CHPL_HOME=/opt/chapel-2.1.0 make
-#RUN wget https://github.com/chapel-lang/chapel/releases/download/2.2.0/chapel-2.2.0.tar.gz && tar -xvf chapel-2.2.0.tar.gz && cd /opt/chapel-2.2.0 && CHPL_HOME=/opt/chapel-2.2.0 make
+RUN wget https://github.com/chapel-lang/chapel/releases/download/2.2.0/chapel-2.2.0.tar.gz && tar -xvf chapel-2.2.0.tar.gz && cd /opt/chapel-2.2.0 && CHPL_HOME=/opt/chapel-2.2.0 make
 RUN wget https://github.com/chapel-lang/chapel/releases/download/2.3.0/chapel-2.3.0.tar.gz && tar -xvf chapel-2.3.0.tar.gz && cd /opt/chapel-2.3.0 && CHPL_HOME=/opt/chapel-2.3.0 make
 
 # install chapel-py
@@ -165,9 +165,8 @@ RUN rm -fr arkouda
 #   Save build environment to the .bashrc.chpl
 RUN env >> ~/.bashrc.chpl
 
-RUN apt-get install -y software-properties-common && add-apt-repository ppa:deadsnakes/ppa
-RUN apt-get install -y python3.10 python3.10-venv python3.10-dev python3.11 python3.11-venv python3.11-dev python3.12 python3.12-venv python3.12-dev python3.13 python3.13-venv python3.13-dev
-RUN pip install --upgrade pip setuptools wheel
+
+#RUN pip install --upgrade pip setuptools wheel
 
 ENTRYPOINT ["/bin/bash", "-l"]
 
