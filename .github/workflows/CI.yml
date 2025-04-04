@@ -72,7 +72,7 @@ jobs:
         (cd /opt/chapel-2.3.0/tools/chapel-py && python3 -m pip install .)
     - name: make chpldoc
       run: |    
-        (cd /opt/chapel && make chpldoc)
+        (cd /opt/chapel-2.3.0 && make chpldoc)
     - name: check chpldoc version
       run: |  
         chpldoc --version
@@ -255,7 +255,7 @@ jobs:
   arkouda_makefile:
     runs-on: ubuntu-24.04
     container:
-      image: ajpotts/almalinux-with-arkouda-deps:1.0.0
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.0
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4     

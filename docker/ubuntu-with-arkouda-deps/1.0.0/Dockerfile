@@ -40,7 +40,6 @@ RUN apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev pyth
 
 #   pip installs should use a virtual environment
 RUN python3 -m venv /venv
-
 RUN python3 -m pip install scikit-build versioneer
 
 
