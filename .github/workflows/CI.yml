@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -36,7 +36,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -67,12 +67,9 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set python3 to Python 3.12
-      run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.12 1
     - name: Install Chapel frontend bindings
       run: |
-        (cd /opt/chapel/tools/chapel-py && python3 -m pip install .)
+        (cd /opt/chapel-2.3.0/tools/chapel-py && python3 -m pip install .)
     - name: make chpldoc
       run: |    
         (cd /opt/chapel && make chpldoc)
@@ -117,10 +114,10 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Set python3 to Python ${matrix.python-version}
-      run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python${{ matrix.python-version }} 1
     # Check Python version
+    - name: Set python version
+      run: |    
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python${{ matrix.python-version }} 1
     - name: Check python version
       run: |
         python3 --version
@@ -135,9 +132,9 @@ jobs:
           echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
           echo "\$(eval \$(call add-path,/opt/deps/install/arrow-install/))" >> Makefile.paths
           echo "\$(eval \$(call add-path,/opt/deps/install/libiconv-install/))" >> Makefile.paths
-          #python3 -m pip install scikit-build   
     - name: Install Chapel frontend bindings
       run: |
+        python3 -m ensurepip --default-pip
         (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)
     - name: Build/Install Arkouda
       run: |
@@ -261,16 +258,13 @@ jobs:
       image: ajpotts/almalinux-with-arkouda-deps:1.0.0
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v4
-    - name: Set python3 to Python 3.12
-      run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.12 1      
+      uses: actions/checkout@v4     
     - name: Check python version
       run: |
         python3 --version
     - name: Install Chapel frontend bindings
       run: |
-        (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)
+        (cd /opt/chapel-2.3.0/tools/chapel-py && python3 -m pip install .)
     - name: Make install-arrow-quick
       uses: nick-fields/retry@v2
       with:
