@@ -424,14 +424,22 @@ If entering keywords,</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.Series.locate">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">locate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.locate" title="Link to this definition">¶</a></dt>
-<dd><p>Lookup values by index label</p>
-<p>The input can be a scalar, a list of scalers, or a list of lists (if the series has a
-MultiIndex). As a special case, if a Series is used as the key, the series labels are
-preserved with its values use as the key.</p>
-<p>Keys will be turned into arkouda arrays as needed.</p>
+<dd><p>Lookup values by index label.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><em>List</em><em>, or </em><em>Tuple</em>) – <p>The key or keys to look up. This can be:
+- A scalar
+- A list of scalars
+- A list of lists (for MultiIndex)
+- A Series (in which case labels are preserved, and its values are used as keys)</p>
+<p>Keys will be converted to Arkouda arrays as needed.</p>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A Series containing the values corresponding to the key.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A Series containing the values corresponding to the key.</p>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -442,14 +450,22 @@ preserved with its values use as the key.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="id0">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">locate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
-<dd><p>Lookup values by index label</p>
-<p>The input can be a scalar, a list of scalers, or a list of lists (if the series has a
-MultiIndex). As a special case, if a Series is used as the key, the series labels are
-preserved with its values use as the key.</p>
-<p>Keys will be turned into arkouda arrays as needed.</p>
+<dd><p>Lookup values by index label.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><em>List</em><em>, or </em><em>Tuple</em>) – <p>The key or keys to look up. This can be:
+- A scalar
+- A list of scalars
+- A list of lists (for MultiIndex)
+- A Series (in which case labels are preserved, and its values are used as keys)</p>
+<p>Keys will be converted to Arkouda arrays as needed.</p>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A Series containing the values corresponding to the key.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A Series containing the values corresponding to the key.</p>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -460,13 +476,16 @@ preserved with its values use as the key.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.Series.sort_index">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">sort_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.sort_index" title="Link to this definition">¶</a></dt>
-<dd><p>Sort the series by its index</p>
+<dd><p>Sort the Series by its index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ascending</strong> (<em>bool</em>) – Sort values in ascending (default) or descending order.</p>
+<dd class="field-odd"><p><strong>ascending</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Whether to sort the index in ascending (default) or descending order.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new Series sorted.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Series sorted by index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -474,13 +493,16 @@ preserved with its values use as the key.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.Series.sort_values">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">sort_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.sort_values" title="Link to this definition">¶</a></dt>
-<dd><p>Sort the series numerically</p>
+<dd><p>Sort the Series by its values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ascending</strong> (<em>bool</em>) – Sort values in ascending (default) or descending order.</p>
+<dd class="field-odd"><p><strong>ascending</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Whether to sort values in ascending (default) or descending order.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new Series sorted smallest to largest</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Series sorted by its values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -491,13 +513,16 @@ preserved with its values use as the key.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.Series.topn">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">topn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.topn" title="Link to this definition">¶</a></dt>
-<dd><p>Return the top values of the series</p>
+<dd><p>Return the top values of the Series.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n</strong> (<em>Number</em><em> of </em><em>values to return</em>)</p>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em><em>, </em><em>default=10</em>) – Number of values to return. The default of 10 returns the top 10 values.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new Series with the top values</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Series containing the top <cite>n</cite> values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -531,14 +556,17 @@ preserved with its values use as the key.</p>
 <dt class="sig sig-object py" id="arkouda.Series.value_counts">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.value_counts" title="Link to this definition">¶</a></dt>
 <dd><p>Return a Series containing counts of unique values.</p>
-<p>The resulting object will be in descending order so that the
-first element is the most frequently-occurring element.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>sort</strong> (<em>Boolean. Whether</em><em> or </em><em>not to sort the results.  Default is true.</em>)</p>
+<dd class="field-odd"><p><strong>sort</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Whether to sort the result by count in descending order. If False,
+the order of the results is not guaranteed.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/series/index.html#arkouda.series.Series" title="arkouda.series.Series"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></a></span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A Series where the index contains the unique values and the values are
+their counts in the original Series.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -560,29 +588,31 @@ first element is the most frequently-occurring element.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.Series.pdconcat">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">pdconcat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.pdconcat" title="Link to this definition">¶</a></dt>
-<dd><p>Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.</p>
-<p>If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping
-is a 2-tuple with the first item being the key(s) and the second being the value.</p>
-<p>If horizontal, each series or grouping must have the same length and the same index. The index of
-the series is converted to a column in the dataframe.  If it is a multi-index,each level is
-converted to a column.</p>
+<dd><p>Concatenate a list of Arkouda Series or grouped arrays, returning a local pandas object.</p>
+<p>If a list of grouped Arkouda arrays is passed, they are converted to Series. Each grouping
+is a 2-tuple with the first item being the key(s) and the second the value.</p>
+<p>If <cite>axis=1</cite> (horizontal), each Series or grouping must have the same length and the same index.
+The index is converted to a column in the resulting DataFrame. If it is a MultiIndex,
+each level is converted to a separate column.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>The list</em><em> of </em><em>series/groupings to concat.</em>)</p></li>
-<li><p><strong>axis</strong> (<em>Whether</em><em> or </em><em>not to do a verticle</em><em> (</em><em>axis=0</em><em>) or </em><em>horizontal</em><em> (</em><em>axis=1</em><em>) </em><em>concatenation</em>)</p></li>
-<li><p><strong>labels</strong> (<em>names to give the columns</em><em> of </em><em>the data frame.</em>)</p></li>
+<li><p><strong>arrays</strong> (<em>List</em>) – A list of Series or groupings (tuples of index and values) to concatenate.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>default=0</em>) – The axis along which to concatenate:
+- 0 = vertical (stack into a Series)
+- 1 = horizontal (align by index into a DataFrame)</p></li>
+<li><p><strong>labels</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id402" title="arkouda.Strings"><em>Strings</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – Names to assign to the resulting columns in the DataFrame.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>]</span></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p><strong>axis=0</strong> (<em>a local PANDAS series</em>)</p></li>
-<li><p><strong>axis=1</strong> (<em>a local PANDAS dataframe</em>)</p></li>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If axis=0: a local pandas Series</p></li>
+<li><p>If axis=1: a local pandas DataFrame</p></li>
 </ul>
 </p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a> or <a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
 </dd>
 </dl>
 </dd></dl>

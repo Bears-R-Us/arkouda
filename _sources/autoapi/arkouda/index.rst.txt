@@ -16055,18 +16055,20 @@ Package Contents
    .. py:method:: add(b: Series) -> Series
 
 
-   .. py:method:: argmax()
+   .. py:method:: argmax() -> Series
 
 
-   .. py:method:: argmin()
+   .. py:method:: argmin() -> Series
 
 
    .. py:property:: at
+      :type: Series
 
-      Accesses entries of a Series by label
 
-      :param key: The key or container of keys to access entries for
-      :type key: pdarray, Strings, Series, list, supported_scalars
+      Accesses entries of a Series by label.
+
+      :returns: An indexer for label-based access to Series entries.
+      :rtype: _LocIndexer
 
 
    .. py:method:: attach(label: str, nkeys: int = 1) -> Series
@@ -16081,31 +16083,35 @@ Package Contents
 
 
 
-   .. py:method:: concat(arrays: List, axis: int = 0, index_labels: Union[List[str], None] = None, value_labels: Union[List[str], None] = None, ordered=False) -> Union[arkouda.dataframe.DataFrame, Series]
+   .. py:method:: concat(arrays: List, axis: int = 0, index_labels: Union[List[str], None] = None, value_labels: Union[List[str], None] = None, ordered: bool = False) -> Union[arkouda.dataframe.DataFrame, Series]
 
-      Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
-              vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each
-              grouping is a 2-tuple with the first item being the key(s) and the second being the value.
-              If horizontal, each series or grouping must have the same length and the same index. The index
-              of the series is converted to a column in the dataframe.  If it is a multi-index,each level is
-              converted to a column.
+      Concatenate a list of Arkouda Series or grouped arrays horizontally or vertically.
 
-              Parameters
-              ----------
-              arrays:  The list of series/groupings to concat.
-              axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
-              index_labels:  column names(s) to label the index.
-              value_labels:  column names to label values of each series.
-              ordered:  If True (default), the arrays will be appended in the order given. If False, array
-                          data may be interleaved in blocks, which can greatly improve performance but
-                          results in non-deterministic ordering of elements.
+      If a list of grouped Arkouda arrays is passed, they are converted to Series. Each grouping
+      is a 2-tuple where the first item is the key(s) and the second is the value. If concatenating
+      horizontally (axis=1), all series/groupings must have the same length and the same index.
+      The index is converted to a column in the resulting DataFrame; if it's a MultiIndex,
+      each level is converted to a separate column.
 
-              Returns
-              -------
-              axis=0: an arkouda series.
-              axis=1: an arkouda dataframe.
+      :param arrays: A list of Series or groupings (tuples of index and values) to concatenate.
+      :type arrays: List
+      :param axis: The axis to concatenate along:
+                   - 0 = vertical (stack series into one)
+                   - 1 = horizontal (align by index and produce a DataFrame)
+      :type axis: int, default=0
+      :param index_labels: Column name(s) to label the index when axis=1.
+      :type index_labels: List of str or None, optional
+      :param value_labels: Column names to label the values of each Series.
+      :type value_labels: List of str or None, optional
+      :param ordered: Unused parameter. Reserved for future support of deterministic
+                      vs. performance-optimized concatenation.
+      :type ordered: bool, default=False
 
+      :returns:
 
+                - If axis=0: a new Series
+                - If axis=1: a new DataFrame
+      :rtype: Series or DataFrame
 
 
 
@@ -16125,7 +16131,7 @@ Package Contents
    .. py:property:: dtype
 
 
-   .. py:method:: fillna(value) -> Series
+   .. py:method:: fillna(value: Union[supported_scalars, Series, pdarray]) -> Series
 
       Fill NA/NaN values using the specified method.
 
@@ -16133,7 +16139,7 @@ Package Contents
                     Series of values specifying which value to use for
                     each index.  Values not in the Series will not be filled.
                     This value cannot be a list.
-      :type value: scalar, Series, or pdarray
+      :type value: supported_scalars, Series, or pdarray
 
       :returns: Object with missing values filled.
       :rtype: Series
@@ -16147,70 +16153,70 @@ Package Contents
       >>> data = ak.Series([1, np.nan, 3, np.nan, 5])
       >>> data
 
-      +----+-----+
-      |    |   0 |
-      +====+=====+
-      |  0 |   1 |
-      +----+-----+
-      |  1 | nan |
-      +----+-----+
-      |  2 |   3 |
-      +----+-----+
-      |  3 | nan |
-      +----+-----+
-      |  4 |   5 |
-      +----+-----+
+      +----+-------+
+      |    |   0   |
+      +====+=======+
+      |  0 |   1.0 |
+      +----+-------+
+      |  1 |   nan |
+      +----+-------+
+      |  2 |   3.0 |
+      +----+-------+
+      |  3 |   nan |
+      +----+-------+
+      |  4 |   5.0 |
+      +----+-------+
 
       >>> fill_values1 = ak.ones(5)
       >>> data.fillna(fill_values1)
 
-      +----+-----+
-      |    |   0 |
-      +====+=====+
-      |  0 |   1 |
-      +----+-----+
-      |  1 |   1 |
-      +----+-----+
-      |  2 |   3 |
-      +----+-----+
-      |  3 |   1 |
-      +----+-----+
-      |  4 |   5 |
-      +----+-----+
+      +----+-------+
+      |    |   0   |
+      +====+=======+
+      |  0 |   1.0 |
+      +----+-------+
+      |  1 |   1.0 |
+      +----+-------+
+      |  2 |   3.0 |
+      +----+-------+
+      |  3 |   1.0 |
+      +----+-------+
+      |  4 |   5.0 |
+      +----+-------+
 
       >>> fill_values2 = Series(ak.ones(5))
       >>> data.fillna(fill_values2)
 
-      +----+-----+
-      |    |   0 |
-      +====+=====+
-      |  0 |   1 |
-      +----+-----+
-      |  1 |   1 |
-      +----+-----+
-      |  2 |   3 |
-      +----+-----+
-      |  3 |   1 |
-      +----+-----+
-      |  4 |   5 |
-      +----+-----+
+      +----+-------+
+      |    |   0   |
+      +====+=======+
+      |  0 |   1.0 |
+      +----+-------+
+      |  1 |   1.0 |
+      +----+-------+
+      |  2 |   3.0 |
+      +----+-------+
+      |  3 |   1.0 |
+      +----+-------+
+      |  4 |   5.0 |
+      +----+-------+
 
       >>> fill_values3 = 100.0
       >>> data.fillna(fill_values3)
 
-      +----+-----+
-      |    |   0 |
-      +====+=====+
-      |  0 |   1 |
-      +----+-----+
-      |  1 | 100 |
-      +----+-----+
-      |  2 |   3 |
-      +----+-----+
-      |  3 | 100 |
-      +----+-----+
-      |  4 |   5 |
-      +----+-----+
+      +----+---------+
+      |    |     0   |
+      +====+=========+
+      |  0 |     1.0 |
+      +----+---------+
+      |  1 |   100.0 |
+      +----+---------+
+      |  2 |     3.0 |
+      +----+---------+
+      |  3 |   100.0 |
+      +----+---------+
+      |  4 |     5.0 |
+      +----+---------+
 
 
 
@@ -16254,7 +16260,19 @@ Package Contents
       >>> s = ak.Series(ak.array([1, 2, 3, np.nan]))
       >>> s
 
-      >>> s.hasnans
+      +----+-------+
+      |    |   0   |
+      +====+=======+
+      |  0 |   1.0 |
+      +----+-------+
+      |  1 |   2.0 |
+      +----+-------+
+      |  2 |   3.0 |
+      +----+-------+
+      |  3 |   nan |
+      +----+-------+
+
+      >>> s.hasnans()
       True
 
 
@@ -16270,20 +16288,20 @@ Package Contents
       :type: Series
 
 
-      Accesses entries of a Series by position
+      Accesses entries of a Series by position.
 
-      :param key: The positions or container of positions to access entries for
-      :type key: int
+      :returns: An indexer for position-based access to a single element.
+      :rtype: _iLocIndexer
 
 
    .. py:property:: iloc
       :type: Series
 
 
-      Accesses entries of a Series by position
+      Accesses entries of a Series by position.
 
-      :param key: The positions or container of positions to access entries for
-      :type key: int
+      :returns: An indexer for position-based access to Series entries.
+      :rtype: _iLocIndexer
 
 
    .. py:method:: is_registered() -> bool
@@ -16307,17 +16325,14 @@ Package Contents
 
    .. py:method:: isin(lst: Union[pdarray, Strings, List]) -> Series
 
-      Find series elements whose values are in the specified list
+      Find Series elements whose values are in the specified list.
 
-              Input
-              -----
-              Either a python list or an arkouda array.
+      :param lst: Either a Python list or an Arkouda array to check membership against.
+      :type lst: pdarray, Strings, or List
 
-              Returns
-              -------
-              Arkouda boolean which is true for elements that are in the list and false otherwise.
-
-
+      :returns: A Series of booleans that is True for elements found in the list,
+                and False otherwise.
+      :rtype: Series
 
 
 
@@ -16397,27 +16412,27 @@ Package Contents
       :type: Series
 
 
-      Accesses entries of a Series by label
+      Accesses entries of a Series by label.
 
-      :param key: The key or container of keys to access entries for
-      :type key: pdarray, Strings, Series, list, supported_scalars
+      :returns: An indexer for label-based access to Series entries.
+      :rtype: _LocIndexer
 
 
    .. py:method:: locate(key: Union[int, pdarray, Index, Series, List, Tuple]) -> Series
 
-      Lookup values by index label
+      Lookup values by index label.
 
-              The input can be a scalar, a list of scalers, or a list of lists (if the series has a
-              MultiIndex). As a special case, if a Series is used as the key, the series labels are
-              preserved with its values use as the key.
+      :param key: The key or keys to look up. This can be:
+                  - A scalar
+                  - A list of scalars
+                  - A list of lists (for MultiIndex)
+                  - A Series (in which case labels are preserved, and its values are used as keys)
 
-              Keys will be turned into arkouda arrays as needed.
+                  Keys will be converted to Arkouda arrays as needed.
+      :type key: int, pdarray, Index, Series, List, or Tuple
 
-              Returns
-              -------
-              A Series containing the values corresponding to the key.
-
-
+      :returns: A Series containing the values corresponding to the key.
+      :rtype: Series
 
 
 
@@ -16442,7 +16457,7 @@ Package Contents
       >>> import arkouda as ak
       >>> ak.connect()
       >>> s = ak.Series(ak.array([2, 3, 2, 3, 4]))
-      >>> display(s)
+      >>> s
 
       +----+-----+
       |    | 0   |
@@ -16482,9 +16497,9 @@ Package Contents
       +====+=====+
       |  0 | b   |
       +----+-----+
-      |  1 | b   |
+      |  1 | d   |
       +----+-----+
-      |  2 | d   |
+      |  2 | b   |
       +----+-----+
       |  3 | d   |
       +----+-----+
@@ -16493,13 +16508,13 @@ Package Contents
 
 
 
-   .. py:method:: max()
+   .. py:method:: max() -> Series
 
 
-   .. py:method:: mean()
+   .. py:method:: mean() -> Series
 
 
-   .. py:method:: memory_usage(index: bool = True, unit='B') -> int
+   .. py:method:: memory_usage(index: bool = True, unit: Literal['B', 'KB', 'MB', 'GB'] = 'B') -> int
 
       Return the memory usage of the Series.
 
@@ -16507,9 +16522,9 @@ Package Contents
       the index.
 
       :param index: Specifies whether to include the memory usage of the Series index.
-      :type index: bool, default True
+      :type index: bool, default=True
       :param unit: Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
-      :type unit: str, default = "B"
+      :type unit: {"B", "KB", "MB", "GB"}, default = "B"
 
       :returns: Bytes of memory consumed.
       :rtype: int
@@ -16537,10 +16552,12 @@ Package Contents
 
 
 
-   .. py:method:: min()
+   .. py:method:: min() -> Series
 
 
    .. py:property:: ndim
+      :type: Series
+
 
 
    .. py:method:: notna() -> Series
@@ -16633,31 +16650,33 @@ Package Contents
 
    .. py:method:: pdconcat(arrays: List, axis: int = 0, labels: Union[Strings, None] = None) -> Union[pd.Series, pd.DataFrame]
 
-      Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.
+      Concatenate a list of Arkouda Series or grouped arrays, returning a local pandas object.
 
-              If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping
-              is a 2-tuple with the first item being the key(s) and the second being the value.
+      If a list of grouped Arkouda arrays is passed, they are converted to Series. Each grouping
+      is a 2-tuple with the first item being the key(s) and the second the value.
 
-              If horizontal, each series or grouping must have the same length and the same index. The index of
-              the series is converted to a column in the dataframe.  If it is a multi-index,each level is
-              converted to a column.
+      If `axis=1` (horizontal), each Series or grouping must have the same length and the same index.
+      The index is converted to a column in the resulting DataFrame. If it is a MultiIndex,
+      each level is converted to a separate column.
 
-              Parameters
-              ----------
-              arrays:  The list of series/groupings to concat.
-              axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
-              labels:  names to give the columns of the data frame.
+      :param arrays: A list of Series or groupings (tuples of index and values) to concatenate.
+      :type arrays: List
+      :param axis: The axis along which to concatenate:
+                   - 0 = vertical (stack into a Series)
+                   - 1 = horizontal (align by index into a DataFrame)
+      :type axis: int, default=0
+      :param labels: Names to assign to the resulting columns in the DataFrame.
+      :type labels: Strings or None, optional
 
-              Returns
-              -------
-              axis=0: a local PANDAS series
-              axis=1: a local PANDAS dataframe
+      :returns:
+
+                - If axis=0: a local pandas Series
+                - If axis=1: a local pandas DataFrame
+      :rtype: Series or DataFrame
 
 
 
-
-
-   .. py:method:: prod()
+   .. py:method:: prod() -> Series
 
 
    .. py:method:: register(user_defined_name: str)
@@ -16691,45 +16710,35 @@ Package Contents
 
    .. py:method:: sort_index(ascending: bool = True) -> Series
 
-      Sort the series by its index
+      Sort the Series by its index.
 
-              Parameters
-              ----------
-              ascending : bool
-                  Sort values in ascending (default) or descending order.
+      :param ascending: Whether to sort the index in ascending (default) or descending order.
+      :type ascending: bool, default=True
 
-              Returns
-              -------
-              A new Series sorted.
-
-
+      :returns: A new Series sorted by index.
+      :rtype: Series
 
 
 
    .. py:method:: sort_values(ascending: bool = True) -> Series
 
-      Sort the series numerically
+      Sort the Series by its values.
 
-              Parameters
-              ----------
-              ascending : bool
-                  Sort values in ascending (default) or descending order.
+      :param ascending: Whether to sort values in ascending (default) or descending order.
+      :type ascending: bool, default=True
 
-              Returns
-              -------
-              A new Series sorted smallest to largest
+      :returns: A new Series sorted by its values.
+      :rtype: Series
 
 
 
-
-
-   .. py:method:: std()
+   .. py:method:: std() -> Series
 
 
    .. py:method:: str_acc(series)
 
 
-   .. py:method:: sum()
+   .. py:method:: sum() -> Series
 
 
    .. py:method:: tail(n: int = 10) -> Series
@@ -16741,18 +16750,15 @@ Package Contents
 
    .. py:method:: to_dataframe(index_labels: Union[List[str], None] = None, value_label: Union[str, None] = None) -> arkouda.dataframe.DataFrame
 
-      Converts series to an arkouda data frame
+      Convert the Series to an Arkouda DataFrame.
 
-              Parameters
-              ----------
-              index_labels:  column names(s) to label the index.
-              value_label:  column name to label values.
+      :param index_labels: Column name(s) to label the index.
+      :type index_labels: list of str or None, optional
+      :param value_label: Column name to label the values.
+      :type value_label: str or None, optional
 
-              Returns
-              -------
-              An arkouda dataframe.
-
-
+      :returns: An Arkouda DataFrame representing the Series.
+      :rtype: DataFrame
 
 
 
@@ -16814,7 +16820,7 @@ Package Contents
 
 
 
-   .. py:method:: to_ndarray()
+   .. py:method:: to_ndarray() -> np.ndarray
 
 
    .. py:method:: to_pandas() -> pd.Series
@@ -16826,17 +16832,13 @@ Package Contents
 
    .. py:method:: topn(n: int = 10) -> Series
 
-      Return the top values of the series
+      Return the top values of the Series.
 
-              Parameters
-              ----------
-              n: Number of values to return
+      :param n: Number of values to return. The default of 10 returns the top 10 values.
+      :type n: int, default=10
 
-              Returns
-              -------
-              A new Series with the top values
-
-
+      :returns: A new Series containing the top `n` values.
+      :rtype: Series
 
 
 
@@ -16863,7 +16865,7 @@ Package Contents
       Also converts list and tuple arguments into pdarrays.
 
       :param key: The key or container of keys that might be used to index into the Series.
-      :type key: Series, pdarray, Strings, Categorical, List, supported_scalars
+      :type key: Series, pdarray, Strings, Categorical, List, supported_scalars, or SegArray
 
       :rtype: The validated key(s), with lists and tuples converted to pdarrays
 
@@ -16881,7 +16883,7 @@ Package Contents
       Also converts list and tuple arguments into pdarrays.
 
       :param val: The value or container of values that might be assigned into the Series.
-      :type val: pdarray, Strings, list, supported_scalars
+      :type val: pdarray, Strings, supported_scalars, or List
 
       :rtype: The validated value, with lists converted to pdarrays
 
@@ -16896,18 +16898,17 @@ Package Contents
 
       Return a Series containing counts of unique values.
 
-              The resulting object will be in descending order so that the
-              first element is the most frequently-occurring element.
+      :param sort: Whether to sort the result by count in descending order. If False,
+                   the order of the results is not guaranteed.
+      :type sort: bool, default=True
 
-              Parameters
-              ----------
-              sort : Boolean. Whether or not to sort the results.  Default is true.
-
-
-
+      :returns: A Series where the index contains the unique values and the values are
+                their counts in the original Series.
+      :rtype: Series
 
 
-   .. py:method:: var()
+
+   .. py:method:: var() -> Series
 
 
 .. py:class:: SeriesDTypes

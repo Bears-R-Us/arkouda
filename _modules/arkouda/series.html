@@ -369,7 +369,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -409,11 +409,11 @@
 <span class="n">supported_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">]</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">is_supported_scalar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_supported_scalar</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">))</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">natural_binary_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">natural_binary_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">op</span> <span class="ow">in</span> <span class="p">{</span>
         <span class="s2">&quot;__add__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">add</span><span class="p">,</span>
         <span class="s2">&quot;__sub__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">sub</span><span class="p">,</span>
@@ -439,7 +439,7 @@
     <span class="k">return</span> <span class="bp">cls</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">unary_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">unary_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">op</span> <span class="ow">in</span> <span class="p">{</span>
         <span class="s2">&quot;__invert__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">invert</span><span class="p">,</span>
         <span class="s2">&quot;__neg__&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">neg</span><span class="p">,</span>
@@ -449,7 +449,7 @@
     <span class="k">return</span> <span class="bp">cls</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">aggregation_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">aggregation_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="s2">&quot;var&quot;</span><span class="p">,</span> <span class="s2">&quot;argmax&quot;</span><span class="p">,</span> <span class="s2">&quot;argmin&quot;</span><span class="p">,</span> <span class="s2">&quot;prod&quot;</span><span class="p">]:</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_aggop</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
     <span class="k">return</span> <span class="bp">cls</span>
@@ -592,7 +592,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        key: Series, pdarray, Strings, Categorical, List, supported_scalars</span>
+<span class="sd">        key : Series, pdarray, Strings, Categorical, List, supported_scalars, or SegArray</span>
 <span class="sd">            The key or container of keys that might be used to index into the Series.</span>
 
 <span class="sd">        Returns</span>
@@ -673,7 +673,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        key: pdarray, Strings, Series, list, supported_scalars</span>
+<span class="sd">        _key : supported_scalars, pdarray, Strings, List, or Series</span>
 <span class="sd">            The key or container of keys to get entries for.</span>
 
 <span class="sd">        Returns</span>
@@ -705,7 +705,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        val: pdarray, Strings, list, supported_scalars</span>
+<span class="sd">        val : pdarray, Strings, supported_scalars, or List</span>
 <span class="sd">            The value or container of values that might be assigned into the Series.</span>
 
 <span class="sd">        Returns</span>
@@ -745,17 +745,21 @@
         <span class="k">return</span> <span class="n">val</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">supported_scalars</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">],</span>
+        <span class="n">val</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">supported_scalars</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets or adds entries in a Series by label.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        key: pdarray, Strings, Series, list, supported_scalars</span>
+<span class="sd">        key : pdarray, Strings, Categorical, Series, List, supported_scalars, or SegArray</span>
 <span class="sd">            The key or container of keys to set entries for.</span>
 
-<span class="sd">        val: pdarray, list, supported_scalars</span>
-<span class="sd">            The values to set/add to the Series.</span>
+<span class="sd">        val : pdarray, Strings, List, or supported_scalars</span>
+<span class="sd">            The value or values to set/add to the Series.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
@@ -789,10 +793,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">val_array</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">],</span> <span class="n">val</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">val_array</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">is_supported_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">val_array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">return</span>
-            <span class="k">if</span> <span class="n">update_count</span> <span class="o">!=</span> <span class="n">val</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">update_count</span> <span class="o">!=</span> <span class="n">val_array</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;Cannot set using a list-like indexer with a different length from the value&quot;</span>
                 <span class="p">)</span>
@@ -801,7 +806,7 @@
 
 <div class="viewcode-block" id="Series.memory_usage">
 <a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.memory_usage">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;KB&quot;</span><span class="p">,</span> <span class="s2">&quot;MB&quot;</span><span class="p">,</span> <span class="s2">&quot;GB&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the memory usage of the Series.</span>
 
@@ -810,9 +815,9 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        index : bool, default True</span>
+<span class="sd">        index : bool, default=True</span>
 <span class="sd">            Specifies whether to include the memory usage of the Series index.</span>
-<span class="sd">        unit : str, default = &quot;B&quot;</span>
+<span class="sd">        unit : {&quot;B&quot;, &quot;KB&quot;, &quot;MB&quot;, &quot;GB&quot;}, default = &quot;B&quot;</span>
 <span class="sd">            Unit to return. One of {&#39;B&#39;, &#39;KB&#39;, &#39;MB&#39;, &#39;GB&#39;}.</span>
 
 <span class="sd">        Returns</span>
@@ -867,59 +872,59 @@
 
 <div class="viewcode-block" id="Series.to_ndarray">
 <a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.to_ndarray">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span></div>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">ndim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ndim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">1</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">loc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_LocIndexer</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Accesses entries of a Series by label</span>
+<span class="sd">        Accesses entries of a Series by label.</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        key: pdarray, Strings, Series, list, supported_scalars</span>
-<span class="sd">            The key or container of keys to access entries for</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        _LocIndexer</span>
+<span class="sd">            An indexer for label-based access to Series entries.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">_LocIndexer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">at</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_LocIndexer</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Accesses entries of a Series by label</span>
+<span class="sd">        Accesses entries of a Series by label.</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        key: pdarray, Strings, Series, list, supported_scalars</span>
-<span class="sd">            The key or container of keys to access entries for</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        _LocIndexer</span>
+<span class="sd">            An indexer for label-based access to Series entries.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">_LocIndexer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">iloc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_iLocIndexer</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Accesses entries of a Series by position</span>
+<span class="sd">        Accesses entries of a Series by position.</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        key: int</span>
-<span class="sd">            The positions or container of positions to access entries for</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        _iLocIndexer</span>
+<span class="sd">            An indexer for position-based access to Series entries.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">_iLocIndexer</span><span class="p">(</span><span class="s2">&quot;iloc&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">iat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_iLocIndexer</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Accesses entries of a Series by position</span>
+<span class="sd">        Accesses entries of a Series by position.</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        key: int</span>
-<span class="sd">            The positions or container of positions to access entries for</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        _iLocIndexer</span>
+<span class="sd">            An indexer for position-based access to a single element.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">_iLocIndexer</span><span class="p">(</span><span class="s2">&quot;iat&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
@@ -927,27 +932,31 @@
     <span class="n">str_acc</span> <span class="o">=</span> <span class="n">CachedAccessor</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="n">StringAccessor</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="c1"># mimic the pandas return of series shape property</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">,)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span>
 
 <div class="viewcode-block" id="Series.isin">
 <a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.isin">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">isin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">List</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find series elements whose values are in the specified list</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find Series elements whose values are in the specified list.</span>
 
-<span class="sd">        Input</span>
-<span class="sd">        -----</span>
-<span class="sd">        Either a python list or an arkouda array.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lst : pdarray, Strings, or List</span>
+<span class="sd">            Either a Python list or an Arkouda array to check membership against.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Arkouda boolean which is true for elements that are in the list and false otherwise.</span>
+<span class="sd">        Series</span>
+<span class="sd">            A Series of booleans that is True for elements found in the list,</span>
+<span class="sd">            and False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">lst</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
@@ -960,17 +969,24 @@
 <a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.locate">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">locate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Index</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lookup values by index label</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lookup values by index label.</span>
 
-<span class="sd">        The input can be a scalar, a list of scalers, or a list of lists (if the series has a</span>
-<span class="sd">        MultiIndex). As a special case, if a Series is used as the key, the series labels are</span>
-<span class="sd">        preserved with its values use as the key.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : int, pdarray, Index, Series, List, or Tuple</span>
+<span class="sd">            The key or keys to look up. This can be:</span>
+<span class="sd">            - A scalar</span>
+<span class="sd">            - A list of scalars</span>
+<span class="sd">            - A list of lists (for MultiIndex)</span>
+<span class="sd">            - A Series (in which case labels are preserved, and its values are used as keys)</span>
 
-<span class="sd">        Keys will be turned into arkouda arrays as needed.</span>
+<span class="sd">            Keys will be converted to Arkouda arrays as needed.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        A Series containing the values corresponding to the key.</span>
+<span class="sd">        Series</span>
+<span class="sd">            A Series containing the values corresponding to the key.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
             <span class="c1"># special case, keep the index values of the Series, and lookup the values</span>
@@ -1008,7 +1024,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_make_binop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">operator</span><span class="p">):</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">_check_aligned</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
                     <span class="k">return</span> <span class="bp">cls</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">operator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span><span class="p">)))</span>
@@ -1024,14 +1040,14 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_make_unaryop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">operator</span><span class="p">):</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">unaryop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">unaryop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">operator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)))</span>
 
         <span class="k">return</span> <span class="n">unaryop</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_make_aggop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">aggop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">aggop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="p">)()</span>
 
         <span class="k">return</span> <span class="n">aggop</span>
@@ -1052,15 +1068,18 @@
 <a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.topn">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">topn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the top values of the series</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the top values of the Series.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        n: Number of values to return</span>
+<span class="sd">        n : int, default=10</span>
+<span class="sd">            Number of values to return. The default of 10 returns the top 10 values.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        A new Series with the top values</span>
+<span class="sd">        Series</span>
+<span class="sd">            A new Series containing the top `n` values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span>
         <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1085,16 +1104,18 @@
 <a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.sort_index">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sort_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort the series by its index</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sort the Series by its index.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        ascending : bool</span>
-<span class="sd">            Sort values in ascending (default) or descending order.</span>
+<span class="sd">        ascending : bool, default=True</span>
+<span class="sd">            Whether to sort the index in ascending (default) or descending order.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        A new Series sorted.</span>
+<span class="sd">        Series</span>
+<span class="sd">            A new Series sorted by index.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span>
@@ -1105,16 +1126,18 @@
 <a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.sort_values">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sort_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort the series numerically</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sort the Series by its values.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        ascending : bool</span>
-<span class="sd">            Sort values in ascending (default) or descending order.</span>
+<span class="sd">        ascending : bool, default=True</span>
+<span class="sd">            Whether to sort values in ascending (default) or descending order.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        A new Series sorted smallest to largest</span>
+<span class="sd">        Series</span>
+<span class="sd">            A new Series sorted by its values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ascending</span><span class="p">:</span>
@@ -1256,14 +1279,20 @@
 <a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.value_counts">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">value_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sort</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a Series containing counts of unique values.</span>
-
-<span class="sd">        The resulting object will be in descending order so that the</span>
-<span class="sd">        first element is the most frequently-occurring element.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a Series containing counts of unique values.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        sort : Boolean. Whether or not to sort the results.  Default is true.</span>
+<span class="sd">        sort : bool, default=True</span>
+<span class="sd">            Whether to sort the result by count in descending order. If False,</span>
+<span class="sd">            the order of the results is not guaranteed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Series</span>
+<span class="sd">            A Series where the index contains the unique values and the values are</span>
+<span class="sd">            their counts in the original Series.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">get_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
@@ -1300,16 +1329,20 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dataframe</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">index_labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">value_label</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">arkouda</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts series to an arkouda data frame</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the Series to an Arkouda DataFrame.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        index_labels:  column names(s) to label the index.</span>
-<span class="sd">        value_label:  column name to label values.</span>
+<span class="sd">        index_labels : list of str or None, optional</span>
+<span class="sd">            Column name(s) to label the index.</span>
+<span class="sd">        value_label : str or None, optional</span>
+<span class="sd">            Column name to label the values.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        An arkouda dataframe.</span>
+<span class="sd">        DataFrame</span>
+<span class="sd">            An Arkouda DataFrame representing the Series.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">list_value_label</span> <span class="o">=</span> <span class="p">[</span><span class="n">value_label</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value_label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">value_label</span>
 
@@ -1565,29 +1598,38 @@
         <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">index_labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">value_labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">ordered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">arkouda</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Series</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or</span>
-<span class="sd">        vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each</span>
-<span class="sd">        grouping is a 2-tuple with the first item being the key(s) and the second being the value.</span>
-<span class="sd">        If horizontal, each series or grouping must have the same length and the same index. The index</span>
-<span class="sd">        of the series is converted to a column in the dataframe.  If it is a multi-index,each level is</span>
-<span class="sd">        converted to a column.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Concatenate a list of Arkouda Series or grouped arrays horizontally or vertically.</span>
+
+<span class="sd">        If a list of grouped Arkouda arrays is passed, they are converted to Series. Each grouping</span>
+<span class="sd">        is a 2-tuple where the first item is the key(s) and the second is the value. If concatenating</span>
+<span class="sd">        horizontally (axis=1), all series/groupings must have the same length and the same index.</span>
+<span class="sd">        The index is converted to a column in the resulting DataFrame; if it&#39;s a MultiIndex,</span>
+<span class="sd">        each level is converted to a separate column.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        arrays:  The list of series/groupings to concat.</span>
-<span class="sd">        axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation</span>
-<span class="sd">        index_labels:  column names(s) to label the index.</span>
-<span class="sd">        value_labels:  column names to label values of each series.</span>
-<span class="sd">        ordered:  If True (default), the arrays will be appended in the order given. If False, array</span>
-<span class="sd">                    data may be interleaved in blocks, which can greatly improve performance but</span>
-<span class="sd">                    results in non-deterministic ordering of elements.</span>
+<span class="sd">        arrays : List</span>
+<span class="sd">            A list of Series or groupings (tuples of index and values) to concatenate.</span>
+<span class="sd">        axis : int, default=0</span>
+<span class="sd">            The axis to concatenate along:</span>
+<span class="sd">            - 0 = vertical (stack series into one)</span>
+<span class="sd">            - 1 = horizontal (align by index and produce a DataFrame)</span>
+<span class="sd">        index_labels : List of str or None, optional</span>
+<span class="sd">            Column name(s) to label the index when axis=1.</span>
+<span class="sd">        value_labels : List of str or None, optional</span>
+<span class="sd">            Column names to label the values of each Series.</span>
+<span class="sd">        ordered : bool, default=False</span>
+<span class="sd">            Unused parameter. Reserved for future support of deterministic</span>
+<span class="sd">            vs. performance-optimized concatenation.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        axis=0: an arkouda series.</span>
-<span class="sd">        axis=1: an arkouda dataframe.</span>
+<span class="sd">        Series or DataFrame</span>
+<span class="sd">            - If axis=0: a new Series</span>
+<span class="sd">            - If axis=1: a new DataFrame</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -1627,7 +1669,7 @@
 
             <span class="k">return</span> <span class="n">arkouda</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Verticle concat</span>
+            <span class="c1"># Vertical concat</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
             <span class="n">v</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
             <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
@@ -1664,7 +1706,7 @@
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; ak.connect()</span>
 <span class="sd">        &gt;&gt;&gt; s = ak.Series(ak.array([2, 3, 2, 3, 4]))</span>
-<span class="sd">        &gt;&gt;&gt; display(s)</span>
+<span class="sd">        &gt;&gt;&gt; s</span>
 
 <span class="sd">        +----+-----+</span>
 <span class="sd">        |    | 0   |</span>
@@ -1704,9 +1746,9 @@
 <span class="sd">        +====+=====+</span>
 <span class="sd">        |  0 | b   |</span>
 <span class="sd">        +----+-----+</span>
-<span class="sd">        |  1 | b   |</span>
+<span class="sd">        |  1 | d   |</span>
 <span class="sd">        +----+-----+</span>
-<span class="sd">        |  2 | d   |</span>
+<span class="sd">        |  2 | b   |</span>
 <span class="sd">        +----+-----+</span>
 <span class="sd">        |  3 | d   |</span>
 <span class="sd">        +----+-----+</span>
@@ -1921,7 +1963,19 @@
 <span class="sd">        &gt;&gt;&gt; s = ak.Series(ak.array([1, 2, 3, np.nan]))</span>
 <span class="sd">        &gt;&gt;&gt; s</span>
 
-<span class="sd">        &gt;&gt;&gt; s.hasnans</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |    |   0   |</span>
+<span class="sd">        +====+=======+</span>
+<span class="sd">        |  0 |   1.0 |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  1 |   2.0 |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  2 |   3.0 |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  3 |   nan |</span>
+<span class="sd">        +----+-------+</span>
+
+<span class="sd">        &gt;&gt;&gt; s.hasnans()</span>
 <span class="sd">        True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">is_float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">):</span>
@@ -1934,13 +1988,13 @@
 
 <div class="viewcode-block" id="Series.fillna">
 <a class="viewcode-back" href="../../autoapi/arkouda/series/index.html#arkouda.Series.fillna">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fillna</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fillna</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">supported_scalars</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fill NA/NaN values using the specified method.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        value : scalar, Series, or pdarray</span>
+<span class="sd">        value : supported_scalars, Series, or pdarray</span>
 <span class="sd">            Value to use to fill holes (e.g. 0), alternately a</span>
 <span class="sd">            Series of values specifying which value to use for</span>
 <span class="sd">            each index.  Values not in the Series will not be filled.</span>
@@ -1961,70 +2015,70 @@
 <span class="sd">        &gt;&gt;&gt; data = ak.Series([1, np.nan, 3, np.nan, 5])</span>
 <span class="sd">        &gt;&gt;&gt; data</span>
 
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |    |   0 |</span>
-<span class="sd">        +====+=====+</span>
-<span class="sd">        |  0 |   1 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  1 | nan |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  2 |   3 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  3 | nan |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  4 |   5 |</span>
-<span class="sd">        +----+-----+</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |    |   0   |</span>
+<span class="sd">        +====+=======+</span>
+<span class="sd">        |  0 |   1.0 |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  1 |   nan |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  2 |   3.0 |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  3 |   nan |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  4 |   5.0 |</span>
+<span class="sd">        +----+-------+</span>
 
 <span class="sd">        &gt;&gt;&gt; fill_values1 = ak.ones(5)</span>
 <span class="sd">        &gt;&gt;&gt; data.fillna(fill_values1)</span>
 
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |    |   0 |</span>
-<span class="sd">        +====+=====+</span>
-<span class="sd">        |  0 |   1 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  1 |   1 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  2 |   3 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  3 |   1 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  4 |   5 |</span>
-<span class="sd">        +----+-----+</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |    |   0   |</span>
+<span class="sd">        +====+=======+</span>
+<span class="sd">        |  0 |   1.0 |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  1 |   1.0 |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  2 |   3.0 |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  3 |   1.0 |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  4 |   5.0 |</span>
+<span class="sd">        +----+-------+</span>
 
 <span class="sd">        &gt;&gt;&gt; fill_values2 = Series(ak.ones(5))</span>
 <span class="sd">        &gt;&gt;&gt; data.fillna(fill_values2)</span>
 
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |    |   0 |</span>
-<span class="sd">        +====+=====+</span>
-<span class="sd">        |  0 |   1 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  1 |   1 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  2 |   3 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  3 |   1 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  4 |   5 |</span>
-<span class="sd">        +----+-----+</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |    |   0   |</span>
+<span class="sd">        +====+=======+</span>
+<span class="sd">        |  0 |   1.0 |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  1 |   1.0 |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  2 |   3.0 |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  3 |   1.0 |</span>
+<span class="sd">        +----+-------+</span>
+<span class="sd">        |  4 |   5.0 |</span>
+<span class="sd">        +----+-------+</span>
 
 <span class="sd">        &gt;&gt;&gt; fill_values3 = 100.0</span>
 <span class="sd">        &gt;&gt;&gt; data.fillna(fill_values3)</span>
 
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |    |   0 |</span>
-<span class="sd">        +====+=====+</span>
-<span class="sd">        |  0 |   1 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  1 | 100 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  2 |   3 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  3 | 100 |</span>
-<span class="sd">        +----+-----+</span>
-<span class="sd">        |  4 |   5 |</span>
-<span class="sd">        +----+-----+</span>
+<span class="sd">        +----+---------+</span>
+<span class="sd">        |    |     0   |</span>
+<span class="sd">        +====+=========+</span>
+<span class="sd">        |  0 |     1.0 |</span>
+<span class="sd">        +----+---------+</span>
+<span class="sd">        |  1 |   100.0 |</span>
+<span class="sd">        +----+---------+</span>
+<span class="sd">        |  2 |     3.0 |</span>
+<span class="sd">        +----+---------+</span>
+<span class="sd">        |  3 |   100.0 |</span>
+<span class="sd">        +----+---------+</span>
+<span class="sd">        |  4 |     5.0 |</span>
+<span class="sd">        +----+---------+</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">where</span>
@@ -2045,25 +2099,32 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">pdconcat</span><span class="p">(</span>
         <span class="n">arrays</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Concatenate a list of Arkouda Series or grouped arrays, returning a local pandas object.</span>
 
-<span class="sd">        If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping</span>
-<span class="sd">        is a 2-tuple with the first item being the key(s) and the second being the value.</span>
+<span class="sd">        If a list of grouped Arkouda arrays is passed, they are converted to Series. Each grouping</span>
+<span class="sd">        is a 2-tuple with the first item being the key(s) and the second the value.</span>
 
-<span class="sd">        If horizontal, each series or grouping must have the same length and the same index. The index of</span>
-<span class="sd">        the series is converted to a column in the dataframe.  If it is a multi-index,each level is</span>
-<span class="sd">        converted to a column.</span>
+<span class="sd">        If `axis=1` (horizontal), each Series or grouping must have the same length and the same index.</span>
+<span class="sd">        The index is converted to a column in the resulting DataFrame. If it is a MultiIndex,</span>
+<span class="sd">        each level is converted to a separate column.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        arrays:  The list of series/groupings to concat.</span>
-<span class="sd">        axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation</span>
-<span class="sd">        labels:  names to give the columns of the data frame.</span>
+<span class="sd">        arrays : List</span>
+<span class="sd">            A list of Series or groupings (tuples of index and values) to concatenate.</span>
+<span class="sd">        axis : int, default=0</span>
+<span class="sd">            The axis along which to concatenate:</span>
+<span class="sd">            - 0 = vertical (stack into a Series)</span>
+<span class="sd">            - 1 = horizontal (align by index into a DataFrame)</span>
+<span class="sd">        labels : Strings or None, optional</span>
+<span class="sd">            Names to assign to the resulting columns in the DataFrame.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        axis=0: a local PANDAS series</span>
-<span class="sd">        axis=1: a local PANDAS dataframe</span>
+<span class="sd">        Series or DataFrame</span>
+<span class="sd">            - If axis=0: a local pandas Series</span>
+<span class="sd">            - If axis=1: a local pandas DataFrame</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Array length must be non-zero&quot;</span><span class="p">)</span>
@@ -2108,7 +2169,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">method_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="n">series</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">key</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
