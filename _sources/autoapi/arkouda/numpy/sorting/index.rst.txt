@@ -19,6 +19,7 @@ Functions
 
    arkouda.numpy.sorting.argsort
    arkouda.numpy.sorting.coargsort
+   arkouda.numpy.sorting.searchsorted
    arkouda.numpy.sorting.sort
 
 
@@ -104,6 +105,40 @@ Module Contents
    array([0 0 1 1])
    >>> b[perm]
    array([0 1 0 1])
+
+
+.. py:function:: searchsorted(a: arkouda.numpy.pdarrayclass.pdarray, v: Union[arkouda.numpy.dtypes.int_scalars, arkouda.numpy.dtypes.float64, arkouda.numpy.dtypes.bigint, arkouda.numpy.pdarrayclass.pdarray], side: Literal['left', 'right'] = 'left') -> Union[int, arkouda.numpy.pdarrayclass.pdarray]
+
+   Find indices where elements should be inserted to maintain order.
+
+   Find the indices into a sorted array `a` such that, if the corresponding
+   elements in `v` were inserted before the indices, the order of `a` would be preserved.
+
+   :param a: 1-D input array. Must be sorted in ascending order. `sorter` is not currently supported.
+   :type a: pdarray
+   :param v: Values to insert into `a`. Can be a scalar or array-like.
+   :type v: int_scalars, float64, bigint, or pdarray
+   :param side: If 'left', the index of the first suitable location found is given.
+                If 'right', return the last such index.
+   :type side: {'left', 'right'}, default='left'
+
+   :returns: **indices** -- If `v` is an array, returns an array of insertion points with the same shape.
+             If `v` is a scalar, returns a single integer index.
+   :rtype: int or pdarray
+
+   :raises ValueError: If `a` has more than one dimension.
+   :raises TypeError: If `a` has an unsupported dtype (i.e., not int64, uint64, bigint, or float64).
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([11, 12, 13, 14, 15])
+   >>> ak.searchsorted(a, 13)
+   2
+   >>> ak.searchsorted(a, 13, side='right')
+   3
+   >>> v = ak.array([-10, 20, 12, 13])
+   >>> ak.searchsorted(a, v)
+   array([0 5 1 2])
 
 
 .. py:function:: sort(pda: arkouda.numpy.pdarrayclass.pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = -1) -> arkouda.numpy.pdarrayclass.pdarray

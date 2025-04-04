@@ -396,7 +396,10 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.sorting.coargsort" title="arkouda.numpy.sorting.coargsort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coargsort</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the permutation that groups the rows (left-to-right), if the</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.sorting.sort" title="arkouda.numpy.sorting.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.sorting.searchsorted" title="arkouda.numpy.sorting.searchsorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">searchsorted</span></code></a>(→ Union[int, ...)</p></td>
+<td><p>Find indices where elements should be inserted to maintain order.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.sorting.sort" title="arkouda.numpy.sorting.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return a sorted copy of the array. Only sorts numeric arrays;</p></td>
 </tr>
 </tbody>
@@ -502,6 +505,48 @@ but not lexicographic ordering of those groups.</p>
 <span class="go">array([0 0 1 1])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span>
 <span class="go">array([0 1 0 1])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.sorting.searchsorted">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.sorting.</span></span><span class="sig-name descname"><span class="pre">searchsorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.float64" title="arkouda.numpy.dtypes.float64"><span class="pre">arkouda.numpy.dtypes.float64</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><span class="pre">arkouda.numpy.dtypes.bigint</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">side</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'left'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'right'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'left'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/sorting.html#searchsorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.sorting.searchsorted" title="Link to this definition">¶</a></dt>
+<dd><p>Find indices where elements should be inserted to maintain order.</p>
+<p>Find the indices into a sorted array <cite>a</cite> such that, if the corresponding
+elements in <cite>v</cite> were inserted before the indices, the order of <cite>a</cite> would be preserved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – 1-D input array. Must be sorted in ascending order. <cite>sorter</cite> is not currently supported.</p></li>
+<li><p><strong>v</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.float64" title="arkouda.float64"><em>float64</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.bigint" title="arkouda.bigint"><em>bigint</em></a><em>, or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Values to insert into <cite>a</cite>. Can be a scalar or array-like.</p></li>
+<li><p><strong>side</strong> (<em>{'left'</em><em>, </em><em>'right'}</em><em>, </em><em>default='left'</em>) – If ‘left’, the index of the first suitable location found is given.
+If ‘right’, return the last such index.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>indices</strong> – If <cite>v</cite> is an array, returns an array of insertion points with the same shape.
+If <cite>v</cite> is a scalar, returns a single integer index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int or <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If <cite>a</cite> has more than one dimension.</p></li>
+<li><p><strong>TypeError</strong> – If <cite>a</cite> has an unsupported dtype (i.e., not int64, uint64, bigint, or float64).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+<span class="go">array([0 5 1 2])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -614,6 +659,7 @@ to non-uniformity in data but communication intensive.</p>
 <li><a class="reference internal" href="#arkouda.numpy.sorting.SortingAlgorithm"><code class="docutils literal notranslate"><span class="pre">SortingAlgorithm</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.sorting.argsort"><code class="docutils literal notranslate"><span class="pre">argsort()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.sorting.coargsort"><code class="docutils literal notranslate"><span class="pre">coargsort()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.sorting.searchsorted"><code class="docutils literal notranslate"><span class="pre">searchsorted()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.sorting.sort"><code class="docutils literal notranslate"><span class="pre">sort()</span></code></a></li>
 </ul>
 </li>
