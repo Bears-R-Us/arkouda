@@ -15,7 +15,7 @@ def shape(a: Union[pdarray, Strings, all_scalars]) -> Tuple:
 
     Parameters
     ----------
-    a : pdarray
+    a : pdarray, Strings, or all_scalars
         Input array.
 
     Returns
