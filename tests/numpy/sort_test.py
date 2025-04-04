@@ -2,7 +2,9 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+from arkouda.client import get_array_ranks
 from arkouda.numpy.sorting import SortingAlgorithm
+from arkouda.testing import assert_arkouda_array_equivalent
 
 NUMERIC_AND_BIGINT_TYPES = ["int64", "float64", "uint64", "bigint"]
 
@@ -119,3 +121,43 @@ class TestSort:
         pos_arr = np.array([3.14, np.inf, np.nan, np.inf, 7.7, 0.0, 3.14, 8])
         for npa in neg_arr, pos_arr:
             assert np.allclose(np.sort(npa), ak.sort(ak.array(npa), algo).to_ndarray(), equal_nan=True)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [ak.float64, ak.uint64, ak.int64, ak.bigint])
+    @pytest.mark.parametrize("v_shape", [(), (10,), (4, 5), (2, 2, 3)])
+    @pytest.mark.parametrize("side", ["left", "right"])
+    def test_searchsorted(self, size, dtype, v_shape, side):
+        low = 0
+        high = 100
+        if dtype == ak.bigint:
+            shift = 2**200
+            dtype_ = ak.int64
+        else:
+            shift = 0
+            dtype_ = dtype
+        if v_shape == ():
+            v = ak.randint(low=low, high=high, size=1, dtype=dtype_, seed=pytest.seed)[0]
+            if dtype != ak.bigint:
+                v = dtype(v)
+            else:
+                v = int(v) + shift
+        else:
+            if len(v_shape) not in get_array_ranks():
+                pytest.skip(f"Server not compiled for rank {len(v_shape)}")
+            else:
+                v = ak.randint(low=low, high=high, size=v_shape, dtype=dtype_, seed=pytest.seed)
+                v = ak.array(v, dtype) + shift
+        a = ak.randint(low=low, high=high, size=size, dtype=dtype_, seed=pytest.seed)
+        a = ak.sort(a)
+        a = ak.array(a, dtype) + shift
+        np_a = a.to_ndarray()
+        if isinstance(v, ak.pdarray):
+            np_v = v.to_ndarray()
+        else:
+            np_v = v
+        np_output = np.searchsorted(np_a, np_v, side)
+        ak_output = ak.searchsorted(a, v, side)
+        if v_shape == ():
+            assert ak_output == np_output
+        else:
+            assert_arkouda_array_equivalent(ak_output, np_output)

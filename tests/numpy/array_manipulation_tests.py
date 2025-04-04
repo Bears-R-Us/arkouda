@@ -69,4 +69,4 @@ class TestManipulationFunctions:
                 assert_arkouda_array_equivalent(n_delete, a_delete)
 
         else:
-            pytest.skip(f"Sever not compiled for rank {num_dims}")
+            pytest.skip(f"Server not compiled for rank {num_dims}")
