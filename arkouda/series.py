@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import operator
-from typing import List, Optional, Tuple, Union, cast
+from typing import List, Literal, Optional, Tuple, Union, cast
 
 import numpy as np
 import pandas as pd
@@ -42,11 +42,11 @@ __all__ = [
 supported_scalars = Union[int, float, bool, str, np.int64, np.float64, np.bool_, np.str_]
 
 
-def is_supported_scalar(x):
+def is_supported_scalar(x) -> bool:
     return isinstance(x, (int, float, bool, str, np.int64, np.float64, np.bool_, np.str_))
 
 
-def natural_binary_operators(cls):
+def natural_binary_operators(cls) -> type:
     for name, op in {
         "__add__": operator.add,
         "__sub__": operator.sub,
@@ -72,7 +72,7 @@ def natural_binary_operators(cls):
     return cls
 
 
-def unary_operators(cls):
+def unary_operators(cls) -> type:
     for name, op in {
         "__invert__": operator.invert,
         "__neg__": operator.neg,
@@ -82,7 +82,7 @@ def unary_operators(cls):
     return cls
 
 
-def aggregation_operators(cls):
+def aggregation_operators(cls) -> type:
     for name in ["max", "min", "mean", "sum", "std", "var", "argmax", "argmin", "prod"]:
         setattr(cls, name, cls._make_aggop(name))
     return cls
@@ -221,7 +221,7 @@ class Series:
 
         Parameters
         ----------
-        key: Series, pdarray, Strings, Categorical, List, supported_scalars
+        key : Series, pdarray, Strings, Categorical, List, supported_scalars, or SegArray
             The key or container of keys that might be used to index into the Series.
 
         Returns
@@ -301,7 +301,7 @@ class Series:
 
         Parameters
         ----------
-        key: pdarray, Strings, Series, list, supported_scalars
+        _key : supported_scalars, pdarray, Strings, List, or Series
             The key or container of keys to get entries for.
 
         Returns
@@ -331,7 +331,7 @@ class Series:
 
         Parameters
         ----------
-        val: pdarray, Strings, list, supported_scalars
+        val : pdarray, Strings, supported_scalars, or List
             The value or container of values that might be assigned into the Series.
 
         Returns
@@ -370,17 +370,21 @@ class Series:
             raise TypeError("cannot set with unsupported value type: {}".format(type(val)))
         return val
 
-    def __setitem__(self, key, val):
+    def __setitem__(
+        self,
+        key: Union[pdarray, Strings, Categorical, Series, List, supported_scalars, SegArray],
+        val: Union[pdarray, Strings, List, supported_scalars],
+    ) -> None:
         """
         Sets or adds entries in a Series by label.
 
         Parameters
         ----------
-        key: pdarray, Strings, Series, list, supported_scalars
+        key : pdarray, Strings, Categorical, Series, List, supported_scalars, or SegArray
             The key or container of keys to set entries for.
 
-        val: pdarray, list, supported_scalars
-            The values to set/add to the Series.
+        val : pdarray, Strings, List, or supported_scalars
+            The value or values to set/add to the Series.
 
         Raises
         ------
@@ -414,17 +418,18 @@ class Series:
             self.values[indices] = val
             return
         else:
-            if val.size == 1 and is_supported_scalar(key):
-                self.values[indices] = val[0]
+            val_array = cast(Union[pdarray, Strings], val)
+            if val_array.size == 1 and is_supported_scalar(key):
+                self.values[indices] = val_array[0]
                 return
-            if update_count != val.size:
+            if update_count != val_array.size:
                 raise ValueError(
                     "Cannot set using a list-like indexer with a different length from the value"
                 )
             self.values[indices] = val
             return
 
-    def memory_usage(self, index: bool = True, unit="B") -> int:
+    def memory_usage(self, index: bool = True, unit: Literal["B", "KB", "MB", "GB"] = "B") -> int:
         """
         Return the memory usage of the Series.
 
@@ -433,9 +438,9 @@ class Series:
 
         Parameters
         ----------
-        index : bool, default True
+        index : bool, default=True
             Specifies whether to include the memory usage of the Series index.
-        unit : str, default = "B"
+        unit : {"B", "KB", "MB", "GB"}, default = "B"
             Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
 
         Returns
@@ -484,58 +489,58 @@ class Series:
         tf, counts = GroupBy(self.index.values).size()
         return counts.size != self.index.size
 
-    def to_ndarray(self):
+    def to_ndarray(self) -> np.ndarray:
         return self.values.to_ndarray()
 
     @property
-    def ndim(self):
+    def ndim(self) -> int:
         return 1
 
     @property
     def loc(self) -> _LocIndexer:
         """
-        Accesses entries of a Series by label
+        Accesses entries of a Series by label.
 
-        Parameters
-        ----------
-        key: pdarray, Strings, Series, list, supported_scalars
-            The key or container of keys to access entries for
+        Returns
+        -------
+        _LocIndexer
+            An indexer for label-based access to Series entries.
         """
         return _LocIndexer(self)
 
     @property
     def at(self) -> _LocIndexer:
         """
-        Accesses entries of a Series by label
+        Accesses entries of a Series by label.
 
-        Parameters
-        ----------
-        key: pdarray, Strings, Series, list, supported_scalars
-            The key or container of keys to access entries for
+        Returns
+        -------
+        _LocIndexer
+            An indexer for label-based access to Series entries.
         """
         return _LocIndexer(self)
 
     @property
     def iloc(self) -> _iLocIndexer:
         """
-        Accesses entries of a Series by position
+        Accesses entries of a Series by position.
 
-        Parameters
-        ----------
-        key: int
-            The positions or container of positions to access entries for
+        Returns
+        -------
+        _iLocIndexer
+            An indexer for position-based access to Series entries.
         """
         return _iLocIndexer("iloc", self)
 
     @property
     def iat(self) -> _iLocIndexer:
         """
-        Accesses entries of a Series by position
+        Accesses entries of a Series by position.
 
-        Parameters
-        ----------
-        key: int
-            The positions or container of positions to access entries for
+        Returns
+        -------
+        _iLocIndexer
+            An indexer for position-based access to a single element.
         """
         return _iLocIndexer("iat", self)
 
@@ -543,25 +548,29 @@ class Series:
     str_acc = CachedAccessor("str", StringAccessor)
 
     @property
-    def shape(self):
+    def shape(self) -> Tuple[int]:
         # mimic the pandas return of series shape property
         return (self.values.size,)
 
     @property
-    def dtype(self):
+    def dtype(self) -> np.dtype:
         return self.values.dtype
 
     @typechecked
     def isin(self, lst: Union[pdarray, Strings, List]) -> Series:
-        """Find series elements whose values are in the specified list
+        """
+        Find Series elements whose values are in the specified list.
 
-        Input
-        -----
-        Either a python list or an arkouda array.
+        Parameters
+        ----------
+        lst : pdarray, Strings, or List
+            Either a Python list or an Arkouda array to check membership against.
 
         Returns
         -------
-        Arkouda boolean which is true for elements that are in the list and false otherwise.
+        Series
+            A Series of booleans that is True for elements found in the list,
+            and False otherwise.
         """
         if isinstance(lst, list):
             lst = array(lst)
@@ -571,17 +580,24 @@ class Series:
 
     @typechecked
     def locate(self, key: Union[int, pdarray, Index, Series, List, Tuple]) -> Series:
-        """Lookup values by index label
+        """
+        Lookup values by index label.
 
-        The input can be a scalar, a list of scalers, or a list of lists (if the series has a
-        MultiIndex). As a special case, if a Series is used as the key, the series labels are
-        preserved with its values use as the key.
+        Parameters
+        ----------
+        key : int, pdarray, Index, Series, List, or Tuple
+            The key or keys to look up. This can be:
+            - A scalar
+            - A list of scalars
+            - A list of lists (for MultiIndex)
+            - A Series (in which case labels are preserved, and its values are used as keys)
 
-        Keys will be turned into arkouda arrays as needed.
+            Keys will be converted to Arkouda arrays as needed.
 
         Returns
         -------
-        A Series containing the values corresponding to the key.
+        Series
+            A Series containing the values corresponding to the key.
         """
         if isinstance(key, Series):
             # special case, keep the index values of the Series, and lookup the values
@@ -618,7 +634,7 @@ class Series:
 
     @classmethod
     def _make_binop(cls, operator):
-        def binop(self, other):
+        def binop(self, other) -> Series:
             if isinstance(other, Series):
                 if self.index._check_aligned(other.index):
                     return cls((self.index, operator(self.values, other.values)))
@@ -634,14 +650,14 @@ class Series:
 
     @classmethod
     def _make_unaryop(cls, operator):
-        def unaryop(self):
+        def unaryop(self) -> Series:
             return cls((self.index, operator(self.values)))
 
         return unaryop
 
     @classmethod
     def _make_aggop(cls, name):
-        def aggop(self):
+        def aggop(self) -> Series:
             return getattr(self.values, name)()
 
         return aggop
@@ -657,15 +673,18 @@ class Series:
 
     @typechecked
     def topn(self, n: int = 10) -> Series:
-        """Return the top values of the series
+        """
+        Return the top values of the Series.
 
         Parameters
         ----------
-        n: Number of values to return
+        n : int, default=10
+            Number of values to return. The default of 10 returns the top 10 values.
 
         Returns
         -------
-        A new Series with the top values
+        Series
+            A new Series containing the top `n` values.
         """
         k = self.index
         v = self.values
@@ -687,16 +706,18 @@ class Series:
 
     @typechecked
     def sort_index(self, ascending: bool = True) -> Series:
-        """Sort the series by its index
+        """
+        Sort the Series by its index.
 
         Parameters
         ----------
-        ascending : bool
-            Sort values in ascending (default) or descending order.
+        ascending : bool, default=True
+            Whether to sort the index in ascending (default) or descending order.
 
         Returns
         -------
-        A new Series sorted.
+        Series
+            A new Series sorted by index.
         """
 
         idx = self.index.argsort(ascending=ascending)
@@ -704,16 +725,18 @@ class Series:
 
     @typechecked
     def sort_values(self, ascending: bool = True) -> Series:
-        """Sort the series numerically
+        """
+        Sort the Series by its values.
 
         Parameters
         ----------
-        ascending : bool
-            Sort values in ascending (default) or descending order.
+        ascending : bool, default=True
+            Whether to sort values in ascending (default) or descending order.
 
         Returns
         -------
-        A new Series sorted smallest to largest
+        Series
+            A new Series sorted by its values.
         """
 
         if not ascending:
@@ -837,14 +860,20 @@ class Series:
 
     @typechecked
     def value_counts(self, sort: bool = True) -> Series:
-        """Return a Series containing counts of unique values.
-
-        The resulting object will be in descending order so that the
-        first element is the most frequently-occurring element.
+        """
+        Return a Series containing counts of unique values.
 
         Parameters
         ----------
-        sort : Boolean. Whether or not to sort the results.  Default is true.
+        sort : bool, default=True
+            Whether to sort the result by count in descending order. If False,
+            the order of the results is not guaranteed.
+
+        Returns
+        -------
+        Series
+            A Series where the index contains the unique values and the values are
+            their counts in the original Series.
         """
 
         dtype = get_callback(self.values)
@@ -875,16 +904,20 @@ class Series:
     def to_dataframe(
         self, index_labels: Union[List[str], None] = None, value_label: Union[str, None] = None
     ) -> arkouda.dataframe.DataFrame:
-        """Converts series to an arkouda data frame
+        """
+        Convert the Series to an Arkouda DataFrame.
 
         Parameters
         ----------
-        index_labels:  column names(s) to label the index.
-        value_label:  column name to label values.
+        index_labels : list of str or None, optional
+            Column name(s) to label the index.
+        value_label : str or None, optional
+            Column name to label the values.
 
         Returns
         -------
-        An arkouda dataframe.
+        DataFrame
+            An Arkouda DataFrame representing the Series.
         """
         list_value_label = [value_label] if isinstance(value_label, str) else value_label
 
@@ -1122,29 +1155,38 @@ class Series:
         axis: int = 0,
         index_labels: Union[List[str], None] = None,
         value_labels: Union[List[str], None] = None,
-        ordered=False,
+        ordered: bool = False,
     ) -> Union[arkouda.dataframe.DataFrame, Series]:
-        """Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
-        vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each
-        grouping is a 2-tuple with the first item being the key(s) and the second being the value.
-        If horizontal, each series or grouping must have the same length and the same index. The index
-        of the series is converted to a column in the dataframe.  If it is a multi-index,each level is
-        converted to a column.
+        """
+        Concatenate a list of Arkouda Series or grouped arrays horizontally or vertically.
+
+        If a list of grouped Arkouda arrays is passed, they are converted to Series. Each grouping
+        is a 2-tuple where the first item is the key(s) and the second is the value. If concatenating
+        horizontally (axis=1), all series/groupings must have the same length and the same index.
+        The index is converted to a column in the resulting DataFrame; if it's a MultiIndex,
+        each level is converted to a separate column.
 
         Parameters
         ----------
-        arrays:  The list of series/groupings to concat.
-        axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
-        index_labels:  column names(s) to label the index.
-        value_labels:  column names to label values of each series.
-        ordered:  If True (default), the arrays will be appended in the order given. If False, array
-                    data may be interleaved in blocks, which can greatly improve performance but
-                    results in non-deterministic ordering of elements.
+        arrays : List
+            A list of Series or groupings (tuples of index and values) to concatenate.
+        axis : int, default=0
+            The axis to concatenate along:
+            - 0 = vertical (stack series into one)
+            - 1 = horizontal (align by index and produce a DataFrame)
+        index_labels : List of str or None, optional
+            Column name(s) to label the index when axis=1.
+        value_labels : List of str or None, optional
+            Column names to label the values of each Series.
+        ordered : bool, default=False
+            Unused parameter. Reserved for future support of deterministic
+            vs. performance-optimized concatenation.
 
         Returns
         -------
-        axis=0: an arkouda series.
-        axis=1: an arkouda dataframe.
+        Series or DataFrame
+            - If axis=0: a new Series
+            - If axis=1: a new DataFrame
         """
 
         if len(arrays) == 0:
@@ -1184,7 +1226,7 @@ class Series:
 
             return arkouda.dataframe.DataFrame(data)
         else:
-            # Verticle concat
+            # Vertical concat
             idx = arrays[0].index
             v = arrays[0].values
             for other in arrays[1:]:
@@ -1218,7 +1260,7 @@ class Series:
         >>> import arkouda as ak
         >>> ak.connect()
         >>> s = ak.Series(ak.array([2, 3, 2, 3, 4]))
-        >>> display(s)
+        >>> s
 
         +----+-----+
         |    | 0   |
@@ -1258,9 +1300,9 @@ class Series:
         +====+=====+
         |  0 | b   |
         +----+-----+
-        |  1 | b   |
+        |  1 | d   |
         +----+-----+
-        |  2 | d   |
+        |  2 | b   |
         +----+-----+
         |  3 | d   |
         +----+-----+
@@ -1460,7 +1502,19 @@ class Series:
         >>> s = ak.Series(ak.array([1, 2, 3, np.nan]))
         >>> s
 
-        >>> s.hasnans
+        +----+-------+
+        |    |   0   |
+        +====+=======+
+        |  0 |   1.0 |
+        +----+-------+
+        |  1 |   2.0 |
+        +----+-------+
+        |  2 |   3.0 |
+        +----+-------+
+        |  3 |   nan |
+        +----+-------+
+
+        >>> s.hasnans()
         True
         """
         if is_float(self.values):
@@ -1470,13 +1524,13 @@ class Series:
 
         return False
 
-    def fillna(self, value) -> Series:
+    def fillna(self, value: Union[supported_scalars, Series, pdarray]) -> Series:
         """
         Fill NA/NaN values using the specified method.
 
         Parameters
         ----------
-        value : scalar, Series, or pdarray
+        value : supported_scalars, Series, or pdarray
             Value to use to fill holes (e.g. 0), alternately a
             Series of values specifying which value to use for
             each index.  Values not in the Series will not be filled.
@@ -1497,70 +1551,70 @@ class Series:
         >>> data = ak.Series([1, np.nan, 3, np.nan, 5])
         >>> data
 
-        +----+-----+
-        |    |   0 |
-        +====+=====+
-        |  0 |   1 |
-        +----+-----+
-        |  1 | nan |
-        +----+-----+
-        |  2 |   3 |
-        +----+-----+
-        |  3 | nan |
-        +----+-----+
-        |  4 |   5 |
-        +----+-----+
+        +----+-------+
+        |    |   0   |
+        +====+=======+
+        |  0 |   1.0 |
+        +----+-------+
+        |  1 |   nan |
+        +----+-------+
+        |  2 |   3.0 |
+        +----+-------+
+        |  3 |   nan |
+        +----+-------+
+        |  4 |   5.0 |
+        +----+-------+
 
         >>> fill_values1 = ak.ones(5)
         >>> data.fillna(fill_values1)
 
-        +----+-----+
-        |    |   0 |
-        +====+=====+
-        |  0 |   1 |
-        +----+-----+
-        |  1 |   1 |
-        +----+-----+
-        |  2 |   3 |
-        +----+-----+
-        |  3 |   1 |
-        +----+-----+
-        |  4 |   5 |
-        +----+-----+
+        +----+-------+
+        |    |   0   |
+        +====+=======+
+        |  0 |   1.0 |
+        +----+-------+
+        |  1 |   1.0 |
+        +----+-------+
+        |  2 |   3.0 |
+        +----+-------+
+        |  3 |   1.0 |
+        +----+-------+
+        |  4 |   5.0 |
+        +----+-------+
 
         >>> fill_values2 = Series(ak.ones(5))
         >>> data.fillna(fill_values2)
 
-        +----+-----+
-        |    |   0 |
-        +====+=====+
-        |  0 |   1 |
-        +----+-----+
-        |  1 |   1 |
-        +----+-----+
-        |  2 |   3 |
-        +----+-----+
-        |  3 |   1 |
-        +----+-----+
-        |  4 |   5 |
-        +----+-----+
+        +----+-------+
+        |    |   0   |
+        +====+=======+
+        |  0 |   1.0 |
+        +----+-------+
+        |  1 |   1.0 |
+        +----+-------+
+        |  2 |   3.0 |
+        +----+-------+
+        |  3 |   1.0 |
+        +----+-------+
+        |  4 |   5.0 |
+        +----+-------+
 
         >>> fill_values3 = 100.0
         >>> data.fillna(fill_values3)
 
-        +----+-----+
-        |    |   0 |
-        +====+=====+
-        |  0 |   1 |
-        +----+-----+
-        |  1 | 100 |
-        +----+-----+
-        |  2 |   3 |
-        +----+-----+
-        |  3 | 100 |
-        +----+-----+
-        |  4 |   5 |
-        +----+-----+
+        +----+---------+
+        |    |     0   |
+        +====+=========+
+        |  0 |     1.0 |
+        +----+---------+
+        |  1 |   100.0 |
+        +----+---------+
+        |  2 |     3.0 |
+        +----+---------+
+        |  3 |   100.0 |
+        +----+---------+
+        |  4 |     5.0 |
+        +----+---------+
 
         """
         from arkouda.numpy import where
@@ -1578,25 +1632,32 @@ class Series:
     def pdconcat(
         arrays: List, axis: int = 0, labels: Union[Strings, None] = None
     ) -> Union[pd.Series, pd.DataFrame]:
-        """Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.
+        """
+        Concatenate a list of Arkouda Series or grouped arrays, returning a local pandas object.
 
-        If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping
-        is a 2-tuple with the first item being the key(s) and the second being the value.
+        If a list of grouped Arkouda arrays is passed, they are converted to Series. Each grouping
+        is a 2-tuple with the first item being the key(s) and the second the value.
 
-        If horizontal, each series or grouping must have the same length and the same index. The index of
-        the series is converted to a column in the dataframe.  If it is a multi-index,each level is
-        converted to a column.
+        If `axis=1` (horizontal), each Series or grouping must have the same length and the same index.
+        The index is converted to a column in the resulting DataFrame. If it is a MultiIndex,
+        each level is converted to a separate column.
 
         Parameters
         ----------
-        arrays:  The list of series/groupings to concat.
-        axis  :  Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
-        labels:  names to give the columns of the data frame.
+        arrays : List
+            A list of Series or groupings (tuples of index and values) to concatenate.
+        axis : int, default=0
+            The axis along which to concatenate:
+            - 0 = vertical (stack into a Series)
+            - 1 = horizontal (align by index into a DataFrame)
+        labels : Strings or None, optional
+            Names to assign to the resulting columns in the DataFrame.
 
         Returns
         -------
-        axis=0: a local PANDAS series
-        axis=1: a local PANDAS dataframe
+        Series or DataFrame
+            - If axis=0: a local pandas Series
+            - If axis=1: a local pandas DataFrame
         """
         if len(arrays) == 0:
             raise IndexError("Array length must be non-zero")
@@ -1639,7 +1700,7 @@ class _iLocIndexer:
         self.name = method_name
         self.series = series
 
-    def validate_key(self, key):
+    def validate_key(self, key) -> Union[pdarray, int]:
         if isinstance(key, list):
             key = array(key)
         if isinstance(key, tuple):
