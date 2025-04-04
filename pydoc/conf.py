@@ -59,7 +59,7 @@ mathjax_path = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS
 
 
 # Include __init__.pyi files
-autodoc_mock_imports = ["arkouda.numpy", "arkouda.scipy"]
+autodoc_mock_imports = ["arkouda.numpy", "arkouda.pandas", "arkouda.scipy"]
 
 source_suffix = [".rst", ".md"]
 

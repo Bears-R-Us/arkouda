@@ -334,7 +334,7 @@ def assert_series_equivalent(
 
     if not isinstance(left, (Series, pd.Series)) or not isinstance(right, (Series, pd.Series)):
         raise TypeError(
-            f"left and right must be type arkouda.Series or pandas.Series.  "
+            f"left and right must be type arkouda.pandas.Series or pandas.pandas.Series.  "
             f"Instead types were {type(left)} and {type(right)}."
         )
 

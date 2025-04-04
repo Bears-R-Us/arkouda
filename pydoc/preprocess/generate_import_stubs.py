@@ -151,7 +151,8 @@ def main():
     import arkouda.scipy as akscipy
     import arkouda.scipy.special as akscipySpecial
     import arkouda.scipy.stats as akscipyStats
-    import arkouda.series as akSeries
+    import arkouda.pandas.series as akSeries
+    import arkouda as ak
 
     write_stub(
         aknp.dtypes,
