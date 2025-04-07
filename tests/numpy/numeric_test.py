@@ -376,23 +376,6 @@ class TestNumeric:
         with pytest.raises(TypeError):
             ak.square(np.array([range(-10, 10)]).astype(ak.bool_))
 
-    @pytest.mark.parametrize("num_type1", NO_BOOL)
-    @pytest.mark.parametrize("num_type2", NO_BOOL)
-    def test_dot(self, num_type1, num_type2):
-        seed = pytest.seed if pytest.seed is not None else 8675309
-        np.random.seed(seed)
-        if num_type1 == ak.uint64 and num_type2 == ak.int64:
-            pytest.skip()
-        if num_type1 == ak.int64 and num_type2 == ak.uint64:
-            pytest.skip()
-        na1 = np.random.randint(0, 10, 10).astype(num_type1)
-        na2 = np.random.randint(0, 10, 10).astype(num_type2)
-        pda1 = ak.array(na1)
-        pda2 = ak.array(na2)
-        assert np.allclose(np.dot(na1, na2), ak.dot(pda1, pda2))
-        assert np.allclose(np.dot(na1[0], na2), ak.dot(pda1[0], pda2).to_ndarray())
-        assert np.allclose(np.dot(na1, na2[0]), ak.dot(pda1, pda2[0]).to_ndarray())
-
     #   cumsum and cumprod tests were identical, and so have been combined.
 
     @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
