@@ -68,6 +68,7 @@ module OperatorMsg
         var realOps: set(string);
         realOps.add("+");
         realOps.add("-");
+        realOps.add("*");
         realOps.add("/");
         realOps.add("//");
 
@@ -253,6 +254,7 @@ module OperatorMsg
         var realOps: set(string);
         realOps.add("+");
         realOps.add("-");
+        realOps.add("*");
         realOps.add("/");
         realOps.add("//");
 
