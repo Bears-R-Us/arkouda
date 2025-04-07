@@ -929,3 +929,31 @@ class TestString:
         strings = self.get_strings(size, base_words)
 
         ak_assert_equal(strings.flatten(), strings)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_concatenate_uniquely(self, size):
+        import random
+
+        from arkouda import Strings
+
+        base_array = [str(i) for i in range(size)]
+        list_1 = []
+        for i in range(size // 5):
+            val = random.choice(base_array)
+            list_1.append(val)
+            base_array.remove(val)
+
+        base_array = [str(i) for i in range(size)]
+        list_2 = []
+        for i in range(size // 5):
+            val = random.choice(base_array)
+            list_2.append(val)
+            base_array.remove(val)
+
+        ak_arr_1 = ak.array(list_1)
+        ak_arr_2 = ak.array(list_2)
+
+        output = Strings.concatenate_uniquely([ak_arr_1, ak_arr_2])
+        correct = set(list_1).union(set(list_2))
+
+        assert set(output.to_ndarray()) == correct

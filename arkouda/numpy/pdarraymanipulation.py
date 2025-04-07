@@ -109,7 +109,6 @@ def hstack(
                 cmd=f"concatenate<{akdtype(dtype_).name},{arrays[0].ndim}>",
                 args={
                     "names": list(arrays),
-                    "n": len(arrays),
                     "axis": 0,
                     "offsets": offsets,
                 },
@@ -125,7 +124,6 @@ def hstack(
             cmd=f"concatenate<{akdtype(dtype_).name},{arrays[0].ndim}>",
             args={
                 "names": list(arrays),
-                "n": len(arrays),
                 "axis": 1,
                 "offsets": offsets,
             },
@@ -239,7 +237,6 @@ def vstack(
             cmd=f"concatenate<{akdtype(dtype_).name},{arrays[0].ndim}>",
             args={
                 "names": list(arrays),
-                "n": len(arrays),
                 "axis": 0,
                 "offsets": offsets,
             },

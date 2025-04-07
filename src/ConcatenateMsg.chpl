@@ -18,7 +18,10 @@ module ConcatenateMsg
     use PrivateDist;
     
     use AryUtil;
-    
+    use CTypes;
+    use Set;
+    use List;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const cmLogger = new Logger(logLevel, logChannel);
@@ -33,15 +36,17 @@ module ConcatenateMsg
     proc concatenateMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
         param pn = Reflection.getRoutineName();
 
-        const nArrays = msgArgs["n"].toScalar(int),
-              names = msgArgs["names"].toScalarArray(string, nArrays),
+        const names = msgArgs["names"].toScalarList(string),
+              nArrays = names.size,
               axis = msgArgs["axis"].getPositiveIntValue(array_nd),
               offsets = msgArgs["offsets"].toScalarArray(int, nArrays);
 
+        const arrNames = names.toArray();
+
         var dtype: DType;
-        dtype = getGenericTypedArrayEntry(names[0], st).dtype;
+        dtype = getGenericTypedArrayEntry(arrNames[0], st).dtype;
         var same: bool = true;
-        for n in names {
+        for n in arrNames {
           if getGenericTypedArrayEntry(n, st).dtype != dtype {
             same = false;
           }
@@ -54,7 +59,7 @@ module ConcatenateMsg
         }
 
         // Retrieve the arrays from the symbol table
-        const eIns = for n in names do st[n]: borrowed SymEntry(array_dtype, array_nd),
+        const eIns = for n in arrNames do st[n]: borrowed SymEntry(array_dtype, array_nd),
               shapes = [i in 0..<nArrays] eIns[i].tupShape,
               (valid, shapeOut) = concatenatedShape(shapes, axis, array_nd);
         var eOut = createSymEntry((...shapeOut), array_dtype);
@@ -95,7 +100,7 @@ module ConcatenateMsg
         // Compute output shape
         shapeOut = firstShape;
         shapeOut[axis] = + reduce [i in 0..<d.size] shapes[i][axis]; // Sum sizes along axis
-        
+
         return (true, shapeOut);
     }
 
@@ -107,19 +112,12 @@ module ConcatenateMsg
         var repMsg: string;
         var objtype = msgArgs.getValueOf("objType").toUpper(): ObjType;
         var mode = msgArgs.getValueOf("mode");
-        var n = msgArgs.get("nstr").getIntValue(); // number of arrays to sort
-        var names = msgArgs.get("names").getList(n);
+        var names = msgArgs.get("names").toScalarList(string);
+        var n = names.size;
         
         cmLogger.debug(getModuleName(),getRoutineName(), getLineNumber(), 
               "number of arrays: %i names: %?".format(n,names));
 
-        // Check that fields contains the stated number of arrays
-        if (n != names.size) { 
-            var errorMsg = incompatibleArgumentsError(pn, 
-                             "Expected %i arrays but got %i".format(n, names.size)); 
-            cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                               
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
         /* var arrays: [0..#n] borrowed GenSymEntry; */
         var size: int = 0;
         var blocksizes: [PrivateSpace] int;
@@ -469,4 +467,250 @@ module ConcatenateMsg
     }
     registerFunction("concatenateStr", concatenateStrMsg, getModuleName());
 
+    proc concatenateUniqueStrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+
+        var repMsg: string;
+        var names = msgArgs.get("names").toScalarList(string);
+        var n = names.size;
+
+
+        cmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                    "concatenate unique strings from %i arrays: %?".format(n, names));
+
+        // Each locale gets its own set
+        var localeSets = makeDistArray(numLocales, set(string));
+
+        // Initialize sets
+        coforall loc in Locales do on loc {
+            localeSets[here.id] = new set(string);
+        }
+
+        // Collect all unique strings from each input SegmentedString
+        for rawName in names {
+            var (strName, _) = rawName.splitMsgToTuple('+', 2);
+            try {
+                var segString = getSegString(strName, st);
+                cmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                            "Processing SegString: %s".format(strName));
+
+                // Grab the strings by locale and throw them in the sets.
+                coforall loc in Locales do on loc {
+                    ref globalOffsets = segString.offsets.a;
+                    const offsetsDom = segString.offsets.a.domain.localSubdomain();
+                    const offsets = segString.offsets.a.localSlice[offsetsDom];
+                    const topEnd = if offsetsDom.high >= segString.offsets.a.domain.high then segString.values.a.size else globalOffsets[offsetsDom.high + 1];
+                    var locSet = new set(string);
+                    forall idx in offsetsDom with (+ reduce locSet) {
+                        const start = offsets[idx];
+                        const end = if idx == offsetsDom.high then topEnd else offsets[idx + 1];
+                        var str = interpretAsString(segString.values.a, start..<end);
+                        locSet.add(str);
+                    }
+                    localeSets[here.id] |= locSet;
+                }
+
+            } catch e: Error {
+                throw getErrorWithContext(
+                    msg="lookup for %s failed".format(rawName),
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="UnknownSymbolError");
+            }
+        }
+
+        // These variables will help us create the buffers.
+        var numStringsReceived = makeDistArray(numLocales, [0..#numLocales] int);
+        var numBytesReceived = makeDistArray(numLocales, [0..#numLocales] int);
+        var numStringsSending = makeDistArray(numLocales, [0..#numLocales] int);
+        var numBytesSending = makeDistArray(numLocales, [0..#numLocales] int);
+
+        var maxStringsPerPeer: int = 0;
+        var maxBytesPerPeer: int = 0;
+
+        var destLocaleByStrIdx: [PrivateSpace] list(int);
+        var strOffsetInLocale: [PrivateSpace] list(int);
+        var strIdxInLocale: [PrivateSpace] list(int);
+
+        // Hash all the strings and figure out how many strings are going to each locale, and how many bytes that takes
+        coforall loc in Locales with (max reduce maxStringsPerPeer, max reduce maxBytesPerPeer) do on loc {
+            const strArray = localeSets[here.id].toArray();
+            var destLoc: [0..#strArray.size] int;
+            var strSize: [0..#strArray.size] int;
+            var strOffsets: [0..#strArray.size] int;
+            var strIndices: [0..#strArray.size] int;
+
+            var sendingStrings: [0..#numLocales] int;
+            var sendingBytes: [0..#numLocales] int;
+            forall strIdx in strArray.domain with (+ reduce sendingStrings, + reduce sendingBytes) {
+                const str = strArray[strIdx];
+                const targetID: int = (str.hash() % numLocales): int;
+                const strBytes = str.bytes();
+                destLoc[strIdx] = targetID;
+                strSize[strIdx] = strBytes.size + 1;
+                sendingStrings[targetID] += 1;
+                sendingBytes[targetID] += strBytes.size + 1;
+            }
+            destLocaleByStrIdx[here.id] = new list(destLoc);
+            forall i in 0..#numLocales {
+                numStringsReceived[i][here.id] = sendingStrings[i];
+                numBytesReceived[i][here.id] = sendingBytes[i];
+                numStringsSending[here.id][i] = sendingStrings[i];
+                numBytesSending[here.id][i] = sendingBytes[i];
+            }
+
+            for i in 0..#numLocales {
+                var currStrSize = forall j in strSize.domain do (if destLoc[j] == i then strSize[j] else 0);
+                var offsets = (+ scan currStrSize) - currStrSize;
+                var currLocIndices = forall j in strSize.domain do (if destLoc[j] == i then 1 else 0);
+                var indices = (+ scan currLocIndices) - currLocIndices;
+                forall j in strIndices.domain {
+                    if destLoc[j] == i {
+                        strOffsets[j] = offsets[j];
+                        strIndices[j] = indices[j];
+                    }
+                }
+            }
+            strOffsetInLocale[here.id] = new list(strOffsets);
+            strIdxInLocale[here.id] = new list(strIndices);
+
+            maxStringsPerPeer = max reduce sendingStrings;
+            maxBytesPerPeer = max reduce sendingBytes;
+        }
+
+        // This may be a little wasteful with the buffers but I couldn't think of a better option.
+        var sendOffsets = makeDistArray(numLocales, [0..#numLocales] [0..#(maxStringsPerPeer+1)] int);
+        var recvOffsets = makeDistArray(numLocales, [0..#numLocales] [0..#(maxStringsPerPeer+1)] int);
+        var sendBytes = makeDistArray(numLocales, [0..#numLocales] [0..#(maxBytesPerPeer)] uint(8));
+        var recvBytes = makeDistArray(numLocales, [0..#numLocales] [0..#(maxBytesPerPeer)] uint(8));
+
+        // In particular, I'm hoping that by setting up these buffers as uint(8) type
+        // that the domain mapping will ship off a bunch of data at the same time and cut down on puts and gets.
+
+        // Now we prep the data in the send variables and then place it on the destination locale in the recv buffer.
+
+        coforall loc in Locales do on loc {
+            var mySendOffsets = sendOffsets[here.id];
+            var mySendBytes = sendBytes[here.id];
+
+            const strArray = localeSets[here.id].toArray();
+
+            const strOffsets = strOffsetInLocale[here.id].toArray();
+            const destLoc = destLocaleByStrIdx[here.id].toArray();
+            const idxInLocale = strIdxInLocale[here.id].toArray();
+
+            forall i in strArray.domain {
+                const str = strArray[i];
+                const targetID = destLoc[i];
+                const offset = strOffsets[i];
+                const locInd = idxInLocale[i];
+
+                const strBytes = str.bytes();
+                const strSize = strBytes.size;
+                mySendOffsets[targetID][locInd] = offset;
+                mySendBytes[targetID][offset..#strSize] = strBytes[0..#strSize];
+                mySendBytes[targetID][offset + strSize] = 0;
+            }
+
+            forall i in 0..#numLocales {
+                mySendOffsets[i][numStringsSending[here.id][i]] = numBytesSending[here.id][i];
+                recvOffsets[i][here.id][0..#(numStringsSending[here.id][i]+1)] = mySendOffsets[i][0..#numStringsSending[here.id][i]];
+                recvBytes[i][here.id][0..#numBytesSending[here.id][i]] = mySendBytes[i][0..#numBytesSending[here.id][i]];
+            }
+        }
+
+        // I need variables to store how many strings each locale has
+        // how many bytes each locale has
+        // It'd be nice to store the set as an array on each Locale so I only have to convert once.
+        // Then I can convert the string array to uint(8) on each locale
+        // Use some global ref to how many bytes per and do some kinda + scan numBytes thing
+        // And I think I'm done. I don't care about rebalancing, the bytes array is already distributed.
+        // So ship data via domains and I don't think that can really be beat with the aggregators.
+        // Certainly not beat by one byte at a time.
+        // This also beats the calculation of which locale to send data to. Who cares? Just send it.
+        // offsets by locale does not line up with bytes by locale. So it doesn't matter.
+
+        // Intentionally not distributed because I'm going to need these available to every locale.
+
+        var numStringsPerLocale: [0..#numLocales] int;
+        var numBytesPerLocale: [0..#numLocales] int;
+
+        coforall loc in Locales with(ref numStringsPerLocale, ref numBytesPerLocale) do on loc {
+            var strSet = new set(string);
+
+            for i in 0..#numLocales {
+                forall j in 1..#numStringsReceived[here.id][i] with (+ reduce strSet) {
+                    const start = recvOffsets[here.id][i][j - 1];
+                    const end = recvOffsets[here.id][i][j];
+                    var str = interpretAsString(recvBytes[here.id][i], start..<end);
+                    strSet.add(str);
+                }
+            }
+
+            const strArray = strSet.toArray();
+            numStringsPerLocale[here.id] = strArray.size;
+            var size = 0;
+
+            forall str in strArray with (+ reduce size) {
+                size += str.size + 1;
+            }
+
+            numBytesPerLocale[here.id] = size;
+
+            localeSets[here.id] = strSet;
+        }
+
+        // I need to set up the segString here.
+        // I need to create the running sum of strings per locale
+        var stringOffsetByLocale = + scan numStringsPerLocale;
+        var bytesOffsetByLocale = + scan numBytesPerLocale;
+        // I need to create the running sum of bytes per locale.
+
+        var esegs = createTypedSymEntry(stringOffsetByLocale.last, int);
+        var evals = createTypedSymEntry(bytesOffsetByLocale.last, uint(8));
+        ref esa = esegs.a;
+        ref eva = evals.a;
+
+        stringOffsetByLocale -= numStringsPerLocale;
+        bytesOffsetByLocale -= numBytesPerLocale;
+
+        // Let's allocate a new SegString for the return object
+        var retString = assembleSegStringFromParts(esegs, evals, st);
+
+        coforall loc in Locales do on loc {
+
+            const strArray = localeSets[here.id].toArray();
+            var myBytes: [0..#numBytesPerLocale[here.id]] uint(8);
+            var byteIdx = 0;
+            var strOffsets: [0..#strArray.size] int;
+
+            // This could probably be turned into a forall, using some sort of + scan on a strBytesSizes array of some kind.
+
+            for (i, str) in zip(0..#strArray.size, strArray) {
+
+                strOffsets[i] = byteIdx;
+
+                const strBytes = str.bytes();
+                const size = strBytes.size;
+
+                myBytes[byteIdx..#size] = strBytes[0..#size];
+                byteIdx += size + 1;
+
+            }
+
+            esa[stringOffsetByLocale[here.id]..#strArray.size] = strOffsets[0..#strArray.size] + bytesOffsetByLocale[here.id];
+            eva[bytesOffsetByLocale[here.id]..#numBytesPerLocale[here.id]] = myBytes[0..#numBytesPerLocale[here.id]];
+
+        }
+
+        // Store the result in the symbol table and return
+        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
+
+        cmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                    "Created unique concatenated SegmentedString: %s".format(st.attrib(retString.name)));
+
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    registerFunction("concatenateUniquely", concatenateUniqueStrMsg, getModuleName());
 }
