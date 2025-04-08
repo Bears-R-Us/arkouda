@@ -364,10 +364,8 @@ class Array:
         ak.abs()
 
         """
-        # TODO -- this must be fixed.  It doesn't return abs.  However, fixing it causes
-        # tests/array_api/stats_functions test_std and test_var to fail.
 
-        return self
+        return ak.abs(self._array)
 
     def __add__(self: Array, other: Union[int, float, Array], /) -> Array:
         """
