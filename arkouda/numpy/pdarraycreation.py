@@ -237,14 +237,17 @@ def array(
     if (a.dtype == bigint or dtype == bigint) and a.ndim in get_array_ranks() and a.ndim > 1:
         sh = a.shape
         try:
-            a = a.reshape(a.size)
             # attempt to break bigint into multiple uint64 arrays
             # early out if we would have more uint arrays than can fit in max_bits
             early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
             while (a != 0).any() and len(uint_arrays) < early_out:
                 low, a = a % 2**64, a // 2**64
                 uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
-            return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits).reshape(sh)
+            # If uint_arrays is empty, this will create an empty ak array and reshape it.
+            if not uint_arrays:
+                return zeros(size=sh, dtype=bigint, max_bits=max_bits)
+            else:
+                return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits)
         except TypeError:
             raise RuntimeError(f"Unhandled dtype {a.dtype}")
 
@@ -436,11 +439,11 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
     if not arrays:
         return create_pdarray(
             generic_msg(
-                cmd="big_int_creation",
+                cmd="big_int_creation<bigint,1>",
                 args={
                     "arrays": arrays,
                     "num_arrays": len(arrays),
-                    "len": 0,
+                    "shape": (0,),
                     "max_bits": max_bits,
                 },
             )
@@ -461,11 +464,11 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
 
     return create_pdarray(
         generic_msg(
-            cmd="big_int_creation",
+            cmd=f"big_int_creation<bigint,{arrays[0].ndim}>",
             args={
                 "arrays": arrays,
                 "num_arrays": len(arrays),
-                "len": arrays[0].size,
+                "shape": arrays[0].shape,
                 "max_bits": max_bits,
             },
         )
@@ -543,11 +546,6 @@ def zeros(
 
     if isinstance(shape, tuple) and len(shape) == 0:
         raise ValueError("size () not currently supported in ak.zeros.")
-
-    if ndim != 1 and max_bits is not None:
-        raise ValueError(
-            f"max_bits is not currently supported for {ndim}D pdarrays in ak.zeros, ak.ones, ak.full."
-        )
 
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
@@ -686,11 +684,6 @@ def full(
 
     if isinstance(shape, tuple) and len(shape) == 0:
         raise ValueError("size () not currently supported in ak.full.")
-
-    if ndim != 1 and max_bits is not None:
-        raise ValueError(
-            f"max_bits is not currently supported for {ndim}D pdarrays in ak.zeros, ak.ones, ak.full."
-        )
 
     repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
