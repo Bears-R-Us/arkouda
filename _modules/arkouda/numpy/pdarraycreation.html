@@ -609,14 +609,17 @@
     <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="n">get_array_ranks</span><span class="p">()</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">sh</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
             <span class="c1"># attempt to break bigint into multiple uint64 arrays</span>
             <span class="c1"># early out if we would have more uint arrays than can fit in max_bits</span>
             <span class="n">early_out</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_bits</span> <span class="o">//</span> <span class="mi">64</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">max_bits</span> <span class="o">%</span> <span class="mi">64</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">max_bits</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
             <span class="k">while</span> <span class="p">(</span><span class="n">a</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">uint_arrays</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">early_out</span><span class="p">:</span>
                 <span class="n">low</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">%</span> <span class="mi">2</span><span class="o">**</span><span class="mi">64</span><span class="p">,</span> <span class="n">a</span> <span class="o">//</span> <span class="mi">2</span><span class="o">**</span><span class="mi">64</span>
                 <span class="n">uint_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akuint64</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">bigint_from_uint_arrays</span><span class="p">(</span><span class="n">uint_arrays</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+            <span class="c1"># If uint_arrays is empty, this will create an empty ak array and reshape it.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">uint_arrays</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">bigint</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">bigint_from_uint_arrays</span><span class="p">(</span><span class="n">uint_arrays</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unhandled dtype </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -814,11 +817,11 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">arrays</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;big_int_creation&quot;</span><span class="p">,</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;big_int_creation&lt;bigint,1&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;arrays&quot;</span><span class="p">:</span> <span class="n">arrays</span><span class="p">,</span>
                     <span class="s2">&quot;num_arrays&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">),</span>
-                    <span class="s2">&quot;len&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,),</span>
                     <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="n">max_bits</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">)</span>
@@ -839,11 +842,11 @@
 
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;big_int_creation&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;big_int_creation&lt;bigint,</span><span class="si">{</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;arrays&quot;</span><span class="p">:</span> <span class="n">arrays</span><span class="p">,</span>
                 <span class="s2">&quot;num_arrays&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">),</span>
-                <span class="s2">&quot;len&quot;</span><span class="p">:</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
                 <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="n">max_bits</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
@@ -924,11 +927,6 @@
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;size () not currently supported in ak.zeros.&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;max_bits is not currently supported for </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D pdarrays in ak.zeros, ak.ones, ak.full.&quot;</span>
-        <span class="p">)</span>
 
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create&lt;</span><span class="si">{</span><span class="n">dtype_name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">})</span>
 
@@ -1073,11 +1071,6 @@
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;size () not currently supported in ak.full.&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;max_bits is not currently supported for </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D pdarrays in ak.zeros, ak.ones, ak.full.&quot;</span>
-        <span class="p">)</span>
 
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create&lt;</span><span class="si">{</span><span class="n">dtype_name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">})</span>
 
