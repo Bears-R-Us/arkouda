@@ -108,6 +108,8 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.9', '3.10', '3.11', '3.12']
+    env:
+      REPOSITORY_URL : https://doris-thirdparty-repo.bj.bcebos.com/thirdparty
     container:
       image: chapel/chapel:2.3.0
     steps:
@@ -160,6 +162,16 @@ jobs:
     - name: Check python version
       run: |
         python --version
+    - name: Install arrow
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |   
+          apt-get -y update && apt-get  -y -V upgrade && apt-get install -y -V ca-certificates lsb-release wget
+          make install-arrow
     - name: Install dependencies
       uses: nick-fields/retry@v2
       with:
@@ -168,8 +180,6 @@ jobs:
         retry_wait_seconds: 60
         retry_on: error
         command: |   
-          apt-get update && apt-get install -y -V ca-certificates lsb-release wget
-          make install-arrow
           apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libcurl4-openssl-dev libidn2-dev
           make install-iconv
           echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
@@ -437,6 +447,8 @@ jobs:
     strategy:
       matrix:
         chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0']
+    env:
+      REPOSITORY_URL : https://doris-thirdparty-repo.bj.bcebos.com/thirdparty
     container:
       image: chapel/chapel:${{matrix.chpl-version}}
     steps:
@@ -473,6 +485,8 @@ jobs:
     strategy:
       matrix:
         chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0']
+    env:
+      REPOSITORY_URL : https://doris-thirdparty-repo.bj.bcebos.com/thirdparty
     container:
       image: chapel/chapel:${{matrix.chpl-version}}
     steps:
