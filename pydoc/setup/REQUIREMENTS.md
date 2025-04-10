@@ -8,7 +8,7 @@ The installation instructions for the dependencies listed here may vary dependin
 - `cmake>=3.13.4`
 - `zeromq>=4.2.5`
 - `hdf5`
-- `python>=3.9`
+- `python>=3.10`
 - `iconv`
 - `idn2`
 - `Arrow`
@@ -17,7 +17,7 @@ The installation instructions for the dependencies listed here may vary dependin
 
 The following python packages are required by the Arkouda client package.
 
-- `python>=3.9`
+- `python>=3.10`
 - `numpy>=1.24.1,<2.0`
 - `pandas>=1.4.0,!=2.2.0`
 - `pyzmq>=20.0.0`
@@ -30,7 +30,7 @@ The following python packages are required by the Arkouda client package.
 - `hdf5>=1.12.2`
 - `pip`
 - `types-tabulate`
-- `pytables>=3.8.0`
+- `pytables>=3.10.0`
 - `pyarrow`
 - `libiconv`
 - `libidn2`

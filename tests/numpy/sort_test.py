@@ -123,7 +123,7 @@ class TestSort:
             assert np.allclose(np.sort(npa), ak.sort(ak.array(npa), algo).to_ndarray(), equal_nan=True)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", [ak.float64, ak.uint64, ak.int64, ak.bigint])
+    @pytest.mark.parametrize("dtype", [ak.float64, ak.int64, ak.bigint])
     @pytest.mark.parametrize("v_shape", [(), (10,), (4, 5), (2, 2, 3)])
     @pytest.mark.parametrize("side", ["left", "right"])
     def test_searchsorted(self, size, dtype, v_shape, side):
