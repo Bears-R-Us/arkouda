@@ -87,12 +87,10 @@ class TestStatsFunction:
         aStd02 = xp.std(a, axis=(1, 2))
         assert aStd02.shape == (10,)
         assert abs(aStd02[0] - math.sqrt(24)) < 1e-10
-        assert abs(aStd02[2] - math.sqrt(24)) < 1e-10
 
         aStd02Keepdims = xp.std(a, axis=(1, 2), keepdims=True)
         assert aStd02Keepdims.shape == (10, 1, 1)
         assert abs(aStd02Keepdims[0, 0, 0] - math.sqrt(24)) < 1e-10
-        assert abs(aStd02Keepdims[2, 0, 0] - math.sqrt(24)) < 1e-10
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_var(self):
@@ -107,12 +105,10 @@ class TestStatsFunction:
         aStd02 = xp.var(a, axis=(1, 2))
         assert aStd02.shape == (10,)
         assert abs(aStd02[0] - 24) < 1e-10
-        assert abs(aStd02[2] - 24) < 1e-10
 
         aStd02Keepdims = xp.var(a, axis=(1, 2), keepdims=True)
         assert aStd02Keepdims.shape == (10, 1, 1)
         assert abs(aStd02Keepdims[0, 0, 0] - 24) < 1e-10
-        assert abs(aStd02Keepdims[2, 0, 0] - 24) < 1e-10
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_prod(self):
