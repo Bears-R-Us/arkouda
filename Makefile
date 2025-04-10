@@ -690,6 +690,9 @@ isort:
 	#  Verify if it will pass the CI check:
 	isort --check-only --diff .
 
+format: isort ruff-format
+	flake8
+
 #################
 #### Test.mk ####
 #################
