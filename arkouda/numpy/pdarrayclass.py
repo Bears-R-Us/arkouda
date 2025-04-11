@@ -596,12 +596,12 @@ class pdarray:
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
 
-        from arkouda.dtypes import float64 as ak_float64
-        from arkouda.dtypes import int64 as ak_int64
+        from arkouda.dtypes import float64 as akfloat64
+        from arkouda.dtypes import int64 as akint64
 
-        if self.dtype == ak_uint64 and dtype(other) == ak_int64:
+        if self.dtype == akuint64 and dtype(other) == akint64:
             dt = "float64"
-            other = ak_float64(other)
+            other = akfloat64(other)
 
         from arkouda.numpy.dtypes import can_cast as ak_can_cast
 
