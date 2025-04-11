@@ -276,6 +276,9 @@ module BinOp
         when "-" {
           e = l.a:real - r.a:real;
         }
+        when "*" {
+          e = l.a:real * r.a:real;
+        }  
         when "/" { // truediv
             e = l.a:real / r.a:real;
         }
