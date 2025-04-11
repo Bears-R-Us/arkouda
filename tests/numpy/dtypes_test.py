@@ -23,6 +23,12 @@ SUPPORTED_NP_DTYPES = [
 
 
 class TestDTypes:
+    def test_my_module_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(dtypes)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     def test_resolve_scalar_dtype(self):
         for b in True, False:
             assert "bool" == dtypes.resolve_scalar_dtype(b)

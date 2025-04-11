@@ -455,9 +455,10 @@ def isSupportedInt(num):
 
     Examples
     --------
-    >>> ak.isSupportedInt(ak.int64)
+    >>> import arkouda as ak
+    >>> ak.isSupportedInt(79)
     True
-    >>> ak.isSupportedInt(ak.float64)
+    >>> ak.isSupportedInt(54.9)
     False
 
     """
@@ -479,9 +480,10 @@ def isSupportedFloat(num):
 
     Examples
     --------
-    >>> ak.isSupportedFloat(ak.int64)
+    >>> import arkouda as ak
+    >>> ak.isSupportedFloat(56)
     False
-    >>> ak.isSupportedFloat(ak.float64)
+    >>> ak.isSupportedFloat(56.7)
     True
 
     """
@@ -503,9 +505,10 @@ def isSupportedNumber(num):
 
     Examples
     --------
-    >>> ak.isSupportedNumber(ak.int64)
+    >>> import arkouda as ak
+    >>> ak.isSupportedNumber(45.9)
     True
-    >>> ak.isSupportedNumber(ak.str_)
+    >>> ak.isSupportedNumber("string")
     False
 
     """
@@ -527,9 +530,10 @@ def isSupportedBool(num):
 
     Examples
     --------
-    >>> ak.isSupportedBool(ak.int64)
+    >>> import arkouda as ak
+    >>> ak.isSupportedBool("True")
     False
-    >>> ak.isSupportedBool(bool)
+    >>> ak.isSupportedBool(True)
     True
 
     """
@@ -551,7 +555,8 @@ def isSupportedDType(scalar: object) -> bool:
 
     Examples
     --------
-    >>> ak.isSupportedDType(ak.int64)
+    >>> import arkouda as ak
+    >>> ak.isSupportedDType(ak.int64(64))
     True
     >>> ak.isSupportedDType(np.complex128(1+2j))
     False
@@ -576,6 +581,7 @@ def resolve_scalar_dtype(val: object) -> str:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.resolve_scalar_dtype(1)
     'int64'
     >>> ak.resolve_scalar_dtype(2.0)
@@ -634,6 +640,7 @@ def get_byteorder(dt: np.dtype) -> str:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.get_byteorder(ak.dtype(ak.int64))
     '<'
 
@@ -665,6 +672,7 @@ def get_server_byteorder() -> str:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.get_server_byteorder()
     'little'
 
