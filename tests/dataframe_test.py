@@ -1135,6 +1135,47 @@ class TestDataFrame:
                     # assert_frame_equal(sorted_ak.to_pandas()[sorted_column_names],
                     # sorted_pd[sorted_column_names])
 
+    @pytest.mark.parametrize("how", ["inner", "left", "right"])
+    def test_merge_left_on_right_on(self, how):
+        size = 1000
+        seed = 42
+
+        a = ak.randint(-size // 10, size // 10, size, seed=seed)
+        b = ak.randint(-size // 10, size // 10, size, seed=seed + 1)
+        c = ak.randint(-size // 10, size // 10, size, seed=seed + 2)
+        d = ak.randint(-size // 10, size // 10, size, seed=seed + 3)
+        ones = ak.ones(size, int)
+        altr = alternating_1_0(size)
+
+        for truth in itertools.product([True, False], repeat=3):
+            left_arrs = [pda if t else pda_to_str_helper(pda) for pda, t in zip([a, b, ones], truth)]
+            right_arrs = [pda if t else pda_to_str_helper(pda) for pda, t in zip([c, d, altr], truth)]
+
+            left_df = ak.DataFrame({k: v for k, v in zip(["a", "b", "c"], left_arrs)})
+            right_df = ak.DataFrame({k: v for k, v in zip(["x", "y", "z"], right_arrs)})
+
+            l_pd, r_pd = left_df.to_pandas(), right_df.to_pandas()
+
+            for left_on, right_on in [
+                ("a", "x"),
+                ("c", "z"),
+                (["a", "c"], ["x", "z"]),
+            ]:
+                ak_merge = ak.merge(left_df, right_df, left_on=left_on, right_on=right_on, how=how)
+                pd_merge = pd.merge(l_pd, r_pd, left_on=left_on, right_on=right_on, how=how, copy=False)
+
+                sorted_column_names = sorted(ak_merge.columns.values)
+                assert sorted_column_names == sorted(pd_merge.columns.values)
+
+                for col in sorted_column_names:
+                    from_ak = ak_merge[col].to_ndarray()
+                    from_pd = pd_merge[col].to_numpy()
+
+                    if isinstance(ak_merge[col], ak.pdarray):
+                        assert np.allclose(np.sort(from_ak), np.sort(from_pd), equal_nan=True)
+                    else:
+                        assert (np.sort(from_ak) == np.sort(from_pd.astype(str))).all()
+
     def test_isna_notna(self):
         df = ak.DataFrame(
             {
