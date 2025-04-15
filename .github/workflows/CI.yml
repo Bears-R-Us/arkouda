@@ -55,7 +55,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.4.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.0
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.1
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -75,7 +75,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.4.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.0
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.1
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -100,7 +100,7 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.0
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.1
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -133,7 +133,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.4.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.0
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.1
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -176,7 +176,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.4.0
     container:
-      image: ajpotts/almalinux-with-arkouda-deps:1.0.0
+      image: ajpotts/almalinux-with-arkouda-deps:1.0.1
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -275,7 +275,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.4.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.0
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.1
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4    
@@ -373,7 +373,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.0
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.1
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -421,7 +421,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.0
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.1
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -466,48 +466,24 @@ jobs:
 
   arkouda_tests_linux:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - image: chapel
-            threads: 2
-#          - image: chapel-gasnet-smp
-#            threads: 1
     env:
-      CHPL_RT_NUM_THREADS_PER_LOCALE: ${{matrix.threads}}
+      CHPL_RT_NUM_THREADS_PER_LOCALE: 2
+      CHPL_HOME: /opt/chapel-2.4.0
     container:
-      image: chapel/${{matrix.image}}:2.3.0
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.1
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Install python dependencies
-      uses: nick-fields/retry@v2
-      with:
-        timeout_seconds: 1200  # or use timeout_minutes
-        max_attempts: 2
-        retry_wait_seconds: 60
-        retry_on: error
-        command: |
-          apt-get update
-          apt-get install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libssl-dev libsqlite3-dev libreadline-dev libbz2-dev libffi-dev curl liblzma-dev tk-dev
-          apt-get install -y libhdf5-dev
-
-    # Download and install Python from source (updated URL for Python 3.12)
-    - name: Download Python 3.12 source
+    - name: Set Python version to 3.13
       run: |
-        curl -O https://www.python.org/ftp/python/3.12.0/Python-3.12.0.tgz
-        file Python-3.12.0.tgz  # Check the file type
-
-    - name: Extract Python 3.12 source
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1      
+    - name: Set Chapel version to 2.4
       run: |
-        tar -xvf Python-3.12.0.tgz
-        cd Python-3.12.0 && ./configure --enable-optimizations && make -j$(nproc) && make altinstall && cd ..
-        update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.12 1
-
-    # Install pip for Python from the get-pip.py script
-    - name: Install pip for Python 3.12
+        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.4.0/bin/linux64-x86_64/chpl 1
+        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.4.0/bin/linux64-x86_64/chpldoc 1
+    - name: Check Chapel version
       run: |
-        curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3.12 get-pip.py
+        chpl --version
     - name: Install dependencies
       uses: nick-fields/retry@v2
       with:
@@ -516,16 +492,11 @@ jobs:
         retry_wait_seconds: 60
         retry_on: error
         command: |
-          apt-get update && apt-get install -y -V ca-certificates lsb-release wget
-          make install-arrow
-          apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev libcurl4-openssl-dev libidn2-dev libzmq3-dev
-          make install-iconv
-          make install-pytables
+          python3 -m ensurepip --default-pip
+          python3 -m pip install pytest-benchmark==3.2.2 py
           echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
-          python3 -m pip install scikit-build pytest-benchmark==3.2.2 py
-    - name: Install Chapel frontend bindings
-      run: |
-        (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)
+          echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/arrow-install/))" >> Makefile.paths
+          echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/libiconv-install/))" >> Makefile.paths
     - name: Build/Install Arkouda
       run: |
         make
@@ -547,48 +518,23 @@ jobs:
         
   arkouda_benchmark_linux:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - image: chapel
-            threads: 2
-#          - image: chapel-gasnet-smp
-#            threads: 1
     env:
-      CHPL_RT_NUM_THREADS_PER_LOCALE: ${{matrix.threads}}
+      CHPL_HOME: /opt/chapel-2.4.0
     container:
-      image: chapel/${{matrix.image}}:2.3.0
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.1
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - name: Install python dependencies
-      uses: nick-fields/retry@v2
-      with:
-        timeout_seconds: 1200  # or use timeout_minutes
-        max_attempts: 2
-        retry_wait_seconds: 60
-        retry_on: error
-        command: |
-          apt-get update
-          apt-get install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libssl-dev libsqlite3-dev libreadline-dev libbz2-dev libffi-dev curl liblzma-dev tk-dev
-          apt-get install -y libhdf5-dev
-
-    # Download and install Python from source (updated URL for Python 3.12)
-    - name: Download Python 3.12 source
+    - name: Set Python version to 3.13
       run: |
-        curl -O https://www.python.org/ftp/python/3.12.0/Python-3.12.0.tgz
-        file Python-3.12.0.tgz  # Check the file type
-
-    - name: Extract Python 3.12 source
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1      
+    - name: Set Chapel version to 2.4
       run: |
-        tar -xvf Python-3.12.0.tgz
-        cd Python-3.12.0 && ./configure --enable-optimizations && make -j$(nproc) && make altinstall && cd ..
-        update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.12 1
-
-    # Install pip for Python from the get-pip.py script
-    - name: Install pip for Python 3.12
+        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.4.0/bin/linux64-x86_64/chpl 1
+        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.4.0/bin/linux64-x86_64/chpldoc 1
+    - name: Check Chapel version
       run: |
-        curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3.12 get-pip.py
+        chpl --version
     - name: Install dependencies
       uses: nick-fields/retry@v2
       with:
@@ -597,23 +543,15 @@ jobs:
         retry_wait_seconds: 60
         retry_on: error
         command: |
-          apt-get update && apt-get install -y -V ca-certificates lsb-release wget
-          make install-arrow
-          apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev libcurl4-openssl-dev libidn2-dev libzmq3-dev
-          make install-iconv
-          make install-pytables
+          python3 -m ensurepip --default-pip
+          python3 -m pip install pytest-benchmark==3.2.2 py
           echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
-          python3 -m pip install scikit-build pytest-benchmark==3.2.2 py
-    - name: Install Chapel frontend bindings
-      run: |
-        (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)
+          echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/arrow-install/))" >> Makefile.paths
+          echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/libiconv-install/))" >> Makefile.paths
     - name: Build/Install Arkouda
       run: |
         make
         python3 -m pip install .[dev]
-    - name: Arkouda make check
-      run: |
-        make check
     - name: Arkouda benchmark
       run: |
         make benchmark size_bm=10

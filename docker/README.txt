@@ -11,5 +11,5 @@ This script builds and optionally pushes a Docker image for the Arkouda project.
 ## Usage
 
 ```bash
-./build_and_push.sh -v VERSION -i IMAGE_NAME -r REPO_NAME [-p]
+bash docker/build_arkouda_container.sh -v VERSION -i IMAGE_NAME -r REPO_NAME [-p]
 ```
