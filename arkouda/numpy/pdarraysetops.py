@@ -11,6 +11,7 @@ from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type, uni
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import bool_ as akbool
+from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
@@ -400,7 +401,6 @@ def concatenate(
     types = {type(x) for x in arrays}
     if len(types) != 1:
         raise TypeError(f"Items must all have same type: {types}")
-
     if isinstance(arrays[0], BitVector):
         # everything should be a BitVector because all have the same type, but do isinstance for mypy
         widths = {x.width for x in arrays if isinstance(x, BitVector)}
@@ -436,20 +436,54 @@ def concatenate(
             return callback(zeros_like(cast(pdarray, arrays[0])))
         else:
             return arrays[0]
-
-    repMsg = generic_msg(
-        cmd="concatenate",
-        args={
-            "nstr": len(arrays),
-            "objType": objtype,
-            "mode": mode,
-            "names": names,
-        })
-    if objtype == pdarray.objType:
+    if objtype == pdarray.objType and ordered:
+        dtype_ = arrays[0].dtype
+        if dtype_ == bigint:
+            max_bit_list = []
+            for a in arrays:
+                if a.dtype == bigint and isinstance(a, pdarray):
+                    if a.max_bits > 0:
+                        max_bit_list.append(a.max_bits)
+            # Should this be min or max?
+            m_bits = -1 if len(max_bit_list) == 0 else min(max_bit_list)
+            for a in arrays:
+                if a.dtype == bigint and isinstance(a, pdarray):
+                    a.max_bits = m_bits
+        offsets = [0 for _ in range(len(arrays))]
+        for i in range(1, len(arrays)):
+            prev_arr = arrays[i - 1]
+            if isinstance(prev_arr, pdarray):
+                shape1 = prev_arr.shape
+                offsets[i] = offsets[i - 1] + shape1[0]
+        repMsg = generic_msg(
+            cmd=f"concatenate<{akdtype(dtype_).name},{arrays[0].ndim}>",
+            args={
+                "n": len(arrays),
+                "names": list(arrays),
+                "axis": 0,
+                "offsets": offsets,
+            })
+        if dtype_ == bigint:
+            ret = create_pdarray(cast(str, repMsg))
+            ret.max_bits = m_bits
+            return callback(ret)
         return callback(create_pdarray(cast(str, repMsg)))
-    elif objtype == Strings.objType:
-        # ConcatenateMsg returns created attrib(name)+created nbytes=123
-        return Strings.from_return_msg(cast(str, repMsg))
+    elif objtype == Strings.objType or not ordered:
+        repMsg = generic_msg(
+            cmd="concatenateStr",
+            args={
+                "nstr": len(arrays),
+                "objType": objtype,
+                "names": names,
+                "mode": mode,
+            })
+        if objtype == pdarray.objType:
+            return callback(create_pdarray(cast(str, repMsg)))
+        elif objtype == Strings.objType:
+            # ConcatenateMsg returns created attrib(name)+created nbytes=123
+            return Strings.from_return_msg(cast(str, repMsg))
+        else:
+            raise TypeError("arrays must be an array of pdarray or Strings objects")
     else:
         raise TypeError("arrays must be an array of pdarray or Strings objects")
 # fmt:on
