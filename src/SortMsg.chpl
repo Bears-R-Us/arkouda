@@ -5,6 +5,7 @@ module SortMsg
     use Time;
     use Math only;
     use ArkoudaSortCompat only relativeComparator;
+    private use DynamicSort;
     use Search only;
     use Reflection;
     use ServerErrors;
@@ -45,7 +46,7 @@ module SortMsg
 
       if algorithm == SortingAlgorithm.TwoArrayRadixSort {
         var sorted = makeDistArray(array);
-        ArgSortMsg.dynamicTwoArrayRadixSort(sorted, comparator=myDefaultComparator);
+        DynamicSort.dynamicTwoArrayRadixSort(sorted, comparator=myDefaultComparator);
         return sorted;
       } else {
         var sorted = radixSortLSD_keys(array);
@@ -74,7 +75,7 @@ module SortMsg
             slice[i] = array[perpIdx];
           }
 
-          ArgSortMsg.dynamicTwoArrayRadixSort(slice, comparator=myDefaultComparator);
+          DynamicSort.dynamicTwoArrayRadixSort(slice, comparator=myDefaultComparator);
 
           forall i in d.dim(axis) with (var perpIdx = idx) {
             perpIdx[axis] = i;
