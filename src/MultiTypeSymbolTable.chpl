@@ -20,7 +20,7 @@ module MultiTypeSymbolTable
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
-    const mtLogger : owned Logger = new Logger(logLevel, logChannel);
+    const mtLogger = new Logger(logLevel, logChannel);
 
     /* symbol table */
     class SymTab
