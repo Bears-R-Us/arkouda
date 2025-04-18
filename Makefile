@@ -1,5 +1,6 @@
 # Makefile for Arkouda
 ARKOUDA_PROJECT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+ARKOUDA_PROJECT_DIR := $(patsubst %/,%,$(ARKOUDA_PROJECT_DIR))
 
 PROJECT_NAME := arkouda
 ARKOUDA_SOURCE_DIR := $(ARKOUDA_PROJECT_DIR)/src
@@ -114,7 +115,7 @@ deps-download-source: zmq-download-source hdf5-download-source arrow-download-so
 
 DEP_DIR := dep
 DEP_INSTALL_DIR := $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)
-DEP_BUILD_DIR := $(ARKOUDA_PROJECT_DIR)$(DEP_DIR)/build
+DEP_BUILD_DIR := $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)/build
 
 ZMQ_VER := 4.3.5
 ZMQ_NAME_VER := zeromq-$(ZMQ_VER)
@@ -128,8 +129,8 @@ zmq-download-source:
     ifeq (,$(wildcard ${ZMQ_BUILD_DIR}*/.*))
         #   If the tar.gz not found, download it
         ifeq (,$(wildcard ${DEP_BUILD_DIR}/${ZMQ_NAME_VER}*.tar.gz))
-			cd $(DEP_BUILD_DIR) && curl -sL $(ZMQ_LINK) | tar xz		
-		#   Otherwise just unzip it
+			cd $(DEP_BUILD_DIR) && curl -sL $(ZMQ_LINK) | tar xz
+        #   Otherwise just unzip it
         else
 			cd $(DEP_BUILD_DIR) && tar -xzf $(ZMQ_NAME_VER)*.tar.gz
         endif
@@ -166,18 +167,18 @@ hdf5-download-source:
     ifeq (,$(wildcard ${HDF5_BUILD_DIR}*/.*))
         #   If the tar.gz not found, download it
         ifeq (,$(wildcard ${DEP_BUILD_DIR}/$(HDF5_NAME_VER)*tar.gz))
-			cd $(DEP_BUILD_DIR) && curl -sL $(HDF5_LINK) | tar xz		
-		#   Otherwise just unzip it
+			cd $(DEP_BUILD_DIR) && curl -sL $(HDF5_LINK) | tar xz
+        #   Otherwise just unzip it
         else
 			cd $(DEP_BUILD_DIR) && tar -xzf $(HDF5_NAME_VER)*.tar.gz
         endif
-    endif    
+    endif
 
 install-hdf5: hdf5-download-source
 	@echo "Installing HDF5"
 	rm -rf $(HDF5_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	
+
 	cd $(HDF5_BUILD_DIR)* && ./configure --prefix=$(HDF5_INSTALL_DIR) --enable-optimization=high --enable-hl && make && make install
 	echo '$$(eval $$(call add-path,$(HDF5_INSTALL_DIR)))' >> Makefile.paths
 
@@ -218,9 +219,8 @@ arrow-download-source:
 		mkdir -p $(ARROW_DEP_DIR)
 		cd $(ARROW_BUILD_DIR)/cpp/thirdparty/ && ./download_dependencies.sh $(ARROW_DEP_DIR) > $(DEP_BUILD_DIR)/arrow_exports.sh
     endif
-    
+
 	rm -fr $(ARROW_BUILD_DIR)
-    
 
 install-arrow: arrow-download-source
 	@echo "Installing Apache Arrow/Parquet"
@@ -230,16 +230,16 @@ install-arrow: arrow-download-source
 
 	cd $(DEP_BUILD_DIR) && tar -xvf $(ARROW_NAME_VER).tar.gz
 	mkdir -p $(ARROW_BUILD_DIR)/cpp/build-release
-	
+
 	cd $(DEP_BUILD_DIR) && . ./arrow_exports.sh && cd $(ARROW_BUILD_DIR)/cpp/build-release && cmake -S $(ARROW_BUILD_DIR)/cpp .. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON -DARROW_DEPENDENCY_SOURCE=$(ARROW_DEPENDENCY_SOURCE) $(ARROW_OPTIONS) && make -j$(NUM_CORES)
 
 	cd $(ARROW_BUILD_DIR)/cpp/build-release && make install
-    
-	echo '$$(eval $$(call add-path,$(ARROW_INSTALL_DIR)))' >> Makefile.paths   
+
+	echo '$$(eval $$(call add-path,$(ARROW_INSTALL_DIR)))' >> Makefile.paths
 
 arrow-clean:
 	rm -rf $(DEP_BUILD_DIR)/apache-arrow*
-	rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*	
+	rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*
 	rm -rf $(ARROW_DEP_DIR)
 	rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
 
@@ -268,23 +268,23 @@ ICONV_LINK := https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VER).tar.gz
 
 iconv-download-source:
 	mkdir -p $(DEP_BUILD_DIR)
-	
+
     #If the build directory does not exist,  create it
     ifeq (,$(wildcard ${ICONV_BUILD_DIR}*/.*))
         #   If the tar.gz not found, download it
         ifeq (,$(wildcard ${DEP_BUILD_DIR}/libiconv-${ICONV_VER}.tar.gz))
-			cd $(DEP_BUILD_DIR) && curl -sL $(ICONV_LINK) | tar xz		
-		#   Otherwise just unzip it
+			cd $(DEP_BUILD_DIR) && curl -sL $(ICONV_LINK) | tar xz
+        #   Otherwise just unzip it
         else
 			cd $(DEP_BUILD_DIR) && tar -xzf libiconv-$(ICONV_VER).tar.gz
         endif
-    endif	
-    
+    endif
+
 install-iconv: iconv-download-source
 	@echo "Installing iconv"
 	rm -rf $(ICONV_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	
+
 	cd $(ICONV_BUILD_DIR) && ./configure --prefix=$(ICONV_INSTALL_DIR) && make && make install
 	echo '$$(eval $$(call add-path,$(ICONV_INSTALL_DIR)))' >> Makefile.paths
 
@@ -299,23 +299,23 @@ LIBIDN_LINK := https://ftp.gnu.org/gnu/libidn/libidn2-$(LIBIDN_VER).tar.gz
 
 idn2-download-source:
 	mkdir -p $(DEP_BUILD_DIR)
-	
+
     #If the build directory does not exist,  create it
     ifeq (,$(wildcard $(LIBIDN_BUILD_DIR)*/.*))
-		# If the tar.gz is not found, download it
+        # If the tar.gz is not found, download it
         ifeq (,$(wildcard ${DEP_BUILD_DIR}/libidn2-$(LIBIDN_VER)*.tar.gz))
-			cd $(DEP_BUILD_DIR) && curl -sL $(LIBIDN_LINK) | tar xz		
-		# Otherwise just unzip it
+			cd $(DEP_BUILD_DIR) && curl -sL $(LIBIDN_LINK) | tar xz
+        # Otherwise just unzip it
         else
 			cd $(DEP_BUILD_DIR) && tar -xzf libidn2-$(LIBIDN_VER)*.tar.gz
         endif
-    endif	
+    endif
 
 install-idn2: idn2-download-source
 	@echo "Installing libidn2"
 	rm -rf $(LIBIDN_INSTALL_DIR)
-	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)	
-	
+	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
+
 	cd $(LIBIDN_BUILD_DIR) && ./configure --prefix=$(LIBIDN_INSTALL_DIR) && make && make install
 	echo '$$(eval $$(call add-path,$(LIBIDN_INSTALL_DIR)))' >> Makefile.paths
 
@@ -327,7 +327,7 @@ BLOSC_INSTALL_DIR := $(DEP_INSTALL_DIR)/c-blosc-install
 
 blosc-download-source:
 	mkdir -p $(DEP_BUILD_DIR)
-	
+
     #If the build directory does not exist,  create it
     ifeq (,$(wildcard $(BLOSC_BUILD_DIR)/.*))
 		cd $(DEP_BUILD_DIR) && git clone https://github.com/Blosc/c-blosc2.git
@@ -759,8 +759,6 @@ benchmark:
 	mkdir -p benchmark_v2/data
 	python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks --size=$(size_bm) --benchmark-json=$(out)
 	python3 benchmark_v2/reformat_benchmark_results.py --benchmark-data $(out)
-
-	
 
 version:
 	@echo $(VERSION);
