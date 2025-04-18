@@ -10,6 +10,7 @@ module SegStringSort {
   use Logging;
   use ServerConfig;
   use BlockDist;
+  import DynamicSort.dynamicTwoArrayRadixSort;
 
   private config const SSS_v = false;
   private const vv = SSS_v;
@@ -76,7 +77,7 @@ module SegStringSort {
       tl = timeSinceEpoch().totalSeconds();
       // Sort the strings, but bring the inds along for the ride
       const myComparator = new StringIntComparator();
-      sort(stringsWithInds, comparator=myComparator);
+      dynamicTwoArrayRadixSort(stringsWithInds, comparator=myComparator);
 
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                              "Sorted long strings in %? seconds".format(timeSinceEpoch().totalSeconds() - tl));
