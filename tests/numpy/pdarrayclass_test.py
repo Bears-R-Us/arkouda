@@ -5,6 +5,7 @@ import pytest
 
 import arkouda as ak
 from arkouda.client import get_array_ranks, get_max_array_rank
+from arkouda.testing import assert_arkouda_array_equivalent
 from arkouda.testing import assert_equal as ak_assert_equal
 from arkouda.testing import assert_equivalent as ak_assert_equivalent
 
@@ -16,21 +17,9 @@ INDEX_REDUCTION_OPS = ak.pdarrayclass.SUPPORTED_INDEX_REDUCTION_OPS
 
 DTYPES = ["int64", "float64", "bool", "uint64"]
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
+NUMERIC_TYPES_NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 
 #   TODO: add uint8 to DTYPES
-
-#  bumpup is useful for multi-dimensional testing.
-#  Given an array of shape(m1,m2,...m), it will broadcast it to shape (2,m1,m2,...,m).
-
-
-def bumpup(a):
-    if a.ndim == 1:
-        blob = (2, a.size)
-    else:
-        blob = list(a.shape)
-        blob.insert(0, 2)
-        blob = tuple(blob)
-    return np.broadcast_to(a, blob)
 
 
 class TestPdarrayClass:
@@ -235,24 +224,68 @@ class TestPdarrayClass:
         self.assert_reduction_ops_match(op, pda, axis=axis)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
-    def test_dot(self, size, dtype):
-        nda1 = np.array([1, 2, 3])
-        nda2 = np.array([4, 5, 6])
-        factor = 3
+    @pytest.mark.parametrize("dtype1", NUMERIC_TYPES)
+    @pytest.mark.parametrize("dtype2", NUMERIC_TYPES)
+    def test_dot(self, size, dtype1, dtype2):
+        #   two 1D vectors
+
+        nda1 = np.random.randint(0, 2, size).astype(dtype1)
+        nda2 = np.random.randint(0, 2, size).astype(dtype2)
         pda1 = ak.array(nda1)
         pda2 = ak.array(nda2)
-        assert ak.dot(pda1, pda2) == np.dot(nda1, nda2)
-        assert (ak.dot(pda1, factor).to_ndarray() == np.dot(nda1, factor)).all()
-        assert (ak.dot(factor, pda2).to_ndarray() == np.dot(factor, nda2)).all()
-        # above is single-dim ; below is multi-dim
-        if get_max_array_rank() > 1:
-            for n in range(2, get_max_array_rank()):
-                nda1 = np.ascontiguousarray(bumpup(nda1))  # contiguous is needed
-                nda2 = np.ascontiguousarray(bumpup(nda2))  # for conversion to pdarray
-                if n in get_array_ranks():
-                    pda1 = ak.array(nda1)
-                    pda2 = ak.array(nda2)
-                    assert ak.dot(pda1, pda2) == np.sum(nda1 * nda2)
-                    assert (ak.dot(pda1, factor).to_ndarray() == np.dot(nda1, factor)).all()
-                    assert (ak.dot(factor, pda2).to_ndarray() == np.dot(factor, nda2)).all()
+        assert ak.dot(pda1, pda2) == np.dot(nda1, nda2)  # results are scalar
+
+        #   one 1D vector and one scalar
+
+        factor = 5
+        assert_arkouda_array_equivalent(ak.dot(pda1, factor), np.dot(nda1, factor))
+        assert_arkouda_array_equivalent(ak.dot(factor, pda2), np.dot(factor, nda2))
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype1", NUMERIC_TYPES)
+    @pytest.mark.parametrize("dtype2", NUMERIC_TYPES)
+    def test_dot_2D(self, size, dtype1, dtype2):
+        #   two 2D arrays
+
+        right = size // 2
+        nda1 = np.arange(2 * right).astype(dtype1).reshape(2, right)
+        nda2 = np.arange(2 * right).astype(dtype2).reshape(right, 2)
+        pda1 = ak.array(nda1)
+        pda2 = ak.array(nda2)
+        assert_arkouda_array_equivalent(ak.dot(pda1, pda2), np.dot(nda1, nda2))
+
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype1", NUMERIC_TYPES)
+    @pytest.mark.parametrize("dtype2", NUMERIC_TYPES)
+    def test_dot_multi_dim(self, size, dtype1, dtype2):
+        mrank = get_max_array_rank()
+
+        #   one max rank array and one 1D array
+
+        if mrank > 1:
+            mshape = (mrank - 1) * [2]
+            fsize = size // (2 ** (mrank - 1))
+            mshape.append(fsize)
+            msize = 2 ** (mrank - 1) * fsize
+            nda1 = np.arange(msize).astype(dtype1).reshape(tuple(mshape))
+            nda2 = np.arange(fsize).astype(dtype2)
+            pda1 = ak.array(nda1)
+            pda2 = ak.array(nda2)
+            assert_arkouda_array_equivalent(ak.dot(pda1, pda2), np.dot(nda1, nda2))
+
+        #   one max rank-1 array, and one 2D array
+
+        if mrank > 2 and 2 in get_array_ranks() and mrank - 1 in get_array_ranks():
+            mshape = (mrank - 2) * [2]
+            fsize = size // (2 ** (mrank - 2))
+            mshape.append(fsize)
+            msize = 2 ** (mrank - 2) * fsize
+            nda1 = np.arange(msize).astype(dtype1).reshape(tuple(mshape))
+            nda2 = np.arange(2 * fsize).astype(dtype2).reshape((fsize, 2))
+            pda1 = ak.array(nda1)
+            pda2 = ak.array(nda2)
+            assert_arkouda_array_equivalent(ak.dot(pda1, pda2), np.dot(nda1, nda2))
+
+        #   higher dimension testing may not be feasible at this time

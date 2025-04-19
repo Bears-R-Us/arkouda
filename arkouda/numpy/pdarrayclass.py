@@ -10,8 +10,7 @@ from typing import TYPE_CHECKING, Any, List, Optional, Sequence, Tuple, Union, c
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
-from arkouda.dtypes import uint64 as ak_uint64
+from arkouda.client import generic_msg, get_array_ranks
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import (
@@ -184,12 +183,12 @@ def parse_single_value(msg: str) -> Union[numpy_scalars, int]:
         #   This is a work-around to deal with the fact that the server
         #   sometimes returns a negative value when it should return a uint.
         #   It can be removed when issue #4157 is resolved.
-        if mydtype == ak_uint64:
+        if mydtype == akuint64:
             if value.startswith("-"):
                 value = value.strip("-")
-                uint_value = np.uint64(np.iinfo(np.uint64).max) - ak_uint64(value) + ak_uint64(1)
+                uint_value = np.uint64(np.iinfo(np.uint64).max) - akuint64(value) + akuint64(1)
                 return uint_value
-            return ak_uint64(value)
+            return akuint64(value)
         return mydtype.type(value)
     except Exception:
         raise ValueError(f"unsupported value from server {mydtype.name} {value}")
@@ -597,12 +596,12 @@ class pdarray:
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
 
-        from arkouda.dtypes import float64 as ak_float64
-        from arkouda.dtypes import int64 as ak_int64
+        from arkouda.dtypes import float64 as akfloat64
+        from arkouda.dtypes import int64 as akint64
 
-        if self.dtype == ak_uint64 and dtype(other) == ak_int64:
+        if self.dtype == akuint64 and dtype(other) == akint64:
             dt = "float64"
-            other = ak_float64(other)
+            other = akfloat64(other)
 
         from arkouda.numpy.dtypes import can_cast as ak_can_cast
 
@@ -3350,7 +3349,66 @@ setattr(
     ),
 )
 
-# TODO: align dot to numpy in multi-dimensional case; presently = np.sum(a*b), not np.dot(a,b)
+
+def resolve(pda):  # get type, either of pda or scalar
+    return pda.dtype.name if isinstance(pda, pdarray) else resolve_scalar_dtype(pda)
+
+
+def int_uint_case(pda1, pda2):
+    # to match numpy, we do this check so that
+    # dot will return floats if given an int and a uint
+
+    t1 = resolve(pda1)
+    t2 = resolve(pda2)
+
+    if (t1 == "uint64" and t2 == "int64") or (t1 == "int64" and t2 == "uint64"):
+        return True
+    else:
+        return False
+
+
+def _compute_dot_result_shape(s1, s2):
+    #   Because of the conditionals in dot, this will never be called with scalars.
+    #   This accepts two shapes s1 and s2, checks them for compliance with the
+    #   requirements of ak.dot, and either returns the shape that the result
+    #   of ak.dot will have, or raises an error if the shapes aren't compatible.
+
+    l1 = list(s1)
+    l2 = list(s2)
+
+    #   s1 consists of ( front1, k )
+    #   s2 consists of ( front2, k, m )
+    #      where front1 and front2 are subsets of the shapes s1, s2.
+
+    #   if the two ks don't match, it's an error
+    #   front2 is optional.  If front2 is missing, m is also optional.
+
+    front1 = l1[:-1]
+    k1 = l1[-1]
+
+    front2 = list()
+    m_exists = False
+
+    if len(l2) == 1:
+        k2 = l2[0]
+    elif len(l2) == 2:
+        k2 = l2[0]
+        m_exists = True
+        m = l2[1]
+    else:
+        m_exists = True
+        m = l2[-1]
+        k2 = l2[-2]
+        front2 = l2[:-2]
+
+    if k1 == k2:
+        l3 = front1.copy()
+        l3.extend(front2)
+        if m_exists:
+            l3.append(m)
+        return tuple(l3)
+    else:
+        raise ValueError(f"Incompatible shapes {tuple(s1)} and {tuple(s2)} for ak.dot")
 
 
 @typechecked
@@ -3359,51 +3417,128 @@ def dot(
     pda2: Union[np.int64, np.float64, np.uint64, pdarray],
 ) -> Union[numpy_scalars, pdarray]:
     """
-    Returns the sum of the elementwise product of two arrays of the same size (the dot product) or
-    the product of a singleton element and an array.
+    Computes dot product of two arrays.
+
+    If pda1 and pda2 are 1-D vectors of identical length, returns the conventional dot product.
+
+    If both pda1 and pda2 are scalars, returns their product.
+
+    If one of pda1, pda2 is a scalar, and the other a pdarray, returns the pdarray multiplied
+    by the scalar.
+
+    If both pda1 and pda2 are 2-D arrays, returns the matrix multiplication.
+
+    If pda1 is M-D and pda2 is 1-D, returns a sum product over the last axis of pda1 and pda2.
+
+    If pda1 is M-D and pda2 is N-D, returns a sum product over the last axis of pda1 and the
+    next-to-last axis of pda2, e.g.:
+
+    For example, If pda1 has rank (3,3,4) and pda2 has rank (4,2), then the result of
+    ak.dot(pda1,pda2) has rank (3,3,2), and
+
+    result[i,j,k] = sum( pda1[i, j, :] * pda2[:, k] )
 
     Parameters
     ----------
-    pda1 : Union[numeric_scalars, pdarray]
-
-    pda2 : Union[numeric_scalars, pdarray]
+    pda1: Union[np.int64, np.float64, np.uint64, pdarray],
+    pda2: Union[np.int64, np.float64, np.uint64, pdarray],
 
     Returns
     -------
-    Union[numeric_scalars, pdarray]
-        The sum of the elementwise product pda1 and pda2 or
-        the product of a singleton element and an array.
+    Union[numpy_scalars, pdarray]
+        as described above
+
+    Examples
+    --------
+    >>> ak.dot(ak.array([1, 2, 3]),ak.array([4,5,6]))
+    32
+    >>> ak.dot(ak.array([1, 2, 3]),5)
+    array([5 10 15])
+    >>> ak.dot(5,ak.array([2, 3, 4]))
+    array([10 15 20])
+    >>> ak.dot(ak.arange(9).reshape(3,3),ak.arange(6).reshape(3,2))
+    array([array([10 13]) array([28 40]) array([46 67])])
+    >>> ak.dot(ak.arange(27).reshape(3,3,3),ak.array([2,3,4]))
+    array([array([11 38 65]) array([92 119 146]) array([173 200 227])])
+    >>> ak.dot(ak.arange(36).reshape(3,3,4),ak.arange(8).reshape(4,2))
+    array([array([array([28 34]) array([76 98]) array([124 162])]) array([array([172 226])
+        array([220 290]) array([268 354])]) array([array([316 418]) array([364 482]) array([412 546])])])
 
     Raises
     ------
     ValueError
-        Raised if the size of pda1 is not the same as pda2
-
-    Examples
-    --------
-    >>> x = ak.array([2, 3])
-    >>> y = ak.array([4, 5])
-    >>> ak.dot(x,y)
-    23
-    >>> ak.dot(x,2)
-    array([4 6])
+        Raised if either pdda1 or pda2 is not an allowed type, or if shapes are incompatible.
     """
 
-    def resolve(pda):  # get type, either of pda or scalar
-        return pda.dtype.name if isinstance(pda, pdarray) else resolve_scalar_dtype(pda)
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy.numeric import matmul as akmatmul
 
-    t1 = resolve(pda1)
-    t2 = resolve(pda2)
+    specialCase = int_uint_case(pda1, pda2)  # used to handle the (int,uint)->(float) case
 
-    if (t1 == "uint64" and t2 == "int64") or (t1 == "int64" and t2 == "uint64"):
-        raise TypeError(f"incompatible types {t1}, {t2}")
+    def ship(result, flag):  # "ship" converts to float for the (int,uint) case
+        return akcast(result, akfloat64) if flag else result  # else leaves type alone
+
+    #   Cases are handled (mostly) in the order specified in the np.dot documentation
+
+    #   First case is two 1D vectors.
+
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        if pda1.size != pda2.size:
-            raise ValueError(f"Arrays must be same size, {pda1.size}, {pda2.size}")
-        else:
-            return sum(pda1 * pda2)
+        if pda1.ndim == 1 and pda2.ndim == 1:
+            if pda1.dtype != akbool or pda2.dtype != akbool:
+                return sum(ship(pda1 * pda2, specialCase))  # type: ignore
+            else:
+                return (pda1 & pda2).any()  # type: ignore
+
+        #   Second case is two 2D arrays.
+
+        elif pda1.ndim == 2 and pda2.ndim == 2:  # matmul will do the shape check
+            return ship(akmatmul(pda1, pda2), specialCase)  # type: ignore
+
+        #   Third and fourth cases involve a left argument of N-dimensions, and a right argument
+        #   of 1 or more.  The 1-D right argument is handled by reshaping it to 2-D and then
+        #   reshaping the answer to remove the extra dimension.
+
+        elif pda1.ndim > 1 and pda2.ndim >= 1:
+            s3 = _compute_dot_result_shape(pda1.shape, pda2.shape)
+            if len(s3) not in get_array_ranks():
+                raise ValueError(
+                    f"ak.dot of {pda1.shape} and {pda2.shape} gives f{s3}, outside compiled ranks."
+                )
+            else:
+                d1_case = pda2.ndim == 1
+                temp_pda2 = pda2.reshape(pda2.size, 1) if d1_case else pda2  # type: ignore
+                repMsg = generic_msg(
+                    cmd=f"dot<{pda1.dtype},{pda1.ndim},{pda2.dtype},{temp_pda2.ndim}>",
+                    args={
+                        "a": pda1,
+                        "b": temp_pda2,
+                    },
+                )
+                if d1_case:
+                    temp_ans = create_pdarray(repMsg)
+                    newshape = list(temp_ans.shape)  # these steps remove
+                    del newshape[-1]  # the padded 1 from
+                    temp_ans = temp_ans.reshape(tuple(newshape))  # the shape of result
+                    return ship(temp_ans, specialCase)
+                else:
+                    return ship(create_pdarray(repMsg), specialCase)
+
+    #   If both are scalar
+
+    elif np.isscalar(pda1) and np.isscalar(pda2):
+        return pda1 * pda2  # type: ignore
+
+    #   Finally if just one is scalar
+
+    elif np.isscalar(pda1) or np.isscalar(pda2):
+        return ship(pda1 * pda2, specialCase)  # type: ignore
+
     else:
-        return pda1 * pda2
+        raise TypeError("Inputs to ak.dot must be scalars or pdarrays.")
+
+    #   The following unreachable line prevents mypy from flagging a "missing return" error
+
+    return None  # type: ignore
 
 
 @typechecked
