@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import json
-import warnings
 from typing import Optional, Sequence, Tuple
 from typing import cast as type_cast
-from warnings import warn
 
 import numpy as np
 
@@ -54,18 +52,6 @@ def _aggregator(func):
         return func
 
     return update_doc
-
-
-def segarray(segments: pdarray, values: pdarray, lengths=None, grouping=None):
-    """
-    Alias for the from_parts function. Prevents user from needing to call `ak.SegArray` constructor
-    DEPRECATED
-    """
-    warn(
-        "ak.segarray has been deprecated. Please use ak.SegArray constructor moving forward",
-        DeprecationWarning,
-    )
-    return SegArray(segments, values, lengths, grouping)
 
 
 class SegArray:
@@ -130,40 +116,6 @@ class SegArray:
         segments = create_pdarray(eles["segments"])
         lengths = create_pdarray(eles["lengths"]) if "lengths" in eles else None
         return cls(segments, values, lengths=lengths)
-
-    @classmethod
-    def from_parts(cls, segments, values, lengths=None, grouping=None) -> SegArray:
-        """
-        DEPRECATED
-        Construct a SegArray object from its parts
-
-        Parameters
-        ----------
-        segments : pdarray, int64
-            Start index of each sub-array in the flattened values array
-        values : pdarray
-            The flattened values of all sub-arrays
-        lengths: pdarray
-            The length of each segment
-        grouping: GroupBy
-            grouping of segments
-
-        Returns
-        -------
-        SegArray
-            Data structure representing an array whose elements are variable-length arrays.
-
-        Notes
-        -----
-        Keyword args 'lengths' and 'grouping' are not user-facing. They are used by the
-        attach method.
-        """
-        warn(
-            "ak.SegArray.from_parts has been deprecated. Please use ak.SegArray constructor to "
-            "generate SegArray objects.",
-            DeprecationWarning,
-        )
-        return cls(segments, values, lengths=lengths, grouping=grouping)
 
     @classmethod
     def from_multi_array(cls, m):
@@ -1058,68 +1010,6 @@ class SegArray:
             ),
         )
 
-    def save(
-        self,
-        prefix_path,
-        dataset="segarray",
-        mode="truncate",
-        file_type="distribute",
-    ):
-        """
-        DEPRECATED
-        Save the SegArray to HDF5.
-        The object can be saved to a collection of files or single file.
-        Parameters
-        ----------
-        prefix_path : str
-            Directory and filename prefix that all output files share
-        dataset : str
-            Name of the dataset to create in files (must not already exist)
-        mode : str {'truncate' | 'append'}
-            By default, truncate (overwrite) output files, if they exist.
-            If 'append', attempt to create new dataset in existing files.
-        file_type: str ("single" | "distribute")
-            Default: "distribute"
-            When set to single, dataset is written to a single file.
-            When distribute, dataset is written on a file per locale.
-            This is only supported by HDF5 files and will have no impact of Parquet Files.
-        Returns
-        -------
-        string message indicating result of save operation
-        Raises
-        -------
-        RuntimeError
-            Raised if a server-side error is thrown saving the pdarray
-        Notes
-        -----
-        - The prefix_path must be visible to the arkouda server and the user must
-        have write permission.
-        - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-        ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-        the file name will be `prefix_path`.
-        - If any of the output files already exist and
-        the mode is 'truncate', they will be overwritten. If the mode is 'append'
-        and the number of output files is less than the number of locales or a
-        dataset with the same name already exists, a ``RuntimeError`` will result.
-        - Any file extension can be used.The file I/O does not rely on the extension to
-        determine the file format.
-        See Also
-        --------
-        to_hdf, load
-        """
-        from warnings import warn
-
-        warn(
-            "ak.SegArray.save has been deprecated. Please use ak.SegArray.to_hdf",
-            DeprecationWarning,
-        )
-        return self.to_hdf(
-            prefix_path,
-            dataset,
-            mode=mode,
-            file_type=file_type,
-        )
-
     @classmethod
     def read_hdf(cls, prefix_path, dataset="segarray"):
         """
@@ -1140,16 +1030,6 @@ class SegArray:
         from arkouda.io import read_hdf
 
         return read_hdf(prefix_path, datasets=dataset)
-
-    @classmethod
-    def load(cls, prefix_path, dataset="segarray", segment_name="segments", value_name="values"):
-        warnings.warn(
-            "ak.SegArray.load() is deprecated. Please use ak.SegArray.read_hdf() instead.",
-            DeprecationWarning,
-        )
-        if segment_name != "segments" or value_name != "values":
-            dataset = [dataset + "_" + value_name, dataset + "_" + segment_name]
-        return cls.read_hdf(prefix_path, dataset)
 
     def intersect(self, other):
         """
@@ -1175,8 +1055,8 @@ class SegArray:
         >>> b = [3, 1, 4, 5]
         >>> c = [1, 3, 3, 5]
         >>> d = [2, 2, 4]
-        >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
-        >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
         >>> seg_a.intersect(seg_b)
         SegArray([
         [1, 3],
@@ -1229,8 +1109,8 @@ class SegArray:
         >>> b = [3, 1, 4, 5]
         >>> c = [1, 3, 3, 5]
         >>> d = [2, 2, 4]
-        >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
-        >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
         >>> seg_a.union(seg_b)
         SegArray([
         [1, 2, 3, 4, 5],
@@ -1283,8 +1163,8 @@ class SegArray:
         >>> b = [3, 1, 4, 5]
         >>> c = [1, 3, 3, 5]
         >>> d = [2, 2, 4]
-        >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
-        >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
         >>> seg_a.setdiff(seg_b)
         SegArray([
         [2, 4],
@@ -1337,8 +1217,8 @@ class SegArray:
         >>> b = [3, 1, 4, 5]
         >>> c = [1, 3, 3, 5]
         >>> d = [2, 2, 4]
-        >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
-        >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
         >>> seg_a.setxor(seg_b)
         SegArray([
         [2, 4, 5],
@@ -1481,74 +1361,6 @@ class SegArray:
             raise RegistrationError("This object is not registered")
         unregister(self.registered_name)
         self.registered_name = None
-
-    @staticmethod
-    def unregister_segarray_by_name(user_defined_name):
-        """
-        Using the defined name, remove the registered SegArray object from the Symbol Table
-
-        Parameters
-        ----------
-        user_defined_name : str
-            user defined name which the SegArray object was registered under
-
-        Returns
-        -------
-        None
-
-        Raises
-        ------
-        RuntimeError
-            Raised if the server could not unregister the SegArray object from the Symbol Table
-
-        See Also
-        --------
-        register, unregister, attach, is_registered
-        """
-        import warnings
-
-        from arkouda.numpy.util import unregister
-
-        warnings.warn(
-            "ak.SegArray.unregister_segarray_by_name() is deprecated. "
-            "Please use ak.unregister() instead.",
-            DeprecationWarning,
-        )
-        return unregister(user_defined_name)
-
-    @classmethod
-    def attach(cls, user_defined_name):
-        """
-        Using the defined name, attach to a SegArray that has been registered to the Symbol Table
-
-        Parameters
-        ----------
-        user_defined_name : str
-            user defined name which the SegArray object was registered under
-
-        Returns
-        -------
-        SegArray
-            The resulting SegArray
-
-        Raises
-        ------
-        RuntimeError
-            Raised if the server could not attach to the SegArray object
-
-        See Also
-        --------
-        register, unregister, is_registered
-        """
-        import warnings
-
-        from arkouda.numpy.util import attach
-
-        warnings.warn(
-            "ak.SegArray.attach() is deprecated. Please use ak.attach() instead.",
-            DeprecationWarning,
-        )
-        return attach(user_defined_name)
 
     def is_registered(self) -> bool:
         """
