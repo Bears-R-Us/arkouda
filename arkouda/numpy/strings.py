@@ -6,6 +6,7 @@ import re
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union, cast
 
 import numpy as np
+from numpy import dtype as npdtype
 from typeguard import typechecked
 
 import arkouda.numpy.dtypes
@@ -13,9 +14,13 @@ from arkouda.client import generic_msg
 from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import getArkoudaLogger
 from arkouda.match import Match, MatchType
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, bool_scalars
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars
+from arkouda.numpy.dtypes import (
+    NUMBER_FORMAT_STRINGS,
+    bool_scalars,
+    int_scalars,
+    resolve_scalar_dtype,
+    str_scalars,
+)
 from arkouda.numpy.pdarrayclass import RegistrationError
 from arkouda.numpy.pdarrayclass import all as akall
 from arkouda.numpy.pdarrayclass import create_pdarray, parse_single_value, pdarray
@@ -209,7 +214,6 @@ class Strings:
 
         self._bytes: Optional[pdarray] = None
         self._offsets: Optional[pdarray] = None
-        self.dtype = akdtype(str_)
         self._regex_dict: Dict = dict()
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
 
@@ -362,6 +366,13 @@ class Strings:
             return Strings.from_return_msg(repMsg)
         else:
             raise TypeError(f"unsupported pdarray index type {key.__class__.__name__}")
+
+    @property
+    def dtype(self) -> npdtype:
+        """
+        Return the dtype object of the underlying data.
+        """
+        return npdtype("<U")
 
     @property
     def inferred_type(self) -> str:
