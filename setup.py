@@ -167,6 +167,7 @@ setup(
             "pydocstyle>=6.3.0",
             "pre-commit",
             "darglint>=1.8.1",
+            "pytest-subtests",
         ],
     },
     # replace original install command with version that also builds
