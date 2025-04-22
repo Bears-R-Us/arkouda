@@ -170,6 +170,7 @@ setup(
             "pydoclint[flake8]==0.6.6",
             "pytest-subtests",
             "numba",
+            "pytest-subtests",
         ],
     },
     # replace original install command with version that also builds
