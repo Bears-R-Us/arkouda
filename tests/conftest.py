@@ -129,6 +129,7 @@ def manage_connection():
     try:
         ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.timeout)
         pytest.max_rank = get_max_array_rank()
+        pytest.compiled_ranks = get_array_ranks()
 
     except Exception as e:
         raise ConnectionError(e)
