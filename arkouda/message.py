@@ -46,6 +46,7 @@ class ParameterObject:
         Returns
         -------
         ParameterObject
+
         """
         return ParameterObject(key, str(val.dtype), val.name)
 
@@ -65,6 +66,7 @@ class ParameterObject:
         Returns
         -------
         ParameterObject
+
         """
         return ParameterObject(key, str(val.dtype), val.name)
 
@@ -84,6 +86,7 @@ class ParameterObject:
         Returns
         -------
         ParameterObject
+
         """
         # empty string if name of String obj is none
         name = val.name if val.name else ""
@@ -105,6 +108,7 @@ class ParameterObject:
         Returns
         -------
         ParameterObject
+
         """
         data = json.dumps({"segments": val.segments.name, "values": val.values.name})
         return ParameterObject(key, str(val.values.dtype), data)
@@ -143,6 +147,7 @@ class ParameterObject:
         Returns
         -------
         ParameterObject
+
         """
         return ParameterObject._build_list_param(key, list(val))
 
@@ -162,6 +167,7 @@ class ParameterObject:
         Returns
         -------
         ParameterObject
+
         """
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.segarray import SegArray
@@ -218,6 +224,7 @@ class ParameterObject:
         Returns
         -------
         ParameterObject
+
         """
         v = val if isinstance(val, str) else str(val)
         return ParameterObject(key, resolve_scalar_dtype(val), v)
@@ -225,11 +232,12 @@ class ParameterObject:
     @staticmethod
     def generate_dispatch() -> Dict:
         """
-        Builds and returns the dispatch table used to build parameter object.
+        Build and return the dispatch table used to build parameter object.
 
         Returns
         -------
         Dictionary - mapping the parameter type to the build function
+
         """
         from arkouda.numpy.segarray import SegArray
         from arkouda.numpy.strings import Strings
@@ -245,18 +253,37 @@ class ParameterObject:
     @classmethod
     def factory(cls, key: str, val) -> ParameterObject:
         """
-        Factory method used to build ParameterObject given a key value pair
+        Create a ParameterObject from a key–value pair for server communication.
+
+        This factory method selects the appropriate builder based on the type of
+        `val`. It handles `pdarray` and `sparray` specially to avoid duplicate
+        dispatch entries, and falls back to a generic parameter builder for other
+        types.
 
         Parameters
         ----------
         key : str
-            key from the dictionary object
-        val
-            the value corresponding to the provided key from the dictionary
+            The name of the parameter.
+        val : Any
+            The value of the parameter. Supported types include:
+            - `pdarray`: constructs a pdarray parameter
+            - `sparray`: constructs a sparse array parameter
+            - Other types via the generic parameter builder
 
         Returns
+        -------
+        ParameterObject
+            A `ParameterObject` formatted for the Chapel server.
+
+        Examples
         --------
-        ParameterObject - The parameter object formatted to be parsed by the chapel server
+        >>> import arkouda as ak
+        >>> from arkouda.message import ParameterObject
+        >>> arr = ak.array([1, 2, 3])
+        >>> param = ParameterObject.factory("my_array", arr)
+        >>> isinstance(param, ParameterObject)
+        True
+
         """
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.scipy.sparrayclass import sparray
@@ -359,7 +386,6 @@ class RequestMessage:
 
         Parameters
         ----------
-
         user : str
             The user the request corresponds to
         cmd : str
@@ -377,6 +403,7 @@ class RequestMessage:
         Returns
         -------
         None
+
         """
         object.__setattr__(self, "user", user)
         object.__setattr__(self, "token", token)
@@ -395,6 +422,7 @@ class RequestMessage:
         -------
         Dict
             A dict object encapsulating ReplyMessage state
+
         """
         # args and token logic will not be needed once Chapel supports nulls
         args = self.args if self.args else ""
@@ -427,7 +455,7 @@ class ReplyMessage:
     @staticmethod
     def fromdict(values: Dict) -> ReplyMessage:
         """
-        Generates a ReplyMessage from a dict encapsulating the data and
+        Generate a ReplyMessage from a dict encapsulating the data and
         metadata from a reply returned by the Arkouda server.
 
         Parameters
@@ -445,6 +473,7 @@ class ReplyMessage:
         ------
         ValueError
             Raised if the values Dict is missing fields or contains malformed values
+
         """
         try:
             return ReplyMessage(

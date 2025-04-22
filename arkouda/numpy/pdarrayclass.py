@@ -228,7 +228,7 @@ def _parse_index_tuple(key, shape):
     """
     Parse a tuple of indices into slices, scalars, and pdarrays
 
-    Returns a tuple of (starts, stops and strides) for the slices and scalar indices,
+    Return a tuple of (starts, stops and strides) for the slices and scalar indices,
     as well as lists indicating which axes are indexed by scalars and pdarrays
     """
     scalar_axes = []
@@ -546,7 +546,7 @@ class pdarray:
     # binary operators
     def _binop(self, other: pdarray, op: str) -> pdarray:
         """
-        Executes binary operation specified by the op string
+        Execute binary operation specified by the op string
 
         Parameters
         ----------
@@ -624,7 +624,7 @@ class pdarray:
     # pdarray binop pdarray: taken care of by binop function
     def _r_binop(self, other: pdarray, op: str) -> pdarray:
         """
-        Executes reverse binary operation specified by the op string
+        Execute reverse binary operation specified by the op string
 
         Parameters
         ----------
@@ -670,7 +670,7 @@ class pdarray:
 
     def transfer(self, hostname: str, port: int_scalars):
         """
-        Sends a pdarray to a different Arkouda server
+        Send a pdarray to a different Arkouda server.
 
         Parameters
         ----------
@@ -1461,7 +1461,7 @@ class pdarray:
 
     def _list_component_names(self) -> List[str]:
         """
-        Internal Function that returns a list of all component names
+        Return a list of all component names
 
         Parameters
         ----------
@@ -1476,7 +1476,7 @@ class pdarray:
 
     def info(self) -> str:
         """
-        Returns a JSON formatted string containing information about all components of self
+        Return a JSON formatted string containing information about all components of self
 
         Parameters
         ----------
@@ -1491,7 +1491,7 @@ class pdarray:
 
     def pretty_print_info(self) -> None:
         """
-        Prints information about all components of self in a human readable format
+        Print information about all components of self in a human readable format
 
         Parameters
         ----------
@@ -1964,7 +1964,7 @@ class pdarray:
 
     def slice_bits(self, low, high) -> pdarray:
         """
-        Returns a pdarray containing only bits from low to high of self.
+        Return a pdarray containing only bits from low to high of self.
 
         This is zero indexed and inclusive on both ends, so slicing the bottom 64 bits is
         pda.slice_bits(0, 63)
@@ -2009,7 +2009,7 @@ class pdarray:
     @typechecked()
     def bigint_to_uint_arrays(self) -> List[pdarray]:
         """
-        Creates a list of uint pdarrays from a bigint pdarray.
+        Create a list of uint pdarrays from a bigint pdarray.
         The first item in return will be the highest 64 bits of the
         bigint pdarray and the last item will be the lowest 64 bits.
 
@@ -2354,10 +2354,12 @@ class pdarray:
         Examples
         --------
         >>> a = ak.arange(25)
-        >>> # Saving without an extension
+
+        Saving without an extension
         >>> a.to_parquet('path/prefix', dataset='array')
         Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
-        >>> # Saving with an extension (HDF5)
+
+        Saving with an extension (HDF5)
         >>> a.to_parqet('path/prefix.parquet', dataset='array')
         Saves the array to numLocales HDF5 files with the name
         ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
@@ -2433,14 +2435,17 @@ class pdarray:
         Examples
         --------
         >>> a = ak.arange(25)
-        >>> # Saving without an extension
+
+        Saving without an extension
         >>> a.to_hdf('path/prefix', dataset='array')
         Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
-        >>> # Saving with an extension (HDF5)
+
+        Saving with an extension (HDF5)
         >>> a.to_hdf('path/prefix.h5', dataset='array')
         Saves the array to numLocales HDF5 files with the name
         ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
-        >>> # Saving to a single file
+
+        Saving to a single file
         >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single')
         Saves the array in to single hdf5 file on the root node.
         ``cwd/path/name_prefix.hdf5``
@@ -2621,7 +2626,7 @@ class pdarray:
             If the user is attempting to register more than one pdarray with the same name,
             the former should be unregistered first to free up the registration name.
 
-        See also
+        See Also
         --------
         attach, unregister, is_registered, list_registry, unregister_pdarray_by_name
 
@@ -2634,7 +2639,8 @@ class pdarray:
         --------
         >>> a = zeros(100)
         >>> a.register("my_zeros")
-        >>> # potentially disconnect from server and reconnect to server
+
+        potentially disconnect from server and reconnect to server
         >>> b = ak.pdarray.attach("my_zeros")
         >>> # ...other work...
         >>> b.unregister()
@@ -2669,7 +2675,7 @@ class pdarray:
         RuntimeError
             Raised if the server could not find the internal name/symbol to remove
 
-        See also
+        See Also
         --------
         register, unregister, is_registered, unregister_pdarray_by_name, list_registry
 
@@ -2682,7 +2688,8 @@ class pdarray:
         --------
         >>> a = zeros(100)
         >>> a.register("my_zeros")
-        >>> # potentially disconnect from server and reconnect to server
+
+        # potentially disconnect from server and reconnect to server
         >>> b = ak.pdarray.attach("my_zeros")
         >>> # ...other work...
         >>> b.unregister()

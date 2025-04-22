@@ -23,6 +23,7 @@ loggers = {}
 The LogLevel enum class defines the log levels for the ArkoudaLogger, the
 purpose of which is to provide controlled vocabulary for setting the log
 levels for ArkoudaLogger.
+
 """
 
 
@@ -36,7 +37,7 @@ class LogLevel(Enum):
 
 """
 ArkoudaLogger encapsulates logging configuration and logic to log messages
-at varying levels including debug, info, critical, warn, and error
+at varying levels including debug, info, critical, warn, and error.
 
     Attributes
     ----------
@@ -48,6 +49,7 @@ at varying levels including debug, info, critical, warn, and error
     handlers : List[Handler]
         List of 1..n logging.Handler objects that define where and how to log
         messages, defaults to list containing a single StreamHandler object
+
 """
 
 
@@ -73,8 +75,8 @@ class ArkoudaLogger(Logger):
         logFormat: Optional[str] = "[%(name)s] Line %(lineno)d %(levelname)s: %(message)s",
     ) -> None:
         """
-        Initializes the ArkoudaLogger with the name, level, logFormat, and
-        handlers parameters
+        Initialize the ArkoudaLogger with the name, level, logFormat, and
+        handlers parameters.
 
         Parameters
         ----------
@@ -119,6 +121,7 @@ class ArkoudaLogger(Logger):
         The Logger-scoped level is set to DEBUG to enable fine-grained control at
         the Handler level as a higher level would disable DEBUG-level logging in
         the individual handlers.
+
         """
         Logger.__init__(self, name=name, level=DEBUG)
         if handlers is None:
@@ -135,7 +138,7 @@ class ArkoudaLogger(Logger):
     def changeLogLevel(self, level: LogLevel, handlerNames: Optional[List[str]] = None) -> None:
         """
         Dynamically changes the logging level for ArkoudaLogger and 1..n
-        of configured Handlers
+        of configured Handlers.
 
         Parameters
         ----------
@@ -160,6 +163,7 @@ class ArkoudaLogger(Logger):
         The default is to change the log level of all configured Handlers.
         If the handlerNames list is not None, then only the log level of
         the named Handler object is changed.
+
         """
         newLevel = ArkoudaLogger.levelMappings[level]
         if handlerNames is None:
@@ -174,12 +178,13 @@ class ArkoudaLogger(Logger):
 
     def enableVerbose(self) -> None:
         """
-        Enables verbose output by setting the log level for all handlers
-        to DEBUG
+        Enable verbose output by setting the log level for all handlers
+        to DEBUG.
 
         Returns
         -------
         None
+
         """
         self.changeLogLevel(LogLevel.DEBUG)
 
@@ -203,13 +208,14 @@ class ArkoudaLogger(Logger):
         Returns
         -------
         None
+
         """
         self.changeLogLevel(logLevel)
 
     @typechecked
     def getHandler(self, name: str) -> Handler:
         """
-        Retrieves the Handler object corresponding to the name.
+        Retrieve the Handler object corresponding to the name.
 
         Parameters
         ----------
@@ -227,6 +233,7 @@ class ArkoudaLogger(Logger):
         ValueError
             Raised if the name does not match the name of any
             of the configured handlers
+
         """
         for handler in self.handlers:
             if name == handler.name:
@@ -242,8 +249,8 @@ def getArkoudaLogger(
     logLevel: Optional[LogLevel] = None,
 ) -> ArkoudaLogger:
     """
-    A convenience method for instantiating an ArkoudaLogger that retrieves the
-    logging level from the ARKOUDA_LOG_LEVEL env variable
+    Instantiate an ArkoudaLogger that retrieves the
+    logging level from the ARKOUDA_LOG_LEVEL env variable.
 
     Parameters
     ----------
@@ -272,6 +279,7 @@ def getArkoudaLogger(
     dynamic changes to 1..n handlers is desired, set a name for each Handler
     object as follows: handler.name = <desired name>, which will enable retrieval
     and updates for the specified handler.
+
     """
     if not logLevel:
         logLevel = LogLevel(os.getenv("ARKOUDA_LOG_LEVEL", LogLevel("INFO")))
@@ -284,7 +292,7 @@ def getArkoudaLogger(
 @typechecked
 def getArkoudaClientLogger(name: str) -> ArkoudaLogger:
     """
-    A convenience method for instantiating an ArkoudaLogger that retrieves the
+    Instantiate an ArkoudaLogger that retrieves the
     logging level from the ARKOUDA_LOG_LEVEL env variable and outputs log
     messages without any formatting to stdout.
 
@@ -307,14 +315,13 @@ def getArkoudaClientLogger(name: str) -> ArkoudaLogger:
     The returned ArkoudaLogger is configured to write unformatted log messages to
     stdout, making it suitable for logging messages users will see such as
     confirmation of successful login or pdarray creation
+
     """
     return getArkoudaLogger(name=name, logFormat=ArkoudaLogger.CLIENT_LOG_FORMAT)
 
 
 def enableVerbose() -> None:
-    """
-    Enables verbose logging (DEBUG log level) for all ArkoudaLoggers
-    """
+    """Enable verbose logging (DEBUG log level) for all ArkoudaLoggers."""
     for logger in loggers.values():
         logger.enableVerbose()
 
@@ -323,7 +330,7 @@ def enableVerbose() -> None:
 def disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None:
     """
     Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
-    the log level for each to the logLevel parameter
+    the log level for each to the logLevel parameter.
 
     Parameters
     ----------
@@ -334,6 +341,7 @@ def disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None:
     ------
     TypeError
         Raised if logLevel is not a LogLevel enum
+
     """
     for logger in loggers.values():
         logger.disableVerbose(logLevel)
@@ -342,10 +350,10 @@ def disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None:
 @typechecked
 def write_log(log_msg: str, tag: str = "ClientGeneratedLog", log_lvl: LogLevel = LogLevel.INFO):
     """
-    Allows the user to write custom logs.
+    Allow the user to write custom logs.
 
     Parameters
-    -----------
+    ----------
     log_msg: str
         The message to be added to the server log
     tag: str
@@ -357,8 +365,9 @@ def write_log(log_msg: str, tag: str = "ClientGeneratedLog", log_lvl: LogLevel =
         Defaults to LogLevel.INFO
 
     See Also
-    ---------
+    --------
     LogLevel
+
     """
     from arkouda.client import generic_msg
 

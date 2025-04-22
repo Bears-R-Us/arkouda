@@ -14,7 +14,7 @@ from .manipulation_functions import broadcast_arrays
 
 def argmax(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> Array:
     """
-    Returns an array with the indices of the maximum values along a given axis.
+    Return an array with the indices of the maximum values along a given axis.
 
     Parameters
     ----------
@@ -35,7 +35,7 @@ def argmax(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
 
 def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> Array:
     """
-    Returns an array with the indices of the minimum values along a given axis.
+    Return an array with the indices of the minimum values along a given axis.
 
     Parameters
     ----------
@@ -54,7 +54,7 @@ def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
 
 def nonzero(x: Array, /) -> Tuple[Array, ...]:
     """
-    Returns a tuple of arrays containing the indices of the non-zero elements of the input array.
+    Return a tuple of arrays containing the indices of the non-zero elements of the input array.
     """
     resp = cast(
         str,

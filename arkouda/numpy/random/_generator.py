@@ -58,7 +58,7 @@ class Generator:
 
     def choice(self, a, size=None, replace=True, p=None):
         """
-        Generates a randomly sample from a.
+        Generate a randomly sample from a.
 
         Parameters
         ----------

@@ -193,9 +193,7 @@ class Categorical:
 
     @property
     def inferred_type(self) -> str:
-        """
-        Return a string of the type inferred from the values.
-        """
+        """Return a string of the type inferred from the values."""
         return "categorical"
 
     @classmethod
@@ -230,6 +228,7 @@ class Categorical:
         TypeError
             Raised if codes is not a pdarray of int64 objects or if
             categories is not a Strings object
+
         """
         if codes.dtype != akint64:
             raise TypeError("Codes must be pdarray of int64")
@@ -248,8 +247,9 @@ class Categorical:
         Create categorical from return message from server
 
         Notes
-        ------
+        -----
         This is currently only used when reading a Categorical from HDF5 files.
+
         """
         # parse return json
         eles = json.loads(rep_msg)
@@ -281,6 +281,7 @@ class Categorical:
         -------
         List of Categoricals
             A list of the original Categoricals remapped to the shared categories.
+
         """
         for arr in arrays:
             if not isinstance(arr, cls):
@@ -317,6 +318,7 @@ class Categorical:
         >>> c2 = Categorical(ak.array(["a", "x", "c"]))
         >>> c.equals(c2)
         False
+
         """
         if isinstance(other, Categorical):
             if other.size != self.size:
@@ -345,6 +347,7 @@ class Categorical:
             A new Categorical with the user-defined categories. Old values present
             in new categories will appear unchanged. Old values not present will
             be assigned the NA value.
+
         """
         if NAvalue is None:
             NAvalue = self.NAvalue
@@ -409,6 +412,7 @@ class Categorical:
         distributed system with much more memory than the client. The user
         may override this limit by setting ak.client.maxTransferBytes to a larger
         value, but proceed with caution.
+
         """
         if self.categories.size > self.codes.size:
             newcat = self.reset_categories()
@@ -420,9 +424,7 @@ class Categorical:
         return idx[valcodes]
 
     def to_pandas(self) -> pd_Categorical:
-        """
-        Return the equivalent Pandas Categorical.
-        """
+        """Return the equivalent Pandas Categorical."""
         return pd_Categorical.from_codes(
             codes=self.codes.to_ndarray(), categories=self.categories.to_ndarray()
         )
@@ -449,6 +451,7 @@ class Categorical:
         distributed system with much more memory than the client. The user
         may override this limit by setting ak.client.maxTransferBytes to a larger
         value, but proceed with caution.
+
         """
         return self.to_ndarray().tolist()
 
@@ -505,7 +508,7 @@ class Categorical:
     @typechecked
     def _binop(self, other: Union[Categorical, str_scalars], op: str_scalars) -> pdarray:
         """
-        Executes the requested binop on this Categorical instance and returns
+        Execute the requested binop on this Categorical instance and returns
         the results within a pdarray object.
 
         Parameters
@@ -521,13 +524,14 @@ class Categorical:
             encapsulating the results of the requested binop
 
         Raises
-        -----
+        ------
         ValueError
             Raised if (1) the op is not in the self.BinOps set, or (2) if the
             sizes of this and the other instance don't match
         RuntimeError
             Raised if a server-side error is thrown while executing the
             binary operation
+
         """
         if op not in self.BinOps:
             raise NotImplementedError(f"Categorical: unsupported operator: {op}")
@@ -556,7 +560,7 @@ class Categorical:
     @typechecked
     def _r_binop(self, other: Union[Categorical, str_scalars], op: str_scalars) -> pdarray:
         """
-        Executes the requested reverse binop on this Categorical instance and
+        Execute the requested reverse binop on this Categorical instance and
         returns the results within a pdarray object.
 
         Parameters
@@ -572,13 +576,14 @@ class Categorical:
             encapsulating the results of the requested binop
 
         Raises
-        -----
+        ------
         ValueError
             Raised if (1) the op is not in the self.BinOps set, or (2) if the
             sizes of this and the other instance don't match
         RuntimeError
             Raised if a server-side error is thrown while executing the
             binary operation
+
         """
         return self._binop(other, op)
 
@@ -597,9 +602,7 @@ class Categorical:
             return Categorical.from_codes(self.codes[key], self.categories)
 
     def isna(self):
-        """
-        Find where values are missing or null (as defined by self.NAvalue)
-        """
+        """Find where values are missing or null (as defined by self.NAvalue)."""
         return self.codes == self._NAcode
 
     def reset_categories(self) -> Categorical:
@@ -614,6 +617,7 @@ class Categorical:
         -------
         Categorical
             A Categorical object generated from the current instance
+
         """
         g = GroupBy(self.codes)
         idx = self.categories[g.unique_keys]
@@ -659,6 +663,7 @@ class Categorical:
         This method can be significantly faster than the corresponding method
         on Strings objects, because it searches the unique category labels
         instead of the full array.
+
         """
         categories_contains = self.categories.contains(substr, regex)
         return categories_contains[self.codes]
@@ -700,6 +705,7 @@ class Categorical:
         This method can be significantly faster than the corresponding
         method on Strings objects, because it searches the unique category
         labels instead of the full array.
+
         """
         categories_ends_with = self.categories.startswith(substr, regex)
         return categories_ends_with[self.codes]
@@ -741,6 +747,7 @@ class Categorical:
         This method can be significantly faster than the corresponding method
         on Strings objects, because it searches the unique category labels
         instead of the full array.
+
         """
         categories_ends_with = self.categories.endswith(substr, regex)
         return categories_ends_with[self.codes]
@@ -791,6 +798,7 @@ class Categorical:
         >>> catTwo = ak.Categorical(strings)
         >>> ak.in1d(cat,catTwo)
         array([False False False False False])
+
         """
         if isinstance(test, Categorical):
             # Must use test._categories_used instead of test.categories to avoid
@@ -825,6 +833,7 @@ class Categorical:
         by Python for dictionaries and sets). For realistic numbers of strings (up
         to about 10**15), the probability of a collision between two 128-bit hash
         values is negligible.
+
         """
         rep_msg = generic_msg(
             cmd="categoricalHash",
@@ -857,6 +866,7 @@ class Categorical:
         created using from_codes(), this function will be faster than
         Strings.group() because it sorts dense integer values, rather than
         128-bit hash values.
+
         """
         if self.permutation is None:
             return argsort(self.codes)
@@ -917,6 +927,7 @@ class Categorical:
         Notes
         -----
         This operation can be expensive -- slower than concatenating Strings.
+
         """
         if isinstance(others, Categorical):
             others = [others]
@@ -971,8 +982,9 @@ class Categorical:
         None
 
         See Also
-        ---------
+        --------
         load
+
         """
         from arkouda.io import _file_type_to_int, _mode_str_to_int
 
@@ -1001,7 +1013,7 @@ class Categorical:
         the dataset does not exist it is added.
 
         Parameters
-        -----------
+        ----------
         prefix_path : str
             Directory and filename prefix that all output files share
         dataset : str
@@ -1014,21 +1026,22 @@ class Categorical:
             file sizes to expand.
 
         Returns
-        --------
+        -------
         None
 
         Raises
-        -------
+        ------
         RuntimeError
             Raised if a server-side error is thrown saving the Categorical
 
         Notes
-        ------
+        -----
         - If file does not contain File_Format attribute to indicate how it was saved,
           the file name is checked for _LOCALE#### to determine if it is distributed.
         - If the dataset provided does not exist, it will be added
         - Because HDF5 deletes do not release memory, the repack option allows for
           automatic creation of a file without the inaccessible data.
+
         """
         from arkouda.io import (
             _file_type_to_int,
@@ -1071,51 +1084,56 @@ class Categorical:
         compression: Optional[str] = None,
     ) -> str:
         """
-        This functionality is currently not supported and will also raise a RuntimeError.
-        Support is in development.
-        Save the Categorical to Parquet. The result is a collection of files,
-        one file per locale of the arkouda server, where each filename starts
-        with prefix_path. Each locale saves its chunk of the array to its
-        corresponding file.
+        [Not Yet Implemented] Save the Categorical to a Parquet dataset.
+
+        !!! This method is currently not supported and will raise a RuntimeError. !!!
+        Parquet support for Categorical is under development.
+
+        When implemented, this method will write the Categorical to a set of Parquet
+        files, one file per locale on the Arkouda server. Each file will be named
+        using the `prefix_path` with locale-specific suffixes.
 
         Parameters
         ----------
         prefix_path : str
-            Directory and filename prefix that all output files share
-        dataset : str
-            Name of the dataset to create in HDF5 files (must not already exist)
-        mode : str {'truncate' | 'append'}
-            By default, truncate (overwrite) output files, if they exist.
-            If 'append', create a new Categorical dataset within existing files.
-        compression : str (Optional)
-            Default None
-            Provide the compression type to use when writing the file.
-            Supported values: snappy, gzip, brotli, zstd, lz4
+            The directory and filename prefix shared by all output files.
+        dataset : str, default="categorical_array"
+            The dataset name to use to create the Parquet files.
+        mode : {'truncate', 'append'}, default='truncate'
+            Specifies write behavior. Use 'truncate' to overwrite existing files or
+            'append' to add to them. (Appending is not yet efficient.)
+        compression : str, optional
+            Compression algorithm to use when writing the file.
+            Supported values include: 'snappy', 'gzip', 'brotli', 'zstd', 'lz4'.
+            Default is None (no compression).
 
         Returns
         -------
-        String message indicating result of save operation
+        str
+            A message indicating the result of the operation.
 
         Raises
         ------
         RuntimeError
-            On run due to compatability issues of Categorical with Parquet.
+            Always raised. Parquet export for Categorical is not yet supported.
+
         Notes
         -----
-        - The prefix_path must be visible to the arkouda server and the user must
-        have write permission.
-        - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-        ranges from 0 to ``numLocales`` for `file_type='distribute'`.
-        - 'append' write mode is supported, but is not efficient.
+        - The specified `prefix_path` must be writable and accessible to the Arkouda server.
+        - The user must have write permission.
+        - Output files will be named as ``<prefix_path>_LOCALE<i>`` for each locale `i`.
+        - Appending mode requires that the existing files already match the server’s locale layout.
+        - Appending mode is supported, but is not efficient.
+        - File extensions are not used to determine file type.
         - If any of the output files already exist and
         the mode is 'truncate', they will be overwritten. If the mode is 'append'
         and the number of output files is less than the number of locales or a
         dataset with the same name already exists, a ``RuntimeError`` will result.
-        - Any file extension can be used.The file I/O does not rely on the extension to
-        determine the file format.
+
         See Also
         --------
-        to_hdf
+        to_hdf : Save the Categorical to HDF5 format (currently supported).
+
         """
         # due to the possibility that components will be different sizes,
         # writing to Parquet is not supported at this time
@@ -1172,7 +1190,7 @@ class Categorical:
         RegistrationError
             If the server was unable to register the Categorical with the user_defined_name
 
-        See also
+        See Also
         --------
         unregister, attach, unregister_categorical_by_name, is_registered
 
@@ -1180,6 +1198,7 @@ class Categorical:
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -1209,7 +1228,7 @@ class Categorical:
             If the object is already unregistered or if there is a server error
             when attempting to unregister
 
-        See also
+        See Also
         --------
         register, attach, unregister_categorical_by_name, is_registered
 
@@ -1217,6 +1236,7 @@ class Categorical:
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.numpy.util import unregister
 
@@ -1248,6 +1268,7 @@ class Categorical:
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.numpy.util import is_registered
 
@@ -1265,7 +1286,7 @@ class Categorical:
 
     def _get_components_dict(self) -> Dict:
         """
-        Internal function that returns a dictionary with all required or non-None components of self
+        Return a dictionary with all required or non-None components of self
 
         Required Categorical components (Codes and Categories) are always included in
         returned components_dict
@@ -1278,6 +1299,7 @@ class Categorical:
             Dictionary of all required or non-None components of self
                 Keys: component names (Codes, Categories, Permutation, Segments)
                 Values: components of self
+
         """
         return {
             piece_name: getattr(self, piece_name)
@@ -1287,7 +1309,7 @@ class Categorical:
 
     def _list_component_names(self) -> List[str]:
         """
-        Internal function that returns a list of all component names
+        Return a list of all component names.
 
         Parameters
         ----------
@@ -1297,6 +1319,7 @@ class Categorical:
         -------
         List[str]
             List of all component names
+
         """
         return list(
             itertools.chain.from_iterable(
@@ -1306,7 +1329,7 @@ class Categorical:
 
     def info(self) -> str:
         """
-        Returns a JSON formatted string containing information about all components of self
+        Return a JSON formatted string containing information about all components of self
 
         Parameters
         ----------
@@ -1316,12 +1339,13 @@ class Categorical:
         -------
         str
             JSON string containing information about all components of self
+
         """
         return information(self._list_component_names())
 
     def pretty_print_info(self) -> None:
         """
-        Prints information about all components of self in a human readable format
+        Print information about all components of self in a human readable format
 
         Parameters
         ----------
@@ -1330,15 +1354,18 @@ class Categorical:
         Returns
         -------
         None
+
         """
         [p.pretty_print_info() for p in Categorical._get_components_dict(self).values()]
 
     @staticmethod
     @typechecked
-    def parse_hdf_categoricals(
+    def _parse_hdf_categoricals(
         d: Mapping[str, Union[pdarray, Strings]],
     ) -> Tuple[List[str], Dict[str, Categorical]]:
         """
+        Parse mapping of pdarray and Stings objects
+        in order to reconstitute Categoricals objects from hdf5 files.
         This function should be used in conjunction with the load_all function which reads hdf5 files
         and reconstitutes Categorical objects.
         Categorical objects use a naming convention and HDF5 structure so they can be identified and
@@ -1386,7 +1413,7 @@ class Categorical:
 
     def transfer(self, hostname: str, port: int_scalars):
         """
-        Sends a Categorical object to a different Arkouda server
+        Send a Categorical object to a different Arkouda server.
 
         Parameters
         ----------
@@ -1417,6 +1444,7 @@ class Categorical:
         TypeError
             Raised if other is not a pdarray or the pdarray.dtype is not
             a supported dtype
+
         """
         # hostname is the hostname to send to
         args = {

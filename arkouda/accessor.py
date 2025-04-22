@@ -6,18 +6,22 @@ from arkouda.numpy.timeclass import Datetime
 class CachedAccessor:
     """
     Custom property-like object.
+
     A descriptor for caching accessors.
+
     Parameters
     ----------
     name : str
         Namespace that will be accessed under, e.g. ``df.foo``.
     accessor : cls
         Class with the extension methods.
+
     Notes
     -----
     For accessor, The class's __init__ method assumes that one of
     ``Series``, ``DataFrame`` or ``Index`` as the
     single argument ``data``.
+
     """
 
     def __init__(self, name: str, accessor) -> None:

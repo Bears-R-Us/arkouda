@@ -1364,7 +1364,7 @@ class SegArray:
 
     def is_registered(self) -> bool:
         """
-        Checks if the name of the SegArray object is registered in the Symbol Table
+        Check if the name of the SegArray object is registered in the Symbol Table
 
         Returns
         -------
@@ -1387,7 +1387,7 @@ class SegArray:
 
     def transfer(self, hostname: str, port: int_scalars):
         """
-        Sends a Segmented Array to a different Arkouda server
+        Send a Segmented Array to a different Arkouda server.
 
         Parameters
         ----------

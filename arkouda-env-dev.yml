@@ -43,6 +43,7 @@ dependencies:
   - mathjax
   - pandas-stubs
   - types-python-dateutil
+  - pydocstyle>=6.3.0
 
   - pip:
     # Developer dependencies

@@ -43,6 +43,7 @@ def start_comm_diagnostics():
     -------
     str
         Completion message.
+
     """
     rep_msg = generic_msg(
         cmd="startCommDiagnostics",
@@ -59,6 +60,7 @@ def stop_comm_diagnostics():
     -------
     str
         Completion message.
+
     """
     rep_msg = generic_msg(
         cmd="stopCommDiagnostics",
@@ -75,6 +77,7 @@ def reset_comm_diagnostics():
     -------
     str
         Completion message.
+
     """
     rep_msg = generic_msg(
         cmd="resetCommDiagnostics",
@@ -102,6 +105,7 @@ def print_comm_diagnostics_table(print_empty_columns=False):
     -------
     str
         Completion message.
+
     """
     from arkouda import sum as ak_sum
 
@@ -131,6 +135,7 @@ def start_verbose_comm():
     -------
     str
         Completion message.
+
     """
     rep_msg = generic_msg(
         cmd="startVerboseComm",
@@ -147,6 +152,7 @@ def stop_verbose_comm():
     -------
     str
         Completion message.
+
     """
     rep_msg = generic_msg(
         cmd="stopVerboseComm",
@@ -157,13 +163,14 @@ def stop_verbose_comm():
 
 def get_comm_diagnostics_put():
     """
-    blocking PUTs, in which initiator waits for completion
+    Return blocking puts, in which initiator waits for completion
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsPut",
@@ -174,13 +181,14 @@ def get_comm_diagnostics_put():
 
 def get_comm_diagnostics_get():
     """
-    blocking GETs, in which initiator waits for completion
+    Return blocking gets, in which initiator waits for completion
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsGet",
@@ -191,13 +199,14 @@ def get_comm_diagnostics_get():
 
 def get_comm_diagnostics_put_nb():
     """
-    non-blocking PUTs
+    Return non-blocking puts
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsPutNb",
@@ -208,13 +217,14 @@ def get_comm_diagnostics_put_nb():
 
 def get_comm_diagnostics_get_nb():
     """
-    non-blocking GETs
+    Return non-blocking gets
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsGetNb",
@@ -225,13 +235,14 @@ def get_comm_diagnostics_get_nb():
 
 def get_comm_diagnostics_test_nb():
     """
-    tests for non-blocking GET/PUT completions
+    Return test statistic for non-blocking get/put completions
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsTestNb",
@@ -242,13 +253,14 @@ def get_comm_diagnostics_test_nb():
 
 def get_comm_diagnostics_wait_nb():
     """
-    blocking waits for non-blocking GET/PUT completions
+    Return blocking waits for non-blocking get/put completions
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsWaitNb",
@@ -259,13 +271,14 @@ def get_comm_diagnostics_wait_nb():
 
 def get_comm_diagnostics_try_nb():
     """
-    tests for non-blocking GET/PUT completions
+    Return test statistics for non-blocking get/put completions
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsTryNb",
@@ -276,13 +289,14 @@ def get_comm_diagnostics_try_nb():
 
 def get_comm_diagnostics_amo():
     """
-    atomic memory operations
+    Return atomic memory operations statistic.
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsAmo",
@@ -293,13 +307,14 @@ def get_comm_diagnostics_amo():
 
 def get_comm_diagnostics_execute_on():
     """
-    blocking remote executions, in which initiator waits for completion
+    Return blocking remote executions, in which initiator waits for completion.
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsExecuteOn",
@@ -310,13 +325,14 @@ def get_comm_diagnostics_execute_on():
 
 def get_comm_diagnostics_execute_on_fast():
     """
-    blocking remote executions performed by the target locale’s Active Message handler
+    Return blocking remote executions performed by the target locale’s Active Message handler.
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsExecuteOnFast",
@@ -327,13 +343,14 @@ def get_comm_diagnostics_execute_on_fast():
 
 def get_comm_diagnostics_execute_on_nb():
     """
-    non-blocking remote executions
+    Return non-blocking remote executions.
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsExecuteOnNb",
@@ -344,14 +361,15 @@ def get_comm_diagnostics_execute_on_nb():
 
 def get_comm_diagnostics_cache_get_hits():
     """
-    GETs that were handled by the cache.
-    GETs counted here did not require the cache to communicate in order to return the result.
+    Return number of gets that were handled by the cache.
+    Gets counted here did not require the cache to communicate in order to return the result.
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheGetHits",
@@ -362,13 +380,14 @@ def get_comm_diagnostics_cache_get_hits():
 
 def get_comm_diagnostics_cache_get_misses():
     """
-    GETs that were not handled by the cache
+    Return number of gets that were not handled by the cache
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheGetMisses",
@@ -379,13 +398,14 @@ def get_comm_diagnostics_cache_get_misses():
 
 def get_comm_diagnostics_cache_put_hits():
     """
-    PUTs that were stored in cache pages that already existed.
+    Return number of puts that were stored in cache pages that already existed.
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCachePutHits",
@@ -396,13 +416,14 @@ def get_comm_diagnostics_cache_put_hits():
 
 def get_comm_diagnostics_cache_put_misses():
     """
-    PUTs that required the cache to create a new page to store them.
+    Return number of puts that required the cache to create a new page to store them.
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCachePutMisses",
@@ -413,7 +434,7 @@ def get_comm_diagnostics_cache_put_misses():
 
 def get_comm_diagnostics_cache_num_prefetches():
     """
-    Number of prefetches issued to the remote cache at the granularity of cache pages.
+    Return number of prefetches issued to the remote cache at the granularity of cache pages.
     This counter is specifically triggered via calls to chpl_comm_remote_prefetch
 
     Returns
@@ -421,6 +442,7 @@ def get_comm_diagnostics_cache_num_prefetches():
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheNumPrefetches",
@@ -431,13 +453,14 @@ def get_comm_diagnostics_cache_num_prefetches():
 
 def get_comm_diagnostics_cache_num_page_readaheads():
     """
-    Number of readaheads issued to the remote cache at the granularity of cache pages.
+    Return number of readaheads issued to the remote cache at the granularity of cache pages.
 
     Returns
     -------
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheNumPageReadaheads",
@@ -448,7 +471,7 @@ def get_comm_diagnostics_cache_num_page_readaheads():
 
 def get_comm_diagnostics_cache_prefetch_unused():
     """
-    Number of cache pages that were prefetched but evicted from the cache before being accessed
+    Return number of cache pages that were prefetched but evicted from the cache before being accessed
     (i.e., the prefetches were too early).
 
     Returns
@@ -456,6 +479,7 @@ def get_comm_diagnostics_cache_prefetch_unused():
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCachePrefetchUnused",
@@ -466,7 +490,8 @@ def get_comm_diagnostics_cache_prefetch_unused():
 
 def get_comm_diagnostics_cache_prefetch_waited():
     """
-    Number of cache pages that were prefetched but did not arrive in the cache before being accessed
+    Return number of cache pages that were prefetched
+    but did not arrive in the cache before being accessed
     (i.e., the prefetches were too late).
 
     Returns
@@ -474,6 +499,7 @@ def get_comm_diagnostics_cache_prefetch_waited():
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCachePrefetchWaited",
@@ -484,7 +510,7 @@ def get_comm_diagnostics_cache_prefetch_waited():
 
 def get_comm_diagnostics_cache_readahead_unused():
     """
-    Number of cache pages that were read ahead but evicted from the cache before being accessed
+    Return number of cache pages that were read ahead but evicted from the cache before being accessed
     (i.e., the readaheads were too early).
 
     Returns
@@ -492,6 +518,7 @@ def get_comm_diagnostics_cache_readahead_unused():
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheReadaheadUnused",
@@ -502,7 +529,8 @@ def get_comm_diagnostics_cache_readahead_unused():
 
 def get_comm_diagnostics_cache_readahead_waited():
     """
-    Number of cache pages that were read ahead but did not arrive in the cache before being accessed
+    Return number of cache pages that were read ahead
+    but did not arrive in the cache before being accessed
     (i.e., the readaheads were too late).
 
     Returns
@@ -510,6 +538,7 @@ def get_comm_diagnostics_cache_readahead_waited():
     pdarray
         A pdarray, where the size is the number of locales,
         populated with the statistic value from each locale.
+
     """
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheReadaheadWaited",
@@ -525,6 +554,7 @@ def get_comm_diagnostics() -> DataFrame:
     Returns
     -------
     DataFrame
+
     """
     return DataFrame(
         {

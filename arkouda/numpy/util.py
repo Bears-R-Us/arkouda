@@ -246,7 +246,7 @@ def sparse_sum_help(
     percent_transfer_limit: int = 100,
 ) -> Tuple[pdarray, pdarray]:
     """
-    Helper for summing two sparse matrices together
+    Sum two sparse matrices together.
 
     Return is equivalent to
     ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((val1, val2)))

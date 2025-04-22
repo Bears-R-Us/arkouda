@@ -47,9 +47,7 @@ class Matcher:
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type:ignore
 
     def find_locations(self) -> None:
-        """
-        Populates Matcher object by finding the positions of matches
-        """
+        """Populate Matcher object by finding the positions of matches."""
         sym_tab = list_symbol_table()
         if not self.populated or any(
             [getattr(self, pda).name not in sym_tab for pda in self.LocationsInfo]
@@ -80,9 +78,7 @@ class Matcher:
             self.populated = True
 
     def get_match(self, match_type: MatchType, parent: object = None) -> Match:
-        """
-        Create a Match object of type match_type
-        """
+        """Create a Match object of type match_type."""
         self.find_locations()
         if match_type == MatchType.SEARCH:
             matched = self.search_bool
@@ -110,7 +106,8 @@ class Matcher:
 
     def split(self, maxsplit: int = 0, return_segments: bool = False):
         """
-        Split string by the occurrences of pattern. If maxsplit is nonzero, at most maxsplit splits occur
+        Split string by the occurrences of pattern.
+        If maxsplit is nonzero, at most maxsplit splits occur.
         """
         from arkouda.numpy.strings import Strings
 
@@ -137,9 +134,7 @@ class Matcher:
             return Strings.from_return_msg(repMsg)
 
     def findall(self, return_match_origins: bool = False):
-        """
-        Return all non-overlapping matches of pattern in Strings as a new Strings object
-        """
+        """Return all non-overlapping matches of pattern in Strings as a new Strings object."""
         from arkouda.numpy.strings import Strings
 
         self.find_locations()

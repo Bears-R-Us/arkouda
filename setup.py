@@ -164,6 +164,7 @@ setup(
             "pandas-stubs",
             "types-python-dateutil",
             "ipython",
+            "pydocstyle>=6.3.0",
         ],
     },
     # replace original install command with version that also builds

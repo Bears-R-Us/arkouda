@@ -662,7 +662,7 @@ class Datetime(_AbstractBaseTime):
         RegistrationError
             If the server was unable to register the Datetimes with the user_defined_name
 
-        See also
+        See Also
         --------
         unregister, attach, is_registered
 
@@ -697,7 +697,7 @@ class Datetime(_AbstractBaseTime):
             If the object is already unregistered or if there is a server error
             when attempting to unregister
 
-        See also
+        See Also
         --------
         register, attach, is_registered
 
@@ -917,7 +917,7 @@ class Timedelta(_AbstractBaseTime):
         RegistrationError
             If the server was unable to register the timedelta with the user_defined_name
 
-        See also
+        See Also
         --------
         unregister, attach, is_registered
 
@@ -952,7 +952,7 @@ class Timedelta(_AbstractBaseTime):
             If the object is already unregistered or if there is a server error
             when attempting to unregister
 
-        See also
+        See Also
         --------
         register, attach, is_registered
 
@@ -1012,7 +1012,8 @@ def date_range(
     inclusive="both",
     **kwargs,
 ):
-    """Creates a fixed frequency Datetime range. Alias for
+    """
+    Create a fixed frequency Datetime range. Alias for
     ``ak.Datetime(pd.date_range(args))``. Subject to size limit
     imposed by client.maxTransferBytes.
 
@@ -1083,7 +1084,8 @@ def date_range(
 
 
 def timedelta_range(start=None, end=None, periods=None, freq=None, name=None, closed=None, **kwargs):
-    """Return a fixed frequency TimedeltaIndex, with day as the default
+    """
+    Return a fixed frequency TimedeltaIndex, with day as the default
     frequency. Alias for ``ak.Timedelta(pd.timedelta_range(args))``.
     Subject to size limit imposed by client.maxTransferBytes.
 

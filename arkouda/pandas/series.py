@@ -27,13 +27,13 @@ from arkouda.numpy.pdarrayclass import (
 )
 from arkouda.numpy.pdarraycreation import arange, array, full, zeros
 from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
+from arkouda.numpy.strings import Strings
+from arkouda.numpy.util import get_callback, is_float
 
 if TYPE_CHECKING:
     from arkouda.numpy.segarray import SegArray
 else:
     SegArray = TypeVar("SegArray")
-from arkouda.numpy.strings import Strings
-from arkouda.numpy.util import get_callback, is_float
 
 # pd.set_option("display.max_colwidth", 65) is being called in DataFrame.py. This will resolve BitVector
 # truncation issues. If issues arise, that's where to look for it.
@@ -130,6 +130,7 @@ class Series:
     If entering keywords,
         'data' (see Parameters)
         'index' (optional) must match size of 'data'
+
     """
 
     objType = "Series"
@@ -137,7 +138,15 @@ class Series:
     @typechecked
     def __init__(
         self,
-        data: Union[Tuple, List, groupable_element_type, Series, SegArray, pd.Series, pd.Categorical],
+        data: Union[
+            Tuple,
+            List,
+            groupable_element_type,
+            Series,
+            SegArray,
+            pd.Series,
+            pd.Categorical,
+        ],
         name=None,
         index: Optional[Union[pdarray, Strings, Tuple, List, Index]] = None,
     ):
@@ -187,10 +196,7 @@ class Series:
         return self.values.size
 
     def __repr__(self):
-        """
-        Return ascii-formatted version of the series.
-        """
-
+        """Return ascii-formatted version of the series."""
         if len(self) == 0:
             return "Series([ -- ][ 0 values : 0 B])"
 
@@ -217,10 +223,11 @@ class Series:
         )
 
     def validate_key(
-        self, key: Union[Series, pdarray, Strings, Categorical, List, supported_scalars, SegArray]
+        self,
+        key: Union[Series, pdarray, Strings, Categorical, List, supported_scalars, SegArray],
     ) -> Union[pdarray, Strings, Categorical, supported_scalars, SegArray]:
         """
-        Validates type requirements for keys when reading or writing the Series.
+        Validate type requirements for keys when reading or writing the Series.
         Also converts list and tuple arguments into pdarrays.
 
         Parameters
@@ -242,6 +249,7 @@ class Series:
         IndexError
             Raised if the length of a boolean key array is different
             from the Series
+
         """
         if isinstance(key, list):
             return self.validate_key(array(key))
@@ -301,7 +309,7 @@ class Series:
     @typechecked
     def __getitem__(self, _key: Union[supported_scalars, pdarray, Strings, List, Series]):
         """
-        Gets values from Series.
+        Get values from Series.
 
         Parameters
         ----------
@@ -312,6 +320,7 @@ class Series:
         -------
         Series with all entries with matching labels. If only one entry in the
         Series is accessed, returns a scalar.
+
         """
         key = self.validate_key(_key)
         if is_supported_scalar(key):
@@ -330,7 +339,7 @@ class Series:
         self, val: Union[pdarray, Strings, supported_scalars, List]
     ) -> Union[pdarray, Strings, supported_scalars]:
         """
-        Validates type requirements for values being written into the Series.
+        Validate type requirements for values being written into the Series.
         Also converts list and tuple arguments into pdarrays.
 
         Parameters
@@ -349,6 +358,7 @@ class Series:
               of the same time as the Series
             Raised if val is a string or Strings type.
             Raised if val is not one of the supported types
+
         """
         if isinstance(val, list):
             val = array(val)
@@ -380,7 +390,7 @@ class Series:
         val: Union[pdarray, Strings, List, supported_scalars],
     ) -> None:
         """
-        Sets or adds entries in a Series by label.
+        Set or adds entries in a Series by label.
 
         Parameters
         ----------
@@ -396,6 +406,7 @@ class Series:
             Raised when setting multiple values to a Series with repeated labels
             Raised when number of values provided does not match the number of
             entries to set.
+
         """
         val = self.validate_val(val)
         key = self.validate_key(key)
@@ -487,9 +498,7 @@ class Series:
         return v
 
     def has_repeat_labels(self) -> bool:
-        """
-        Returns whether the Series has any labels that appear more than once
-        """
+        """Return whether the Series has any labels that appear more than once."""
         tf, counts = GroupBy(self.index.values).size()
         return counts.size != self.index.size
 
@@ -509,6 +518,7 @@ class Series:
         -------
         _LocIndexer
             An indexer for label-based access to Series entries.
+
         """
         return _LocIndexer(self)
 
@@ -521,6 +531,7 @@ class Series:
         -------
         _LocIndexer
             An indexer for label-based access to Series entries.
+
         """
         return _LocIndexer(self)
 
@@ -533,6 +544,7 @@ class Series:
         -------
         _iLocIndexer
             An indexer for position-based access to Series entries.
+
         """
         return _iLocIndexer("iloc", self)
 
@@ -545,6 +557,7 @@ class Series:
         -------
         _iLocIndexer
             An indexer for position-based access to a single element.
+
         """
         return _iLocIndexer("iat", self)
 
@@ -575,6 +588,7 @@ class Series:
         Series
             A Series of booleans that is True for elements found in the list,
             and False otherwise.
+
         """
         if isinstance(lst, list):
             lst = array(lst)
@@ -602,6 +616,7 @@ class Series:
         -------
         Series
             A Series containing the values corresponding to the key.
+
         """
         if isinstance(key, Series):
             # special case, keep the index values of the Series, and lookup the values
@@ -689,6 +704,7 @@ class Series:
         -------
         Series
             A new Series containing the top `n` values.
+
         """
         k = self.index
         v = self.values
@@ -722,8 +738,8 @@ class Series:
         -------
         Series
             A new Series sorted by index.
-        """
 
+        """
         idx = self.index.argsort(ascending=ascending)
         return self._reindex(idx)
 
@@ -741,8 +757,8 @@ class Series:
         -------
         Series
             A new Series sorted by its values.
-        """
 
+        """
         if not ascending:
             if isinstance(self.values, pdarray) and self.values.dtype in (
                 int64,
@@ -761,14 +777,12 @@ class Series:
     @typechecked
     def tail(self, n: int = 10) -> Series:
         """Return the last n values of the series"""
-
         idx_series = self.index[-n:]
         return Series(index=idx_series.index, data=self.values[-n:])
 
     @typechecked
     def head(self, n: int = 10) -> Series:
         """Return the first n values of the series"""
-
         idx_series = self.index[0:n]
         return Series(index=idx_series.index, data=self.values[0:n])
 
@@ -827,7 +841,6 @@ class Series:
 
         Examples
         --------
-
         >>> import arkouda as ak
         >>> ak.connect()
         >>> s = ak.Series(["elk", "pig", "dog", "quetzal"], name="animal")
@@ -856,7 +869,11 @@ class Series:
 
         """
         return self.to_pandas().to_markdown(
-            mode=mode, index=index, tablefmt=tablefmt, storage_options=storage_options, **kwargs
+            mode=mode,
+            index=index,
+            tablefmt=tablefmt,
+            storage_options=storage_options,
+            **kwargs,
         )
 
     @typechecked()
@@ -880,8 +897,8 @@ class Series:
         Series
             A Series where the index contains the unique values and the values are
             their counts in the original Series.
-        """
 
+        """
         dtype = get_callback(self.values)
         idx, vals = value_counts(self.values)
         s = Series(index=idx, data=vals)
@@ -892,11 +909,11 @@ class Series:
 
     @typechecked
     def diff(self) -> Series:
-        """Diffs consecutive values of the series.
+        """
+        Diffs consecutive values of the series.
 
         Returns a new series with the same index and length.  First value is set to NaN.
         """
-
         values = zeros(len(self), "float64")
         if not isinstance(self.values, Categorical):
             values[1:] = akcast(self.values[1:] - self.values[:-1], "float64")
@@ -908,7 +925,9 @@ class Series:
 
     @typechecked
     def to_dataframe(
-        self, index_labels: Union[List[str], None] = None, value_label: Union[str, None] = None
+        self,
+        index_labels: Union[List[str], None] = None,
+        value_label: Union[str, None] = None,
     ) -> arkouda.dataframe.DataFrame:
         """
         Convert the Series to an Arkouda DataFrame.
@@ -924,6 +943,7 @@ class Series:
         -------
         DataFrame
             An Arkouda DataFrame representing the Series.
+
         """
         list_value_label = [value_label] if isinstance(value_label, str) else value_label
 
@@ -955,7 +975,7 @@ class Series:
         RegistrationError
             If the server was unable to register the Series with the user_defined_name
 
-        See also
+        See Also
         --------
         unregister, attach, is_registered
 
@@ -963,6 +983,7 @@ class Series:
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.client import generic_msg
 
@@ -1036,7 +1057,7 @@ class Series:
             If the object is already unregistered or if there is a server error
             when attempting to unregister
 
-        See also
+        See Also
         --------
         register, attach, is_registered
 
@@ -1044,6 +1065,7 @@ class Series:
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.numpy.util import unregister
 
@@ -1056,13 +1078,29 @@ class Series:
     @typechecked
     def attach(label: str, nkeys: int = 1) -> Series:
         """
-        DEPRECATED
-        Retrieve a series registered with arkouda
+        Retrieve a Series previously registered in Arkouda.
+
+        Deprecated
+        ----------
+        Use `ak.attach(label)` instead.
 
         Parameters
         ----------
-        label: name used to register the series
-        nkeys: number of keys, if a multi-index was registerd
+        label : str
+            The name under which the Series was registered.
+        nkeys : int, optional
+            The number of index keys if a MultiIndex was registered. Default is 1.
+
+        Returns
+        -------
+        Series
+            The Series object associated with the given label.
+
+        Raises
+        ------
+        KeyError
+            If no Series is registered under `label`.
+
         """
         import warnings
 
@@ -1098,6 +1136,7 @@ class Series:
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.numpy.util import is_registered
 
@@ -1128,6 +1167,7 @@ class Series:
         RuntimeError
             Raised if a server-side error is thrown in the process of creating
             the Series instance
+
         """
         data = json.loads(repMsg)
         val_comps = data["value"].split("+|+")
@@ -1146,7 +1186,6 @@ class Series:
     @typechecked
     def _all_aligned(array: List) -> bool:
         """Is an array of Series indexed aligned?"""
-
         itor = iter(array)
         a1 = next(itor).index
         for a2 in itor:
@@ -1193,8 +1232,8 @@ class Series:
         Series or DataFrame
             - If axis=0: a new Series
             - If axis=1: a new DataFrame
-        """
 
+        """
         if len(arrays) == 0:
             raise IndexError("Array length must be non-zero")
 
@@ -1256,11 +1295,13 @@ class Series:
             When the input Series has Categorical values,
             the return Series will have Strings values.
             Otherwise, the return type will match the input type.
+
         Raises
         ------
         TypeError
             Raised if arg is not of type dict or arkouda.Series.
             Raised if series values not of type pdarray, Categorical, or Strings.
+
         Examples
         --------
         >>> import arkouda as ak
@@ -1338,7 +1379,6 @@ class Series:
 
         Examples
         --------
-
         >>> import arkouda as ak
         >>> ak.connect()
         >>> from arkouda import Series
@@ -1358,7 +1398,6 @@ class Series:
         +----+---------+
 
         """
-
         if not is_float(self.values):
             return Series(full(self.values.size, False, dtype=bool), index=self.index)
 
@@ -1383,7 +1422,6 @@ class Series:
 
         Examples
         --------
-
         >>> import arkouda as ak
         >>> ak.connect()
         >>> from arkouda import Series
@@ -1422,7 +1460,6 @@ class Series:
 
         Examples
         --------
-
         >>> import arkouda as ak
         >>> ak.connect()
         >>> from arkouda import Series
@@ -1442,7 +1479,6 @@ class Series:
         +----+---------+
 
         """
-
         if not is_float(self.values):
             return Series(full(self.values.size, True, dtype=bool), index=self.index)
 
@@ -1467,7 +1503,6 @@ class Series:
 
         Examples
         --------
-
         >>> import arkouda as ak
         >>> ak.connect()
         >>> from arkouda import Series
@@ -1499,7 +1534,6 @@ class Series:
 
         Examples
         --------
-
         >>> import arkouda as ak
         >>> ak.connect()
         >>> from arkouda import Series
@@ -1522,6 +1556,7 @@ class Series:
 
         >>> s.hasnans()
         True
+
         """
         if is_float(self.values):
             result = any(isnan(self.values))
@@ -1549,7 +1584,6 @@ class Series:
 
         Examples
         --------
-
         >>> import arkouda as ak
         >>> ak.connect()
         >>> from arkouda import Series
@@ -1664,6 +1698,7 @@ class Series:
         Series or DataFrame
             - If axis=0: a local pandas Series
             - If axis=1: a local pandas DataFrame
+
         """
         if len(arrays) == 0:
             raise IndexError("Array length must be non-zero")

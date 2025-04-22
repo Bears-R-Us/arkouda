@@ -12,17 +12,16 @@ class HistoryRetriever:
 
     def _filter_arkouda_command(self, command: str, filter_string: str = "ak") -> Optional[str]:
         """
-        Returns command string if the filter string is in the command and the
+        Return command string if the filter string is in the command and the
         command is not generate_history. Otherwise, returns None
         """
-
         return command if (filter_string in command and "generate_history" not in command) else None
 
     def retrieve(
         self, command_filter: Optional[str] = None, num_commands: Optional[int] = None
     ) -> List[str]:
         """
-        Generates list of commands executed within a Python REPL shell, Jupyter notebook,
+        Generate list of commands executed within a Python REPL shell, Jupyter notebook,
         or IPython notebook, with an optional command filter and number of commands to return.
 
         Parameters
@@ -36,6 +35,7 @@ class HistoryRetriever:
         -------
         List[str]
             A list of commands from the Python shell, Jupyter notebook, or IPython notebook
+
         """
         raise NotImplementedError("Derived classes must implement retrieve")
 
@@ -50,7 +50,7 @@ class ShellHistoryRetriever(HistoryRetriever):
         self, command_filter: Optional[str] = None, num_commands: Optional[int] = None
     ) -> List[str]:
         """
-        Generates list of commands executed within the a Python REPL shell, with an
+        Generate list of commands executed within the a Python REPL shell, with an
         optional command filter and number of commands to return.
 
         Parameters
@@ -75,6 +75,7 @@ class ShellHistoryRetriever(HistoryRetriever):
         3
         >>> h.retrieve()
         [' 1 + 2', 'h.retrieve()']
+
         """
         length_of_history = readline.get_current_history_length()
         num_to_return = num_commands if num_commands else length_of_history
@@ -101,7 +102,7 @@ class NotebookHistoryRetriever(HistoryAccessor, HistoryRetriever):
         self, command_filter: Optional[str] = None, num_commands: Optional[int] = None
     ) -> List[str]:
         """
-        Generates list of commands executed within a Jupyter notebook or IPython shell,
+        Generate list of commands executed within a Jupyter notebook or IPython shell,
         with an optional command filter and number of commands to return.
 
         Parameters
@@ -125,6 +126,7 @@ class NotebookHistoryRetriever(HistoryAccessor, HistoryRetriever):
         >>> 2**3
         >>> h.retrieve(num_commands=3)
         ['1+2', '4*6', '2**3']
+
         """
         raw = True  # HistoryAccessor _run_sql method parameter
         output = False  # HistoryAccessor _run_sql method parameter
