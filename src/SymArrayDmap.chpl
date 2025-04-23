@@ -92,39 +92,27 @@ module SymArrayDmap {
     }
 
     proc makeDistArray(D: domain(?), type etype) throws
-      where MyDmap != Dmap.defaultRectangular && D.isDefaultRectangular()
-    {
-      return makeDistArray(makeDistDom(D), etype);
-    }
-
-    proc makeDistArray(D: domain(?), type etype) throws
-      where D.rank == 1 && (MyDmap == Dmap.defaultRectangular || !D.isDefaultRectangular())
+      where D.rank == 1
     {
       var res = D.tryCreateArray(etype);
       return res;
     }
 
     proc makeDistArray(D: domain(?), type etype) throws
-      where D.rank > 1 && (MyDmap == Dmap.defaultRectangular || !D.isDefaultRectangular())
+      where D.rank > 1
     {
       var res: [D] etype;
       return res;
     }
 
-    proc makeDistArray(D: domain(?), initExpr) throws
-      where MyDmap != Dmap.defaultRectangular && D.isDefaultRectangular()
-    {
-      return makeDistArray(makeDistDom(D), initExpr);
-    }
-
     proc makeDistArray(D: domain(?), initExpr: ?t) throws
-      where D.rank == 1 && (MyDmap == Dmap.defaultRectangular || !D.isDefaultRectangular())
+      where D.rank == 1
     {
       return D.tryCreateArray(t, initExpr);
     }
 
     proc makeDistArray(D: domain(?), initExpr: ?t) throws
-      where D.rank > 1 && (MyDmap == Dmap.defaultRectangular || !D.isDefaultRectangular())
+      where D.rank > 1
     {
       var res: [D] t = initExpr;
       return res;

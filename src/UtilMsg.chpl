@@ -50,7 +50,7 @@ module UtilMsg {
   */
 
   @arkouda.registerCommand()
-  proc diff(x: [?d] ?t, n: int, axis: int): [] t throws
+  proc diff(x: [?d] ?t, n: int, axis: int): [] t throws 
     where (t == real) || (t == int) || (t == uint(8)) || (t == uint(64)){
 
     const outDom = subDomain(x.shape, axis, n);
@@ -99,7 +99,7 @@ module UtilMsg {
         then rngs[i] = 0..<(shape[i] - n);
         else rngs[i] = 0..<shape[i];
     }
-    return makeDistDom({(...rngs)});
+    return {(...rngs)};
   }
 
   private proc tuplify(x: int) do return (x,);
