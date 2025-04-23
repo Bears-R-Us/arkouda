@@ -295,6 +295,12 @@ class TestNumeric:
         with pytest.raises(TypeError):
             ak.histogram(np.array([range(0, 10)]).astype(num_type), bins="1")
 
+        # add 'range'
+        ak_result, ak_bins = ak.histogram(pda, bins=20, range=(15, 20))
+        np_result, np_bins = np.histogram(np.array(pda.to_list()), bins=20, range=(15, 20))
+        assert np.allclose(ak_result.to_list(), np_result.tolist())
+        assert np.allclose(ak_bins.to_list(), np_bins.tolist())
+
     #   log and exp tests were identical, and so have been combined.
 
     @pytest.mark.skipif(pytest.host == "horizon", reason="Fails on horizon")
@@ -304,11 +310,10 @@ class TestNumeric:
     def test_histogram_multidim(self, num_type1, num_type2):
         # test 2d histogram
         seed = 1
-        ak_x, ak_y = (
-            ak.randint(1, 100, 1000, seed=seed, dtype=num_type1),
-            ak.randint(1, 100, 1000, seed=seed + 1, dtype=num_type2),
-        )
+        ak_x = ak.randint(1, 100, 1000, seed=seed, dtype=num_type1)
+        ak_y = ak.randint(1, 100, 1000, seed=seed + 1, dtype=num_type2)
         np_x, np_y = ak_x.to_ndarray(), ak_y.to_ndarray()
+
         np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y)
         ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y)
         assert np.allclose(np_hist.tolist(), ak_hist.to_list())
@@ -321,6 +326,13 @@ class TestNumeric:
         assert np.allclose(np_x_edges.tolist(), ak_x_edges.to_list())
         assert np.allclose(np_y_edges.tolist(), ak_y_edges.to_list())
 
+        # add 'range'
+        np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y, range=((25, 92), (15, 86)))
+        ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y, range=((25, 92), (15, 86)))
+        assert np.allclose(np_hist.tolist(), ak_hist.to_list())
+        assert np.allclose(np_x_edges.tolist(), ak_x_edges.to_list())
+        assert np.allclose(np_y_edges.tolist(), ak_y_edges.to_list())
+
         # test arbitrary dimensional histogram
         dim_list = [3, 4, 5]
         bin_list = [[2, 4, 5], [2, 4, 5, 2], [2, 4, 5, 2, 3]]
@@ -328,8 +340,17 @@ class TestNumeric:
             if dim <= get_max_array_rank():
                 np_arrs = [np.random.randint(1, 100, 1000) for _ in range(dim)]
                 ak_arrs = [ak.array(a) for a in np_arrs]
+
                 np_hist, np_bin_edges = np.histogramdd(np_arrs, bins=bins)
                 ak_hist, ak_bin_edges = ak.histogramdd(ak_arrs, bins=bins)
+                assert np.allclose(np_hist.tolist(), ak_hist.to_list())
+                for np_edge, ak_edge in zip(np_bin_edges, ak_bin_edges):
+                    assert np.allclose(np_edge.tolist(), ak_edge.to_list())
+
+                # add 'range'
+                range_arg = [(10, 80) for _ in range(dim)]
+                np_hist, np_bin_edges = np.histogramdd(np_arrs, bins=bins, range=range_arg)
+                ak_hist, ak_bin_edges = ak.histogramdd(ak_arrs, bins=bins, range=range_arg)
                 assert np.allclose(np_hist.tolist(), ak_hist.to_list())
                 for np_edge, ak_edge in zip(np_bin_edges, ak_bin_edges):
                     assert np.allclose(np_edge.tolist(), ak_edge.to_list())
