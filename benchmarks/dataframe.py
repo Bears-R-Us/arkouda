@@ -32,7 +32,7 @@ def generate_dataframe(N, seed):
         elif d == ak.Strings:
             df_dict[key] = ak.random_strings_uniform(minlen=5, maxlen=6, size=N, seed=seed)
         elif d == ak.SegArray:
-            df_dict[key] = ak.segarray(ak.arange(0, N), ak.array(np.random.randint(0, 2**32, N)))
+            df_dict[key] = ak.SegArray(ak.arange(0, N), ak.array(np.random.randint(0, 2**32, N)))
     return ak.DataFrame(df_dict)
 
 

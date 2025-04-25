@@ -24,17 +24,17 @@ def bench_segarr_setops(benchmark, op, dtype):
         if dtype == "int64":
             a = ak.randint(0, 2**32, N, seed=seed)
             b = ak.randint(0, 2**32, N, seed=seed)
-            seg_a = ak.segarray(ak.array([0, len(a)]), ak.concatenate([a, b]))
+            seg_a = ak.SegArray(ak.array([0, len(a)]), ak.concatenate([a, b]))
             c = ak.randint(0, 2**32, N, seed=seed)
             d = ak.randint(0, 2**32, N, seed=seed)
-            seg_b = ak.segarray(ak.array([0, len(c)]), ak.concatenate([c, d]))
+            seg_b = ak.SegArray(ak.array([0, len(c)]), ak.concatenate([c, d]))
         elif dtype == "uint64":
             a = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
             b = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
-            seg_a = ak.segarray(ak.array([0, len(a)]), ak.concatenate([a, b]))
+            seg_a = ak.SegArray(ak.array([0, len(a)]), ak.concatenate([a, b]))
             c = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
             d = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
-            seg_b = ak.segarray(ak.array([0, len(c)]), ak.concatenate([c, d]))
+            seg_b = ak.SegArray(ak.array([0, len(c)]), ak.concatenate([c, d]))
 
         fxn = getattr(seg_a, op)
         benchmark.pedantic(fxn, args=[seg_b], rounds=pytest.trials)

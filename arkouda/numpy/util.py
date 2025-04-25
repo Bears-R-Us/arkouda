@@ -4,15 +4,13 @@ import builtins
 import json
 from math import prod as maprod
 from typing import TYPE_CHECKING, Literal, Sequence, Tuple, TypeVar, Union, cast
-from warnings import warn
 
-import numpy as np
 from typeguard import typechecked
 
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
-from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.groupbyclass import GroupBy
 from arkouda.infoclass import list_registry
 from arkouda.numpy.dtypes import (
     _is_dtype_in_union,
@@ -52,16 +50,6 @@ def get_callback(x):
         return identity
 
 
-def concatenate(items, ordered=True):
-    warn(
-        "This function is deprecated and will be removed in a later version of Arkouda."
-        " Use arkouda.numpy.util.generic_concat(items, ordered) instead.",
-        DeprecationWarning,
-    )
-
-    return generic_concat(items, ordered=ordered)
-
-
 def generic_concat(items, ordered=True):
     # this version can be called with Dataframe and Series (which have Class.concat methods)
     from arkouda.numpy.pdarraysetops import concatenate as pdarrayconcatenate
@@ -87,66 +75,6 @@ def report_mem(pre=""):
     print(f"{pre} mem use: {get_mem_used() / (1024**4): .2f} TB ({used:.1%})")
 
 
-def enrich_inplace(data, keynames, aggregations, **kwargs):
-    warn(
-        "This function is deprecated and will be removed in a later version of Arkouda.",
-        DeprecationWarning,
-    )
-
-    # TO DO: validate reductions and values
-    try:
-        keys = data[keynames]
-    except (KeyError, TypeError):
-        keys = [data[k] for k in keynames]
-    g = GroupBy(keys, **kwargs)
-    for resname, (reduction, values) in aggregations.items():
-        try:
-            values = data[values]
-        except (KeyError, TypeError):
-            pass
-        if reduction == "count":
-            pergroupval = g.size()[1]
-        else:
-            pergroupval = g.aggregate(values, reduction)[1]
-        data[resname] = g.broadcast(pergroupval, permute=True)
-
-
-@typechecked
-def expand(size: Union[int, np.int64, np.uint64], segs: pdarray, vals: pdarray) -> pdarray:
-    """
-    Expand an array with values placed into the indicated segments.
-
-    Parameters
-    ----------
-    size : int, np.int64, or np.uint64
-
-        The size of the array to be expanded
-    segs : pdarray
-
-        The indices where the values should be placed
-    vals : pdarray
-
-        The values to be placed in each segment
-
-    Returns
-    -------
-    pdarray
-        The expanded array.
-
-    Notes
-    -----
-    This function (with different order of arguments) is now in arkouda
-    proper as ak.broadcast. It is retained here for backwards compatibility.
-
-    """
-    warn(
-        "This function is deprecated and will be removed in a later version of Arkouda."
-        " Use arkouda.broadcast(segments, values, size) instead.",
-        DeprecationWarning,
-    )
-    return broadcast(segs, vals, size=size)
-
-
 @typechecked
 def invert_permutation(perm: pdarray) -> pdarray:
     """
@@ -167,16 +95,6 @@ def invert_permutation(perm: pdarray) -> pdarray:
     if (not isinstance(unique_vals, pdarray)) or unique_vals.size != perm.size:
         raise ValueError("The array is not a permutation.")
     return coargsort([perm, arange(0, perm.size)])
-
-
-def most_common(g, values):
-    warn(
-        "This function is deprecated and will be removed in a later version of Arkouda."
-        " Use arkouda.GroupBy.most_common(values) instead.",
-        DeprecationWarning,
-    )
-
-    return g.most_common(values)
 
 
 def convert_if_categorical(values):

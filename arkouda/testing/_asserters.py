@@ -610,7 +610,7 @@ def assert_arkouda_segarray_equal(
     obj: str = "segarray",
 ) -> None:
     """
-    Check that the two 'ak.segarray's are equivalent.
+    Check that the two 'ak.SegArray's are equivalent.
 
     Parameters
     ----------
