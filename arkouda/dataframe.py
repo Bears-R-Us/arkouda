@@ -5756,7 +5756,8 @@ def invert_permutation(perm):
 def _inner_join_merge(
     left: DataFrame,
     right: DataFrame,
-    on: Union[str, List[str]],
+    left_on: Union[str, List[str]],
+    right_on: Union[str, List[str]],
     col_intersect: Union[str, List[str]],
     left_suffix: str = "_x",
     right_suffix: str = "_y",
@@ -5773,9 +5774,14 @@ def _inner_join_merge(
         The Left DataFrame to be joined
     right: DataFrame
         The Right DataFrame to be joined
-    on: Optional[Union[str, List[str]]] = None
-        The name or list of names of the DataFrame column(s) to join on.
-        If on is None, this defaults to the intersection of the columns in both DataFrames.
+    left_on: Optional[Union[str, List[str]]] = None
+        The name or list of names of the DataFrame column(s) to join on from the left DataFrame.
+        If left_on is None, this defaults to the intersection of the columns in both DataFrames.
+    right_on: Optional[Union[str, List[str]]] = None
+        The name or list of names of the DataFrame column(s) to join on from the right DataFrame.
+        If right_on is None, this defaults to the intersection of the columns in both DataFrames.
+    col_intersect: Union[str, List[str]]
+        These are the columns that left and right have in common. Used to add suffix when appropriate.
     left_suffix: str = "_x"
         A string indicating the suffix to add to columns from the left dataframe for overlapping
         column names in both left and right. Defaults to "_x"
@@ -5791,40 +5797,43 @@ def _inner_join_merge(
         Inner-Joined Arkouda DataFrame
     """
     left_cols, right_cols = left.columns.values.copy(), right.columns.values.copy()
-    if isinstance(on, str):
-        left_inds, right_inds = inner_join(left[on], right[on])
-        new_dict = {on: left[on][left_inds]}
-        left_cols.remove(on)
-        right_cols.remove(on)
-    else:
-        left_inds, right_inds = inner_join([left[col] for col in on], [right[col] for col in on])
-        new_dict = {col: left[col][left_inds] for col in on}
-        for col in on:
-            left_cols.remove(col)
-            right_cols.remove(col)
+    col_intersect_ = col_intersect.copy() if isinstance(col_intersect, list) else [col_intersect[:]]
+    left_on_ = [left_on] if isinstance(left_on, str) else left_on
+    right_on_ = [right_on] if isinstance(right_on, str) else right_on
+    left_inds, right_inds = inner_join(
+        [left[col] for col in left_on_], [right[col] for col in right_on_]
+    )
+    new_dict = {}
+    for lcol, rcol in zip(left_on_, right_on_):
+        if lcol == rcol:
+            right_cols.remove(rcol)
+            col_intersect_.remove(rcol)
 
     for col in left_cols:
-        new_col = col + left_suffix if col in col_intersect else col
+        new_col = col + left_suffix if col in col_intersect_ else col
         new_dict[new_col] = left[col][left_inds]
     for col in right_cols:
-        new_col = col + right_suffix if col in col_intersect else col
+        new_col = col + right_suffix if col in col_intersect_ else col
         new_dict[new_col] = right[col][right_inds]
 
     ret_df = DataFrame(new_dict)
-    if sort is True:
-        ret_df = ret_df.sort_values(on).reset_index()
+    sort_keys = [left_on] if isinstance(left_on, str) else left_on
+    if sort:
+        ret_df = ret_df.sort_values(sort_keys).reset_index()
     return ret_df
 
 
 def _right_join_merge(
     left: DataFrame,
     right: DataFrame,
-    on: Union[str, List[str]],
+    left_on: Union[str, List[str]],
+    right_on: Union[str, List[str]],
     col_intersect: Union[str, List[str]],
     left_suffix: str = "_x",
     right_suffix: str = "_y",
     convert_ints: bool = True,
     sort: bool = True,
+    actually_left_join: bool = False,
 ) -> DataFrame:
     """
     Utilizes the ak.join.inner_join_merge function to return an
@@ -5839,9 +5848,14 @@ def _right_join_merge(
         The Left DataFrame to be joined
     right: DataFrame
         The Right DataFrame to be joined
-    on: Optional[Union[str, List[str]]] = None
-        The name or list of names of the DataFrame column(s) to join on.
-        If on is None, this defaults to the intersection of the columns in both DataFrames.
+    left_on: Optional[Union[str, List[str]]] = None
+        The name or list of names of the DataFrame column(s) to join on from the left DataFrame.
+        If left_on is None, this defaults to the intersection of the columns in both DataFrames.
+    right_on: Optional[Union[str, List[str]]] = None
+        The name or list of names of the DataFrame column(s) to join on from the right DataFrame.
+        If right_on is None, this defaults to the intersection of the columns in both DataFrames.
+    col_intersect: Union[str, List[str]]
+        These are the columns that left and right have in common. Used to add suffix when appropriate.
     left_suffix: str = "_x"
         A string indicating the suffix to add to columns from the left dataframe for overlapping
         column names in both left and right. Defaults to "_x"
@@ -5855,24 +5869,39 @@ def _right_join_merge(
     sort: bool = True
         If True, DataFrame is returned sorted by "on".
         Otherwise, the DataFrame is not sorted.
+    actually_left_join: bool = False
+        If True, this is doing a right join but the columns are switched up because
+        left and right were switched when passed into this function.
     Returns
     -------
     arkouda.dataframe.DataFrame
         Right-Joined Arkouda DataFrame
     """
-    in_left = _inner_join_merge(left, right, on, col_intersect, left_suffix, right_suffix, sort=False)
-    in_left_cols, left_cols = in_left.columns.values.copy(), left.columns.values.copy()
-    if isinstance(on, str):
-        left_at_on = left[on]
-        right_at_on = right[on]
-        left_cols.remove(on)
-        in_left_cols.remove(on)
+    left_on_ = [left_on] if isinstance(left_on, str) else left_on
+    right_on_ = [right_on] if isinstance(right_on, str) else right_on
+    if actually_left_join:
+        in_left = _inner_join_merge(
+            right, left, right_on_, left_on_, col_intersect, right_suffix, left_suffix, sort=False
+        )
     else:
-        left_at_on = [left[col] for col in on]
-        right_at_on = [right[col] for col in on]
-        for col in on:
-            left_cols.remove(col)
-            in_left_cols.remove(col)
+        in_left = _inner_join_merge(
+            left, right, left_on_, right_on_, col_intersect, left_suffix, right_suffix, sort=False
+        )
+    in_left_cols, left_cols = in_left.columns.values.copy(), left.columns.values.copy()
+    right_cols = right.columns.values.copy()
+
+    left_at_on = [left[col] for col in left_on_]
+    right_at_on = [right[col] for col in right_on_]
+
+    for lcol, rcol in zip(left_on_, right_on_):
+        if lcol in left_cols:
+            left_cols.remove(lcol)
+        if rcol in right_cols:
+            right_cols.remove(rcol)
+        if lcol in in_left_cols:
+            in_left_cols.remove(lcol)
+        if rcol in in_left_cols:
+            in_left_cols.remove(rcol)
 
     not_in_left = right[in1d(right_at_on, left_at_on, invert=True)]
     for col in not_in_left.columns:
@@ -5880,7 +5909,7 @@ def _right_join_merge(
             not_in_left[col + right_suffix] = not_in_left[col]
             not_in_left = not_in_left.drop(col, axis=1)
 
-    nan_cols = list(set(in_left) - set(not_in_left))
+    nan_cols = [col for col in in_left.columns if col not in not_in_left.columns]
     for col in nan_cols:
         if convert_ints is True and in_left[col].dtype == int:
             in_left[col] = akcast(in_left[col], akfloat64)
@@ -5888,15 +5917,17 @@ def _right_join_merge(
         # Create a nan array for all values not in the left df
         not_in_left[col] = __nulls_like(in_left[col], len(not_in_left))
     ret_df = DataFrame.append(in_left, not_in_left)
-    if sort is True:
-        ret_df = ret_df.sort_values(on).reset_index()
+    sort_keys = [right_on] if isinstance(right_on, str) else right_on
+    if sort:
+        ret_df = ret_df.sort_values(sort_keys).reset_index()
     return ret_df
 
 
 def _outer_join_merge(
     left: DataFrame,
     right: DataFrame,
-    on: Union[str, List[str]],
+    left_on: Union[str, List[str]],
+    right_on: Union[str, List[str]],
     col_intersect: Union[str, List[str]],
     left_suffix: str = "_x",
     right_suffix: str = "_y",
@@ -5915,9 +5946,14 @@ def _outer_join_merge(
         The Left DataFrame to be joined
     right: DataFrame
         The Right DataFrame to be joined
-    on: Optional[Union[str, List[str]]] = None
-        The name or list of names of the DataFrame column(s) to join on.
-        If on is None, this defaults to the intersection of the columns in both DataFrames.
+    left_on: Optional[Union[str, List[str]]] = None
+        The name or list of names of the DataFrame column(s) to join on from the left DataFrame.
+        If left_on is None, this defaults to the intersection of the columns in both DataFrames.
+    right_on: Optional[Union[str, List[str]]] = None
+        The name or list of names of the DataFrame column(s) to join on from the right DataFrame.
+        If right_on is None, this defaults to the intersection of the columns in both DataFrames.
+    col_intersect: Union[str, List[str]]
+        These are the columns that left and right have in common. Used to add suffix when appropriate.
     left_suffix: str = "_x"
         A string indicating the suffix to add to columns from the left dataframe for overlapping
         column names in both left and right. Defaults to "_x"
@@ -5936,24 +5972,24 @@ def _outer_join_merge(
     arkouda.dataframe.DataFrame
         Outer-Joined Arkouda DataFrame
     """
-    inner = _inner_join_merge(left, right, on, col_intersect, left_suffix, right_suffix, sort=False)
+    inner = _inner_join_merge(
+        left, right, left_on, right_on, col_intersect, left_suffix, right_suffix, sort=False
+    )
     left_cols, right_cols = (
         left.columns.values.copy(),
         right.columns.values.copy(),
     )
+    left_on_ = [left_on] if isinstance(left_on, str) else left_on
+    right_on_ = [right_on] if isinstance(right_on, str) else right_on
 
-    if isinstance(on, str):
-        left_at_on = left[on]
-        right_at_on = right[on]
-        left_cols.remove(on)
-        right_cols.remove(on)
+    left_at_on = [left[col] for col in left_on_]
+    right_at_on = [right[col] for col in right_on_]
 
-    else:
-        left_at_on = [left[col] for col in on]
-        right_at_on = [right[col] for col in on]
-        for col in on:
-            left_cols.remove(col)
-            right_cols.remove(col)
+    for lcol, rcol in zip(left_on_, right_on_):
+        if lcol in left_cols:
+            left_cols.remove(lcol)
+        if rcol in right_cols:
+            right_cols.remove(rcol)
 
     not_in_left = right[in1d(right_at_on, left_at_on, invert=True)]
     for col in not_in_left.columns:
@@ -5993,8 +6029,9 @@ def _outer_join_merge(
         not_in_right[col] = __nulls_like(inner[col], len(not_in_right))
 
     ret_df = DataFrame.append(DataFrame.append(inner, not_in_left), not_in_right)
-    if sort is True:
-        ret_df = ret_df.sort_values(on).reset_index()
+    sort_keys = [left_on] if isinstance(left_on, str) else left_on
+    if sort:
+        ret_df = ret_df.sort_values(sort_keys).reset_index()
 
     return ret_df
 
@@ -6029,6 +6066,8 @@ def merge(
     left: DataFrame,
     right: DataFrame,
     on: Optional[Union[str, List[str]]] = None,
+    left_on: Optional[Union[str, List[str]]] = None,
+    right_on: Optional[Union[str, List[str]]] = None,
     how: str = "inner",
     left_suffix: str = "_x",
     right_suffix: str = "_y",
@@ -6052,6 +6091,12 @@ def merge(
     on: Optional[Union[str, List[str]]] = None
         The name or list of names of the DataFrame column(s) to join on.
         If on is None, this defaults to the intersection of the columns in both DataFrames.
+    left_on: str or List of str, optional
+        Column name or names to join on in the left DataFrame. If this is not None, then right_on
+        must also not be None, and this will override `on`.
+    right_on: str or List of str, optional
+        Column name or names to join on in the right DataFrame. If this is not None, then left_on
+        must also not be None, and this will override `on`.
     how: str, default = "inner"
         The merge condition.
         Must be one of "inner", "left", "right", or "outer".
@@ -6133,17 +6178,17 @@ def merge(
     >>> merge(left_df, right_df, on = "col1", how = "left")
 
     +----+--------+----------+----------+
-    |    |   col1 |   col2_y |   col2_x |
+    |    |   col1 |   col2_x |   col2_y |
     +====+========+==========+==========+
-    |  0 |      0 |        0 |        0 |
+    |  0 |      0 |        0 |      0.0 |
     +----+--------+----------+----------+
-    |  1 |      1 |      nan |       -1 |
+    |  1 |      1 |       -1 |      nan |
     +----+--------+----------+----------+
-    |  2 |      2 |        2 |       -2 |
+    |  2 |      2 |       -2 |      2.0 |
     +----+--------+----------+----------+
-    |  3 |      3 |      nan |       -3 |
+    |  3 |      3 |       -3 |      nan |
     +----+--------+----------+----------+
-    |  4 |      4 |        4 |       -4 |
+    |  4 |      4 |       -4 |      4.0 |
     +----+--------+----------+----------+
 
     >>> merge(left_df, right_df, on = "col1", how = "right")
@@ -6151,11 +6196,11 @@ def merge(
     +----+--------+----------+----------+
     |    |   col1 |   col2_x |   col2_y |
     +====+========+==========+==========+
-    |  0 |      0 |        0 |        0 |
+    |  0 |      0 |      0.0 |        0 |
     +----+--------+----------+----------+
-    |  1 |      2 |       -2 |        2 |
+    |  1 |      2 |     -2.0 |        2 |
     +----+--------+----------+----------+
-    |  2 |      4 |       -4 |        4 |
+    |  2 |      4 |     -4.0 |        4 |
     +----+--------+----------+----------+
     |  3 |      6 |      nan |        6 |
     +----+--------+----------+----------+
@@ -6165,41 +6210,70 @@ def merge(
     >>> merge(left_df, right_df, on = "col1", how = "outer")
 
     +----+--------+----------+----------+
-    |    |   col1 |   col2_y |   col2_x |
+    |    |   col1 |   col2_x |   col2_y |
     +====+========+==========+==========+
-    |  0 |      0 |        0 |        0 |
+    |  0 |      0 |      0.0 |      0.0 |
     +----+--------+----------+----------+
-    |  1 |      1 |      nan |       -1 |
+    |  1 |      1 |     -1.0 |      nan |
     +----+--------+----------+----------+
-    |  2 |      2 |        2 |       -2 |
+    |  2 |      2 |     -2.0 |      2.0 |
     +----+--------+----------+----------+
-    |  3 |      3 |      nan |       -3 |
+    |  3 |      3 |     -3.0 |      nan |
     +----+--------+----------+----------+
-    |  4 |      4 |        4 |       -4 |
+    |  4 |      4 |     -4.0 |      4.0 |
     +----+--------+----------+----------+
-    |  5 |      6 |        6 |      nan |
+    |  5 |      6 |      nan |      6.0 |
     +----+--------+----------+----------+
-    |  6 |      8 |        8 |      nan |
+    |  6 |      8 |      nan |      8.0 |
     +----+--------+----------+----------+
 
     """
     col_intersect = list(set(left.columns) & set(right.columns))
     on = on if on is not None else col_intersect
+    if left_on is None and right_on is None:
+        left_on = on
+        right_on = on
+    elif (left_on is None) != (right_on is None):
+        raise ValueError("If one of left_on or right_on is not None, the other must also be set")
+    left_on_: List[str]
+    right_on_: List[str]
+    if isinstance(left_on, str):
+        left_on_ = [left_on]
+    else:
+        left_on_ = cast(List[str], left_on)
+    if isinstance(right_on, str):
+        right_on_ = [right_on]
+    else:
+        right_on_ = cast(List[str], right_on)
+    if len(left_on_) == 0 or len(right_on_) == 0:
+        raise ValueError("Cannot merge with no columns on at least one DataFrame")
+    if len(left_on_) != len(right_on_):
+        raise ValueError("Cannot merge with more columns from one DataFrame than the other")
 
-    if not isinstance(on, str):
-        if not all(
-            isinstance(left[col], (pdarray, Strings)) and isinstance(right[col], (pdarray, Strings))
-            for col in on
-        ):
-            raise ValueError("All columns of a multi-column merge must be pdarrays")
+    if not all(
+        isinstance(left[left_col], (pdarray, Strings))
+        and isinstance(right[right_col], (pdarray, Strings))
+        for left_col, right_col in zip(left_on_, right_on_)
+    ):
+        raise ValueError("All columns of a multi-column merge must be pdarrays")
 
     if how == "inner":
-        return _inner_join_merge(left, right, on, col_intersect, left_suffix, right_suffix, sort=sort)
+        return _inner_join_merge(
+            left,
+            right,
+            left_on_,
+            right_on_,
+            col_intersect,
+            left_suffix,
+            right_suffix,
+            sort=sort,
+        )
     elif how == "right":
         return _right_join_merge(
             left,
             right,
-            on,
+            left_on_,
+            right_on_,
             col_intersect,
             left_suffix,
             right_suffix,
@@ -6210,12 +6284,14 @@ def merge(
         return _right_join_merge(
             right,
             left,
-            on,
+            right_on_,
+            left_on_,
             col_intersect,
             right_suffix,
             left_suffix,
             convert_ints=convert_ints,
             sort=sort,
+            actually_left_join=True,
         )
     elif how == "outer":
         warn(
@@ -6224,12 +6300,13 @@ def merge(
             UserWarning,
         )
         return _outer_join_merge(
-            right,
             left,
-            on,
+            right,
+            left_on_,
+            right_on_,
             col_intersect,
-            right_suffix,
             left_suffix,
+            right_suffix,
             convert_ints=convert_ints,
             sort=sort,
         )

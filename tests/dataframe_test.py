@@ -12,6 +12,7 @@ import arkouda as ak
 from arkouda import io_util
 from arkouda.scipy import chisquare as akchisquare
 from arkouda.testing import assert_frame_equal as ak_assert_frame_equal
+from arkouda.testing import assert_frame_equivalent
 
 
 def alternating_1_0(n):
@@ -1134,6 +1135,125 @@ class TestDataFrame:
                     # from pandas.testing import assert_frame_equal
                     # assert_frame_equal(sorted_ak.to_pandas()[sorted_column_names],
                     # sorted_pd[sorted_column_names])
+
+    @pytest.mark.parametrize("how", ["inner", "left", "right"])
+    @pytest.mark.parametrize(
+        ("left_on", "right_on"),
+        [
+            ("a", "x"),
+            ("c", "z"),
+            (["a", "c"], ["x", "z"]),
+        ],
+    )
+    def test_merge_left_on_right_on(self, how, left_on, right_on):
+        size = 1000
+        seed = 42
+
+        a = ak.randint(-size // 10, size // 10, size, seed=seed)
+        b = ak.randint(-size // 10, size // 10, size, seed=seed + 1)
+        c = ak.randint(-size // 10, size // 10, size, seed=seed + 2)
+        d = ak.randint(-size // 10, size // 10, size, seed=seed + 3)
+        ones = ak.ones(size, int)
+        altr = alternating_1_0(size)
+
+        for truth in itertools.product([True, False], repeat=3):
+            left_arrs = [pda if t else pda_to_str_helper(pda) for pda, t in zip([a, b, ones], truth)]
+            right_arrs = [pda if t else pda_to_str_helper(pda) for pda, t in zip([c, d, altr], truth)]
+
+            left_df = ak.DataFrame({k: v for k, v in zip(["a", "b", "c"], left_arrs)})
+            right_df = ak.DataFrame({k: v for k, v in zip(["x", "y", "z"], right_arrs)})
+
+            l_pd, r_pd = left_df.to_pandas(), right_df.to_pandas()
+
+            ak_merge = ak.merge(
+                left_df, right_df, left_on=left_on, right_on=right_on, how=how, sort=True
+            )
+            pd_merge = pd.merge(
+                l_pd, r_pd, left_on=left_on, right_on=right_on, how=how, copy=True, sort=True
+            )
+
+            # Numeric sorting works okay when floats aren't involved
+            if truth == (True, True, True) and not ak_merge.isna().any():
+                assert_frame_equivalent(ak_merge, pd_merge)
+
+            # If there are strings involved, do it this way
+            else:
+                sorted_column_names = sorted(ak_merge.columns.values)
+                assert sorted_column_names == sorted(pd_merge.columns.values)
+
+                for col in sorted_column_names:
+                    from_ak = ak_merge[col].to_ndarray()
+                    from_pd = pd_merge[col].to_numpy()
+
+                    if isinstance(ak_merge[col], ak.pdarray):
+                        assert np.allclose(np.sort(from_ak), np.sort(from_pd), equal_nan=True)
+                    else:
+                        assert (np.sort(from_ak) == np.sort(from_pd.astype(str))).all()
+
+    """
+    @pytest.mark.parametrize("how", ["inner", "left", "right"])
+    @pytest.mark.parametrize(
+        ("left_on", "right_on"),
+        [
+            ("a", "x"),
+            ("c", "z"),
+            (["a",  "c"], ["x", "z"]),
+        ],
+    )
+    def test_merge_categoricals_left_on_right_on(self, how, left_on, right_on):
+        size = 20
+        seed = 42
+
+        a = ak.randint(0, 5, size, seed=seed)
+        b = ak.randint(0, 5, size, seed=seed + 1)
+        c = ak.randint(0, 5, size, seed=seed + 2)
+        d = ak.randint(0, 5, size, seed=seed + 3)
+
+        a = ak.Categorical(ak.array([str(i) for i in list(a.to_ndarray())]))
+        b = ak.Categorical(ak.array([str(i) for i in list(b.to_ndarray())]))
+        c = ak.Categorical(ak.array([str(i) for i in list(c.to_ndarray())]))
+        d = ak.Categorical(ak.array([str(i) for i in list(d.to_ndarray())]))
+
+        ones = ak.ones(size, int)
+        altr = alternating_1_0(size)
+
+        left_arrs = [pda for pda in [a, b, ones]]
+        right_arrs = [pda for pda in [c, d, altr]]
+
+        left_df = ak.DataFrame({k: v for k, v in zip(["a", "b", "c"], left_arrs)})
+        right_df = ak.DataFrame({k: v for k, v in zip(["x", "y", "z"], right_arrs)})
+
+        l_pd, r_pd = left_df.to_pandas(), right_df.to_pandas()
+
+        ak_merge = ak.merge(left_df, right_df, left_on=left_on, right_on=right_on, how=how, sort=True)
+        pd_merge = pd.merge(
+            l_pd,
+            r_pd,
+            left_on=left_on,
+            right_on=right_on,
+            how=how,
+            copy=True,
+            sort=True
+        )
+
+        # Numeric sorting works okay when floats aren't involved
+        if True:
+            assert_frame_equivalent(ak_merge, pd_merge)
+
+        # If there are strings involved, do it this way
+        else:
+            sorted_column_names = sorted(ak_merge.columns.values)
+            assert sorted_column_names == sorted(pd_merge.columns.values)
+
+            for col in sorted_column_names:
+                from_ak = ak_merge[col].to_ndarray()
+                from_pd = pd_merge[col].to_numpy()
+
+                if isinstance(ak_merge[col], ak.pdarray):
+                    assert np.allclose(np.sort(from_ak), np.sort(from_pd), equal_nan=True)
+                else:
+                    assert (np.sort(from_ak) == np.sort(from_pd.astype(str))).all()
+    """
 
     def test_isna_notna(self):
         df = ak.DataFrame(
