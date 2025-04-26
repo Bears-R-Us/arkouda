@@ -69,9 +69,13 @@ from .numeric import *
 from .utils import *
 from .manipulation_functions import *
 from .pdarrayclass import *
+from .sorting import *
+from .pdarraysetops import *
 from .pdarraycreation import *
 from .pdarraymanipulation import *
-from .pdarraysetops import *
+from .strings import *
+from .timeclass import *
+from .segarray import *
 from .util import (
     attach,
     unregister,
@@ -81,7 +85,3 @@ from .util import (
     is_registered,
     broadcast_dims,
 )
-from .segarray import *
-from .sorting import *
-from .strings import *
-from .timeclass import *

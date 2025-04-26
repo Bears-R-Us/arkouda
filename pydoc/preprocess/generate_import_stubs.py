@@ -145,13 +145,14 @@ def write_stub(module, filename, all_only=False, allow_arkouda=False):
 
 
 def main():
+    import arkouda as ak
     import arkouda.dataframe as akDataframe
     import arkouda.groupbyclass as akGroupbyclass
     import arkouda.numpy as aknp
+    import arkouda.pandas.series as akSeries
     import arkouda.scipy as akscipy
     import arkouda.scipy.special as akscipySpecial
     import arkouda.scipy.stats as akscipyStats
-    import arkouda.series as akSeries
 
     write_stub(
         aknp.dtypes,

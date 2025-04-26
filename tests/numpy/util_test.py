@@ -31,7 +31,7 @@ class TestUtil:
         floats = ak.array([1, np.nan])
 
         from arkouda.index import Index
-        from arkouda.series import Series
+        from arkouda.pandas.series import Series
 
         for item in [
             strings,

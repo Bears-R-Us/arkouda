@@ -2171,6 +2171,7 @@ def snapshot(filename):
     from types import ModuleType
 
     from arkouda.dataframe import DataFrame
+    from arkouda.numpy.segarray import SegArray
 
     filename = filename + "_SNAPSHOT"
     mode = "TRUNCATE"

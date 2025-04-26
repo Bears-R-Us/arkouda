@@ -49,7 +49,7 @@ class UtilTest(ArkoudaTest):
         categoricals = ak.Categorical(strings)
         floats = ak.array([1, np.nan])
 
-        from arkouda.series import Series
+        from arkouda.pandas.series import Series
         from arkouda.index import Index
 
         for item in [
