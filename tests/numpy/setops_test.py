@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+from arkouda.testing import assert_arkouda_array_equivalent
 
 OPS = ["in1d", "intersect1d", "union1d", "setxor1d", "setdiff1d"]
 INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bigint]
@@ -23,8 +24,8 @@ class TestSetOps:
             a = np.random.random(size)
             b = np.random.random(size)
         elif dtype == ak.bool_:
-            a = np.random.randint(0, 1, size=size, dtype=dtype)
-            b = np.random.randint(0, 1, size=size, dtype=dtype)
+            a = np.random.randint(0, 2, size=size, dtype=dtype)
+            b = np.random.randint(0, 2, size=size, dtype=dtype)
         else:
             a = b = None
 
@@ -402,6 +403,35 @@ class TestSetOps:
         t = ak.union1d([a1, a2], [b1, b2])
         assert len({"xyz", "def", "abc"}.symmetric_difference(t[0].to_list())) == 0
         assert len({"0", "456", "123"}.symmetric_difference(t[1].to_list())) == 0
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_union1d_many_strings(self, size):
+        import random
+
+        base_array = [str(i) for i in range(size)]
+        list_1 = []
+        for i in range(size // 5):
+            val = random.choice(base_array)
+            list_1.append(val)
+            base_array.remove(val)
+
+        base_array = [str(i) for i in range(size)]
+        list_2 = []
+        for i in range(size // 5):
+            val = random.choice(base_array)
+            list_2.append(val)
+            base_array.remove(val)
+
+        ak_arr_1 = ak.array(list_1)
+        ak_arr_2 = ak.array(list_2)
+
+        np_arr_1 = np.array(list_1)
+        np_arr_2 = np.array(list_2)
+
+        ak_result = ak.union1d(ak_arr_1, ak_arr_2)
+        np_result = np.union1d(np_arr_1, np_arr_2)
+
+        assert_arkouda_array_equivalent(ak_result, np_result)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_union1d_multiarray_categorical(self, size):
