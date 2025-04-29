@@ -36,12 +36,13 @@ def asarray(
     - a scalar value (bool, int, float)
     - a sequence of scalar values (not yet implemented)
     - a buffer (not yet implemented)
-    - an arkouda :class:`~arkouda.numpy.pdarrayclass.pdarray`
+    - an arkouda class:`~arkouda.numpy.pdarrayclass.pdarray`
     - a numpy ndarray
 
     Parameters
     ----------
-    obj:
+    obj : Array, bool, int, float, complex,
+          sequence of scalars, buffer, pdarray, or numpy.ndarray
         The object to convert to an Array
     dtype: Optional[Dtype]
         The dtype of the resulting Array. If None, the dtype is inferred from the input object

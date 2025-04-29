@@ -45,6 +45,7 @@ dependencies:
   - types-python-dateutil
   - pydocstyle>=6.3.0
   - pre-commit
+  - darglint>=1.8.1
 
   - pip:
     # Developer dependencies

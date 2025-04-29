@@ -60,7 +60,7 @@ class Match:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that match, False otherwise
 
         Examples
