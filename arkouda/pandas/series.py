@@ -27,13 +27,13 @@ from arkouda.numpy.pdarrayclass import (
 )
 from arkouda.numpy.pdarraycreation import arange, array, full, zeros
 from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
+from arkouda.numpy.strings import Strings
+from arkouda.numpy.util import get_callback, is_float
 
 if TYPE_CHECKING:
     from arkouda.numpy.segarray import SegArray
 else:
     SegArray = TypeVar("SegArray")
-from arkouda.numpy.strings import Strings
-from arkouda.numpy.util import get_callback, is_float
 
 # pd.set_option("display.max_colwidth", 65) is being called in DataFrame.py. This will resolve BitVector
 # truncation issues. If issues arise, that's where to look for it.

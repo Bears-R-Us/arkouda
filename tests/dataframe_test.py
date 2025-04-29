@@ -1190,14 +1190,13 @@ class TestDataFrame:
                     else:
                         assert (np.sort(from_ak) == np.sort(from_pd.astype(str))).all()
 
-    """
     @pytest.mark.parametrize("how", ["inner", "left", "right"])
     @pytest.mark.parametrize(
         ("left_on", "right_on"),
         [
             ("a", "x"),
             ("c", "z"),
-            (["a",  "c"], ["x", "z"]),
+            (["a", "c"], ["x", "z"]),
         ],
     )
     def test_merge_categoricals_left_on_right_on(self, how, left_on, right_on):
@@ -1227,17 +1226,11 @@ class TestDataFrame:
 
         ak_merge = ak.merge(left_df, right_df, left_on=left_on, right_on=right_on, how=how, sort=True)
         pd_merge = pd.merge(
-            l_pd,
-            r_pd,
-            left_on=left_on,
-            right_on=right_on,
-            how=how,
-            copy=True,
-            sort=True
+            l_pd, r_pd, left_on=left_on, right_on=right_on, how=how, copy=True, sort=True
         )
 
         # Numeric sorting works okay when floats aren't involved
-        if True:
+        if not ak_merge.isna().any():
             assert_frame_equivalent(ak_merge, pd_merge)
 
         # If there are strings involved, do it this way
@@ -1251,9 +1244,15 @@ class TestDataFrame:
 
                 if isinstance(ak_merge[col], ak.pdarray):
                     assert np.allclose(np.sort(from_ak), np.sort(from_pd), equal_nan=True)
+                elif isinstance(ak_merge[col], ak.Categorical):
+                    na = ak_merge[col].NAvalue
+                    from_ak = np.where(from_ak == na, "nan", from_ak)
+                    from_ak = np.sort(from_ak)
+                    from_pd = np.sort(from_pd.astype(str))
+
+                    assert (from_ak == from_pd).all()
                 else:
                     assert (np.sort(from_ak) == np.sort(from_pd.astype(str))).all()
-    """
 
     def test_isna_notna(self):
         df = ak.DataFrame(
