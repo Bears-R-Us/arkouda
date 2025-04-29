@@ -13,7 +13,7 @@ from arkouda.numpy.timeclass import Datetime, Timedelta, date_range, timedelta_r
 
 def plot_dist(b, h, log=True, xlabel=None, newfig=True):
     """
-    Plot the distribution and cumulative distribution of histogram Data
+    Plot the distribution and cumulative distribution of histogram Data.
 
     Parameters
     ----------
@@ -41,8 +41,10 @@ def plot_dist(b, h, log=True, xlabel=None, newfig=True):
     >>> from matplotlib import pyplot as plt
     >>> b, h = ak.histogram(ak.arange(10), 3)
     >>> ak.plot_dist(b, h.to_ndarray())
-    >>> # to show the plot
+
+    Show the plot:
     >>> plt.show()
+
     """
     if newfig:
         plt.figure(figsize=(12, 5))
@@ -63,7 +65,7 @@ def plot_dist(b, h, log=True, xlabel=None, newfig=True):
 
 def hist_all(ak_df: DataFrame, cols: list = []):
     """
-    Create a grid plot histogramming all numeric columns in ak dataframe
+    Create a grid plot histogramming all numeric columns in ak dataframe.
 
     Parameters
     ----------
@@ -86,8 +88,8 @@ def hist_all(ak_df: DataFrame, cols: list = []):
                               "d": ak.array(np.random.randn(100))
                               })
     >>> hist_all(ak_df)
-    """
 
+    """
     if len(cols) == 0:
         cols = ak_df.columns
 

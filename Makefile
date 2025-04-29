@@ -691,7 +691,11 @@ isort:
 	isort --check-only --diff .
 
 format: isort ruff-format
+	#   Run docstring linter
+	pydocstyle
+	#   Run flake8
 	flake8
+
 
 #################
 #### Test.mk ####

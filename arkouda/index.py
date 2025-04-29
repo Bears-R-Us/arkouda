@@ -213,9 +213,11 @@ class Index:
         """
         Integer number of levels in this Index.
         An Index will always have 1 level.
+
         See Also
         --------
         MultiIndex.nlevels
+
         """
         return 1
 
@@ -227,14 +229,13 @@ class Index:
         See Also
         --------
         MultiIndex.ndim
+
         """
         return 1
 
     @property
     def inferred_type(self) -> str:
-        """
-        Return a string of the type inferred from the values.
-        """
+        """Return a string of the type inferred from the values."""
         if isinstance(self.values, list):
             from arkouda.numpy.dtypes import float_scalars, int_scalars
             from arkouda.numpy.util import _is_dtype_in_union
@@ -249,15 +250,34 @@ class Index:
 
     @property
     def names(self):
-        """
-        Return Index or MultiIndex names.
-        """
+        """Return Index or MultiIndex names."""
         return [self.name]
 
     @property
     def index(self):
         """
-        This is maintained to support older code
+        Deprecated alias for `values`.
+
+        This property is maintained for backward compatibility and returns the same
+        array as the `values` attribute. It will be removed in a future release;
+        use `values` directly instead.
+
+        Returns
+        -------
+        arkouda.numpy.pdarray
+            The underlying values of this object (same as `values`).
+
+        Deprecated
+        ----------
+        Use the `values` attribute directly. This alias will be removed in a future release.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> idx = ak.Index(ak.array([1, 2, 3]))
+        >>> idx.index
+        array([1 2 3])
+
         """
         return self.values
 
@@ -269,9 +289,11 @@ class Index:
     def is_unique(self):
         """
         Property indicating if all values in the index are unique
+
         Returns
         -------
             bool - True if all values are unique, False otherwise.
+
         """
         if isinstance(self.values, list):
             return len(set(self.values)) == self.size
@@ -342,6 +364,7 @@ class Index:
         >>> m2 = ak.MultiIndex(arrays2, names=["numbers2", "colors2"])
         >>> m.equals(m2)
         False
+
         """
         if self is other:
             return True
@@ -395,7 +418,6 @@ class Index:
 
         Examples
         --------
-
         >>> import arkouda as ak
         >>> ak.connect()
         >>> idx = Index(ak.array([1, 2, 3]))
@@ -408,9 +430,7 @@ class Index:
         return convert_bytes(self.values.nbytes, unit=unit)
 
     def to_pandas(self):
-        """
-        Return the equivalent Pandas Index.
-        """
+        """Return the equivalent Pandas Index."""
         if isinstance(self.values, list):
             val = ndarray(self.values)
         elif isinstance(self.values, Categorical):
@@ -434,7 +454,8 @@ class Index:
             return self.to_ndarray().tolist()
 
     def set_dtype(self, dtype):
-        """Change the data type of the index
+        """
+        Change the data type of the index
 
         Currently only aku.ip_address and ak.array are supported.
         """
@@ -467,7 +488,7 @@ class Index:
         RegistrationError
             If the server was unable to register the Index with the user_defined_name
 
-        See also
+        See Also
         --------
         unregister, attach, is_registered
 
@@ -475,6 +496,7 @@ class Index:
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         if isinstance(self.values, list):
             raise TypeError("Index cannot be registered when values are list type.")
@@ -530,7 +552,7 @@ class Index:
             If the object is already unregistered or if there is a server error
             when attempting to unregister
 
-        See also
+        See Also
         --------
         register, attach, is_registered
 
@@ -538,6 +560,7 @@ class Index:
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.numpy.util import unregister
 
@@ -569,6 +592,7 @@ class Index:
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.numpy.util import is_registered
 
@@ -701,6 +725,7 @@ class Index:
         """
         Save the Index to HDF5.
         The object can be saved to a collection of files or single file.
+
         Parameters
         ----------
         prefix_path : str
@@ -715,15 +740,18 @@ class Index:
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.
             This is only supported by HDF5 files and will have no impact of Parquet Files.
+
         Returns
         -------
         string message indicating result of save operation
+
         Raises
-        -------
+        ------
         RuntimeError
             Raised if a server-side error is thrown saving the pdarray
         TypeError
             Raised if the Index values are a list.
+
         Notes
         -----
         - The prefix_path must be visible to the arkouda server and the user must
@@ -737,6 +765,7 @@ class Index:
         dataset with the same name already exists, a ``RuntimeError`` will result.
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
+
         """
         from typing import cast as typecast
 
@@ -799,7 +828,7 @@ class Index:
         the dataset does not exist it is added.
 
         Parameters
-        -----------
+        ----------
         prefix_path : str
             Directory and filename prefix that all output files share
         dataset : str
@@ -812,21 +841,22 @@ class Index:
             file sizes to expand.
 
         Returns
-        --------
+        -------
         str - success message if successful
 
         Raises
-        -------
+        ------
         RuntimeError
             Raised if a server-side error is thrown saving the index
 
         Notes
-        ------
+        -----
         - If file does not contain File_Format attribute to indicate how it was saved,
           the file name is checked for _LOCALE#### to determine if it is distributed.
         - If the dataset provided does not exist, it will be added
         - Because HDF5 deletes do not release memory, this will create a copy of the
           file with the new data
+
         """
         from arkouda.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
@@ -897,6 +927,7 @@ class Index:
         one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the array to its
         corresponding file.
+
         Parameters
         ----------
         prefix_path : str
@@ -912,12 +943,14 @@ class Index:
         Returns
         -------
         string message indicating result of save operation
+
         Raises
         ------
         RuntimeError
             Raised if a server-side error is thrown saving the pdarray
         TypeError
             Raised if the Index values are a list.
+
         Notes
         -----
         - The prefix_path must be visible to the arkouda server and the user must
@@ -931,6 +964,7 @@ class Index:
         dataset with the same name already exists, a ``RuntimeError`` will result.
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
+
         """
         if isinstance(self.values, list):
             raise TypeError("Unable to write Index to parquet when values are a list.")
@@ -945,12 +979,12 @@ class Index:
         col_delim: str = ",",
         overwrite: bool = False,
     ):
-        """
+        r"""
         Write Index to CSV file(s). File will contain a single column with the pdarray data.
         All CSV Files written by Arkouda include a header denoting data types of the columns.
 
         Parameters
-        -----------
+        ----------
         prefix_path: str
             The filename prefix to be used for saving files. Files will have _LOCALE#### appended
             when they are written to disk.
@@ -964,7 +998,7 @@ class Index:
             be overwritten. If False, an error will be returned if existing files are found.
 
         Returns
-        --------
+        -------
         str reponse message
 
         Raises
@@ -981,11 +1015,12 @@ class Index:
             Raised if the Index values are a list.
 
         Notes
-        ------
+        -----
         - CSV format is not currently supported by load/load_all operations
         - The column delimiter is expected to be the same for column names and data
         - Be sure that column delimiters are not found within your data.
         - All CSV files must delimit rows using newline (`\n`) at this time.
+
         """
         if isinstance(self.values, list):
             raise TypeError("Unable to write Index to csv when values are a list.")
@@ -1071,16 +1106,12 @@ class MultiIndex(Index):
 
     @property
     def names(self):
-        """
-        Return Index or MultiIndex names.
-        """
+        """Return Index or MultiIndex names."""
         return self._names
 
     @property
     def name(self):
-        """
-        Return Index or MultiIndex name.
-        """
+        """Return Index or MultiIndex name."""
         return self._name
 
     @property
@@ -1095,6 +1126,7 @@ class MultiIndex(Index):
         See Also
         --------
         Index.nlevels
+
         """
         return len(self.levels)
 
@@ -1106,6 +1138,7 @@ class MultiIndex(Index):
         See Also
         --------
         Index.ndim
+
         """
         return 1
 
@@ -1115,9 +1148,7 @@ class MultiIndex(Index):
 
     @property
     def dtype(self) -> npdtype:
-        """
-        Return the dtype object of the underlying data.
-        """
+        """Return the dtype object of the underlying data."""
         return npdtype("O")
 
     def get_level_values(self, level: Union[str, int]):
@@ -1143,10 +1174,7 @@ class MultiIndex(Index):
             )
 
     def equal_levels(self, other: MultiIndex) -> builtins.bool:
-        """
-        Return True if the levels of both MultiIndex objects are the same
-
-        """
+        """Return True if the levels of both MultiIndex objects are the same."""
         if self.nlevels != other.nlevels:
             return False
 
@@ -1178,7 +1206,6 @@ class MultiIndex(Index):
 
         Examples
         --------
-
         >>> import arkouda as ak
         >>> ak.connect()
         >>> m = ak.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])
@@ -1203,7 +1230,8 @@ class MultiIndex(Index):
         return mi
 
     def set_dtype(self, dtype):
-        """Change the data type of the index
+        """
+        Change the data type of the index
 
         Currently only aku.ip_address and ak.array are supported.
         """
@@ -1242,7 +1270,7 @@ class MultiIndex(Index):
         RegistrationError
             If the server was unable to register the Index with the user_defined_name
 
-        See also
+        See Also
         --------
         unregister, attach, is_registered
 
@@ -1250,6 +1278,7 @@ class MultiIndex(Index):
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.client import generic_msg
 
@@ -1356,6 +1385,7 @@ class MultiIndex(Index):
         """
         Save the Index to HDF5.
         The object can be saved to a collection of files or single file.
+
         Parameters
         ----------
         prefix_path : str
@@ -1370,11 +1400,13 @@ class MultiIndex(Index):
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.
             This is only supported by HDF5 files and will have no impact of Parquet Files.
+
         Returns
         -------
         string message indicating result of save operation
+
         Raises
-        -------
+        ------
         RuntimeError
             Raised if a server-side error is thrown saving the pdarray.
 
@@ -1391,6 +1423,7 @@ class MultiIndex(Index):
         dataset with the same name already exists, a ``RuntimeError`` will result.
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
+
         """
         from typing import cast as typecast
 
@@ -1443,7 +1476,7 @@ class MultiIndex(Index):
         the dataset does not exist it is added.
 
         Parameters
-        -----------
+        ----------
         prefix_path : str
             Directory and filename prefix that all output files share
         dataset : str
@@ -1456,23 +1489,24 @@ class MultiIndex(Index):
             file sizes to expand.
 
         Returns
-        --------
+        -------
         str - success message if successful
 
         Raises
-        -------
+        ------
         RuntimeError
             Raised if a server-side error is thrown saving the index
         TypeError
             Raised if the Index levels are a list.
 
         Notes
-        ------
+        -----
         - If file does not contain File_Format attribute to indicate how it was saved,
           the file name is checked for _LOCALE#### to determine if it is distributed.
         - If the dataset provided does not exist, it will be added
         - Because HDF5 deletes do not release memory, this will create a copy of the
           file with the new data
+
         """
         from arkouda.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg

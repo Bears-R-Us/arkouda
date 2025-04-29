@@ -68,83 +68,112 @@ class Strings:
     @staticmethod
     def from_return_msg(rep_msg: str) -> Strings:
         """
-        Factory method for creating a Strings object from an Arkouda server
-        response message
+        Create a Strings object from an Arkouda server response message.
+
+        Parse the server’s response descriptor and construct a `Strings` array
+        with its underlying pdarray and total byte size.
 
         Parameters
         ----------
         rep_msg : str
-            Server response message currently of form
-            `created name type size ndim shape itemsize+created bytes.size 1234`
+            Server response message of the form:
+            ```
+            created <name> <type> <size> <ndim> <shape> <itemsize>+... bytes.size <total_bytes>
+            ```
+            For example:
+            ```
+            "created foo Strings 3 1 (3,) 8+created bytes.size 24"
+            ```
 
         Returns
         -------
         Strings
-            object representing a segmented strings array on the server
+            A `Strings` object representing the segmented strings array on the server,
+            initialized with the returned pdarray and byte-size metadata.
 
         Raises
         ------
         RuntimeError
-            Raised if there's an error converting a server-returned str-descriptor
+            If the response message cannot be parsed or does not match the expected format.
 
-        Notes
-        -----
-        We really don't have an itemsize because these are variable length strings.
-        In the future we could probably use this position to store the total bytes.
+        Examples
+        --------
+        >>> import arkouda as ak
+
+        # Example response message (typically from `generic_msg`)
+        >>> rep_msg = "created foo Strings 3 1 (3,) 8+created bytes.size 24"
+        >>> s = ak.Strings.from_return_msg(rep_msg)
+        >>> isinstance(s, ak.Strings)
+        True
         """
         left, right = cast(str, rep_msg).split("+")
-        bytes_size: int_scalars = int(right.split()[-1])
+        try:
+            bytes_size = int(right.split()[-1])
+        except Exception as e:
+            raise RuntimeError(f"Cannot parse byte size from response: {rep_msg}") from e
         return Strings(create_pdarray(left), bytes_size)
 
     @staticmethod
     def from_parts(offset_attrib: Union[pdarray, str], bytes_attrib: Union[pdarray, str]) -> Strings:
         """
-        Factory method for creating a Strings object from an Arkouda server
-        response where the arrays are separate components.
+        Assemble a Strings object from separate offset and bytes arrays.
+
+        This factory method constructs a segmented `Strings` array by sending two
+        separate components—offsets and values—to the Arkouda server and instructing
+        it to assemble them into a single `Strings` object. Use this when offsets
+        and byte data are created or transported independently.
 
         Parameters
         ----------
         offset_attrib : pdarray or str
-            the array containing the offsets
+            The array of starting positions for each string, or a string
+            expression that can be passed to `create_pdarray` to build it.
         bytes_attrib : pdarray or str
-            the array containing the string values
+            The array of raw byte values (e.g., uint8 character codes), or a string
+            expression that can be passed to `create_pdarray` to build it.
 
         Returns
         -------
         Strings
-            object representing a segmented strings array on the server
+            A `Strings` object representing the assembled segmented strings array
+            on the Arkouda server.
 
         Raises
         ------
         RuntimeError
-            Raised if there's an error converting a server-returned str-descriptor
+            If conversion of `offset_attrib` or `bytes_attrib` to `pdarray` fails,
+            or if the server is unable to assemble the parts into a `Strings`.
 
         Notes
         -----
-        This factory method is used when we construct the parts of a Strings
-        object on the client side and transfer the offsets & bytes separately
-        to the server.  This results in two entries in the symbol table and we
-        need to instruct the server to assemble the into a composite entity.
+        - Both inputs can be existing `pdarray` instances or arguments suitable
+          for `create_pdarray`.
+        - Internally uses the `CMD_ASSEMBLE` command to merge offsets and values.
+
         """
         if not isinstance(offset_attrib, pdarray):
             try:
                 offset_attrib = create_pdarray(offset_attrib)
             except Exception as e:
-                raise RuntimeError(e)
+                raise RuntimeError(f"Failed to convert offsets: {e}") from e
         if not isinstance(bytes_attrib, pdarray):
             try:
                 bytes_attrib = create_pdarray(bytes_attrib)
             except Exception as e:
-                raise RuntimeError(e)
-        # Now we have two pdarray objects
+                raise RuntimeError(f"Failed to convert values: {e}") from e
+
         response = cast(
-            str, generic_msg(cmd=CMD_ASSEMBLE, args={"offsets": offset_attrib, "values": bytes_attrib})
+            str,
+            generic_msg(
+                cmd=CMD_ASSEMBLE,
+                args={"offsets": offset_attrib, "values": bytes_attrib},
+            ),
         )
         return Strings.from_return_msg(response)
 
     def __init__(self, strings_pdarray: pdarray, bytes_size: int_scalars) -> None:
         """
-        Initializes the Strings instance by setting all instance
+        Initialize the Strings instance by setting all instance
         attributes, some of which are derived from the array parameters.
 
         Parameters
@@ -218,7 +247,7 @@ class Strings:
     @typechecked
     def _binop(self, other: Union[Strings, str_scalars], op: str) -> pdarray:
         """
-        Executes the requested binop on this Strings instance and the
+        Execute the requested binop on this Strings instance and the
         parameter Strings object and returns the results within
         a pdarray object.
 
@@ -529,7 +558,7 @@ class Strings:
     @typechecked
     def lower(self) -> Strings:
         """
-        Returns a new Strings with all uppercase characters from the original replaced with
+        Return a new Strings with all uppercase characters from the original replaced with
         their lowercase equivalent
 
         Returns
@@ -563,7 +592,7 @@ class Strings:
     @typechecked
     def upper(self) -> Strings:
         """
-        Returns a new Strings with all lowercase characters from the original replaced with
+        Return a new Strings with all lowercase characters from the original replaced with
         their uppercase equivalent
 
         Returns
@@ -597,7 +626,7 @@ class Strings:
     @typechecked
     def title(self) -> Strings:
         """
-        Returns a new Strings from the original replaced with their titlecase equivalent.
+        Return a new Strings from the original replaced with their titlecase equivalent.
 
         Returns
         -------
@@ -630,7 +659,7 @@ class Strings:
     @typechecked
     def isdecimal(self) -> pdarray:
         """
-        Returns a boolean pdarray where index i indicates whether string i of the
+        Return a boolean pdarray where index i indicates whether string i of the
         Strings has all decimal characters.
 
         Returns
@@ -675,7 +704,7 @@ class Strings:
     @typechecked
     def capitalize(self) -> Strings:
         """
-        Returns a new Strings from the original replaced with the first letter capitilzed
+        Return a new Strings from the original replaced with the first letter capitilzed
         and the remaining letters lowercase.
 
         Returns
@@ -712,7 +741,7 @@ class Strings:
     @typechecked
     def islower(self) -> pdarray:
         """
-        Returns a boolean pdarray where index i indicates whether string i of the
+        Return a boolean pdarray where index i indicates whether string i of the
         Strings is entirely lowercase
 
         Returns
@@ -748,7 +777,7 @@ class Strings:
     @typechecked
     def isupper(self) -> pdarray:
         """
-        Returns a boolean pdarray where index i indicates whether string i of the
+        Return a boolean pdarray where index i indicates whether string i of the
         Strings is entirely uppercase
 
         Returns
@@ -784,7 +813,7 @@ class Strings:
     @typechecked
     def istitle(self) -> pdarray:
         """
-        Returns a boolean pdarray where index i indicates whether string i of the
+        Return a boolean pdarray where index i indicates whether string i of the
         Strings is titlecase
 
         Returns
@@ -821,7 +850,7 @@ class Strings:
     @typechecked
     def isalnum(self) -> pdarray:
         """
-        Returns a boolean pdarray where index i indicates whether string i of the
+        Return a boolean pdarray where index i indicates whether string i of the
         Strings is alphanumeric.
 
         Returns
@@ -859,7 +888,7 @@ class Strings:
     @typechecked
     def isalpha(self) -> pdarray:
         """
-        Returns a boolean pdarray where index i indicates whether string i of the
+        Return a boolean pdarray where index i indicates whether string i of the
         Strings is alphabetic.  This means there is at least one character,
         and all the characters are alphabetic.
 
@@ -899,7 +928,7 @@ class Strings:
     @typechecked
     def isdigit(self) -> pdarray:
         """
-        Returns a boolean pdarray where index i indicates whether string i of the
+        Return a boolean pdarray where index i indicates whether string i of the
         Strings has all digit characters.
 
         Returns
@@ -945,7 +974,7 @@ class Strings:
     @typechecked
     def isempty(self) -> pdarray:
         """
-        Returns a boolean pdarray where index i indicates whether string i of the
+        Return a boolean pdarray where index i indicates whether string i of the
         Strings is empty.
 
 
@@ -986,7 +1015,7 @@ class Strings:
     @typechecked
     def isspace(self) -> pdarray:
         """
-        Returns a boolean pdarray where index i indicates whether string i has all
+        Return a boolean pdarray where index i indicates whether string i has all
         whitespace characters (‘ ’, ‘\\\\t’, ‘\\\\n’, ‘\\\\v’, ‘\\\\f’, ‘\\\\r’).
 
         Returns
@@ -1025,7 +1054,7 @@ class Strings:
     @typechecked
     def strip(self, chars: Optional[Union[bytes, str_scalars]] = "") -> Strings:
         """
-        Returns a new Strings object with all leading and trailing occurrences of characters contained
+        Return a new Strings object with all leading and trailing occurrences of characters contained
         in chars removed. The chars argument is a string specifying the set of characters to be removed.
         If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
         prefix or suffix; rather, all combinations of its values are stripped.
@@ -1159,7 +1188,7 @@ class Strings:
     @typechecked
     def search(self, pattern: Union[bytes, str_scalars]) -> Match:
         """
-        Returns a match object with the first location in each element where pattern produces a match.
+        Return a match object with the first location in each element where pattern produces a match.
         Elements match if any part of the string matches the regular expression pattern
 
         Parameters
@@ -1185,7 +1214,7 @@ class Strings:
     @typechecked
     def match(self, pattern: Union[bytes, str_scalars]) -> Match:
         """
-        Returns a match object where elements match only if the beginning of the string matches the
+        Return a match object where elements match only if the beginning of the string matches the
         regular expression pattern
 
         Parameters
@@ -1211,7 +1240,7 @@ class Strings:
     @typechecked()
     def fullmatch(self, pattern: Union[bytes, str_scalars]) -> Match:
         """
-        Returns a match object where elements match only if the whole string matches the
+        Return a match object where elements match only if the whole string matches the
         regular expression pattern
 
         Parameters
@@ -1239,7 +1268,7 @@ class Strings:
         self, pattern: Union[bytes, str_scalars], maxsplit: int = 0, return_segments: bool = False
     ) -> Union[Strings, Tuple]:
         """
-        Returns a new Strings split by the occurrences of pattern.
+        Return a new Strings split by the occurrences of pattern.
         If maxsplit is nonzero, at most maxsplit splits occur
 
         Parameters
@@ -2567,7 +2596,7 @@ class Strings:
 
     def _list_component_names(self) -> List[str]:
         """
-        Internal Function that returns a list of all component names
+        Return a list of all component names
 
         Parameters
         ----------
@@ -2582,7 +2611,7 @@ class Strings:
 
     def info(self) -> str:
         """
-        Returns a JSON formatted string containing information about all components of self
+        Return a JSON formatted string containing information about all components of self
 
         Parameters
         ----------
@@ -2597,7 +2626,7 @@ class Strings:
 
     def pretty_print_info(self) -> None:
         """
-        Prints information about all components of self in a human readable format
+        Print information about all components of self in a human readable format
 
         Parameters
         ----------
@@ -2641,7 +2670,7 @@ class Strings:
             If the user is attempting to register more than one object with the same name,
             the former should be unregistered first to free up the registration name.
 
-        See also
+        See Also
         --------
         attach, unregister
 
@@ -2680,7 +2709,7 @@ class Strings:
         RuntimeError
             Raised if the server could not find the internal name/symbol to remove
 
-        See also
+        See Also
         --------
         register, attach
 
@@ -2723,7 +2752,7 @@ class Strings:
 
     def transfer(self, hostname: str, port: int_scalars) -> Union[str, memoryview]:
         """
-        Sends a Strings object to a different Arkouda server
+        Send a Strings object to a different Arkouda server.
 
         Parameters
         ----------

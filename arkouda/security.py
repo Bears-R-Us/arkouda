@@ -19,8 +19,7 @@ username_tokenizer["Darwin"] = lambda x: x.split("/")
 @typechecked
 def generate_token(length: int = 32) -> str:
     """
-    Uses the secrets.token_hex() method to generate a
-    a hexidecimal token
+    Use the secrets.token_hex() method to generate a hexidecimal token.
 
     Parameters
     ----------
@@ -35,14 +34,14 @@ def generate_token(length: int = 32) -> str:
     Notes
     -----
     This method uses the Python secrets.token_hex method
+
     """
     return secrets.token_hex(length // 2)
 
 
 def get_home_directory() -> str:
     """
-    A platform-independent means of finding path to
-    the current user's home directory
+    Find a path to the current user's home directory in a platform-independent manner.
 
     Returns
     -------
@@ -53,15 +52,17 @@ def get_home_directory() -> str:
     -----
     This method uses the Python os.path.expanduser method
     to retrieve the user's home directory
+
     """
     return expanduser("~")
 
 
 def get_arkouda_client_directory() -> Path:
     """
-    A platform-independent means of finding path to
-    the current user's .arkouda directory where artifacts
-    such as server access tokens are stored.
+    Find a path to the current user's .arkouda directory.
+
+    Artifacts such as server access tokens are stored in a platform-independent manner
+    in the .arkouda directory.
 
     Returns
     -------
@@ -75,6 +76,7 @@ def get_arkouda_client_directory() -> Path:
     default can be overridden by setting the ARKOUDA_CLIENT_DIRECTORY
     environment variable.  It is important this is not the same location
     as the server's token directory as the file format is different.
+
     """
     arkouda_parent_dir = os.getenv("ARKOUDA_CLIENT_DIRECTORY")
     if not arkouda_parent_dir:
@@ -84,8 +86,7 @@ def get_arkouda_client_directory() -> Path:
 
 def get_username() -> str:
     """
-    A platform-independent means of retrieving the current
-    user's username for the host system.
+    Retrieve the current user's username for the host system in a platform-independent manner.
 
     Returns
     -------
@@ -101,6 +102,7 @@ def get_username() -> str:
     -----
     The currently supported operating systems are Windows, Linux,
     and MacOS AKA Darwin
+
     """
     try:
         u_tokens = username_tokenizer[platform.system()](get_home_directory())
@@ -112,9 +114,10 @@ def get_username() -> str:
 @typechecked
 def generate_username_token_json(token: str) -> str:
     """
-    Generates a JSON object encapsulating the user's username
-    and token for connecting to an arkouda server with basic
-    authentication enabled
+    Generate a JSON object encapsulating the user's username and token.
+
+    These credentials are for connecting to an arkouda server with basic
+    authentication enabled.
 
     Parameters
     ----------
@@ -125,5 +128,6 @@ def generate_username_token_json(token: str) -> str:
     -------
     str
         The JSON-formatted string encapsulating username and token
+
     """
     return json.dumps({"username": get_username(), "token": token})

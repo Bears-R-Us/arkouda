@@ -46,7 +46,7 @@ class InfoEntry:
 @typechecked
 def information(names: Union[List[str], str] = RegisteredSymbols) -> str:
     """
-    Returns JSON formatted string containing information about the objects in names
+    Return a JSON formatted string containing information about the objects in names
 
     Parameters
     ----------
@@ -56,7 +56,7 @@ def information(names: Union[List[str], str] = RegisteredSymbols) -> str:
        if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
 
     Returns
-    ------
+    -------
     str
         JSON formatted string containing a list of information for each object in names
 
@@ -65,6 +65,7 @@ def information(names: Union[List[str], str] = RegisteredSymbols) -> str:
     RuntimeError
         Raised if a server-side error is thrown in the process of
         retrieving information about the objects in names
+
     """
     if isinstance(names, str):
         if names in [AllSymbols, RegisteredSymbols]:
@@ -93,6 +94,7 @@ def list_registry(detailed: bool = False):
     ------
     RuntimeError
         Raised if there's a server-side error thrown
+
     """
     data = json.loads(cast(str, generic_msg(cmd="list_registry")))
     objs = json.loads(data["Objects"]) if data["Objects"] != "" else []
@@ -120,13 +122,14 @@ def list_symbol_table() -> List[str]:
     ------
     RuntimeError
         Raised if there's a server-side error thrown
+
     """
     return [i.name for i in _parse_json(AllSymbols)]
 
 
 def _parse_json(names: Union[List[str], str]) -> List[InfoEntry]:
     """
-    Internal method that converts the JSON output of information into a List of InfoEntry objects
+    Convert the JSON output of information into a List of InfoEntry objects
 
     Parameters
     ----------
@@ -142,13 +145,14 @@ def _parse_json(names: Union[List[str], str]) -> List[InfoEntry]:
     ------
     RuntimeError
         Raised if a server-side error is thrown
+
     """
     return json.loads(information(names), object_hook=lambda d: InfoEntry(**d))
 
 
 def pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -> None:
     """
-    Prints verbose information for each object in names in a human readable format
+    Print verbose information for each object in names in a human readable format
 
     Parameters
     ----------
@@ -158,7 +162,7 @@ def pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -
        if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
 
     Returns
-    ------
+    -------
     None
 
     Raises
@@ -166,6 +170,7 @@ def pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -
     RuntimeError
         Raised if a server-side error is thrown in the process of
         retrieving information about the objects in names
+
     """
     for i in _parse_json(names):
         print(i)

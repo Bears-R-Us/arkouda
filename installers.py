@@ -11,7 +11,7 @@ class ArkoudaBuildError(Exception):
 
 
 def chpl_installed():
-    """Checks to see if chapel is installed and sourced"""
+    """Check to see if chapel is installed and sourced"""
     try:
         if os.environ["CHPL_HOME"]:
             print("Existing Chapel install detected")
@@ -22,8 +22,11 @@ def chpl_installed():
 
 
 def make_arkouda_server():
-    """Calls make to build to Arkouda server
-    has a timeout of an hour"""
+    """
+    Call make to build to Arkouda server
+    has a timeout of an hour.
+
+    """
     proc = Popen(["make"], shell=True, stdout=PIPE, stderr=PIPE)
     print("Installing Arkouda server...")
 
@@ -56,7 +59,32 @@ def install_in_py_prefix():
 
 
 def installarkouda(setup_subcommand):
-    """Decorator for installing arkouda"""
+    """
+    Decorate a setuptools command to build and install the Arkouda server.
+
+    This decorator wraps the `run` method of a setuptools command class to
+    ensure that Chapel is installed, build the Arkouda server, and install it
+    into the Python environment before executing the original command.
+
+    Parameters
+    ----------
+    setup_subcommand : class
+        A setuptools command class (e.g., `build_py` or `install`) whose
+        `run` method will be wrapped to include Arkouda server installation.
+
+    Returns
+    -------
+    class
+        The same command class with its `run` method replaced by a version
+        that performs the Arkouda build steps first.
+
+    Raises
+    ------
+    ArkoudaBuildError
+        If Chapel is not installed, or if building or installing the Arkouda
+        server fails.
+
+    """
     run_subcommand = setup_subcommand.run
 
     def custom_run(self):
@@ -76,7 +104,10 @@ def installarkouda(setup_subcommand):
 
 @installarkouda
 class ArkoudaInstall(build_py):
-    """Will replace the `python setup.py install` command
-    Is called when user invokes pip install Arkouda"""
+    """
+    Will replace the `python setup.py install` command
+    Is called when user invokes pip install Arkouda
+
+    """
 
     pass
