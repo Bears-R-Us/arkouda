@@ -191,7 +191,7 @@ install-arrow-quick:
 	./scripts/install_arrow_quick.sh $(DEP_BUILD_DIR)
 
 
-ARROW_VER := 19.0.0
+ARROW_VER := 19.0.1
 ARROW_NAME_VER := apache-arrow-$(ARROW_VER)
 ARROW_FULL_NAME_VER := arrow-apache-arrow-$(ARROW_VER)
 ARROW_BUILD_DIR := $(DEP_BUILD_DIR)/$(ARROW_FULL_NAME_VER)
