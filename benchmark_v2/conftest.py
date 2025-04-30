@@ -17,8 +17,53 @@ default_compression = [None, "snappy", "gzip", "brotli", "zstd", "lz4"]
 
 
 def pytest_addoption(parser):
+    default_host = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
     parser.addoption(
-        "--optional-parquet", action="store_true", default=False, help="run optional parquet tests"
+        "--host",
+        action="store",
+        default=default_host,
+        help="arkouda server host",
+    )
+
+    default_port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
+    parser.addoption(
+        "--port",
+        action="store",
+        default=default_port,
+        type=int,
+        help="arkouda server port",
+    )
+
+    default_running_mode = os.getenv("ARKOUDA_RUNNING_MODE", "CLASS_SERVER")
+    parser.addoption(
+        "--running_mode",
+        action="store",
+        default=default_running_mode,
+        help="arkouda running mode",
+    )
+
+    default_client_timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 0))
+    parser.addoption(
+        "--timeout",
+        action="store",
+        type=int,
+        default=default_client_timeout,
+        help="client timeout",
+    )
+
+    default_log_level = os.getenv("ARKOUDA_LOG_LEVEL", "DEBUG")
+    parser.addoption(
+        "--log_level",
+        action="store",
+        default=default_log_level,
+        help="log level",
+    )
+
+    parser.addoption(
+        "--optional-parquet",
+        action="store_true",
+        default=False,
+        help="run optional parquet tests",
     )
 
     parser.addoption(
@@ -65,7 +110,10 @@ def pytest_addoption(parser):
         "-1 is interpreted as no maximum.",
     )
     parser.addoption(
-        "--alpha", action="store", default="1.0", help="Benchmark only option. Scalar multiple"
+        "--alpha",
+        action="store",
+        default="1.0",
+        help="Benchmark only option. Scalar multiple",
     )
     parser.addoption(
         "--randomize",
@@ -140,6 +188,12 @@ def pytest_addoption(parser):
 
 
 def pytest_configure(config):
+    pytest.host = config.getoption("host")
+    pytest.port = config.getoption("port")
+    pytest.running_mode = TestRunningMode(config.getoption("running_mode"))
+    pytest.verbose = config.getoption("verbose")
+    pytest.timeout = config.getoption("timeout")
+    pytest.log_level = config.getoption("log_level")
     pytest.prob_size = eval(config.getoption("size"))
     pytest.trials = eval(config.getoption("trials"))
     pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
@@ -172,19 +226,17 @@ def pytest_configure(config):
 
 @pytest.fixture(scope="module", autouse=True)
 def startup_teardown():
-    port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
-    server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
-    test_running_mode = TestRunningMode(os.getenv("ARKOUDA_RUNNING_MODE", "GLOBAL_SERVER"))
-
     if not importlib.util.find_spec("pytest") or not importlib.util.find_spec("pytest_env"):
         raise EnvironmentError("pytest and pytest-env must be installed")
-    if TestRunningMode.CLASS_SERVER == test_running_mode:
+    if TestRunningMode.CLASS_SERVER == pytest.running_mode:
         try:
             nl = get_arkouda_numlocales()
-            server, _, _ = start_arkouda_server(numlocales=nl, port=port)
+            server_host, server_port, process_handle = start_arkouda_server(
+                host=pytest.host, numlocales=nl, port=pytest.port
+            )
             print(
                 "Started arkouda_server in TEST_CLASS mode with host: {} port: {} locales: {}".format(
-                    server, port, nl
+                    server_host, server_port, nl
                 )
             )
         except Exception as e:
@@ -194,11 +246,11 @@ def startup_teardown():
                 e,
             )
     else:
-        print("in client stack test mode with host: {} port: {}".format(server, port))
+        print("in client stack test mode with host: {} port: {}".format(pytest.host, pytest.port))
 
     yield
 
-    if TestRunningMode.CLASS_SERVER == test_running_mode:
+    if TestRunningMode.CLASS_SERVER == pytest.running_mode:
         try:
             stop_arkouda_server()
         except Exception:
@@ -207,11 +259,8 @@ def startup_teardown():
 
 @pytest.fixture(scope="function", autouse=True)
 def manage_connection():
-    port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
-    server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
-    timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
     try:
-        ak.connect(server=server, port=port, timeout=timeout)
+        ak.connect(server=pytest.host, port=pytest.port, timeout=pytest.timeout)
     except Exception as e:
         raise ConnectionError(e)
 
