@@ -24,6 +24,7 @@ dependencies:
   - pytest>=6.0
   - pytest-env
   - cloudpickle
+  - pre-commit
   # - chapel-py
 
   - pip:
