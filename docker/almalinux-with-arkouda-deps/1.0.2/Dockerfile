@@ -5,9 +5,8 @@ USER root
 
 
 #   Download all the dependencies necessary for make install-deps
-#  TODO: fix specific commit
-#  RUN cd /opt && git clone https://github.com/Bears-R-Us/arkouda.git  && git checkout abfb13bfe7931c07c2dec4e814955c59551a2d98
-RUN cd /opt && git clone -b 4341_Upgrade_to_arrow_19.0.1 https://github.com/ajpotts/arkouda.git
+#  Fix specific commit https://github.com/Bears-R-Us/arkouda/pull/4342
+RUN cd /opt && git clone https://github.com/Bears-R-Us/arkouda.git  && cd /opt/arkouda && git checkout 33298be6ab0d75125ee6513e1d5375485c70676c
 RUN cd /opt/arkouda && source ~/.bashrc && make install-deps DEP_BUILD_DIR=/dep/build
 
 #   Download all the python packages necessary for the pip install
