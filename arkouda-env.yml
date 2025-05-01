@@ -25,6 +25,7 @@ dependencies:
   - pytest-env
   - cloudpickle
   - pre-commit
+  - darglint>=1.8.1
   # - chapel-py
 
   - pip:

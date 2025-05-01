@@ -1733,7 +1733,10 @@ def load(
 
 @typechecked
 def load_all(
-    path_prefix: str, file_format: str = "INFER", column_delim: str = ",", read_nested=True
+    path_prefix: str,
+    file_format: str = "INFER",
+    column_delim: str = ",",
+    read_nested: bool = True,
 ) -> Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]:
     """
     Load multiple pdarrays, Strings, SegArrays, or Categoricals previously
@@ -1763,7 +1766,7 @@ def load_all(
 
     Raises
     ------
-    TypeError:
+    TypeError
         Raised if path_prefix is not a str
     ValueError
         Raised if file_format/extension is encountered that is not hdf5 or parquet or
