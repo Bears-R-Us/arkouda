@@ -1709,7 +1709,7 @@ def where(
     B: Union[str, numeric_scalars, pdarray, Strings, Categorical],  # type: ignore
 ) -> Union[pdarray, Strings, Categorical]:  # type: ignore
     """
-    Returns an array with elements chosen from A and B based upon a
+    Return an array with elements chosen from A and B based upon a
     conditioning array. As is the case with numpy.where, the return array
     consists of values from the first array (A) where the conditioning array
     elements are True and from the second array (B) where the conditioning
@@ -2456,7 +2456,7 @@ def putmask(
     A: pdarray, mask: pdarray, Values: pdarray
 ) -> None:  # doesn't return anything, as A is overwritten in place
     """
-    Overwrites elements of A with elements from B based upon a mask array.
+    Overwrite elements of A with elements from B based upon a mask array.
     Similar to numpy.putmask, where mask = False, A retains its original value,
     but where mask = True, A is overwritten with the corresponding entry from Values.
 

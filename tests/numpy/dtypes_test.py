@@ -23,7 +23,7 @@ SUPPORTED_NP_DTYPES = [
 
 
 class TestDTypes:
-    def test_my_module_docstrings(self):
+    def test_dtypes_docstrings(self):
         import doctest
 
         result = doctest.testmod(dtypes)

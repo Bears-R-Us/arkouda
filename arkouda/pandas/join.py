@@ -32,8 +32,7 @@ def join_on_eq_with_dt(
     result_limit: Union[int, np.int64] = 1000,
 ) -> Tuple[pdarray, pdarray]:
     """
-    Performs an inner-join on equality between two integer arrays where
-    the time-window predicate is also true
+    Inner-join on equality between two integer arrays where the time-window predicate is also true.
 
     Parameters
     ----------
@@ -67,6 +66,7 @@ def join_on_eq_with_dt(
     ValueError
         if a1, a2, t1, or t2 dtype is not int64, pred is not
         'true_dt', 'abs_dt', or 'pos_dt', or result_limit is < 0
+
     """
     if not (a1.dtype == akint64):
         raise ValueError("a1 must be int64 dtype")
@@ -141,6 +141,7 @@ def gen_ranges(starts, ends, stride=1, return_lengths=False):
         The actual ranges, flattened into a single array
     lengths : pdarray, int64
         The lengths of each segment. Only returned if return_lengths=True.
+
     """
     if starts.size != ends.size:
         raise ValueError("starts and ends must be same length")
@@ -199,7 +200,8 @@ def inner_join(
         ]
     ] = None,
 ) -> Tuple[pdarray, pdarray]:
-    """Perform inner join on values in <left> and <right>,
+    """
+    Perform inner join on values in <left> and <right>,
     using conditions defined by <wherefunc> evaluated on
     <whereargs>, returning indices of left-right pairs.
 

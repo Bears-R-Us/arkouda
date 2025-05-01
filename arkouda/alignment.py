@@ -39,6 +39,7 @@ def zero_up(vals):
     -------
     aligned : pdarray
         Array with values replaced by 0-up indices
+
     """
     g = GroupBy(vals)
     unique_size = g.unique_keys.size if not isinstance(vals, Sequence) else g.unique_keys[0].size
@@ -60,6 +61,7 @@ def align(*args):
     -------
     aligned : list of pdarrays
         Arrays with values replaced by 0-up indices
+
     """
     if not any(isinstance(arg, Sequence) for arg in args):
         key = concatenate([full(arg.size, i, akint64) for i, arg in enumerate(args)], ordered=False)
@@ -90,6 +92,7 @@ def right_align(left, right):
         Logical index of left-hand values that survived
     aligned : (pdarray, pdarray)
         Left and right arrays with values replaced by 0-up indices
+
     """
     is_sequence = isinstance(left, Sequence) and isinstance(right, Sequence)
     uright = unique(right)
@@ -187,6 +190,7 @@ def find(query, space, all_occurrences=False, remove_missing=False):
      [11, 15],
      [5, 7],
      [0, 4]]
+
     """
     # Concatenate the space and query in fast (block interleaved) mode
     if isinstance(query, (pdarray, Strings, Categorical)):
@@ -296,7 +300,6 @@ def lookup(keys, values, arguments, fillvalue=-1):
 
     Examples
     --------
-
     Lookup numbers by two-word name
 
     >>> keys1 = ak.array(['twenty' for _ in range(5)])
@@ -316,6 +319,7 @@ def lookup(keys, values, arguments, fillvalue=-1):
     >>> keys1[idx], keys2[idx]
     (array(['twenty', 'twenty', 'twenty']),
     array(['four', 'one', 'two']))
+
     """
     if isinstance(values, Categorical):
         codes = lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
@@ -370,6 +374,7 @@ def in1d_intervals(vals, intervals, symmetric=False):
         ...
         ((intervals[0] <= vals[-1]) & (intervals[1] > vals[-1]))
     But much faster when vals is non-trivial size.
+
     """
     idx = search_intervals(vals, intervals)
     found = idx > -1
@@ -434,6 +439,7 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
     110680464442257309696 110680464442257309708 166020696663385964574]))
     >>> ak.search_intervals(bi_vals, (bi_starts, bi_ends))
     array([0 0 0 0 1 1 1 -1])
+
     """
     from arkouda.pandas.join import gen_ranges
 
@@ -671,8 +677,8 @@ def is_cosorted(arrays):
         Raised if arrays are not the same length
     TypeError
         Raised if arrays is not a list-like of pdarrays
-    """
 
+    """
     if not isinstance(arrays, Sequence) or not all(isinstance(array, pdarray) for array in arrays):
         raise TypeError("Input must be a list-like of pdarrays")
 
@@ -722,6 +728,7 @@ def interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None, hierar
         Value of function corresponding to the keys interval
         containing each argument, or fillvalue if argument not
         in any interval.
+
     """
     if isinstance(values, Categorical):
         codes = interval_lookup(keys, values.codes, arguments, fillvalue=values._NAcode)

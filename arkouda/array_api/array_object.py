@@ -109,7 +109,7 @@ class Array:
         will fail if the array is too large (see:
         :func:`~arkouda.client.maxTransferBytes`)
 
-        See also
+        See Also
         --------
         pdarray.to_list()
 
@@ -129,7 +129,7 @@ class Array:
         will fail if the array is too large (see:
         :func:`~arkouda.client.maxTransferBytes`)
 
-        See also
+        See Also
         --------
         pdarray.to_ndarray()
 
@@ -153,7 +153,7 @@ class Array:
 
         For axes=None, reverse all the dimensions of the array.
 
-        See also
+        See Also
         --------
         ak.transpose()
 
@@ -163,13 +163,13 @@ class Array:
 
     def __str__(self: Array, /) -> str:
         """
-        Performs the operation __str__.
+        Perform the operation __str__.
         """
         return self._array.__str__()
 
     def __repr__(self: Array, /) -> str:
         """
-        Performs the operation __repr__.
+        Perform the operation __repr__.
         """
         return f"Arkouda Array ({self.shape}, {self.dtype})" + self._array.__str__()
 
@@ -208,7 +208,8 @@ class Array:
                 cast(
                     str,
                     ak.generic_msg(
-                        cmd=f"chunkInfoAsString<{self.dtype},{self.ndim}>", args={"array": self._array}
+                        cmd=f"chunkInfoAsString<{self.dtype},{self.ndim}>",
+                        args={"array": self._array},
                     ),
                 )  # string returned has format "str {list of lists}"
             )
@@ -231,7 +232,9 @@ class Array:
         self, other: bool | int | float | Array, dtype_category: str, op: str
     ) -> Array:
         """
-        Helper function for operators to only allow specific input dtypes
+        Allow only specific input dtypes.
+
+        Helper function for operators.
 
         Use like
 
@@ -273,7 +276,7 @@ class Array:
     # Helper function to match the type promotion rules in the spec
     def _promote_scalar(self, scalar) -> Array:
         """
-        Returns a promoted version of a Python scalar appropriate for use with
+        Return a promoted version of a Python scalar appropriate for use with
         operations on self.
 
         This may raise an OverflowError in cases where the scalar is an
@@ -359,7 +362,7 @@ class Array:
         """
         Take the element-wise absolute value of the array.
 
-        See also
+        See Also
         --------
         ak.abs()
 
@@ -570,7 +573,7 @@ class Array:
         """
         Compute the matrix multiplication of this array with another array.
 
-        See also
+        See Also
         --------
         ak.matmul()
         """

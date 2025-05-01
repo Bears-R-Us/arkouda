@@ -120,6 +120,7 @@ def unique(
     >>> A = ak.array([3, 2, 1, 1, 2, 3])
     >>> ak.unique(A)
     array([1, 2, 3])
+
     """
     from arkouda.categorical import Categorical as Categorical_
 
@@ -186,15 +187,31 @@ class GroupByReductionType(enum.Enum):
 
     def __str__(self) -> str:
         """
-        Overridden method returns value, which is useful in outputting
-        a GroupByReductionType as a request parameter
+        Return the string representation of this GroupByReductionType.
+
+        This overrides the default `str()` to return the internal `value` attribute,
+        which is used when specifying reduction types in Arkouda server requests.
+
+        Returns
+        -------
+        str
+            The underlying string value of the reduction type.
+
         """
         return self.value
 
     def __repr__(self) -> str:
         """
-        Overridden method returns value, which is useful in outputting
-        a GroupByReductionType as a request parameter
+        Return the canonical string representation of this GroupByReductionType.
+
+        This overrides the default `repr()` to return the internal `value` attribute,
+        which is used when encoding reduction types in Arkouda server requests.
+
+        Returns
+        -------
+        str
+            The underlying string value of the reduction type.
+
         """
         return self.value
 
@@ -206,7 +223,9 @@ GROUPBY_REDUCTION_TYPES = frozenset(
 
 class GroupBy:
     """
-    Group an array or list of arrays by value, usually in preparation
+    Group an array or list of arrays by value.
+
+    Usually in preparation
     for aggregating the within-group values of another array.
 
     Parameters
@@ -380,7 +399,9 @@ class GroupBy:
         file_type="distribute",
     ):
         """
-        Save the GroupBy to HDF5. The result is a collection of HDF5 files, one file
+        Save the GroupBy to HDF5.
+
+        The result is a collection of HDF5 files, one file
         per locale of the arkouda server, where each filename starts with prefix_path.
 
         Parameters
@@ -403,6 +424,7 @@ class GroupBy:
         None
 
         GroupBy is not currently supported by Parquet
+
         """
         from arkouda.categorical import Categorical as Categorical_
         from arkouda.io import _file_type_to_int, _mode_str_to_int
@@ -515,8 +537,9 @@ class GroupBy:
 
     def size(self) -> Tuple[groupable, pdarray]:
         """
-        Count the number of elements in each group, i.e. the number of times
-        each key appears.  This counts the total number of rows (including NaN values).
+        Count the number of elements in each group, i.e. the number of times each key appears.
+
+        This counts the total number of rows (including NaN values).
 
         Parameters
         ----------
@@ -544,6 +567,7 @@ class GroupBy:
         array([1, 2, 3, 4])
         >>> counts
         array([1, 2, 4, 3])
+
         """
         repMsg = generic_msg(
             cmd="sizeReduction",
@@ -554,12 +578,15 @@ class GroupBy:
 
     def count(self, values: pdarray) -> Tuple[groupable, pdarray]:
         """
-        Count the number of elements in each group.  NaN values will be excluded from the total.
+        Count the number of elements in each group.
+
+        NaN values will be excluded from the total.
 
         Parameters
         ----------
         values: pdarray
             The values to be count by group (excluding NaN values).
+
         Returns
         -------
         unique_keys : (list of) pdarray or Strings
@@ -581,6 +608,7 @@ class GroupBy:
         array([-1 0 1])
         >>> counts
         array([2 0 1])
+
         """
         k, v = self.aggregate(values, "count")
         return k, cast(pdarray, v)
@@ -593,8 +621,9 @@ class GroupBy:
         ddof: int_scalars = 1,
     ) -> Tuple[groupable, groupable]:
         """
-        Using the permutation stored in the GroupBy instance, group another
-        array of values and apply a reduction to each group's values.
+        Group another array of values and apply a reduction to each group's values.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -639,6 +668,7 @@ class GroupBy:
         (array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), array([-1, -0.77777777777777779,
         -0.55555555555555558, -0.33333333333333337, -0.11111111111111116, 0.11111111111111116,
         0.33333333333333326, 0.55555555555555536, 0.77777777777777768, 1]))
+
         """
         operator = operator.lower()
         if operator not in self.Reductions:
@@ -684,8 +714,9 @@ class GroupBy:
 
     def sum(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and sum each group's values.
+        Group another array of values and sum each group's values.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -727,15 +758,16 @@ class GroupBy:
         array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
         >>> g.sum(b)
         (array([2, 3, 4]), array([8, 14, 6]))
+
         """
         k, v = self.aggregate(values, "sum", skipna)
         return k, cast(pdarray, v)
 
     def prod(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and compute the product of each group's
-        values.
+        Group another array of values and compute the product of each group's values.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -778,6 +810,7 @@ class GroupBy:
         array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
         >>> g.prod(b)
         (array([2, 3, 4]), array([12, 108.00000000000003, 8.9999999999999982]))
+
         """
         k, v = self.aggregate(values, "prod", skipna)
         return k, cast(pdarray, v)
@@ -786,9 +819,9 @@ class GroupBy:
         self, values: pdarray, skipna: bool = True, ddof: int_scalars = 1
     ) -> Tuple[groupable, pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and compute the variance of
-        each group's values.
+        Group another array of values and compute the variance of each group's values.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -841,6 +874,7 @@ class GroupBy:
         array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
         >>> g.var(b)
         (array([2 3 4]), array([2.333333333333333 1.2 0]))
+
         """
         k, v = self.aggregate(values, "var", skipna, ddof)
         return k, cast(pdarray, v)
@@ -849,9 +883,9 @@ class GroupBy:
         self, values: pdarray, skipna: bool = True, ddof: int_scalars = 1
     ) -> Tuple[groupable, pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and compute the standard deviation of
-        each group's values.
+        Group another array of values and compute the standard deviation of each group's values.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -907,15 +941,16 @@ class GroupBy:
         array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
         >>> g.std(b)
         (array([2 3 4]), array([1.5275252316519465 1.0954451150103321 0]))
+
         """
         k, v = self.aggregate(values, "std", skipna, ddof)
         return k, cast(pdarray, v)
 
     def mean(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and compute the mean of each group's
-        values.
+        Group another array of values and compute the mean of each group's values.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -956,15 +991,16 @@ class GroupBy:
         array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
         >>> g.mean(b)
         (array([2, 3, 4]), array([2.6666666666666665, 2.7999999999999998, 3]))
+
         """
         k, v = self.aggregate(values, "mean", skipna)
         return k, cast(pdarray, v)
 
     def median(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and compute the median of each group's
-        values.
+        Group another array of values and compute the median of each group's values.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -1005,15 +1041,16 @@ class GroupBy:
         array([-5 -3.75 -2.5 -1.25 0 1.25 2.5 3.75 5])
         >>> g.median(b)
         (array([1 2 3 4]), array([-3.75 1.25 3.75 -3.75]))
+
         """
         k, v = self.aggregate(values, "median", skipna)
         return k, cast(pdarray, v)
 
     def min(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and return the minimum of each group's
-        values.
+        Group another array of values and return the minimum of each group's values.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -1053,6 +1090,7 @@ class GroupBy:
         array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
         >>> g.min(b)
         (array([2, 3, 4]), array([1, 1, 3]))
+
         """
         if values.dtype == bool:
             raise TypeError("min is only supported for pdarrays of dtype float64, uint64, and int64")
@@ -1061,9 +1099,9 @@ class GroupBy:
 
     def max(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and return the maximum of each
-        group's values.
+        Group another array of values and return the maximum of each group's values.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -1103,6 +1141,7 @@ class GroupBy:
         array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
         >>> g.max(b)
         (array([2, 3, 4]), array([4, 4, 3]))
+
         """
         if values.dtype == bool:
             raise TypeError("max is only supported for pdarrays of dtype float64, uint64, and int64")
@@ -1111,9 +1150,9 @@ class GroupBy:
 
     def argmin(self, values: pdarray) -> Tuple[groupable, pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and return the location of the first
-        minimum of each group's values.
+        Group another array of values and return the location of the first minimum of each group.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -1156,15 +1195,16 @@ class GroupBy:
         array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
         >>> g.argmin(b)
         (array([2, 3, 4]), array([5, 4, 2]))
+
         """
         k, v = self.aggregate(values, "argmin")
         return k, cast(pdarray, v)
 
     def argmax(self, values: pdarray) -> Tuple[groupable, pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and return the location of the first
-        maximum of each group's values.
+        Group another array of values and return the location of the first maximum of each group.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -1205,6 +1245,7 @@ class GroupBy:
         array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
         >>> g.argmax(b)
         (array([2, 3, 4]), array([9, 3, 2]))
+
         """
         k, v = self.aggregate(values, "argmax")
         return k, cast(pdarray, v)
@@ -1230,8 +1271,9 @@ class GroupBy:
 
     def nunique(self, values: groupable) -> Tuple[groupable, pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group another
-        array of values and return the number of unique values in each group.
+        Group another array of values and return the number of unique values in each group.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -1273,6 +1315,7 @@ class GroupBy:
         #    Group (2,2,2) has values [1,1,4] -> 2 unique values 1&4
         #    Group (3,3,3) has values [3,4,1] -> 3 unique values
         #    Group (4) has values [4] -> 1 unique value
+
         """
         # TO DO: defer to self.aggregate once logic is ported over to Chapel
         # return self.aggregate(values, "nunique")
@@ -1298,8 +1341,9 @@ class GroupBy:
 
     def any(self, values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group another
-        array of values and perform an "or" reduction on each group.
+        Group another array of values and perform an "or" reduction on each group.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -1321,6 +1365,7 @@ class GroupBy:
         ValueError
             Raised if the key array size does not match the values size or
             if the operator is not in the GroupBy.Reductions array
+
         """
         if values.dtype != bool:
             raise TypeError("any is only supported for pdarrays of dtype bool")
@@ -1328,9 +1373,9 @@ class GroupBy:
 
     def all(self, values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and perform an "and" reduction on
-        each group.
+        Group another array of values and perform an "and" reduction on each group.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -1354,6 +1399,7 @@ class GroupBy:
             if the operator is not in the GroupBy.Reductions array
         RuntimeError
             Raised if all is not supported for the values dtype
+
         """
         if values.dtype != bool:
             raise TypeError("all is only supported for pdarrays of dtype bool")
@@ -1364,9 +1410,9 @@ class GroupBy:
         """
         Bitwise OR of values in each segment.
 
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and perform a bitwise OR reduction on
-        each group.
+        Group another array of values and perform a bitwise OR reduction on each group.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -1390,6 +1436,7 @@ class GroupBy:
             if the operator is not in the GroupBy.Reductions array
         RuntimeError
             Raised if all is not supported for the values dtype
+
         """
         if values.dtype not in [akint64, akuint64, bigint]:
             raise TypeError("OR is only supported for pdarrays of dtype int64, uint64, or bigint")
@@ -1400,9 +1447,9 @@ class GroupBy:
         """
         Bitwise AND of values in each segment.
 
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and perform a bitwise AND reduction on
-        each group.
+        Group another array of values and perform a bitwise AND reduction on each group.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -1426,6 +1473,7 @@ class GroupBy:
             if the operator is not in the GroupBy.Reductions array
         RuntimeError
             Raised if all is not supported for the values dtype
+
         """
         if values.dtype not in [akint64, akuint64, bigint]:
             raise TypeError("AND is only supported for pdarrays of dtype int64, uint64, or bigint")
@@ -1436,9 +1484,9 @@ class GroupBy:
         """
         Bitwise XOR of values in each segment.
 
-        Using the permutation stored in the GroupBy instance, group
-        another array of values and perform a bitwise XOR reduction on
-        each group.
+        Group another array of values and perform a bitwise XOR reduction on each group.
+
+        Group using the permutation stored in the GroupBy instance.
 
         Parameters
         ----------
@@ -1462,6 +1510,7 @@ class GroupBy:
             if the operator is not in the GroupBy.Reductions array
         RuntimeError
             Raised if all is not supported for the values dtype
+
         """
         if values.dtype not in [akint64, akuint64]:
             raise TypeError("XOR is only supported for pdarrays of dtype int64 or uint64")
@@ -1527,7 +1576,6 @@ class GroupBy:
         array([0 -6 -2 -8 -4 -10])
 
         """
-
         repMsg = generic_msg(
             cmd="segmentedReduction",
             args={
@@ -1606,7 +1654,6 @@ class GroupBy:
         array([-12 -18 -8 -14 -10 -16])
 
         """
-
         repMsg = generic_msg(
             cmd="segmentedReduction",
             args={
@@ -1641,6 +1688,7 @@ class GroupBy:
             The unique keys, in grouped order
         result : pdarray-like
             The first value of each group
+
         """
         # Index of first value in each segment, in input domain
         first_idx = self.permutation[self.segments]
@@ -1648,7 +1696,9 @@ class GroupBy:
 
     def mode(self, values: groupable) -> Tuple[groupable, groupable]:
         """
-        Most common value in each group. If a group is multi-modal, return the
+        Return the most common value in each group.
+
+        If a group is multi-modal, return the
         modal value that occurs first.
 
         Parameters
@@ -1662,6 +1712,7 @@ class GroupBy:
             The unique keys, in grouped order
         result : (list of) pdarray-like
             The most common value of each group
+
         """
         togroup = self._nested_grouping_helper(values)
         # Get value counts for each key group
@@ -1701,7 +1752,9 @@ class GroupBy:
         permute_samples=False,
     ):
         """
-        Return a random sample from each group. You can either specify the number of elements
+        Return a random sample from each group.
+
+        You can either specify the number of elements
         or the fraction of elements to be sampled. random_state can be used for reproducibility
 
         Parameters
@@ -1744,6 +1797,7 @@ class GroupBy:
         pdarray
             if return_indices is True, return the indices of the sampled values.
             Otherwise, return the sample values.
+
         """
         from arkouda.numpy import cast as akcast
         from arkouda.numpy import round as akround
@@ -1867,6 +1921,7 @@ class GroupBy:
         ------
         TypeError
             Raised if values is or contains Strings or Categorical
+
         """
         from arkouda import Categorical
         from arkouda.numpy.segarray import SegArray
@@ -1962,6 +2017,7 @@ class GroupBy:
         array([True False True True True False True True False False])
         >>> g.broadcast(counts < 4)
         array([True True True True True True True True True True])
+
         """
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
@@ -1989,7 +2045,7 @@ class GroupBy:
     @staticmethod
     def build_from_components(user_defined_name: Optional[str] = None, **kwargs) -> GroupBy:
         """
-        function to build a new GroupBy object from component keys and permutation.
+        Build a new GroupBy object from component keys and permutation.
 
         Parameters
         ----------
@@ -2029,13 +2085,14 @@ class GroupBy:
 
     def _get_groupby_required_pieces(self) -> Dict:
         """
-        Internal function that returns a dictionary with all required components of self
+        Return a dictionary with all required components of self.
 
         Returns
         -------
         Dict
             Dictionary of all required components of self
                 Components (keys, permutation)
+
         """
         requiredPieces = frozenset(["keys", "permutation", "unique_keys", "segments"])
 
@@ -2044,7 +2101,7 @@ class GroupBy:
     @no_type_check
     def register(self, user_defined_name: str) -> GroupBy:
         """
-        Register this GroupBy object and underlying components with the Arkouda server
+        Register this GroupBy object and underlying components with the Arkouda server.
 
         Parameters
         ----------
@@ -2067,7 +2124,7 @@ class GroupBy:
         RegistrationError
             If the server was unable to register the GroupBy with the user_defined_name
 
-        See also
+        See Also
         --------
         unregister, attach, unregister_groupby_by_name, is_registered
 
@@ -2075,6 +2132,7 @@ class GroupBy:
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda import Categorical
 
@@ -2145,6 +2203,8 @@ class GroupBy:
 
     def unregister(self):
         """
+        Unregister this GroupBy object.
+
         Unregister this GroupBy object in the arkouda server which was previously
         registered using register() and/or attached to using attach()
 
@@ -2154,7 +2214,7 @@ class GroupBy:
             If the object is already unregistered or if there is a server error
             when attempting to unregister
 
-        See also
+        See Also
         --------
         register, attach, unregister_groupby_by_name, is_registered
 
@@ -2162,6 +2222,7 @@ class GroupBy:
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.numpy.util import unregister
 
@@ -2176,7 +2237,7 @@ class GroupBy:
 
     def is_registered(self) -> bool:
         """
-         Return True if the object is contained in the registry
+        Return True if the object is contained in the registry.
 
         Returns
         -------
@@ -2196,6 +2257,7 @@ class GroupBy:
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.numpy.util import is_registered
 
@@ -2257,6 +2319,7 @@ def broadcast(
     >>> permutation = ak.arange(6, -1, -1)
     >>> ak.broadcast(row_starts, row_number, permutation=permutation)
     array([2 2 1 1 1 0 0])
+
     """
     if segments.size != values.size:
         raise ValueError("segments and values arrays must be same size")

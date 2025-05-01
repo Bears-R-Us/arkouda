@@ -56,7 +56,7 @@ class Match:
 
     def matched(self) -> pdarray:
         """
-        Returns a boolean array indiciating whether each element matched
+        Return a boolean array indiciating whether each element matched
 
         Returns
         -------
@@ -68,12 +68,13 @@ class Match:
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.search('_+').matched()
         array([True True False True False])
+
         """
         return self._matched
 
     def start(self) -> pdarray:
         """
-        Returns the starts of matches
+        Return the starts of matches
 
         Returns
         -------
@@ -85,12 +86,13 @@ class Match:
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.search('_+').start()
         array([1 0 0])
+
         """
         return self._starts
 
     def end(self) -> pdarray:
         """
-        Returns the ends of matches
+        Return the ends of matches
 
         Returns
         -------
@@ -102,12 +104,13 @@ class Match:
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.search('_+').end()
         array([2 4 2])
+
         """
         return self._ends
 
     def match_type(self) -> str:
         """
-        Returns the type of the Match object
+        Return the type of the Match object
 
         Returns
         -------
@@ -119,6 +122,7 @@ class Match:
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.search('_+').match_type()
         'SEARCH'
+
         """
         return self._match_type.name
 
@@ -149,6 +153,7 @@ class Match:
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.search('_+').find_matches(return_match_origins=True)
         (array(['_', '____', '__']), array([0 1 3]))
+
         """
         from arkouda.numpy.strings import Strings
 
@@ -174,8 +179,8 @@ class Match:
             return Strings.from_return_msg(repMsg)
 
     def group(self, group_num: int = 0, return_group_origins: bool = False):
-        """
-        Returns a new Strings containing the capture group corresponding to group_num.
+        r"""
+        Return a new Strings containing the capture group corresponding to group_num.
         For the default, group_num=0, return the full match
 
         Parameters
@@ -203,6 +208,7 @@ class Match:
         array(['Isaac', 'Gottfried'])
         >>> m.group(2, return_group_origins=True)
         (array(['Newton', 'Leibniz']), array([0 2]))
+
         """
         from arkouda.client import regexMaxCaptures
         from arkouda.numpy.strings import Strings

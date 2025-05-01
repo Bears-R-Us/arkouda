@@ -118,7 +118,11 @@ def assert_almost_equal(
 
         if isinstance(left, pdarray) and isinstance(right, pdarray):
             assert np.allclose(
-                left.to_ndarray(), right.to_ndarray(), rtol=rtol, atol=atol, equal_nan=True
+                left.to_ndarray(),
+                right.to_ndarray(),
+                rtol=rtol,
+                atol=atol,
+                equal_nan=True,
             )
         else:
             assert np.allclose(left, right, rtol=rtol, atol=atol, equal_nan=True)
@@ -126,9 +130,10 @@ def assert_almost_equal(
 
 def _check_isinstance(left, right, cls) -> None:
     """
-    Helper method for our assert_* methods that ensures that
-    the two objects being compared have the right type before
+    Ensures that the two objects being compared have the right type before
     proceeding with the comparison.
+
+    Helper method for our assert_* methods.
 
     Parameters
     ----------
@@ -336,9 +341,7 @@ def assert_index_equal(
 
 
 def assert_class_equal(left, right, exact: bool = True, obj: str = "Input") -> None:
-    """
-    Checks classes are equal.
-    """
+    """Check classes are equal."""
     __tracebackhide__ = not DEBUG
 
     def repr_class(x):
@@ -432,7 +435,10 @@ def assert_categorical_equal(
 
     if check_category_order:
         assert_index_equal(
-            Index(left.categories), Index(right.categories), obj=f"{obj}.categories", exact=exact
+            Index(left.categories),
+            Index(right.categories),
+            obj=f"{obj}.categories",
+            exact=exact,
         )
         assert_arkouda_array_equal(left.codes, right.codes, check_dtype=check_dtype, obj=f"{obj}.codes")
     else:
@@ -767,7 +773,12 @@ def assert_arkouda_array_equal(
 
     if isinstance(left, Strings) and isinstance(right, Strings):
         assert_arkouda_strings_equal(
-            left, right, err_msg=err_msg, check_same=check_same, obj=obj, index_values=index_values
+            left,
+            right,
+            err_msg=err_msg,
+            check_same=check_same,
+            obj=obj,
+            index_values=index_values,
         )
     elif isinstance(left, Categorical) and isinstance(right, Categorical):
         assert_arkouda_array_equal(
@@ -1151,7 +1162,7 @@ def assert_contains_all(iterable, dic) -> None:
 
 def assert_copy(iter1, iter2, **eql_kwargs) -> None:
     """
-    Checks that the elements are equal, but not the same object.
+    Check that the elements are equal, but not the same object.
     (Does not check that items in sequences are also not the same object.)
 
     Parameters

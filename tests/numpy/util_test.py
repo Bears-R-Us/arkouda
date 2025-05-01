@@ -1,10 +1,17 @@
 import numpy as np
 
 import arkouda as ak
+from arkouda.numpy import util
 from arkouda.numpy.util import is_float, is_int, is_numeric, map
 
 
 class TestUtil:
+    def test_util_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(util, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     def test_sparse_sum_helper(self):
         cfg = ak.get_config()
         N = (10**4) * cfg["numLocales"]
@@ -43,7 +50,14 @@ class TestUtil:
         ]:
             assert not is_numeric(item)
 
-        for item in [ints, Index(ints), Series(ints), floats, Index(floats), Series(floats)]:
+        for item in [
+            ints,
+            Index(ints),
+            Series(ints),
+            floats,
+            Index(floats),
+            Series(floats),
+        ]:
             assert is_numeric(item)
 
         for item in [

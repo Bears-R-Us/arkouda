@@ -25,7 +25,9 @@ def apply(
     result_dtype: Optional[Union[np.dtype, str]] = None,
 ) -> pdarray:
     """
-    Apply a python function to a pdarray. The function should take one argument
+    Apply a python function to a pdarray.
+
+    The function should take one argument
     and return a new value. The function will then be called on each element in
     the pdarray.
 
@@ -68,8 +70,8 @@ def apply(
     -------
     pdarray
         The pdarray resulting from applying the function to the input array
-    """
 
+    """
     if getattr(apply, "is_apply_supported", None) is None:
         res = generic_msg("isPythonModuleSupported")
         is_supported = parse_single_value(cast(str, res))
