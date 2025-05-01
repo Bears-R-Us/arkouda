@@ -304,10 +304,9 @@ class Index:
 
     @staticmethod
     def factory(index):
-        t = type(index)
         if isinstance(index, Index):
             return index
-        elif t != list and t != tuple:
+        elif not isinstance(index, List) and not isinstance(index, Tuple):
             return Index(index)
         else:
             return MultiIndex(index)
@@ -839,10 +838,6 @@ class Index:
             data (that was overwritten) is removed. When False, the data remains, but is
             inaccessible. Setting to false will yield better performance, but will cause
             file sizes to expand.
-
-        Returns
-        -------
-        str - success message if successful
 
         Raises
         ------
@@ -1487,10 +1482,6 @@ class MultiIndex(Index):
             data (that was overwritten) is removed. When False, the data remains, but is
             inaccessible. Setting to false will yield better performance, but will cause
             file sizes to expand.
-
-        Returns
-        -------
-        str - success message if successful
 
         Raises
         ------

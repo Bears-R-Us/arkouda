@@ -419,10 +419,8 @@ class GroupBy:
             When distribute, dataset is written on a file per locale.
             This is only supported by HDF5 files and will have no impact of Parquet Files.
 
-        Returns
-        -------
-        None
-
+        Notes
+        -----
         GroupBy is not currently supported by Parquet
 
         """

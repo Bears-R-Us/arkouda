@@ -167,6 +167,7 @@ setup(
             "pydocstyle>=6.3.0",
             "pre-commit",
             "darglint>=1.8.1",
+            "pydoclint[flake8]==0.6.6",
         ],
     },
     # replace original install command with version that also builds

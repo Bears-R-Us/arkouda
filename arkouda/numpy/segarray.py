@@ -894,10 +894,6 @@ class SegArray:
             inaccessible. Setting to false will yield better performance, but will cause
             file sizes to expand.
 
-        Returns
-        --------
-        None
-
         Raises
         -------
         RuntimeError
@@ -1336,10 +1332,6 @@ class SegArray:
         """
         Unregister this SegArray object in the arkouda server which was previously
         registered using register() and/or attached to using attach()
-
-        Returns
-        -------
-        None
 
         Raises
         ------

@@ -646,9 +646,6 @@ class Generator:
         x: pdarray
             shuffle the elements of x randomly in place
 
-        Returns
-        -------
-        None
         """
         if not isinstance(x, pdarray):
             raise TypeError("shuffle only accepts a pdarray.")
