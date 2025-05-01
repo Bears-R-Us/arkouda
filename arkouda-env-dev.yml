@@ -44,6 +44,7 @@ dependencies:
   - pandas-stubs
   - types-python-dateutil
   - pydocstyle>=6.3.0
+  - pre-commit
 
   - pip:
     # Developer dependencies
