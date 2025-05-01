@@ -5784,8 +5784,19 @@ def _inner_join_merge(
     col_intersect_ = col_intersect.copy() if isinstance(col_intersect, list) else [col_intersect[:]]
     left_on_ = [left_on] if isinstance(left_on, str) else left_on
     right_on_ = [right_on] if isinstance(right_on, str) else right_on
+    tmp_left = {col: left[col] for col in left_cols}
+    tmp_right = {col: right[col] for col in right_cols}
+    for lcol, rcol in zip(left_on_, right_on_):
+        if isinstance(left[lcol], Categorical) and isinstance(right[rcol], Categorical):
+            new_categoricals = Categorical.standardize_categories([left[lcol], right[rcol]])
+            tmp_left[lcol] = new_categoricals[0]
+            tmp_right[rcol] = new_categoricals[1]
     left_inds, right_inds = inner_join(
-        [left[col] for col in left_on_], [right[col] for col in right_on_]
+        [tmp_left[col].codes if isinstance(left[col], Categorical) else left[col] for col in left_on_],
+        [
+            tmp_right[col].codes if isinstance(right[col], Categorical) else right[col]
+            for col in right_on_
+        ],
     )
     new_dict = {}
     for lcol, rcol in zip(left_on_, right_on_):
@@ -5795,10 +5806,10 @@ def _inner_join_merge(
 
     for col in left_cols:
         new_col = col + left_suffix if col in col_intersect_ else col
-        new_dict[new_col] = left[col][left_inds]
+        new_dict[new_col] = tmp_left[col][left_inds]
     for col in right_cols:
         new_col = col + right_suffix if col in col_intersect_ else col
-        new_dict[new_col] = right[col][right_inds]
+        new_dict[new_col] = tmp_right[col][right_inds]
 
     ret_df = DataFrame(new_dict)
     sort_keys = [left_on] if isinstance(left_on, str) else left_on
@@ -6048,8 +6059,12 @@ def __nulls_like(
     if size is None:
         size = arry.size
 
-    if isinstance(arry, (Strings, Categorical)):
+    if isinstance(arry, Strings):
         return full(size, "nan")
+    elif isinstance(arry, Categorical):
+        return Categorical.from_codes(
+            categories=arry.categories, codes=full(size, len(arry.categories) - 1, dtype=akint64)
+        )
     else:
         return full(size, np.nan, arry.dtype)
 
@@ -6245,8 +6260,8 @@ def merge(
         raise ValueError("Cannot merge with more columns from one DataFrame than the other")
 
     if not all(
-        isinstance(left[left_col], (pdarray, Strings))
-        and isinstance(right[right_col], (pdarray, Strings))
+        isinstance(left[left_col], (pdarray, Strings, Categorical))
+        and isinstance(right[right_col], (pdarray, Strings, Categorical))
         for left_col, right_col in zip(left_on_, right_on_)
     ):
         raise ValueError("All columns of a multi-column merge must be pdarrays")
