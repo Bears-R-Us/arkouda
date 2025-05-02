@@ -55,7 +55,7 @@ module SegmentedComputation {
     StringIsEmpty,
     StringIsSpace,
   }
-  
+
   proc computeOnSegments(segments: [?D] int, ref values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
     // type retType = if (function == SegFunction.StringToNumericReturnValidity) then (outType, bool) else outType;
     var res = makeDistArray(D, retType);
@@ -64,7 +64,7 @@ module SegmentedComputation {
     }
 
     const (startSegInds, numSegs, lengths) = computeSegmentOwnership(segments, vD);
-    
+
     // Start task parallelism
     coforall loc in Locales with (ref res, ref values) {
       on loc {
@@ -73,7 +73,7 @@ module SegmentedComputation {
         const mySegInds = {myFirstSegIdx..#myNumSegs};
         // Segment offsets whose bytes are owned by loc
         // Lengths of segments whose bytes are owned by loc
-        var mySegs, myLens = makeDistArray(mySegInds, int);
+        var mySegs, myLens = mySegInds.tryCreateArray(int); // Non dist array
         forall i in mySegInds with (var agg = new SrcAggregator(int)) {
           agg.copy(mySegs[i], segments[i]);
           agg.copy(myLens[i], lengths[i]);
