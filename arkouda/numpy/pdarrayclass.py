@@ -2642,7 +2642,6 @@ class pdarray:
 
         potentially disconnect from server and reconnect to server
         >>> b = ak.pdarray.attach("my_zeros")
-        >>> # ...other work...
         >>> b.unregister()
         """
         if self.registered_name is not None and self.is_registered():
@@ -2691,7 +2690,6 @@ class pdarray:
 
         # potentially disconnect from server and reconnect to server
         >>> b = ak.pdarray.attach("my_zeros")
-        >>> # ...other work...
         >>> b.unregister()
         """
         from arkouda.numpy.util import unregister
