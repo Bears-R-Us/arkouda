@@ -1254,6 +1254,37 @@ class TestDataFrame:
                 else:
                     assert (np.sort(from_ak) == np.sort(from_pd.astype(str))).all()
 
+    @pytest.mark.parametrize(
+        "df_init, merge",
+        [
+            pytest.param(
+                ak.DataFrame,
+                lambda df_1, df_2: df_1.merge(df_2, on=["idx"], how="inner"),
+                id="Arkouda via `DataFrame.merge`",
+            ),
+            pytest.param(
+                ak.DataFrame,
+                lambda df_1, df_2: ak.merge(df_1, df_2, on=["idx"], how="inner"),
+                id="Arkouda via `arkouda.merge`",
+            ),
+        ],
+    )
+    def test_merge_instance_and_module(self, df_init, merge):
+        df_first = df_init(
+            {
+                "idx": list(range(10)),
+                "val": list(range(10)),
+            }
+        )
+        df_second = df_init(
+            {
+                "idx": list(range(10)),
+                "val": list(map(lambda x: x + 3, range(10))),
+            }
+        )
+        df_merged = merge(df_first, df_second)
+        assert (df_merged["val_y"] - df_merged["val_x"] == 3).all()
+
     def test_isna_notna(self):
         df = ak.DataFrame(
             {

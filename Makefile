@@ -690,7 +690,18 @@ isort:
 	#  Verify if it will pass the CI check:
 	isort --check-only --diff .
 
-format: isort ruff-format
+
+.PHONY: check-doc-examples
+check-doc-examples:
+	@# skip binaries, only look in .py files, use extended regex
+	@if grep -R -I -nE '^[[:space:]]*>>>[[:space:]]*#' \
+	     --include="*.py" $(ARKOUDA_PROJECT_DIR)/arkouda; then \
+	  echo "💥 Found comment-only doctest examples (>>> #…); please remove them"; \
+	  exit 1; \
+	fi
+	
+	
+format: isort ruff-format check-doc-examples
 	#   Run docstring linter
 	pydocstyle
 	#   Run flake8

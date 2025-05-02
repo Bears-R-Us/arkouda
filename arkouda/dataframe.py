@@ -4625,7 +4625,14 @@ class DataFrame(UserDict):
 
         """
         return merge(
-            self, right, on, how, left_suffix, right_suffix, convert_ints=convert_ints, sort=sort
+            self,
+            right,
+            on,
+            how=how,
+            left_suffix=left_suffix,
+            right_suffix=right_suffix,
+            convert_ints=convert_ints,
+            sort=sort,
         )
 
     @typechecked
