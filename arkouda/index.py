@@ -304,10 +304,9 @@ class Index:
 
     @staticmethod
     def factory(index):
-        t = type(index)
         if isinstance(index, Index):
             return index
-        elif t != list and t != tuple:
+        elif not isinstance(index, List) and not isinstance(index, Tuple):
             return Index(index)
         else:
             return MultiIndex(index)
