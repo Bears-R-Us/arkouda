@@ -7,6 +7,12 @@ from arkouda import io_util
 
 
 class TestIOUtil:
+    def test_io_util_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(io_util, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @classmethod
     def setup_class(cls):
         cls.io_test_dir_base = f"{pytest.temp_directory}/io_test_dir"

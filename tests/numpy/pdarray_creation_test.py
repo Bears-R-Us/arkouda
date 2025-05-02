@@ -8,6 +8,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+from arkouda.numpy import pdarraycreation
 from arkouda.numpy.util import _generate_test_shape
 from arkouda.testing import assert_arkouda_array_equal, assert_equivalent
 
@@ -37,6 +38,14 @@ def multi_dim_ranks():
 
 
 class TestPdarrayCreation:
+    def test_pdarraycreation_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(
+            pdarraycreation, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_array_creation(self, dtype):
         fixed_size = 100
@@ -941,13 +950,13 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("dtype", [bool, np.float64, np.int64, str])
     def test_from_series_dtypes(self, size, dtype):
         p_array = ak.from_series(pd.Series(np.random.randint(0, 10, size)), dtype)
-        assert isinstance(p_array, ak.pdarray if dtype != str else ak.Strings)
+        assert isinstance(p_array, ak.pdarray if dtype is not str else ak.Strings)
         assert dtype == p_array.dtype
 
         p_objects_array = ak.from_series(
             pd.Series(np.random.randint(0, 10, size), dtype="object"), dtype=dtype
         )
-        assert isinstance(p_objects_array, ak.pdarray if dtype != str else ak.Strings)
+        assert isinstance(p_objects_array, ak.pdarray if dtype is not str else ak.Strings)
         assert dtype == p_objects_array.dtype
 
     def test_from_series_misc(self):

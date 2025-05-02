@@ -103,6 +103,7 @@ def invert_permutation(perm: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> from arkouda import array, invert_permutation
     >>> perm = array([2, 0, 3, 1])
     >>> inv = invert_permutation(perm)
@@ -862,6 +863,7 @@ def _infer_shape_from_size(size):
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> _infer_shape_from_size(5)
     (5, 1, 5)
 
@@ -909,6 +911,7 @@ def _generate_test_shape(rank, size):
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> _generate_test_shape(3, 16)
     ((2, 2, 4), 16)
 

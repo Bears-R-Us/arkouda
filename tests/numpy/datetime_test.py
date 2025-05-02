@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+from arkouda.numpy import timeclass
 
 
 def build_op_table():
@@ -20,11 +21,21 @@ def build_op_table():
                 r_is_supported = op in getattr(
                     firstclass, f"supported_with_r_{secondclass.__name__.lower()}"
                 )
-                table[(firstclass, op, secondclass)] = (is_supported, r_is_supported, return_type)
+                table[(firstclass, op, secondclass)] = (
+                    is_supported,
+                    r_is_supported,
+                    return_type,
+                )
     return table
 
 
 class TestDatetime:
+    def test_timeclass_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(timeclass, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @classmethod
     def setup_class(cls):
         cls.dt_vec1 = ak.date_range(start="2021-01-01 12:00:00", periods=100, freq="s")
@@ -103,13 +114,21 @@ class TestDatetime:
             assert (t == ak.Timedelta(ak.zeros(100, dtype=ak.int64), unit="s")).all()
 
     def test_op_types(self, verbose=pytest.verbose):
-        vectors = {ak.Datetime: self.dt_vec1, ak.Timedelta: self.td_vec1, ak.pdarray: ak.arange(100)}
+        vectors = {
+            ak.Datetime: self.dt_vec1,
+            ak.Timedelta: self.td_vec1,
+            ak.pdarray: ak.arange(100),
+        }
         pdvectors = {
             ak.Datetime: pd.to_datetime(self.dt_vec1.to_ndarray()),
             ak.Timedelta: pd.to_timedelta(self.td_vec1.to_ndarray()),
             ak.pdarray: pd.Series(ak.arange(100).to_ndarray()),
         }
-        scalars = {ak.Datetime: self.dt_scalar, ak.Timedelta: self.one_second, ak.pdarray: 5}
+        scalars = {
+            ak.Datetime: self.dt_scalar,
+            ak.Timedelta: self.one_second,
+            ak.pdarray: 5,
+        }
         metrics = {"ak_supported": 0, "ak_not_supported": 0, "ak_yes_pd_no": 0}
         for (firstclass, op, secondclass), (
             is_supported,
@@ -239,9 +258,17 @@ class TestDatetime:
         assert ak_timedel_std == pd_timedel_std
 
     def test_scalars(self):
-        for scal in self.dt_scalar, self.dt_scalar.to_pydatetime(), self.dt_scalar.to_numpy():
+        for scal in (
+            self.dt_scalar,
+            self.dt_scalar.to_pydatetime(),
+            self.dt_scalar.to_numpy(),
+        ):
             assert (scal <= self.dt_vec1).all()
-        for scal in self.one_second, self.one_second.to_pytimedelta(), self.one_second.to_numpy():
+        for scal in (
+            self.one_second,
+            self.one_second.to_pytimedelta(),
+            self.one_second.to_numpy(),
+        ):
             assert (scal == self.td_vec1).all()
 
     def test_units(self, verbose=pytest.verbose):
@@ -256,7 +283,13 @@ class TestDatetime:
         }
         for pdunit, aliases in unitmap.items():
             for akunit in (pdunit,) + aliases:
-                for pdclass, akclass in (pd.Timestamp, ak.Datetime), (pd.Timedelta, ak.Timedelta):
+                for pdclass, akclass in (
+                    (pd.Timestamp, ak.Datetime),
+                    (
+                        pd.Timedelta,
+                        ak.Timedelta,
+                    ),
+                ):
                     pdval = pdclass(1, unit=pdunit)
                     akval = akclass(ak.ones(10, dtype=ak.int64), unit=akunit)[0]
                     try:
@@ -327,7 +360,13 @@ class TestDatetime:
     def test_woy_boundary(self):
         # make sure weeks at year boundaries are correct, modified version of pandas test at
         # https://github.com/pandas-dev/pandas/blob/main/pandas/tests/scalar/timestamp/test_timestamp.py
-        for date in "2013-12-31", "2008-12-28", "2009-12-31", "2010-01-01", "2010-01-03":
+        for date in (
+            "2013-12-31",
+            "2008-12-28",
+            "2009-12-31",
+            "2010-01-01",
+            "2010-01-03",
+        ):
             ak_week = ak.Datetime(ak.date_range(date, periods=10, freq="W")).week.to_list()
             pd_week = (
                 pd.Series(pd.date_range(date, periods=10, freq="W")).dt.isocalendar().week.to_list()

@@ -12,6 +12,14 @@ def supports_apply():
 
 
 class TestApply:
+    # def test_apply_docstrings(self):
+    #     import doctest
+    #
+    #     result = doctest.testmod(
+    #         apply_module, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+    #     )
+    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @classmethod
     def setup_class(cls):
         if not supports_apply():

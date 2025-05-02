@@ -24,6 +24,12 @@ def np_is_sorted(arr):
 
 
 class TestSort:
+    # def test_sort_docstrings(self):
+    #     import doctest
+    #
+    #     result = doctest.testmod(sort, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.float64, ak.uint64, ak.float64])
     def test_compare_argsort(self, size, dtype):

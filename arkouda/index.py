@@ -57,6 +57,7 @@ class Index:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.Index([1, 2, 3])
     Index(array([1 2 3]), dtype='int64')
 

@@ -5,14 +5,36 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+from arkouda import match, matcher
 
 
 class TestRegex:
+    def test_match_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(match, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
+    def test_matcher_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(matcher, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @classmethod
     def match_objects_helper(
         cls,
         pattern="_+",
-        s=["", "____", "_1_2____", "3___4___", "5", "__6__", "___7", "__8___9____10____11"],
+        s=[
+            "",
+            "____",
+            "_1_2____",
+            "3___4___",
+            "5",
+            "__6__",
+            "___7",
+            "__8___9____10____11",
+        ],
     ):
         strings = ak.array(s)
 
@@ -36,7 +58,16 @@ class TestRegex:
     def sub_helper(
         cls,
         pattern="_+",
-        s=["", "____", "_1_2____", "3___4___", "5", "__6__", "___7", "__8___9____10____11"],
+        s=[
+            "",
+            "____",
+            "_1_2____",
+            "3___4___",
+            "5",
+            "__6__",
+            "___7",
+            "__8___9____10____11",
+        ],
         repl="-",
         count=3,
     ):
@@ -113,7 +144,11 @@ class TestRegex:
 
     def test_caputure_groups(self):
         tug_of_war = ak.array(
-            ["Isaac Newton, physicist", "<--calculus-->", "Gottfried Leibniz, mathematician"]
+            [
+                "Isaac Newton, physicist",
+                "<--calculus-->",
+                "Gottfried Leibniz, mathematician",
+            ]
         )
         pattern = "(\\w+) (\\w+)"
         ak_captures = tug_of_war.search(pattern)
@@ -135,7 +170,16 @@ class TestRegex:
 
     def test_regex_split(self):
         strings = ak.array(
-            ["", "____", "_1_2____", "3___4___", "5", "__6__", "___7", "__8___9____10____11"]
+            [
+                "",
+                "____",
+                "_1_2____",
+                "3___4___",
+                "5",
+                "__6__",
+                "___7",
+                "__8___9____10____11",
+            ]
         )
         pattern = "_+"
         maxsplit = 3
@@ -255,7 +299,13 @@ class TestRegex:
         orig = ak.array(["one|two", "three|four|five", "six", "seven|eight|nine|ten|", "eleven"])
         digit = ak.array(["one1two", "three2four3five", "six", "seven4eight5nine6ten7", "eleven"])
         under = ak.array(
-            ["one_two", "three_four__five", "six", "seven_____eight__nine____ten_", "eleven"]
+            [
+                "one_two",
+                "three_four__five",
+                "six",
+                "seven_____eight__nine____ten_",
+                "eleven",
+            ]
         )
 
         answer_flat = [

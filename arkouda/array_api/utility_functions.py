@@ -224,6 +224,7 @@ def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: 
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> y = xp.asarray(ak.array([1, 2, 3]))
 
     Use the trapezoidal rule on evenly spaced points:

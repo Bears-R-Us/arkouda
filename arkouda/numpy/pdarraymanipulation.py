@@ -51,6 +51,7 @@ def hstack(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([1, 2, 3])
     >>> b = ak.array([4, 5, 6])
     >>> ak.hstack((a, b))
@@ -174,6 +175,7 @@ def vstack(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([1, 2, 3])
     >>> b = ak.array([4, 5, 6])
     >>> ak.vstack((a, b))
@@ -274,6 +276,7 @@ def delete(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> arr = ak.array([[1,2,3,4], [5,6,7,8], [9,10,11,12]])
     >>> arr
     array([array([1 2 3 4]) array([5 6 7 8]) array([9 10 11 12])])

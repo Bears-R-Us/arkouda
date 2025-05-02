@@ -3,11 +3,18 @@ import json
 import pytest
 
 import arkouda as ak
+from arkouda import message
 from arkouda.client import _json_args_to_str
 from arkouda.message import MessageFormat, MessageType, ReplyMessage, RequestMessage
 
 
 class TestMessage:
+    def test_message_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(message, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     def test_message_format(self):
         assert MessageFormat.BINARY == MessageFormat("BINARY")
         assert MessageFormat.STRING == MessageFormat("STRING")

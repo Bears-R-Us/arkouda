@@ -6,6 +6,14 @@ DATA_TYPES = [ak.int64, ak.uint64, ak.float64]
 
 
 class TestAlignment:
+    # def test_alignment_docstrings(self):
+    #     import doctest
+    #
+    #     result = doctest.testmod(
+    #         alignment, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+    #     )
+    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @staticmethod
     def get_interval_info(lower_bound, upper_bound, vals, dtype):
         lb = ak.array(lower_bound, dtype)
@@ -56,7 +64,10 @@ class TestAlignment:
         # test hierarchical flag
         starts = (ak.array([0, 5], dtype), ak.array([0, 11], dtype))
         ends = (ak.array([5, 9], dtype), ak.array([10, 20], dtype))
-        vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9], dtype), ak.array([0, 20, 1, 5, 15, 0, 12, 30], dtype))
+        vals = (
+            ak.array([0, 0, 2, 5, 5, 6, 6, 9], dtype),
+            ak.array([0, 20, 1, 5, 15, 0, 12, 30], dtype),
+        )
 
         search_intervals = ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
         assert search_intervals == [0, -1, 0, 0, 1, -1, 1, -1]

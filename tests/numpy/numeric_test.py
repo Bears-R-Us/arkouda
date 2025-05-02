@@ -150,6 +150,12 @@ def _infinity_edge_case_helper(np_func, ak_func):
 
 
 class TestNumeric:
+    # def test_numeric_docstrings(self):
+    #     import doctest
+    #
+    #     result = doctest.testmod(numeric, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.parametrize("numeric_type", NUMERIC_TYPES)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_seeded_rng_typed(self, prob_size, numeric_type):
@@ -1255,11 +1261,17 @@ class TestNumeric:
             n_x1 = x1.to_ndarray()
             n_x2 = x2.to_ndarray()
             assert np.array_equal(
-                ak.nextafter(x1, x2).to_ndarray(), np.nextafter(n_x1, n_x2), equal_nan=True
+                ak.nextafter(x1, x2).to_ndarray(),
+                np.nextafter(n_x1, n_x2),
+                equal_nan=True,
             )
             assert np.array_equal(
-                ak.nextafter(x2, x1).to_ndarray(), np.nextafter(n_x2, n_x1), equal_nan=True
+                ak.nextafter(x2, x1).to_ndarray(),
+                np.nextafter(n_x2, n_x1),
+                equal_nan=True,
             )
             assert np.array_equal(
-                ak.nextafter(x1, x1).to_ndarray(), np.nextafter(n_x1, n_x1), equal_nan=True
+                ak.nextafter(x1, x1).to_ndarray(),
+                np.nextafter(n_x1, n_x1),
+                equal_nan=True,
             )

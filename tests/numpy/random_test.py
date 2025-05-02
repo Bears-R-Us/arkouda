@@ -7,12 +7,19 @@ import pytest
 from scipy import stats as sp_stats
 
 import arkouda as ak
+from arkouda.numpy import random
 from arkouda.scipy import chisquare as akchisquare
 
 INT_FLOAT = [ak.int64, ak.float64]
 
 
 class TestRandom:
+    def test_random_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(random, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     def test_integers(self):
         # verify same seed gives different but reproducible arrays
         rng = ak.random.default_rng(18)

@@ -251,6 +251,7 @@ class Generator:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> rng = ak.random.default_rng()
         >>> rng.integers(5, 20, 10)
         array([15, 13, 10, 8, 5, 18, 16, 14, 7, 13])  # random
@@ -335,6 +336,7 @@ class Generator:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.random.default_rng(17).logistic(3, 2.5, 3)
         array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])
         """
@@ -413,6 +415,7 @@ class Generator:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.random.default_rng(17).lognormal(3, 2.5, 3)
         array([7.3866978126031091 106.20159494048757 4.5424399190667666])
         """
@@ -462,6 +465,7 @@ class Generator:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.random.default_rng(17).normal(3, 2.5, 3)
         array([2.3673425816523577 4.0532529435624589 2.0598322696795694])
         """
@@ -502,6 +506,7 @@ class Generator:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> rng = ak.random.default_rng()
         >>> rng.random()
         0.47108547995356098 # random
@@ -542,6 +547,7 @@ class Generator:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> rng = ak.random.default_rng()
         >>> rng.standard_gamma(1)
         0.8729704388729135 # random
@@ -607,6 +613,7 @@ class Generator:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> rng = ak.random.default_rng()
         >>> rng.standard_normal()
         2.1923875335537315 # random
@@ -764,6 +771,7 @@ class Generator:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> rng = ak.random.default_rng()
         >>> rng.poisson(lam=3, size=5)
         array([5 3 2 2 3])  # random
@@ -823,6 +831,7 @@ class Generator:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> rng = ak.random.default_rng()
         >>> rng.uniform(-1, 1, 3)
         array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random

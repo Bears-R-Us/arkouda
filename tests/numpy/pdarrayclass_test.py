@@ -23,6 +23,14 @@ NUMERIC_TYPES_NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 
 
 class TestPdarrayClass:
+    # def test_pdarrayclass_docstrings(self):
+    #     import doctest
+    #
+    #     result = doctest.testmod(
+    #         pdarrayclass, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+    #     )
+    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_reshape(self, dtype):

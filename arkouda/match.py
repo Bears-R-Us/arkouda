@@ -65,6 +65,7 @@ class Match:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.search('_+').matched()
         array([True True False True False])
@@ -83,6 +84,7 @@ class Match:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.search('_+').start()
         array([1 0 0])
@@ -101,6 +103,7 @@ class Match:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.search('_+').end()
         array([2 4 2])
@@ -119,6 +122,7 @@ class Match:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.search('_+').match_type()
         'SEARCH'
@@ -150,6 +154,7 @@ class Match:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.search('_+').find_matches(return_match_origins=True)
         (array(['_', '____', '__']), array([0 1 3]))
@@ -200,6 +205,7 @@ class Match:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(["Isaac Newton, physics", '<-calculus->', 'Gottfried Leibniz, math'])
         >>> m = strings.search("(\\w+) (\\w+)")
         >>> m.group()

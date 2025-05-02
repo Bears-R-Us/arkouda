@@ -67,6 +67,7 @@ class ShellHistoryRetriever(HistoryRetriever):
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> from arkouda.history import ShellHistoryRetriever
         >>> import readline
         >>> h = ShellHistoryRetriever()
@@ -119,6 +120,7 @@ class NotebookHistoryRetriever(HistoryAccessor, HistoryRetriever):
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> from arkouda.history import NotebookHistoryRetriever
         >>> h = NotebookHistoryRetriever()
         >>> 1+2

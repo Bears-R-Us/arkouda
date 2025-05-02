@@ -145,6 +145,7 @@ def find(query, space, all_occurrences=False, remove_missing=False):
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> select_from = ak.arange(10)
     >>> arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]
     >>> arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]
@@ -300,6 +301,7 @@ def lookup(keys, values, arguments, fillvalue=-1):
 
     Examples
     --------
+    >>> import arkouda as ak
     Lookup numbers by two-word name
 
     >>> keys1 = ak.array(['twenty' for _ in range(5)])
@@ -422,6 +424,7 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> starts = (ak.array([0, 5]), ak.array([0, 11]))
     >>> ends = (ak.array([5, 9]), ak.array([10, 20]))
     >>> vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))

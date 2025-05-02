@@ -700,6 +700,7 @@ def read_hdf(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>>
     # Read with file Extension
     >>> x = ak.read_hdf('path/name_prefix.h5') # load HDF5
@@ -848,6 +849,7 @@ def read_parquet(
 
     Examples
     --------
+    >>> import arkouda as ak
     Read without file Extension
     >>> x = ak.read_parquet('path/name_prefix.parquet') # load Parquet
     Read Glob Expression
@@ -1269,6 +1271,7 @@ def to_parquet(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.arange(25)
     >>> b = ak.arange(25)
 
@@ -1371,6 +1374,7 @@ def to_hdf(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.arange(25)
     >>> b = ak.arange(25)
 
@@ -1690,6 +1694,7 @@ def load(
 
     Examples
     --------
+    >>> import arkouda as ak
     Loading from file without extension
     >>> obj = ak.load('path/prefix')
     Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.
@@ -1925,6 +1930,7 @@ def read(
 
     Examples
     --------
+    >>> import arkouda as ak
     Read with file Extension
     >>> x = ak.read('path/name_prefix.h5') # load HDF5 - processing determines file type not extension
     Read without file Extension
@@ -1998,6 +2004,7 @@ def save_checkpoint(name="", path=".akdata", mode: str = "overwrite"):
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> arr = ak.zeros(10, int)
     >>> arr[2] = 2
     >>> arr[2]
@@ -2040,6 +2047,7 @@ def load_checkpoint(name, path=".akdata"):
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> arr = ak.zeros(10, int)
     >>> arr[2] = 2
     >>> arr[2]
@@ -2116,6 +2124,7 @@ def read_tagged_data(
 
     Examples
     --------
+    >>> import arkouda as ak
     Read files and return data with tagging corresponding to the Categorical returned
     cat.codes will link the codes in data to the filename. Data will contain the code `Filename_Codes`
     >>> data, cat = ak.read_tagged_data('path/name')
