@@ -839,10 +839,6 @@ class Index:
             inaccessible. Setting to false will yield better performance, but will cause
             file sizes to expand.
 
-        Returns
-        -------
-        str - success message if successful
-
         Raises
         ------
         RuntimeError
@@ -1486,10 +1482,6 @@ class MultiIndex(Index):
             data (that was overwritten) is removed. When False, the data remains, but is
             inaccessible. Setting to false will yield better performance, but will cause
             file sizes to expand.
-
-        Returns
-        -------
-        str - success message if successful
 
         Raises
         ------

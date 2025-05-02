@@ -1508,10 +1508,6 @@ def to_csv(
         Defaults to False. If True, any existing files matching your provided prefix_path will
         be overwritten. If False, an error will be returned if existing files are found.
 
-    Returns
-    -------
-    None
-
     Raises
     ------
     ValueError
@@ -2187,10 +2183,6 @@ def snapshot(filename):
     ----------
     filename: str
     Name to use when storing file
-
-    Returns
-    -------
-    None
 
     See Also
     --------

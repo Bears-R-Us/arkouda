@@ -1667,7 +1667,7 @@ class DataFrame(UserDict):
             subset = self._columns
 
         if len(subset) == 1:
-            if not subset[0] in self.data:
+            if subset[0] not in self.data:
                 raise KeyError(f"{subset[0]} is not a column in the DataFrame.")
             gp = akGroupBy(self.data[subset[0]])
 
@@ -3071,10 +3071,6 @@ class DataFrame(UserDict):
         file_type: str (single | distribute), default=distribute
             Whether to save to a single file or distribute across Locales.
 
-        Returns
-        -------
-        None
-
         Raises
         ------
         RuntimeError
@@ -3280,7 +3276,7 @@ class DataFrame(UserDict):
         from arkouda.io import update_hdf
 
         data = self._prep_data(index=index, columns=columns)
-        update_hdf(data, prefix_path=prefix_path, repack=repack)
+        return update_hdf(data, prefix_path=prefix_path, repack=repack)
 
     def to_parquet(
         self,
@@ -3308,10 +3304,6 @@ class DataFrame(UserDict):
             Parquet requires all columns to be the same size and Categoricals
             don't satisfy that requirement.
             If set, write the equivalent Strings in place of any Categorical columns.
-
-        Returns
-        -------
-        None
 
         Raises
         ------
@@ -3400,10 +3392,6 @@ class DataFrame(UserDict):
         overwrite: bool, default=False
             If True, any existing files matching your provided prefix_path will
             be overwritten. If False, an error will be returned if existing files are found.
-
-        Returns
-        -------
-        None
 
         Raises
         ------
@@ -3869,10 +3857,6 @@ class DataFrame(UserDict):
             some order. Very minimal testing is done to ensure this
             is a permutation.
 
-        Returns
-        -------
-        None
-
         See Also
         --------
         sort
@@ -3917,75 +3901,73 @@ class DataFrame(UserDict):
         self._set_index(self.index[perm])
 
     def filter_by_range(self, keys, low=1, high=None):
-        def filter_by_range(self, keys, low=1, high=None):
-            """
-            Filter rows by the size of groups defined on one or more columns.
+        """
+        Filter rows by the size of groups defined on one or more columns.
 
-            Group the DataFrame by the specified `keys`, compute the count of each group,
-            and return a boolean mask indicating which rows belong to groups whose sizes
-            fall within the inclusive range [`low`, `high`].
+        Group the DataFrame by the specified `keys`, compute the count of each group,
+        and return a boolean mask indicating which rows belong to groups whose sizes
+        fall within the inclusive range [`low`, `high`].
 
-            Parameters
-            ----------
-            keys : str or list of str
-                Column name or list of column names to group by.
-            low : int, default=1
-                Minimum group size (inclusive). Must be >= 0.
-            high : int or None, default=None
-                Maximum group size (inclusive). If `None`, no upper bound is applied.
+        Parameters
+        ----------
+        keys : str or list of str
+            Column name or list of column names to group by.
+        low : int, default=1
+            Minimum group size (inclusive). Must be >= 0.
+        high : int or None, default=None
+            Maximum group size (inclusive). If `None`, no upper bound is applied.
 
-            Returns
-            -------
-            pdarray of bool
-                A boolean mask array of length equal to the number of rows in the DataFrame,
-                where `True` indicates the row’s group size is between `low` and `high`.
+        Returns
+        -------
+        pdarray of bool
+            A boolean mask array of length equal to the number of rows in the DataFrame,
+            where `True` indicates the row’s group size is between `low` and `high`.
 
-            Raises
-            ------
-            ValueError
-                If `low` is negative, or if `high` is not `None` and `high < low`.
-            TypeError
-                If `keys` is not a string or list of strings.
+        Raises
+        ------
+        ValueError
+            If `low` is negative, or if `high` is not `None` and `high < low`.
+        TypeError
+            If `keys` is not a string or list of strings.
 
-            Examples
-            --------
-            >>> df = ak.DataFrame({'col1': [1, 2, 2, 2, 3, 3], 'col2': [4, 5, 6, 7, 8, 9]})
-            >>> display(df)
+        Examples
+        --------
+        >>> df = ak.DataFrame({'col1': [1, 2, 2, 2, 3, 3], 'col2': [4, 5, 6, 7, 8, 9]})
+        >>> display(df)
 
-            +----+--------+--------+
-            |    |   col1 |   col2 |
-            +====+========+========+
-            |  0 |      1 |      4 |
-            +----+--------+--------+
-            |  1 |      2 |      5 |
-            +----+--------+--------+
-            |  2 |      2 |      6 |
-            +----+--------+--------+
-            |  3 |      2 |      7 |
-            +----+--------+--------+
-            |  4 |      3 |      8 |
-            +----+--------+--------+
-            |  5 |      3 |      9 |
-            +----+--------+--------+
+        +----+--------+--------+
+        |    |   col1 |   col2 |
+        +====+========+========+
+        |  0 |      1 |      4 |
+        +----+--------+--------+
+        |  1 |      2 |      5 |
+        +----+--------+--------+
+        |  2 |      2 |      6 |
+        +----+--------+--------+
+        |  3 |      2 |      7 |
+        +----+--------+--------+
+        |  4 |      3 |      8 |
+        +----+--------+--------+
+        |  5 |      3 |      9 |
+        +----+--------+--------+
 
-            >>> df.filter_by_range("col1", low=1, high=2)
-            array([True False False False True True])
+        >>> df.filter_by_range("col1", low=1, high=2)
+        array([True False False False True True])
 
-            >>> filtered_df = df[df.filter_by_range("col1", low=1, high=2)]
-            >>> display(filtered_df)
+        >>> filtered_df = df[df.filter_by_range("col1", low=1, high=2)]
+        >>> display(filtered_df)
 
-            +----+--------+--------+
-            |    |   col1 |   col2 |
-            +====+========+========+
-            |  0 |      1 |      4 |
-            +----+--------+--------+
-            |  1 |      3 |      8 |
-            +----+--------+--------+
-            |  2 |      3 |      9 |
-            +----+--------+--------+
+        +----+--------+--------+
+        |    |   col1 |   col2 |
+        +====+========+========+
+        |  0 |      1 |      4 |
+        +----+--------+--------+
+        |  1 |      3 |      8 |
+        +----+--------+--------+
+        |  2 |      3 |      9 |
+        +----+--------+--------+
 
-            """
-
+        """
         if isinstance(keys, str):
             keys = [keys]
         gb = self.GroupBy(keys, use_series=False)

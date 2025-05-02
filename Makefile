@@ -705,7 +705,7 @@ format: isort ruff-format check-doc-examples
 	#   Run docstring linter
 	pydocstyle
 	#   Run flake8
-	flake8 $(ARKOUDA_PROJECT_DIR)/arkouda
+	flake8 --config=$(ARKOUDA_PROJECT_DIR)/setup.cfg $(ARKOUDA_PROJECT_DIR)/arkouda
 
 darglint: 
 	#   Check darglint linter for doc strings:

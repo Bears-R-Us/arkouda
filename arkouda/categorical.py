@@ -977,10 +977,6 @@ class Categorical:
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.
 
-        Returns
-        -------
-        None
-
         See Also
         --------
         load
@@ -1024,10 +1020,6 @@ class Categorical:
             data (that was overwritten) is removed. When False, the data remains, but is
             inaccessible. Setting to false will yield better performance, but will cause
             file sizes to expand.
-
-        Returns
-        -------
-        None
 
         Raises
         ------

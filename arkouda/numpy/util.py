@@ -380,12 +380,6 @@ def register_all(data: dict):
         A dictionary that maps the name to register the object to the object itself.
         For example, {"MyArray": ak.array([0, 1, 2])}.
 
-    Returns
-    -------
-    None
-        This function does not return anything. It performs the registration
-        as side effects.
-
     Examples
     --------
     >>> import arkouda as ak
@@ -412,12 +406,6 @@ def unregister_all(names: List[str]):
     names : List of str
         A list of registered names corresponding to Arkouda objects
         that should be unregistered.
-
-    Returns
-    -------
-    None
-        This function performs unregistration as a side effect and
-        does not return a value.
 
     Examples
     --------
