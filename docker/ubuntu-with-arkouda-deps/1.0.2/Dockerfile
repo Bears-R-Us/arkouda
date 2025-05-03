@@ -96,10 +96,8 @@ RUN  mkdir -p $DEP_DIR && mkdir -p $DEP_BUILD_DIR && mkdir -p $DEP_INSTALL_DIR
 #COPY build.tar $DEP_DIR/build.tar
 #RUN cd $DEP_DIR && tar -xvf build.tar
 
-#   TODO:  Fix the correct commit from master branch.
-#   Download clone arkouda repo and set to specific commit: Closes #4098 upgrade to numpy 2.0.0 (#4213)
-#   RUN cd /opt && git clone https://github.com/Bears-R-Us/arkouda.git && cd arkouda && git checkout abfb13bfe7931c07c2dec4e814955c59551a2d98
-RUN cd /opt && git clone -b 4341_Upgrade_to_arrow_19.0.1 https://github.com/ajpotts/arkouda.git  && cd arkouda
+#   Download clone arkouda repo and set to specific commit: https://github.com/Bears-R-Us/arkouda/pull/4342
+RUN cd /opt && git clone https://github.com/Bears-R-Us/arkouda.git && cd arkouda && cd /opt/arkouda && git checkout 33298be6ab0d75125ee6513e1d5375485c70676c
 WORKDIR /opt/arkouda
 
 #   This step will skip the download if the files are already in $DEP_BUILD_DIR
