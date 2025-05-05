@@ -178,7 +178,7 @@ class DataFrameGroupBy:
 
             Returns
             -------
-            arkouda.dataframe.DataFrame
+            DataFrame
 
             """
             if colnames is None:
@@ -288,7 +288,7 @@ class DataFrameGroupBy:
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
 
         Examples
         --------
@@ -363,7 +363,7 @@ class DataFrameGroupBy:
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
 
         Examples
         --------
@@ -1446,7 +1446,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
 
         Examples
         --------
@@ -1543,7 +1543,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame or None
+        DataFrame or None
             DateFrame when `inplace=False`;
             None when `inplace=True`
 
@@ -1626,7 +1626,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             DataFrame with duplicates removed.
 
         Example
@@ -1934,7 +1934,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame or None
+        DataFrame or None
             DateFrame when `inplace=False`;
             None when `inplace=True`.
 
@@ -2083,7 +2083,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame or None
+        DataFrame or None
             DateFrame when `inplace=False`
             None when `inplace=True`
 
@@ -2137,7 +2137,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame or None
+        DataFrame or None
             DateFrame when `inplace=False`
             None when `inplace=True`
 
@@ -2209,7 +2209,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame or None
+        DataFrame or None
             DateFrame when `inplace=False`;
             None when `inplace=True`.
 
@@ -2438,7 +2438,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             The first `n` rows of the DataFrame.
 
         See Also
@@ -2520,7 +2520,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             The last `n` rows of the DataFrame.
 
         See Also
@@ -2590,7 +2590,7 @@ class DataFrame(UserDict):
             return self
         return self[self._nrows - n :]
 
-    def sample(self, n=5):
+    def sample(self, n=5) -> DataFrame:
         """
         Return a random sample of `n` rows.
 
@@ -2601,7 +2601,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             The sampled `n` rows of the DataFrame.
 
         Example
@@ -2644,7 +2644,11 @@ class DataFrame(UserDict):
             return self
         return self[array(random.sample(range(self._nrows), n))]
 
-    def GroupBy(self, keys, use_series=False, as_index=True, dropna=True):
+    from arkouda.groupbyclass import GroupBy as GroupBy_class
+
+    def GroupBy(
+        self, keys, use_series=False, as_index=True, dropna=True
+    ) -> Union[DataFrameGroupBy, GroupBy_class]:
         """
         Group the dataframe by a column or a list of columns.
 
@@ -2723,7 +2727,9 @@ class DataFrame(UserDict):
         else:
             cols = [self.data[col] for col in keys]
 
-        gb = akGroupBy(cols, dropna=dropna)
+        from arkouda.groupbyclass import GroupBy as GroupBy_class
+
+        gb: Union[DataFrameGroupBy, GroupBy_class] = akGroupBy(cols, dropna=dropna)
         if use_series:
             gb = DataFrameGroupBy(gb, self, gb_key_names=keys, as_index=as_index)
         return gb
@@ -3457,7 +3463,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             Arkouda DataFrame containing the columns from the CSV file.
 
         Raises
@@ -3529,7 +3535,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             A dataframe loaded from the prefix_path.
 
         Examples
@@ -4001,7 +4007,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             A deep or shallow copy according to caller specification.
 
         Examples
@@ -4146,7 +4152,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             Arkouda DataFrame of booleans showing whether each element in the DataFrame is
             contained in values.
 
@@ -4297,7 +4303,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.pandas.series.Series
+        Series
             For each column/row the number of non-NA/null entries.
 
         Raises
@@ -4407,7 +4413,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             Arkouda DataFrame containing correlation matrix of all columns.
 
         Raises
@@ -4514,7 +4520,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             Joined Arkouda DataFrame.
 
         Note
@@ -4646,7 +4652,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             Mask of bool values for each element in DataFrame
             that indicates whether an element is an NA value.
 
@@ -4701,7 +4707,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             Mask of bool values for each element in DataFrame
             that indicates whether an element is not an NA value.
 
@@ -4979,7 +4985,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             DataFrame with NA entries dropped from it.
 
         Examples
@@ -5126,7 +5132,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
             The same DataFrame which is now registered with the arkouda server and has an updated name.
             This is an in-place modification, the original is returned to support a
             fluid programming style.
@@ -5363,7 +5369,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrame
+        DataFrame
 
         """
         from arkouda.categorical import Categorical as Categorical_
@@ -5765,7 +5771,7 @@ def _inner_join_merge(
 
     Returns
     -------
-    arkouda.dataframe.DataFrame
+    DataFrame
         Inner-Joined Arkouda DataFrame
 
     """
@@ -5961,7 +5967,7 @@ def _outer_join_merge(
 
     Returns
     -------
-    arkouda.dataframe.DataFrame
+    DataFrame
         Outer-Joined Arkouda DataFrame
 
     """
@@ -6115,7 +6121,7 @@ def merge(
 
     Returns
     -------
-    arkouda.dataframe.DataFrame
+    DataFrame
         Joined Arkouda DataFrame.
 
     Note

@@ -149,11 +149,12 @@ def cast(
 
     Returns
     -------
-    pdarray or Strings
-        Array of values cast to desired dtype
-    [validity : pdarray(bool)]
-        If errors="return_validity" and input is Strings, a second array is
-        returned with True where the cast succeeded and False where it failed.
+    Union[Union[pdarray, Strings, Categorical], Tuple[pdarray, pdarray]]
+        pdarray or Strings
+            Array of values cast to desired dtype
+        [validity : pdarray(bool)]
+            If errors="return_validity" and input is Strings, a second array is
+            returned with True where the cast succeeded and False where it failed.
 
     Notes
     -----
@@ -1966,17 +1967,18 @@ def histogram2d(
 
     Returns
     -------
-    hist : pdarray
-        shape(nx, ny)
-        The bi-dimensional histogram of samples x and y.
-        Values in x are histogrammed along the first dimension and
-        values in y are histogrammed along the second dimension.
+    Tuple[pdarray, pdarray, pdarray]
+        hist : pdarray
+            shape(nx, ny)
+            The bi-dimensional histogram of samples x and y.
+            Values in x are histogrammed along the first dimension and
+            values in y are histogrammed along the second dimension.
 
-    x_edges : pdarray
-        The bin edges along the first dimension.
+        x_edges : pdarray
+            The bin edges along the first dimension.
 
-    y_edges : pdarray
-        The bin edges along the second dimension.
+        y_edges : pdarray
+            The bin edges along the second dimension.
 
     Raises
     ------
@@ -2075,14 +2077,15 @@ def histogramdd(
 
     Returns
     -------
-    hist : pdarray
-        shape(nx, ny, ..., nd)
-        The multidimensional histogram of pdarrays in sample.
-        Values in first pdarray are histogrammed along the first dimension.
-        Values in second pdarray are histogrammed along the second dimension and so on.
+    Tuple[pdarray, Sequence[pdarray]]
+        hist : pdarray
+            shape(nx, ny, ..., nd)
+            The multidimensional histogram of pdarrays in sample.
+            Values in first pdarray are histogrammed along the first dimension.
+            Values in second pdarray are histogrammed along the second dimension and so on.
 
-    edges : List[pdarray]
-        A list of pdarrays containing the bin edges for each dimension.
+        edges : List[pdarray]
+            A list of pdarrays containing the bin edges for each dimension.
 
 
     Raises
@@ -2235,7 +2238,7 @@ def clip(
 
     Returns
     -------
-    arkouda.numpy.pdarrayclass.pdarray
+    pdarray
         A pdarray matching pda, except that element x remains x if lo <= x <= hi,
                                                 or becomes lo if x < lo,
                                                 or becomes hi if x > hi.
@@ -2516,7 +2519,7 @@ def putmask(
         (ak_bool, ak_bool),
     ]
 
-    if not ((A.dtype, Values.dtype) in ALLOWED_PUTMASK_PAIRS):
+    if (A.dtype, Values.dtype) not in ALLOWED_PUTMASK_PAIRS:
         raise RuntimeError(f"Types {A.dtype} and {Values.dtype} are not compatible in putmask.")
     if mask.size != A.size:
         raise RuntimeError("mask and A must be same size in putmask")

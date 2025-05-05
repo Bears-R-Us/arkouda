@@ -20,7 +20,7 @@ def shape(a: Union[pdarray, Strings, all_scalars]) -> Tuple:
 
     Returns
     -------
-    shape : tuple of ints
+    Tuple
         The elements of the shape tuple give the lengths of the
         corresponding array dimensions.
 

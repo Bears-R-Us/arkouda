@@ -41,7 +41,7 @@ if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 
 
-__all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
+__all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES", "groupable"]
 
 groupable_element_type = Union[pdarray, Strings, "Categorical"]
 groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
@@ -95,12 +95,13 @@ def unique(
 
     Returns
     -------
-    unique : (list of) pdarray, Strings, or Categorical
-        The unique values. If input dtype is int64, return values will be sorted.
-    permutation : pdarray, optional
-        Permutation that groups equivalent values together (only when return_groups=True)
-    segments : pdarray, optional
-        The offset of each group in the permuted array (only when return_groups=True)
+    Union[groupable, Tuple[groupable, pdarray, pdarray, int]]
+        unique : (list of) pdarray, Strings, or Categorical
+            The unique values. If input dtype is int64, return values will be sorted.
+        permutation : pdarray, optional
+            Permutation that groups equivalent values together (only when return_groups=True)
+        segments : pdarray, optional
+            The offset of each group in the permuted array (only when return_groups=True)
 
     Raises
     ------
@@ -545,10 +546,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        counts : pdarray, int64
-            The number of times each unique key appears
+        List[pdarray|Strings], pdarray|int64
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            counts : pdarray, int64
+                The number of times each unique key appears
 
         See Also
         --------
@@ -587,10 +589,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        counts : pdarray, int64
-            The number of times each unique key appears (excluding NaN values).
+        List[pdarray|Strings], pdarray|int64
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            counts : pdarray, int64
+                The number of times each unique key appears (excluding NaN values).
 
         Examples
         --------
@@ -636,10 +639,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : groupable
-            The unique keys, in grouped order
-        aggregates : groupable
-            One aggregate value per unique key in the GroupBy instance
+        Tuple[groupable, groupable]
+            unique_keys : groupable
+                The unique keys, in grouped order
+            aggregates : groupable
+                One aggregate value per unique key in the GroupBy instance
 
         Raises
         ------
@@ -726,10 +730,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        group_sums : pdarray
-            One sum per unique key in the GroupBy instance
+        Tuple[groupable, pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            group_sums : pdarray
+                One sum per unique key in the GroupBy instance
 
         Raises
         ------
@@ -776,10 +781,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        group_products : pdarray, float64
-            One product per unique key in the GroupBy instance
+        Tuple[groupable, pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            group_products : pdarray, float64
+                One product per unique key in the GroupBy instance
 
         Raises
         ------
@@ -832,10 +838,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        group_vars : pdarray, float64
-            One var value per unique key in the GroupBy instance
+        Tuple[groupable, pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            group_vars : pdarray, float64
+                One var value per unique key in the GroupBy instance
 
         Raises
         ------
@@ -896,10 +903,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        group_stds : pdarray, float64
-            One std value per unique key in the GroupBy instance
+        Tuple[groupable, pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            group_stds : pdarray, float64
+                One std value per unique key in the GroupBy instance
 
         Raises
         ------
@@ -959,10 +967,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        group_means : pdarray, float64
-            One mean value per unique key in the GroupBy instance
+        Tuple[groupable, pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            group_means : pdarray, float64
+                One mean value per unique key in the GroupBy instance
 
         Raises
         ------
@@ -1009,10 +1018,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        group_medians : pdarray, float64
-            One median value per unique key in the GroupBy instance
+        Tuple[groupable, pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            group_medians : pdarray, float64
+                One median value per unique key in the GroupBy instance
 
         Raises
         ------
@@ -1059,10 +1069,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        group_minima : pdarray
-            One minimum per unique key in the GroupBy instance
+        Tuple[groupable, pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            group_minima : pdarray
+                One minimum per unique key in the GroupBy instance
 
         Raises
         ------
@@ -1110,10 +1121,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        group_maxima : pdarray
-            One maximum per unique key in the GroupBy instance
+        Tuple[groupable, pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            group_maxima : pdarray
+                One maximum per unique key in the GroupBy instance
 
         Raises
         ------
@@ -1159,10 +1171,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        group_argminima : pdarray, int64
-            One index per unique key in the GroupBy instance
+        Tuple[groupable, pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            group_argminima : pdarray, int64
+                One index per unique key in the GroupBy instance
 
         Raises
         ------
@@ -1211,10 +1224,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        group_argmaxima : pdarray, int64
-            One index per unique key in the GroupBy instance
+        Tuple[groupable, pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            group_argmaxima : pdarray, int64
+                One index per unique key in the GroupBy instance
 
         Raises
         ------
@@ -1280,10 +1294,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : groupable
-            The unique keys, in grouped order
-        group_nunique : groupable
-            Number of unique values per unique key in the GroupBy instance
+        Tuple[groupable, pdarray]
+            unique_keys : groupable
+                The unique keys, in grouped order
+            group_nunique : groupable
+                Number of unique values per unique key in the GroupBy instance
 
         Raises
         ------
@@ -1350,10 +1365,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        group_any : pdarray, bool
-            One bool per unique key in the GroupBy instance
+        Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            group_any : pdarray, bool
+                One bool per unique key in the GroupBy instance
 
         Raises
         ------
@@ -1382,10 +1398,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        group_any : pdarray, bool
-            One bool per unique key in the GroupBy instance
+        Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            group_any : pdarray, bool
+                One bool per unique key in the GroupBy instance
 
         Raises
         ------
@@ -1419,10 +1436,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        result : pdarray, int64
-            Bitwise OR of values in segments corresponding to keys
+        Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            result : pdarray, int64
+                Bitwise OR of values in segments corresponding to keys
 
         Raises
         ------
@@ -1456,10 +1474,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        result : pdarray, int64
-            Bitwise AND of values in segments corresponding to keys
+        Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            result : pdarray, int64
+                Bitwise AND of values in segments corresponding to keys
 
         Raises
         ------
@@ -1493,10 +1512,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
-            The unique keys, in grouped order
-        result : pdarray, int64
-            Bitwise XOR of values in segments corresponding to keys
+        Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
+            unique_keys : (list of) pdarray or Strings
+                The unique keys, in grouped order
+            result : pdarray, int64
+                Bitwise XOR of values in segments corresponding to keys
 
         Raises
         ------
@@ -1538,12 +1558,13 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray-like
-            The unique keys, in grouped order
-        result : pdarray-like
-            The first n items of each group.
-            If return_indices is True, the result are indices.
-            O.W. the result are values.
+        Tuple[groupable, groupable_element_type]
+            unique_keys : (list of) pdarray-like
+                The unique keys, in grouped order
+            result : pdarray-like
+                The first n items of each group.
+                If return_indices is True, the result are indices.
+                O.W. the result are values.
 
         Examples
         --------
@@ -1616,12 +1637,13 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray-like
-            The unique keys, in grouped order
-        result : pdarray-like
-            The last n items of each group.
-            If return_indices is True, the result are indices.
-            O.W. the result are values.
+        Tuple[groupable, groupable_element_type]
+            unique_keys : (list of) pdarray-like
+                The unique keys, in grouped order
+            result : pdarray-like
+                The last n items of each group.
+                If return_indices is True, the result are indices.
+                O.W. the result are values.
 
         Examples
         --------
@@ -1682,10 +1704,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray-like
-            The unique keys, in grouped order
-        result : pdarray-like
-            The first value of each group
+        Tuple[groupable, groupable_element_type]
+            unique_keys : (list of) pdarray-like
+                The unique keys, in grouped order
+            result : pdarray-like
+                The first value of each group
 
         """
         # Index of first value in each segment, in input domain
@@ -1706,10 +1729,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray-like
-            The unique keys, in grouped order
-        result : (list of) pdarray-like
-            The most common value of each group
+        Tuple[groupable, groupable]
+            unique_keys : (list of) pdarray-like
+                The unique keys, in grouped order
+            result : (list of) pdarray-like
+                The most common value of each group
 
         """
         togroup = self._nested_grouping_helper(values)
@@ -1910,10 +1934,11 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray-like
-            The unique keys, in grouped order
-        result : (list of) SegArray
-            The unique values of each group
+        (list of) pdarray-like, (list of) SegArray
+            unique_keys : (list of) pdarray-like
+                The unique keys, in grouped order
+            result : (list of) SegArray
+                The unique values of each group
 
         Raises
         ------

@@ -78,7 +78,7 @@ class Match:
 
         Returns
         -------
-        pdarray, int64
+        pdarray
             The start positions of matches
 
         Examples
@@ -96,7 +96,7 @@ class Match:
 
         Returns
         -------
-        pdarray, int64
+        pdarray
             The end positions of matches
 
         Examples

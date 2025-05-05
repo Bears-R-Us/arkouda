@@ -338,7 +338,7 @@ class Index:
 
         Returns
         -------
-        bool
+        bool_scalars
             True if the Indexes are the same, o.w. False.
 
         Examples

@@ -922,7 +922,7 @@ def arange(*args, **kwargs) -> pdarray:
 
     Returns
     -------
-    pdarray, dtype
+    pdarray
         Integers from start (inclusive) to stop (exclusive) by stride
 
     Raises
@@ -1040,7 +1040,7 @@ def linspace(start: numeric_scalars, stop: numeric_scalars, length: int_scalars)
 
     Returns
     -------
-    pdarray, float64
+    pdarray
         Array of evenly spaced float values along the interval
 
     Raises
@@ -1163,7 +1163,7 @@ def uniform(
 
     Returns
     -------
-    pdarray, float64
+    pdarray
         Values drawn uniformly from the specified range
 
     Raises
@@ -1204,7 +1204,7 @@ def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) ->
 
     Returns
     -------
-    pdarray, float64
+    pdarray
         The array of random numbers
 
     Raises

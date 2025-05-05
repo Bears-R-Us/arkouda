@@ -53,10 +53,11 @@ def join_on_eq_with_dt(
 
     Returns
     -------
-    result_array_one : pdarray, int64
-        a1 indices where a1 == a2
-    result_array_one : pdarray, int64
-        a2 indices where a2 == a1
+    Tuple[pdarray, pdarray]
+        result_array_one : pdarray, int64
+            a1 indices where a1 == a2
+        result_array_one : pdarray, int64
+            a2 indices where a2 == a1
 
     Raises
     ------
@@ -80,7 +81,7 @@ def join_on_eq_with_dt(
     if not (t2.dtype == akint64):
         raise ValueError("t2 must be int64 dtype")
 
-    if not (pred in predicates.keys()):
+    if pred not in predicates.keys():
         raise ValueError(f"pred must be one of {predicates.keys()}")
 
     if result_limit < 0:
@@ -135,12 +136,13 @@ def gen_ranges(starts, ends, stride=1, return_lengths=False):
 
     Returns
     -------
-    segments : pdarray, int64
-        The starting index of each range in the resulting array
-    ranges : pdarray, int64
-        The actual ranges, flattened into a single array
-    lengths : pdarray, int64
-        The lengths of each segment. Only returned if return_lengths=True.
+    pdarray|int64, pdarray|int64, pdarray|int64
+        segments : pdarray, int64
+            The starting index of each range in the resulting array
+        ranges : pdarray, int64
+            The actual ranges, flattened into a single array
+        lengths : pdarray, int64
+            The lengths of each segment. Only returned if return_lengths=True.
 
     """
     if starts.size != ends.size:
@@ -220,10 +222,11 @@ def inner_join(
 
     Returns
     -------
-    leftInds : pdarray(int64)
-        The left indices of pairs that meet the join condition
-    rightInds : pdarray(int64)
-        The right indices of pairs that meet the join condition
+    Tuple[pdarray, pdarray]
+        leftInds : pdarray(int64)
+            The left indices of pairs that meet the join condition
+        rightInds : pdarray(int64)
+            The right indices of pairs that meet the join condition
 
     Notes
     -----
@@ -239,8 +242,8 @@ def inner_join(
 
     # Reduce processing to codes to prevent groupby on entire Categorical
     if isinstance(left, Categorical) and isinstance(right, Categorical):
-        l, r = Categorical.standardize_categories([left, right])
-        left, right = l.codes, r.codes
+        lft, r = Categorical.standardize_categories([left, right])
+        left, right = lft.codes, r.codes
 
     if is_sequence:
         if len(left) != len(right):

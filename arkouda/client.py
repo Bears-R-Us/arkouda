@@ -808,10 +808,9 @@ def _start_tunnel(addr: str, tunnel_server: str) -> Tuple[str, object]:
 
     Returns
     -------
-    str
-        The new tunneled-version of connect string
-    object
-        The ssh tunnel object
+    Tuple[str, object]
+        str: The new tunneled-version of connect string
+        object: The ssh tunnel object
 
     Raises
     ------

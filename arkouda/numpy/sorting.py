@@ -51,7 +51,7 @@ def argsort(
 
     Returns
     -------
-    pdarray of int64
+    pdarray
         The indices such that ``pda[indices]`` is sorted
 
     Raises
@@ -139,7 +139,7 @@ def coargsort(
 
     Returns
     -------
-    pdarray of int64
+    pdarray
         The indices that permute the rows to grouped order
 
     Raises
@@ -244,7 +244,7 @@ def sort(
 
     Returns
     -------
-    pdarray of int64, uint64, or float64
+    pdarray
         The sorted copy of pda
 
     Raises

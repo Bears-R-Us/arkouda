@@ -88,10 +88,11 @@ def right_align(left, right):
 
     Returns
     -------
-    keep : pdarray, bool
-        Logical index of left-hand values that survived
-    aligned : (pdarray, pdarray)
-        Left and right arrays with values replaced by 0-up indices
+    pdarray, (pdarray, pdarray)
+        keep : pdarray, bool
+            Logical index of left-hand values that survived
+        aligned : (pdarray, pdarray)
+            Left and right arrays with values replaced by 0-up indices
 
     """
     is_sequence = isinstance(left, Sequence) and isinstance(right, Sequence)

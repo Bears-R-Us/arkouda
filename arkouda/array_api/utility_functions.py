@@ -105,7 +105,7 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
 
     Returns
     -------
-    diff : ndarray
+    Array
         The n-th differences. The shape of the output is the same as `a`
         except along `axis` where the dimension is smaller by `n`. The
         type of the output is the same as the type of the difference
@@ -200,7 +200,7 @@ def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: 
 
     Returns
     -------
-    trapezoid : float or pdarray
+    Array
         Definite integral of `y` = n-dimensional array as approximated along
         a single axis by the trapezoidal rule. If `y` is a 1-dimensional array,
         then the result is a float. If `n` is greater than 1, then the result

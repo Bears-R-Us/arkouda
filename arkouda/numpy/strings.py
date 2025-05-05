@@ -381,7 +381,7 @@ class Strings:
 
         Returns
         -------
-        bool
+        bool_scalars
             True if the Strings are the same, o.w. False.
 
         Examples
@@ -411,7 +411,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, int
+        pdarray
             The length of each string
 
         Raises
@@ -429,7 +429,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, uint8
+        pdarray
             Pdarray of bytes of the string accessed
 
         Example
@@ -454,7 +454,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, int64
+        pdarray
             Pdarray of offsets of the string accessed
 
         Example
@@ -664,7 +664,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that are decimals, False otherwise
 
         Raises
@@ -746,7 +746,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that are entirely lowercase, False otherwise
 
         Raises
@@ -782,7 +782,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that are entirely uppercase, False otherwise
 
         Raises
@@ -818,7 +818,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that are titlecase, False otherwise
 
         Raises
@@ -855,7 +855,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that are alphanumeric, False otherwise
 
         Raises
@@ -894,7 +894,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that are alphabetic, False otherwise
 
         Raises
@@ -933,7 +933,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that are digits, False otherwise
 
         Raises
@@ -982,7 +982,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that are digits, False otherwise
 
         Raises
@@ -1020,7 +1020,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that are whitespace, False otherwise
 
         Raises
@@ -1150,12 +1150,13 @@ class Strings:
 
         Returns
         -------
-        pdarray, int64
-            For each original string, the number of pattern matches
-        pdarray, int64
-            The start positons of pattern matches
-        pdarray, int64
-            The lengths of pattern matches
+        Tuple[pdarray, pdarray, pdarray]
+            pdarray, int64
+                For each original string, the number of pattern matches
+            pdarray, int64
+                The start positons of pattern matches
+            pdarray, int64
+                The lengths of pattern matches
 
         Raises
         ------
@@ -1284,11 +1285,12 @@ class Strings:
 
         Returns
         -------
-        Strings
-            Substrings with pattern matches removed
-        pdarray, int64 (optional)
-            For each original string, the index of first corresponding substring
-            in the return array
+        Union[Strings, Tuple]
+            Strings
+                Substrings with pattern matches removed
+            pdarray, int64 (optional)
+                For each original string, the index of first corresponding substring
+                in the return array
 
         Examples
         --------
@@ -1315,10 +1317,11 @@ class Strings:
 
         Returns
         -------
-        Strings
-            Strings object containing only pattern matches
-        pdarray, int64 (optional)
-            The index of the original string each pattern match is from
+        Union[Strings, Tuple]
+            Strings
+                Strings object containing only pattern matches
+            pdarray, int64 (optional)
+                The index of the original string each pattern match is from
 
         Raises
         ------
@@ -1391,7 +1394,7 @@ class Strings:
     @typechecked()
     def subn(
         self, pattern: Union[bytes, str_scalars], repl: Union[bytes, str_scalars], count: int = 0
-    ) -> Tuple:
+    ) -> Tuple[Strings, pdarray]:
         """
         Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions)
 
@@ -1407,10 +1410,11 @@ class Strings:
 
         Returns
         -------
-        Strings
-            Strings with pattern matches replaced
-        pdarray, int64
-            The number of substitutions made for each element of Strings
+        Tuple[Strings, pdarray]
+            Strings
+                Strings with pattern matches replaced
+            pdarray, int64
+                The number of substitutions made for each element of Strings
 
         Raises
         ------
@@ -1451,7 +1455,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that contain substr, False otherwise
 
         Raises
@@ -1508,7 +1512,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that start with substr, False otherwise
 
         Raises
@@ -1564,7 +1568,7 @@ class Strings:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that end with substr, False otherwise
 
         Raises
@@ -1619,11 +1623,12 @@ class Strings:
 
         Returns
         -------
-        Strings
-            Flattened substrings with delimiters removed
-        pdarray, int64 (optional)
-            For each original string, the index of first corresponding substring
-            in the return array
+        Union[Strings, Tuple]
+            Strings
+                Flattened substrings with delimiters removed
+            pdarray, int64 (optional)
+                For each original string, the index of first corresponding substring
+                in the return array
 
         See Also
         --------
@@ -1981,12 +1986,13 @@ class Strings:
 
         Returns
         -------
-        prefixes : Strings
-            The array of n-character prefixes; the number of elements is the number of
-            True values in the returned mask.
-        origin_indices : pdarray, bool
-            Boolean array that is True where the string was long enough to return
-            an n-character prefix, False otherwise.
+        Union[Strings, Tuple[Strings, pdarray]]
+            prefixes : Strings
+                The array of n-character prefixes; the number of elements is the number of
+                True values in the returned mask.
+            origin_indices : pdarray, bool
+                Boolean array that is True where the string was long enough to return
+                an n-character prefix, False otherwise.
         """
         repMsg = cast(
             str,
@@ -2030,12 +2036,13 @@ class Strings:
 
         Returns
         -------
-        suffixes : Strings
-            The array of n-character suffixes; the number of elements is the number of
-            True values in the returned mask.
-        origin_indices : pdarray, bool
-            Boolean array that is True where the string was long enough to return
-            an n-character suffix, False otherwise.
+        Union[Strings, Tuple[Strings, pdarray]]
+            suffixes : Strings
+                The array of n-character suffixes; the number of elements is the number of
+                True values in the returned mask.
+            origin_indices : pdarray, bool
+                Boolean array that is True where the string was long enough to return
+                an n-character suffix, False otherwise.
         """
         repMsg = cast(
             str,
@@ -2187,7 +2194,7 @@ class Strings:
             res[i] = np.str_(codecs.decode(b"".join(npvalues[o : o + ln])))
         return res
 
-    def to_list(self) -> Any:
+    def to_list(self) -> List[str]:
         """
         Convert the SegString to a list, transferring data from the
         arkouda server to Python. If the SegString exceeds a built-in size limit,
@@ -2195,7 +2202,7 @@ class Strings:
 
         Returns
         -------
-        list
+        List[str]
             A list with the same strings as this SegString
 
         Notes
@@ -2220,7 +2227,7 @@ class Strings:
         >>> type(a.to_list())
         <class 'list'>
         """
-        return self.to_ndarray().tolist()
+        return cast(List[str], self.to_ndarray().tolist())
 
     def _comp_to_ndarray(self, comp: str) -> np.ndarray:
         """
@@ -2300,7 +2307,7 @@ class Strings:
 
         Returns
         -------
-        ak.pdarray
+        pdarray
             An arkouda pdarray with values converted to the specified data type
 
         Notes
@@ -2334,9 +2341,12 @@ class Strings:
             If 'append', attempt to create new dataset in existing files.
         compression : {"snappy", "gzip", "brotli", "zstd", "lz4"}, optional
             Sets the compression type used with Parquet files
+
         Returns
         -------
-        string message indicating result of save operation
+        str
+            string message indicating result of save operation
+
         Raises
         ------
         RuntimeError
@@ -2405,7 +2415,8 @@ class Strings:
 
         Returns
         -------
-        String message indicating result of save operation
+        str
+            String message indicating result of save operation
 
         Raises
         ------
@@ -2482,7 +2493,8 @@ class Strings:
 
         Returns
         --------
-        str - success message if successful
+        str
+            success message if successful
 
         Raises
         -------
@@ -2635,6 +2647,7 @@ class Strings:
         Returns
         -------
         None
+
         """
         self.entry.pretty_print_info()
 
@@ -2774,7 +2787,8 @@ class Strings:
 
         Returns
         -------
-        A message indicating a complete transfer
+        str
+            A message indicating a complete transfer
 
         Raises
         ------
