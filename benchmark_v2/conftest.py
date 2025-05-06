@@ -34,6 +34,16 @@ def pytest_addoption(parser):
         help="arkouda server port",
     )
 
+    default_nl = get_arkouda_numlocales()
+    parser.addoption(
+        "--nl",
+        action="store",
+        default=default_nl,
+        help="Number of Locales to run Arkouda with."
+        "Defaults ARKOUDA_NUMLOCALES, if set, otherwise 2. "
+        "If Arkouda is not configured for multi_locale, 1 locale is used.",
+    )
+
     default_running_mode = os.getenv("ARKOUDA_RUNNING_MODE", "CLASS_SERVER")
     parser.addoption(
         "--running_mode",
@@ -190,6 +200,7 @@ def pytest_addoption(parser):
 def pytest_configure(config):
     pytest.host = config.getoption("host")
     pytest.port = config.getoption("port")
+    pytest.nl = config.getoption("nl")
     pytest.running_mode = TestRunningMode(config.getoption("running_mode"))
     pytest.verbose = config.getoption("verbose")
     pytest.timeout = config.getoption("timeout")
@@ -230,7 +241,7 @@ def startup_teardown():
         raise EnvironmentError("pytest and pytest-env must be installed")
     if TestRunningMode.CLASS_SERVER == pytest.running_mode:
         try:
-            nl = get_arkouda_numlocales()
+            nl = pytest.nl
             server_host, server_port, process_handle = start_arkouda_server(
                 host=pytest.host, numlocales=nl, port=pytest.port
             )
