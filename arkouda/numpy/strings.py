@@ -2183,8 +2183,8 @@ class Strings:
         dt = f"<U{lengths.max() if len(lengths) > 0 else 1}"
         res = np.empty(self.size, dtype=dt)
         # Form a string from each segment and store in numpy array
-        for i, (o, l) in enumerate(zip(npoffsets, lengths)):
-            res[i] = np.str_(codecs.decode(b"".join(npvalues[o : o + l])))
+        for i, (o, ln) in enumerate(zip(npoffsets, lengths)):
+            res[i] = np.str_(codecs.decode(b"".join(npvalues[o : o + ln])))
         return res
 
     def to_list(self) -> Any:
@@ -2789,3 +2789,36 @@ class Strings:
             cmd="sendArray",
             args={"values": self.entry, "hostname": hostname, "port": port, "objType": "strings"},
         )
+
+    @staticmethod
+    def concatenate_uniquely(strings: List[Strings]) -> Strings:
+        """
+        Concatenates a list of Strings into a single Strings object
+        containing only unique strings. Order may not be preserved.
+
+        Parameters
+        ----------
+        strings : List[Strings]
+            List of segmented string objects to concatenate.
+
+        Returns
+        -------
+        Strings
+            A new Strings object containing the unique values.
+        """
+
+        if not strings:
+            raise ValueError("Must provide at least one Strings object")
+
+        # Extract name of each SegmentedString
+        names = [s.name for s in strings]
+
+        # Send the command to the server
+        rep_msg = generic_msg(
+            cmd="concatenateUniquely",
+            args={
+                "names": names,
+            },
+        )
+
+        return Strings.from_return_msg(cast(str, rep_msg))

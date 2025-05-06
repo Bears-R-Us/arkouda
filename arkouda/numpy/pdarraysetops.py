@@ -458,7 +458,6 @@ def concatenate(
         repMsg = generic_msg(
             cmd=f"concatenate<{akdtype(dtype_).name},{arrays[0].ndim}>",
             args={
-                "n": len(arrays),
                 "names": list(arrays),
                 "axis": 0,
                 "offsets": offsets,
@@ -472,7 +471,6 @@ def concatenate(
         repMsg = generic_msg(
             cmd="concatenateStr",
             args={
-                "nstr": len(arrays),
                 "objType": objtype,
                 "names": names,
                 "mode": mode,
