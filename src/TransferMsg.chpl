@@ -67,7 +67,7 @@ module TransferMsg
           var gCode: borrowed GenSymEntry = getGenericTypedArrayEntry(codes_name, st);
           var codes = toSymEntry(gCode, int);
 
-          var cat_entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(categories_name));
+          var cat_entry:SegStringSymEntry = toSegStringSymEntry(st[categories_name]);
           var cats = new SegString("", cat_entry);
 
           var nCode: borrowed GenSymEntry = getGenericTypedArrayEntry(nacodes_name, st);
@@ -96,7 +96,7 @@ module TransferMsg
           }
         }
         else if ele_parts[0] == "Strings"{
-          var entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(ele_parts[2]));
+          var entry:SegStringSymEntry = toSegStringSymEntry(st[ele_parts[2]]);
           var segString = new SegString("", entry);
 
           {
@@ -152,7 +152,7 @@ module TransferMsg
           ref segments_name = ele_parts[2];
           ref values_name = ele_parts[3];
 
-          var segments = toSymEntry(toGenSymEntry(st.lookup(segments_name)), int);
+          var segments = toSymEntry(toGenSymEntry(st[segments_name]), int);
           
           //var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
           var gVal: borrowed GenSymEntry = getGenericTypedArrayEntry(values_name, st);
@@ -440,13 +440,13 @@ module TransferMsg
       var hostname = msgArgs.getValueOf("hostname");
       var port = msgArgs.getValueOf("port");
       
-      var codes_entry = st.lookup(msgArgs.getValueOf("codes"));
+      var codes_entry = st[msgArgs.getValueOf("codes")];
       var codes = toSymEntry(toGenSymEntry(codes_entry), int);
       
-      var cat_entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(msgArgs.getValueOf("categories")));
+      var cat_entry:SegStringSymEntry = toSegStringSymEntry(st[msgArgs.getValueOf("categories")]);
       var cats = new SegString("", cat_entry);
       
-      var naCodes_entry = st.lookup(msgArgs.getValueOf("NA_codes"));
+      var naCodes_entry = st[msgArgs.getValueOf("NA_codes")];
       var naCodes = toSymEntry(toGenSymEntry(naCodes_entry), int);
 
       var localeCount = receiveLocaleCount(hostname, port:string);
@@ -479,7 +479,7 @@ module TransferMsg
       var hostname = msgArgs.getValueOf("hostname");
       var port = msgArgs.getValueOf("port");
       
-      var entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(msgArgs.getValueOf("values")));
+      var entry:SegStringSymEntry = toSegStringSymEntry(st[msgArgs.getValueOf("values")]);
       var segString = new SegString("", entry);
       // get locale count so that we can chunk data
       var localeCount = receiveLocaleCount(hostname, port:string);
@@ -506,7 +506,7 @@ module TransferMsg
       // get locale count so that we can chunk data
       var localeCount = receiveLocaleCount(hostname, port:string);
 
-      var segments = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("segments"))), int);
+      var segments = toSymEntry(toGenSymEntry(st[msgArgs.getValueOf("segments")]), int);
 
       proc sendSegArray(values, localeCount, port, hostname) throws {
         {
@@ -524,19 +524,19 @@ module TransferMsg
       
       select dType {
         when (DType.Int64) {
-          var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), int);
+          var values = toSymEntry(toGenSymEntry(st[msgArgs.getValueOf("values")]), int);
 
           sendSegArray(values, localeCount, port, hostname);
         } when (DType.UInt64) {
-          var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), uint);
+          var values = toSymEntry(toGenSymEntry(st[msgArgs.getValueOf("values")]), uint);
           
           sendSegArray(values, localeCount, port, hostname);
         } when (DType.Float64) {
-          var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), real);
+          var values = toSymEntry(toGenSymEntry(st[msgArgs.getValueOf("values")]), real);
 
           sendSegArray(values, localeCount, port, hostname);
         } when (DType.Bool) {
-          var values = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("values"))), bool);
+          var values = toSymEntry(toGenSymEntry(st[msgArgs.getValueOf("values")]), bool);
           
           sendSegArray(values, localeCount, port, hostname);
         }

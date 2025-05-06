@@ -76,7 +76,7 @@ module RegistrationMsg {
                 when ObjType.SEGARRAY {
                     var comps = jsonToMap(c);
 
-                    var gse = toGenSymEntry(st.lookup(comps["values"]));
+                    var gse = toGenSymEntry(st[comps["values"]]);
                     var val_type: ObjType = if gse.dtype == DType.Strings then ObjType.STRINGS else ObjType.PDARRAY;
                     var vre = new shared ArrayRegEntry(comps["values"], val_type);
 

@@ -207,20 +207,6 @@ module MultiTypeSymbolTable
             for n in tab.keysToArray() { deleteEntry(n); }
         }
 
-
-        /**
-         * Returns the AbstractSymEntry associated with the provided name, if the AbstractSymEntry exists
-         * :arg name: string to index/query in the sym table
-         * :type name: string
-
-         * :returns: AbstractSymEntry or throws on error
-         * :throws: `unkownSymbolError(name)`
-         */
-        // deprecated
-        proc lookup(name: string): borrowed AbstractSymEntry throws {
-            return this[name];
-        }
-
         /*
           Get a symbol from the table. Throw an error if the symbol is not found.
         */
@@ -535,7 +521,7 @@ module MultiTypeSymbolTable
      * You can pass a logger from the calling function for better error reporting.
      */
     proc getGenericTypedArrayEntry(name:string, st: borrowed SymTab): borrowed GenSymEntry throws {
-        var abstractEntry = st.lookup(name);
+        var abstractEntry = st[name];
         if ! abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
             var errorMsg = "Error: SymbolEntryType %s is not assignable to GenSymEntry".format(abstractEntry.entryType);
             mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -554,7 +540,7 @@ module MultiTypeSymbolTable
      * You can pass a logger from the calling function for better error reporting.
      */
     proc getSegStringEntry(name:string, st: borrowed SymTab): borrowed SegStringSymEntry throws {
-        var abstractEntry = st.lookup(name);
+        var abstractEntry = st[name];
         if ! abstractEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
             var errorMsg = "Error: SymbolEntryType %s is not assignable to SegStringSymEntry".format(abstractEntry.entryType);
             mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -569,7 +555,7 @@ module MultiTypeSymbolTable
      * You can pass a logger from the calling function for better error reporting.
      */
     proc getGenericSparseArrayEntry(name:string, st: borrowed SymTab): borrowed GenSparseSymEntry throws {
-        var abstractEntry = st.lookup(name);
+        var abstractEntry = st[name];
         if ! abstractEntry.isAssignableTo(SymbolEntryType.SparseSymEntry) {
             var errorMsg = "Error: SymbolEntryType %s is not assignable to GenSparseSymEntry".format(abstractEntry.entryType);
             mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

@@ -272,12 +272,12 @@ module HDF5Msg {
         // currently only used to handle index distribution
         select objType {
             when ObjType.PDARRAY, ObjType.STRINGS {
-                var gse = toGenSymEntry(st.lookup(name));
+                var gse = toGenSymEntry(st[name]);
                 return prepFiles(filename, mode, gse);
             }
             when ObjType.CATEGORICAL {
                 var cat_comps = jsonToMap(name);
-                var gse = toGenSymEntry(st.lookup(cat_comps["codes"]));
+                var gse = toGenSymEntry(st[cat_comps["codes"]]);
                 return prepFiles(filename, mode, gse);
             }
             otherwise {
@@ -766,7 +766,7 @@ module HDF5Msg {
         var mode: int = msgArgs.get("write_mode").getIntValue();
 
         var filename: string = msgArgs.getValueOf("filename");
-        var entry = st.lookup(msgArgs.getValueOf("values"));
+        var entry = st[msgArgs.getValueOf("values")];
         var file_format = msgArgs.get("file_format").getIntValue();
         var overwrite: bool = if msgArgs.contains("overwrite")
                                 then msgArgs.get("overwrite").getBoolValue()
@@ -1023,7 +1023,7 @@ module HDF5Msg {
                                 then msgArgs.get("overwrite").getBoolValue()
                                 else false;
 
-        var entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(msgArgs.getValueOf("values")));
+        var entry:SegStringSymEntry = toSegStringSymEntry(st[msgArgs.getValueOf("values")]);
         var segString = new SegString("", entry);
 
         const objType = msgArgs.getValueOf("objType");
@@ -1282,8 +1282,8 @@ module HDF5Msg {
         const objType = msgArgs.getValueOf("objType");
 
         // segments is always int64
-        var segments = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("segments"))), int);
-        var valEnt = toGenSymEntry(st.lookup(msgArgs.getValueOf("values")));
+        var segments = toSymEntry(toGenSymEntry(st[msgArgs.getValueOf("segments")]), int);
+        var valEnt = toGenSymEntry(st[msgArgs.getValueOf("values")]);
 
         select file_format {
             when SINGLE_FILE {
@@ -1425,14 +1425,14 @@ module HDF5Msg {
     }
 
     proc writeLocalCategoricalOptionalData(file_id: C_HDF5.hid_t, group: string, permutation: string, segments: string, st: borrowed SymTab) throws {
-        var perm_entry = st.lookup(permutation);
+        var perm_entry = st[permutation];
         var perm = toSymEntry(toGenSymEntry(perm_entry), int);
 
         // localize permutation and write dataset
         var localPerm: [0..#perm.size] int = perm.a;
         writeLocalDset(file_id, "/%s/%s".format(group, PERMUTATION_NAME), c_ptrTo(localPerm), perm.size, int);
 
-        var segment_entry = st.lookup(segments);
+        var segment_entry = st[segments];
         var segs = toSymEntry(toGenSymEntry(segment_entry), int);
 
         // localize segments and write dataset
@@ -1454,11 +1454,11 @@ module HDF5Msg {
                                 else false;
 
         // access entries - types are currently always the same for each
-        var codes_entry = st.lookup(msgArgs.getValueOf("codes"));
+        var codes_entry = st[msgArgs.getValueOf("codes")];
         var codes = toSymEntry(toGenSymEntry(codes_entry), int);
-        var cat_entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(msgArgs.getValueOf("categories")));
+        var cat_entry:SegStringSymEntry = toSegStringSymEntry(st[msgArgs.getValueOf("categories")]);
         var cats = new SegString("", cat_entry);
-        var naCodes_entry = st.lookup(msgArgs.getValueOf("NA_codes"));
+        var naCodes_entry = st[msgArgs.getValueOf("NA_codes")];
         var naCodes = toSymEntry(toGenSymEntry(naCodes_entry), int);
         var perm_seg_exist: bool = false;
         if msgArgs.contains("permutation") && msgArgs.contains("segments") {
@@ -1522,9 +1522,9 @@ module HDF5Msg {
 
                 // writes perms and segs if they exist
                 if perm_seg_exist {
-                    var perm_entry = st.lookup(msgArgs.getValueOf("permutation"));
+                    var perm_entry = st[msgArgs.getValueOf("permutation")];
                     var perm = toSymEntry(toGenSymEntry(perm_entry), int);
-                    var segment_entry = st.lookup(msgArgs.getValueOf("segments"));
+                    var segment_entry = st[msgArgs.getValueOf("segments")];
                     var segs = toSymEntry(toGenSymEntry(segment_entry), int);
                     writeDistDset(filenames, "/%s/%s".format(group, PERMUTATION_NAME), "pdarray", overwrite, perm.a, st);
                     writeDistDset(filenames, "/%s/%s".format(group, SEGMENTS_NAME), "pdarray", overwrite, segs.a, st);
@@ -1555,11 +1555,11 @@ module HDF5Msg {
         const objType = msgArgs.getValueOf("objType").toUpper(): ObjType; // needed to write metadata
 
         // access the permutation and segments pdarrays because these are always int
-        var seg_entry = st.lookup(msgArgs.getValueOf("segments"));
+        var seg_entry = st[msgArgs.getValueOf("segments")];
         var segments = toSymEntry(toGenSymEntry(seg_entry), int);
-        var perm_entry = st.lookup(msgArgs.getValueOf("permutation"));
+        var perm_entry = st[msgArgs.getValueOf("permutation")];
         var perm = toSymEntry(toGenSymEntry(perm_entry), int);
-        var uki_entry = st.lookup(msgArgs.getValueOf("unique_key_idx"));
+        var uki_entry = st[msgArgs.getValueOf("unique_key_idx")];
         var uki = toSymEntry(toGenSymEntry(uki_entry), int);
 
         // access groupby key information
@@ -1605,7 +1605,7 @@ module HDF5Msg {
                             var dtype: C_HDF5.hid_t;
                             select str2dtype(dt) {
                                 when DType.Int64 {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), int);
 
                                     // localize permutation and write dataset
@@ -1614,7 +1614,7 @@ module HDF5Msg {
                                     dtype = getDataType(int);
                                 }
                                 when DType.UInt64 {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), uint);
 
                                     // localize permutation and write dataset
@@ -1623,7 +1623,7 @@ module HDF5Msg {
                                     dtype = getDataType(uint);
                                 }
                                 when DType.Float64 {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), real);
 
                                     // localize permutation and write dataset
@@ -1632,7 +1632,7 @@ module HDF5Msg {
                                     dtype = getDataType(real);
                                 }
                                 when DType.Bool {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), bool);
 
                                     // localize permutation and write dataset
@@ -1641,7 +1641,7 @@ module HDF5Msg {
                                     dtype = C_HDF5.H5T_NATIVE_HBOOL;
                                 }
                                 when DType.BigInt {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), bigint);
                                     var limbs = bigintToUint(key);
 
@@ -1672,7 +1672,7 @@ module HDF5Msg {
                         when ObjType.STRINGS {
                             // create/overwrite the group
                             validateGroup(file_id, f, "%s/KEY_%i".format(group, i), overwrite);
-                            var key_entry: SegStringSymEntry = toSegStringSymEntry(st.lookup(name));
+                            var key_entry: SegStringSymEntry = toSegStringSymEntry(st[name]);
                             var key = new SegString("", key_entry);
                             writeSegmentedLocalDset(file_id, "/%s/KEY_%i".format(group, i), key.values, key.offsets, true, uint(8));
                             writeArkoudaMetaData(file_id, "/%s/KEY_%i".format(group, i), "Strings", getHDF5Type(uint(8)));
@@ -1681,11 +1681,11 @@ module HDF5Msg {
                             // create/overwrite the group
                             validateGroup(file_id, f, "%s/KEY_%i".format(group, i), overwrite);
                             var cat_comps = jsonToMap(name);
-                            var codes_entry = st.lookup(cat_comps["codes"]);
+                            var codes_entry = st[cat_comps["codes"]];
                             var codes = toSymEntry(toGenSymEntry(codes_entry), int);
-                            var cat_entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(cat_comps["categories"]));
+                            var cat_entry:SegStringSymEntry = toSegStringSymEntry(st[cat_comps["categories"]]);
                             var cats = new SegString("", cat_entry);
-                            var naCodes_entry = st.lookup(cat_comps["NA_codes"]);
+                            var naCodes_entry = st[cat_comps["NA_codes"]];
                             var naCodes = toSymEntry(toGenSymEntry(naCodes_entry), int);
                             writeLocalCategoricalRequiredData(file_id, f, "%s/KEY_%i".format(group, i), codes, cats, naCodes, overwrite);
 
@@ -1741,7 +1741,7 @@ module HDF5Msg {
                 for (i, name, ot, dt) in zip(0..#num_keys, key_names, key_objTypes, key_dtypes) {
                     select ot.toUpper(): ObjType {
                         when ObjType.PDARRAY {
-                            var entry = st.lookup(name);
+                            var entry = st[name];
                             select str2dtype(dt) {
                                 when DType.Int64 {
                                     var e = toSymEntry(toGenSymEntry(entry), int);
@@ -1799,7 +1799,7 @@ module HDF5Msg {
                             }
                         }
                         when ObjType.STRINGS {
-                            var entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(name));
+                            var entry:SegStringSymEntry = toSegStringSymEntry(st[name]);
                             var segString = new SegString("", entry);
                             var valEntry = segString.values;
                             var segEntry = segString.offsets;
@@ -1807,11 +1807,11 @@ module HDF5Msg {
                         }
                         when ObjType.CATEGORICAL {
                             var cat_comps = jsonToMap(name);
-                            var codes_entry = st.lookup(cat_comps["codes"]);
+                            var codes_entry = st[cat_comps["codes"]];
                             var codes = toSymEntry(toGenSymEntry(codes_entry), int);
-                            var cat_entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(cat_comps["categories"]));
+                            var cat_entry:SegStringSymEntry = toSegStringSymEntry(st[cat_comps["categories"]]);
                             var cats = new SegString("", cat_entry);
-                            var naCodes_entry = st.lookup(cat_comps["NA_codes"]);
+                            var naCodes_entry = st[cat_comps["NA_codes"]];
                             var naCodes = toSymEntry(toGenSymEntry(naCodes_entry), int);
 
                             // need to add the group to all files
@@ -1838,9 +1838,9 @@ module HDF5Msg {
 
                             // writes perms and segs if they exist
                             if cat_comps.contains["permutation"] && cat_comps.contains["segments"] {
-                                var cat_perm_entry = st.lookup(cat_comps["permutation"]);
+                                var cat_perm_entry = st[cat_comps["permutation"]];
                                 var cat_perm = toSymEntry(toGenSymEntry(cat_perm_entry), int);
-                                var segment_entry = st.lookup(cat_comps["segments"]);
+                                var segment_entry = st[cat_comps["segments"]];
                                 var segs = toSymEntry(toGenSymEntry(segment_entry), int);
                                 writeDistDset(filenames, "/%s/KEY_%i/%s".format(group, i, PERMUTATION_NAME), "pdarray", overwrite, cat_perm.a, st);
                                 writeDistDset(filenames, "/%s/KEY_%i/%s".format(group, i, SEGMENTS_NAME), "pdarray", overwrite, segs.a, st);
@@ -1887,7 +1887,7 @@ module HDF5Msg {
         var col_dtypes = msgArgs.get("column_dtypes").getList(num_cols);
         var col_names = msgArgs.get("columns").getList(num_cols); // names of the pdarrays/objects 
 
-        var idx_entry = st.lookup(msgArgs.getValueOf("index"));
+        var idx_entry = st[msgArgs.getValueOf("index")];
         var idx_gen = toGenSymEntry(idx_entry);
 
         select file_format {
@@ -1952,7 +1952,7 @@ module HDF5Msg {
                             var dtype: C_HDF5.hid_t;
                             select str2dtype(dt) {
                                 when DType.Int64 {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), int);
 
                                     // localize permutation and write dataset
@@ -1961,7 +1961,7 @@ module HDF5Msg {
                                     dtype = getDataType(int);
                                 }
                                 when DType.UInt64 {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), uint);
 
                                     // localize permutation and write dataset
@@ -1970,7 +1970,7 @@ module HDF5Msg {
                                     dtype = getDataType(uint);
                                 }
                                 when DType.Float64 {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), real);
 
                                     // localize permutation and write dataset
@@ -1979,7 +1979,7 @@ module HDF5Msg {
                                     dtype = getDataType(real);
                                 }
                                 when DType.Bool {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), bool);
 
                                     // localize permutation and write dataset
@@ -1988,7 +1988,7 @@ module HDF5Msg {
                                     dtype = getDataType(bool);
                                 }
                                 when DType.BigInt {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), bigint);
                                     var limbs = bigintToUint(key);
 
@@ -2019,7 +2019,7 @@ module HDF5Msg {
                         when ObjType.STRINGS {
                             // create/overwrite the group
                             validateGroup(file_id, f, "%s/%s".format(group, dset), overwrite);
-                            var key_entry: SegStringSymEntry = toSegStringSymEntry(st.lookup(name));
+                            var key_entry: SegStringSymEntry = toSegStringSymEntry(st[name]);
                             var key = new SegString("", key_entry);
                             writeSegmentedLocalDset(file_id, "/%s/%s".format(group, dset), key.values, key.offsets, true, uint(8));
                             writeArkoudaMetaData(file_id, "/%s/%s".format(group, dset), "Strings", getHDF5Type(uint(8)));
@@ -2028,11 +2028,11 @@ module HDF5Msg {
                             // create/overwrite the group
                             validateGroup(file_id, f, "%s/%s".format(group, dset), overwrite);
                             var cat_comps = jsonToMap(name);
-                            var codes_entry = st.lookup(cat_comps["codes"]);
+                            var codes_entry = st[cat_comps["codes"]];
                             var codes = toSymEntry(toGenSymEntry(codes_entry), int);
-                            var cat_entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(cat_comps["categories"]));
+                            var cat_entry:SegStringSymEntry = toSegStringSymEntry(st[cat_comps["categories"]]);
                             var cats = new SegString("", cat_entry);
-                            var naCodes_entry = st.lookup(cat_comps["NA_codes"]);
+                            var naCodes_entry = st[cat_comps["NA_codes"]];
                             var naCodes = toSymEntry(toGenSymEntry(naCodes_entry), int);
                             writeLocalCategoricalRequiredData(file_id, f, "%s/%s".format(group, dset), codes, cats, naCodes, overwrite);
 
@@ -2044,9 +2044,9 @@ module HDF5Msg {
                         when ObjType.SEGARRAY {
                             validateGroup(file_id, f, "%s/%s".format(group, dset), overwrite);
                             var sa_comps = jsonToMap(name);
-                            var segments = toSymEntry(toGenSymEntry(st.lookup(sa_comps["segments"])), int);
+                            var segments = toSymEntry(toGenSymEntry(st[sa_comps["segments"]]), int);
 
-                            var vals_entry = toGenSymEntry(st.lookup(sa_comps["values"]));
+                            var vals_entry = toGenSymEntry(st[sa_comps["values"]]);
                             var dtype: C_HDF5.hid_t;
                             select vals_entry.dtype {
                                 when DType.Int64 {
@@ -2168,7 +2168,7 @@ module HDF5Msg {
                 for (dset, name, ot, dt) in zip(dset_names, col_names, col_objTypes, col_dtypes) {
                     select ot.toUpper(): ObjType {
                         when ObjType.PDARRAY, ObjType.IPV4, ObjType.DATETIME, ObjType.TIMEDELTA {
-                            var entry = st.lookup(name);
+                            var entry = st[name];
                             select str2dtype(dt) {
                                 when DType.Int64 {
                                     var e = toSymEntry(toGenSymEntry(entry), int);
@@ -2226,7 +2226,7 @@ module HDF5Msg {
                             }
                         }
                         when ObjType.STRINGS {
-                            var entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(name));
+                            var entry:SegStringSymEntry = toSegStringSymEntry(st[name]);
                             var segString = new SegString("", entry);
                             var valEntry = segString.values;
                             var segEntry = segString.offsets;
@@ -2234,11 +2234,11 @@ module HDF5Msg {
                         }
                         when ObjType.CATEGORICAL {
                             var cat_comps = jsonToMap(name);
-                            var codes_entry = st.lookup(cat_comps["codes"]);
+                            var codes_entry = st[cat_comps["codes"]];
                             var codes = toSymEntry(toGenSymEntry(codes_entry), int);
-                            var cat_entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(cat_comps["categories"]));
+                            var cat_entry:SegStringSymEntry = toSegStringSymEntry(st[cat_comps["categories"]]);
                             var cats = new SegString("", cat_entry);
-                            var naCodes_entry = st.lookup(cat_comps["NA_codes"]);
+                            var naCodes_entry = st[cat_comps["NA_codes"]];
                             var naCodes = toSymEntry(toGenSymEntry(naCodes_entry), int);
 
                             // need to add the group to all files
@@ -2265,9 +2265,9 @@ module HDF5Msg {
 
                             // writes perms and segs if they exist
                             if cat_comps.contains["permutation"] && cat_comps.contains["segments"] {
-                                var cat_perm_entry = st.lookup(cat_comps["permutation"]);
+                                var cat_perm_entry = st[cat_comps["permutation"]];
                                 var cat_perm = toSymEntry(toGenSymEntry(cat_perm_entry), int);
-                                var segment_entry = st.lookup(cat_comps["segments"]);
+                                var segment_entry = st[cat_comps["segments"]];
                                 var segs = toSymEntry(toGenSymEntry(segment_entry), int);
                                 writeDistDset(filenames, "/%s/%s/%s".format(group, dset, PERMUTATION_NAME), "pdarray", overwrite, cat_perm.a, st);
                                 writeDistDset(filenames, "/%s/%s/%s".format(group, dset, SEGMENTS_NAME), "pdarray", overwrite, segs.a, st);
@@ -2275,9 +2275,9 @@ module HDF5Msg {
                         }
                         when ObjType.SEGARRAY {
                             var sa_comps = jsonToMap(name);
-                            var segments = toSymEntry(toGenSymEntry(st.lookup(sa_comps["segments"])), int);
+                            var segments = toSymEntry(toGenSymEntry(st[sa_comps["segments"]]), int);
 
-                            var vals_entry = toGenSymEntry(st.lookup(sa_comps["values"]));
+                            var vals_entry = toGenSymEntry(st[sa_comps["values"]]);
                             select vals_entry.dtype {
                                 when DType.Int64 {
                                     var values = toSymEntry(vals_entry, int);
@@ -2377,7 +2377,7 @@ module HDF5Msg {
                             var dtype: C_HDF5.hid_t;
                             select str2dtype(dt) {
                                 when DType.Int64 {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), int);
 
                                     // localize permutation and write dataset
@@ -2386,7 +2386,7 @@ module HDF5Msg {
                                     dtype = getDataType(int);
                                 }
                                 when DType.UInt64 {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), uint);
 
                                     // localize permutation and write dataset
@@ -2395,7 +2395,7 @@ module HDF5Msg {
                                     dtype = getDataType(uint);
                                 }
                                 when DType.Float64 {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), real);
 
                                     // localize permutation and write dataset
@@ -2404,7 +2404,7 @@ module HDF5Msg {
                                     dtype = getDataType(real);
                                 }
                                 when DType.Bool {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), bool);
 
                                     // localize permutation and write dataset
@@ -2413,7 +2413,7 @@ module HDF5Msg {
                                     dtype = getDataType(bool);
                                 }
                                 when DType.BigInt {
-                                    var key_entry = st.lookup(name);
+                                    var key_entry = st[name];
                                     var key = toSymEntry(toGenSymEntry(key_entry), bigint);
                                     var limbs = bigintToUint(key);
 
@@ -2443,7 +2443,7 @@ module HDF5Msg {
                         when ObjType.STRINGS {
                             // create/overwrite the group
                             validateGroup(file_id, f, "%s/IDX_%i".format(group, i), overwrite);
-                            var key_entry: SegStringSymEntry = toSegStringSymEntry(st.lookup(name));
+                            var key_entry: SegStringSymEntry = toSegStringSymEntry(st[name]);
                             var key = new SegString("", key_entry);
                             writeSegmentedLocalDset(file_id, "/%s/IDX_%i".format(group, i), key.values, key.offsets, true, uint(8));
                             writeArkoudaMetaData(file_id, "/%s/IDX_%i".format(group, i), "Strings", getHDF5Type(uint(8)));
@@ -2452,11 +2452,11 @@ module HDF5Msg {
                             // create/overwrite the group
                             validateGroup(file_id, f, "%s/IDX_%i".format(group, i), overwrite);
                             var cat_comps = jsonToMap(name);
-                            var codes_entry = st.lookup(cat_comps["codes"]);
+                            var codes_entry = st[cat_comps["codes"]];
                             var codes = toSymEntry(toGenSymEntry(codes_entry), int);
-                            var cat_entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(cat_comps["categories"]));
+                            var cat_entry:SegStringSymEntry = toSegStringSymEntry(st[cat_comps["categories"]]);
                             var cats = new SegString("", cat_entry);
-                            var naCodes_entry = st.lookup(cat_comps["NA_codes"]);
+                            var naCodes_entry = st[cat_comps["NA_codes"]];
                             var naCodes = toSymEntry(toGenSymEntry(naCodes_entry), int);
                             writeLocalCategoricalRequiredData(file_id, f, "%s/IDX_%i".format(group, i), codes, cats, naCodes, overwrite);
 
@@ -2499,7 +2499,7 @@ module HDF5Msg {
                 for (name, ot, dt, i) in zip(idx_names, idx_objTypes, idx_dtypes, 0..) {
                     select ot.toUpper(): ObjType {
                         when ObjType.PDARRAY {
-                            var entry = st.lookup(name);
+                            var entry = st[name];
                             select str2dtype(dt) {
                                 when DType.Int64 {
                                     var e = toSymEntry(toGenSymEntry(entry), int);
@@ -2557,7 +2557,7 @@ module HDF5Msg {
                             }
                         }
                         when ObjType.STRINGS {
-                            var entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(name));
+                            var entry:SegStringSymEntry = toSegStringSymEntry(st[name]);
                             var segString = new SegString("", entry);
                             var valEntry = segString.values;
                             var segEntry = segString.offsets;
@@ -2565,11 +2565,11 @@ module HDF5Msg {
                         }
                         when ObjType.CATEGORICAL {
                             var cat_comps = jsonToMap(name);
-                            var codes_entry = st.lookup(cat_comps["codes"]);
+                            var codes_entry = st[cat_comps["codes"]];
                             var codes = toSymEntry(toGenSymEntry(codes_entry), int);
-                            var cat_entry:SegStringSymEntry = toSegStringSymEntry(st.lookup(cat_comps["categories"]));
+                            var cat_entry:SegStringSymEntry = toSegStringSymEntry(st[cat_comps["categories"]]);
                             var cats = new SegString("", cat_entry);
-                            var naCodes_entry = st.lookup(cat_comps["NA_codes"]);
+                            var naCodes_entry = st[cat_comps["NA_codes"]];
                             var naCodes = toSymEntry(toGenSymEntry(naCodes_entry), int);
 
                             // need to add the group to all files
@@ -2596,9 +2596,9 @@ module HDF5Msg {
 
                             // writes perms and segs if they exist
                             if cat_comps.contains["permutation"] && cat_comps.contains["segments"] {
-                                var cat_perm_entry = st.lookup(cat_comps["permutation"]);
+                                var cat_perm_entry = st[cat_comps["permutation"]];
                                 var cat_perm = toSymEntry(toGenSymEntry(cat_perm_entry), int);
-                                var segment_entry = st.lookup(cat_comps["segments"]);
+                                var segment_entry = st[cat_comps["segments"]];
                                 var segs = toSymEntry(toGenSymEntry(segment_entry), int);
                                 writeDistDset(filenames, "/%s/IDX_%i/%s".format(group, i, PERMUTATION_NAME), "pdarray", overwrite, cat_perm.a, st);
                                 writeDistDset(filenames, "/%s/IDX_%i/%s".format(group, i, SEGMENTS_NAME), "pdarray", overwrite, segs.a, st);

@@ -1152,7 +1152,7 @@ module ParquetMsg {
   proc pdarray_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab): bool throws {
     var mode = msgArgs.get("mode").getIntValue();
     var filename: string = msgArgs.getValueOf("prefix");
-    var entry = st.lookup(msgArgs.getValueOf("values"));
+    var entry = st[msgArgs.getValueOf("values")];
     var dsetname = msgArgs.getValueOf("dset");
     var dataType = str2dtype(msgArgs.getValueOf("dtype"));
     var dtypestr = msgArgs.getValueOf("dtype");
@@ -1205,7 +1205,7 @@ module ParquetMsg {
   proc strings_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab): bool throws {
     var mode = msgArgs.get("mode").getIntValue();
     var filename: string = msgArgs.getValueOf("prefix");
-    var entry = st.lookup(msgArgs.getValueOf("values"));
+    var entry = st[msgArgs.getValueOf("values")];
     var dsetname = msgArgs.getValueOf("dset");
     var dataType = msgArgs.getValueOf("dtype");
     var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
@@ -1412,7 +1412,7 @@ module ParquetMsg {
   proc segarray_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab): bool throws {
     var mode = msgArgs.get("mode").getIntValue();
     var filename: string = msgArgs.getValueOf("prefix");
-    var entry = st.lookup(msgArgs.getValueOf("values"));
+    var entry = st[msgArgs.getValueOf("values")];
     var dsetname = msgArgs.getValueOf("dset");
     var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
 
@@ -1427,9 +1427,9 @@ module ParquetMsg {
     }
 
     // segments is always int64
-    var segments = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("segments"))), int);
+    var segments = toSymEntry(toGenSymEntry(st[msgArgs.getValueOf("segments")]), int);
 
-    var genVal = toGenSymEntry(st.lookup(msgArgs.getValueOf("values")));
+    var genVal = toGenSymEntry(st[msgArgs.getValueOf("values")]);
     
     var warnFlag: bool;
     select genVal.dtype {
@@ -1563,7 +1563,7 @@ module ParquetMsg {
         var objType = ot.toUpper(): ObjType;
 
         if objType == ObjType.STRINGS {
-          var entry = st.lookup(column);
+          var entry = st[column];
           var e: SegStringSymEntry = toSegStringSymEntry(entry);
           var segStr = new SegString("", e);
           ref ss = segStr;
@@ -1661,7 +1661,7 @@ module ParquetMsg {
 
         select ot.toUpper(): ObjType {
           when ObjType.STRINGS {
-            var entry = st.lookup(column);
+            var entry = st[column];
             var e: SegStringSymEntry = toSegStringSymEntry(entry);
             var segStr = new SegString("", e);
             ref ss = segStr;
@@ -1931,7 +1931,7 @@ module ParquetMsg {
     var targetLocales;
     select objType.toUpper(): ObjType {
       when ObjType.STRINGS {
-        var entry = st.lookup(name);
+        var entry = st[name];
         var e: SegStringSymEntry = toSegStringSymEntry(entry);
         var segStr = new SegString("", e);
         targetLocales = segStr.offsets.a.targetLocales();
@@ -1946,7 +1946,7 @@ module ParquetMsg {
         targetLocales = segments.a.targetLocales();
       }
       when ObjType.PDARRAY {
-        var entry = st.lookup(name);
+        var entry = st[name];
         var entryDtype = (entry: borrowed GenSymEntry).dtype;
         select entryDtype {
           when DType.Int64 {
