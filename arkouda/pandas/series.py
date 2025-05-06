@@ -1074,44 +1074,6 @@ class Series:
         unregister(self.registered_name)
         self.registered_name = None
 
-    @staticmethod
-    @typechecked
-    def attach(label: str, nkeys: int = 1) -> Series:
-        """
-        Retrieve a Series previously registered in Arkouda.
-
-        Deprecated
-        ----------
-        Use `ak.attach(label)` instead.
-
-        Parameters
-        ----------
-        label : str
-            The name under which the Series was registered.
-        nkeys : int, optional
-            The number of index keys if a MultiIndex was registered. Default is 1.
-
-        Returns
-        -------
-        Series
-            The Series object associated with the given label.
-
-        Raises
-        ------
-        KeyError
-            If no Series is registered under `label`.
-
-        """
-        import warnings
-
-        from arkouda.numpy.util import attach
-
-        warnings.warn(
-            "ak.Series.attach() is deprecated. Please use ak.attach() instead.",
-            DeprecationWarning,
-        )
-        return attach(label)
-
     @typechecked
     def is_registered(self) -> bool:
         """
