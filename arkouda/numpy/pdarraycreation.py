@@ -1,5 +1,5 @@
 import itertools
-from typing import Any, Iterable, List, Optional, Tuple, Union, cast
+from typing import Any, Iterable, List, Optional, Tuple, Union, cast, overload
 
 import numpy as np
 import pandas as pd
@@ -912,10 +912,38 @@ def full_like(pda: pdarray, fill_value: numeric_scalars) -> Union[pdarray, Strin
     return full(tuple(pda.shape), fill_value, pda.dtype, pda.max_bits)
 
 
+@overload
 def arange(
-    start: Optional[int_scalars] = None,
-    stop: Optional[int_scalars] = None,
-    step: Optional[int_scalars] = None,
+    __arg1: int_scalars,
+    *,
+    dtype: Optional[Union[np.dtype, type, bigint]] = None,
+    max_bits: Optional[int] = None,
+) -> pdarray: ...
+
+
+@overload
+def arange(
+    __arg1: int_scalars,
+    __arg2: int_scalars,
+    *,
+    dtype: Optional[Union[np.dtype, type, bigint]] = None,
+    max_bits: Optional[int] = None,
+) -> pdarray: ...
+
+
+@overload
+def arange(
+    __arg1: int_scalars,
+    __arg2: int_scalars,
+    __arg3: int_scalars,
+    *,
+    dtype: Optional[Union[np.dtype, type, bigint]] = None,
+    max_bits: Optional[int] = None,
+) -> pdarray: ...
+
+
+def arange(
+    *args: int_scalars,
     dtype: Optional[Union[np.dtype, type, bigint]] = None,
     max_bits: Optional[int] = None,
 ) -> pdarray:
@@ -981,21 +1009,28 @@ def arange(
     >>> ak.arange(-5, -10, -1)
     array([-5 -6 -7 -8 -9])
     """
+
     from arkouda.numpy import cast as akcast
 
-    if start is None and stop is None and step is None:
-        raise ValueError("A stopping value must be supplied to arange.")
+    start: int_scalars
+    stop: int_scalars
+    step: int_scalars
 
-    if step is None:
-        step = 1
-        if stop is None:
-            stop = start
-            start = 0
+    if len(args) == 0:
+        raise ValueError("A stopping value must be supplied to arange.")
+    elif len(args) == 1:
+        start, stop, step = 0, args[0], 1
+    elif len(args) == 2:
+        start, stop, step = args[0], args[1], 1
+    elif len(args) == 3:
+        start, stop, step = args[0], args[1], args[2]
+    else:
+        raise RuntimeError("arange does not accept more than arguments.")
 
     if step == 0:
         raise ZeroDivisionError("division by zero")
 
-    aktype = akint64 if dtype is None else dtype
+    aktype = akdtype(akint64 if dtype is None else dtype)
 
     # check the conditions that cause numpy to return an empty array, and
     # return one also.  This includes a fix needed for empty bigint arrays.
@@ -1007,7 +1042,7 @@ def arange(
     # the requested dtype.
     # This matters for several tests in tests/series_test.py
 
-    if (start == stop) | ((np.sign(stop - start) * np.sign(step)) <= 0):  # type: ignore
+    if (start == stop) | ((np.sign(stop - start) * np.sign(step)) <= 0):
         return akcast(array([], dtype=akint64), dt=aktype)
 
     if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(step):
@@ -1020,22 +1055,15 @@ def arange(
             arg_dtype = "uint64"
 
         if step < 0:
-            stop = stop + 2  # type: ignore
+            stop = stop + 2
+
         repMsg = generic_msg(
             cmd=f"arange<{arg_dtype},1>", args={"start": start, "stop": stop, "step": step}
         )
-        return cast(
-            pdarray,
-            (
-                create_pdarray(repMsg, max_bits=max_bits)
-                if aktype == akint64
-                else array(create_pdarray(repMsg), max_bits=akmax_bits, dtype=aktype)  # type: ignore
-            ),
-        )
-    else:
-        raise TypeError(
-            f"start,stop,step must be type int, np.int64, or np.uint64 {start} {stop} {step}"
-        )
+        arr = create_pdarray(repMsg, max_bits=max_bits)
+        return arr if aktype == akint64 else akcast(arr, dt=aktype)
+
+    raise TypeError(f"start, stop, step must be ints; got {args!r}")
 
 
 @typechecked
