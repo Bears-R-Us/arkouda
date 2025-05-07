@@ -1,6 +1,5 @@
 import datetime
 import json
-from warnings import warn
 
 import numpy as np
 from pandas import Series as pdSeries
@@ -1008,7 +1007,6 @@ def date_range(
     tz=None,
     normalize=False,
     name=None,
-    closed=None,
     inclusive="both",
     **kwargs,
 ):
@@ -1037,10 +1035,6 @@ def date_range(
         Normalize start/end dates to midnight before generating date range.
     name : str, default None
         Name of the resulting DatetimeIndex.
-    closed : {None, 'left', 'right'}, optional
-        Make the interval closed with respect to the given frequency to
-        the 'left', 'right', or both sides (None, the default).
-        *Deprecated*
     inclusive : {"both", "neither", "left", "right"}, default "both"
         Include boundaries. Whether to set each bound as closed or open.
     **kwargs
@@ -1061,12 +1055,6 @@ def date_range(
     <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
 
     """
-    if closed is not None:
-        warn(
-            "closed has been deprecated. Please use the inclusive parameter instead.",
-            DeprecationWarning,
-        )
-        inclusive = closed
 
     return Datetime(
         pd_date_range(
