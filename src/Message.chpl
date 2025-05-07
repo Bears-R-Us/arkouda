@@ -492,7 +492,7 @@ module Message {
                 }
             }
 
-            throw new owned ErrorWithContext("JSON argument key Not Found; %s".format(key),
+            throw new owned ErrorWithContext("JSON argument key Not Found: %s".format(key),
                                              getLineNumber(),
                                              getRoutineName(),
                                              getModuleName(),

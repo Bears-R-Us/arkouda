@@ -95,6 +95,14 @@ module ServerDaemon {
         }
     }
 
+
+    /**
+     * Guard mutually-exclusive activities such as the main "server"
+     * and asynchronous checkpointing.
+     */
+    private var activityMutex: sync string;
+
+
     /**
      * The ArkoudaServerDaemon class defines the run and shutdown 
      * functions all derived classes must override
@@ -514,11 +522,13 @@ module ServerDaemon {
             var startTime = timeSinceEpoch().totalSeconds();
         
             while !this.shutdownDaemon {
+                startIdleServer();
+
                 // receive message on the zmq socket
                 var reqMsgRaw = socket.recv(bytes);
 
+                stopIdleServer();
                 this.reqCount += 1;
-
                 var s0 = timeSinceEpoch().totalSeconds();
 
                 /*
@@ -659,6 +669,8 @@ module ServerDaemon {
                         }
                         otherwise { // Look up in CommandMap
                             if commandMap.contains(cmd) {
+                                activityMutex.writeEF("server");
+                                defer { activityMutex.readFE(); }
                                 repMsg = executeCommand(cmd, msgArgs, st);
                             } else {
                                 const errorMsg = "Unrecognized command: %s".format(cmd);
@@ -723,6 +735,30 @@ module ServerDaemon {
                                                                             repCount,
                                                                             elapsed));
             this.shutdown(); 
+        }
+
+        /* While waiting for a message from client, do checkpointing if desired. */
+        proc startIdleServer() throws {
+          // Do nothing if the checkpointing module was not included.
+          if commandMap.contains("auto_checkpoint") {
+            const msgArgs = new owned MessageArgs();
+            msgArgs.addPayload(b"idle start");
+            // lock here to avoid dependency CheckpointMsg -> ServerDaemons
+            activityMutex.writeEF("autoCheckpoint");
+            defer { activityMutex.readFE(); }
+            // ignore the returned message, for now
+            executeCommand("auto_checkpoint", msgArgs, st);
+          }
+        }
+
+        /* Signal that idling finished. Does NOT wait for activity completion. */
+        proc stopIdleServer() throws {
+          if commandMap.contains("auto_checkpoint") {
+            const msgArgs = new owned MessageArgs();
+            msgArgs.addPayload(b"idle stop");
+            // ignore the returned message, for now
+            executeCommand("auto_checkpoint", msgArgs, st);
+          }
         }
     }
 

@@ -21,21 +21,23 @@ module CheckpointMsg {
 
   config const dsetname = "data";
 
+  /* Perform checkpointing automatically when used memory exceeds this many percent
+     of available memory. No auto-checkpointing if 0 or below. */
+  config const ckptMemPct = 0;
+
+  // Prevent further auto-checkpoints upon exceeding 'ckptMemPct'
+  // until memory usage drops below the limit, or upon loadCheckpointMsg.
+  private var skipAutoCkpt = false;
+
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
   const cpLogger = new Logger(logLevel,logChannel);
 
 
-  proc saveCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
-                         st: borrowed SymTab): MsgTuple throws {
-    var basePath = msgArgs.getValueOf("path");
-    const nameArg = msgArgs.getValueOf("name");
-    const mode = msgArgs.getValueOf("mode");
-
+  private proc saveCheckpointImpl(basePath, cpName, mode, st) throws {
     if !exists(basePath) then
       mkdir(basePath);
 
-    const cpName = if nameArg.isEmpty() then st.serverid else nameArg;
     const cpPath = Path.joinPath(basePath, cpName);
 
     if exists(cpPath) {
@@ -80,11 +82,23 @@ module CheckpointMsg {
         cpLogger.debug(M(), R(), L(), "Cannot save %s".format(name));
       }
     }
+  }
+
+  proc saveCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                         st: borrowed SymTab): MsgTuple throws {
+    const basePath = msgArgs.getValueOf("path");
+    const nameArg = msgArgs.getValueOf("name");
+    const cpName = if nameArg.isEmpty() then st.serverid else nameArg;
+    const mode = msgArgs.getValueOf("mode");
+
+    saveCheckpointImpl(basePath, cpName, mode, st);
+
     return Msg.send(cpName);
   }
 
   proc loadCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
                          st: borrowed SymTab): MsgTuple throws {
+    skipAutoCkpt = true;
     var basePath = msgArgs.getValueOf("path");
     const nameArg = msgArgs.getValueOf("name");
 
@@ -129,6 +143,45 @@ module CheckpointMsg {
 
     }
     return Msg.send(nameArg);
+  }
+
+  private proc needMemBasedCkpt() {
+    if ckptMemPct <= 0 then return false;
+
+    // check whether memory use exceeds ckptMemPct
+    if (getMemUsed():real / getMemLimit()) > ckptMemPct / 100.0 {
+      return if skipAutoCkpt then false else true;
+    } else {
+      skipAutoCkpt = false;
+      return false;
+    }
+  }
+
+  proc autoCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                         st: borrowed SymTab): MsgTuple throws {
+    select msgArgs.payload {
+        when b"idle start" {
+          if needMemBasedCkpt() {
+            const basePath = ".akdata";
+            const cpName = "auto_checkpoint";
+            cpLogger.info(M(), R(), L(), "starting autoCheckpoint: memory exceeded %i %%; saving into %s/%s"
+                          .format(ckptMemPct, basePath, cpName));
+            saveCheckpointImpl(basePath, cpName, "overwrite", st);
+            cpLogger.info(M(), R(), L(), "finished autoCheckpoint into %s/%s".format(basePath, cpName));
+            skipAutoCkpt = true;
+            return MsgTuple.success("autoCheckpoint: completed");
+          }
+        }
+//        when b"idle start" {
+//          // nothing for now
+//        }
+        otherwise {
+          cpLogger.debug(M(), R(), L(), "Unrecognized auto_checkpoint command: %?".format(msgArgs));
+          return MsgTuple.error("Unrecognized auto_checkpoint command: %?".format(msgArgs));
+        }
+     }
+
+    return MsgTuple.success("autoCheckpoint: no action taken");
   }
 
   private proc getSEType(type t) type {
@@ -282,6 +335,7 @@ module CheckpointMsg {
   use CommandMap;
   registerFunction("save_checkpoint", saveCheckpointMsg, M());
   registerFunction("load_checkpoint", loadCheckpointMsg, M());
+  registerFunction("auto_checkpoint", autoCheckpointMsg, M());
 
   /* Thrown while loading a checkpoint. The cases for this error type is limited
      to the logic of checkpointing itself. Other errors related to IO etc can
