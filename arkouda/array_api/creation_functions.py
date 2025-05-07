@@ -110,10 +110,15 @@ def arange(
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
+    #  ak.arange is presently limited to int arguments, so we pass this
+    #  data to linspace instead.
+
     if stop is None:
-        return Array._new(ak.arange(0, start, step, dtype=dtype))
+        # return Array._new(ak.arange(0, start, step, dtype=dtype))
+        return Array._new(ak.linspace(0, start, start // step, dtype=dtype))
     else:
-        return Array._new(ak.arange(start, stop, step, dtype=dtype))
+        # return Array._new(ak.arange(start, stop, step, dtype=dtype))
+        return Array._new(ak.linspace(start, stop, (stop - start) // step, dtype=dtype))
 
 
 def empty(
