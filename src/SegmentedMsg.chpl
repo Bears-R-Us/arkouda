@@ -175,7 +175,7 @@ module SegmentedMsg {
     const property = msgArgs.getValueOf("property");
     const name = msgArgs.getValueOf("obj");
 
-    var genSym = toGenSymEntry(st.lookup(name));
+    var genSym = toGenSymEntry(st[name]);
 
     if genSym.dtype != DType.Strings{
       var errorMsg = notImplementedError(pn, "%s".format(dtype2str(genSym.dtype)));
@@ -481,10 +481,10 @@ module SegmentedMsg {
         const optName: string = if returnMatchOrig then st.nextName() else "";
         var strings = getSegString(name, st);
         // numMatches is the matched boolean array for Match objects
-        var numMatches = st.lookup(numMatchesName): borrowed SymEntry(bool, 1);
-        var starts = st.lookup(startsName): borrowed SymEntry(int, 1);
-        var lens = st.lookup(lensName): borrowed SymEntry(int, 1);
-        var indices = st.lookup(indicesName): borrowed SymEntry(int, 1);
+        var numMatches = st[numMatchesName]: borrowed SymEntry(bool, 1);
+        var starts = st[startsName]: borrowed SymEntry(int, 1);
+        var lens = st[lensName]: borrowed SymEntry(int, 1);
+        var indices = st[indicesName]: borrowed SymEntry(int, 1);
 
         var (off, val, matchOrigins) = strings.findAllMatches(numMatches, starts, lens, indices, returnMatchOrig);
         var retString = getSegString(off, val, st);

@@ -157,7 +157,7 @@ module ConcatenateMsg
             }
 
             st.checkTable(name, "concatenateStrMsg");
-            var abstractEntry = st.lookup(name);
+            var abstractEntry = st[name];
             var (entryDtype, entrySize, entryItemSize) = getArraySpecFromEntry(abstractEntry);
             
             if (i == 1) {

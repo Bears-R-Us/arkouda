@@ -39,7 +39,7 @@ module SegmentedString {
   config const NULL_STRINGS_VALUE = 0:uint(8);
 
   proc getSegString(name: string, st: borrowed SymTab): owned SegString throws {
-      var abstractEntry = st.lookup(name);
+      var abstractEntry = st[name];
       if !abstractEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
           var errorMsg = "Error: Unhandled SymbolEntryType %s".format(abstractEntry.entryType);
           ssLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
