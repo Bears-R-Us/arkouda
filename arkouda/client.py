@@ -4,13 +4,8 @@ import warnings
 from enum import Enum
 from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 
-<<<<<<< HEAD
 from arkouda import __version__, io_util, security
 from arkouda.logger import ArkoudaLogger, LogLevel, getArkoudaLogger
-=======
-from arkouda import __version__, security
-from arkouda.logger import LogLevel, getArkoudaLogger
->>>>>>> e83141b23 (reorg io_util)
 from arkouda.message import (
     MessageFormat,
     MessageType,
