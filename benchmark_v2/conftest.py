@@ -1,5 +1,7 @@
 import importlib
+import importlib.util
 import os
+from typing import Iterator
 
 import pytest
 
@@ -235,37 +237,70 @@ def pytest_configure(config):
     pytest.correctness_only = config.getoption("correctness_only")
 
 
-@pytest.fixture(scope="module", autouse=True)
-def startup_teardown():
+def _ensure_plugins_installed():
     if not importlib.util.find_spec("pytest") or not importlib.util.find_spec("pytest_env"):
         raise EnvironmentError("pytest and pytest-env must be installed")
-    if TestRunningMode.CLASS_SERVER == pytest.running_mode:
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _global_server() -> Iterator[None]:
+    """
+    If we're in GLOBAL_SERVER mode, start a single Arkouda server
+    at the beginning of the session and tear it down at the end.
+
+    Yields
+    ------
+    None
+        Fixture point: control will flow back to pytest after server start,
+        and then here again once the session is over to stop the server.
+    """
+    _ensure_plugins_installed()
+
+    if pytest.running_mode == TestRunningMode.GLOBAL_SERVER:
+        nl = pytest.nl
+        host, port, proc = start_arkouda_server(host=pytest.host, numlocales=nl, port=pytest.port)
+        print(f"Started arkouda_server in GLOBAL_SERVER mode on {host}:{port} ({nl} locales)")
+
         try:
-            nl = pytest.nl
-            server_host, server_port, process_handle = start_arkouda_server(
-                host=pytest.host, numlocales=nl, port=pytest.port
-            )
-            print(
-                "Started arkouda_server in TEST_CLASS mode with host: {} port: {} locales: {}".format(
-                    server_host, server_port, nl
-                )
-            )
-        except Exception as e:
-            raise RuntimeError(
-                "in configuring or starting the arkouda_server: {}, check "
-                + "environment and/or arkouda_server installation",
-                e,
-            )
+            yield
+        finally:
+            try:
+                stop_arkouda_server()
+            except Exception:
+                pass
+
     else:
-        print("in client stack test mode with host: {} port: {}".format(pytest.host, pytest.port))
+        # no server needed in CLASS_SERVER or CLIENT mode
+        yield
 
-    yield
 
-    if TestRunningMode.CLASS_SERVER == pytest.running_mode:
+@pytest.fixture(scope="module", autouse=True)
+def _module_server() -> Iterator[None]:
+    """
+    If we're in CLASS_SERVER mode, start/stop Arkouda once per module.
+    In GLOBAL_SERVER or CLIENT mode this fixture is a no-op.
+
+    Yields
+    ------
+    None
+        Fixture point: control passes to pytest to run the module’s tests,
+        then returns here to stop the server after the module is done.
+    """
+    if pytest.running_mode == TestRunningMode.CLASS_SERVER:
+        nl = pytest.nl
+        host, port, proc = start_arkouda_server(host=pytest.host, numlocales=nl, port=pytest.port)
+        print(f"Started arkouda_server in CLASS_SERVER mode on {host}:{port} ({nl} locales)")
+
         try:
-            stop_arkouda_server()
-        except Exception:
-            pass
+            yield
+        finally:
+            try:
+                stop_arkouda_server()
+            except Exception:
+                pass
+    else:
+        # No server needed in GLOBAL_SERVER or CLIENT mode
+        yield
 
 
 @pytest.fixture(scope="function", autouse=True)
