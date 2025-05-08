@@ -3132,7 +3132,7 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
-        from arkouda.io import to_hdf
+        from arkouda.pandas.io import to_hdf
 
         data = self._prep_data(index=index, columns=columns)
         to_hdf(data, prefix_path=path, file_type=file_type)
@@ -3171,7 +3171,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.categorical import Categorical as Categorical_
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
         from arkouda.numpy.segarray import SegArray
 
         column_data = [
@@ -3296,7 +3296,7 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
-        from arkouda.io import update_hdf
+        from arkouda.pandas.io import update_hdf
 
         data = self._prep_data(index=index, columns=columns)
         return update_hdf(data, prefix_path=prefix_path, repack=repack)
@@ -3366,7 +3366,7 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
-        from arkouda.io import to_parquet
+        from arkouda.pandas.io import to_parquet
 
         data = self._prep_data(index=index, columns=columns)
         if not convert_categoricals and any(isinstance(val, Categorical) for val in data.values()):
@@ -3458,7 +3458,7 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
-        from arkouda.io import to_csv
+        from arkouda.pandas.io import to_csv
 
         data = self._prep_data(index=index, columns=columns)
         to_csv(data, path, names=columns, col_delim=col_delim, overwrite=overwrite)
@@ -3531,7 +3531,7 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
-        from arkouda.io import read_csv
+        from arkouda.pandas.io import read_csv
 
         data = read_csv(filename, column_delim=col_delim)
         return cls(data)
@@ -3586,7 +3586,7 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _dict_recombine_segarrays_categoricals,
             get_filetype,
             load_all,
