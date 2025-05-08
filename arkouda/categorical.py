@@ -790,6 +790,7 @@ class Categorical:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array([f'String {i}' for i in range(0,5)])
         >>> cat = ak.Categorical(strings)
         >>> ak.in1d(cat,strings)

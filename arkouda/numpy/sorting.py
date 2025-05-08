@@ -70,6 +70,7 @@ def argsort(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.randint(0, 10, 10)
     >>> perm = ak.argsort(a)
     >>> a[perm]
@@ -164,6 +165,7 @@ def coargsort(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([0, 1, 0, 1])
     >>> b = ak.array([1, 1, 0, 0])
     >>> perm = ak.coargsort([a, b])
@@ -266,6 +268,7 @@ def sort(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.randint(0, 10, 10)
     >>> sorted = ak.sort(a)
     >>> sorted
@@ -320,6 +323,7 @@ def searchsorted(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([11, 12, 13, 14, 15])
     >>> ak.searchsorted(a, 13)
     2

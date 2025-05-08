@@ -113,6 +113,7 @@ def repeat(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.repeat(3, 4)
     array([3 3 3 3])
     >>> x = ak.array([[1,2],[3,4]])
@@ -315,6 +316,7 @@ Thus for an A of shape (2, 3, 4, 5), a reps of (2, 2) is treated as (1, 1, 2, 2)
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([0, 1, 2])
     >>> ak.tile(a, 2)
     array([0 1 2 0 1 2])

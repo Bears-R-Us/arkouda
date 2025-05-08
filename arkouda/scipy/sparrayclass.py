@@ -112,6 +112,7 @@ class sparray:
         and the values at the respective indices within the sparse matrix.
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.random_sparse_matrix(100,0.2,"CSR");
     >>> a.to_pdarray()
     [array([1 1 1 ... 100 100 100]), array([17 21 29 ... 75 77 85]), array([0 0 0 ... 0 0 0])]

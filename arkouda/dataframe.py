@@ -782,6 +782,7 @@ class DataFrame(UserDict):
 
     Examples
     --------
+    >>> import arkouda as ak
     Create an empty DataFrame and add a column of data:
 
     >>> import arkouda as ak
@@ -3534,6 +3535,7 @@ class DataFrame(UserDict):
 
         Examples
         --------
+        >>> import arkouda as ak
         To store data in <my_dir>/my_data_LOCALE0000,
         use "<my_dir>/my_data" as the prefix.
 
@@ -3932,6 +3934,7 @@ class DataFrame(UserDict):
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> df = ak.DataFrame({'col1': [1, 2, 2, 2, 3, 3], 'col2': [4, 5, 6, 7, 8, 9]})
         >>> display(df)
 
@@ -5430,6 +5433,7 @@ class DataFrame(UserDict):
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> df = ak.DataFrame({'temp_c': [17.0, 25.0]},
         ...                   index=['Portland', 'Berkeley'])
         >>> df

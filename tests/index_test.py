@@ -34,6 +34,14 @@ def df_test_base_tmp(request):
 
 
 class TestIndex:
+    # def test_index_docstrings(self):
+    #     import doctest
+    #
+    #     result = doctest.testmod(
+    #         index, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+    #     )
+    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_index_creation(self, size):
         idx = ak.Index(ak.arange(size))
@@ -328,7 +336,12 @@ class TestIndex:
         assert m.equal_levels(m2)
 
         m3 = ak.MultiIndex(
-            [ak.arange(3), ak.arange(3) * -1, ak.array(["a", "b", "c"]), 2 * ak.arange(3)],
+            [
+                ak.arange(3),
+                ak.arange(3) * -1,
+                ak.array(["a", "b", "c"]),
+                2 * ak.arange(3),
+            ],
             names=["col1", "col2", "col3"],
         )
 

@@ -492,6 +492,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.array([1, 2, 3])
         >>> a_cpy = ak.array([1, 2, 3])
         >>> a.equals(a_cpy)
@@ -1360,6 +1361,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.any(ak.array([True,False,False]))
         True
         >>> ak.any(ak.array([[True,True,False],[False,True,True]]),axis=0)
@@ -1406,6 +1408,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.all(ak.array([True,False,False]))
         False
         >>> ak.all(ak.array([[True,True,False],[False,True,True]]),axis=0)
@@ -1531,6 +1534,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.is_sorted(ak.array([1,2,3,4,5]))
         True
         >>> ak.is_sorted(ak.array([5,4,3,2,1]))
@@ -1577,6 +1581,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.sum(ak.array([1,2,3,4,5]))
         15
         >>> ak.sum(ak.array([5.5,4.5,3.5,2.5,1.5]))
@@ -1622,6 +1627,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.prod(ak.array([1,2,3,4,5]))
         120
         >>> ak.prod(ak.array([5.5,4.5,3.5,2.5,1.5]))
@@ -1667,6 +1673,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.min(ak.array([1,2,3,4,5]))
         1
         >>> ak.min(ak.array([5.5,4.5,3.5,2.5,1.5]))
@@ -1712,6 +1719,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.max(ak.array([1,2,3,4,5]))
         5
         >>> ak.max(ak.array([5.5,4.5,3.5,2.5,1.5]))
@@ -1755,6 +1763,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.argmin(ak.array([1,2,3,4,5]))
         0
         >>> ak.argmin(ak.array([5.5,4.5,3.5,2.5,1.5]))
@@ -1798,6 +1807,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.argmax(ak.array([1,2,3,4,5]))
         4
         >>> ak.argmax(ak.array([5.5,4.5,3.5,2.5,1.5]))
@@ -1920,6 +1930,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
         (array([0, 2, 4]), array([3, 2, 1]))
         """
@@ -1942,6 +1953,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> ak.array([1,2,3]).astype(ak.float64)
         array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
         >>> ak.array([1.5,2.5]).astype(ak.int64)
@@ -1989,6 +2001,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> p = ak.array([2**65 + (2**64 - 1)])
         >>> bin(p[0])
         '0b101111111111111111111111111111111111111111111111111111111111111111'
@@ -2031,6 +2044,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.arange(2**64, 2**64 + 5)
         >>> a
         array([18446744073709551616 18446744073709551617 18446744073709551618
@@ -2058,6 +2072,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.array([[3,2,1],[2,3,1]])
         >>> a.reshape((3,2))
         array([array([3 2]) array([1 2]) array([3 1])])
@@ -2101,6 +2116,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.array([[3,2,1],[2,3,1]])
         >>> a.flatten()
         array([3 2 1 2 3 1])
@@ -2146,6 +2162,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.arange(0, 5, 1)
         >>> a.to_ndarray()
         array([0, 1, 2, 3, 4])
@@ -2235,6 +2252,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.arange(0, 5, 1)
         >>> a.to_list()
         [0, 1, 2, 3, 4]
@@ -2280,6 +2298,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.arange(0, 5, 1)
         >>> a.to_cuda()
         array([0, 1, 2, 3, 4])
@@ -2353,6 +2372,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.arange(25)
 
         Saving without an extension
@@ -2434,6 +2454,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.arange(25)
 
         Saving without an extension
@@ -2637,6 +2658,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = zeros(100)
         >>> a.register("my_zeros")
 
@@ -2685,6 +2707,7 @@ class pdarray:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = zeros(100)
         >>> a.register("my_zeros")
 
@@ -3295,6 +3318,7 @@ def dot(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.dot(ak.array([1, 2, 3]),ak.array([4,5,6]))
     32
     >>> ak.dot(ak.array([1, 2, 3]),5)
@@ -3403,6 +3427,7 @@ def mean(pda: pdarray) -> np.float64:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.arange(10)
     >>> ak.mean(a)
     4.5
@@ -3443,6 +3468,7 @@ def var(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.arange(10)
     >>> ak.var(a)
     8.25
@@ -3504,6 +3530,7 @@ def std(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.arange(10)
     >>> ak.std(a)
     2.8722813232690143
@@ -3567,6 +3594,7 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.arange(10)
     >>> b = a + 1
     >>> ak.cov(a,b)
@@ -3614,6 +3642,7 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.arange(10)
     >>> b = a + 1
     >>> ak.corr(a,b)
@@ -3683,6 +3712,7 @@ def divmod(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> x = ak.arange(5, 10)
     >>> y = ak.array([2, 1, 4, 5, 8])
     >>> ak.divmod(x,y)
@@ -3757,6 +3787,7 @@ def mink(pda: pdarray, k: int_scalars) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> A = ak.array([10,5,1,3,7,2,9,0])
     >>> ak.mink(A, 3)
     array([0, 1, 2])
@@ -3812,6 +3843,7 @@ def maxk(pda: pdarray, k: int_scalars) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> A = ak.array([10,5,1,3,7,2,9,0])
     >>> ak.maxk(A, 3)
     array([7, 9, 10])
@@ -3864,6 +3896,7 @@ def argmink(pda: pdarray, k: int_scalars) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> A = ak.array([10,5,1,3,7,2,9,0])
     >>> ak.argmink(A, 3)
     array([7, 2, 5])
@@ -3918,6 +3951,7 @@ def argmaxk(pda: pdarray, k: int_scalars) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> A = ak.array([10,5,1,3,7,2,9,0])
     >>> ak.argmaxk(A, 3)
     array([4, 6, 0])
@@ -3956,6 +3990,7 @@ def popcount(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> A = ak.arange(10)
     >>> ak.popcount(A)
     array([0, 1, 1, 2, 1, 2, 2, 3, 1, 2])
@@ -3997,6 +4032,7 @@ def parity(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> A = ak.arange(10)
     >>> ak.parity(A)
     array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0])
@@ -4037,6 +4073,7 @@ def clz(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> A = ak.arange(10)
     >>> ak.clz(A)
     array([64, 63, 62, 62, 61, 61, 61, 61, 60, 60])
@@ -4119,6 +4156,7 @@ def ctz(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> A = ak.arange(10)
     >>> ak.ctz(A)
     array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
@@ -4197,6 +4235,7 @@ def rotl(x, rot) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> A = ak.arange(10)
     >>> ak.rotl(A, A)
     array([0, 2, 8, 24, 64, 160, 384, 896, 2048, 4608])
@@ -4235,6 +4274,7 @@ def rotr(x, rot) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> A = ak.arange(10)
     >>> ak.rotr(1024 * A, A)
     array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
@@ -4284,6 +4324,7 @@ def power(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.arange(5)
     >>> ak.power(a, 3)
     array([0, 1, 8, 27, 64])
@@ -4333,6 +4374,7 @@ def sqrt(pda: pdarray, where: Union[bool_scalars, pdarray] = True) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.arange(5)
     >>> ak.sqrt(a)
     array([0.00000000000000000 1.00000000000000000 1.4142135623730951
@@ -4376,6 +4418,7 @@ def skew(pda: pdarray, bias: bool = True) -> np.float64:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([1, 1, 1, 5, 10])
     >>> ak.skew(a)
     0.9442193396379165
@@ -4432,6 +4475,7 @@ def mod(dividend, divisor) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
     >>> b = ak.array([2,2,2,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8])
     >>> ak.mod(a,b)
@@ -4604,6 +4648,7 @@ def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.arange(2).reshape(1,2,1)
     >>> ak.broadcast_to_shape(a,(2,2,2))
     array([array([array([0 0]) array([1 1])]) array([array([0 0]) array([1 1])])])

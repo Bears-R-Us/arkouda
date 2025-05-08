@@ -78,6 +78,7 @@ def from_series(series: pd.Series, dtype: Optional[Union[type, str]] = None) -> 
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> np.random.seed(1701)
     >>> ak.from_series(pd.Series(np.random.randint(0,10,5)))
     array([4 3 3 5 0])
@@ -89,8 +90,14 @@ def from_series(series: pd.Series, dtype: Optional[Union[type, str]] = None) -> 
     >>> ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=3)))
     array([0.089433234324597599 0.1153776854774361 0.51874393620990389])
 
-    >>> ak.from_series(pd.Series(['0.57600036956445599', '0.41619265571741659',
-                       '0.6615356693784662']), dtype=np.float64)
+    >>> ak.from_series(
+    ...     pd.Series([
+    ...         '0.57600036956445599',
+    ...         '0.41619265571741659',
+    ...         '0.6615356693784662',
+    ...     ]),
+    ...     dtype=np.float64,
+    ... )
     array([0.57600036956445599 0.41619265571741659 0.6615356693784662])
 
     >>> np.random.seed(1864)
@@ -193,6 +200,7 @@ def array(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.array(np.arange(1,10))
     array([1 2 3 4 5 6 7 8 9])
 
@@ -365,6 +373,7 @@ def promote_to_common_dtype(arrays: List[pdarray]) -> Tuple[Any, List[pdarray]]:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.arange(5)
     >>> b = ak.ones(5, dtype=ak.float64)
     >>> dtype, promoted = ak.promote_to_common_dtype([a, b])
@@ -425,6 +434,7 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.bigint_from_uint_arrays([ak.ones(5, dtype=ak.uint64), ak.arange(5, dtype=ak.uint64)])
     >>> a
     array([18446744073709551616 18446744073709551617 18446744073709551618
@@ -518,6 +528,7 @@ def zeros(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.zeros(5, dtype=ak.int64)
     array([0 0 0 0 0])
 
@@ -594,6 +605,7 @@ def ones(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.ones(5, dtype=ak.int64)
     array([1 1 1 1 1])
 
@@ -655,6 +667,7 @@ def full(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.full(5, 7, dtype=ak.int64)
     array([7 7 7 7 7])
 
@@ -714,6 +727,7 @@ def scalar_array(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.scalar_array(5)
     array([5])
 
@@ -790,6 +804,7 @@ def zeros_like(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.zeros_like(ak.ones(5,dtype=ak.int64))
     array([0 0 0 0 0])
 
@@ -835,6 +850,7 @@ def ones_like(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.ones_like(ak.zeros(5,dtype=ak.int64))
     array([1 1 1 1 1])
 
@@ -882,6 +898,7 @@ def full_like(pda: pdarray, fill_value: numeric_scalars) -> Union[pdarray, Strin
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.full_like(ak.full(5,7,dtype=ak.int64),6)
     array([6 6 6 6 6])
 
@@ -944,6 +961,7 @@ def arange(*args, **kwargs) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.arange(0, 5, 1)
     array([0 1 2 3 4])
 
@@ -1059,6 +1077,7 @@ def linspace(start: numeric_scalars, stop: numeric_scalars, length: int_scalars)
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.linspace(0, 1, 5)
     array([0.00000000000000000 0.25 0.5 0.75 1.00000000000000000])
 
@@ -1125,6 +1144,7 @@ def randint(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.randint(0, 10, 5, seed=1701)
     array([6 5 1 6 3])
 
@@ -1181,6 +1201,7 @@ def uniform(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.uniform(3,seed=1701)
     array([0.011410423448327005 0.73618171558685619 0.12367222192448891])
 
@@ -1226,6 +1247,7 @@ def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) ->
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.standard_normal(3,1)
     array([-0.68586185091150265 1.1723810583573377 0.567584107142031])
     """
@@ -1275,6 +1297,7 @@ def random_strings_uniform(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=8675309, size=5)
     array(['ECWO', 'WSS', 'TZG', 'RW', 'C'])
 
@@ -1350,6 +1373,7 @@ def random_strings_lognormal(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1)
     array(['VWHJEX', 'BEBBXJHGM', 'RWOVKBUR', 'LNJCSDXD', 'NKEDQC'])
 

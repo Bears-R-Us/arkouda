@@ -4,6 +4,7 @@ import random
 import pytest
 
 import arkouda as ak
+from arkouda import client_dtypes
 
 INT_TYPES = [ak.int64, ak.uint64]
 
@@ -16,6 +17,14 @@ class TestClientDTypes:
     it only converts to a bit representation for display.
     Thus, pdarray testing covers these operations.
     """
+
+    def test_client_dtypes_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(
+            client_dtypes, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @pytest.mark.parametrize("dtype", INT_TYPES)
     def test_bit_vector_creation(self, dtype):

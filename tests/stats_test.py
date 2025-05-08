@@ -73,7 +73,15 @@ class TestStats:
 
         # verify this doesn't have scoping issues with numeric conversion
         ak.DataFrame(
-            {"x": self.x, "y": self.y, "u": self.u, "b": self.b, "f": self.f, "s": self.s, "c": self.c}
+            {
+                "x": self.x,
+                "y": self.y,
+                "u": self.u,
+                "b": self.b,
+                "f": self.f,
+                "s": self.s,
+                "c": self.c,
+            }
         ).corr()
 
     def test_divmod(self):
@@ -111,7 +119,10 @@ class TestStats:
             # float float
             [(30.0, ak.cast(self.y, ak.float64)), (30.0, self.npy.astype(float))],
             # float float (non-whole numbers)
-            [(30.5, ak.cast(self.y + 1.5, ak.float64)), (30.5, self.npy.astype(float) + 1.5)],
+            [
+                (30.5, ak.cast(self.y + 1.5, ak.float64)),
+                (30.5, self.npy.astype(float) + 1.5),
+            ],
             # vector-scalar cases
             # int int
             [(self.x, 3), (self.npx, 3)],
@@ -122,7 +133,10 @@ class TestStats:
             # float float
             [(ak.cast(self.x, ak.float64), 3.0), (self.npx.astype(float), 3.0)],
             # float float (non-whole numbers)
-            [(ak.cast(self.x + 0.5, ak.float64), 4.5), (self.npx.astype(float) + 0.5, 4.5)],
+            [
+                (ak.cast(self.x + 0.5, ak.float64), 4.5),
+                (self.npx.astype(float) + 0.5, 4.5),
+            ],
         ]
 
         for ak_args, np_args in all_args:

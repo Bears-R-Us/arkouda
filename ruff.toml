@@ -10,4 +10,5 @@ extend-exclude = [
 
 # Add the `line-too-long` rule to the enforced rule set.
 lint.extend-select = ["E501"]
+lint.extend-ignore = ["E712"]
 

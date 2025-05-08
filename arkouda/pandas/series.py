@@ -472,6 +472,7 @@ class Series:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> from arkouda.series import Series
         >>> s = ak.Series(ak.arange(3))
         >>> s.memory_usage()

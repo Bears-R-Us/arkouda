@@ -84,6 +84,7 @@ def _in1d_single(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.in1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
     array([False True False])
 
@@ -183,6 +184,7 @@ def in1d(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.in1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
     array([False True False])
 
@@ -295,6 +297,7 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> select_from = ak.arange(10)
     >>> query = select_from[ak.randint(0, select_from.size, 20, seed=10)]
     >>> space = select_from[ak.randint(0, select_from.size, 20, seed=11)]
@@ -369,6 +372,7 @@ def concatenate(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.concatenate([ak.array([1, 2, 3]), ak.array([4, 5, 6])])
     array([1 2 3 4 5 6])
 
@@ -542,6 +546,7 @@ def union1d(
     Examples
     --------
 
+    >>> import arkouda as ak
     1D Example
 
     >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
@@ -626,6 +631,7 @@ def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Unio
     Examples
     --------
 
+    >>> import arkouda as ak
     1D Example
 
     >>> ak.intersect1d(ak.array([1, 3, 4, 3]), ak.array([3, 1, 2, 1]))
@@ -738,6 +744,7 @@ def setdiff1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([1, 2, 3, 2, 4, 1])
     >>> b = ak.array([3, 4, 5, 6])
     >>> ak.setdiff1d(a, b)
@@ -841,6 +848,7 @@ def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[p
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([1, 2, 3, 2, 4])
     >>> b = ak.array([2, 3, 5, 7, 5])
     >>> ak.setxor1d(a,b)

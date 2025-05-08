@@ -59,6 +59,7 @@ def randint(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.randint(0, 10, 5)
     array([5, 7, 4, 8, 3])
 
@@ -146,6 +147,7 @@ def standard_normal(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.standard_normal(3,1)
     array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
     """
@@ -212,6 +214,7 @@ def uniform(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.uniform(3)
     array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
 

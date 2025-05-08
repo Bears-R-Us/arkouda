@@ -1,6 +1,7 @@
 import pytest
 
 import arkouda as ak
+from arkouda import comm_diagnostics
 from arkouda.comm_diagnostics import (
     get_comm_diagnostics,
     get_comm_diagnostics_get,
@@ -37,6 +38,15 @@ diagnostic_stats_functions = [
 
 
 class TestCommDiagnostics:
+    def test_comm_diagnostics_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(
+            comm_diagnostics,
+            optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE,
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_verbose_comm(self, size):
         start_verbose_comm()

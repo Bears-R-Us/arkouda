@@ -15,6 +15,14 @@ INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bool_, ak.bigint]
 
 
 class TestSeries:
+    # def test_series_docstrings(self):
+    #     import doctest
+    #
+    #     result = doctest.testmod(
+    #         series, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+    #     )
+    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_series_creation(self, dtype):
         idx = ak.arange(3, dtype=dtype)
@@ -216,7 +224,11 @@ class TestSeries:
             df = func([s, s3], axis=1)
             if fname == "concat":
                 ref_df = pd.DataFrame(
-                    {"idx": [0, 1, 2, 3, 4], "val_0": [0, 1, 2, 3, 4], "val_1": [5, 6, 7, 8, 9]}
+                    {
+                        "idx": [0, 1, 2, 3, 4],
+                        "val_0": [0, 1, 2, 3, 4],
+                        "val_1": [5, 6, 7, 8, 9],
+                    }
                 )
                 assert isinstance(df, ak.DataFrame)
                 pd_assert_frame_equal(ref_df, df.to_pandas())
@@ -361,7 +373,10 @@ class TestSeries:
         assert np.allclose(data_float.isna().values.to_ndarray(), expected_float.values.to_ndarray())
         assert np.allclose(data_float.isnull().values.to_ndarray(), expected_float.values.to_ndarray())
         assert np.allclose(data_float.notna().values.to_ndarray(), ~expected_float.values.to_ndarray())
-        assert np.allclose(data_float.notnull().values.to_ndarray(), ~expected_float.values.to_ndarray())
+        assert np.allclose(
+            data_float.notnull().values.to_ndarray(),
+            ~expected_float.values.to_ndarray(),
+        )
         assert data_float.hasnans()
 
     def test_isna_string(self):
@@ -369,10 +384,17 @@ class TestSeries:
         data_string = Series(["a", "b", "c", "d", "e"])
         expected_string = Series([False, False, False, False, False])
         assert np.allclose(data_string.isna().values.to_ndarray(), expected_string.values.to_ndarray())
-        assert np.allclose(data_string.isnull().values.to_ndarray(), expected_string.values.to_ndarray())
-        assert np.allclose(data_string.notna().values.to_ndarray(), ~expected_string.values.to_ndarray())
         assert np.allclose(
-            data_string.notnull().values.to_ndarray(), ~expected_string.values.to_ndarray()
+            data_string.isnull().values.to_ndarray(),
+            expected_string.values.to_ndarray(),
+        )
+        assert np.allclose(
+            data_string.notna().values.to_ndarray(),
+            ~expected_string.values.to_ndarray(),
+        )
+        assert np.allclose(
+            data_string.notnull().values.to_ndarray(),
+            ~expected_string.values.to_ndarray(),
         )
         assert not data_string.hasnans()
 

@@ -60,6 +60,14 @@ class TestGroupBy:
     seed = pytest.seed if pytest.seed is not None else 8675309
     np.random.seed(seed)
 
+    # def test_groupbyclass_docstrings(self):
+    #     import doctest
+    #
+    #     result = doctest.testmod(
+    #         groupbyclass, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+    #     )
+    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @classmethod
     def setup_class(cls):
         cls.bvalues = ak.randint(0, 1, 10, dtype=bool)

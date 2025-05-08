@@ -14,6 +14,12 @@ UNIQUE = N // 4
 
 
 class TestString:
+    # def test_strings_docstrings(self):
+    #     import doctest
+    #
+    #     result = doctest.testmod(strings, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     Gremlins = namedtuple(
         "Gremlins",
         "gremlins_base_words gremlins_strings gremlins_test_strings gremlins_cat",

@@ -221,6 +221,7 @@ def assert_index_equal(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> from arkouda import testing as tm
     >>> a = ak.Index([1, 2, 3])
     >>> b = ak.Index([1, 2, 3])
@@ -871,6 +872,7 @@ def assert_series_equal(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> from arkouda import testing as tm
     >>> a = ak.Series([1, 2, 3, 4])
     >>> b = ak.Series([1, 2, 3, 4])
@@ -1020,6 +1022,7 @@ def assert_frame_equal(
 
     Examples
     --------
+    >>> import arkouda as ak
     This example shows comparing two DataFrames that are equal
     but with columns of differing dtypes.
 

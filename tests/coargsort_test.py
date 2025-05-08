@@ -23,6 +23,14 @@ def make_ak_arrays(size, dtype, minimum=-(2**32), maximum=2**32):
 
 
 class TestCoargsort:
+    # def test_coargsort_docstrings(self):
+    #     import doctest
+    #
+    #     result = doctest.testmod(
+    #         coargsort(), optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+    #     )
+    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
     @pytest.mark.parametrize("algo", SortingAlgorithm)
@@ -38,7 +46,16 @@ class TestCoargsort:
             z = ak.zeros(prob_size, dtype=dtype)
             n = make_ak_arrays(prob_size, dtype, -(2 ** (exp - 1)), 2**exp)
             arr_lists.extend(
-                [[a], [n], [a, b], [b, a], [a, b, c, d], [z, b, c, d], [z, z, c, d], [z, z, z, d]]
+                [
+                    [a],
+                    [n],
+                    [a, b],
+                    [b, a],
+                    [a, b, c, d],
+                    [z, b, c, d],
+                    [z, z, c, d],
+                    [z, z, z, d],
+                ]
             )
 
         for arr_list in arr_lists:
@@ -56,7 +73,9 @@ class TestCoargsort:
     def test_coargsort_mixed_types(self, prob_size, algo):
         for dt in NUMERIC_TYPES:
             dtypes = [dt] + np.random.choice(
-                list(set(NUMERIC_TYPES) - {dt}), size=len(NUMERIC_TYPES) - 1, replace=False
+                list(set(NUMERIC_TYPES) - {dt}),
+                size=len(NUMERIC_TYPES) - 1,
+                replace=False,
             ).tolist()
             arr_list = [make_ak_arrays(prob_size, dt, 0, 2**63) for dt in dtypes]
             if not isinstance(arr_list, list):

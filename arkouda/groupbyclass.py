@@ -117,6 +117,7 @@ def unique(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> A = ak.array([3, 2, 1, 1, 2, 3])
     >>> ak.unique(A)
     array([1, 2, 3])
@@ -556,6 +557,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.randint(1,5,10)
         >>> a
         array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
@@ -594,6 +596,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.array([1, 0, -1, 1, 0, -1])
         >>> a
         array([1 0 -1 1 0 -1])
@@ -654,6 +657,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> keys = ak.arange(0, 10)
         >>> vals = ak.linspace(-1, 1, 10)
         >>> g = ak.GroupBy(keys)
@@ -745,6 +749,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.randint(1,5,10)
         >>> a
         array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -797,6 +802,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.randint(1,5,10)
         >>> a
         array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -861,6 +867,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.randint(1,5,10)
         >>> a
         array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -928,6 +935,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.randint(1,5,10)
         >>> a
         array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -978,6 +986,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.randint(1,5,10)
         >>> a
         array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -1028,6 +1037,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.randint(1,5,9)
         >>> a
         array([4 1 4 3 2 2 2 3 3])
@@ -1077,6 +1087,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.randint(1,5,10)
         >>> a
         array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -1128,6 +1139,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.randint(1,5,10)
         >>> a
         array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -1182,6 +1194,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.randint(1,5,10)
         >>> a
         array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -1232,6 +1245,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.randint(1,5,10)
         >>> a
         array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -1298,6 +1312,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> data = ak.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])
         >>> data
         array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])
@@ -1547,6 +1562,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.arange(10) %3
         >>> a
         array([0 1 2 0 1 2 0 1 2 0])
@@ -1625,6 +1641,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.arange(10) %3
         >>> a
         array([0 1 2 0 1 2 0 1 2 0])
@@ -1995,6 +2012,7 @@ class GroupBy:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.array([0, 1, 0, 1, 0])
         >>> values = ak.array([3, 5])
         >>> g = ak.GroupBy(a)
@@ -2305,6 +2323,7 @@ def broadcast(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>>
     # Define a sparse matrix with 3 rows and 7 nonzeros
     >>> row_starts = ak.array([0, 2, 5])

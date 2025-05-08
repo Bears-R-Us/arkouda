@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+from arkouda.pandas import join
 
 """
 Encapsulates a variety of arkouda join_on_eq_with_dt test cases.
@@ -18,6 +19,12 @@ class TestJoin:
         cls.t2 = cls.a1 * 10
         cls.dt = 10
         ak.verbose = False
+
+    def test_join_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(join, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @pytest.mark.parametrize("dt_type", ["true_dt", "abs_dt", "pos_dt"])
     def test_join_on_eq_by_dt(self, dt_type):
@@ -78,7 +85,10 @@ class TestJoin:
             with pytest.raises(ValueError):
                 l, r = ak.join.inner_join(left, right, wherefunc=where_func)
 
-        for where_args in ((ak.arange(5), ak.arange(10)), (ak.arange(10), ak.arange(5))):
+        for where_args in (
+            (ak.arange(5), ak.arange(10)),
+            (ak.arange(10), ak.arange(5)),
+        ):
             with pytest.raises(ValueError):
                 l, r = ak.join.inner_join(left, right, wherefunc=ak.intersect1d, whereargs=where_args)
 
@@ -206,7 +216,10 @@ class TestJoin:
         assert res.to_list() == ans
         # Compound lookup with (str, int) keys
         res2 = ak.lookup(
-            (ak.cast(keys, ak.str_), keys), values, (ak.cast(args, ak.str_), args), fillvalue=-1
+            (ak.cast(keys, ak.str_), keys),
+            values,
+            (ak.cast(args, ak.str_), args),
+            fillvalue=-1,
         )
         assert res2.to_list() == ans
         # Keys not in uniqued order

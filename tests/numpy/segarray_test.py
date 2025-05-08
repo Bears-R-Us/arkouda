@@ -33,6 +33,12 @@ def seg_test_base_tmp(request):
 
 
 class TestSegArray:
+    # def test_segarray_docstrings(self):
+    #     import doctest
+    #
+    #     result = doctest.testmod(segarray, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @staticmethod
     def make_segarray(size, dtype):
         segs = np.arange(0, size, 5)
@@ -762,7 +768,11 @@ class TestSegArray:
     def test_equality(self):
         # reproducer for issue #2617
         # verify equality no matter position of empty seg
-        for has_empty_seg in [0, 0, 9, 14], [0, 9, 9, 14, 14], [0, 0, 7, 9, 14, 14, 17, 20]:
+        for has_empty_seg in (
+            [0, 0, 9, 14],
+            [0, 9, 9, 14, 14],
+            [0, 0, 7, 9, 14, 14, 17, 20],
+        ):
             sa = ak.SegArray(ak.array(has_empty_seg), ak.arange(-10, 10))
             assert (sa == sa).all()
 
@@ -775,7 +785,8 @@ class TestSegArray:
             {
                 "c_1": ak.SegArray(ak.array([0, 0, 9, 14]), ak.arange(-10, 10)),
                 "c_2": ak.SegArray(
-                    ak.array([0, 5, 10, 10]), ak.arange(2**63, 2**63 + 15, dtype=ak.uint64)
+                    ak.array([0, 5, 10, 10]),
+                    ak.arange(2**63, 2**63 + 15, dtype=ak.uint64),
                 ),
                 "c_3": ak.SegArray(ak.array([0, 0, 5, 10]), ak.randint(0, 1, 15, dtype=ak.bool_)),
                 "c_4": ak.SegArray(
@@ -800,19 +811,24 @@ class TestSegArray:
                     ),
                 ),
                 "c_5": ak.SegArray(
-                    ak.array([0, 2, 5, 5]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
+                    ak.array([0, 2, 5, 5]),
+                    ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"]),
                 ),
                 "c_6": ak.SegArray(
-                    ak.array([0, 2, 2, 2]), ak.array(["a", "b", "", "c", "d", "e", "f", "g", "h", "i"])
+                    ak.array([0, 2, 2, 2]),
+                    ak.array(["a", "b", "", "c", "d", "e", "f", "g", "h", "i"]),
                 ),
                 "c_7": ak.SegArray(
-                    ak.array([0, 0, 2, 2]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
+                    ak.array([0, 0, 2, 2]),
+                    ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"]),
                 ),
                 "c_8": ak.SegArray(
-                    ak.array([0, 2, 3, 3]), ak.array(["", "'", " ", "test", "", "'", "", " ", ""])
+                    ak.array([0, 2, 3, 3]),
+                    ak.array(["", "'", " ", "test", "", "'", "", " ", ""]),
                 ),
                 "c_9": ak.SegArray(
-                    ak.array([0, 5, 5, 8]), ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
+                    ak.array([0, 5, 5, 8]),
+                    ak.array(["a", "b", "c", "d", "e", "f", "g", "h", "i"]),
                 ),
                 "c_10": ak.SegArray(
                     ak.array([0, 5, 8, 8]),

@@ -37,6 +37,14 @@ def df_test_base_tmp(request):
 
 
 class TestDataFrame:
+    # def test_dataframe_docstrings(self):
+    #     import doctest
+    #
+    #     result = doctest.testmod(
+    #         dataframe, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+    #     )
+    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @staticmethod
     def build_pd_df():
         username = ["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"]
@@ -1166,10 +1174,21 @@ class TestDataFrame:
             l_pd, r_pd = left_df.to_pandas(), right_df.to_pandas()
 
             ak_merge = ak.merge(
-                left_df, right_df, left_on=left_on, right_on=right_on, how=how, sort=True
+                left_df,
+                right_df,
+                left_on=left_on,
+                right_on=right_on,
+                how=how,
+                sort=True,
             )
             pd_merge = pd.merge(
-                l_pd, r_pd, left_on=left_on, right_on=right_on, how=how, copy=True, sort=True
+                l_pd,
+                r_pd,
+                left_on=left_on,
+                right_on=right_on,
+                how=how,
+                copy=True,
+                sort=True,
             )
 
             # Numeric sorting works okay when floats aren't involved
@@ -1226,7 +1245,13 @@ class TestDataFrame:
 
         ak_merge = ak.merge(left_df, right_df, left_on=left_on, right_on=right_on, how=how, sort=True)
         pd_merge = pd.merge(
-            l_pd, r_pd, left_on=left_on, right_on=right_on, how=how, copy=True, sort=True
+            l_pd,
+            r_pd,
+            left_on=left_on,
+            right_on=right_on,
+            how=how,
+            copy=True,
+            sort=True,
         )
 
         # Numeric sorting works okay when floats aren't involved

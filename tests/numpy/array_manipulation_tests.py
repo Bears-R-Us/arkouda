@@ -3,10 +3,21 @@ import pytest
 
 import arkouda as ak
 from arkouda.client import get_array_ranks
+from arkouda.numpy import pdarraymanipulation
 from arkouda.testing import assert_arkouda_array_equivalent
 
 
 class TestManipulationFunctions:
+    @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
+    def test_pdarraymanipulation_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(
+            pdarraymanipulation,
+            optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE,
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.skip_if_rank_not_compiled([2])
     def test_vstack(self):
         a = [ak.random.randint(0, 10, 25) for _ in range(4)]
@@ -70,7 +81,8 @@ class TestManipulationFunctions:
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, ak.bigint])
     @pytest.mark.parametrize(
-        "shapes", [[(1, 2, 3), (1, 2, 3)], [(1, 2, 3), (2, 2, 3)], [(2, 2, 2), (4, 2, 2)]]
+        "shapes",
+        [[(1, 2, 3), (1, 2, 3)], [(1, 2, 3), (2, 2, 3)], [(2, 2, 2), (4, 2, 2)]],
     )
     def test_vstack3D_with_shapes(self, dtype, shapes):
         shape1, shape2 = shapes
@@ -157,7 +169,8 @@ class TestManipulationFunctions:
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, ak.bigint])
     @pytest.mark.parametrize(
-        "shapes", [[(1, 2, 3), (1, 2, 3)], [(1, 2, 3), (1, 1, 3)], [(2, 2, 2), (2, 4, 2)]]
+        "shapes",
+        [[(1, 2, 3), (1, 2, 3)], [(1, 2, 3), (1, 1, 3)], [(2, 2, 2), (2, 4, 2)]],
     )
     def test_hstack3D_with_shapes(self, dtype, shapes):
         shape1, shape2 = shapes

@@ -578,6 +578,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
         >>> strings
         array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
@@ -612,6 +613,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
         >>> strings
         array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
@@ -645,6 +647,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
         >>> strings
         array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
@@ -678,6 +681,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> not_decimal = ak.array([f'Strings {i}' for i in range(3)])
         >>> decimal = ak.array([f'12{i}' for i in range(3)])
         >>> strings = ak.concatenate([not_decimal, decimal])
@@ -725,6 +729,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array([f'StrINgS aRe Here {i}' for i in range(5)])
         >>> strings
         array(['StrINgS aRe Here 0', 'StrINgS aRe Here 1', 'StrINgS aRe Here 2', \
@@ -760,6 +765,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> lower = ak.array([f'strings {i}' for i in range(3)])
         >>> upper = ak.array([f'STRINGS {i}' for i in range(3)])
         >>> strings = ak.concatenate([lower, upper])
@@ -796,6 +802,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> lower = ak.array([f'strings {i}' for i in range(3)])
         >>> upper = ak.array([f'STRINGS {i}' for i in range(3)])
         >>> strings = ak.concatenate([lower, upper])
@@ -833,6 +840,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> mixed = ak.array([f'sTrINgs {i}' for i in range(3)])
         >>> title = ak.array([f'Strings {i}' for i in range(3)])
         >>> strings = ak.concatenate([mixed, title])
@@ -871,6 +879,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> not_alnum = ak.array([f'%Strings {i}' for i in range(3)])
         >>> alnum = ak.array([f'Strings{i}' for i in range(3)])
         >>> strings = ak.concatenate([not_alnum, alnum])
@@ -911,6 +920,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> not_alpha = ak.array([f'%Strings {i}' for i in range(3)])
         >>> alpha = ak.array(['StringA','StringB','StringC'])
         >>> strings = ak.concatenate([not_alpha, alpha])
@@ -949,6 +959,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> not_digit = ak.array([f'Strings {i}' for i in range(3)])
         >>> digit = ak.array([f'12{i}' for i in range(3)])
         >>> strings = ak.concatenate([not_digit, digit])
@@ -998,6 +1009,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> not_empty = ak.array([f'Strings {i}' for i in range(3)])
         >>> empty = ak.array(['' for i in range(3)])
         >>> strings = ak.concatenate([not_empty, empty])
@@ -1036,6 +1048,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> not_space = ak.array([f'Strings {i}' for i in range(3)])
         >>> space = ak.array([' ', '\\t', '\\n', '\\v', '\\f', '\\r', ' \\t\\n\\v\\f\\r'])
         >>> strings = ak.concatenate([not_space, space])
@@ -1077,6 +1090,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(['Strings ', '  StringS  ', 'StringS   '])
         >>> s = strings.strip()
         >>> s
@@ -1172,6 +1186,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array([f'{i} string {i}' for i in range(1, 6)])
         >>> num_matches, starts, lens = strings.find_locations('\\d')
         >>> num_matches
@@ -1204,6 +1219,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.search('_+')
         <ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4);
@@ -1230,6 +1246,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.match('_+')
         <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False;
@@ -1256,6 +1273,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.fullmatch('_+')
         <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False;
@@ -1292,6 +1310,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.regex_split('_+', maxsplit=2, return_segments=True)
         (array(['1', '2', '', '', '', '3', '', '4', '5____6___7', '']), array([0 3 5 6 9]))
@@ -1335,6 +1354,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.findall('_+', return_match_origins=True)
         (array(['_', '___', '____', '__', '___', '____', '___']), array([0 0 1 3 3 3 3]))
@@ -1380,6 +1400,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.sub(pattern='_+', repl='-', count=2)
         array(['1-2-', '-', '3', '-4-5____6___7', ''])
@@ -1427,6 +1448,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
         >>> strings.subn(pattern='_+', repl='-', count=2)
         (array(['1-2-', '-', '3', '-4-5____6___7', '']), array([2 1 0 2 0]))
@@ -1469,6 +1491,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings = ak.array([f'{i} string {i}' for i in range(1, 6)])
         >>> strings
         array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
@@ -1526,6 +1549,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings_end = ak.array([f'string {i}' for i in range(1, 6)])
         >>> strings_end
         array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
@@ -1582,6 +1606,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> strings_start = ak.array([f'{i} string' for i in range(1,6)])
         >>> strings_start
         array(['1 string', '2 string', '3 string', '4 string', '5 string'])
@@ -1631,6 +1656,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> orig = ak.array(['one|two', 'three|four|five', 'six'])
         >>> orig.split('|')
         array(['one', 'two', 'three', 'four', 'five', 'six'])
@@ -1735,6 +1761,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> s = ak.array(['a.b', 'c.d', 'e.f.g'])
         >>> s.peel('.')
         (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
@@ -1836,6 +1863,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> s = ak.array(['a.b', 'c.d', 'e.f.g'])
         >>> s.rpeel('.')
         (array(['a', 'c', 'e.f']), array(['b', 'd', 'g']))
@@ -1894,6 +1922,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> s = ak.array(['a', 'c', 'e'])
         >>> t = ak.array(['b', 'd', 'f'])
         >>> s.stick(t, delimiter='.')
@@ -1951,6 +1980,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> s = ak.array(['a', 'c', 'e'])
         >>> t = ak.array(['b', 'd', 'f'])
         >>> s.lstick(t, delimiter='.')
@@ -2167,6 +2197,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.array(["hello", "my", "world"])
         >>> a.to_ndarray()
         array(['hello', 'my', 'world'], dtype='<U5')
@@ -2214,6 +2245,7 @@ class Strings:
 
         Examples
         --------
+        >>> import arkouda as ak
         >>> a = ak.array(["hello", "my", "world"])
         >>> a.to_list()
         ['hello', 'my', 'world']

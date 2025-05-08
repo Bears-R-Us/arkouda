@@ -163,6 +163,7 @@ def cast(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
     array([1 2 3 4 5])
 
@@ -243,6 +244,7 @@ def abs(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.abs(ak.arange(-5,-1))
     array([5 4 3 2])
 
@@ -280,6 +282,7 @@ def ceil(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.ceil(ak.linspace(1.1,5.5,5))
     array([2.00000000000000000 3.00000000000000000 4.00000000000000000
     5.00000000000000000 6.00000000000000000])
@@ -315,6 +318,7 @@ def floor(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.floor(ak.linspace(1.1,5.5,5))
     array([1.00000000000000000 2.00000000000000000 3.00000000000000000
     4.00000000000000000 5.00000000000000000])
@@ -350,6 +354,7 @@ def round(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
     array([1.00000000000000000 3.00000000000000000 3.00000000000000000])
     """
@@ -384,6 +389,7 @@ def trunc(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
     array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
     """
@@ -422,6 +428,7 @@ def sign(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.sign(ak.array([-10, -5, 0, 5, 10]))
     array([-1 -1 0 1 1])
     """
@@ -459,6 +466,7 @@ def isfinite(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.isfinite(ak.array([1.0, 2.0, ak.inf]))
     array([True True False])
     """
@@ -495,6 +503,7 @@ def isinf(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.isinf(ak.array([1.0, 2.0, ak.inf]))
     array([False False True])
     """
@@ -531,6 +540,7 @@ def isnan(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.isnan(ak.array([1.0, 2.0, np.log(-1)]))
     array([False False True])
     """
@@ -578,6 +588,7 @@ def log(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> A = ak.array([1, 10, 100])
     # Natural log
     >>> ak.log(A)
@@ -664,6 +675,7 @@ def log1p(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.log1p(ak.arange(1,5))
     array([0.69314718055994529 1.0986122886681098 1.3862943611198906 1.6094379124341003])
     """
@@ -701,6 +713,7 @@ def nextafter(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> eps = np.finfo(np.float64).eps
     >>> ak.nextafter(1, 2) == 1 + eps
     True
@@ -766,6 +779,7 @@ def exp(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.exp(ak.arange(1,5))
     array([2.7182818284590451 7.3890560989306504 20.085536923187668 54.598150033144236])
 
@@ -804,6 +818,7 @@ def expm1(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.expm1(ak.arange(1,5))
     array([1.7182818284590451 6.3890560989306504 19.085536923187668 53.598150033144236])
 
@@ -842,6 +857,7 @@ def square(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.square(ak.arange(1,5))
     array([1 4 9 16])
     """
@@ -879,6 +895,7 @@ def cumsum(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.cumsum(ak.arange(1,5))
     array([1 3 6 10])
 
@@ -924,6 +941,7 @@ def cumprod(pda: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.cumprod(ak.arange(1,5))
     array([1 2 6 24])
 
@@ -1742,6 +1760,7 @@ def where(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a1 = ak.arange(1,10)
     >>> a2 = ak.ones(9, dtype=np.int64)
     >>> cond = a1 < 5
@@ -1904,6 +1923,7 @@ def histogram(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> import matplotlib.pyplot as plt
     >>> A = ak.arange(0, 10, 1)
     >>> nbins = 3
@@ -2001,6 +2021,7 @@ def histogram2d(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> x = ak.arange(0, 10, 1)
     >>> y = ak.arange(9, -1, -1)
     >>> nbins = 3
@@ -2103,6 +2124,7 @@ def histogramdd(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> x = ak.arange(0, 10, 1)
     >>> y = ak.arange(9, -1, -1)
     >>> z = ak.where(x % 2 == 0, x, y)
@@ -2197,6 +2219,7 @@ def value_counts(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> A = ak.array([2, 0, 2, 4, 0, 0])
     >>> ak.value_counts(A)
     (array([0 2 4]), array([3 2 1]))
@@ -2242,6 +2265,7 @@ def clip(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([1,2,3,4,5,6,7,8,9,10])
     >>> ak.clip(a,3,8)
     array([3 3 3 4 5 6 7 8 8 8])
@@ -2321,6 +2345,7 @@ def median(pda: pdarray) -> np.float64:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> pda = ak.array([0,4,7,8,1,3,5,2,-1])
     >>> ak.median(pda)
     3.0
@@ -2367,6 +2392,7 @@ def count_nonzero(pda: pdarray) -> np.int64:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> pda = ak.array([0,4,7,8,1,3,5,2,-1])
     >>> ak.count_nonzero(pda)
     8
@@ -2431,6 +2457,7 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False) -> bool
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.randint(0,10,10,dtype=ak.float64)
     >>> b = a
     >>> ak.array_equal(a,b)
@@ -2474,6 +2501,7 @@ def putmask(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array(np.arange(10))
     >>> ak.putmask (a,a>2,a**2)
     >>> a
@@ -2516,7 +2544,7 @@ def putmask(
         (ak_bool, ak_bool),
     ]
 
-    if not ((A.dtype, Values.dtype) in ALLOWED_PUTMASK_PAIRS):
+    if (A.dtype, Values.dtype) not in ALLOWED_PUTMASK_PAIRS:
         raise RuntimeError(f"Types {A.dtype} and {Values.dtype} are not compatible in putmask.")
     if mask.size != A.size:
         raise RuntimeError("mask and A must be same size in putmask")
@@ -2555,6 +2583,7 @@ def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = 
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> ak.eye(rows=4,cols=4,diag=0,dt=ak.int64)
     array([array([1 0 0 0]) array([0 1 0 0]) array([0 0 1 0]) array([0 0 0 1])])
     >>> ak.eye(rows=3,cols=3,diag=1,dt=ak.float64)
@@ -2606,6 +2635,7 @@ def triu(pda: pdarray, diag: int_scalars = 0) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([[1,2,3,4,5],[2,3,4,5,6],[3,4,5,6,7],[4,5,6,7,8],[5,6,7,8,9]])
     >>> ak.triu(a,diag=0)
     array([array([1 2 3 4 5]) array([0 3 4 5 6]) array([0 0 5 6 7])
@@ -2662,6 +2692,7 @@ def tril(pda: pdarray, diag: int_scalars = 0) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([[1,2,3,4,5],[2,3,4,5,6],[3,4,5,6,7],[4,5,6,7,8],[5,6,7,8,9]])
     >>> ak.tril(a,diag=4)
     array([array([1 2 3 4 5]) array([2 3 4 5 6]) array([3 4 5 6 7])
@@ -2719,6 +2750,7 @@ def transpose(pda: pdarray, axes: Optional[Tuple[int, ...]] = None) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
     >>> ak.transpose(a)
     array([array([1 1]) array([2 2]) array([3 3]) array([4 4]) array([5 5])])
@@ -2769,6 +2801,7 @@ def matmul(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
     >>> b = ak.array([[1,1],[2,2],[3,3],[4,4],[5,5]])
     >>> ak.matmul(a,b)
@@ -2818,6 +2851,7 @@ def vecdot(x1: pdarray, x2: pdarray) -> pdarray:
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
     >>> b = ak.array([[2,2,2,2,2],[2,2,2,2,2]])
     >>> ak.vecdot(a,b)
