@@ -7,7 +7,7 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 from numpy import dtype as npdtype
 
-from arkouda import io_util
+from arkouda.pandas import io_util
 from arkouda.numpy.dtypes import dtype
 from arkouda.pandas.index import Index
 from arkouda.numpy.pdarrayclass import pdarray

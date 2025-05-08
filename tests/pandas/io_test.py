@@ -5,6 +5,7 @@ import shutil
 import tempfile
 from typing import List, Mapping, Union
 
+from arkouda.pandas import io_util
 import h5py
 import numpy as np
 import pandas as pd
@@ -14,7 +15,7 @@ import pytest
 from pandas.testing import assert_series_equal
 
 import arkouda as ak
-from arkouda import io_util, read_zarr, to_zarr
+from arkouda import read_zarr, to_zarr
 from arkouda.testing import assert_frame_equal
 
 NUMERIC_TYPES = ["int64", "float64", "bool", "uint64"]

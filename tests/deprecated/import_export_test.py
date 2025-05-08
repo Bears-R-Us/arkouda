@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from base_test import ArkoudaTest
 from context import arkouda as ak
-from arkouda import io_util
+from arkouda.pandas import io_util
 
 
 class ImportExportTest(ArkoudaTest):
