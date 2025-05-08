@@ -5,7 +5,7 @@ from typing import Optional, Union
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.numpy import cast as akcast
 from arkouda.numpy import where
 from arkouda.numpy.dtypes import bitType, intTypes, isSupportedInt

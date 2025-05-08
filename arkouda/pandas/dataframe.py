@@ -27,8 +27,15 @@ from typeguard import typechecked
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
+<<<<<<< HEAD
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.index import Index, MultiIndex
+=======
+from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES
+from arkouda.pandas.groupbyclass import GroupBy as akGroupBy
+from arkouda.pandas.groupbyclass import unique
+from arkouda.pandas.index import Index, MultiIndex
+>>>>>>> 55fb7be08 (reorg groupbyclass and index)
 from arkouda.numpy import cast as akcast
 from arkouda.numpy import cumsum, where
 from arkouda.numpy.dtypes import _is_dtype_in_union, bigint
@@ -560,7 +567,7 @@ class DataFrameGroupBy:
 
                 series = Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names[0]))
             elif isinstance(self.gb_key_names, list) and len(self.gb_key_names) > 1:
-                from arkouda.index import MultiIndex
+                from arkouda.pandas.index import MultiIndex
 
                 # handle when values is a tuple/list containing data and index
                 # since we are also sending the index keyword
@@ -735,7 +742,11 @@ class DiffAggregate:
 
     Attributes
     ----------
+<<<<<<< HEAD
     gb : GroupBy
+=======
+    gb : arkouda.pandas.groupbyclass.GroupBy
+>>>>>>> 55fb7be08 (reorg groupbyclass and index)
         GroupBy object, where the aggregation keys are values of column(s) of a dataframe.
     values : Series
         A column to compute the difference on.
@@ -2650,7 +2661,7 @@ class DataFrame(UserDict):
             return self
         return self[array(random.sample(range(int(self._nrows)), n))]
 
-    from arkouda.groupbyclass import GroupBy as GroupBy_class
+    from arkouda.pandas.groupbyclass import GroupBy as GroupBy_class
 
     def GroupBy(
         self, keys, use_series=False, as_index=True, dropna=True
@@ -2664,7 +2675,7 @@ class DataFrame(UserDict):
             An (ordered) list of column names or a single string to group by.
         use_series : bool, default=False
             If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
-            Otherwise an arkouda.groupbyclass.GroupBy object.
+            Otherwise an arkouda.pandas.groupbyclass.GroupBy object.
         as_index: bool, default=True
             If True, groupby columns will be set as index
             otherwise, the groupby columns will be treated as DataFrame columns.
@@ -2675,9 +2686,9 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.pandas.dataframe.DataFrameGroupBy or arkouda.groupbyclass.GroupBy
+        arkouda.pandas.dataframe.DataFrameGroupBy or arkouda.pandas.groupbyclass.GroupBy
             If use_series = True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
-            Otherwise returns an arkouda.groupbyclass.GroupBy object.
+            Otherwise returns an arkouda.pandas.groupbyclass.GroupBy object.
 
         See Also
         --------
@@ -2703,7 +2714,7 @@ class DataFrame(UserDict):
         +----+--------+--------+
 
         >>> df.GroupBy("col1")
-        <arkouda.groupbyclass.GroupBy at 0x7f2cf23e10c0>
+        <arkouda.pandas.groupbyclass.GroupBy at 0x7f2cf23e10c0>
         >>> df.GroupBy("col1").size()
         (array([1.00000000000000000 2.00000000000000000]), array([2 1]))
 
@@ -2733,7 +2744,7 @@ class DataFrame(UserDict):
         else:
             cols = [self.data[col] for col in keys]
 
-        from arkouda.groupbyclass import GroupBy as GroupBy_class
+        from arkouda.pandas.groupbyclass import GroupBy as GroupBy_class
 
         gb: Union[DataFrameGroupBy, GroupBy_class] = GroupBy_class(cols, dropna=dropna)
         if use_series:
@@ -4087,7 +4098,7 @@ class DataFrame(UserDict):
             An (ordered) list of column names or a single string to group by.
         use_series : bool, default=True
             If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
-            Otherwise an arkouda.groupbyclass.GroupBy object.
+            Otherwise an arkouda.pandas.groupbyclass.GroupBy object.
         as_index: bool, default=True
             If True, groupby columns will be set as index
             otherwise, the groupby columns will be treated as DataFrame columns.
@@ -4098,9 +4109,9 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.pandas.dataframe.DataFrameGroupBy or arkouda.groupbyclass.GroupBy
+        arkouda.pandas.dataframe.DataFrameGroupBy or arkouda.pandas.groupbyclass.GroupBy
             If use_series = True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
-            Otherwise returns an arkouda.groupbyclass.GroupBy object.
+            Otherwise returns an arkouda.pandas.groupbyclass.GroupBy object.
 
         See Also
         --------
@@ -4126,7 +4137,7 @@ class DataFrame(UserDict):
         +----+--------+--------+
 
         >>> df.GroupBy("col1")
-        <arkouda.groupbyclass.GroupBy at 0x7f2cf23e10c0>
+        <arkouda.pandas.groupbyclass.GroupBy at 0x7f2cf23e10c0>
         >>> df.GroupBy("col1").size()
         (array([1.00000000000000000 2.00000000000000000]), array([2 1]))
 

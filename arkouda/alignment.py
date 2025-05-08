@@ -6,7 +6,7 @@ import numpy as np
 
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
-from arkouda.groupbyclass import GroupBy, broadcast, unique
+from arkouda.pandas.groupbyclass import GroupBy, broadcast, unique
 from arkouda.numpy import cumsum, where
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import float64 as akfloat64
