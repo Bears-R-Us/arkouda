@@ -414,7 +414,7 @@ class Index:
         arkouda.numpy.pdarrayclass.nbytes
         arkouda.index.MultiIndex.memory_usage
         arkouda.pandas.series.Series.memory_usage
-        arkouda.dataframe.DataFrame.memory_usage
+        arkouda.pandas.dataframe.DataFrame.memory_usage
 
         Examples
         --------
@@ -1198,7 +1198,7 @@ class MultiIndex(Index):
         arkouda.numpy.pdarrayclass.nbytes
         arkouda.index.Index.memory_usage
         arkouda.pandas.series.Series.memory_usage
-        arkouda.dataframe.DataFrame.memory_usage
+        arkouda.pandas.dataframe.DataFrame.memory_usage
 
         Examples
         --------

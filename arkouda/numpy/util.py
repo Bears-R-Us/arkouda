@@ -239,7 +239,7 @@ def attach(name: str):
     [1 2 3]
     >>> registered_obj.unregister()
     """
-    from arkouda.dataframe import DataFrame
+    from arkouda.pandas.dataframe import DataFrame
     from arkouda.index import Index, MultiIndex
     from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.numpy.segarray import SegArray

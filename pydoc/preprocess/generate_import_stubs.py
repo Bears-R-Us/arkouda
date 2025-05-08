@@ -146,7 +146,7 @@ def write_stub(module, filename, all_only=False, allow_arkouda=False):
 
 def main():
     import arkouda as ak
-    import arkouda.dataframe as akDataframe
+    import arkouda.pandas.dataframe as akDataframe
     import arkouda.groupbyclass as akGroupbyclass
     import arkouda.numpy as aknp
     import arkouda.pandas.series as akSeries
@@ -164,7 +164,7 @@ def main():
     write_stub(akscipy, "arkouda/scipy.pyi", all_only=True, allow_arkouda=True)
     write_stub(akscipyStats, "arkouda/scipy/stats.pyi", all_only=True, allow_arkouda=True)
     write_stub(akscipySpecial, "arkouda/scipy/special.pyi", all_only=True, allow_arkouda=True)
-    write_stub(akDataframe, "arkouda/dataframe.pyi", all_only=True, allow_arkouda=True)
+    write_stub(akDataframe, "arkouda/panda/dataframe.pyi", all_only=True, allow_arkouda=True)
     write_stub(akGroupbyclass, "arkouda/groupbyclass.pyi", all_only=True, allow_arkouda=True)
     write_stub(akSeries, "arkouda/series.pyi", all_only=True, allow_arkouda=True)
     write_stub(

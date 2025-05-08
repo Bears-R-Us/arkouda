@@ -42,7 +42,6 @@ from arkouda.groupbyclass import *
 from arkouda.categorical import *
 from arkouda.logger import *
 from arkouda.infoclass import *
-from arkouda.dataframe import *
 from arkouda.index import *
 from arkouda.alignment import *
 from arkouda.plotting import *

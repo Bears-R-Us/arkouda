@@ -3,7 +3,7 @@ import math
 import numpy as np
 from matplotlib import pyplot as plt
 
-from arkouda.dataframe import DataFrame
+from arkouda.pandas.dataframe import DataFrame
 from arkouda.groupbyclass import GroupBy
 from arkouda.numpy import histogram, isnan
 from arkouda.numpy.pdarrayclass import skew
