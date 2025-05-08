@@ -12,7 +12,7 @@ import arkouda.numpy.dtypes
 from arkouda.client import generic_msg
 from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import getArkoudaLogger
-from arkouda.match import Match, MatchType
+from arkouda.pandas.match import Match, MatchType
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, bool_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars
