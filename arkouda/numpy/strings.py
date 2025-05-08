@@ -1134,7 +1134,7 @@ class Strings:
         """
         internal function to fetch cached Matcher objects
         """
-        from arkouda.matcher import Matcher
+        from arkouda.pandas.matcher import Matcher
 
         if isinstance(pattern, bytes):
             pattern = pattern.decode()
