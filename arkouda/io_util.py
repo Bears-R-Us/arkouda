@@ -16,8 +16,8 @@ def get_directory(path: str) -> Path:
 
     Returns
     -------
-    str
-        Path object corresponding to the directory
+    Path
+        Object corresponding to the directory
 
     Raises
     ------

@@ -4,7 +4,6 @@ import itertools
 import json
 from collections import defaultdict
 from typing import (
-    Any,
     DefaultDict,
     Dict,
     List,
@@ -304,7 +303,7 @@ class Categorical:
 
         Returns
         -------
-        bool
+        bool_scalars
             True if the Categoricals are the same, o.w. False.
 
         Examples
@@ -429,7 +428,7 @@ class Categorical:
             codes=self.codes.to_ndarray(), categories=self.categories.to_ndarray()
         )
 
-    def to_list(self) -> Any:
+    def to_list(self) -> List[str]:
         """
         Convert the Categorical to a list, transferring data from
         the arkouda server to Python. This conversion discards category
@@ -438,7 +437,7 @@ class Categorical:
 
         Returns
         -------
-        list
+        List[str]
             A list of strings corresponding to the values in
             this Categorical
 
@@ -453,15 +452,15 @@ class Categorical:
         value, but proceed with caution.
 
         """
-        return self.to_ndarray().tolist()
+        return cast(List[str], self.to_ndarray().tolist())
 
-    def to_strings(self) -> List:
+    def to_strings(self) -> Strings:
         """
         Convert the Categorical to Strings.
 
         Returns
         -------
-        arkouda.numpy.strings.Strings
+        Strings
             A Strings object corresponding to the values in
             this Categorical.
 
@@ -642,7 +641,7 @@ class Categorical:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that contain substr, False otherwise
 
         Raises
@@ -684,7 +683,7 @@ class Categorical:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that start with substr, False otherwise
 
         Raises
@@ -726,7 +725,7 @@ class Categorical:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             True for elements that end with substr, False otherwise
 
         Raises
@@ -768,7 +767,7 @@ class Categorical:
 
         Returns
         -------
-        pdarray, bool
+        pdarray
             The values `self[in1d]` are in the `test` Strings or Categorical object.
 
         Raises

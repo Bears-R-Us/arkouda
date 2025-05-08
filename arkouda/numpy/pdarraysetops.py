@@ -57,7 +57,7 @@ def _in1d_single(
 
     Returns
     -------
-    pdarray, bool
+    pdarray
         The values `pda1[in1d]` are in `pda2`.
 
     Raises
@@ -170,7 +170,7 @@ def in1d(
 
     Returns
     -------
-    pdarray, bool
+    groupable
         True for each row in a that is contained in b
 
     Raises
@@ -287,7 +287,7 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
 
     Returns
     -------
-    indices : pdarray, int64
+    pdarray
         For each item in query that is found in space, its index in space.
 
     Notes
@@ -529,7 +529,7 @@ def union1d(
 
     Returns
     -------
-    pdarray/groupable
+    groupable
         Unique, sorted union of the input arrays.
 
     Raises

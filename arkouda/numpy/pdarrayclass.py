@@ -5,7 +5,7 @@ import json
 from functools import reduce
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast
 
 import numpy as np
 from typeguard import typechecked
@@ -487,7 +487,7 @@ class pdarray:
 
         Returns
         -------
-        bool
+        bool_scalars
             True if the pdarrays are the same, o.w. False.
 
         Examples
@@ -1922,11 +1922,12 @@ class pdarray:
 
         Returns
         -------
-        unique_values : pdarray
-            The unique values, sorted in ascending order
+        pdarray, pdarray|int64
+            unique_values : pdarray
+                The unique values, sorted in ascending order
 
-        counts : pdarray, int64
-            The number of times the corresponding unique value occurs
+            counts : pdarray, int64
+                The number of times the corresponding unique value occurs
 
         Examples
         --------
@@ -2219,7 +2220,7 @@ class pdarray:
         else:
             return x.reshape(self.shape)
 
-    def to_list(self) -> Any:
+    def to_list(self) -> List[numeric_scalars]:
         """
         Convert the array to a list, transferring array data from the
         Arkouda server to client-side Python. Note: if the pdarray size exceeds
@@ -2227,7 +2228,7 @@ class pdarray:
 
         Returns
         -------
-        list
+        List[numeric_scalars]
             A list with the same data as the pdarray
 
         Raises
@@ -2259,7 +2260,7 @@ class pdarray:
         >>> type(a.to_list())
         <class 'list'>
         """
-        return self.to_ndarray().tolist()
+        return cast(List[numeric_scalars], self.to_ndarray().tolist())
 
     def to_cuda(self):
         """
@@ -3821,7 +3822,7 @@ def maxk(pda: pdarray, k: int_scalars) -> pdarray:
 
     Returns
     -------
-    pdarray, int
+    pdarray
         The maximum `k` values from pda, sorted
 
     Raises
@@ -3875,7 +3876,7 @@ def argmink(pda: pdarray, k: int_scalars) -> pdarray:
 
     Returns
     -------
-    pdarray, int
+    pdarray
         The indices of the minimum `k` values from the pda, sorted
 
     Raises
@@ -3930,7 +3931,7 @@ def argmaxk(pda: pdarray, k: int_scalars) -> pdarray:
 
     Returns
     -------
-    pdarray, int
+    pdarray
         The indices of the maximum `k` values from the pda, sorted
 
     Raises
@@ -3980,7 +3981,7 @@ def popcount(pda: pdarray) -> pdarray:
 
     Returns
     -------
-    population : pdarray
+    pdarray
         The number of bits set (1) in each element
 
     Raises
@@ -4022,7 +4023,7 @@ def parity(pda: pdarray) -> pdarray:
 
     Returns
     -------
-    parity : pdarray
+    pdarray
         The parity of each element: 0 if even number of bits set, 1 if odd.
 
     Raises
@@ -4063,7 +4064,7 @@ def clz(pda: pdarray) -> pdarray:
 
     Returns
     -------
-    lz : pdarray
+    pdarray
         The number of leading zeros of each element.
 
     Raises
@@ -4142,7 +4143,7 @@ def ctz(pda: pdarray) -> pdarray:
 
     Returns
     -------
-    lz : pdarray
+    pdarray
         The number of trailing zeros of each element.
 
     Notes
@@ -4225,7 +4226,7 @@ def rotl(x, rot) -> pdarray:
 
     Returns
     -------
-    rotated : pdarray(int64/uint64)
+    pdarray
         The rotated elements of x.
 
     Raises
@@ -4264,7 +4265,7 @@ def rotr(x, rot) -> pdarray:
 
     Returns
     -------
-    rotated : pdarray(int64/uint64)
+    pdarray
         The rotated elements of x.
 
     Raises

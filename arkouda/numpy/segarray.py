@@ -332,12 +332,13 @@ class SegArray:
 
         Returns
         -------
-        suffixes : list of pdarray
-            An n-long list of pdarrays, essentially a table where each row is an n-suffix.
-            The number of rows is the number of True values in the returned mask.
-        origin_indices : pdarray, bool
-            Boolean array that is True where the sub-array was long enough to return
-            an n-suffix, False otherwise.
+        List of pdarray, pdarray|bool
+            suffixes : list of pdarray
+                An n-long list of pdarrays, essentially a table where each row is an n-suffix.
+                The number of rows is the number of True values in the returned mask.
+            origin_indices : pdarray, bool
+                Boolean array that is True where the sub-array was long enough to return
+                an n-suffix, False otherwise.
         """
         if proper:
             longenough = self.lengths > n
@@ -370,12 +371,13 @@ class SegArray:
 
         Returns
         -------
-        prefixes : list of pdarray
-            An n-long list of pdarrays, essentially a table where each row is an n-prefix.
-            The number of rows is the number of True values in the returned mask.
-        origin_indices : pdarray, bool
-            Boolean array that is True where the sub-array was long enough to return
-            an n-suffix, False otherwise.
+        List of pdarray, pdarray|bool
+            prefixes : list of pdarray
+                An n-long list of pdarrays, essentially a table where each row is an n-prefix.
+                The number of rows is the number of True values in the returned mask.
+            origin_indices : pdarray, bool
+                Boolean array that is True where the sub-array was long enough to return
+                an n-suffix, False otherwise.
         """
         if proper:
             longenough = self.lengths > n
@@ -404,10 +406,11 @@ class SegArray:
 
         Returns
         -------
-        ngrams : list of pdarray
-            An n-long list of pdarrays, essentially a table where each row is an n-gram.
-        origin_indices : pdarray, int
-            The index of the sub-array from which the corresponding n-gram originated
+        pdarray, pdarray|int
+            ngrams : list of pdarray
+                An n-long list of pdarrays, essentially a table where each row is an n-gram.
+            origin_indices : pdarray, int
+                The index of the sub-array from which the corresponding n-gram originated
         """
         if n > self.lengths.max():
             raise ValueError("n must be <= the maximum length of the sub-arrays")
@@ -461,13 +464,14 @@ class SegArray:
 
         Returns
         -------
-        val : pdarray
-            compressed=False: The j-th value of each sub-array where j is in
-            bounds and the default value where j is out of bounds.
-            compressed=True: The j-th values of only the sub-arrays where j is
-            in bounds
-        origin_indices : pdarray, bool
-            A Boolean array that is True where j is in bounds for the sub-array.
+        pdarray, pdarray|bool
+            val : pdarray
+                compressed=False: The j-th value of each sub-array where j is in
+                bounds and the default value where j is out of bounds.
+                compressed=True: The j-th values of only the sub-arrays where j is
+                in bounds
+            origin_indices : pdarray, bool
+                A Boolean array that is True where j is in bounds for the sub-array.
 
         Notes
         ------
@@ -526,13 +530,14 @@ class SegArray:
 
         Returns
         -------
-        columns : list of pdarray
-            An n-long list of pdarray, where each row is one of the n-long
-            sub-arrays from the SegArray. The number of rows is the number of
-            True values in the returned mask.
-        origin_indices : pdarray, bool
-            Array of bool for each element of the SegArray, True where sub-array
-            has length n.
+        List of pdarray, pdarray|bool
+            columns : list of pdarray
+                An n-long list of pdarray, where each row is one of the n-long
+                sub-arrays from the SegArray. The number of rows is the number of
+                True values in the returned mask.
+            origin_indices : pdarray, bool
+                Array of bool for each element of the SegArray, True where sub-array
+                has length n.
         """
         mask = self.lengths == n
         elem = []
@@ -621,11 +626,12 @@ class SegArray:
 
         Returns
         -------
-        norepeats : SegArray
-            Sub-arrays with runs of repeated values replaced with single value
-        multiplicity : SegArray
-            If return_multiplicity=True, this array contains the number of times
-            each value in the returned SegArray was repeated in the original SegArray.
+        Segarray, Segarray
+            norepeats : SegArray
+                Sub-arrays with runs of repeated values replaced with single value
+            multiplicity : SegArray
+                If return_multiplicity=True, this array contains the number of times
+                each value in the returned SegArray was repeated in the original SegArray.
         """
         isrepeat = zeros(self.values.size, dtype=akbool)
         isrepeat[1:] = self.values[:-1] == self.values[1:]

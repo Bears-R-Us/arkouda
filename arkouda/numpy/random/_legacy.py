@@ -111,7 +111,8 @@ def randint(
 
 @typechecked
 def standard_normal(
-    size: Union[int_scalars, Tuple[int_scalars, ...]], seed: Union[None, int_scalars] = None
+    size: Union[int_scalars, Tuple[int_scalars, ...]],
+    seed: Union[None, int_scalars] = None,
 ) -> pdarray:
     """
     Draw real numbers from the standard normal distribution.
@@ -125,7 +126,7 @@ def standard_normal(
 
     Returns
     -------
-    pdarray, float64
+    pdarray
         The array of random numbers
 
     Raises
@@ -196,7 +197,7 @@ def uniform(
 
     Returns
     -------
-    pdarray, float64
+    pdarray
         Values drawn uniformly from the specified range
 
     Raises

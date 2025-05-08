@@ -466,9 +466,9 @@ class Series:
         See Also
         --------
         arkouda.numpy.pdarrayclass.nbytes
-        arkouda.index.Index.memory_usage
-        arkouda.series.Series.memory_usage
-        arkouda.dataframe.DataFrame.memory_usage
+        arkouda.Index.memory_usage
+        arkouda.pandas.series.Series.memory_usage
+        arkouda.datafame.DataFrame.memory_usage
 
         Examples
         --------
@@ -1083,7 +1083,7 @@ class Series:
 
         Returns
         -------
-        numpy.bool
+        bool
             Indicates if the object is contained in the registry
 
         Raises
@@ -1253,7 +1253,7 @@ class Series:
 
         Returns
         -------
-        arkouda.series.Series
+        Series
             A new series with the same index as the caller.
             When the input Series has Categorical values,
             the return Series will have Strings values.
@@ -1336,7 +1336,7 @@ class Series:
 
         Returns
         -------
-        arkouda.series.Series
+        Series
             Mask of bool values for each element in Series
             that indicates whether an element is an NA value.
 
@@ -1379,7 +1379,7 @@ class Series:
 
         Returns
         -------
-        arkouda.series.Series
+        Series
             Mask of bool values for each element in Series
             that indicates whether an element is an NA value.
 
@@ -1417,7 +1417,7 @@ class Series:
 
         Returns
         -------
-        arkouda.series.Series
+        Series
             Mask of bool values for each element in Series
             that indicates whether an element is not an NA value.
 
@@ -1460,7 +1460,7 @@ class Series:
 
         Returns
         -------
-        arkouda.series.Series
+        Series
             Mask of bool values for each element in Series
             that indicates whether an element is not an NA value.
 
