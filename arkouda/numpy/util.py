@@ -10,7 +10,7 @@ from typeguard import typechecked
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
-from arkouda.groupbyclass import GroupBy
+from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.infoclass import list_registry
 from arkouda.numpy.dtypes import (
     _is_dtype_in_union,
@@ -27,7 +27,7 @@ from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
 
 if TYPE_CHECKING:
-    from arkouda.index import Index
+    from arkouda.pandas.index import Index
     from arkouda.numpy.segarray import SegArray
     from arkouda.pandas.series import Series
 else:
@@ -240,7 +240,7 @@ def attach(name: str):
     >>> registered_obj.unregister()
     """
     from arkouda.pandas.dataframe import DataFrame
-    from arkouda.index import Index, MultiIndex
+    from arkouda.pandas.index import Index, MultiIndex
     from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.numpy.segarray import SegArray
     from arkouda.pandas.series import Series
@@ -672,7 +672,7 @@ def is_numeric(arry: Union[pdarray, Strings, Categorical, Series, Index]) -> bui
     >>> ak.util.is_numeric(cat)
     False
     """
-    from arkouda.index import Index
+    from arkouda.pandas.index import Index
     from arkouda.pandas.series import Series
 
     if isinstance(arry, (pdarray, Series, Index)):
@@ -710,7 +710,7 @@ def is_float(arry: Union[pdarray, Strings, Categorical, Series, Index]) -> built
     >>> ak.util.is_float(strings)
     False
     """
-    from arkouda.index import Index
+    from arkouda.pandas.index import Index
     from arkouda.pandas.series import Series
 
     if isinstance(arry, (pdarray, Series, Index)):
@@ -748,7 +748,7 @@ def is_int(arry: Union[pdarray, Strings, Categorical, Series, Index]) -> builtin
     >>> ak.util.is_int(strings)
     False
     """
-    from arkouda.index import Index
+    from arkouda.pandas.index import Index
     from arkouda.pandas.series import Series
 
     if isinstance(arry, (pdarray, Series, Index)):

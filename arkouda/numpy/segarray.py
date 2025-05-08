@@ -7,7 +7,7 @@ from typing import cast as type_cast
 import numpy as np
 
 from arkouda.client import generic_msg
-from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy import cumsum
 from arkouda.numpy.dtypes import bool_ as akbool

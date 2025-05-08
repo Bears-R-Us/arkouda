@@ -13,8 +13,8 @@ import arkouda.pandas.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
 from arkouda.categorical import Categorical
-from arkouda.groupbyclass import GroupBy, groupable_element_type
-from arkouda.index import Index, MultiIndex
+from arkouda.pandas.groupbyclass import GroupBy, groupable_element_type
+from arkouda.pandas.index import Index, MultiIndex
 from arkouda.numpy import cast as akcast
 from arkouda.numpy import isnan, value_counts
 from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64

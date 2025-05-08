@@ -11,8 +11,8 @@ from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.client_dtypes import IPv4
 from arkouda.pandas.dataframe import DataFrame
-from arkouda.groupbyclass import GroupBy
-from arkouda.index import Index, MultiIndex
+from arkouda.pandas.groupbyclass import GroupBy
+from arkouda.pandas.index import Index, MultiIndex
 from arkouda.numpy.dtypes import float32, float64, int32, int64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array

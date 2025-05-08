@@ -20,7 +20,7 @@ from pandas import Categorical as pd_Categorical
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.groupbyclass import GroupBy, unique
+from arkouda.pandas.groupbyclass import GroupBy, unique
 from arkouda.infoclass import information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy import cast as akcast

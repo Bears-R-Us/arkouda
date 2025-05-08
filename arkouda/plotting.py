@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from arkouda.pandas.dataframe import DataFrame
-from arkouda.groupbyclass import GroupBy
+from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.numpy import histogram, isnan
 from arkouda.numpy.pdarrayclass import skew
 from arkouda.numpy.pdarraycreation import arange
