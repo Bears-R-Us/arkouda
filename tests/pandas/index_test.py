@@ -10,7 +10,7 @@ from pandas import Index as pd_Index
 from pandas.testing import assert_index_equal as pd_assert_index_equal
 
 import arkouda as ak
-from arkouda import io_util
+from arkouda.pandas import io_util
 from arkouda.pandas.index import Index
 from arkouda.numpy.dtypes import dtype
 from arkouda.numpy.pdarrayclass import pdarray
