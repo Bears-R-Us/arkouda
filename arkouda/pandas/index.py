@@ -771,7 +771,7 @@ class Index:
 
         from arkouda.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         if isinstance(self.values, list):
             raise TypeError("Unable to write Index to hdf when values are a list.")
@@ -856,7 +856,7 @@ class Index:
         """
         from arkouda.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,
@@ -1425,7 +1425,7 @@ class MultiIndex(Index):
 
         from arkouda.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         index_data = [
             (
@@ -1502,7 +1502,7 @@ class MultiIndex(Index):
         """
         from arkouda.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,

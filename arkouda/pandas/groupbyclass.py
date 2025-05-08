@@ -427,7 +427,7 @@ class GroupBy:
 
         """
         from arkouda.categorical import Categorical as Categorical_
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         keys = self.keys if isinstance(self.keys, Sequence) else [self.keys]
 
@@ -476,7 +476,7 @@ class GroupBy:
         dataset: str = "groupby",
         repack: bool = True,
     ):
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,

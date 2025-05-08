@@ -683,7 +683,7 @@ class IPv4(pdarray):
         from typing import cast as typecast
 
         from arkouda.client import generic_msg
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return typecast(
             str,
@@ -704,7 +704,7 @@ class IPv4(pdarray):
     def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
         """Override the pdarray implementation so that the special object type will be used."""
         from arkouda.client import generic_msg
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,

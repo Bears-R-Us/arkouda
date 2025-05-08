@@ -223,7 +223,7 @@ class _AbstractBaseTime(pdarray):
         """
         from typing import cast as typecast
 
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return typecast(
             str,
@@ -245,7 +245,7 @@ class _AbstractBaseTime(pdarray):
         """
         Override the pdarray implementation so that the special object type will be used.
         """
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,

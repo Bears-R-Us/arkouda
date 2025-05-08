@@ -44,7 +44,6 @@ from arkouda.infoclass import *
 from arkouda.alignment import *
 from arkouda.plotting import *
 from arkouda.accessor import *
-from arkouda.io import *
 from arkouda.scipy.special import *
 from arkouda.scipy import *
 from arkouda.testing import *

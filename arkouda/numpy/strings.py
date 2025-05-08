@@ -2397,7 +2397,7 @@ class Strings:
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
         """
-        from arkouda.io import _mode_str_to_int
+        from arkouda.pandas.io import _mode_str_to_int
 
         return cast(
             str,
@@ -2476,7 +2476,7 @@ class Strings:
         ---------
         to_hdf
         """
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return cast(
             str,
@@ -2539,7 +2539,7 @@ class Strings:
           the file name is checked for _LOCALE#### to determine if it is distributed.
         - If the dataset provided does not exist, it will be added
         """
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,
