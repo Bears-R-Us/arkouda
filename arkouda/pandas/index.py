@@ -11,7 +11,7 @@ from numpy import dtype as npdtype
 from typeguard import typechecked
 
 from arkouda.categorical import Categorical
-from arkouda.groupbyclass import GroupBy, unique
+from arkouda.pandas.groupbyclass import GroupBy, unique
 from arkouda.numpy import cast as akcast
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars

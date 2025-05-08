@@ -37,7 +37,7 @@ class TestUtil:
         categoricals = ak.Categorical(strings)
         floats = ak.array([1, np.nan])
 
-        from arkouda.index import Index
+        from arkouda.pandas.index import Index
         from arkouda.pandas.series import Series
 
         for item in [
