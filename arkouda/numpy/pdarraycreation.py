@@ -1008,7 +1008,7 @@ def arange(*args, **kwargs) -> pdarray:
         if stride < 0:
             stop = stop + 2
         repMsg = generic_msg(
-            cmd="arange", args={"start": start, "stop": stop, "stride": stride, "dtype": arg_dtype}
+            cmd=f"arange<{arg_dtype},1>", args={"start": start, "stop": stop, "step": stride}
         )
         return cast(
             pdarray,
