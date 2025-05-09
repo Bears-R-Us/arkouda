@@ -52,9 +52,12 @@ from arkouda.pandas.row import Row
 if TYPE_CHECKING:
     from arkouda.numpy.segarray import SegArray
     from arkouda.pandas.series import Series
+    from arkouda.client import generic_msg, maxTransferBytes
 else:
     Series = TypeVar("Series")
     SegArray = TypeVar("SegArray")
+    generic_msg = TypeVar("generic_msg")
+    maxTransferBytes = TypeVar("maxTransferBytes")
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
