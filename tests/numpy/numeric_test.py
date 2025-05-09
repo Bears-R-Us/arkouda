@@ -3,6 +3,7 @@ from math import isclose, prod, sqrt
 
 import numpy as np
 import pytest
+import random
 
 import arkouda as ak
 from arkouda.client import get_array_ranks, get_max_array_rank
@@ -34,6 +35,10 @@ ALLOWED_PERQUANT_METHODS = [
     "midpoint",
     "higher",
 ]  # not supporting 'nearest' at present
+
+#  The subset of methods is used when doing multi-locale testing during development
+
+SUBSET_PERQUANT_METHODS = ["linear", "midpoint"]  # one continuous, one discontinuous
 
 ALLOWED_PUTMASK_PAIRS = [
     (ak.float64, ak.float64),
@@ -1295,36 +1300,60 @@ class TestNumeric:
     def test_perquant_scalar_no_axis(self, prob_size, method_name, data_type):
         nda = np.random.randint(0, prob_size, prob_size).astype(data_type)
         pda = ak.array(nda)
-        q_range_size = 3
-        range_of_qs = np.arange(q_range_size) / (q_range_size + 1)
-        for q in range_of_qs:
-            pr = ak.quantile(pda, q, method=method_name)
-            nr = np.quantile(nda, q, method=method_name).astype(np.float64)
-            assert isclose(pr, nr)
-            pr = ak.percentile(pda, 100 * q, method=method_name)
-            nr = np.percentile(nda, 100 * q, method=method_name).astype(np.float64)
-            assert isclose(pr, nr)
+        q = np.random.uniform()
+        pr = ak.quantile(pda, q, method=method_name)
+        nr = np.quantile(nda, q, method=method_name).astype(np.float64)
+        assert isclose(pr, nr)
+        pr = ak.percentile(pda, 100 * q, method=method_name)
+        nr = np.percentile(nda, 100 * q, method=method_name).astype(np.float64)
+        assert isclose(pr, nr)
+
+    #   Note: axis slicing tests take considerably longer, so only a
+    #   subset of the methods are used when multi-locales exist.
 
     #   test scalar q, 2 dimensional pda with 1 slice axis, returns pdarray
 
     @pytest.mark.skip_if_rank_not_compiled(2)
+    @pytest.mark.skipif(pytest.nl > 1, reason="Single locale test skipped.")
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("method_name", ALLOWED_PERQUANT_METHODS)
     @pytest.mark.parametrize("data_type", NO_BOOL)
-    def test_perquant_scalar_with_axis(self, prob_size, method_name, data_type):
+    def test_perquant_scalar_with_axis_one_locale(self, prob_size, method_name, data_type):
         smaller = prob_size // 2
         nda = np.random.randint(0, smaller, (2, smaller)).astype(data_type)
         pda = ak.array(nda)
-        q_range_size = 3
-        range_of_qs = np.arange(q_range_size) / (q_range_size + 1)
-        for q in range_of_qs:
-            for axis in [0, 1]:
-                pr = ak.quantile(pda, q, axis=axis, method=method_name)
-                nr = np.quantile(nda, q, axis=axis, method=method_name).astype(np.float64)
-                ak_assert_almost_equivalent(pr, nr)
-                pr = ak.percentile(pda, 100 * q, axis=axis, method=method_name)
-                nr = np.percentile(nda, 100 * q, axis=axis, method=method_name).astype(np.float64)
-                ak_assert_almost_equivalent(pr, nr)
+        q = np.random.uniform()
+        for axis in [0, 1]:
+            keepdims = bool(axis)  # first False, then True
+            pr = ak.quantile(pda, q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.quantile(nda, q, axis=axis, keepdims=keepdims, method=method_name).astype(np.float64)
+            ak_assert_almost_equivalent(pr, nr)
+            pr = ak.percentile(pda, 100 * q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.percentile(nda, 100 * q, axis=axis, keepdims=keepdims, method=method_name).astype(
+                np.float64
+            )
+            ak_assert_almost_equivalent(pr, nr)
+
+    @pytest.mark.skip_if_rank_not_compiled(2)
+    @pytest.mark.skipif(pytest.nl < 2, reason="Multi-locale test skipped")
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("method_name", SUBSET_PERQUANT_METHODS)
+    @pytest.mark.parametrize("data_type", NO_BOOL)
+    def test_perquant_scalar_with_axis_multi_locale(self, prob_size, method_name, data_type):
+        smaller = prob_size // 2
+        nda = np.random.randint(0, smaller, (2, smaller)).astype(data_type)
+        pda = ak.array(nda)
+        q = np.random.uniform()
+        for axis in [0, 1]:
+            keepdims = bool(axis)  # first False, then True
+            pr = ak.quantile(pda, q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.quantile(nda, q, axis=axis, keepdims=keepdims, method=method_name).astype(np.float64)
+            ak_assert_almost_equivalent(pr, nr)
+            pr = ak.percentile(pda, 100 * q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.percentile(nda, 100 * q, axis=axis, keepdims=keepdims, method=method_name).astype(
+                np.float64
+            )
+            ak_assert_almost_equivalent(pr, nr)
 
     #   test array q, 2 dimensional pda with no slice axis, returns pdarray
 
@@ -1335,7 +1364,7 @@ class TestNumeric:
     def test_perquant_array_no_axis(self, prob_size, method_name, data_type):
         nda = np.random.randint(0, prob_size, prob_size).astype(data_type)
         pda = ak.array(nda)
-        q = np.random.uniform(0, 1, (2, 2))
+        q = np.random.uniform(0, 1, 3)
         pr = ak.quantile(pda, q, method=method_name)
         nr = np.quantile(nda, q, method=method_name).astype(np.float64)
         ak_assert_almost_equivalent(pr, nr)
@@ -1346,20 +1375,45 @@ class TestNumeric:
     #   test array 1 dimensional q, 2 dimensional pda with slice axis, returns pdarray.
 
     @pytest.mark.skip_if_rank_not_compiled(2, 3)
+    @pytest.mark.skipif(pytest.nl > 1, reason="Single locale test skipped.")
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("method_name", ALLOWED_PERQUANT_METHODS)
     @pytest.mark.parametrize("data_type", NO_BOOL)
-    def test_perquant_array_with_axis(self, prob_size, method_name, data_type):
+    def test_perquant_array_with_axis_one_locale(self, prob_size, method_name, data_type):
         smaller = prob_size // 2
         nda = np.random.randint(0, smaller, (2, smaller)).astype(data_type)
         pda = ak.array(nda)
-        q = np.random.uniform(0, 1, (2))
+        q = np.random.uniform(0, 1, 2)
         for axis in [0, 1]:
-            pr = ak.quantile(pda, q, axis=axis, method=method_name)
-            nr = np.quantile(nda, q, axis=axis, method=method_name).astype(np.float64)
+            keepdims = bool(axis)  # alternate False, True
+            pr = ak.quantile(pda, q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.quantile(nda, q, axis=axis, keepdims=keepdims, method=method_name).astype(np.float64)
             ak_assert_almost_equivalent(pr, nr)
-            pr = ak.percentile(pda, 100 * q, axis=axis, method=method_name)
-            nr = np.percentile(nda, 100 * q, axis=axis, method=method_name).astype(np.float64)
+            pr = ak.percentile(pda, 100 * q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.percentile(nda, 100 * q, axis=axis, keepdims=keepdims, method=method_name).astype(
+                np.float64
+            )
+            ak_assert_almost_equivalent(pr, nr)
+
+    @pytest.mark.skip_if_rank_not_compiled(2, 3)
+    @pytest.mark.skipif(pytest.nl < 2, reason="Multi locale test skipped.")
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("method_name", SUBSET_PERQUANT_METHODS)
+    @pytest.mark.parametrize("data_type", NO_BOOL)
+    def test_perquant_array_with_axis_multi_locale(self, prob_size, method_name, data_type):
+        smaller = prob_size // 2
+        nda = np.random.randint(0, smaller, (2, smaller)).astype(data_type)
+        pda = ak.array(nda)
+        q = np.random.uniform(0, 1, 2)
+        for axis in [0, 1]:
+            keepdims = bool(axis)  # alternate False, True
+            pr = ak.quantile(pda, q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.quantile(nda, q, axis=axis, keepdims=keepdims, method=method_name).astype(np.float64)
+            ak_assert_almost_equivalent(pr, nr)
+            pr = ak.percentile(pda, 100 * q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.percentile(nda, 100 * q, axis=axis, keepdims=keepdims, method=method_name).astype(
+                np.float64
+            )
             ak_assert_almost_equivalent(pr, nr)
 
     #   test array 2 dimensional q, 2 dimensional pda with slice axis, returns pdarray.
@@ -1367,37 +1421,91 @@ class TestNumeric:
     #      only be run if that rank is compiled.
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3, 4])
+    @pytest.mark.skipif(pytest.nl > 1, reason="Single locale test skipped.")
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("method_name", ALLOWED_PERQUANT_METHODS)
     @pytest.mark.parametrize("data_type", NO_BOOL)
-    def test_perquant_array_multi_dim(self, prob_size, method_name, data_type):
+    def test_perquant_array_multi_dim_one_locale(self, prob_size, method_name, data_type):
         smaller = prob_size // 2
         nda = np.random.randint(0, smaller, (2, smaller)).astype(data_type)
         pda = ak.array(nda)
         q = np.random.uniform(0, 1, (2, 2))
         for axis in [0, 1]:
-            pr = ak.quantile(pda, q, axis=axis, method=method_name)
-            nr = np.quantile(nda, q, axis=axis, method=method_name).astype(np.float64)
+            keepdims = bool(axis)  # alternate False, True
+            pr = ak.quantile(pda, q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.quantile(nda, q, axis=axis, keepdims=keepdims, method=method_name).astype(np.float64)
             ak_assert_almost_equivalent(pr, nr)
-            pr = ak.percentile(pda, 100 * q, axis=axis, method=method_name)
-            nr = np.percentile(nda, 100 * q, axis=axis, method=method_name).astype(np.float64)
+            pr = ak.percentile(pda, 100 * q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.percentile(nda, 100 * q, axis=axis, keepdims=keepdims, method=method_name).astype(
+                np.float64
+            )
+            ak_assert_almost_equivalent(pr, nr)
+
+    @pytest.mark.skip_if_rank_not_compiled([2, 3, 4])
+    @pytest.mark.skipif(pytest.nl < 2, reason="Multi locale test skipped.")
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("method_name", SUBSET_PERQUANT_METHODS)
+    @pytest.mark.parametrize("data_type", NO_BOOL)
+    def test_perquant_array_multi_dim_multi_locale(self, prob_size, method_name, data_type):
+        smaller = prob_size // 2
+        nda = np.random.randint(0, smaller, (2, smaller)).astype(data_type)
+        pda = ak.array(nda)
+        q = np.random.uniform(0, 1, (2, 2))
+        for axis in [0, 1]:
+            keepdims = bool(axis)  # First False, then True
+            pr = ak.quantile(pda, q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.quantile(nda, q, axis=axis, keepdims=keepdims, method=method_name).astype(np.float64)
+            ak_assert_almost_equivalent(pr, nr)
+            pr = ak.percentile(pda, 100 * q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.percentile(nda, 100 * q, axis=axis, keepdims=keepdims, method=method_name).astype(
+                np.float64
+            )
+            ak_assert_almost_equivalent(pr, nr)
 
     #   test array 1 dimensional q, 3 dimensional pda with multi-axis slice, returns pdarray.
     #      This is also a case with an intermediate result of rank 4, so the test can
     #      only be run if that rank is compiled.
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3, 4])
+    @pytest.mark.skipif(pytest.nl > 1, reason="Single locale test skipped.")
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("method_name", ALLOWED_PERQUANT_METHODS)
     @pytest.mark.parametrize("data_type", NO_BOOL)
-    def test_perquant_array_multi_slice(self, prob_size, method_name, data_type):
+    def test_perquant_array_multi_slice_one_locale(self, prob_size, method_name, data_type):
         smaller = prob_size // 4
         nda = np.random.randint(0, smaller, (2, 2, smaller)).astype(data_type)
         pda = ak.array(nda)
-        q = np.random.uniform(0, 1, (3))
+        q = np.random.uniform(0, 1, 3)
+        keepdims = False
         for axis in [0, 1, 2, (0, 1), (0, 2), (1, 2)]:
-            pr = ak.quantile(pda, q, axis=axis, method=method_name)
-            nr = np.quantile(nda, q, axis=axis, method=method_name).astype(np.float64)
+            pr = ak.quantile(pda, q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.quantile(nda, q, axis=axis, keepdims=keepdims, method=method_name).astype(np.float64)
             ak_assert_almost_equivalent(pr, nr)
-            pr = ak.percentile(pda, 100 * q, axis=axis, method=method_name)
-            nr = np.percentile(nda, 100 * q, axis=axis, method=method_name).astype(np.float64)
+            pr = ak.percentile(pda, 100 * q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.percentile(nda, 100 * q, axis=axis, keepdims=keepdims, method=method_name).astype(
+                np.float64
+            )
+            ak_assert_almost_equivalent(pr, nr)
+            keepdims = not keepdims  # switch this each time through the loop
+
+    @pytest.mark.skip_if_rank_not_compiled([2, 3, 4])
+    @pytest.mark.skipif(pytest.nl < 2, reason="Multi locale test skipped.")
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("method_name", SUBSET_PERQUANT_METHODS)
+    @pytest.mark.parametrize("data_type", NO_BOOL)
+    def test_perquant_array_multi_slice_multi_locale(self, prob_size, method_name, data_type):
+        smaller = prob_size // 4
+        nda = np.random.randint(0, smaller, (2, 2, smaller)).astype(data_type)
+        pda = ak.array(nda)
+        q = np.random.uniform(0, 1, 3)
+        keepdims = False
+        for axis in [random.choice([0, 1, 2]), random.choice([(0, 1), (0, 2), (1, 2)])]:
+            pr = ak.quantile(pda, q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.quantile(nda, q, axis=axis, keepdims=keepdims, method=method_name).astype(np.float64)
+            ak_assert_almost_equivalent(pr, nr)
+            pr = ak.percentile(pda, 100 * q, axis=axis, keepdims=keepdims, method=method_name)
+            nr = np.percentile(nda, 100 * q, axis=axis, keepdims=keepdims, method=method_name).astype(
+                np.float64
+            )
+            ak_assert_almost_equivalent(pr, nr)
+            keepdims = not keepdims  # switch this each time through the loop

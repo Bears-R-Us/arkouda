@@ -914,7 +914,7 @@ module EfuncMsg
       where ((t==real || t==int || t==uint)) {
         var a_ = sort(flatten(a));
         var return_value = makeDistArray(dq,real);
-        for dqidx in dq {
+        forall dqidx in dq {
             return_value[dqidx] = quantile_helper(a_,q[dqidx],method);
         }
         return return_value;
@@ -936,19 +936,10 @@ module EfuncMsg
             for (sliceDom,sliceIdx) in axisSlices(d, axes) {
 
                 var holder = makeDistArray(sliceDom.size,t);
-                if numLocales == 1 {
-                    var hdx = 0;
-                    for element in a[sliceDom] {
-                      holder[hdx] = element;
-                      hdx += 1;
-                    }
-                    ret [sliceIdx] = quantile_helper(sort(holder),q,method);
-                } else {
-                    forall idx in holder.domain with (var agg = new DstAggregator(t)) {
-                       agg.copy (holder(idx),a[sliceDom.orderToIndex(idx)]) ;
-                    }
-                    ret [sliceIdx] = quantile_helper(sort(flatten(holder)),q,method);
+                forall idx in holder.domain with (var agg = new DstAggregator(t)) {
+                   agg.copy (holder(idx),a[sliceDom.orderToIndex(idx)]) ;
                 }
+                ret [sliceIdx] = quantile_helper(sort(flatten(holder)),q,method);
             }
             return ret;
         }
@@ -983,16 +974,8 @@ module EfuncMsg
             for (sliceDom,sliceIdx) in axisSlices(d, axes) {
 
                 var holder = makeDistArray(sliceDom.size,t);
-                if numLocales == 1 {
-                    var hdx = 0;
-                    for element in a[sliceDom] {
-                      holder[hdx] = element;
-                      hdx += 1;
-                    }
-                } else {  
-                    forall idx in holder.domain with (var agg = new DstAggregator(t)) {
-                        agg.copy (holder(idx),a[sliceDom.orderToIndex(idx)]) ;
-                    }
+                forall idx in holder.domain with (var agg = new DstAggregator(t)) {
+                    agg.copy (holder(idx),a[sliceDom.orderToIndex(idx)]) ;
                 }
 
                 // The "holder" vector (the slice) was formed before looping over q.
