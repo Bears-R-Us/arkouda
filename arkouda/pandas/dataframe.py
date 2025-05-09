@@ -25,14 +25,11 @@ from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
 from typeguard import typechecked
 
 from arkouda.categorical import Categorical
-from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES
 from arkouda.pandas.groupbyclass import GroupBy as akGroupBy
 from arkouda.pandas.groupbyclass import unique
 from arkouda.pandas.index import Index, MultiIndex
-from arkouda.numpy import cast as akcast
-from arkouda.numpy import cumsum, where
 from arkouda.numpy.dtypes import _is_dtype_in_union, bigint
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -53,11 +50,16 @@ if TYPE_CHECKING:
     from arkouda.numpy.segarray import SegArray
     from arkouda.pandas.series import Series
     from arkouda.client import generic_msg, maxTransferBytes
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import cumsum, where
 else:
     Series = TypeVar("Series")
     SegArray = TypeVar("SegArray")
     generic_msg = TypeVar("generic_msg")
     maxTransferBytes = TypeVar("maxTransferBytes")
+    akcast = TypeVar("akcast")
+    cumsum = TypeVar("cumsum")
+    where = TypeVar("where")
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits

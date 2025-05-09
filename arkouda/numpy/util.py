@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar, Union
 from typeguard import typechecked
 
 from arkouda.categorical import Categorical
-from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.infoclass import list_registry
@@ -30,10 +29,15 @@ if TYPE_CHECKING:
     from arkouda.pandas.index import Index
     from arkouda.numpy.segarray import SegArray
     from arkouda.pandas.series import Series
+    from arkouda.client import generic_msg, get_config, get_mem_used
+
 else:
     Index = TypeVar("Index")
     Series = TypeVar("Series")
     SegArray = TypeVar("SegArray")
+    generic_msg = TypeVar("generic_msg")
+    get_config = TypeVar("get_config")
+    get_mem_used = TypeVar("get_mem_used")
 
 
 def identity(x):

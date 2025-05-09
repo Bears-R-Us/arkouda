@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 import json
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, TypeVar,List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -12,7 +12,6 @@ from typeguard import typechecked
 
 from arkouda.categorical import Categorical
 from arkouda.pandas.groupbyclass import GroupBy, unique
-from arkouda.numpy import cast as akcast
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -26,7 +25,9 @@ from arkouda.numpy.util import convert_if_categorical, generic_concat, get_callb
 
 if TYPE_CHECKING:
     from arkouda.pandas.series import Series
-
+    from arkouda.numpy import cast as akcast
+else:
+    akcast = TypeVar("akcast")
 
 class Index:
     objType = "Index"

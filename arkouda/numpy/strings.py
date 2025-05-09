@@ -3,13 +3,12 @@ from __future__ import annotations
 import codecs
 import itertools
 import re
-from typing import Any, Dict, List, Literal, Optional, Tuple, Union, cast
+from typing import Any, TYPE_CHECKING, TypeVar, Dict, List, Literal, Optional, Tuple, Union, cast
 
 import numpy as np
 from typeguard import typechecked
 
 import arkouda.numpy.dtypes
-from arkouda.client import generic_msg
 from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import getArkoudaLogger
 from arkouda.pandas.match import Match, MatchType
@@ -19,6 +18,11 @@ from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_, str_sc
 from arkouda.numpy.pdarrayclass import RegistrationError
 from arkouda.numpy.pdarrayclass import all as akall
 from arkouda.numpy.pdarrayclass import create_pdarray, parse_single_value, pdarray
+
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+else:
+    generic_msg = TypeVar("generic_msg")
 
 __all__ = ["Strings"]
 

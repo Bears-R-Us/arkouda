@@ -1,11 +1,10 @@
 import itertools
-from typing import Any, Iterable, List, Optional, Tuple, Union, cast
+from typing import Any, TYPE_CHECKING, TypeVar, Iterable, List, Optional, Tuple, Union, cast
 
 import numpy as np
 import pandas as pd
 from typeguard import typechecked
 
-from arkouda.client import generic_msg, get_array_ranks
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     DTypes,
@@ -26,6 +25,12 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.strings import Strings
+
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg, get_array_ranks
+else:
+    generic_msg = TypeVar("generic_msg")
+    get_array_ranks = TypeVar("get_array_ranks")
 
 __all__ = [
     "array",

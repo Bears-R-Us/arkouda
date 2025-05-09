@@ -1,14 +1,17 @@
-from typing import Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, TypeVar, Optional, Tuple, Union, cast
 
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+else:
+    generic_msg = TypeVar("generic_msg")
 
 @typechecked
 def randint(
