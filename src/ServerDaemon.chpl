@@ -664,10 +664,8 @@ module ServerDaemon {
                         }
                         otherwise { // Look up in CommandMap
                             if commandMap.contains(cmd) {
-                                writeln(stamp, ">>> wass requesting lock - main"); 
                                 activityMutex.writeEF("server");
-                                writeln(stamp, "    wass acquired lock - main");
-                                defer { writeln(stamp, "<<< wass unlock - main"); activityMutex.readFE(); }
+                                defer { activityMutex.readFE(); }
 
                                 repMsg = executeCommand(cmd, msgArgs, st);
                             } else {

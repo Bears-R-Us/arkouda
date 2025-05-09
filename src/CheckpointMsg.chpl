@@ -187,13 +187,6 @@ module CheckpointMsg {
             if checkpointCheckDelay <= 0 then minRequestedDelay
             else min(checkpointCheckDelay, minRequestedDelay);
 
-          writeln("wass<<<>>>",
-                  "  memPct ", checkpointMemPct,
-                  "  memDel ", checkpointMemPctDelay,
-                  "  idleTm ", checkpointIdleTime,
-                  "  chkDel ", checkpointCheckDelay,
-                  "  minReq ", minRequestedDelay);
-
           // start the asynchronous task
           begin asyncCheckpointDaemon(st);
 
@@ -214,35 +207,28 @@ module CheckpointMsg {
     // The only way to end this task is exit() in DefaultServerDaemon.shutdown().
     while true {
       try {
-        writeln("wass sleep %.2dr".format(delay));
         Time.sleep(delay);
 
         // Check and checkpoint within the same mutex region
         // to avoid the server firing up when we are about to checkpoint.
-        writeln(stamp, ">>> wass requesting lock - async");
         activityMutex.writeEF("async checkpointing");
-        writeln(stamp, "    wass acquired lock - async");
-        defer { writeln(stamp, "<<< wass unlock - async"); activityMutex.readFE(); }
+        defer { activityMutex.readFE(); }
 
         const idleStart = idlePeriodStart.read();
         if idleStart == 0 {
-          writeln(stamp, "  wass server busy");
           // The server is not idle. Do not do anything now. Check back later.
           delay = minRequestedDelay;
           continue;
         }
 
         const idleTime = Time.timeSinceEpoch().totalSeconds() - idleStart;
-        writeln(stamp, "  idleTime %.2dr".format(idleTime));
         if idleTime < minRequestedDelay {
-          writeln(stamp, "  wass server idle too little");
           // The server has not been idle long enough. Check back later.
           delay = minRequestedDelay - idleTime;
           continue;
         }
 
         const ckptReason = needToCheckpoint(idleTime);
-        writeln(stamp, "  wass ckptReason = ", ckptReason);
         if ! ckptReason.isEmpty() {
           // Save a checkpoint.
           const basePath = ".akdata";

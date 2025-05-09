@@ -30,10 +30,6 @@ module MultiTypeSymbolTable
     // 0 if it is currently not idle.
     var idlePeriodStart: atomic real;
 
-    import Time; //wass
-    const startTime = Time.timeSinceEpoch().totalSeconds();
-    proc stamp do return try! "%6.2dr".format(Time.timeSinceEpoch().totalSeconds() - startTime);
-
     /* symbol table */
     class SymTab
     {
