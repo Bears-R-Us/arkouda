@@ -86,6 +86,7 @@ autoapi_ignore = [
     "*decorators.py",
     "*message.py",
     "*arkouda/numpy/dtypes.py",
+    "*arkouda/numpy/imports/*",
     "*arkouda/dataframe.py",
     "*arkouda/groupbyclass.py",
     "*arkouda/series.py",
