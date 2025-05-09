@@ -22,6 +22,7 @@ from arkouda.numpy.dtypes import (
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
+    str_,
 )
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
@@ -678,8 +679,12 @@ def full(
     >>> ak.full(5, 5, dtype=ak.bool_)
     array([True True True True True])
     """
+    from arkouda.numpy.dtypes import dtype as ak_dtype
+
     if isinstance(fill_value, str):
         return _full_string(size, fill_value)
+    elif ak_dtype(dtype) == str_ or dtype == Strings:
+        return _full_string(size, str_(fill_value))
 
     dtype = akdtype(dtype)  # normalize dtype
     dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
