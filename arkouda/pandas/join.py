@@ -1,13 +1,11 @@
-from typing import Callable, Optional, Sequence, Tuple, Union, cast
+from typing import TYPE_CHECKING, TypeVar, Callable, Optional, Sequence, Tuple, Union, cast
 
 import numpy as np
 from typeguard import typechecked
 
 from arkouda.alignment import right_align
 from arkouda.categorical import Categorical
-from arkouda.client import generic_msg
-from arkouda.groupbyclass import GroupBy, broadcast
-from arkouda.numpy import cumsum
+from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import resolve_scalar_dtype
@@ -15,6 +13,13 @@ from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.strings import Strings
+
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+    from arkouda.numpy import cumsum
+else:
+    generic_msg = TypeVar("generic_msg")
+    cumsum = TypeVar("cumsum")
 
 __all__ = ["join_on_eq_with_dt", "gen_ranges", "compute_join_size"]
 

@@ -3,22 +3,26 @@ from __future__ import annotations
 import codecs
 import itertools
 import re
-from typing import Any, Dict, List, Literal, Optional, Tuple, Union, cast
+from typing import Any, TYPE_CHECKING, TypeVar, Dict, List, Literal, Optional, Tuple, Union, cast
 
 import numpy as np
 from typeguard import typechecked
 
 import arkouda.numpy.dtypes
-from arkouda.client import generic_msg
 from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import getArkoudaLogger
-from arkouda.match import Match, MatchType
+from arkouda.pandas.match import Match, MatchType
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, bool_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars
 from arkouda.numpy.pdarrayclass import RegistrationError
 from arkouda.numpy.pdarrayclass import all as akall
 from arkouda.numpy.pdarrayclass import create_pdarray, parse_single_value, pdarray
+
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+else:
+    generic_msg = TypeVar("generic_msg")
 
 __all__ = ["Strings"]
 
@@ -1134,7 +1138,7 @@ class Strings:
         """
         internal function to fetch cached Matcher objects
         """
-        from arkouda.matcher import Matcher
+        from arkouda.pandas.matcher import Matcher
 
         if isinstance(pattern, bytes):
             pattern = pattern.decode()
@@ -2397,7 +2401,7 @@ class Strings:
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
         """
-        from arkouda.io import _mode_str_to_int
+        from arkouda.pandas.io import _mode_str_to_int
 
         return cast(
             str,
@@ -2476,7 +2480,7 @@ class Strings:
         ---------
         to_hdf
         """
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return cast(
             str,
@@ -2539,7 +2543,7 @@ class Strings:
           the file name is checked for _LOCALE#### to determine if it is distributed.
         - If the dataset provided does not exist, it will be added
         """
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,

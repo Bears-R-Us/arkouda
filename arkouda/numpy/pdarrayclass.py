@@ -5,12 +5,11 @@ import json
 from functools import reduce
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, TypeVar, List, Optional, Tuple, Union, cast
 
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg, get_array_ranks
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import (
@@ -74,7 +73,11 @@ if TYPE_CHECKING:
 
     argmax = index_reduce
     argmin = index_reduce
-
+    
+    from arkouda.client import generic_msg, get_array_ranks
+else:
+    generic_msg = TypeVar("generic_msg")
+    get_array_ranks = TypeVar("get_array_ranks")
 
 __all__ = [
     "pdarray",
@@ -2385,7 +2388,7 @@ class pdarray:
         Saves the array to numLocales HDF5 files with the name
         ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
         """
-        from arkouda.io import _mode_str_to_int
+        from arkouda.pandas.io import _mode_str_to_int
 
         return cast(
             str,
@@ -2472,7 +2475,7 @@ class pdarray:
         Saves the array in to single hdf5 file on the root node.
         ``cwd/path/name_prefix.hdf5``
         """
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return cast(
             str,
@@ -2523,7 +2526,7 @@ class pdarray:
           the file name is checked for _LOCALE#### to determine if it is distributed.
         - If the dataset provided does not exist, it will be added
         """
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,

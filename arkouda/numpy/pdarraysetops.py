@@ -5,9 +5,8 @@ from typing import TYPE_CHECKING, Sequence, TypeVar, Union, cast
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
 from arkouda.client_dtypes import BitVector
-from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type, unique
+from arkouda.pandas.groupbyclass import GroupBy, groupable, groupable_element_type, unique
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import bool_ as akbool
@@ -21,8 +20,10 @@ from arkouda.numpy.strings import Strings
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
+    from arkouda.client import generic_msg
 else:
     Categorical = TypeVar("Categorical")
+    generic_msg = TypeVar("generic_msg")
 
 __all__ = ["in1d", "concatenate", "union1d", "intersect1d", "setdiff1d", "setxor1d", "indexof1d"]
 
@@ -71,7 +72,7 @@ def _in1d_single(
 
     See Also
     --------
-    arkouda.groupbyclass.unique, intersect1d, union1d
+    arkouda.pandas.groupbyclass.unique, intersect1d, union1d
 
     Notes
     -----
@@ -193,7 +194,7 @@ def in1d(
 
     See Also
     --------
-    arkouda.groupbyclass.unique, intersect1d, union1d
+    arkouda.pandas.groupbyclass.unique, intersect1d, union1d
 
     Notes
     ------
@@ -541,7 +542,7 @@ def union1d(
 
     See Also
     --------
-    intersect1d, arkouda.groupbyclass.unique
+    intersect1d, arkouda.pandas.groupbyclass.unique
 
     Examples
     --------
@@ -626,7 +627,7 @@ def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Unio
 
     See Also
     --------
-    arkouda.groupbyclass.unique, union1d
+    arkouda.pandas.groupbyclass.unique, union1d
 
     Examples
     --------
@@ -736,7 +737,7 @@ def setdiff1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[
 
     See Also
     --------
-    arkouda.groupbyclass.unique, setxor1d
+    arkouda.pandas.groupbyclass.unique, setxor1d
 
     Notes
     -----

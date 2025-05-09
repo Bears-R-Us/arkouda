@@ -10,7 +10,7 @@ import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
-from arkouda import io_util
+from arkouda.pandas import io_util
 from arkouda import to_zarr, read_zarr
 import arkouda.array_api as Array
 

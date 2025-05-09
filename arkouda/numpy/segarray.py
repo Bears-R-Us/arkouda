@@ -7,7 +7,7 @@ from typing import cast as type_cast
 import numpy as np
 
 from arkouda.client import generic_msg
-from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy import cumsum
 from arkouda.numpy.dtypes import bool_ as akbool
@@ -860,7 +860,7 @@ class SegArray:
         ---------
         load
         """
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return type_cast(
             str,
@@ -915,7 +915,7 @@ class SegArray:
         - Because HDF5 deletes do not release memory, this will create a copy of the
           file with the new data
         """
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,
@@ -993,7 +993,7 @@ class SegArray:
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
         """
-        from arkouda.io import _mode_str_to_int
+        from arkouda.pandas.io import _mode_str_to_int
 
         if mode.lower() == "append":
             raise ValueError("Append mode is not supported for SegArray.")
@@ -1031,7 +1031,7 @@ class SegArray:
         -------
         SegArray
         """
-        from arkouda.io import read_hdf
+        from arkouda.pandas.io import read_hdf
 
         return read_hdf(prefix_path, datasets=dataset)
 

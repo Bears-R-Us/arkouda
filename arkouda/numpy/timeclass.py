@@ -1,6 +1,8 @@
 import datetime
 import json
 
+from typing import TYPE_CHECKING, TypeVar
+
 import numpy as np
 from pandas import Series as pdSeries
 from pandas import Timedelta as pdTimedelta
@@ -9,12 +11,20 @@ from pandas import date_range as pd_date_range
 from pandas import timedelta_range as pd_timedelta_range
 from pandas import to_datetime, to_timedelta
 
-from arkouda.client import generic_msg
-from arkouda.numpy import abs as akabs
-from arkouda.numpy import cast
 from arkouda.numpy.dtypes import int64, int_scalars, intTypes, isSupportedInt
 from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import from_series
+
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+    from arkouda.numpy import abs as akabs
+    from arkouda.numpy import cast
+
+else:
+    generic_msg = TypeVar("generic_msg")
+    akabs = TypeVar("akabs")
+    cast = TypeVar("cast")
+
 
 _BASE_UNIT = "ns"
 
@@ -223,7 +233,7 @@ class _AbstractBaseTime(pdarray):
         """
         from typing import cast as typecast
 
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return typecast(
             str,
@@ -245,7 +255,7 @@ class _AbstractBaseTime(pdarray):
         """
         Override the pdarray implementation so that the special object type will be used.
         """
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,

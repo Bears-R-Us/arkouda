@@ -4,6 +4,7 @@ import enum
 import json
 from typing import (
     TYPE_CHECKING,
+    TypeVar,
     Dict,
     List,
     Optional,
@@ -17,7 +18,6 @@ from typing import (
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import _val_isinstance_of_union, bigint
 from arkouda.numpy.dtypes import dtype as akdtype
@@ -39,7 +39,9 @@ from arkouda.numpy.strings import Strings
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
-
+    from arkouda.client import generic_msg
+else:
+    generic_msg = TypeVar("generic_msg")
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES", "groupable"]
 
@@ -427,7 +429,7 @@ class GroupBy:
 
         """
         from arkouda.categorical import Categorical as Categorical_
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         keys = self.keys if isinstance(self.keys, Sequence) else [self.keys]
 
@@ -476,7 +478,7 @@ class GroupBy:
         dataset: str = "groupby",
         repack: bool = True,
     ):
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,

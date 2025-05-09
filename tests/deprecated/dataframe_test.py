@@ -11,8 +11,8 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 from pandas.testing import assert_frame_equal, assert_series_equal
 
-from arkouda import io_util
-from arkouda.index import Index
+from arkouda.pandas import io_util
+from arkouda.pandas.index import Index
 from arkouda.scipy import chisquare as akchisquare
 
 
