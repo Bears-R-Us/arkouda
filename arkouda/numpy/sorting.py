@@ -5,11 +5,23 @@ from typing import TYPE_CHECKING, Literal, Sequence, TypeVar, Union, cast
 
 from typeguard import check_type, typechecked
 
-from arkouda.client import generic_msg
-from arkouda.numpy.dtypes import bigint, dtype, float64, int64, int_scalars, uint64
+from arkouda.numpy.dtypes import (
+    bigint,
+    bool_,
+    dtype,
+    float64,
+    int64,
+    int_scalars,
+    uint64,
+)
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import array, zeros
 from arkouda.numpy.strings import Strings
+
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+else:
+    generic_msg = TypeVar("generic_msg")
 
 numeric_dtypes = {dtype(int64), dtype(uint64), dtype(float64)}
 

@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Sequence, TypeVar, Union, cast
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
 from arkouda.client_dtypes import BitVector
 from arkouda.pandas.groupbyclass import GroupBy, groupable, groupable_element_type, unique
 from arkouda.logger import getArkoudaLogger
@@ -21,8 +20,10 @@ from arkouda.numpy.strings import Strings
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
+    from arkouda.client import generic_msg
 else:
     Categorical = TypeVar("Categorical")
+    generic_msg = TypeVar("generic_msg")
 
 __all__ = ["in1d", "concatenate", "union1d", "intersect1d", "setdiff1d", "setxor1d", "indexof1d"]
 
