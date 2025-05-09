@@ -7,9 +7,9 @@ from typing import no_type_check
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
+from arkouda.client import generic_msg, get_array_ranks
 from arkouda.groupbyclass import GroupBy, groupable
-from arkouda.numpy.dtypes import _datatype_check, bigint
+from arkouda.numpy.dtypes import ARKOUDA_SUPPORTED_INTS, _datatype_check, bigint
 from arkouda.numpy.dtypes import bool_ as ak_bool
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as ak_float64
@@ -23,12 +23,14 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.dtypes import str_
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as ak_uint64
+from arkouda.numpy.pdarrayclass import _reduces_to_single_value
 from arkouda.numpy.pdarrayclass import all as ak_all
 from arkouda.numpy.pdarrayclass import any as ak_any
 from arkouda.numpy.pdarrayclass import (
     argmax,
     broadcast_if_needed,
     create_pdarray,
+    parse_single_value,
     pdarray,
     sum,
 )
@@ -37,6 +39,20 @@ from arkouda.numpy.sorting import sort
 from arkouda.numpy.strings import Strings
 
 NUMERIC_TYPES = [ak_int64, ak_float64, ak_bool, ak_uint64]
+ALLOWED_PERQUANT_METHODS = [
+    "inverted_cdf",
+    "averaged_inverted_cdf",
+    "closest_observation",
+    "interpolated_inverted_cdf",
+    "hazen",
+    "weibull",
+    "linear",
+    "median_unbiased",
+    "normal_unbiased",
+    "lower",
+    "midpoint",
+    "higher",
+]  # not supporting 'nearest' at present
 
 
 if TYPE_CHECKING:
@@ -100,6 +116,8 @@ __all__ = [
     "median",
     "value_counts",
     "ErrorMode",
+    "quantile",
+    "percentile",
 ]
 
 
@@ -2895,3 +2913,260 @@ def vecdot(x1: pdarray, x2: pdarray) -> pdarray:
         del x2
 
     return create_pdarray(repMsg)
+
+
+def quantile(
+    a: pdarray,
+    q: Optional[Union[numeric_scalars, Tuple[numeric_scalars], np.ndarray, pdarray]] = 0.5,
+    axis: Optional[Union[int_scalars, Tuple[int_scalars, ...], None]] = None,
+    method: Optional[str] = "linear",
+    keepdims: bool = False,
+) -> Union[numeric_scalars, pdarray]:  # type : ignore
+    """
+    Compute the q-th quantile of the data along the specified axis.
+
+    Parameters
+    ----------
+    a : pdarray
+        data whose quantile will be computed
+    q : pdarray, Tuple, or np.ndarray
+        a scalar, tuple, or np.ndarray of q values for the computation.  All values
+        must be in the range 0 <= q <= 1
+    axis : None, int scalar, or tuple of int scalars
+        the axis or axes along which the quantiles are computed.  The default is None,
+        which computes the quantile along a flattened version of the array.
+    method : string
+        one of "inverted_cdf," "averaged_inverted_cdf", "closest_observation",
+        "interpolated_inverted_cdf", "hazen", "weibull", "linear", 'median_unbiased",
+        "normal_unbiased", "lower"," higher", "midpoint"
+    keepdims : bool
+        True if the degenerate axes are to be retained after slicing, False if not
+
+
+    Returns
+    -------
+    pdarray or scalar
+        If q is a scalar and axis is None, the result is a scalar.
+        If q is a scalar and axis is supplied, the result is a pdarray of rank len(axis)
+        less than the rank of a.
+        If q is an array and axis is None, the result is a pdarray of shape q.shape
+        If q is an array and axis is None, the result is a pdarray of rank q.ndim +
+        pda.ndim - len(axis).  However, there is an intermediate result which is of rank
+        q.ndim + pda.ndim.  If this is not in the compiled ranks, an error will be thrown
+        even if the final result would be in the compiled ranks.
+
+    Notes
+    -----
+    np.quantile also supports the method "nearest," however its behavior does not match
+    the numpy documentation, so it's not supported here.
+    np.quantile also allows for weighted inputs, but only for the method "inverted_cdf."
+    That also is not supported here.
+
+    Examples
+    --------
+    >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
+    >>> q = 0.7
+    >>> ak.quantile(a,q,axis=None,method="linear")
+    np.float64(4.0)
+    >>> ak.quantile(a,q,axis=1,method="lower")
+    array([3.00000000000000000 3.00000000000000000])
+    >>> q = np.array([0.4,0.6])
+    >>> ak.quantile(a,q,axis=None,method="weibull")
+    array([2.4000000000000004 3.5999999999999996])
+    >>> a = ak.array([[1,2],[5,3]])
+    >>> ak.quantile(a,q,axis=0,method="hazen")
+    array([array([2.2000000000000002 2.2999999999999998])
+        array([3.7999999999999998 2.6999999999999997])])
+
+    Raises
+    ------
+    ValueError
+        Raised if scalar q or any value of array q is outside the range [0,1]
+        Raised if the method is not one of the 12 supported methods.
+        Raised if the result would have a rank not in the compiled ranks.
+
+    """
+
+    keepdims = False if keepdims is None else keepdims
+
+    from .manipulation_functions import squeeze
+
+    axis_ = (
+        []
+        if axis is None
+        else (
+            [
+                axis,
+            ]
+            if isinstance(axis, ARKOUDA_SUPPORTED_INTS)
+            else list(axis)
+        )
+    )
+
+    q_ = 0.5 if q is None else q if np.isscalar(q) else array(q)  # type: ignore
+
+    if np.isscalar(q_):
+        if q_ < 0.0 or q_ > 1.0:  # type: ignore
+            raise ValueError("Values of q in quantile must be in range [0,1].")
+    else:
+        if (q_ < 0.0).any() or (q_ > 1.0).any():  # type: ignore
+            raise ValueError("Values of q in quantile must be in range [0,1].")
+
+    if not (method in ALLOWED_PERQUANT_METHODS):
+        raise ValueError(f"Method {method} is not supported in quantile.")
+
+    # scalar q, no axis slicing
+
+    if np.isscalar(q_) and _reduces_to_single_value(axis_, a.ndim):
+        return parse_single_value(
+            generic_msg(
+                cmd=f"quantile_scalar_no_axis<{a.dtype},{a.ndim}>",
+                args={
+                    "a": a,
+                    "q": q_,
+                    "method": method,
+                },
+            )
+        )
+
+    # array q, no axis slicing
+
+    elif not np.isscalar(q_) and _reduces_to_single_value(axis_, a.ndim):
+        return create_pdarray(
+            generic_msg(
+                cmd=f"quantile_array_no_axis<{a.dtype},{a.ndim},{q.ndim}>",  # type: ignore
+                args={
+                    "a": a,
+                    "q": q_,
+                    "method": method,
+                },
+            )
+        )
+
+    # scalar q, with axis slicing
+
+    elif np.isscalar(q_) and not _reduces_to_single_value(axis_, a.ndim):
+        result = create_pdarray(
+            generic_msg(
+                cmd=f"quantile_scalar_with_axis<{a.dtype},{a.ndim}>",
+                args={
+                    "a": a,
+                    "q": q_,
+                    "axis": axis_,
+                    "method": method,
+                },
+            )
+        )
+        if keepdims:
+            return result
+        else:  # squeeze out the degenerate axis or axes
+            return squeeze(result, axis)
+
+    # array q, with axis slicing (it's the only option left)
+
+    else:
+        if q_.ndim + a.ndim not in get_array_ranks():  # type: ignore
+            raise ValueError(
+                f"Computation has rank {q_.ndim + a.ndim}, not in compiled ranks"  # type: ignore
+            )
+        result = create_pdarray(
+            generic_msg(
+                cmd=f"quantile_array_with_axis<{a.dtype},{a.ndim},{q.ndim}>",  # type: ignore
+                args={
+                    "a": a,
+                    "q": q_,
+                    "axis": axis_,
+                    "method": method,
+                },
+            )
+        )
+        # squeeze out the degenerate axis or axes, which is/are now offset by the rank of q
+        if keepdims:
+            return result
+        else:  # squeeze out the degenerate axis or axes
+            squeezeable = tuple([m + q_.ndim for m in axis_])  # type: ignore
+            return squeeze(result, squeezeable)
+
+
+def percentile(
+    a: pdarray,
+    q: Optional[Union[numeric_scalars, Tuple[numeric_scalars], np.ndarray]] = 0.5,
+    axis: Optional[Union[int_scalars, Tuple[int_scalars, ...], None]] = None,
+    method: Optional[str] = "linear",
+    keepdims: bool = False,
+) -> Union[numeric_scalars, pdarray]:  # type : ignore
+    """
+    Compute the q-th percentile of the data along the specified axis.
+
+    Parameters
+    ----------
+    a : pdarray
+        data whose percentile will be computed
+    q : pdarray, Tuple, or np.ndarray
+        a scalar, tuple, or np.ndarray of q values for the computation.  All values
+        must be in the range 0 <= q <= 100
+    axis : None, int scalar, or tuple of int scalars
+        the axis or axes along which the percentiles are computed.  The default is None,
+        which computes the percenntile along a flattened version of the array.
+    method : string
+        one of "inverted_cdf," "averaged_inverted_cdf", "closest_observation",
+        "interpolated_inverted_cdf", "hazen", "weibull", "linear", 'median_unbiased",
+        "normal_unbiased", "lower"," higher", "midpoint"
+    keepdims : bool
+        True if the degenerate axes are to be retained after slicing, False if not
+
+
+    Returns
+    -------
+    pdarray or scalar
+        If q is a scalar and axis is None, the result is a scalar.
+        If q is a scalar and axis is supplied, the result is a pdarray of rank len(axis)
+        less than the rank of a.
+        If q is an array and axis is None, the result is a pdarray of shape q.shape
+        If q is an array and axis is None, the result is a pdarray of rank q.ndim +
+        pda.ndim - len(axis).  However, there is an intermediate result which is of rank
+        q.ndim + pda.ndim.  If this is not in the compiled ranks, an error will be thrown
+        even if the final result would be in the compiled ranks.
+
+    Notes
+    -----
+    np.percentile also supports the method "nearest," however its behavior does not match
+    the numpy documentation, so it's not supported here.
+    np.percentile also allows for weighted inputs, but only for the method "inverted_cdf."
+    That also is not supported here.
+
+    Examples
+    --------
+    >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
+    >>> q = 70
+    >>> ak.percentile(a,q,axis=None,method="linear")
+    np.float64(4.0)
+    >>> ak.percentile(a,q,axis=1,method="lower")
+    array([3.00000000000000000 3.00000000000000000])
+    >>> q = np.array([40,60])
+    >>> ak.percentile(a,q,axis=None,method="weibull")
+    array([2.4000000000000004 3.5999999999999996])
+    >>> a = ak.array([[1,2],[5,3]])
+    >>> ak.percentile(a,q,axis=0,method="hazen")
+    array([array([2.2000000000000002 2.2999999999999998])
+        array([3.7999999999999998 2.6999999999999997])])
+
+    Raises
+    ------
+    ValueError
+        Raised if scalar q or any value of array q is outside the range [0,100]
+        Raised if the method is not one of the 12 supported methods.
+        Raised if the result would have a rank not in the compiled ranks.
+
+    """
+
+    q_ = 50.0 if q is None else q if np.isscalar(q) else array(q)  # type: ignore
+
+    if np.isscalar(q_):
+        if q_ < 0.0 or q_ > 100.0:  # type: ignore
+            raise ValueError("Values of q in percentile must be in range [0,100].")
+    else:
+        if (q_ < 0.0).any() or (q_ > 100.0).any():  # type: ignore
+            raise ValueError("Values of q in percentile must be in range [0,100].")
+
+    return quantile(a, q_ / 100.0, axis, method, keepdims)  # type: ignore
