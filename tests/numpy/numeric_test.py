@@ -1,9 +1,9 @@
+import random
 import warnings
 from math import isclose, prod, sqrt
 
 import numpy as np
 import pytest
-import random
 
 import arkouda as ak
 from arkouda.client import get_array_ranks, get_max_array_rank
