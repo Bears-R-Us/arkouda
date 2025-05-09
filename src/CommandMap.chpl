@@ -1,6 +1,7 @@
 module CommandMap {
   use Message;
   use MultiTypeSymbolTable;
+  import ServerDaemon;
 
   use JSON;
   use IO;
@@ -38,6 +39,12 @@ module CommandMap {
         moduleMap.add(cmd, (modName, line));
     }
   }
+
+  /* Support for asynchronous checkpointing. */
+  proc emptyStartAsyncCheckpointDaemon(sd: borrowed ServerDaemon.DefaultServerDaemon) {
+    return false;
+  }
+  var funStartAsyncCheckpointDaemon = emptyStartAsyncCheckpointDaemon;
 
   proc writeUsedModulesJson(ref mods: set(string)) {
     const cfgFile = try! open("UsedModules.json", ioMode.cw),
