@@ -4,6 +4,7 @@ import enum
 import json
 from typing import (
     TYPE_CHECKING,
+    TypeVar,
     Dict,
     List,
     Optional,
@@ -39,7 +40,9 @@ from arkouda.numpy.strings import Strings
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
-
+    from arkouda.client import generic_msg
+else:
+    generic_msg = TypeVar("generic_msg")
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES", "groupable"]
 

@@ -1,7 +1,8 @@
+from typing import TYPE_CHECKING, TypeVar
+
 import numpy as np
 import numpy.random as np_random
 
-from arkouda.client import generic_msg
 from arkouda.numpy.dtypes import _val_isinstance_of_union
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import dtype as to_numpy_dtype

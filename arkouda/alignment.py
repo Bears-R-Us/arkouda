@@ -1,13 +1,11 @@
 import functools
-from typing import Sequence
+from typing import TYPE_CHECKING, TypeVar, Sequence
 from warnings import warn
 
 import numpy as np
 
 from arkouda.categorical import Categorical
-from arkouda.client import generic_msg
 from arkouda.pandas.groupbyclass import GroupBy, broadcast, unique
-from arkouda.numpy import cumsum, where
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64

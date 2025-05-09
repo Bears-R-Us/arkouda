@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast, overload
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg, get_array_ranks
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
@@ -173,7 +172,11 @@ if TYPE_CHECKING:
 
     var = stats_reduce
     std = stats_reduce
-
+    
+    from arkouda.client import generic_msg, get_array_ranks
+else:
+    generic_msg = TypeVar("generic_msg")
+    get_array_ranks = TypeVar("get_array_ranks")
 
 __all__ = [
     "pdarray",
