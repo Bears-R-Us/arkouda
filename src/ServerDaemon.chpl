@@ -38,6 +38,8 @@ module ServerDaemon {
     
     var serverDaemonTypes = try! getDaemonTypes();
 
+    private var asyncCkptRunning = false;
+
     /**
      * Retrieves a list of 1..n ServerDaemonType objects generated 
      * from the comma-delimited list of ServerDaemonType strings
@@ -75,7 +77,7 @@ module ServerDaemon {
      * Returns a boolean indicating if there are multiple ServerDaemons
      */
     proc multipleServerDaemons() {
-        return serverDaemonTypes.size > 1;
+        return serverDaemonTypes.size + asyncCkptRunning > 1;
     }
 
     /**
@@ -510,15 +512,18 @@ module ServerDaemon {
                 this.printServerSplashMessage(this.serverToken,this.arkDirectory);
             }
             this.registerServerCommands();
+            startAsyncCheckpointTask();
                     
             var startTime = timeSinceEpoch().totalSeconds();
         
             while !this.shutdownDaemon {
+                serverIdleStart();
+
                 // receive message on the zmq socket
                 var reqMsgRaw = socket.recv(bytes);
 
+                serverIdleStop();
                 this.reqCount += 1;
-
                 var s0 = timeSinceEpoch().totalSeconds();
 
                 /*
@@ -659,6 +664,11 @@ module ServerDaemon {
                         }
                         otherwise { // Look up in CommandMap
                             if commandMap.contains(cmd) {
+                                writeln(stamp, ">>> wass requesting lock - main"); 
+                                activityMutex.writeEF("server");
+                                writeln(stamp, "    wass acquired lock - main");
+                                defer { writeln(stamp, "<<< wass unlock - main"); activityMutex.readFE(); }
+
                                 repMsg = executeCommand(cmd, msgArgs, st);
                             } else {
                                 const errorMsg = "Unrecognized command: %s".format(cmd);
@@ -723,6 +733,33 @@ module ServerDaemon {
                                                                             repCount,
                                                                             elapsed));
             this.shutdown(); 
+        }
+
+        // helper for creating 'msgArgs'
+        proc sendAsyncCkptMessage(message: bytes): MsgTuple throws {
+          const msgArgs = new owned MessageArgs();
+          msgArgs.addPayload(message);
+          return executeCommand("async_checkpoint", msgArgs, st);
+        }
+
+        /* Starts a task for asynchronous checkpointing. */
+        proc startAsyncCheckpointTask() throws {
+          // Do nothing if the checkpointing module was not included.
+          if commandMap.contains("async_checkpoint") {
+            asyncCkptRunning = true;
+            const result = sendAsyncCkptMessage(b"start async task");
+            if result.msgType != MsgType.NORMAL {
+              asyncCkptRunning = false;
+            }
+          }
+        }
+
+        proc serverIdleStart() {
+          idlePeriodStart.write(timeSinceEpoch().totalSeconds());
+        }
+
+        proc serverIdleStop() {
+          idlePeriodStart.write(0);
         }
     }
 

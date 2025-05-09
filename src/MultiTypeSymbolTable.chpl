@@ -22,6 +22,18 @@ module MultiTypeSymbolTable
     private config const logChannel = ServerConfig.logChannel;
     const mtLogger = new Logger(logLevel, logChannel);
 
+    // Guard mutually-exclusive activities such as the main "server"
+    // and asynchronous checkpointing.
+    var activityMutex: sync string;
+
+    // Time stamp when the server started being idle.
+    // 0 if it is currently not idle.
+    var idlePeriodStart: atomic real;
+
+    import Time; //wass
+    const startTime = Time.timeSinceEpoch().totalSeconds();
+    proc stamp do return try! "%6.2dr".format(Time.timeSinceEpoch().totalSeconds() - startTime);
+
     /* symbol table */
     class SymTab
     {

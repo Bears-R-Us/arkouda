@@ -2,7 +2,7 @@ module CheckpointMsg {
   use FileSystem;
   use List;
   use ArkoudaJSONCompat;
-  import IO, Path;
+  import IO, Path, Time;
   import Reflection.{getModuleName as M,
                      getRoutineName as R,
                      getLineNumber as L};
@@ -25,17 +25,36 @@ module CheckpointMsg {
   private config const logChannel = ServerConfig.logChannel;
   const cpLogger = new Logger(logLevel,logChannel);
 
+  /* Perform checkpointing automatically when used memory exceeds this many percent
+     of available memory. No auto-checkpointing if 0 or below. */
+  config const checkpointMemPct = 0;
 
-  proc saveCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
-                         st: borrowed SymTab): MsgTuple throws {
-    var basePath = msgArgs.getValueOf("path");
-    const nameArg = msgArgs.getValueOf("name");
-    const mode = msgArgs.getValueOf("mode");
+  /* When memory exceeds the 'checkpointMemPct' threhsold, wait for this many seconds
+     of idle time before checkpointing. If <=0 then 5 is used. */
+  config var checkpointMemPctDelay = 0;
+
+  /* Perform checkpointing automatically when the server is idle
+     for this many seconds. No auto-checkpointing if 0 or below. */
+  config const checkpointIdleTime = 0;
+
+  /* Implementation can delay asynchronous checkpointing by at most this many seconds.
+     If <= 0 then min(checkpointMemPctDelay,checkpointIdleTime) is used. */
+  config var checkpointCheckDelay = 0;
+
+  // The smaller of the active delays, 0 if no checking is requested.
+  private var minRequestedDelay = 0;
+
+  // Prevent further auto-checkpoints upon exceeding 'checkpointMemPct'
+  // until memory usage drops below the limit, or upon loadCheckpointMsg.
+  private var skipAutoCkpt: atomic bool = false;
+
+
+  private proc saveCheckpointImpl(basePath, cpName, mode, st) throws {
+    skipAutoCkpt.write(true);
 
     if !exists(basePath) then
       mkdir(basePath);
 
-    const cpName = if nameArg.isEmpty() then st.serverid else nameArg;
     const cpPath = Path.joinPath(basePath, cpName);
 
     if exists(cpPath) {
@@ -80,11 +99,23 @@ module CheckpointMsg {
         cpLogger.debug(M(), R(), L(), "Cannot save %s".format(name));
       }
     }
+  }
+
+  proc saveCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                         st: borrowed SymTab): MsgTuple throws {
+    const basePath = msgArgs.getValueOf("path");
+    const nameArg = msgArgs.getValueOf("name");
+    const cpName = if nameArg.isEmpty() then st.serverid else nameArg;
+    const mode = msgArgs.getValueOf("mode");
+
+    saveCheckpointImpl(basePath, cpName, mode, st);
+
     return Msg.send(cpName);
   }
 
   proc loadCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
                          st: borrowed SymTab): MsgTuple throws {
+    skipAutoCkpt.write(true);
     var basePath = msgArgs.getValueOf("path");
     const nameArg = msgArgs.getValueOf("name");
 
@@ -129,6 +160,129 @@ module CheckpointMsg {
 
     }
     return Msg.send(nameArg);
+  }
+
+  proc asyncCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                         st: borrowed SymTab): MsgTuple throws {
+    select msgArgs.payload {
+        when b"start async task" {
+          if checkpointMemPct <= 0 && checkpointIdleTime <= 0 {
+            cpLogger.info(M(), R(), L(), "asynchronous checkpointing not requested");
+            return MsgTuple.warning("asynchronous checkpointing not requested");
+          }
+
+          // tidy up the delays and 'minRequestedDelay'
+
+          if checkpointMemPct > 0 then
+            if checkpointMemPctDelay <= 0 then checkpointMemPctDelay = 5;
+          else
+            checkpointMemPctDelay = 0;
+
+          minRequestedDelay =
+            if checkpointMemPctDelay <= 0 then checkpointIdleTime
+            else if checkpointIdleTime <= 0 then checkpointMemPctDelay
+            else min(checkpointMemPctDelay, checkpointIdleTime);
+
+          checkpointCheckDelay =
+            if checkpointCheckDelay <= 0 then minRequestedDelay
+            else min(checkpointCheckDelay, minRequestedDelay);
+
+          writeln("wass<<<>>>",
+                  "  memPct ", checkpointMemPct,
+                  "  memDel ", checkpointMemPctDelay,
+                  "  idleTm ", checkpointIdleTime,
+                  "  chkDel ", checkpointCheckDelay,
+                  "  minReq ", minRequestedDelay);
+
+          // start the asynchronous task
+          begin asyncCheckpointDaemon(st);
+
+          return MsgTuple.success("started the asynchronous checkpointing daemon");
+        }
+
+        otherwise {
+          cpLogger.debug(M(), R(), L(), "Unrecognized auto_checkpoint command: %? payload=%?"
+                         .format(msgArgs, msgArgs.payload));
+          return MsgTuple.error("Unrecognized auto_checkpoint command: %? payload=%?"
+                                .format(msgArgs, msgArgs.payload));
+        }
+     }
+  }
+
+  private proc asyncCheckpointDaemon(st: borrowed SymTab) {
+    var delay: real = minRequestedDelay;
+    // The only way to end this task is exit() in DefaultServerDaemon.shutdown().
+    while true {
+      try {
+        writeln("wass sleep %.2dr".format(delay));
+        Time.sleep(delay);
+
+        // Check and checkpoint within the same mutex region
+        // to avoid the server firing up when we are about to checkpoint.
+        writeln(stamp, ">>> wass requesting lock - async");
+        activityMutex.writeEF("async checkpointing");
+        writeln(stamp, "    wass acquired lock - async");
+        defer { writeln(stamp, "<<< wass unlock - async"); activityMutex.readFE(); }
+
+        const idleStart = idlePeriodStart.read();
+        if idleStart == 0 {
+          writeln(stamp, "  wass server busy");
+          // The server is not idle. Do not do anything now. Check back later.
+          delay = minRequestedDelay;
+          continue;
+        }
+
+        const idleTime = Time.timeSinceEpoch().totalSeconds() - idleStart;
+        writeln(stamp, "  idleTime %.2dr".format(idleTime));
+        if idleTime < minRequestedDelay {
+          writeln(stamp, "  wass server idle too little");
+          // The server has not been idle long enough. Check back later.
+          delay = minRequestedDelay - idleTime;
+          continue;
+        }
+
+        const ckptReason = needToCheckpoint(idleTime);
+        writeln(stamp, "  wass ckptReason = ", ckptReason);
+        if ! ckptReason.isEmpty() {
+          // Save a checkpoint.
+          const basePath = ".akdata";
+          const cpName = "auto_checkpoint";
+          cpLogger.info(M(), R(), L(), "starting autoCheckpoint: %s; saving into %s/%s"
+                        .format(ckptReason, basePath, cpName));
+          saveCheckpointImpl(basePath, cpName, "overwrite", st);
+          cpLogger.info(M(), R(), L(), "finished autoCheckpoint into %s/%s".format(basePath, cpName));
+          skipAutoCkpt.write(true);
+
+          // Done. Take a break, check back later.
+          delay = minRequestedDelay;
+          continue;
+        }
+
+        // If nothing came up, wait before checking again.
+        delay = minRequestedDelay;
+
+      } catch err {
+        // We can't do anything with errors, so ignore them.
+      }
+    }
+  }
+
+  private proc needToCheckpoint(idleTime) throws {
+    if checkpointIdleTime > 0 && idleTime >= checkpointIdleTime then
+      return "server was idle for over %i seconds".format(checkpointIdleTime);
+
+    if checkpointMemPctDelay > 0 && idleTime >= checkpointMemPctDelay {
+      // check whether memory use exceeds checkpointMemPct
+      if (getMemUsed():real / getMemLimit()) >= checkpointMemPct / 100.0 {
+        if ! skipAutoCkpt.read() then
+          return "memory usage exceeded %i%%".format(checkpointMemPct);
+      } else {
+        skipAutoCkpt.write(false);
+      }
+    }
+
+    // no need to checkpoint
+    return "";
   }
 
   private proc getSEType(type t) type {
@@ -282,6 +436,7 @@ module CheckpointMsg {
   use CommandMap;
   registerFunction("save_checkpoint", saveCheckpointMsg, M());
   registerFunction("load_checkpoint", loadCheckpointMsg, M());
+  registerFunction("async_checkpoint", asyncCheckpointMsg, M());
 
   /* Thrown while loading a checkpoint. The cases for this error type is limited
      to the logic of checkpointing itself. Other errors related to IO etc can
