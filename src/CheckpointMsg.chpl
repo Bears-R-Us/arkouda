@@ -8,7 +8,7 @@ module CheckpointMsg {
                      getLineNumber as L};
 
   use ServerErrors, ServerConfig;
-  import ServerDaemon;
+  import ServerDaemon.DefaultServerDaemon;
   use MultiTypeSymbolTable, MultiTypeSymEntry;
   use Message;
   use ParquetMsg;
@@ -45,14 +45,26 @@ module CheckpointMsg {
   // The smaller of the active delays, 0 if no checking is requested.
   private var minRequestedDelay = 0;
 
-  // Prevent further auto-checkpoints upon exceeding 'checkpointMemPct'
-  // until memory usage drops below the limit, or upon loadCheckpointMsg.
-  private var skipAutoCkpt: atomic bool = false;
+  // The biggest of the active delays.
+  private var maxRequestedDelay = 0;
+
+  /* Automatic checkpointing due to memory use or idle time will wait for at least this many seconds
+     after any completed checkpoint save or load operations, including automatic and client-initiated.
+     If <= 0 then 3600 (one hour) is used.
+     This avoids overly-frequent auto-checkpointing.
+     Checkpoint operations requested by the client are not subject to this delay. */
+  config var checkpointInterval = 0;
+
+  // Time stamp of a successful checkpointing operation.
+  // Note: this is shared across all daemons.
+  private var lastCkptCompletion: atomic real = 0;
+
+  private proc updateLastCkptCompletion() {
+    lastCkptCompletion.write(Time.timeSinceEpoch().totalSeconds());
+  }
 
 
   private proc saveCheckpointImpl(basePath, cpName, mode, st) throws {
-    skipAutoCkpt.write(true);
-
     if !exists(basePath) then
       mkdir(basePath);
 
@@ -100,6 +112,8 @@ module CheckpointMsg {
         cpLogger.debug(M(), R(), L(), "Cannot save %s".format(name));
       }
     }
+
+    updateLastCkptCompletion();
   }
 
   proc saveCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
@@ -116,7 +130,7 @@ module CheckpointMsg {
 
   proc loadCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
                          st: borrowed SymTab): MsgTuple throws {
-    skipAutoCkpt.write(true);
+    updateLastCkptCompletion();
     var basePath = msgArgs.getValueOf("path");
     const nameArg = msgArgs.getValueOf("name");
 
@@ -170,7 +184,7 @@ module CheckpointMsg {
   }
 
   // returns true if the daemon was started
-  proc startAsyncCheckpointDaemon(sd: borrowed ServerDaemon.DefaultServerDaemon) {
+  proc startAsyncCheckpointDaemon(sd: borrowed DefaultServerDaemon) {
     if checkpointMemPct <= 0 && checkpointIdleTime <= 0 {
       try! cpLogger.info(M(), R(), L(), "asynchronous checkpointing was not requested");
       return false;
@@ -181,8 +195,14 @@ module CheckpointMsg {
     if checkpointMemPct <= 0 then checkpointMemPctDelay = 0;
     else if checkpointMemPctDelay <= 0 then checkpointMemPctDelay = 5;
 
+    if checkpointInterval <= 0 then checkpointInterval = 3600;
+
     minRequestedDelay = minOfPos(checkpointMemPctDelay, checkpointIdleTime);
+
     checkpointCheckDelay = minOfPos(checkpointCheckDelay, minRequestedDelay);
+
+    maxRequestedDelay = max(checkpointInterval, checkpointCheckDelay,
+                            checkpointIdleTime, checkpointMemPctDelay);
 
     // start the asynchronous task
     begin asyncCheckpointDaemon(sd);
@@ -191,9 +211,8 @@ module CheckpointMsg {
     return true;
   }
 
-  private proc asyncCheckpointDaemon(sd: borrowed ServerDaemon.DefaultServerDaemon) {
+  private proc asyncCheckpointDaemon(sd: borrowed DefaultServerDaemon) {
     var delay: real = minRequestedDelay;
-    var prevIdleStart = 0;
 
     // The only way to end this task is exit() in DefaultServerDaemon.shutdown().
     while true {
@@ -207,12 +226,20 @@ module CheckpointMsg {
 
         const idleStart = sd.idlePeriodStart.read();
         if idleStart == 0 {
-          // The server is not idle. Do not do anything now. Check back later.
+          // The server is not idle. Do not checkpoint now.
           delay = minRequestedDelay;
           continue;
         }
 
-        const idleTime = Time.timeSinceEpoch().totalSeconds() - idleStart;
+        const curTime = Time.timeSinceEpoch().totalSeconds();
+        const lastCkpt = lastCkptCompletion.read();
+        if curTime < lastCkpt + checkpointInterval {
+          // There was a recent checkpoint activity. Wait.
+          delay = lastCkpt + checkpointInterval - curTime;
+          continue;
+        }
+
+        const idleTime = curTime - idleStart;
         if idleTime < minRequestedDelay {
           // The server has not been idle long enough. Check back later.
           delay = minRequestedDelay - idleTime;
@@ -226,16 +253,17 @@ module CheckpointMsg {
           const cpName = "auto_checkpoint";
           cpLogger.info(M(), R(), L(), "starting autoCheckpoint: %s; saving into %s/%s"
                         .format(ckptReason, basePath, cpName));
-          saveCheckpointImpl(basePath, cpName, "overwrite", sd.st);
-          cpLogger.info(M(), R(), L(), "finished autoCheckpoint into %s/%s".format(basePath, cpName));
-          skipAutoCkpt.write(true);
 
-          // Done. Take a break, check back later.
-          delay = minRequestedDelay;
+          saveCheckpointImpl(basePath, cpName, "overwrite", sd.st);
+
+          cpLogger.info(M(), R(), L(), "finished autoCheckpoint into %s/%s".format(basePath, cpName));
+
+          // Fulfill all waiting periods before a next checkpoint.
+          delay = maxRequestedDelay;
           continue;
         }
 
-        // If nothing came up, wait before checking again.
+        // Nothing came up. Check back later.
         delay = minRequestedDelay;
 
       } catch err {
@@ -244,18 +272,14 @@ module CheckpointMsg {
     }
   }
 
-  private proc needToCheckpoint(idleTime) throws {
+  private proc needToCheckpoint(idleTime) {
     if checkpointIdleTime > 0 && idleTime >= checkpointIdleTime then
-      return "server was idle for over %i seconds".format(checkpointIdleTime);
+      return "server was idle for over " + checkpointIdleTime:string + "seconds";
 
     if checkpointMemPctDelay > 0 && idleTime >= checkpointMemPctDelay {
       // check whether memory use exceeds checkpointMemPct
-      if (getMemUsed():real / getMemLimit()) >= checkpointMemPct / 100.0 {
-        if ! skipAutoCkpt.read() then
-          return "memory usage exceeded %i%%".format(checkpointMemPct);
-      } else {
-        skipAutoCkpt.write(false);
-      }
+      if (getMemUsed():real / getMemLimit()) >= checkpointMemPct / 100.0 then
+        return "memory usage exceeded " + checkpointMemPct:string + "%";
     }
 
     // no need to checkpoint
