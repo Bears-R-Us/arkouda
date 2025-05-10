@@ -26,20 +26,20 @@ module CheckpointMsg {
   private config const logChannel = ServerConfig.logChannel;
   const cpLogger = new Logger(logLevel,logChannel);
 
-  /* Perform checkpointing automatically when used memory exceeds this many percent
-     of available memory. No auto-checkpointing if 0 or below. */
+  /* Perform checkpointing automatically when memory usage exceeds this many percent
+     of available memory. By default / if <=0, auto-checkpointing is not triggered by memory usage. */
   config const checkpointMemPct = 0;
 
-  /* When memory exceeds the 'checkpointMemPct' threhsold, wait for this many seconds
-     of idle time before checkpointing. If <=0 then 5 is used. */
+  /* When memory exceeds the `checkpointMemPct` threhsold, wait for this many seconds
+     of idle time before checkpointing. By default / if <=0, uses 5 seconds. */
   config var checkpointMemPctDelay = 0;
 
-  /* Perform checkpointing automatically when the server is idle
-     for this many seconds. No auto-checkpointing if 0 or below. */
+  /* Perform checkpointing automatically when the server is idle for this many seconds.
+     By default / if <=0, auto-checkpointing is not triggered by idle time. */
   config const checkpointIdleTime = 0;
 
-  /* Implementation can delay asynchronous checkpointing by at most this many seconds.
-     If <= 0 then min(checkpointMemPctDelay,checkpointIdleTime) is used. */
+  /* Implementation can delay checking of the above memory and idle time conditions by this many seconds.
+     By default / if <=0, uses min(checkpointMemPctDelay,checkpointIdleTime). */
   config var checkpointCheckDelay = 0;
 
   // The smaller of the active delays, 0 if no checking is requested.
@@ -49,8 +49,8 @@ module CheckpointMsg {
   private var maxRequestedDelay = 0;
 
   /* Automatic checkpointing due to memory use or idle time will wait for at least this many seconds
-     after any completed checkpoint save or load operations, including automatic and client-initiated.
-     If <= 0 then 3600 (one hour) is used.
+     after any completed checkpoint save or load operations, whether automatic or client-initiated.
+     By default / if <=0, uses 3600 (one hour).
      This avoids overly-frequent auto-checkpointing.
      Checkpoint operations requested by the client are not subject to this delay. */
   config var checkpointInterval = 0;
