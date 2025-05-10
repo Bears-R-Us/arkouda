@@ -38,7 +38,7 @@ module ServerDaemon {
     
     var serverDaemonTypes = try! getDaemonTypes();
 
-    private var asyncCkptRunning = false;
+    private var numAsyncTasks: atomic int;
 
     /**
      * Retrieves a list of 1..n ServerDaemonType objects generated 
@@ -77,7 +77,7 @@ module ServerDaemon {
      * Returns a boolean indicating if there are multiple ServerDaemons
      */
     proc multipleServerDaemons() {
-        return serverDaemonTypes.size + asyncCkptRunning > 1;
+        return serverDaemonTypes.size + numAsyncTasks.read();
     }
 
     /**
@@ -733,23 +733,20 @@ module ServerDaemon {
             this.shutdown(); 
         }
 
-        // helper for creating 'msgArgs'
-        proc sendAsyncCkptMessage(message: bytes): MsgTuple throws {
-          const msgArgs = new owned MessageArgs();
-          msgArgs.addPayload(message);
-          return executeCommand("async_checkpoint", msgArgs, st);
-        }
+        // Guard mutually-exclusive activities such as the main "server"
+        // and asynchronous checkpointing.
+        var activityMutex: sync string;
+
+        // Time stamp when the server started being idle.
+        // 0 if it is currently not idle.
+        var idlePeriodStart: atomic real;
 
         /* Starts a task for asynchronous checkpointing. */
-        proc startAsyncCheckpointTask() throws {
-          // Do nothing if the checkpointing module was not included.
-          if commandMap.contains("async_checkpoint") {
-            asyncCkptRunning = true;
-            const result = sendAsyncCkptMessage(b"start async task");
-            if result.msgType != MsgType.NORMAL {
-              asyncCkptRunning = false;
-            }
-          }
+        proc startAsyncCheckpointTask() {
+          numAsyncTasks.add(1);
+          const taskStarted = funStartAsyncCheckpointDaemon(this);
+          if ! taskStarted then
+            numAsyncTasks.sub(1);
         }
 
         proc serverIdleStart() {

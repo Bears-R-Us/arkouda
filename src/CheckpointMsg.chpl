@@ -8,6 +8,7 @@ module CheckpointMsg {
                      getLineNumber as L};
 
   use ServerErrors, ServerConfig;
+  import ServerDaemon;
   use MultiTypeSymbolTable, MultiTypeSymEntry;
   use Message;
   use ParquetMsg;
@@ -162,48 +163,40 @@ module CheckpointMsg {
     return Msg.send(nameArg);
   }
 
-  proc asyncCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
-                         st: borrowed SymTab): MsgTuple throws {
-    select msgArgs.payload {
-        when b"start async task" {
-          if checkpointMemPct <= 0 && checkpointIdleTime <= 0 {
-            cpLogger.info(M(), R(), L(), "asynchronous checkpointing not requested");
-            return MsgTuple.warning("asynchronous checkpointing not requested");
-          }
-
-          // tidy up the delays and 'minRequestedDelay'
-
-          if checkpointMemPct > 0 then
-            if checkpointMemPctDelay <= 0 then checkpointMemPctDelay = 5;
-          else
-            checkpointMemPctDelay = 0;
-
-          minRequestedDelay =
-            if checkpointMemPctDelay <= 0 then checkpointIdleTime
-            else if checkpointIdleTime <= 0 then checkpointMemPctDelay
-            else min(checkpointMemPctDelay, checkpointIdleTime);
-
-          checkpointCheckDelay =
-            if checkpointCheckDelay <= 0 then minRequestedDelay
-            else min(checkpointCheckDelay, minRequestedDelay);
-
-          // start the asynchronous task
-          begin asyncCheckpointDaemon(st);
-
-          return MsgTuple.success("started the asynchronous checkpointing daemon");
-        }
-
-        otherwise {
-          cpLogger.debug(M(), R(), L(), "Unrecognized auto_checkpoint command: %? payload=%?"
-                         .format(msgArgs, msgArgs.payload));
-          return MsgTuple.error("Unrecognized auto_checkpoint command: %? payload=%?"
-                                .format(msgArgs, msgArgs.payload));
-        }
-     }
+  // the smaller of those argument that are positive
+  private proc minOfPos(x, y: x.type) {
+    return if x > 0 then
+             if y > 0 then min(x, y) else x
+           else
+             if y > 0 then y else 0: x.type;
   }
 
-  private proc asyncCheckpointDaemon(st: borrowed SymTab) {
+  // returns true if the daemon was started
+  proc startAsyncCheckpointDaemon(sd: borrowed ServerDaemon.DefaultServerDaemon) {
+    if checkpointMemPct <= 0 && checkpointIdleTime <= 0 {
+      try! cpLogger.info(M(), R(), L(), "asynchronous checkpointing was not requested");
+      return false;
+    }
+
+    // tidy up the delays and 'minRequestedDelay'
+
+    if checkpointMemPct <= 0 then checkpointMemPctDelay = 0;
+    else if checkpointMemPctDelay <= 0 then checkpointMemPctDelay = 5;
+
+    minRequestedDelay = minOfPos(checkpointMemPctDelay, checkpointIdleTime);
+    checkpointCheckDelay = minOfPos(checkpointCheckDelay, minRequestedDelay);
+
+    // start the asynchronous task
+    begin asyncCheckpointDaemon(sd);
+
+    try! cpLogger.info(M(), R(), L(), "started the asynchronous checkpointing daemon");
+    return true;
+  }
+
+  private proc asyncCheckpointDaemon(sd: borrowed ServerDaemon.DefaultServerDaemon) {
     var delay: real = minRequestedDelay;
+    var prevIdleStart = 0;
+
     // The only way to end this task is exit() in DefaultServerDaemon.shutdown().
     while true {
       try {
@@ -211,10 +204,10 @@ module CheckpointMsg {
 
         // Check and checkpoint within the same mutex region
         // to avoid the server firing up when we are about to checkpoint.
-        activityMutex.writeEF("async checkpointing");
-        defer { activityMutex.readFE(); }
+        sd.activityMutex.writeEF("async checkpointing");
+        defer { sd.activityMutex.readFE(); }
 
-        const idleStart = idlePeriodStart.read();
+        const idleStart = sd.idlePeriodStart.read();
         if idleStart == 0 {
           // The server is not idle. Do not do anything now. Check back later.
           delay = minRequestedDelay;
@@ -235,7 +228,7 @@ module CheckpointMsg {
           const cpName = "auto_checkpoint";
           cpLogger.info(M(), R(), L(), "starting autoCheckpoint: %s; saving into %s/%s"
                         .format(ckptReason, basePath, cpName));
-          saveCheckpointImpl(basePath, cpName, "overwrite", st);
+          saveCheckpointImpl(basePath, cpName, "overwrite", sd.st);
           cpLogger.info(M(), R(), L(), "finished autoCheckpoint into %s/%s".format(basePath, cpName));
           skipAutoCkpt.write(true);
 
@@ -422,7 +415,7 @@ module CheckpointMsg {
   use CommandMap;
   registerFunction("save_checkpoint", saveCheckpointMsg, M());
   registerFunction("load_checkpoint", loadCheckpointMsg, M());
-  registerFunction("async_checkpoint", asyncCheckpointMsg, M());
+  funStartAsyncCheckpointDaemon = startAsyncCheckpointDaemon;
 
   /* Thrown while loading a checkpoint. The cases for this error type is limited
      to the logic of checkpointing itself. Other errors related to IO etc can
