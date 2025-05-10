@@ -165,10 +165,8 @@ module CheckpointMsg {
 
   // the smaller of those argument that are positive
   private proc minOfPos(x, y: x.type) {
-    return if x > 0 then
-             if y > 0 then min(x, y) else x
-           else
-             if y > 0 then y else 0: x.type;
+    return if x > 0 then if y > 0 then min(x, y) else x
+                    else if y > 0 then y else 0: x.type;
   }
 
   // returns true if the daemon was started

@@ -77,7 +77,7 @@ module ServerDaemon {
      * Returns a boolean indicating if there are multiple ServerDaemons
      */
     proc multipleServerDaemons() {
-        return serverDaemonTypes.size + numAsyncTasks.read();
+        return ( serverDaemonTypes.size + numAsyncTasks.read() ) > 1;
     }
 
     /**
