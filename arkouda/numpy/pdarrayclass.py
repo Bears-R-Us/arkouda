@@ -31,6 +31,44 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
 
+
+def _axis_parser(axis):
+    if axis is None:
+        return None
+    else:
+        axis_ = [axis] if np.isscalar(axis) else list(axis) if isinstance(axis, tuple) else axis
+        return axis_
+
+
+def _axis_validation(axis, rank):
+    if axis is None:
+        return True, None
+    elif isinstance(axis, int):
+        axis = axis if axis > 0 else rank + axis
+        if 0 <= axis and axis < rank:
+            return True, axis
+        else:
+            return False, axis
+    elif isinstance(axis, list):  # it's a list
+        valid = True
+        axis_ = axis.copy()
+        for i in range(len(axis_)):
+            axis_[i] = axis_[i] if axis_[i] >= 0 else rank + axis_[i]
+            if axis_[i] < 0 or axis_[i] >= rank:
+                valid = False
+        return valid, axis_
+    else:
+        return False, axis
+
+=======
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg, get_array_ranks
+else:
+    generic_msg = TypeVar("generic_msg")
+    get_array_ranks = TypeVar("get_array_ranks")
+>>>>>>> 6167a1f81 (trying to fix tests, typevar issue)
+
+>>>>>>> fd084087e (trying to fix tests, typevar issue)
 module = modules[__name__]
 
 
