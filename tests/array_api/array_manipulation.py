@@ -105,7 +105,7 @@ class TestManipulation:
     @pytest.mark.skip_if_rank_not_compiled([3])
     def test_flip(self):
         # 1D case
-        a = xp.arange(10)
+        a = xp.asarray(ak.arange(10))
         b1 = xp.flip(a)
         b2 = xp.flip(a, axis=0)
 
@@ -201,7 +201,7 @@ class TestManipulation:
     @pytest.mark.skip_if_rank_not_compiled([3])
     def test_roll(self):
         # 1D case
-        a = xp.arange(10)
+        a = xp.asarray(ak.arange(10))
         b1 = xp.roll(a, 3)
         b2 = xp.roll(a, -3)
 
