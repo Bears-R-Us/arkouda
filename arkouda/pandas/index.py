@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 import json
-from typing import TYPE_CHECKING, TypeVar,List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, TypeVar, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
