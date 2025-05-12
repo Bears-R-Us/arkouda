@@ -30,6 +30,7 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
 
+<<<<<<< HEAD
 
 def _axis_parser(axis):
     if axis is None:
@@ -59,6 +60,13 @@ def _axis_validation(axis, rank):
     else:
         return False, axis
 
+=======
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg, get_array_ranks
+else:
+    generic_msg = TypeVar("generic_msg")
+    get_array_ranks = TypeVar("get_array_ranks")
+>>>>>>> 6167a1f81 (trying to fix tests, typevar issue)
 
 module = modules[__name__]
 
