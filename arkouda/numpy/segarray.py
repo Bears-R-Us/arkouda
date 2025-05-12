@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 import json
-from typing import Optional, Sequence, Tuple
+from typing import TYPE_CHECKING, TypeVar, Optional, Sequence, Tuple
 from typing import cast as type_cast
 
 import numpy as np
 
-from arkouda.client import generic_msg
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.logger import getArkoudaLogger
-from arkouda.numpy import cumsum
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, isSupportedInt, str_
@@ -29,6 +27,12 @@ SEG_SUFFIX = "_segments"
 VAL_SUFFIX = "_values"
 LEN_SUFFIX = "_lengths"
 
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+    from arkouda.numpy import cumsum
+else:
+    generic_msg = TypeVar("generic_msg")
+    cumsum = TypeVar("cumsum")
 
 def _aggregator(func):
     aggdoc = """

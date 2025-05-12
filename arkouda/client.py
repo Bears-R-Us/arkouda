@@ -994,6 +994,7 @@ def generic_msg(
     corresponds to an Arkouda array output as a numpy array.
 
     """
+    
     if not connected:
         raise RuntimeError("client is not connected to a server")
 

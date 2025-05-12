@@ -1,14 +1,13 @@
 import glob
 import json
 import os
-from typing import Dict, List, Mapping, Optional, Union, cast
+from typing import TYPE_CHECKING, TypeVar, Dict, List, Mapping, Optional, Union, cast
 from warnings import warn
 
 import pandas as pd
 from typeguard import typechecked
 
 from arkouda.categorical import Categorical
-from arkouda.client import generic_msg
 from arkouda.client_dtypes import IPv4
 from arkouda.pandas.dataframe import DataFrame
 from arkouda.pandas.groupbyclass import GroupBy
@@ -19,6 +18,11 @@ from arkouda.numpy.pdarraycreation import arange, array
 from arkouda.numpy.segarray import SegArray
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
+
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+else:
+    generic_msg = TypeVar("generic_msg")
 
 __all__ = [
     "get_filetype",
