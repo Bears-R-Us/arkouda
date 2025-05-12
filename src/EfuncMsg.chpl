@@ -1,6 +1,7 @@
 
 module EfuncMsg
 {
+
     use ServerConfig;
 
     use Time;
@@ -8,12 +9,14 @@ module EfuncMsg
     use BitOps;
     use Reflection;
     use ServerErrors;
+    use List;
     use Logging;
     use Message;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     private use SipHash;
+    use SortMsg;
     use UniqueMsg;
     use AryUtil;
     use CTypes;
@@ -789,4 +792,214 @@ module EfuncMsg
     private proc log1p(x: real):real do return log(1.0 + x);
     private proc expm1(x: real):real do return exp(x) - 1.0;
 
+   // Several functions below (m, indx, eclipse and gee) are needed in quantile & percentile,
+   // to support the calculation of the indices j and j1, that are then used to compute the result.
+
+   // "nearest" is not implemented because the numpy version doesn't appear to match its
+   // documentation.  It's included here, in comments, to show that we are aware of it.
+
+   proc m (method: string, q: real) : real {
+        select (method) {
+            when "inverted_cdf"              { return 0.0; }
+            when "averaged_inverted_cdf"     { return 0.0; }
+            when "closest_observation"       { return -0.5; }
+            when "interpolated_inverted_cdf" { return 0.0; }
+            when "hazen"                     { return 0.5; }
+            when "weibull"                   { return q; }
+            when "linear"                    { return 1 - q; }
+            when "median_unbiased"           { return q/3.0 + 1.0/3.0; }
+            when "normal_unbiased"           { return q/4.0 + 0.375; }
+            when "lower"                     { return 1 - q; }
+            when "midpoint"                  { return 1 - q; }
+            when "higher"                    { return 1 - q;}
+            // when "nearest"                { return 1 - q; } // not implementing this one yet
+            otherwise                        { return 1 - q; }
+        }
+    }
+
+    proc indx(q : real, n : int, m : real) : real {
+        return q*n + m - 1;
+    }
+
+    proc frac (a: real) : real {
+        return a - floor(a) ;
+    }
+
+    proc g(method: string, q: real, n: int, j:int) : real {
+        var emm = m(method,q);
+        select (method) {
+            when "inverted_cdf"             { return (indx(q,n,emm) - j > 0):int;  }
+            when "averaged_inverted_cdf"    { var interim = (indx(q,n,emm) - j > 0):int; return (1.0 + interim)/2.0; }
+            when "closest_observation"      { return 1.0 - ((indx(q,n,emm) == j) & (j%2==1)):int; }
+            when "interplated_inverted_cdf" { return frac(q*n + emm - 1.0); }
+            when "hazen"                    { return frac(q*n + emm - 1.0); }
+            when "weibull"                  { return frac(q*n + emm - 1.0); }
+            when "linear"                   { return frac(q*n + emm - 1.0); }
+            when "median_unbiased"          { return frac(q*n + emm - 1.0); }
+            when "normal_unbiased"          { return frac(q*n + emm - 1.0); }
+            when "lower"                    { return 0.0; }
+            when "midpoint"                 { return 0.5; }
+            when "higher"                   { return 1.0; }
+            // when "nearest"               { return 1 - q; } // not implementing this one yet
+            otherwise                       { return frac(q*n + emm -1.0); }
+        }
+    }
+
+   proc eclipse (a : ?, lo : ?, high : ?) : real {
+            return if a < lo then lo else if a > high then high else a;
+        }
+
+   proc supports_integers(method: string) : bool {
+        select (method) {
+            when "inverted_cdf"             { return false; }
+            when "averaged_inverted_cdf"    { return false; }
+            when "closest_observation"      { return false; }
+            otherwise                       { return true; }
+        }
+    }
+        
+   proc discontinuous(method: string) : bool {
+        select (method) {
+            when "lower"       { return true; }
+            when "midpoint"    { return true; }
+            // when "nearest"  { return true; }  // not implementing this one yet
+            when "higher"      { return true; }
+            otherwise          { return false; }
+        }
+    }
+
+   //  quantile and percentile can be called with q as a scalar or an array, and with/without
+   //  axes specified along which to slice.
+
+   //  Regardless of which instance was called (scalar, array, slice, no slice), the computation
+   //  is done in quantile_helper.  The pdarray a must already be sorted and flattened before
+   //  quantile_helper is invoked.
+
+   //  The specifics come from a combination of studying the np.quantile documentation
+   //  and reverse engineering what it actually does.
+
+   proc quantile_helper (in a : [?d] ?t, q : real, method : string) : real throws
+        where (d.rank == 1 && (t==real || t== int || t==uint)) {
+        const n = d.size;
+        var emm = m(method,q);
+        var idx = indx(q,n,emm);
+        var interim_j = q*n + emm - 1.0;
+        if discontinuous (method) then interim_j = q*(n-1.0);
+        var j = eclipse(interim_j,0,n-1):int;
+        var mess = interim_j ;
+        if supports_integers(method) {
+            mess += (interim_j != floor(interim_j)):int ;
+        } else {
+            mess += 1.0;
+        } 
+        var j1 = eclipse(mess,0,n-1):int;
+        var gee = g(method,q,n,j) ;
+        return (1.0 - gee)*a[j] + gee*a[j1];
+    }
+        
+
+   //  1st case is q scalar, no axis slicing.  The result is a scalar.
+
+   @arkouda.registerCommand 
+   proc quantile_scalar_no_axis (in a : [?d] ?t, q : real, method : string) : real throws
+      where ((t==real || t==int || t==uint)) {
+        return quantile_helper(sort(flatten(a)),q,method);
+    }
+
+   // 2nd case is q a pdarray, still no axis slicing.  The result is a pdarray of the same
+   // shape as q.
+
+   @arkouda.registerCommand
+   proc quantile_array_no_axis (in a : [?d] ?t, q : [?dq] real, method : string) : [dq] real throws
+      where ((t==real || t==int || t==uint)) {
+        var a_ = sort(flatten(a));
+        var return_value = makeDistArray(dq,real);
+        forall dqidx in dq {
+            return_value[dqidx] = quantile_helper(a_,q[dqidx],method);
+        }
+        return return_value;
+    }
+
+    // 3rd case is q scalar, with axis slicing.  The result is a pdarray of rank 1 less than the
+    // rank of a.  A temporary result will be passed of the same shape as a.  The degenerate rank
+    // will be removed python-side using the squeeze function.
+
+    @arkouda.registerCommand
+    proc quantile_scalar_with_axis (in a: [?d] ?t, q : real, axis: list(int), method : string) : [] real throws
+        where ((t==real || t==int || t==uint)) {
+        const (valid, axes) = validateNegativeAxes(axis, d.rank);
+        if !valid {
+            throw new Error("Invalid axis value(s) '%?' in quantile reduction".format(axis));
+        } else {
+            const outShape = reducedShape(a.shape, axes);
+            var ret = makeDistArray((...outShape), real);
+            for (sliceDom,sliceIdx) in axisSlices(d, axes) {
+
+                var holder = makeDistArray(sliceDom.size,t);
+                forall idx in holder.domain with (var agg = new DstAggregator(t)) {
+                   agg.copy (holder(idx),a[sliceDom.orderToIndex(idx)]) ;
+                }
+                ret [sliceIdx] = quantile_helper(sort(flatten(holder)),q,method);
+            }
+            return ret;
+        }
+    }
+
+    // 4th case is where q is a pdarray, with axis slicing.  This will return a pdarray of rank
+    // q.ndim + a.ndim, and shape (q.shape,a.shape).  The sliced axes will be removed python-side
+    // using the squeeze function.
+
+    // growShape will append one shape to another.  This is needed only in this
+    // specific case.
+
+    proc growShape(qShape: ?Nq*int, aShape : ?Na*int): (Na+Nq)*int
+        where Na >= 1 && Nq >= 1 {
+        var grownShape : (Na+Nq)*int;
+        for i in 0..(Nq-1) do grownShape[i] = qShape[i];
+        for i in 0..(Na-1) do grownShape[Nq+i] = aShape[i];
+        return grownShape;
+    }
+
+    @arkouda.registerCommand
+    proc quantile_array_with_axis (in a: [?d] ?t, q: [?dq] real, axis: list(int), method : string) : [] real throws
+        where ((t==real || t==int || t==uint)) {
+        const (valid, axes) = validateNegativeAxes(axis, d.rank);
+        if !valid {
+            throw new Error("Invalid axis value(s) '%?' in quantile reduction".format(axis));
+        } else {
+
+            const tmpShape = reducedShape(a.shape, axes);
+            var tmpret = makeDistArray((...tmpShape), real);
+            var ret = makeDistArray((...growShape(q.shape,tmpShape)),real);
+            for (sliceDom,sliceIdx) in axisSlices(d, axes) {
+
+                var holder = makeDistArray(sliceDom.size,t);
+                forall idx in holder.domain with (var agg = new DstAggregator(t)) {
+                    agg.copy (holder(idx),a[sliceDom.orderToIndex(idx)]) ;
+                }
+
+                // The "holder" vector (the slice) was formed before looping over q.
+                // This makes for less computation than calculating the vector slice within
+                // the loop over q.
+
+                for qIdx in q.domain {
+                    var retIdx : (ret.rank)*int; // combination of qIdx and sliceIdx
+                    if q.rank == 1 {
+                        retIdx[0] = qIdx;
+                    } else {
+                        for i in 0..q.rank-1 do retIdx[i] = qIdx[i];
+                    }
+                    if sliceDom.rank == 1 {
+                        retIdx [q.rank] = sliceIdx;
+                    } else {
+                        for i in 0..sliceDom.rank-1 do retIdx[q.rank+i] = sliceIdx[i];
+                    }
+                    ret [retIdx] = quantile_helper(sort(holder),q[qIdx],method);
+                }
+            }
+            return ret ;
+        }
+    }
+
 }
+
