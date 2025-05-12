@@ -1,3 +1,4 @@
+# isort: skip_file
 # flake8: noqa
 
 from ._stats_py import Power_divergenceResult, chisquare, power_divergence
