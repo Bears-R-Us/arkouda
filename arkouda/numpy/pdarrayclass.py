@@ -34,6 +34,12 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
 
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg, get_array_ranks
+else:
+    generic_msg = TypeVar("generic_msg")
+    get_array_ranks = TypeVar("get_array_ranks")
+
 module = modules[__name__]
 
 if TYPE_CHECKING:
@@ -73,11 +79,7 @@ if TYPE_CHECKING:
 
     argmax = index_reduce
     argmin = index_reduce
-    
-    from arkouda.client import generic_msg, get_array_ranks
-else:
-    generic_msg = TypeVar("generic_msg")
-    get_array_ranks = TypeVar("get_array_ranks")
+
 
 __all__ = [
     "pdarray",
