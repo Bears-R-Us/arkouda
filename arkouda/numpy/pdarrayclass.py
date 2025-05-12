@@ -2097,6 +2097,7 @@ class pdarray:
         if (not isinstance(shape, int)) and (not isinstance(shape, pdarray)):
             shape = [i for i in shape]
             lenshape = len(shape)
+
         return create_pdarray(
             generic_msg(
                 cmd=f"reshape<{self.dtype},{self.ndim},{lenshape}>",
@@ -2105,6 +2106,7 @@ class pdarray:
                     "shape": shape,
                 },
             ),
+            max_bits=self.max_bits,
         )
 
     def flatten(self):
