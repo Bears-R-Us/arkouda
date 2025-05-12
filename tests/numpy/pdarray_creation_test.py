@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
-from arkouda.numpy import pdarraycreation
+from arkouda.numpy import newaxis, pdarraycreation
 from arkouda.numpy.util import _generate_test_shape
 from arkouda.testing import assert_arkouda_array_equal, assert_equivalent
 
@@ -246,6 +246,15 @@ class TestPdarrayCreation:
             np_arr = np.array([bi + i for i in range(size)]).reshape(shape)
             ak_arr = ak.array([bi + i for i in range(size)]).reshape(shape)
             assert_arkouda_array_equal(ak_arr, ak.array(np_arr))
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_newaxis(self, size):
+        a = ak.arange(size)
+        b = a[:, newaxis]
+        c = a[newaxis, :]
+        assert_arkouda_array_equal(a, b[:, 0])
+        assert_arkouda_array_equal(a, c[0, :])
 
     def test_arange(self):
         assert np.arange(0, 10, 1).tolist() == ak.arange(0, 10, 1).to_list()
