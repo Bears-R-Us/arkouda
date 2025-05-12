@@ -264,7 +264,7 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("dtype", ak.intTypes)
     def test_arange_dtype(self, dtype):
-        # test dtype works with optional start/stride
+        # test dtype works with optional start/step
         stop = ak.arange(100, dtype=dtype)
         assert np.arange(100, dtype=dtype).tolist() == stop.to_list()
         assert dtype == stop.dtype
@@ -273,22 +273,22 @@ class TestPdarrayCreation:
         assert np.arange(100, 105, dtype=dtype).tolist() == start_stop.to_list()
         assert dtype == start_stop.dtype
 
-        start_stop_stride = ak.arange(100, 105, 2, dtype=dtype)
-        assert np.arange(100, 105, 2, dtype=dtype).tolist() == start_stop_stride.to_list()
-        assert dtype == start_stop_stride.dtype
+        start_stop_step = ak.arange(100, 105, 2, dtype=dtype)
+        assert np.arange(100, 105, 2, dtype=dtype).tolist() == start_stop_step.to_list()
+        assert dtype == start_stop_step.dtype
 
-        # also test for start/stop/stride that cause empty ranges
-        start_stop_stride = ak.arange(100, 10, 2, dtype=dtype)
-        assert np.arange(100, 10, 2, dtype=dtype).tolist() == start_stop_stride.to_list()
-        assert dtype == start_stop_stride.dtype
+        # also test for start/stop/step that cause empty ranges
+        start_stop_step = ak.arange(100, 10, 2, dtype=dtype)
+        assert np.arange(100, 10, 2, dtype=dtype).tolist() == start_stop_step.to_list()
+        assert dtype == start_stop_step.dtype
 
-        start_stop_stride = ak.arange(10, 15, -2, dtype=dtype)
-        assert np.arange(10, 15, -2, dtype=dtype).tolist() == start_stop_stride.to_list()
-        assert dtype == start_stop_stride.dtype
+        start_stop_step = ak.arange(10, 15, -2, dtype=dtype)
+        assert np.arange(10, 15, -2, dtype=dtype).tolist() == start_stop_step.to_list()
+        assert dtype == start_stop_step.dtype
 
-        start_stop_stride = ak.arange(10, 10, -2, dtype=dtype)
-        assert np.arange(10, 10, 2, dtype=dtype).tolist() == start_stop_stride.to_list()
-        assert dtype == start_stop_stride.dtype
+        start_stop_step = ak.arange(10, 10, -2, dtype=dtype)
+        assert np.arange(10, 10, 2, dtype=dtype).tolist() == start_stop_step.to_list()
+        assert dtype == start_stop_step.dtype
 
     def test_arange_misc(self):
         # test uint64 handles negatives correctly
@@ -325,12 +325,12 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [ak.float64, ak.uint64, ak.float64])
     @pytest.mark.parametrize("start", [0, 2, 5])
-    @pytest.mark.parametrize("stride", [1, 3])
-    def test_compare_arange(self, size, dtype, start, stride):
+    @pytest.mark.parametrize("step", [1, 3])
+    def test_compare_arange(self, size, dtype, start, step):
         # create np version
-        nArange = np.arange(start, size, stride, dtype=dtype)
+        nArange = np.arange(start, size, step, dtype=dtype)
         # create ak version
-        aArange = ak.arange(start, size, stride, dtype=dtype)
+        aArange = ak.arange(start, size, step, dtype=dtype)
         assert np.allclose(nArange, aArange.to_ndarray())
 
     @pytest.mark.parametrize("size", pytest.prob_size)
