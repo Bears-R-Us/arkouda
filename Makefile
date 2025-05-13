@@ -710,6 +710,10 @@ format: isort ruff-format check-doc-examples
 darglint: 
 	#   Check darglint linter for doc strings:
 	darglint -v 2 arkouda
+	
+docstr-coverage:
+	#   Check coverage for doc strings:
+	docstr-coverage arkouda --config .docstr.yaml
 
 
 #################

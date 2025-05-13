@@ -120,6 +120,20 @@ jobs:
       run: |
         make doc
 
+  docstr-cov:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with: { python-version: '3.x' }
+      - name: Install dependencies
+        run: pip install docstr-coverage
+      - name: Run docstring coverage
+        run: |
+          mkdir -p docs
+          make docstr-coverage
+
   flake8:
     runs-on: ubuntu-latest
     container:
