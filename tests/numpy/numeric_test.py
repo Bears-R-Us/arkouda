@@ -1386,7 +1386,7 @@ class TestNumeric:
 
     #   test array 1 dimensional q, 2 dimensional pda with slice axis, returns pdarray.
 
-    @pytest.mark.skip_if_rank_not_compiled(2, 3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.skipif(pytest.nl > 1, reason="Single locale test skipped.")
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("method_name", ALLOWED_PERQUANT_METHODS)
@@ -1407,7 +1407,7 @@ class TestNumeric:
             )
             ak_assert_almost_equivalent(pr, nr)
 
-    @pytest.mark.skip_if_rank_not_compiled(2, 3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.skipif(pytest.nl < 2, reason="Multi locale test skipped.")
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("method_name", SUBSET_PERQUANT_METHODS)
