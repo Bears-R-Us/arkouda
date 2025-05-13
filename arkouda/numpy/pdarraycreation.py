@@ -217,6 +217,7 @@ def array(
     <class 'arkouda.numpy.strings.Strings'>
     """
     from arkouda.numpy import cast as akcast
+    from arkouda.client import generic_msg
 
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):

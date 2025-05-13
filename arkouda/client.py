@@ -1078,6 +1078,7 @@ def get_array_ranks() -> list[int]:
         The pdarray ranks supported by the server
 
     """
+    from typing import TypeVar
     if registrationConfig is None:
         raise RuntimeError(
             "There was a problem loading registrationConfig."
