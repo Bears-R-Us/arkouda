@@ -15,6 +15,8 @@ from arkouda.testing import assert_arkouda_array_equal, assert_equivalent
 INT_SCALARS = list(ak.numpy.dtypes.int_scalars.__args__)
 NUMERIC_SCALARS = list(ak.numpy.dtypes.numeric_scalars.__args__)
 
+arangeTypes = [ak.float64, ak.int64, ak.uint64, ak.uint8]
+
 DTYPES = [
     bool,
     float,
@@ -262,7 +264,7 @@ class TestPdarrayCreation:
         assert np.arange(-5, -10, -1).tolist() == ak.arange(-5, -10, -1).to_list()
         assert np.arange(0, 10, 2).tolist() == ak.arange(0, 10, 2).to_list()
 
-    @pytest.mark.parametrize("dtype", ak.intTypes)
+    @pytest.mark.parametrize("dtype", arangeTypes)
     def test_arange_dtype(self, dtype):
         # test dtype works with optional start/step
         stop = ak.arange(100, dtype=dtype)

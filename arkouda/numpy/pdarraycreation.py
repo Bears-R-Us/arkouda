@@ -18,6 +18,7 @@ from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import (
     int_scalars,
+    isSupportedFloat,
     isSupportedInt,
     isSupportedNumber,
     numeric_scalars,
@@ -913,46 +914,43 @@ def full_like(pda: pdarray, fill_value: numeric_scalars) -> Union[pdarray, Strin
 
 
 def arange(
-    start: Optional[int_scalars] = None,
-    stop: Optional[int_scalars] = None,
-    step: Optional[int_scalars] = None,
+    start: Optional[numeric_scalars] = None,
+    stop: Optional[numeric_scalars] = None,
+    step: Optional[numeric_scalars] = None,
     dtype: Optional[Union[np.dtype, type, bigint]] = None,
     max_bits: Optional[int] = None,
 ) -> pdarray:
     """
     arange([start,] stop[, step,] dtype=int64)
 
-    Create a pdarray of consecutive integers within the interval [start, stop).
-    If only one arg is given then arg is the stop parameter. If two args are
-    given, then the first arg is start and second is stop. If three args are
-    given, then the first arg is start, second is stop, third is step.
+    Create a pdarray of consecutive numbers within the interval [start, stop).
 
     The return value is cast to type dtype
 
     Parameters
     ----------
-    start : int_scalars, optional
-    stop  : int_scalars, optional
-    step  : int_scalars, optional
+    start : numeric_scalars, optional
+    stop  : numeric_scalars, optional
+    step  : numeric_scalars, optional
         if one of these three is supplied, it's used as stop, and start = 0, step = 1
         if two of them are supplied, start = start, stop = stop, step = 1
         if all three are supplied, start = start, stop = stop, step = step
     dtype: np.dtype, type, or str
-        The target dtype to cast values to
+        The target dtype to cast values to, defaults to ak.int64
     max_bits: int
         Specifies the maximum number of bits; only used for bigint pdarrays
 
     Returns
     -------
     pdarray
-        Integers from start (inclusive) to stop (exclusive) by step
+        Numbers from start (inclusive) to stop (exclusive) by step
 
     Raises
     ------
     ValueError
         Raised if none of start, stop, step was supplied
     TypeError
-        Raised if start, stop, or step is not an int object
+        Raised if start, stop, or step is not an int or float object
     ZeroDivisionError
         Raised if step == 0
 
@@ -962,9 +960,7 @@ def arange(
 
     Notes
     -----
-    Negative steps result in decreasing values. Currently, only int64
-    pdarrays can be created with this method. For float64 arrays, use
-    the linspace method.
+    Negative steps result in decreasing values.
 
     Examples
     --------
@@ -997,6 +993,8 @@ def arange(
 
     aktype = akint64 if dtype is None else dtype
 
+    # aktype = aktype if aktype is not np.float32 else float64  # "cast" does not handle float32
+
     # check the conditions that cause numpy to return an empty array, and
     # return one also.  This includes a fix needed for empty bigint arrays.
 
@@ -1005,6 +1003,7 @@ def arange(
     # to float64, and cast fails when  converting empty float64 arrays to bigint).
     # So empty arrays are initially created as akint64, and then cast to
     # the requested dtype.
+
     # This matters for several tests in tests/series_test.py
 
     if (start == stop) | ((np.sign(stop - start) * np.sign(step)) <= 0):  # type: ignore
@@ -1032,10 +1031,16 @@ def arange(
                 else array(create_pdarray(repMsg), max_bits=akmax_bits, dtype=aktype)  # type: ignore
             ),
         )
-    else:
-        raise TypeError(
-            f"start,stop,step must be type int, np.int64, or np.uint64 {start} {stop} {step}"
+
+    elif isSupportedFloat(start) or isSupportedFloat(stop) or isSupportedFloat(step):
+        arg_dtype = "float64"
+        repMsg = generic_msg(
+            cmd=f"arange<{arg_dtype},1>", args={"start": start, "stop": stop, "step": step}
         )
+        return create_pdarray(repMsg)
+
+    else:
+        raise TypeError(f"start,stop,step must be supports ints or floats {start} {stop} {step}")
 
 
 @typechecked
