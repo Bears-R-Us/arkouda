@@ -6,12 +6,15 @@ from IPython.core.history import HistoryAccessor
 
 class HistoryRetriever:
     """
-    HistoryRetriever is an abstract base class that defines the retrieve method signature
-    and implements _filter_arkouda_command
+    Abstract base class that defines the retrieve method signature.
+
+    Implements _filter_arkouda_command.
     """
 
     def _filter_arkouda_command(self, command: str, filter_string: str = "ak") -> Optional[str]:
         """
+        Return command string.
+
         Return command string if the filter string is in the command and the
         command is not generate_history. Otherwise, returns None
         """
@@ -21,6 +24,8 @@ class HistoryRetriever:
         self, command_filter: Optional[str] = None, num_commands: Optional[int] = None
     ) -> List[str]:
         """
+        Generate list of commands executed.
+
         Generate list of commands executed within a Python REPL shell, Jupyter notebook,
         or IPython notebook, with an optional command filter and number of commands to return.
 
@@ -41,15 +46,14 @@ class HistoryRetriever:
 
 
 class ShellHistoryRetriever(HistoryRetriever):
-    """
-    ShellHistoryRetriever implements the retrieve method to get command history from the
-    Python REPL shell.
-    """
+    """Implement the retrieve method to get command history from the Python REPL shell."""
 
     def retrieve(
         self, command_filter: Optional[str] = None, num_commands: Optional[int] = None
     ) -> List[str]:
         """
+        Generate list of commands executed.
+
         Generate list of commands executed within the a Python REPL shell, with an
         optional command filter and number of commands to return.
 
@@ -94,15 +98,14 @@ class ShellHistoryRetriever(HistoryRetriever):
 
 
 class NotebookHistoryRetriever(HistoryAccessor, HistoryRetriever):
-    """
-    NotebookHistoryRetriever implements the retrieve method to get command history
-    from a Jupyter notebook or IPython shell.
-    """
+    """Implement the retrieve method to get command history from a Jupyter notebook or IPython shell."""
 
     def retrieve(
         self, command_filter: Optional[str] = None, num_commands: Optional[int] = None
     ) -> List[str]:
         """
+        Generate list of commands executed.
+
         Generate list of commands executed within a Jupyter notebook or IPython shell,
         with an optional command filter and number of commands to return.
 

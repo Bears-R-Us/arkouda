@@ -22,11 +22,7 @@ def chpl_installed():
 
 
 def make_arkouda_server():
-    """
-    Call make to build to Arkouda server
-    has a timeout of an hour.
-
-    """
+    """Call make to build to Arkouda server has a timeout of an hour."""
     proc = Popen(["make"], shell=True, stdout=PIPE, stderr=PIPE)
     print("Installing Arkouda server...")
 
@@ -105,9 +101,9 @@ def installarkouda(setup_subcommand):
 @installarkouda
 class ArkoudaInstall(build_py):
     """
-    Will replace the `python setup.py install` command
-    Is called when user invokes pip install Arkouda
+    Will replace the `python setup.py install` command.
 
+    Is called when user invokes pip install Arkouda.
     """
 
     pass
