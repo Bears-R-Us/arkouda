@@ -32,8 +32,8 @@ class sparray:
     ----------
     name : str
         The server-side identifier for the array
-    dtype : dtype
-        The element type of the array
+    dtype : type
+        The element dtype of the array
     size : int_scalars
         The size of any one dimension of the array (all dimensions are assumed to be equal sized for now)
     nnz: int_scalars
@@ -47,6 +47,15 @@ class sparray:
     itemsize : int_scalars
         The size in bytes of each element
     """
+
+    name: str
+    dtype: type
+    size: int_scalars
+    nnz: int_scalars
+    ndim: int_scalars
+    shape: Sequence[int]
+    layout: str
+    itemsize: int_scalars
 
     def __init__(
         self,

@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 
 from arkouda import __version__, io_util, security
-from arkouda.logger import LogLevel, getArkoudaLogger
+from arkouda.logger import ArkoudaLogger, LogLevel, getArkoudaLogger
 from arkouda.message import (
     MessageFormat,
     MessageType,
@@ -225,12 +225,17 @@ class Channel:
         to the connect_url or generated from supplied server and port values
     user : str
         Arkouda user who will use the Channel to connect to the arkouda_server
-    token : str, optional
+    token : Union[str, None]
         Token used to connect to the arkouda_server if authentication is enabled
     logger : ArkoudaLogger
         ArkoudaLogger used for logging
 
     """
+
+    url: str
+    user: str
+    token: Union[str, None]
+    logger: ArkoudaLogger
 
     __slots__ = ("url", "user", "token", "logger")
 
