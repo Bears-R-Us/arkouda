@@ -28,6 +28,7 @@ from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
+from arkouda.groupbyclass import GroupBy
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index, MultiIndex
@@ -110,17 +111,23 @@ class DataFrameGroupBy:
 
     Attributes
     ----------
-    gb : arkouda.groupbyclass.GroupBy
+    gb : GroupBy
         GroupBy object, where the aggregation keys are values of column(s) of a dataframe,
         usually in preparation for aggregating with respect to the other columns.
-    df : arkouda.dataframe.DataFrame
+    df : DataFrame
         The dataframe containing the original data.
-    gb_key_names : str or list(str)
+    gb_key_names : Union[str, List[str]]
         The column name(s) associated with the aggregated columns.
-    as_index : bool, default=True
+    as_index : bool
         If True the grouped values of the aggregation keys will be treated as an index.
+        Defaults to True.
 
     """
+
+    gb: GroupBy
+    df: DataFrame
+    gb_key_names: Union[str, List[str]]
+    as_index: bool
 
     def __init__(self, gb, df, gb_key_names=None, as_index=True):
         self.gb = gb
@@ -733,12 +740,15 @@ class DiffAggregate:
 
     Attributes
     ----------
-    gb : arkouda.groupbyclass.GroupBy
+    gb : GroupBy
         GroupBy object, where the aggregation keys are values of column(s) of a dataframe.
-    values : arkouda.pandas.series.Series.
+    values : Series
         A column to compute the difference on.
 
     """
+
+    gb: GroupBy
+    values: Series
 
     def __init__(self, gb, series):
         self.gb = gb

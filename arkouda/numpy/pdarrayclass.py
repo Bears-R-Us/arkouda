@@ -369,6 +369,13 @@ class pdarray:
         The size in bytes of each element
     """
 
+    name: str
+    dtype: dtype
+    size: int_scalars
+    ndim: int_scalars
+    shape: Tuple[int, ...]
+    itemsize: int_scalars
+
     BinOps = frozenset(
         [
             "+",

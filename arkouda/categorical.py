@@ -77,6 +77,15 @@ class Categorical:
 
     """
 
+    categories: Strings
+    codes: Union[pdarray, akint64]
+    permutation: Union[pdarray, akint64]
+    segments: Union[pdarray, akint64]
+    size: Union[int, np.int64]
+    nlevels: Union[int, np.int64]
+    ndim: Union[int, np.int64]
+    shape: tuple
+
     BinOps = frozenset(["==", "!="])
     RegisterablePieces = frozenset(["categories", "codes", "permutation", "segments", "_akNAcode"])
     RequiredPieces = frozenset(["categories", "codes", "_akNAcode"])

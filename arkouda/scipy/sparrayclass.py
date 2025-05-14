@@ -48,6 +48,15 @@ class sparray:
         The size in bytes of each element
     """
 
+    name: str
+    dtype: dtype
+    size: int_scalars
+    nnz: int_scalars
+    ndim: int_scalars
+    shape: Sequence[int]
+    layout: str
+    itemsize: int_scalars
+
     def __init__(
         self,
         name: str,

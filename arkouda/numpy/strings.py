@@ -12,7 +12,7 @@ from typeguard import typechecked
 import arkouda.numpy.dtypes
 from arkouda.client import generic_msg
 from arkouda.infoclass import information, list_symbol_table
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import ArkoudaLogger, getArkoudaLogger
 from arkouda.match import Match, MatchType
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
@@ -64,6 +64,14 @@ class Strings:
     starting indices for each string and (2) bytes, which contains the
     raw bytes of all strings, delimited by nulls.
     """
+
+    entry: pdarray
+    size: int_scalars
+    nbytes: int_scalars
+    ndim: int_scalars
+    shape: Tuple
+    dtype: dtype
+    logger: ArkoudaLogger
 
     BinOps = frozenset(["==", "!="])
     objType = "Strings"

@@ -18,7 +18,7 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import ArkoudaLogger, getArkoudaLogger
 from arkouda.numpy.dtypes import _val_isinstance_of_union, bigint
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -257,6 +257,7 @@ class GroupBy:
         If True, and the groupby keys contain NaN values,
         the NaN values together with the corresponding row will be dropped.
         Otherwise, the rows corresponding to NaN values will be kept.
+        The default is True
 
     Raises
     ------
@@ -278,6 +279,15 @@ class GroupBy:
     will be used; otherwise, method 1 will be used.
 
     """
+
+    nkeys: int
+    size: int
+    permutation: pdarray
+    unique_keys: List[Union[pdarray, Strings, Categorical]]
+    ngroups: int
+    segments: pdarray
+    logger: ArkoudaLogger
+    dropna: bool
 
     Reductions = GROUPBY_REDUCTION_TYPES
 
