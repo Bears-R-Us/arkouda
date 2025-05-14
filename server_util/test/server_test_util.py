@@ -105,7 +105,7 @@ def get_arkouda_server_info_file():
     return os.getenv("ARKOUDA_SERVER_CONNECTION_INFO", dflt)
 
 
-def read_server_and_port_from_file(server_connection_info):
+def read_server_and_port_from_file(server_connection_info, process=None):
     """
     Reads the server hostname and port from a file, which must contain
     'hostname port'. Sleeps if the file doesn't exist or formatting was off (so
@@ -113,6 +113,7 @@ def read_server_and_port_from_file(server_connection_info):
 
     :return: tuple containing hostname and port
     :rtype: Tuple
+    :raise: RuntimeError if Arkouda server is not running
     """
     while True:
         try:
@@ -124,6 +125,8 @@ def read_server_and_port_from_file(server_connection_info):
                 return (hostname, port, connect_url)
         except (ValueError, FileNotFoundError):
             time.sleep(1)
+            if process != None and process.poll() != None:
+                raise RuntimeError("Arkouda server exited without creating a connection file, exit code = " + str(process.returncode))
             continue
 
 
@@ -286,7 +289,7 @@ def start_arkouda_server(
         If host is None, this means the host and port are to be retrieved
         via the read_server_and_port_from_file method
         """
-        host, port, connect_url = read_server_and_port_from_file(connection_file)
+        host, port, connect_url = read_server_and_port_from_file(connection_file, process=process)
     server_info = ServerInfo(host, port, process)
     set_server_info(server_info)
     return server_info
