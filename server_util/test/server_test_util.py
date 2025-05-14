@@ -125,8 +125,11 @@ def read_server_and_port_from_file(server_connection_info, process=None):
                 return (hostname, port, connect_url)
         except (ValueError, FileNotFoundError):
             time.sleep(1)
-            if process != None and process.poll() != None:
-                raise RuntimeError("Arkouda server exited without creating a connection file, exit code = " + str(process.returncode))
+            if process is not None and process.poll() is not None:
+                raise RuntimeError(
+                    "Arkouda server exited without creating a connection file, exit code = "
+                    + str(process.returncode)
+                )
             continue
 
 
