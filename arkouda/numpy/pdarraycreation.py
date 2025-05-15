@@ -217,7 +217,7 @@ def array(
     >>> type(strings)
     <class 'arkouda.numpy.strings.Strings'>
     """
-    from arkouda.numpy import cast as akcast
+    from arkouda.numpy.numeric import cast as akcast
     from arkouda.client import generic_msg, get_array_ranks
     
     # If a is already a pdarray, do nothing
