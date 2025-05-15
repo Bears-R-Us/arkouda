@@ -481,7 +481,10 @@ class Datetime(_AbstractBaseTime):
     -----
     The ``.values`` attribute is always in nanoseconds with int64 dtype.
     """
-    from arkouda.client import generic_msg
+    if TYPE_CHECKING:
+        from arkouda.client import generic_msg
+    else:
+        generic_msg = TypeVar("generic_msg")
     supported_with_datetime = frozenset(("==", "!=", "<", "<=", ">", ">=", "-"))
     supported_with_r_datetime = frozenset(("==", "!=", "<", "<=", ">", ">=", "-"))
     supported_with_timedelta = frozenset(("+", "-", "/", "//", "%"))
@@ -786,7 +789,11 @@ class Timedelta(_AbstractBaseTime):
     -----
     The ``.values`` attribute is always in nanoseconds with int64 dtype.
     """
-    from arkouda.client import generic_msg
+    if TYPE_CHECKING:
+        from arkouda.client import generic_msg
+    else:
+        generic_msg = TypeVar("generic_msg")
+        
     supported_with_datetime = frozenset(("+"))
     supported_with_r_datetime = frozenset(("+", "-", "/", "//", "%"))
     supported_with_timedelta = frozenset(("==", "!=", "<", "<=", ">", ">=", "+", "-", "/", "//", "%"))
