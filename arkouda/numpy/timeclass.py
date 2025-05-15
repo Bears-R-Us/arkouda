@@ -229,6 +229,7 @@ class _AbstractBaseTime(pdarray):
         """
         Override of the pdarray to_hdf to store the special dtype
         """
+        from arkouda.client import generic_msg
         from typing import cast as typecast
 
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
@@ -253,6 +254,7 @@ class _AbstractBaseTime(pdarray):
         """
         Override the pdarray implementation so that the special object type will be used.
         """
+        from arkouda.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
@@ -477,7 +479,7 @@ class Datetime(_AbstractBaseTime):
     -----
     The ``.values`` attribute is always in nanoseconds with int64 dtype.
     """
-
+    from arkouda.client import generic_msg
     supported_with_datetime = frozenset(("==", "!=", "<", "<=", ">", ">=", "-"))
     supported_with_r_datetime = frozenset(("==", "!=", "<", "<=", ">", ">=", "-"))
     supported_with_timedelta = frozenset(("+", "-", "/", "//", "%"))
@@ -782,7 +784,7 @@ class Timedelta(_AbstractBaseTime):
     -----
     The ``.values`` attribute is always in nanoseconds with int64 dtype.
     """
-
+    from arkouda.client import generic_msg
     supported_with_datetime = frozenset(("+"))
     supported_with_r_datetime = frozenset(("+", "-", "/", "//", "%"))
     supported_with_timedelta = frozenset(("==", "!=", "<", "<=", ">", ">=", "+", "-", "/", "//", "%"))

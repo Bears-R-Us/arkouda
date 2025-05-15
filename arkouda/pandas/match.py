@@ -212,7 +212,7 @@ class Match:
 
         """
         from arkouda.numpy.strings import Strings
-
+        from arkouda.client import generic_msg
         repMsg = cast(
             str,
             generic_msg(
@@ -268,7 +268,7 @@ class Match:
         (array(['Newton', 'Leibniz']), array([0 2]))
 
         """
-        from arkouda.client import regexMaxCaptures
+        from arkouda.client import generic_msg, regexMaxCaptures
         from arkouda.numpy.strings import Strings
 
         if group_num < 0:
