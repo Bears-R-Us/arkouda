@@ -58,9 +58,12 @@ ALLOWED_PERQUANT_METHODS = [
 if TYPE_CHECKING:
     from arkouda.pandas.categorical import Categorical
     from arkouda.numpy.segarray import SegArray
+    from arkouda.client import generic_msg, get_array_ranks
 else:
     Categorical = TypeVar("Categorical")
     SegArray = TypeVar("SegArray")
+    generic_msg = TypeVar("generic_msg")
+    get_array_ranks = TypeVar("get_array_ranks")
 
 __all__ = [
     "cast",
