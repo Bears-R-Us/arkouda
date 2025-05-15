@@ -2799,6 +2799,7 @@ def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
         Raised if a server-side error is thrown in the process of creating
         the pdarray instance
     """
+    from arkouda.client import generic_msg
     try:
         fields = repMsg.split()
         name = fields[1]
