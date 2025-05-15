@@ -834,7 +834,6 @@ module ManipulationMsg {
     const name = msgArgs["name"],
           nAxes = msgArgs["nAxes"].toScalar(int),
           axes = msgArgs["axes"].toScalarArray(int, nAxes);
-
     var eIn = st[name]: borrowed SymEntry(array_dtype, array_nd_in),
         (valid, shape, mapping) = validateSqueeze(eIn.tupShape, axes, array_nd_out);
 
@@ -875,8 +874,11 @@ module ManipulationMsg {
     if NOut > NIn then return (false, shapeOut, mapping);
     if d.size >= NIn then return (false, shapeOut, mapping);
 
+    const (valid, axes_) = validateNegativeAxes(axes, NIn);
+    if !valid then return (false, shapeOut, mapping);
+
     var degenAxes: NIn*bool;
-    for axis in axes {
+    for axis in axes_ {
       if shape[axis] != 1 then return (false, shapeOut, mapping);
       degenAxes[axis] = true;
     }
