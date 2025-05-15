@@ -104,7 +104,7 @@ class TestNumpyManipulationFunctions:
         f = ak.repeat(a, reps)
         np_f = np.repeat(np_a, reps.to_ndarray())
         assert_arkouda_array_equivalent(np_f, f)
-        for axis in range(3):
+        for axis in range(-3, 3):
             reps = akrandint(0, 10, 1, seed=seed)
             f = ak.repeat(a, reps, axis=axis)
             np_f = np.repeat(np_a, reps.to_ndarray(), axis=axis)
@@ -133,7 +133,7 @@ class TestNumpyManipulationFunctions:
         f = ak.repeat(a, reps)
         np_f = np.repeat(np_a, reps.to_ndarray())
         assert_arkouda_array_equivalent(np_f, f)
-        for axis in range(2):
+        for axis in range(-2, 2):
             reps = akrandint(0, 10, 1, seed=seed)
             f = ak.repeat(a, reps, axis=axis)
             np_f = np.repeat(np_a, reps.to_ndarray(), axis=axis)
