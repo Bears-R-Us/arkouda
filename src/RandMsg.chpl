@@ -10,9 +10,9 @@ module RandMsg
     use ServerConfig;
     use Logging;
     use Message;
+    use PrivateDist;
     use RandArray;
     use RandUtil;
-    use Random;
     use CommAggregation;
     use ZigguratConstants;
 
@@ -750,8 +750,18 @@ module RandMsg
     }
 
     @arkouda.instantiateAndRegister
-    proc shuffle(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
-        do return shuffleHelp(cmd, msgArgs, st, array_dtype, array_nd);
+    proc shuffle(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws{
+        const method = msgArgs["method"].toScalar(string);
+        if (method == "mergeshuffle"){
+            return mergeShuffleHelp(cmd, msgArgs, st, array_dtype, array_nd);
+        } else if (method == "fisheryates"){
+            return shuffleHelp(cmd, msgArgs, st, array_dtype, array_nd);
+        }else{
+            const errorMsg = "Error: Invalid method for shuffle.  Allowed values: fisheryates, mergeshuffle";
+            return MsgTuple.error(errorMsg);
+        }
+
+    }
 
     proc shuffleHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
         where array_nd == 1
@@ -806,6 +816,304 @@ module RandMsg
         }
 
         return MsgTuple.success();
+    }
+
+    proc mergeShuffleHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
+        where array_nd == 1
+    {
+        const name = msgArgs["name"],
+              xName = msgArgs["x"].toScalar(string),
+              shape = msgArgs["shape"].toScalarTuple(int, array_nd),
+              state = msgArgs["state"].toScalar(int);
+
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? shape %? dtype: %? state %i".format(name, shape, type2str(array_dtype), state));
+
+        var generatorEntry = st[name]: borrowed GeneratorSymEntry(int);
+        ref rng = generatorEntry.generator;
+
+        if state != 1 then rng.skipTo(state-1);
+        const generatorSeed = (rng.next() * 2**62):int;
+
+        const arrEntry = st[xName]: SymEntry(array_dtype, array_nd);
+        ref myArr = arrEntry.a;
+        mergeShuffle(myArr, generatorSeed);
+        return MsgTuple.success();
+    }
+
+    proc mergeShuffleHelp(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
+        where array_nd != 1
+    {
+        return new MsgTuple("mergeShuffle does not support arrays of dimension > 1.",MsgType.ERROR);
+    }
+
+    proc mergeShuffle(ref x: [] ?t, generatorSeed: int) throws {
+        const numRounds = log2(numLocales) + 1;
+        const domainLows = getDomainLows(x);
+        const domainHighs = getDomainHighs(x);
+        var rngs = getRandomStreams(generatorSeed, real);
+        var intRngs = getRandomStreams(generatorSeed, int);
+
+        //  TODO:  Update all the seed calculations to match the final version of the algorithm.  Please ignore for now.
+        var seed = 1;
+        shuffleLocales(x, generatorSeed);
+
+        for m in 0..#numRounds {
+            const maxLocalesPerPrevChunk = 2**m;
+            const numNewChunks = (numLocales - 1) / (2 * maxLocalesPerPrevChunk) + 1;
+
+            forall i in 0..#numNewChunks with (ref x, ref generatorSeed){
+                const startLocale = 2 * i * maxLocalesPerPrevChunk;
+                const endLocale = min(startLocale + maxLocalesPerPrevChunk - 1, numLocales - 1 );
+                const startLocale2 = min(endLocale + 1, numLocales - 1 );
+                const endLocale2 = min(startLocale2 + maxLocalesPerPrevChunk - 1, numLocales - 1 );
+                if( endLocale < startLocale2 ){
+                        const start = domainLows[startLocale];
+                        const size1 = domainHighs[endLocale] - domainLows[startLocale] + 1;
+                        const size2 = domainHighs[endLocale2] - domainLows[startLocale2] + 1;
+
+                        const taskSeed = seed + i * 2 * numLocales;         //  TODO: Ignore for now, needs to be updated
+                        merge(x, start, size1, size2, rngs, intRngs);
+                }
+            }
+            seed += numNewChunks * 2 * numLocales;
+        }
+    }
+
+    /*  
+        Shuffles each locale of the array independently.
+        There should be no communication between locales for this step.
+    */
+    proc shuffleLocales(ref x: [] ?t, const generatorSeed: int) throws {
+        coforall loc in Locales with (ref x, const generatorSeed) do on loc{
+            var randStreamInt = new randomStream(int, seed=(generatorSeed + here.id));
+            var seed = randStreamInt.next();
+
+            const localLower = x.localSubdomain(loc=here).low;
+            const localUpper = x.localSubdomain(loc=here).high;
+            const size = localUpper - localLower + 1;
+
+            const maxFisherYatesPower = 6;     //  Hardcoded
+            const smallestChunkSize = max(size/(2**maxFisherYatesPower), min(10, size));     //  Hardcoded minimum size
+            const numChunks = (size - 1)/smallestChunkSize + 1;
+
+            forall i in 0..#numChunks with (ref x, const seed){
+                const taskSeed = seed + i;
+                const low = localLower + i * smallestChunkSize;
+                const high = min(localUpper, low + smallestChunkSize - 1);
+                var rng = new randomStream(int, seed=generatorSeed);
+                fisherYatesOnChunk(x, low..high, high, rng);
+            }
+
+            seed += numChunks;
+
+            const numRounds = log2(numChunks) + 1;
+
+            for m in 0..#(numRounds) {
+                const prevChunkSize = smallestChunkSize * 2**m;
+                const newChunkSize = 2 * prevChunkSize;
+                const numNewChunks = (size - 1)/newChunkSize + 1;
+
+                forall i in 0..#(numNewChunks) with (ref x, const localLower, const localUpper, const newChunkSize, const prevChunkSize, const seed){
+
+                    const start = localLower + i * newChunkSize;
+                    const size1 = min(localUpper - start + 1, prevChunkSize);
+                    const size2 = min(localUpper - start - size1 + 1, prevChunkSize);   
+
+                    const taskSeed = seed + i;
+                    var rng = new randomStream(real, seed=taskSeed);
+                    var rngInt = new randomStream(int, seed=taskSeed);  
+
+                    // figure out which slice of [start..endIdx] lives on this locale
+                    const sub = x.localSubdomain(here);
+                    const localLo = max(start, sub.low);
+                    const localHi = min(start + size1 + size2 -i, sub.high);
+
+                    mergeLocalChunk(x, localLo..localHi, start, size1, size2, rng, rngInt);
+                }
+                seed += numNewChunks;
+            }
+        }
+
+    } 
+
+    proc shuffleRange(
+        ref x: [] ?t, 
+        swapChunk: range(int),
+        const bound: int, 
+        ref rngs: [] randomStream(int)
+        ) throws {
+
+        var localesByLow = [loc in Locales] (loc, x.localSubdomain(loc).low);
+        sort(localesByLow, new ByLow());
+
+        for (loc, lowIdx) in localesByLow {  
+
+            //  Find the intersection of swapChunk with local subdomain
+            const localLower = max(x.localSubdomain(loc=here).low, swapChunk.first);
+            const localUpper = min(x.localSubdomain(loc=here).high, swapChunk.last);
+
+            fisherYatesOnChunk(x, localLower..localUpper, bound, rngs[here.id]);
+        }
+    }
+
+    /*
+        Conduct partial Fisher Yates shuffle on the slice of the array over index swapChunk.
+        Note that elements i in this interval can be swapped with elements in range i..bound (or bound..i if bound < i).
+    */
+    proc fisherYatesOnChunk(
+            ref x: [] ?t,
+            swapChunk: range(int),
+            const bound: int,
+            ref rng: randomStream(int)       // your pre‐built RNG for here
+        ): MsgTuple throws {
+
+        if (bound > swapChunk.first) && (bound < swapChunk.last){
+            var errorMsg = "bound must lie outide the interior of swapChunk in fisherYatesOnChunk.";
+            randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return MsgTuple.error(errorMsg);
+        }
+
+        for i in swapChunk {
+            const idx = if (bound >= i) then rng.choose(i..bound) else rng.choose(bound..i);
+            if (i != idx ){
+                x[i] <=> x[idx];
+            }
+        }
+        return MsgTuple.success("finished fisherYates on range.");
+    }
+
+    use BlockDist;        // or whatever distribution you’re using
+
+    proc mergeLocalChunk(
+        ref x:    [?D] ?T,            // any domain and element type
+        localChunk: range(int),
+        start:    int,                // old “s”
+        len1:     int,                // old “n1”
+        len2:     int,                // old “n2”
+        ref rng: randomStream(real),       // a pre‐initialized stream for `here`
+        ref rngInt: randomStream(int)  
+        ) throws {
+        const endIdx    = start + len1 + len2 - 1;
+        const threshold = len1: real / (len1 + len2);
+
+        // merge: run i from localLo..localHi, swapping in elements from the second run
+        var j = start + len1;
+        for i in localChunk {
+            if i == j then break;        // exhausted the 2nd run
+            if j > endIdx then break;    // nothing left to swap in
+
+            if rng.next() < threshold {
+                // pick from first run → leave x[i] alone
+            } else {
+                // pick from second run → swap it into position i
+                x[i] <=> x[j];
+                j += 1;
+            }
+        }
+        fisherYatesOnChunk(x, j..endIdx, start, rngInt);
+    }
+
+    /*  
+        This version does the swaps using chapel <=> from on the local where the first element lives
+    */
+
+    use Sort;             // for sort()
+    use AtomicObjects;    // for atomic(bool)
+
+    record ByLow: keyComparator {
+        proc key(pair: (locale,int)): int {
+            return pair[1];
+        }
+    }
+
+    proc getRandomStreams(seed0: int, type t = real){
+        return forall id in PrivateSpace do new randomStream(t, seed=seed0 + here.id);
+    }
+
+    proc merge
+    (
+        ref x:   [?D] ?T,
+        start:   int,
+        len1:    int,
+        len2:    int,
+        rngs: [] randomStream(real),
+        intRngs: [] randomStream(int)
+    ) throws {
+
+        const endIdx    = start + len1 + len2 - 1;
+        const threshold = (len1: real)/(len1 + len2: real);
+
+        var i    = start;
+        var j    = start + len1;
+        var done: atomic bool = false;
+
+        // Build & sort (locale, low) pairs
+        var localesByLow = [loc in Locales] (loc, x.localSubdomain(loc).low);
+        sort(localesByLow, new ByLow());
+
+        for (loc, lowIdx) in localesByLow {
+            if done.read() then break;
+
+            // const lowIdx = x.localSubdomain(loc=here).low;
+            const highIdx   = x.localSubdomain(loc).high;
+            const localStart= max(start, lowIdx);
+            const localEnd  = min(endIdx, highIdx);
+
+            on loc {
+                var rs = rngs[here.id];
+                while(true){
+                    if (i < localStart) | (i > localEnd){
+                        break;
+                    }
+
+                    if rs.next() < threshold {
+                        if (i==j){
+                            done.write(true);
+                            break;
+                        }
+                    } else {
+                        if (j==endIdx) {
+                            break;
+                        }
+                        x[i] <=> x[j];
+                        j += 1;
+                    }
+                    i += 1;
+                }
+            }
+        }
+        shuffleRange(x, i..endIdx, start, intRngs);
+    }
+
+
+    proc newSeed(seed: int): int {
+        var randStream = new randomStream(int, seed=seed);
+        return randStream.next();
+    }
+
+    proc getDomainLows(ref x: [] ?t): [] int {
+        var domainLows: [0..#numLocales] int;
+        coforall loc in Locales with (ref x) do on loc {
+            domainLows[here.id] = x.localSubdomain(loc=here).low;
+        }
+        return domainLows;
+    }
+
+    proc getDomainHighs(ref x: [] ?t): [] int {
+        var domainHighs: [0..#numLocales] int;
+        coforall loc in Locales with (ref x) do on loc {
+            domainHighs[here.id] = x.localSubdomain(loc=here).high;
+        } 
+        return domainHighs;
+    }
+
+    proc getDomainSizes(ref x: [] ?t): [] int {
+        var domainSizes: [0..#numLocales] int;
+        coforall loc in Locales with (ref x) do on loc {
+            domainSizes[here.id] = x.localSubdomain(loc=here).size;
+        }
+        return domainSizes;
     }
 
     use CommandMap;

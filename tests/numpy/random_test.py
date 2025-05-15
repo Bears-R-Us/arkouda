@@ -66,7 +66,9 @@ class TestRandom:
         assert all(bounded_arr.to_ndarray() < 5)
 
     @pytest.mark.parametrize("data_type", INT_FLOAT)
-    def test_shuffle(self, data_type):
+    @pytest.mark.parametrize("method", ["FisherYates", "MergeShuffle"])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_shuffle(self, data_type, method, size):
         # ints are checked for equality; floats are checked for closeness
 
         def check(a, b, t):
@@ -76,18 +78,19 @@ class TestRandom:
 
         rng = ak.random.default_rng(18)
         rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
-        pda = rnfunc(-(2**32), 2**32, 10)
+        pda = rnfunc(-(2**32), 2**32, size)
         pda_copy = pda[:]
-        rng.shuffle(pda)
+        rng.shuffle(pda, method=method)
 
+        assert not ak.all(pda == pda_copy)
         assert check(ak.sort(pda), ak.sort(pda_copy), data_type)
 
         # verify same seed gives reproducible arrays
 
         rng = ak.random.default_rng(18)
         rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
-        pda_prime = rnfunc(-(2**32), 2**32, 10)
-        rng.shuffle(pda_prime)
+        pda_prime = rnfunc(-(2**32), 2**32, size)
+        rng.shuffle(pda_prime, method=method)
 
         assert check(pda, pda_prime, data_type)
 
