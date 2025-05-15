@@ -278,6 +278,7 @@ class Strings:
             Raised if a server-side error is thrown while executing the
             binary operation
         """
+        from arkouda.client import generic_msg
         if op not in self.BinOps:
             raise ValueError(f"Strings: unsupported operator: {op}")
         if isinstance(other, Strings):
