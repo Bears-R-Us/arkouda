@@ -844,6 +844,7 @@ class Categorical:
         values is negligible.
 
         """
+        from arkouda.client import generic_msg
         rep_msg = generic_msg(
             cmd="categoricalHash",
             args={"objType": self.objType, "categories": self.categories, "codes": self.codes},
@@ -992,7 +993,7 @@ class Categorical:
 
         """
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
-
+        from arkouda.client import generic_msg
         args = {
             "codes": self.codes,
             "categories": self.categories,
@@ -1044,6 +1045,7 @@ class Categorical:
           automatic creation of a file without the inaccessible data.
 
         """
+        from arkouda.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
@@ -1201,6 +1203,7 @@ class Categorical:
         they are unregistered.
 
         """
+        from arkouda.client import generic_msg
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         generic_msg(
@@ -1447,6 +1450,7 @@ class Categorical:
             a supported dtype
 
         """
+        from arkouda.client import generic_msg
         # hostname is the hostname to send to
         args = {
             "codes": self.codes,

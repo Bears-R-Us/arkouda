@@ -815,6 +815,7 @@ class SegArray:
             A tuple of two int64 pdarrays. The ith hash value is the concatenation
             of the ith values from each array.
         """
+        from arkouda.client import generic_msg
         repMsg = type_cast(
             str,
             generic_msg(
@@ -865,7 +866,7 @@ class SegArray:
         load
         """
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
-
+        from arkouda.client import generic_msg
         return type_cast(
             str,
             generic_msg(
@@ -919,6 +920,7 @@ class SegArray:
         - Because HDF5 deletes do not release memory, this will create a copy of the
           file with the new data
         """
+        from arkouda.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
@@ -998,7 +1000,7 @@ class SegArray:
         determine the file format.
         """
         from arkouda.pandas.io import _mode_str_to_int
-
+        from arkouda.client import generic_msg
         if mode.lower() == "append":
             raise ValueError("Append mode is not supported for SegArray.")
 
@@ -1329,6 +1331,7 @@ class SegArray:
         --------
         unregister, attach, is_registered
         """
+        from arkouda.client import generic_msg
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         generic_msg(
@@ -1426,6 +1429,7 @@ class SegArray:
             Raised if other is not a pdarray or the pdarray.dtype is not
             a supported dtype
         """
+        from arkouda.client import generic_msg
         return generic_msg(
             cmd="sendArray",
             args={

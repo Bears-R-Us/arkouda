@@ -51,6 +51,7 @@ class Matcher:
 
     def find_locations(self) -> None:
         """Populate Matcher object by finding the positions of matches."""
+        from arkouda.client import generic_msg
         sym_tab = list_symbol_table()
         if not self.populated or any(
             [getattr(self, pda).name not in sym_tab for pda in self.LocationsInfo]
@@ -113,7 +114,7 @@ class Matcher:
         If maxsplit is nonzero, at most maxsplit splits occur.
         """
         from arkouda.numpy.strings import Strings
-
+        from arkouda.client import generic_msg
         if re.search(self.pattern, ""):
             raise ValueError("Cannot split or flatten with a pattern that matches the empty string")
         cmd = "segmentedSplit"
@@ -138,6 +139,7 @@ class Matcher:
 
     def findall(self, return_match_origins: bool = False):
         """Return all non-overlapping matches of pattern in Strings as a new Strings object."""
+        from arkouda.client import generic_msg
         from arkouda.numpy.strings import Strings
 
         self.find_locations()
@@ -170,7 +172,7 @@ class Matcher:
         If return_num_subs is True, return the number of substitutions that occurred
         """
         from arkouda.numpy.strings import Strings
-
+        from arkouda.client import generic_msg
         repMsg = cast(
             str,
             generic_msg(
