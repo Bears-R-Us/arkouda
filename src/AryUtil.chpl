@@ -145,7 +145,6 @@ module AryUtil
 
     proc validateNegativeAxes(axis: int, param nd: int): (bool, int) {
       var ret: int;
-      
       ret = if axis >= 0 then axis else nd + axis;
       if ret >= nd then return (false, ret);
       if ret <0    then return (false, ret);

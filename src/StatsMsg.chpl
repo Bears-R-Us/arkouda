@@ -27,13 +27,18 @@ module StatsMsg {
 
     @arkouda.registerCommand()
     proc meanReduce(const ref x: [?d] ?t, skipNan: bool, axes: list(int)): [] real throws {
-      var meanArr = makeDistArray(domOffAxis(d, axes), real);
-      forall (slice, sliceIdx) in axisSlices(d, axes) {
-        if canBeNan(t) && skipNan
-          then meanArr[sliceIdx] = meanSkipNan(x, slice);
-          else meanArr[sliceIdx] = meanOver(x, slice);
+      const (valid, axes_) = validateNegativeAxes (axes, d.rank);
+      if !valid {
+        throw new Error("Invalid axis value(s) '%?' in mean reduction".format(axes));
+      } else {
+        var meanArr = makeDistArray(domOffAxis(d, axes_), real);
+        forall (slice, sliceIdx) in axisSlices(d, axes_) {
+            if canBeNan(t) && skipNan
+            then meanArr[sliceIdx] = meanSkipNan(x, slice);
+            else meanArr[sliceIdx] = meanOver(x, slice);
+        }
+        return meanArr;
       }
-      return meanArr;
     }
 
     @arkouda.registerCommand(name="var")
@@ -45,13 +50,18 @@ module StatsMsg {
 
     @arkouda.registerCommand()
     proc varReduce(const ref x: [?d] ?t, skipNan: bool, ddof: real, axes: list(int)): [] real throws {
-      var varArr = makeDistArray(domOffAxis(d, axes), real);
-      forall (slice, sliceIdx) in axisSlices(d, axes) {
-        if canBeNan(t) && skipNan
-          then varArr[sliceIdx] = varianceSkipNan(x, slice, ddof);
-          else varArr[sliceIdx] = varianceOver(x, slice, ddof);
+      const (valid, axes_) = validateNegativeAxes (axes, d.rank);
+      if !valid {
+        throw new Error("Invalid axis value(s) '%?' in var reduction".format(axes));
+      } else {
+        var varArr = makeDistArray(domOffAxis(d, axes_), real);
+        forall (slice, sliceIdx) in axisSlices(d, axes_) {
+            if canBeNan(t) && skipNan
+              then varArr[sliceIdx] = varianceSkipNan(x, slice, ddof);
+              else varArr[sliceIdx] = varianceOver(x, slice, ddof);
+        }
+        return varArr;
       }
-      return varArr;
     }
 
     @arkouda.registerCommand()
@@ -63,13 +73,18 @@ module StatsMsg {
 
     @arkouda.registerCommand()
     proc stdReduce(const ref x: [?d] ?t, skipNan: bool, ddof: real, axes: list(int)): [] real throws {
-      var stdArr = makeDistArray(domOffAxis(d, axes), real);
-      forall (slice, sliceIdx) in axisSlices(d, axes) {
-        if canBeNan(t) && skipNan
-          then stdArr[sliceIdx] = stdSkipNan(x, slice, ddof);
-          else stdArr[sliceIdx] = stdOver(x, slice, ddof);
+      const (valid, axes_) = validateNegativeAxes (axes, d.rank);
+      if !valid {
+        throw new Error("Invalid axis value(s) '%?' in std reduction".format(axes));
+      } else {
+        var stdArr = makeDistArray(domOffAxis(d, axes_), real);
+        forall (slice, sliceIdx) in axisSlices(d, axes_) {
+            if canBeNan(t) && skipNan
+                then stdArr[sliceIdx] = stdSkipNan(x, slice, ddof);
+                else stdArr[sliceIdx] = stdOver(x, slice, ddof);
+        }
+        return stdArr;
       }
-      return stdArr;
     }
 
     @arkouda.registerCommand()

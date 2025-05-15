@@ -49,6 +49,9 @@ class TestStatsFunction:
         assert aMin02Keepdims[0, 6, 0] == -1
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_mean(self):
         a = xp.ones((10, 5, 5))
         a[0, 0, 0] = 251
