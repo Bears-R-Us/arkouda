@@ -248,7 +248,7 @@ def attach(name: str):
     from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.numpy.segarray import SegArray
     from arkouda.pandas.series import Series
-
+    from arkouda.client import generic_msg
     rep_msg = json.loads(cast(str, generic_msg(cmd="attach", args={"name": name})))
     rtn_obj = None
     if rep_msg["objType"].lower() == pdarray.objType.lower():
@@ -320,6 +320,7 @@ def unregister(name: str) -> str:
     >>> print(response)
     Unregistered PDARRAY my_array
     """
+    from arkouda.client import generic_msg
     rep_msg = cast(str, generic_msg(cmd="unregister", args={"name": name}))
 
     return rep_msg
@@ -517,6 +518,7 @@ def sparse_sum_help(
     >>> ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((vals1, vals2)))
     (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
     """
+    from arkouda.client import generic_msg
     repMsg = generic_msg(
         cmd="sparseSumHelp",
         args={

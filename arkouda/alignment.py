@@ -199,6 +199,7 @@ def find(query, space, all_occurrences=False, remove_missing=False):
      [0, 4]]
 
     """
+    from arkouda.client import generic_msg
     # Concatenate the space and query in fast (block interleaved) mode
     if isinstance(query, (pdarray, Strings, Categorical)):
         if type(query) is not type(space):

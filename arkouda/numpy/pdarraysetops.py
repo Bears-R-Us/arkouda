@@ -93,7 +93,7 @@ def _in1d_single(
     array([False True])
     """
     from arkouda.pandas.categorical import Categorical as Categorical_
-
+    from arkouda.client import generic_msg
     if isinstance(pda1, pdarray) or isinstance(pda1, Strings) or isinstance(pda1, Categorical_):
         # While isinstance(thing, type) can be called on a tuple of types,
         # this causes an issue with mypy for unknown reasons.
@@ -387,7 +387,7 @@ def concatenate(
     from arkouda.pandas.categorical import Categorical as Categorical_
     from arkouda.numpy.dtypes import int_scalars
     from arkouda.numpy.util import get_callback
-
+    from arkouda.client import generic_msg
     size: int_scalars = 0
     objtype = None
     dtype = None
@@ -565,7 +565,7 @@ def union1d(
     [array([1 2 2 3 4 4 5 5]), array([1 2 5 3 2 4 4 5]), array([1 2 4 3 5 4 2 5])]
     """
     from arkouda.pandas.categorical import Categorical as Categorical_
-
+    from arkouda.client import generic_msg
     if (
         isinstance(A, (pdarray, Strings, Categorical_))
         and isinstance(B, (pdarray, Strings, Categorical_))
@@ -650,7 +650,7 @@ def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Unio
     [array([1 3]), array([1 3]), array([1 3])]
     """
     from arkouda.pandas.categorical import Categorical as Categorical_
-
+    from arkouda.client import generic_msg
     if (
         isinstance(A, (pdarray, Strings, Categorical_))
         and isinstance(B, (pdarray, Strings, Categorical_))
@@ -763,7 +763,7 @@ def setdiff1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[
     [array([2 4 5]), array([2 4 5]), array([2 4 5])]
     """
     from arkouda.pandas.categorical import Categorical as Categorical_
-
+    from arkouda.client import generic_msg
     if (
         isinstance(A, (pdarray, Strings, Categorical_))
         and isinstance(B, (pdarray, Strings, Categorical_))
@@ -867,7 +867,7 @@ def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[p
     [array([2 2 4 4 5 5]), array([2 5 2 4 4 5]), array([2 4 5 4 2 5])]
     """
     from arkouda.pandas.categorical import Categorical as Categorical_
-
+    from arkouda.client import generic_msg
     if (
         isinstance(A, (pdarray, Strings, Categorical_))
         and isinstance(B, (pdarray, Strings, Categorical_))

@@ -217,7 +217,7 @@ def array(
     <class 'arkouda.numpy.strings.Strings'>
     """
     from arkouda.numpy import cast as akcast
-    from arkouda.client import generic_msg
+    from arkouda.client import generic_msg, get_array_ranks
     
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
@@ -452,6 +452,7 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
     >>> all(a[i] == 2**64 + i for i in range(5))
     True
     """
+    from arkouda.client import generic_msg
     if not arrays:
         return create_pdarray(
             generic_msg(
@@ -546,6 +547,7 @@ def zeros(
     array([False False False False False])
 
     """
+    from arkouda.client import generic_msg
     dtype = akdtype(dtype)  # normalize dtype
     dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
     # check dtype for error
@@ -684,6 +686,7 @@ def full(
     >>> ak.full(5, 5, dtype=ak.bool_)
     array([True True True True True])
     """
+    from arkouda.client import generic_msg
     if isinstance(fill_value, str):
         return _full_string(size, fill_value)
 
@@ -745,7 +748,7 @@ def scalar_array(
     RuntimeError
         Raised if value cannot be cast as dtype
     """
-
+    from arkouda.client import generic_msg
     if dtype is not None:
         _dtype = akdtype(dtype)
     else:
@@ -779,6 +782,7 @@ def _full_string(
     Strings
         array of the requested size and dtype filled with fill_value
     """
+    from arkouda.client import generic_msg
     repMsg = generic_msg(cmd="segmentedFull", args={"size": size, "fill_value": fill_value})
     return Strings.from_return_msg(cast(str, repMsg))
 
@@ -981,7 +985,7 @@ def arange(*args, **kwargs) -> pdarray:
     array([-5 -6 -7 -8 -9])
     """
     from arkouda.numpy import cast as akcast
-
+    from arkouda.client import generic_msg
     # if one arg is given then arg is stop
 
     if len(args) == 1:
@@ -1093,6 +1097,7 @@ def linspace(start: numeric_scalars, stop: numeric_scalars, length: int_scalars)
     >>> ak.linspace(start=-5, stop=0, length=5)
     array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000])
     """
+    from arkouda.client import generic_msg
     if not isSupportedNumber(start) or not isSupportedNumber(stop):
         raise TypeError("both start and stop must be an int, np.int64, float, or np.float64")
     if not isSupportedNumber(length):
@@ -1311,6 +1316,7 @@ def random_strings_uniform(
     ... characters='printable')
     array(['2 .z', 'aom', '2d|', 'o(', 'M'])
     """
+    from arkouda.client import generic_msg
     if minlen < 0 or maxlen <= minlen or size < 0:
         raise ValueError("Incompatible arguments: minlen < 0, maxlen " + "<= minlen, or size < 0")
 
@@ -1386,6 +1392,7 @@ def random_strings_lognormal(
     >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1, characters='printable')
     array(['eL96<O', ')o-GOe lR', ')PV yHf(', '._b3Yc&K', ',7Wjef'])
     """
+    from arkouda.client import generic_msg
     if not isSupportedNumber(logmean) or not isSupportedNumber(logstd):
         raise TypeError("both logmean and logstd must be an int, np.int64, float, or np.float64")
     if logstd <= 0 or size < 0:

@@ -22,7 +22,7 @@ def take(x: Array, indices: Array, /, *, axis: Optional[int] = None) -> Array:
     axis : int, optional
         The axis along which to take elements. If None, `x` must be 1D.
     """
-
+    from arkouda.client import generic_msg
     if axis is None and x.ndim != 1:
         raise ValueError("axis must be specified for multidimensional arrays")
 
