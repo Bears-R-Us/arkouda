@@ -19,7 +19,7 @@ from arkouda.numpy.sorting import argsort
 from arkouda.numpy.strings import Strings
 
 if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
+    from arkouda.pandas.categorical import Categorical
     from arkouda.client import generic_msg
 else:
     Categorical = TypeVar("Categorical")
@@ -92,7 +92,7 @@ def _in1d_single(
     >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
     array([False True])
     """
-    from arkouda.categorical import Categorical as Categorical_
+    from arkouda.pandas.categorical import Categorical as Categorical_
 
     if isinstance(pda1, pdarray) or isinstance(pda1, Strings) or isinstance(pda1, Categorical_):
         # While isinstance(thing, type) can be called on a tuple of types,
@@ -206,7 +206,7 @@ def in1d(
     ak.in1d is not supported for bool or float64 pdarrays
     """
     from arkouda.alignment import NonUniqueError
-    from arkouda.categorical import Categorical as Categorical_
+    from arkouda.pandas.categorical import Categorical as Categorical_
 
     if isinstance(A, (pdarray, Strings, Categorical_)):
         if isinstance(A, (Strings, Categorical_)) and not isinstance(B, (Strings, Categorical_)):
@@ -320,7 +320,7 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
     RuntimeError
         Raised if the dtype of either array is not supported
     """
-    from arkouda.categorical import Categorical as Categorical_
+    from arkouda.pandas.categorical import Categorical as Categorical_
 
     if isinstance(query, (pdarray, Strings, Categorical_)):
         if isinstance(query, (Strings, Categorical_)) and not isinstance(space, (Strings, Categorical_)):
@@ -384,7 +384,7 @@ def concatenate(
     array(['one', 'two', 'three', 'four', 'five'])
 
     """
-    from arkouda.categorical import Categorical as Categorical_
+    from arkouda.pandas.categorical import Categorical as Categorical_
     from arkouda.numpy.dtypes import int_scalars
     from arkouda.numpy.util import get_callback
 
@@ -495,7 +495,7 @@ def concatenate(
 def multiarray_setop_validation(
     pda1: Sequence[groupable_element_type], pda2: Sequence[groupable_element_type]
 ):
-    from arkouda.categorical import Categorical as Categorical_
+    from arkouda.pandas.categorical import Categorical as Categorical_
 
     if len(pda1) != len(pda2):
         raise ValueError("multi-array setops require same number of arrays in arguments.")
@@ -564,7 +564,7 @@ def union1d(
     >>> ak.union1d(multia, multib)
     [array([1 2 2 3 4 4 5 5]), array([1 2 5 3 2 4 4 5]), array([1 2 4 3 5 4 2 5])]
     """
-    from arkouda.categorical import Categorical as Categorical_
+    from arkouda.pandas.categorical import Categorical as Categorical_
 
     if (
         isinstance(A, (pdarray, Strings, Categorical_))
@@ -649,7 +649,7 @@ def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Unio
     >>> ak.intersect1d(multia, multib)
     [array([1 3]), array([1 3]), array([1 3])]
     """
-    from arkouda.categorical import Categorical as Categorical_
+    from arkouda.pandas.categorical import Categorical as Categorical_
 
     if (
         isinstance(A, (pdarray, Strings, Categorical_))
@@ -762,7 +762,7 @@ def setdiff1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[
     >>> ak.setdiff1d(multia, multib)
     [array([2 4 5]), array([2 4 5]), array([2 4 5])]
     """
-    from arkouda.categorical import Categorical as Categorical_
+    from arkouda.pandas.categorical import Categorical as Categorical_
 
     if (
         isinstance(A, (pdarray, Strings, Categorical_))
@@ -866,7 +866,7 @@ def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[p
     >>> ak.setxor1d(multia, multib)
     [array([2 2 4 4 5 5]), array([2 5 2 4 4 5]), array([2 4 5 4 2 5])]
     """
-    from arkouda.categorical import Categorical as Categorical_
+    from arkouda.pandas.categorical import Categorical as Categorical_
 
     if (
         isinstance(A, (pdarray, Strings, Categorical_))

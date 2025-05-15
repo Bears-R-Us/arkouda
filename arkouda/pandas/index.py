@@ -10,7 +10,7 @@ from numpy import array as ndarray
 from numpy import dtype as npdtype
 from typeguard import typechecked
 
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GroupBy, unique
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
@@ -770,7 +770,7 @@ class Index:
         """
         from typing import cast as typecast
 
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
@@ -855,7 +855,7 @@ class Index:
           file with the new data
 
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,
@@ -1424,7 +1424,7 @@ class MultiIndex(Index):
         """
         from typing import cast as typecast
 
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
@@ -1501,7 +1501,7 @@ class MultiIndex(Index):
           file with the new data
 
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,

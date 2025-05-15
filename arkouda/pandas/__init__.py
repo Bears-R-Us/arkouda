@@ -2,6 +2,7 @@
 # isort: skip_file
 from .dataframe import *
 from .join import *
+from .categorical import *
 from .dataframe import *
 from .row import *
 from .index import *

@@ -12,7 +12,7 @@ from typeguard import typechecked
 import arkouda.pandas.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GroupBy, groupable_element_type
 from arkouda.pandas.index import Index, MultiIndex
 from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64

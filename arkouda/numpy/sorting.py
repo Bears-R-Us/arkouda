@@ -31,7 +31,7 @@ __all__ = ["argsort", "coargsort", "sort", "SortingAlgorithm", "searchsorted"]
 SortingAlgorithm = Enum("SortingAlgorithm", ["RadixSortLSD", "TwoArrayRadixSort"])
 
 if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
+    from arkouda.pandas.categorical import Categorical
 else:
     Categorical = TypeVar("Categorical")
 
@@ -86,7 +86,7 @@ def argsort(
     >>> ak.argsort(a, ak.sorting.SortingAlgorithm["TwoArrayRadixSort"])
     array([0 2 9 6 8 1 3 5 7 4])
     """
-    from arkouda.categorical import Categorical
+    from arkouda.pandas.categorical import Categorical
 
     ndim = cast(Union[int, np.integer], getattr(pda, "ndim"))
 
@@ -180,7 +180,7 @@ def coargsort(
     >>> b[perm]
     array([0 1 0 1])
     """
-    from arkouda.categorical import Categorical
+    from arkouda.pandas.categorical import Categorical
     from arkouda.numpy import cast as akcast
 
     check_type(

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar, Union
 
 from typeguard import typechecked
 
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.infoclass import list_registry
