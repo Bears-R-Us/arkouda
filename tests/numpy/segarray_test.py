@@ -33,11 +33,13 @@ def seg_test_base_tmp(request):
 
 
 class TestSegArray:
-    # def test_segarray_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(segarray, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    def test_segarray_docstrings(self):
+        import doctest
+
+        from arkouda.numpy import segarray
+
+        result = doctest.testmod(segarray, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @staticmethod
     def make_segarray(size, dtype):
