@@ -109,15 +109,23 @@ def _server_output_to_string(p):
     """
     Returns the annotated stdout and stderr, when available from `p`, as a string.
     """
+
     def s2s(stream, name):
-        return ("\n  server " + name + " is shown between braces: {{{\n"
-                + stream.read().decode(errors="backslashreplace") + "}}}")
+        return (
+            f"\n  server {name} is shown between angle brackets: <<<\n"
+            + f"{stream.read().decode(errors='backslashreplace')}>>>"
+        )
+
     if p.stdout:
-        if p.stderr: return s2s(p.stdout, "stdout") + s2s(p.stderr, "stderr")
-        else:        return s2s(p.stdout, "output")
+        if p.stderr:
+            return s2s(p.stdout, "stdout") + s2s(p.stderr, "stderr")
+        else:
+            return s2s(p.stdout, "output")
     else:
-        if p.stderr: return s2s(p.stderr, "output")
-        else:        return ""
+        if p.stderr:
+            return s2s(p.stderr, "output")
+        else:
+            return ""
 
 
 def read_server_and_port_from_file(server_connection_info, process=None, server_cmd=None):
@@ -141,10 +149,12 @@ def read_server_and_port_from_file(server_connection_info, process=None, server_
         except (ValueError, FileNotFoundError):
             time.sleep(1)
             if process is not None and process.poll() is not None:
-                logging.error("Arkouda server exited without creating the connection file"
-                              + "\n  exit code: " + str(process.returncode)
-                              +("\n  launch command was: " + str(server_cmd) if server_cmd else "")
-                              + _server_output_to_string(process))
+                logging.error(
+                    "Arkouda server exited without creating the connection file"
+                    + f"\n  exit code: {str(process.returncode)}"
+                    + (f"\n  launch command was: {str(server_cmd)}" if server_cmd else "")
+                    + _server_output_to_string(process)
+                )
                 raise RuntimeError("Arkouda server exited without creating the connection file")
             continue
 
@@ -308,7 +318,9 @@ def start_arkouda_server(
         If host is None, this means the host and port are to be retrieved
         via the read_server_and_port_from_file method
         """
-        host, port, connect_url = read_server_and_port_from_file(connection_file, process=process, server_cmd=cmd)
+        host, port, connect_url = read_server_and_port_from_file(
+            connection_file, process=process, server_cmd=cmd
+        )
     server_info = ServerInfo(host, port, process)
     set_server_info(server_info)
     return server_info
