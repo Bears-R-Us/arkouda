@@ -80,6 +80,7 @@ def apply(
     array([21.991148575128552 28.274333882308138 15.707963267948966 3.1415926535897931])
 
     """
+    from arkouda.client import generic_msg
     if getattr(apply, "is_apply_supported", None) is None:
         res = generic_msg("isPythonModuleSupported")
         is_supported = parse_single_value(cast(str, res))

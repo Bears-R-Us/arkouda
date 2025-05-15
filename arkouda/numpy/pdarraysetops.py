@@ -93,7 +93,7 @@ def _in1d_single(
     array([False True])
     """
     from arkouda.pandas.categorical import Categorical as Categorical_
-
+    from arkouda.client import generic_msg
     if isinstance(pda1, pdarray) or isinstance(pda1, Strings) or isinstance(pda1, Categorical_):
         # While isinstance(thing, type) can be called on a tuple of types,
         # this causes an issue with mypy for unknown reasons.
@@ -395,7 +395,7 @@ def concatenate(
     from arkouda.pandas.categorical import Categorical as Categorical_
     from arkouda.numpy.dtypes import int_scalars
     from arkouda.numpy.util import get_callback
-
+    from arkouda.client import generic_msg
     size: int_scalars = 0
     objtype = None
     dtype = None
@@ -575,7 +575,7 @@ def union1d(
 
     """
     from arkouda.pandas.categorical import Categorical as Categorical_
-
+    from arkouda.client import generic_msg
     if (
         isinstance(A, (pdarray, Strings, Categorical_))
         and isinstance(B, (pdarray, Strings, Categorical_))

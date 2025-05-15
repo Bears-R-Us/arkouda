@@ -90,7 +90,7 @@ def argsort(
     array([9 3 5 4 2 7 8 0 6 1])
     """
     from arkouda.pandas.categorical import Categorical
-
+    from arkouda.client import generic_msg
     ndim = cast(Union[int, np.integer], getattr(pda, "ndim"))
 
     if axis < -1 or axis > int(ndim):
@@ -187,9 +187,16 @@ def coargsort(
     """
     from arkouda.pandas.categorical import Categorical
     from arkouda.numpy import cast as akcast
+<<<<<<< HEAD
 
     check_type("coargsort", arrays, Sequence[Union[pdarray, Strings, Categorical]])
 
+=======
+    from arkouda.client import generic_msg
+    check_type(
+        argname="coargsort", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]]
+    )
+>>>>>>> 06699fbd9 (first round of add import to py files for generic_msg)
     size: int_scalars = -1
     anames, atypes, expanded_arrays = [], [], []
     max_dim = 1
@@ -301,6 +308,7 @@ def sort(
     >>> sorted
     array([0 1 1 4 5 5 5 7 8 9])
     """
+    from arkouda.client import generic_msg
     if pda.dtype == bigint:
         return pda[coargsort(pda.bigint_to_uint_arrays(), algorithm)]
     if pda.dtype not in numeric_dtypes:
@@ -361,7 +369,7 @@ def searchsorted(
     >>> ak.searchsorted(a, v)
     array([0 5 1 2])
     """
-
+    from arkouda.client import generic_msg
     if a.ndim > 1:
         raise ValueError(f"a must be one dimensional, but has {a.ndim} dimensions.")
     if a.dtype not in numeric_dtypes and a.dtype != bigint:
