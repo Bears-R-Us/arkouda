@@ -2964,6 +2964,7 @@ def quantile(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
     >>> q = 0.7
     >>> ak.quantile(a,q,axis=None,method="linear")
@@ -3012,7 +3013,7 @@ def quantile(
         if (q_ < 0.0).any() or (q_ > 1.0).any():  # type: ignore
             raise ValueError("Values of q in quantile must be in range [0,1].")
 
-    if not (method in ALLOWED_PERQUANT_METHODS):
+    if method not in ALLOWED_PERQUANT_METHODS:
         raise ValueError(f"Method {method} is not supported in quantile.")
 
     # scalar q, no axis slicing
@@ -3137,6 +3138,7 @@ def percentile(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
     >>> q = 70
     >>> ak.percentile(a,q,axis=None,method="linear")
