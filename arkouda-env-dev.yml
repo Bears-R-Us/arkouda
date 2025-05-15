@@ -46,6 +46,7 @@ dependencies:
   - pydocstyle>=6.3.0
   - pre-commit
   - darglint>=1.8.1
+  - pytest-subtests
 
   - pip:
     # Developer dependencies
@@ -56,3 +57,4 @@ dependencies:
     - linkify-it-py
     - ruff==0.11.2
     - pydoclint[flake8]==0.6.6
+    - docstr-coverage

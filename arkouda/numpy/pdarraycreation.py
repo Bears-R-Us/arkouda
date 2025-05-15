@@ -21,6 +21,7 @@ from arkouda.numpy.dtypes import (
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
+    str_,
 )
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
@@ -687,8 +688,12 @@ def full(
     array([True True True True True])
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.dtypes import dtype as ak_dtype
+    
     if isinstance(fill_value, str):
         return _full_string(size, fill_value)
+    elif ak_dtype(dtype) == str_ or dtype == Strings:
+        return _full_string(size, str_(fill_value))
 
     dtype = akdtype(dtype)  # normalize dtype
     dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
@@ -922,26 +927,31 @@ def full_like(pda: pdarray, fill_value: numeric_scalars) -> Union[pdarray, Strin
     return full(tuple(pda.shape), fill_value, pda.dtype, pda.max_bits)
 
 
-def arange(*args, **kwargs) -> pdarray:
+def arange(
+    start: Optional[int_scalars] = None,
+    stop: Optional[int_scalars] = None,
+    step: Optional[int_scalars] = None,
+    dtype: Optional[Union[np.dtype, type, bigint]] = None,
+    max_bits: Optional[int] = None,
+) -> pdarray:
     """
-    arange([start,] stop[, stride,] dtype=int64)
+    arange([start,] stop[, step,] dtype=int64)
 
     Create a pdarray of consecutive integers within the interval [start, stop).
     If only one arg is given then arg is the stop parameter. If two args are
     given, then the first arg is start and second is stop. If three args are
-    given, then the first arg is start, second is stop, third is stride.
+    given, then the first arg is start, second is stop, third is step.
 
     The return value is cast to type dtype
 
     Parameters
     ----------
-    start: int_scalars, optional
-        Starting value (inclusive)
-    stop: int_scalars
-        Stopping value (exclusive)
-    stride: int_scalars, optional
-        The difference between consecutive elements, the default stride is 1,
-        if stride is specified then start must also be specified.
+    start : int_scalars, optional
+    stop  : int_scalars, optional
+    step  : int_scalars, optional
+        if one of these three is supplied, it's used as stop, and start = 0, step = 1
+        if two of them are supplied, start = start, stop = stop, step = 1
+        if all three are supplied, start = start, stop = stop, step = step
     dtype: np.dtype, type, or str
         The target dtype to cast values to
     max_bits: int
@@ -950,14 +960,16 @@ def arange(*args, **kwargs) -> pdarray:
     Returns
     -------
     pdarray
-        Integers from start (inclusive) to stop (exclusive) by stride
+        Integers from start (inclusive) to stop (exclusive) by step
 
     Raises
     ------
+    ValueError
+        Raised if none of start, stop, step was supplied
     TypeError
-        Raised if start, stop, or stride is not an int object
+        Raised if start, stop, or step is not an int object
     ZeroDivisionError
-        Raised if stride == 0
+        Raised if step == 0
 
     See Also
     --------
@@ -965,7 +977,7 @@ def arange(*args, **kwargs) -> pdarray:
 
     Notes
     -----
-    Negative strides result in decreasing values. Currently, only int64
+    Negative steps result in decreasing values. Currently, only int64
     pdarrays can be created with this method. For float64 arrays, use
     the linspace method.
 
@@ -999,17 +1011,19 @@ def arange(*args, **kwargs) -> pdarray:
         stop = args[1]
         stride = 1
 
-    # if three args are given then first arg is start,
-    # second is stop, third is stride
-    if len(args) == 3:
-        start = args[0]
-        stop = args[1]
-        stride = args[2]
+    if start is None and stop is None and step is None:
+        raise ValueError("A stopping value must be supplied to arange.")
 
-    if stride == 0:
+    if step is None:
+        step = 1
+        if stop is None:
+            stop = start
+            start = 0
+
+    if step == 0:
         raise ZeroDivisionError("division by zero")
 
-    dtype = akint64 if "dtype" not in kwargs.keys() else kwargs["dtype"]
+    aktype = akint64 if dtype is None else dtype
 
     # check the conditions that cause numpy to return an empty array, and
     # return one also.  This includes a fix needed for empty bigint arrays.
@@ -1021,34 +1035,34 @@ def arange(*args, **kwargs) -> pdarray:
     # the requested dtype.
     # This matters for several tests in tests/series_test.py
 
-    if (start == stop) | ((np.sign(stop - start) * np.sign(stride)) <= 0):
-        return akcast(array([], dtype=akint64), dt=dtype)
+    if (start == stop) | ((np.sign(stop - start) * np.sign(step)) <= 0):  # type: ignore
+        return akcast(array([], dtype=akint64), dt=aktype)
 
-    if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(stride):
-        arg_dtypes = [resolve_scalar_dtype(arg) for arg in (start, stop, stride)]
-        max_bits = -1 if "max_bits" not in kwargs.keys() else kwargs["max_bits"]
+    if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(step):
+        arg_dtypes = [resolve_scalar_dtype(arg) for arg in (start, stop, step)]
+        akmax_bits = -1 if max_bits is None else max_bits
         arg_dtype = "int64"
-        if dtype in ["bigint", bigint] or "bigint" in arg_dtypes or max_bits != -1:
+        if dtype in ["bigint", bigint] or "bigint" in arg_dtypes or akmax_bits != -1:
             arg_dtype = "bigint"
         elif "uint64" in arg_dtypes:
             arg_dtype = "uint64"
 
-        if stride < 0:
-            stop = stop + 2
+        if step < 0:
+            stop = stop + 2  # type: ignore
         repMsg = generic_msg(
-            cmd=f"arange<{arg_dtype},1>", args={"start": start, "stop": stop, "step": stride}
+            cmd=f"arange<{arg_dtype},1>", args={"start": start, "stop": stop, "step": step}
         )
         return cast(
             pdarray,
             (
                 create_pdarray(repMsg, max_bits=max_bits)
-                if dtype == akint64
-                else array(create_pdarray(repMsg), max_bits=max_bits, dtype=dtype)
+                if aktype == akint64
+                else array(create_pdarray(repMsg), max_bits=akmax_bits, dtype=aktype)  # type: ignore
             ),
         )
     else:
         raise TypeError(
-            f"start,stop,stride must be type int, np.int64, or np.uint64 {start} {stop} {stride}"
+            f"start,stop,step must be type int, np.int64, or np.uint64 {start} {stop} {step}"
         )
 
 

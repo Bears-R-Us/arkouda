@@ -5,6 +5,7 @@ import pytest
 
 import arkouda as ak
 from arkouda.client import get_array_ranks, get_max_array_rank
+from arkouda.dtypes import bigint
 from arkouda.testing import assert_arkouda_array_equivalent
 from arkouda.testing import assert_equal as ak_assert_equal
 from arkouda.testing import assert_equivalent as ak_assert_equivalent
@@ -47,6 +48,13 @@ class TestPdarrayClass:
         size = 10
         x = ak.arange(size, dtype=dtype).reshape((1, size, 1))
         ak_assert_equal(x.flatten(), ak.arange(size, dtype=dtype))
+
+    def test_reshape_bigint_bug_4165_reproducer(self):
+        x = ak.arange(10, dtype=bigint)
+        x.max_bits = 64
+        assert x.max_bits == 64
+        y = x.reshape((10,))
+        assert y.max_bits == 64
 
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_shape(self, dtype):

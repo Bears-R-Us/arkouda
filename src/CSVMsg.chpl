@@ -549,7 +549,7 @@ module CSVMsg {
     proc generate_subdoms(filenames: [?D] string, row_counts: [D] int, validFiles: [D] bool) throws {
         var skips = new set(string);
         var offsets = (+ scan row_counts) - row_counts;
-        var subdoms = makeDistArray(D, domain(1));
+        var subdoms = D.tryCreateArray(domain(1)); // Non dist array
         for (i, fname, off, ct, vf) in zip(D, filenames, offsets, row_counts, validFiles) {
             if (!vf) {
                 skips.add(fname);

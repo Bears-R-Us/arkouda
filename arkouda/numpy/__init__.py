@@ -31,6 +31,7 @@ from numpy import (  # noqa
     longdouble,
     longlong,
     nan,
+    newaxis,
     number,
     pi,
     promote_types,
