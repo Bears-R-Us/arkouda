@@ -24,7 +24,7 @@ from numpy import ndarray
 from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
 from typeguard import typechecked
 
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.index import Index, MultiIndex
@@ -3177,7 +3177,7 @@ class DataFrame(UserDict):
             Raised if a server-side error is thrown saving the pdarray
 
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
         from arkouda.numpy.segarray import SegArray
 
@@ -5199,7 +5199,7 @@ class DataFrame(UserDict):
         False
 
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.numpy.segarray import SegArray
 
         if self.registered_name is not None and self.is_registered():
@@ -5398,7 +5398,7 @@ class DataFrame(UserDict):
         DataFrame
 
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.numpy.segarray import SegArray
 
         data = json.loads(rep_msg)

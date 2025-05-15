@@ -7,7 +7,7 @@ from warnings import warn
 import pandas as pd
 from typeguard import typechecked
 
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.client_dtypes import IPv4
 from arkouda.pandas.dataframe import DataFrame
 from arkouda.pandas.groupbyclass import GroupBy

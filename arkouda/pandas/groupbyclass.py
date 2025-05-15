@@ -39,7 +39,7 @@ from arkouda.numpy.sorting import argsort, sort
 from arkouda.numpy.strings import Strings
 
 if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
+    from arkouda.pandas.categorical import Categorical
     from arkouda.client import generic_msg
 else:
     generic_msg = TypeVar("generic_msg")
@@ -127,7 +127,7 @@ def unique(
     array([1 2 3])
 
     """
-    from arkouda.categorical import Categorical as Categorical_
+    from arkouda.pandas.categorical import Categorical as Categorical_
 
     if not return_groups and hasattr(pda, "unique"):
         return cast(Categorical_, pda).unique()
@@ -384,7 +384,7 @@ class GroupBy:
 
     @staticmethod
     def from_return_msg(rep_msg):
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
 
         data = json.loads(rep_msg)
         perm = create_pdarray(data["permutation"])
@@ -439,7 +439,7 @@ class GroupBy:
         GroupBy is not currently supported by Parquet
 
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         keys = self.keys if isinstance(self.keys, Sequence) else [self.keys]
@@ -499,7 +499,7 @@ class GroupBy:
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
 
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
 
         keys = self.keys
         if not isinstance(self.keys, Sequence):
