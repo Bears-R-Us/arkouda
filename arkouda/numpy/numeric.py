@@ -56,7 +56,7 @@ ALLOWED_PERQUANT_METHODS = [
 
 
 if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
+    from arkouda.pandas.categorical import Categorical
     from arkouda.numpy.segarray import SegArray
 else:
     Categorical = TypeVar("Categorical")
@@ -196,7 +196,7 @@ def cast(
     >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool_)
     array([False True True True True])
     """
-    from arkouda.categorical import Categorical  # type: ignore
+    from arkouda.pandas.categorical import Categorical  # type: ignore
 
     if isinstance(pda, pdarray):
         if dt is Strings or akdtype(dt) == str_:
@@ -1809,7 +1809,7 @@ def _str_cat_where(
 ) -> Union[Strings, Categorical]:
     # added @no_type_check because mypy can't handle Categorical not being declared
     # sooner, but there are circular dependencies preventing that
-    from arkouda.categorical import Categorical
+    from arkouda.pandas.categorical import Categorical
     from arkouda.numpy.pdarraysetops import concatenate
 
     if isinstance(A, str) and isinstance(B, (Categorical, Strings)):
@@ -1955,7 +1955,7 @@ def where(
     if (not isSupportedNumber(A) and not isinstance(A, pdarray)) or (
         not isSupportedNumber(B) and not isinstance(B, pdarray)
     ):
-        from arkouda.categorical import Categorical  # type: ignore
+        from arkouda.pandas.categorical import Categorical  # type: ignore
 
         # fmt: off
         if (

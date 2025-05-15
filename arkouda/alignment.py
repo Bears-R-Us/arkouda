@@ -4,7 +4,7 @@ from warnings import warn
 
 import numpy as np
 
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GroupBy, broadcast, unique
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import float64 as akfloat64
