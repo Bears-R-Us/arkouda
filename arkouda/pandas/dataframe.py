@@ -1272,7 +1272,7 @@ class DataFrame(UserDict):
 
     def _get_head_tail_server(self):
         from arkouda.numpy.segarray import SegArray
-
+        from arkouda.client import generic_msg
         if self._empty:
             return pd.DataFrame()
         self.update_nrows()
@@ -1396,6 +1396,7 @@ class DataFrame(UserDict):
             a supported dtype
 
         """
+        from arkouda.client import generic_msg
         self.update_nrows()
         idx = self._index
         msg_list = []
@@ -3180,7 +3181,7 @@ class DataFrame(UserDict):
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
         from arkouda.numpy.segarray import SegArray
-
+        from arkouda.client import generic_msg
         column_data = [
             (
                 obj.name
@@ -5201,7 +5202,7 @@ class DataFrame(UserDict):
         """
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.numpy.segarray import SegArray
-
+        from arkouda.client import generic_msg
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         column_data = [

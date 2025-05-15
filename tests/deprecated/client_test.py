@@ -146,6 +146,7 @@ class ClientTest(ArkoudaTest):
         use a multi-dimensional command when the server is not configured to
         support multi-dimensional arrays of the given rank.
         """
+        from arkouda.client import generic_msg
         with self.assertRaises(RuntimeError) as cm:
             resp = generic_msg("create10D")
 
@@ -156,7 +157,7 @@ class ClientTest(ArkoudaTest):
         Tests that a user will get a helpful error message if they attempt to
         use a multi-dimensional command when only a 1D implementation exists.
         """
-
+        from arkouda.client import generic_msg
         with self.assertRaises(RuntimeError) as cm:
             resp = generic_msg("connect2D")
 
