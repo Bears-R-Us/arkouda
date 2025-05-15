@@ -25,7 +25,6 @@ def take(x: Array, indices: Array, /, *, axis: Optional[int] = None) -> Array:
     """
 
     from arkouda.numpy.numeric import take
-
     if axis is None and x.ndim != 1:
         raise ValueError("axis must be specified for multidimensional arrays")
 
