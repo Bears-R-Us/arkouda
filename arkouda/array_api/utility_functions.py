@@ -8,7 +8,7 @@ from arkouda.numpy.pdarrayclass import create_pdarray
 from arkouda.numpy.pdarraycreation import scalar_array
 
 from .array_object import Array
-from .manipulation_functions import concat, reshape
+from .manipulation_functions import reshape
 from .statistical_functions import sum
 
 __all__ = [
@@ -153,31 +153,9 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
     array([[-1,  2,  0, -2]])
 
     """
-    if a.dtype == ak.bigint:
-        raise RuntimeError(f"Error executing command: diff does not support dtype {a.dtype}")
+    from arkouda.numpy.pdarrayclass import diff
 
-    if prepend is not None and append is not None:
-        a_ = concat((prepend, a, append), axis=axis)
-    elif prepend is not None:
-        a_ = concat((prepend, a), axis=axis)
-    elif append is not None:
-        a_ = concat((a, append), axis=axis)
-    else:
-        a_ = a
-    if axis < 0:
-        axis = a_.ndim + axis
-    return Array._new(
-        create_pdarray(
-            generic_msg(
-                cmd=f"diff<{a.dtype},{a.ndim}>",
-                args={
-                    "x": a_._array,
-                    "n": n,
-                    "axis": axis,
-                },
-            ),
-        )
-    )
+    return Array._new(diff(a._array, n, axis, prepend, append))
 
 
 def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: int = -1) -> Array:

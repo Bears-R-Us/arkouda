@@ -151,6 +151,7 @@ from arkouda.numpy import (
     datetime64,
     deg2rad,
     delete,
+    diff,
     divmod,
     dot,
     double,
