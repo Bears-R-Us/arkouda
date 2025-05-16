@@ -609,13 +609,16 @@ def log(pda: pdarray) -> pdarray:
     --------
     >>> import arkouda as ak
     >>> A = ak.array([1, 10, 100])
-    # Natural log
+
+    Natural log
     >>> ak.log(A)
     array([0.00000000000000000 2.3025850929940459 4.6051701859880918])
-    # Log base 10
+
+    Log base 10
     >>> ak.log(A) / np.log(10)
     array([0.00000000000000000 1.00000000000000000 2.00000000000000000])
-    # Log base 2
+
+    Log base 2
     >>> ak.log(A) / np.log(2)
     array([0.00000000000000000 3.3219280948873626 6.6438561897747253])
     """
@@ -735,7 +738,7 @@ def nextafter(
     >>> import arkouda as ak
     >>> eps = np.finfo(np.float64).eps
     >>> ak.nextafter(1, 2) == 1 + eps
-    True
+     np.True_
     >>> a = ak.array([1, 2])
     >>> b = ak.array([2, 1])
     >>> ak.nextafter(a, b) == ak.array([eps + 1, 2 - eps])
@@ -802,9 +805,9 @@ def exp(pda: pdarray) -> pdarray:
     >>> ak.exp(ak.arange(1,5))
     array([2.7182818284590451 7.3890560989306504 20.085536923187668 54.598150033144236])
 
-    >>> ak.exp(ak.uniform(5,1.0,5.0))
-    array([11.84010843172504 46.454368507659211 5.5571769623557188
-           33.494295836924771 13.478894913238722])
+    >>> ak.exp(ak.uniform(4, 1.0, 5.0, seed=1))
+    array([63.344862048230922 3.8079467144568273 54.725428723251447 36.234416869913829])
+
     """
     repMsg = generic_msg(
         cmd=f"exp<{pda.dtype},{pda.ndim}>",
@@ -841,9 +844,9 @@ def expm1(pda: pdarray) -> pdarray:
     >>> ak.expm1(ak.arange(1,5))
     array([1.7182818284590451 6.3890560989306504 19.085536923187668 53.598150033144236])
 
-    >>> ak.expm1(ak.uniform(5,1.0,5.0))
-    array([10.84010843172504 45.454368507659211 4.5571769623557188
-           32.494295836924771 12.478894913238722])
+    >>> ak.expm1(ak.uniform(5,1.0,5.0, seed=1))
+    array([62.344862048230922 2.8079467144568273 53.725428723251447
+        35.234416869913829 41.192939934258227])
     """
     repMsg = generic_msg(
         cmd=f"expm1<{pda.dtype},{pda.ndim}>",
@@ -918,12 +921,11 @@ def cumsum(pda: pdarray) -> pdarray:
     >>> ak.cumsum(ak.arange(1,5))
     array([1 3 6 10])
 
-    >>> ak.cumsum(ak.uniform(5,1.0,5.0))
-    array([3.1598310770203937 5.4110385860243131 9.1622479306453748
-           12.710615785506533 13.945880905466208])
+    >>> ak.cumsum(ak.uniform(5,1.0,5.0, seed=1))
+    array([4.1485937992669886 5.4856839230459 9.4880124005630435 13.078021809988414 16.820274716898091])
 
-    >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_))
-    array([0 1 1 2 3])
+    >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_, seed=1))
+    array([1 1 2 3 4])
     """
     _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], "cumsum")
     repMsg = generic_msg(
@@ -964,9 +966,9 @@ def cumprod(pda: pdarray) -> pdarray:
     >>> ak.cumprod(ak.arange(1,5))
     array([1 2 6 24])
 
-    >>> ak.cumprod(ak.uniform(5,1.0,5.0))
-    array([1.5728783400481925 7.0472855509390593 33.78523998586553
-           134.05309592737584 450.21589865655358])
+    >>> ak.cumprod(ak.uniform(5,1.0,5.0, seed=1))
+    array([4.1485937992669886 5.5470437965703221 22.201091353048209
+        79.702126856955317 298.26551591732482])
     """
     _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], "cumprod")
     repMsg = generic_msg(
@@ -1951,13 +1953,14 @@ def histogram(
     array([3 3 4])
     >>> b
     array([0.00000000000000000 3.00000000000000000 6.00000000000000000 9.00000000000000000])
-    # To plot, export the left edges and the histogram to NumPy
+
+    To plot, export the left edges and the histogram to NumPy
     >>> b_np = b.to_ndarray()
     >>> import numpy as np
     >>> b_widths = np.diff(b_np)
     >>> plt.bar(b_np[:-1], h.to_ndarray(), width=b_widths, align='edge', edgecolor='black')
     <BarContainer object of 3 artists>
-    >>> plt.show()
+    >>> plt.show() # doctest: +SKIP
     """
     if bins < 1:
         raise ValueError("bins must be 1 or greater")
@@ -2149,17 +2152,16 @@ def histogramdd(
     >>> x = ak.arange(0, 10, 1)
     >>> y = ak.arange(9, -1, -1)
     >>> z = ak.where(x % 2 == 0, x, y)
-    >>> h, edges = ak.histogramdd((x, y,z), bins=(2,2,5))
+    >>> h, edges = ak.histogramdd((x, y,z), bins=(2,2,3))
     >>> h
-    array([array([array([0 0 0 0 0])
-           array([1 1 1 1 1])])
-           array([array([1 1 1 1 1])
-           array([0 0 0 0 0])])])
+    array([array([array([0.00000000000000000 0.00000000000000000 0.00000000000000000])
+        array([2.00000000000000000 1.00000000000000000 2.00000000000000000])])
+        array([array([2.00000000000000000 1.00000000000000000 2.00000000000000000])
+        array([0.00000000000000000 0.00000000000000000 0.00000000000000000])])])
     >>> edges
     [array([0.00000000000000000 4.5 9.00000000000000000]),
-    array([0.00000000000000000 4.5 9.00000000000000000]),
-    array([0.00000000000000000 1.6000000000000001 3.2000000000000002
-    4.8000000000000007 6.4000000000000004 8.00000000000000000])]
+        array([0.00000000000000000 4.5 9.00000000000000000]),
+        array([0.00000000000000000 2.6666666666666665 5.333333333333333 8.00000000000000000])]
     """
     if not isinstance(sample, Sequence):
         raise ValueError("Sample must be a sequence of pdarrays")
@@ -2298,7 +2300,7 @@ def clip(
     array([1 2 3 4 5 6 7 7 7 7])
     >>> ak.clip(a,5,None)
     array([5 5 5 5 5 6 7 8 9 10])
-    >>> ak.clip(a,None,None)
+    >>> ak.clip(a,None,None) # doctest: +SKIP
     ValueError: Either min or max must be supplied.
     >>> ak.clip(a,ak.array([2,2,3,3,8,8,5,5,6,6]),8)
     array([2 2 3 4 8 8 7 8 8 8])
@@ -2369,10 +2371,10 @@ def median(pda: pdarray) -> np.float64:
     >>> import arkouda as ak
     >>> pda = ak.array([0,4,7,8,1,3,5,2,-1])
     >>> ak.median(pda)
-    3.0
+    np.float64(3.0)
     >>> pda = ak.array([0,1,3,3,1,2,3,4,2,3])
     >>> ak.median(pda)
-    2.5
+    np.float64(2.5)
 
     """
 
@@ -2416,13 +2418,13 @@ def count_nonzero(pda: pdarray) -> np.int64:
     >>> import arkouda as ak
     >>> pda = ak.array([0,4,7,8,1,3,5,2,-1])
     >>> ak.count_nonzero(pda)
-    8
+    np.int64(8)
     >>> pda = ak.array([False,True,False,True,False])
     >>> ak.count_nonzero(pda)
-    2
+    np.int64(2)
     >>> pda = ak.array(["hello","","there"])
     >>> ak.count_nonzero(pda)
-    2
+    np.int64(2)
 
     """
 
@@ -2964,6 +2966,7 @@ def quantile(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
     >>> q = 0.7
     >>> ak.quantile(a,q,axis=None,method="linear")
@@ -3012,7 +3015,7 @@ def quantile(
         if (q_ < 0.0).any() or (q_ > 1.0).any():  # type: ignore
             raise ValueError("Values of q in quantile must be in range [0,1].")
 
-    if not (method in ALLOWED_PERQUANT_METHODS):
+    if method not in ALLOWED_PERQUANT_METHODS:
         raise ValueError(f"Method {method} is not supported in quantile.")
 
     # scalar q, no axis slicing
@@ -3137,6 +3140,7 @@ def percentile(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
     >>> q = 70
     >>> ak.percentile(a,q,axis=None,method="linear")
