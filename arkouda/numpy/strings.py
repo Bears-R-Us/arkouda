@@ -402,10 +402,10 @@ class Strings:
         >>> s = ak.array(["a", "b", "c"])
         >>> s_cpy = ak.array(["a", "b", "c"])
         >>> s.equals(s_cpy)
-        True
+        np.True_
         >>> s2 = ak.array(["a", "x", "c"])
         >>> s.equals(s2)
-        False
+        np.False_
         """
         if isinstance(other, Strings):
             if other.size != self.size:
@@ -445,9 +445,10 @@ class Strings:
 
         Example
         -------
+        >>> import arkouda as ak
         >>> x = ak.array(['one', 'two', 'three'])
         >>> x.get_bytes()
-        [111 110 101 0 116 119 111 0 116 104 114 101 101 0]
+        array([111 110 101 0 116 119 111 0 116 104 114 101 101 0])
         """
         if self._bytes is None or self._bytes.name not in list_symbol_table():
             self._bytes = create_pdarray(
@@ -470,9 +471,10 @@ class Strings:
 
         Example
         -------
+        >>> import arkouda as ak
         >>> x = ak.array(['one', 'two', 'three'])
         >>> x.get_offsets()
-        [0 4 8]
+        array([0 4 8])
         """
         if self._offsets is None or self._offsets.name not in list_symbol_table():
             self._offsets = create_pdarray(

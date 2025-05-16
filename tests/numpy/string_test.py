@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+from arkouda.numpy import strings
 from arkouda.testing import assert_equal as ak_assert_equal
 
 ak.verbose = False
@@ -14,11 +15,11 @@ UNIQUE = N // 4
 
 
 class TestString:
-    # def test_strings_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(strings, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    def test_strings_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(strings, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     Gremlins = namedtuple(
         "Gremlins",
