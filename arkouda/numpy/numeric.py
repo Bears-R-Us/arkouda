@@ -118,6 +118,7 @@ __all__ = [
     "ErrorMode",
     "quantile",
     "percentile",
+    "take",
 ]
 
 
@@ -3174,3 +3175,65 @@ def percentile(
             raise ValueError("Values of q in percentile must be in range [0,100].")
 
     return quantile(a, q_ / 100.0, axis, method, keepdims)  # type: ignore
+
+
+def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[int] = None) -> pdarray:
+    """
+    Take elements from an array along an axis.
+
+    When axis is not None, this function does the same thing as “fancy” indexing (indexing arrays
+    using arrays); however, it can be easier to use if you need elements along a given axis.
+    A call such as ``np.take(arr, indices, axis=3)`` is equivalent to ``arr[:,:,:,indices,...]``.
+
+    Parameters
+    ----------
+    a : pdarray
+        The array from which to take elements
+    indices : numeric_scalars or pdarray
+        The indices of the values to extract. Also allow scalars for indices.
+    axis : int, optional
+        The axis over which to select values. By default, the flattened input array is used.
+
+    Returns
+    -------
+    pdarray
+        The returned array has the same type as `a`.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.array([4, 3, 5, 7, 6, 8])
+    >>> indices = [0, 1, 4]
+    >>> ak.take(a, indices)
+    array([4 3 6])
+
+    """
+
+    if axis is None and a.ndim != 1:
+        a = a.flatten()
+
+    if isinstance(indices, pdarray) and indices.ndim != 1:
+        raise ValueError("indices must be 1D")
+
+    if axis is None:
+        axis = 0
+
+    if not isinstance(indices, pdarray) and isinstance(indices, list):
+        indices_ = array(indices)
+    elif not isinstance(indices, pdarray):
+        indices_ = array([indices])
+    else:
+        indices_ = indices
+
+    result = create_pdarray(
+        generic_msg(
+            cmd=f"takeAlongAxis<{a.dtype},{indices_.dtype},{a.ndim}>",
+            args={
+                "x": a,
+                "indices": indices_,
+                "axis": axis,
+            },
+        )
+    )
+
+    return result
