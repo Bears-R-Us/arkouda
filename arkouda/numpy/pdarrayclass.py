@@ -42,69 +42,10 @@ if TYPE_CHECKING:
     #   They communicate to mypy the expected input and output types,
     #   in cases where the function is generated at runtime.
 
-    # @overload
-    # def sum(a: pdarray, *, axis: None = ..., keepdims: bool = ...) -> numeric_scalars: ...
-    #
-    # @overload
-    # def sum(
-    #     a: pdarray, *, axis: Union[int_scalars, Tuple[int_scalars, ...]], keepdims: bool = ...
-    # ) -> pdarray: ...
-    #
-    # def sum(
-    #     a: pdarray,
-    #     *,
-    #     axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = ...,
-    #     keepdims: bool = ...,
-    # ) -> Union[pdarray, numeric_scalars]: ...
-    #
-    # @overload
-    # def prod(a: pdarray, *, axis: None = ..., keepdims: bool = ...) -> numeric_scalars: ...
-    #
-    # @overload
-    # def prod(
-    #     a: pdarray, *, axis: Union[int_scalars, Tuple[int_scalars, ...]], keepdims: bool = ...
-    # ) -> pdarray: ...
-    #
-    # def prod(
-    #     a: pdarray,
-    #     *,
-    #     axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = ...,
-    #     keepdims: bool = ...,
-    # ) -> Union[pdarray, numeric_scalars]: ...
-    #
-    # @overload
-    # def max(a: pdarray, *, axis: None = ..., keepdims: bool = ...) -> numeric_scalars: ...
-    #
-    # @overload
-    # def max(
-    #     a: pdarray, *, axis: Union[int_scalars, Tuple[int_scalars, ...]], keepdims: bool = ...
-    # ) -> pdarray: ...
-    #
-    # def max(
-    #     a: pdarray,
-    #     *,
-    #     axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = ...,
-    #     keepdims: bool = ...,
-    # ) -> Union[pdarray, numeric_scalars]: ...
-    #
-    # @overload
-    # def min(a: pdarray, *, axis: None = ..., keepdims: bool = ...) -> numeric_scalars: ...
-    #
-    # @overload
-    # def min(
-    #     a: pdarray, *, axis: Union[int_scalars, Tuple[int_scalars, ...]], keepdims: bool = ...
-    # ) -> pdarray: ...
-    #
-    # def min(
-    #     a: pdarray,
-    #     *,
-    #     axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = ...,
-    #     keepdims: bool = ...,
-    # ) -> Union[pdarray, numeric_scalars]: ...
-
     # aliases for readability
     Axis = Union[int_scalars, Tuple[int_scalars, ...]]
 
+    # docstr-coverage:excused `overload-only, docs live on impl`
     @overload
     def numeric_reduce(
         pda: pdarray,
@@ -113,6 +54,7 @@ if TYPE_CHECKING:
         keepdims: bool = ...,
     ) -> numeric_scalars: ...
 
+    # docstr-coverage:excused `overload-only, docs live on impl`
     @overload
     def numeric_reduce(
         pda: pdarray,
@@ -134,6 +76,7 @@ if TYPE_CHECKING:
     min = numeric_reduce
 
     # ----- boolean_reduce overloads -----
+    # docstr-coverage:excused `overload-only, docs live on impl`
     @overload
     def boolean_reduce(
         pda: pdarray,
@@ -142,6 +85,7 @@ if TYPE_CHECKING:
         keepdims: bool = ...,
     ) -> bool_scalars: ...
 
+    # docstr-coverage:excused `overload-only, docs live on impl`
     @overload
     def boolean_reduce(
         pda: pdarray,
@@ -164,6 +108,7 @@ if TYPE_CHECKING:
     any = boolean_reduce
 
     # ----- index_reduce overloads -----
+    # docstr-coverage:excused `overload-only, docs live on impl`
     @overload
     def index_reduce(
         pda: pdarray,
@@ -172,6 +117,7 @@ if TYPE_CHECKING:
         keepdims: bool = ...,
     ) -> Union[akint64, akuint64]: ...
 
+    # docstr-coverage:excused `overload-only, docs live on impl`
     @overload
     def index_reduce(
         pda: pdarray,
