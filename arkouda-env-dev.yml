@@ -58,3 +58,4 @@ dependencies:
     - ruff==0.11.2
     - pydoclint[flake8]==0.6.6
     - docstr-coverage
+    - numba
