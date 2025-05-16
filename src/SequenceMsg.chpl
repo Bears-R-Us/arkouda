@@ -26,7 +26,7 @@ module SequenceMsg {
     */
     @arkouda.instantiateAndRegister
     proc arange(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
-        where ((array_dtype==int) || (array_dtype==uint(64)) || (array_dtype==bigint)) && (array_nd==1) {
+        where ((array_dtype==real) || (array_dtype==int) || (array_dtype==uint(64)) || (array_dtype==bigint)) && (array_nd==1) {
         
         const start =  msgArgs["start"].toScalar(array_dtype),
             stop =  msgArgs["stop"].toScalar(array_dtype),
