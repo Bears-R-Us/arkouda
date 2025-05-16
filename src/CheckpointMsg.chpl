@@ -218,11 +218,6 @@ module CheckpointMsg {
     return true;
   }
 
-    import Time; //wass
-    const startTime = Time.timeSinceEpoch().totalSeconds();
-    proc stamp do return try! "%6.2dr".format(Time.timeSinceEpoch().totalSeconds() - startTime);
-    proc ss(args...) do writeln(stamp, " : ", (...args));
-
   //
   // This function runs asynchronously. It creates automatic checkpoints.
   //
@@ -230,12 +225,10 @@ module CheckpointMsg {
     var idleStartForLastCheckpoint: real = 0;
     var idleStartForLastMemCheck: real = 0;
     var delay: real = minRequestedDelay;
-    try! ss("startTime %6.2dr".format(startTime));
 
     // The only way to end this task is exit() in DefaultServerDaemon.shutdown().
     while true {
       try {
-        ss("sleeping for ", max(delay, checkpointCheckInterval));
         Time.sleep(max(delay, checkpointCheckInterval));
 
         // Check and checkpoint within the same mutex region
@@ -245,12 +238,10 @@ module CheckpointMsg {
 
         const curTime = Time.timeSinceEpoch().totalSeconds();
         const lastCkpt = lastCkptCompletion.read();
-        try! ss("got mutex  lastCkpt %6.2dr  idleStart %6.2dr".format(lastCkpt, sd.idlePeriodStart.read()));
 
         if lastCkpt > 0 && curTime < lastCkpt + checkpointInterval {
           // There was a recent checkpoint activity. Wait.
           delay = lastCkpt + checkpointInterval - curTime;
-          ss("recent checkpoint activity ", delay);
           continue;
         }
 
@@ -258,7 +249,6 @@ module CheckpointMsg {
         if idleStart == 0 {
           // The server is not idle. Do not checkpoint now.
           delay = minRequestedDelay;
-          ss("server not idle");
           continue;
         }
 
@@ -266,7 +256,6 @@ module CheckpointMsg {
           // There has been no action on the server since we last checkpointed.
           try! cpLogger.debug(M(), R(), L(), "no action since last checkpoint");
           delay = minRequestedDelay;
-          ss("no action since last checkpoint");
           continue;
         }
 
@@ -275,12 +264,10 @@ module CheckpointMsg {
           // The server has not been idle long enough. Check back later.
           try! cpLogger.debug(M(), R(), L(), "the server has not been idle for long enough");
           delay = minRequestedDelay - idleTime;
-          ss("not idle for long enough ", delay);
           continue;
         }
 
         const ckptReason = needToCheckpoint(idleTime, idleStart, idleStartForLastMemCheck);
-        try! ss("ckptReason=%s  ISFLMC %6.2dr".format(ckptReason, idleStartForLastMemCheck));
         if ! ckptReason.isEmpty() {
           // Save a checkpoint.
           const ref basePath = checkpointPath;
@@ -296,7 +283,6 @@ module CheckpointMsg {
 
           // Fulfill all waiting periods before a next checkpoint.
           delay = maxRequestedDelay;
-          try! ss("ISFLC %6.2dr  delay %i".format(idleStartForLastCheckpoint, delay));
           continue;
         }
 
@@ -314,7 +300,7 @@ module CheckpointMsg {
       return "server was idle for over " + checkpointIdleTime:string + " seconds";
 
     if checkpointMemPctDelay > 0 && idleTime >= checkpointMemPctDelay &&
-        // no need to check if no action since we last checked
+        // no need to check if no server action since we last checked
         idleStart > idleStartForLastMemCheck {
       idleStartForLastMemCheck = idleStart;
       // check whether memory use exceeds checkpointMemPct

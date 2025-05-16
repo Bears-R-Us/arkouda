@@ -153,6 +153,7 @@ def delete_directory(dir: str) -> None:
         except OSError as e:
             print("Error: %s - %s." % (e.filename, e.strerror))
 
+
 def directory_exists(dir: str) -> bool:
     """
     Return True if the directory exists.
@@ -161,5 +162,6 @@ def directory_exists(dir: str) -> bool:
     ----------
     dir : str
         The path to the directory
+
     """
     return isdir(dir)
