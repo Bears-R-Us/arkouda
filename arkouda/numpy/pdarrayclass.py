@@ -5,7 +5,7 @@ import json
 from functools import reduce
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast, overload
 
 import numpy as np
 from typeguard import typechecked
@@ -41,11 +41,33 @@ if TYPE_CHECKING:
     #   These are dummy functions that are used only for type checking.
     #   They communicate to mypy the expected input and output types,
     #   in cases where the function is generated at runtime.
+
+    # aliases for readability
+    Axis = Union[int_scalars, Tuple[int_scalars, ...]]
+
+    # docstr-coverage:excused `overload-only, docs live on impl`
+    @overload
     def numeric_reduce(
         pda: pdarray,
-        axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None,
+        *,
+        axis: None = ...,
+        keepdims: bool = ...,
+    ) -> numeric_scalars: ...
+
+    # docstr-coverage:excused `overload-only, docs live on impl`
+    @overload
+    def numeric_reduce(
+        pda: pdarray,
+        *,
+        axis: Axis,
+        keepdims: bool = ...,
+    ) -> pdarray: ...
+
+    def numeric_reduce(
+        pda: pdarray,
+        axis: Optional[Axis] = None,
         keepdims: bool = False,
-    ) -> Union[numpy_scalars, pdarray]:
+    ) -> Union[numeric_scalars, pdarray]:
         pass
 
     sum = numeric_reduce
@@ -53,25 +75,64 @@ if TYPE_CHECKING:
     max = numeric_reduce
     min = numeric_reduce
 
+    # ----- boolean_reduce overloads -----
+    # docstr-coverage:excused `overload-only, docs live on impl`
+    @overload
+    def boolean_reduce(
+        pda: pdarray,
+        *,
+        axis: None = ...,
+        keepdims: bool = ...,
+    ) -> bool_scalars: ...
+
+    # docstr-coverage:excused `overload-only, docs live on impl`
+    @overload
+    def boolean_reduce(
+        pda: pdarray,
+        *,
+        axis: Axis,
+        keepdims: bool = ...,
+    ) -> pdarray: ...
+
     def boolean_reduce(
         pda,
-        axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None,
+        axis: Optional[Axis] = None,
         keepdims: bool = False,
     ) -> Union[bool_scalars, pdarray]:
         pass
 
+    # aliases
     is_sorted = boolean_reduce
     is_locally_sorted = boolean_reduce
     all = boolean_reduce
     any = boolean_reduce
 
+    # ----- index_reduce overloads -----
+    # docstr-coverage:excused `overload-only, docs live on impl`
+    @overload
     def index_reduce(
         pda: pdarray,
-        axis: Optional[Union[int_scalars, None]] = None,
-        keepdims: bool = False,
-    ) -> Union[akint64, akuint64, pdarray]:
-        pass
+        *,
+        axis: None = ...,
+        keepdims: bool = ...,
+    ) -> Union[akint64, akuint64]: ...
 
+    # docstr-coverage:excused `overload-only, docs live on impl`
+    @overload
+    def index_reduce(
+        pda: pdarray,
+        *,
+        axis: Axis,
+        keepdims: bool = ...,
+    ) -> pdarray: ...
+
+    def index_reduce(
+        pda: pdarray,
+        axis: Optional[Axis] = None,
+        keepdims: bool = False,
+    ) -> Union[akint64, akuint64, pdarray]: ...
+
+    # aliases
     argmax = index_reduce
     argmin = index_reduce
 
@@ -357,8 +418,8 @@ class pdarray:
     ----------
     name : str
         The server-side identifier for the array
-    dtype : dtype
-        The element type of the array
+    dtype : type
+        The element dtype of the array
     size : int_scalars
         The number of elements in the array
     ndim : int_scalars
@@ -368,6 +429,15 @@ class pdarray:
     itemsize : int_scalars
         The size in bytes of each element
     """
+
+    from arkouda.dtypes import DType
+
+    name: str
+    dtype: np.dtype
+    size: int_scalars
+    ndim: int_scalars
+    _shape: Tuple[int, ...]
+    itemsize: int_scalars
 
     BinOps = frozenset(
         [
@@ -401,7 +471,7 @@ class pdarray:
     def __init__(
         self,
         name: str,
-        mydtype: Union[np.dtype, str],
+        mydtype: np.dtype,
         size: int_scalars,
         ndim: int_scalars,
         shape: Tuple[int, ...],
@@ -1554,7 +1624,7 @@ class pdarray:
         self,
         axis: Optional[Union[int, Tuple[int, ...]]] = None,
         keepdims: bool = False,
-    ) -> Union[numpy_scalars, pdarray]:
+    ) -> Union[numeric_scalars, pdarray]:
         """
         Return sum of array elements along the given axis.
 
@@ -1568,8 +1638,8 @@ class pdarray:
 
         Returns
         -------
-        numpy_scalar or pdarray
-            numpy_scalar if axis is omitted, in which case operation is done over entire array
+        numeric_scalars or pdarray
+            numeric_scalars if axis is omitted, in which case operation is done over entire array
             pdarray if axis is supplied, in which case the operation is done along that axis
 
         Raises
@@ -1600,7 +1670,7 @@ class pdarray:
         self,
         axis: Optional[Union[int, Tuple[int, ...]]] = None,
         keepdims: bool = False,
-    ) -> Union[numpy_scalars, pdarray]:
+    ) -> Union[numeric_scalars, pdarray]:
         """
         Return prod of array elements along the given axis.
 
@@ -1614,8 +1684,8 @@ class pdarray:
 
         Returns
         -------
-        numpy_scalar or pdarray
-            numpy_scalar if axis is omitted, in which case operation is done over entire array
+        numeric_scalars or pdarray
+            numeric_scalars if axis is omitted, in which case operation is done over entire array
             pdarray if axis is supplied, in which case the operation is done along that axis
 
         Raises
@@ -1646,7 +1716,7 @@ class pdarray:
         self,
         axis: Optional[Union[int, Tuple[int, ...]]] = None,
         keepdims: bool = False,
-    ) -> Union[numpy_scalars, pdarray]:
+    ) -> Union[numeric_scalars, pdarray]:
         """
         Return min of array elements along the given axis.
 
@@ -1660,8 +1730,8 @@ class pdarray:
 
         Returns
         -------
-        numpy_scalar or pdarray
-            numpy_scalar if axis is omitted, in which case operation is done over entire array
+        numeric_scalar or pdarray
+            numeric_scalar if axis is omitted, in which case operation is done over entire array
             pdarray if axis is supplied, in which case the operation is done along that axis
 
         Raises
@@ -1692,7 +1762,7 @@ class pdarray:
         self,
         axis: Optional[Union[int, Tuple[int, ...]]] = None,
         keepdims: bool = False,
-    ) -> Union[numpy_scalars, pdarray]:
+    ) -> Union[numeric_scalars, pdarray]:
         """
         Return max of array elements along the given axis.
 
@@ -1706,8 +1776,8 @@ class pdarray:
 
         Returns
         -------
-        numpy_scalar or pdarray
-            numpy_scalar if axis is omitted, in which case operation is done over entire array
+        numeric_scalar or pdarray
+            numeric_scalar if axis is omitted, in which case operation is done over entire array
             pdarray if axis is supplied, in which case the operation is done along that axis
 
         Raises
@@ -2864,7 +2934,7 @@ def _make_reduction_func(
     op,
     function_descriptor="Return reduction of a pdarray by an operation along an axis.",
     return_descriptor="",
-    return_dtype="numpy_scalars",
+    return_dtype="numeric_scalars",
 ):
     if op not in SUPPORTED_REDUCTION_OPS:
         raise ValueError(f"value {op} not supported by _make_reduction_func.")
@@ -2874,7 +2944,7 @@ def _make_reduction_func(
         pda: pdarray,
         axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None,
         keepdims: bool = False,
-    ) -> Union[numpy_scalars, pdarray]:
+    ) -> Union[numeric_scalars, pdarray]:
         return _common_reduction(op, pda, axis, keepdims=keepdims)
 
     op_func.__doc__ = f"""
@@ -2978,7 +3048,7 @@ def _common_reduction(
     pda: pdarray,
     axis: Optional[Union[int_scalars, Tuple[int_scalars, ...], None]] = None,
     keepdims: bool = False,
-) -> Union[numpy_scalars, pdarray]:
+) -> Union[numeric_scalars, pdarray]:
     """
     Return reduction of a pdarray by an operation along an axis.
 
@@ -2996,7 +3066,7 @@ def _common_reduction(
 
     Returns
     -------
-    numpy_scalars, pdarray
+    numeric_scalars, pdarray
 
     Raises
     ------
@@ -3171,7 +3241,7 @@ setattr(
         function_descriptor="Return the product of all elements in the array. "
         "Return value is always a np.float64 or np.int64",
         return_descriptor="The product calculated from the pda.",
-        return_dtype="numpy_scalars",
+        return_dtype="numeric_scalars",
     ),
 )
 
@@ -3182,7 +3252,7 @@ setattr(
         "min",
         function_descriptor="Return the minimum value of the array.",
         return_descriptor="The min calculated from the pda.",
-        return_dtype="numpy_scalars",
+        return_dtype="numeric_scalars",
     ),
 )
 
@@ -3194,7 +3264,7 @@ setattr(
         "max",
         function_descriptor="Return the maximum value of the array.",
         return_descriptor="The max calculated from the pda.",
-        return_dtype="numpy_scalars",
+        return_dtype="numeric_scalars",
     ),
 )
 
@@ -3288,7 +3358,7 @@ def _compute_dot_result_shape(s1, s2):
 def dot(
     pda1: Union[np.int64, np.float64, np.uint64, pdarray],
     pda2: Union[np.int64, np.float64, np.uint64, pdarray],
-) -> Union[numpy_scalars, pdarray]:
+) -> Union[numeric_scalars, pdarray]:
     """
     Computes dot product of two arrays.
 
@@ -3318,7 +3388,7 @@ def dot(
 
     Returns
     -------
-    Union[numpy_scalars, pdarray]
+    Union[numeric_scalars, pdarray]
         as described above
 
     Examples

@@ -3,20 +3,13 @@ from __future__ import annotations
 import itertools
 import json
 from collections import defaultdict
-from typing import (
-    DefaultDict,
-    Dict,
-    List,
-    Mapping,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-    cast,
-)
+from typing import DefaultDict, Dict, List, Mapping, Optional, Sequence, Tuple, Union
+from typing import cast
+from typing import cast as type_cast
 
 import numpy as np
 from pandas import Categorical as pd_Categorical
+from pandas import Index as pd_Index
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
@@ -64,23 +57,31 @@ class Categorical:
         The category indices of the values or -1 for N/A
     permutation : pdarray, int64
         The permutation that groups the values in the same order as categories
-    segments : pdarray, int64
+    segments : Union[pdarray, None]
         When values are grouped, the starting offset of each group
-    size : Union[int,np.int64]
+    size : int_scalars
         The number of items in the array
-    nlevels : Union[int,np.int64]
+    nlevels : int_scalars
         The number of distinct categories
-    ndim : Union[int,np.int64]
+    ndim : int_scalars
         The rank of the array (currently only rank 1 arrays supported)
     shape : tuple
         The sizes of each dimension of the array
 
     """
 
+    categories: Strings
+    codes: pdarray
+    permutation: Union[pdarray, None]
+    segments: Union[pdarray, None]
+    size: int_scalars
+    nlevels: int_scalars
+    ndim: int_scalars
+    shape: tuple
+
     BinOps = frozenset(["==", "!="])
     RegisterablePieces = frozenset(["categories", "codes", "permutation", "segments", "_akNAcode"])
     RequiredPieces = frozenset(["categories", "codes", "_akNAcode"])
-    permutation: Union[pdarray, None] = None
     segments = None
     objType = "Categorical"
     dtype = akdtype(str_)  # this is being set for now because Categoricals only supported on Strings
@@ -111,8 +112,8 @@ class Categorical:
         else:
             # Typical initialization, called with values
             if isinstance(values, pd_Categorical):
-                self.categories = array(values.categories)
-                self.codes = array(values.codes.astype("int64"))
+                self.categories = type_cast(Strings, array(values.categories))
+                self.codes = type_cast(pdarray, array(values.codes.astype("int64")))
                 self._categories_used = self.categories[unique(self.codes)]
                 self.permutation = None
                 self.segments = None
@@ -124,6 +125,8 @@ class Categorical:
                 self.segments = values.segments
             elif isinstance(values, Strings):
                 g = GroupBy(values)
+                if not isinstance(g.unique_keys, Strings):
+                    raise TypeError(f"expected Strings, got {type(g.unique_keys).__name__!r}")
                 self.categories = g.unique_keys
                 self.codes = g.broadcast(arange(self.categories.size), permute=True)
                 self.permutation = cast(pdarray, g.permutation)
@@ -138,7 +141,7 @@ class Categorical:
         # Otherwise, the NA value is set to a string
         if "_akNAcode" in kwargs and kwargs["_akNAcode"] is not None:
             self._akNAcode = kwargs["_akNAcode"]
-            self._NAcode = int(self._akNAcode[0])
+            self._NAcode: int_scalars = int(self._akNAcode[0])
             self.NAvalue = self.categories[self._NAcode]
         else:
             self.NAvalue = kwargs.get("NAvalue", "N/A")
@@ -425,7 +428,8 @@ class Categorical:
     def to_pandas(self) -> pd_Categorical:
         """Return the equivalent Pandas Categorical."""
         return pd_Categorical.from_codes(
-            codes=self.codes.to_ndarray(), categories=self.categories.to_ndarray()
+            codes=type_cast(List[int], self.codes.to_list()),
+            categories=pd_Index(self.categories.to_ndarray()),
         )
 
     def to_list(self) -> List[str]:

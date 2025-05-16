@@ -12,7 +12,7 @@ from typeguard import typechecked
 import arkouda.numpy.dtypes
 from arkouda.client import generic_msg
 from arkouda.infoclass import information, list_symbol_table
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import ArkoudaLogger, getArkoudaLogger
 from arkouda.match import Match, MatchType
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
@@ -53,8 +53,8 @@ class Strings:
         The rank of the array (currently only rank 1 arrays supported)
     shape : tuple
         The sizes of each dimension of the array
-    dtype : dtype
-        The dtype is ak.str
+    dtype : type
+        The dtype is ak.str_
     logger : ArkoudaLogger
         Used for all logging operations
 
@@ -65,10 +65,15 @@ class Strings:
     raw bytes of all strings, delimited by nulls.
     """
 
+    entry: pdarray
+    size: int_scalars
+    nbytes: int_scalars
+    ndim: int_scalars
+    shape: Tuple[int]
+    logger: ArkoudaLogger
+
     BinOps = frozenset(["==", "!="])
     objType = "Strings"
-    size: int_scalars
-    shape: Tuple[int]
 
     @staticmethod
     def from_return_msg(rep_msg: str) -> Strings:
