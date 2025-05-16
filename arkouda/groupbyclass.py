@@ -241,13 +241,11 @@ class GroupBy:
     ----------
     nkeys : int
         The number of key arrays (columns)
-    size : int
-        The length of the input array(s), i.e. number of rows
     permutation : pdarray
         The permutation that sorts the keys array(s) by value (row)
-    unique_keys : (list of) pdarray, Strings, or Categorical
+    unique_keys : pdarray, Strings, or Categorical
         The unique values of the keys array(s), in grouped order
-    ngroups : int
+    ngroups : int_scalars
         The length of the unique_keys array(s), i.e. number of groups
     segments : pdarray
         The start index of each group in the grouped array(s)
@@ -281,10 +279,9 @@ class GroupBy:
     """
 
     nkeys: int
-    size: int
     permutation: pdarray
-    unique_keys: List[Union[pdarray, Strings, Categorical]]
-    ngroups: int
+    unique_keys: Union[pdarray, Strings, Categorical, Tuple[Union[pdarray, Strings, Categorical], ...]]
+    ngroups: int_scalars
     segments: pdarray
     logger: ArkoudaLogger
     dropna: bool
@@ -1364,14 +1361,18 @@ class GroupBy:
         g2 = GroupBy(g.unique_keys[0], assume_sorted=False)
         # Count number of values per key
         keyorder, nuniq = g2.size()
+
+        from arkouda.categorical import Categorical
+
+        if not isinstance(keyorder, (pdarray, Strings, Categorical)):
+            raise TypeError(
+                f"groupby failed to produce keyorder of the correct type: "
+                f"{type(keyorder)} is not pdarray, Strings, or Categorical."
+            )
+
         # The last GroupBy *should* result in sorted key indices, but in case it
         # doesn't, we need to permute the answer to match the original key order
-        if not is_sorted(keyorder):
-            if not isinstance(keyorder, (pdarray, Strings, Categorical)):
-                raise TypeError(
-                    f"groupby failed to produce keyorder of the correct type: "
-                    f"{type(keyorder)} is not pdarray, Strings, or Categorical."
-                )
+        if isinstance(keyorder, pdarray) and not is_sorted(keyorder):
             perm = argsort(keyorder)
             nuniq = nuniq[perm]
         # Re-join unique counts with original keys (sorting guarantees same order)
@@ -1990,7 +1991,7 @@ class GroupBy:
         # GroupBy should be stable with a single key array, but
         # if for some reason these unique keys are not in original
         # order, then permute them accordingly
-        if not (g2.unique_keys == arange(self.ngroups)).all():
+        if not (isinstance(g2.unique_keys, pdarray) and (g2.unique_keys == arange(self.ngroups)).all()):
             perm = argsort(cast(pdarray, g2.unique_keys))
             reorder = True
         else:

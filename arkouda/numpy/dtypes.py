@@ -155,7 +155,7 @@ NUMBER_FORMAT_STRINGS = {
 
 
 def _datatype_check(the_dtype, allowed_list, name):
-    if not (the_dtype in allowed_list):
+    if the_dtype not in allowed_list:
         raise TypeError(f"{name} only implements types {allowed_list}")
 
 

@@ -302,11 +302,14 @@ def inner_join(
         keep12 = keep
     else:
         if whereargs is not None:
-            if not is_sequence:
+            right = whereargs[1]
+
+            left = whereargs[0]
+            if not isinstance(right, Sequence) and not isinstance(left, Sequence):
                 # Gather right whereargs
-                rightWhere = whereargs[1][byRight.permutation][ranges]
+                rightWhere = right[byRight.permutation][ranges]
                 # Expand left whereargs
-                keep_where = whereargs[0][keep]
+                keep_where = left[keep]
                 keep_where = keep_where.codes if isinstance(keep_where, Categorical) else keep_where
                 leftWhere = broadcast(fullSegs, keep_where, ranges.size)
             else:

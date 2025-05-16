@@ -53,8 +53,8 @@ class Strings:
         The rank of the array (currently only rank 1 arrays supported)
     shape : tuple
         The sizes of each dimension of the array
-    dtype : dtype
-        The dtype is ak.str
+    dtype : ak.str_
+        The dtype is ak.str_
     logger : ArkoudaLogger
         Used for all logging operations
 
@@ -69,14 +69,11 @@ class Strings:
     size: int_scalars
     nbytes: int_scalars
     ndim: int_scalars
-    shape: Tuple
-    dtype: dtype
+    shape: Tuple[int]
     logger: ArkoudaLogger
 
     BinOps = frozenset(["==", "!="])
     objType = "Strings"
-    size: int_scalars
-    shape: Tuple[int]
 
     @staticmethod
     def from_return_msg(rep_msg: str) -> Strings:

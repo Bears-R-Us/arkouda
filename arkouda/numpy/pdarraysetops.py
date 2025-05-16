@@ -207,6 +207,9 @@ def in1d(
     from arkouda.alignment import NonUniqueError
     from arkouda.categorical import Categorical as Categorical_
 
+    ua: groupable
+    ub: groupable
+
     if isinstance(A, (pdarray, Strings, Categorical_)):
         if isinstance(A, (Strings, Categorical_)) and not isinstance(B, (Strings, Categorical_)):
             raise TypeError("Arguments must have compatible types, Strings/Categorical")
@@ -648,6 +651,9 @@ def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Unio
     """
     from arkouda.categorical import Categorical as Categorical_
 
+    ua: groupable
+    ub: groupable
+
     if (
         isinstance(A, (pdarray, Strings, Categorical_))
         and isinstance(B, (pdarray, Strings, Categorical_))
@@ -761,6 +767,9 @@ def setdiff1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[
     """
     from arkouda.categorical import Categorical as Categorical_
 
+    ua: groupable
+    ub: groupable
+
     if (
         isinstance(A, (pdarray, Strings, Categorical_))
         and isinstance(B, (pdarray, Strings, Categorical_))
@@ -864,6 +873,9 @@ def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[p
     [array([2 2 4 4 5 5]), array([2 5 2 4 4 5]), array([2 4 5 4 2 5])]
     """
     from arkouda.categorical import Categorical as Categorical_
+
+    ua: groupable
+    ub: groupable
 
     if (
         isinstance(A, (pdarray, Strings, Categorical_))
