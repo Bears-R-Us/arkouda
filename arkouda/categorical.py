@@ -44,8 +44,9 @@ __all__ = ["Categorical"]
 
 class Categorical:
     """
-    Represents an array of values belonging to named categories. Converting a
-    Strings object to Categorical often saves memory and speeds up operations,
+    Represents an array of values belonging to named categories.
+
+    Converting a Strings object to Categorical often saves memory and speeds up operations,
     especially if there are many repeated values, at the cost of some one-time
     work in initialization.
 
@@ -201,7 +202,9 @@ class Categorical:
         cls, codes: pdarray, categories: Strings, permutation=None, segments=None, **kwargs
     ) -> Categorical:
         """
-        Make a Categorical from codes and categories arrays. If codes and
+        Make a Categorical from codes and categories arrays.
+
+        If codes and
         categories have already been pre-computed, this constructor saves
         time. If not, please use the normal constructor.
 
@@ -243,7 +246,7 @@ class Categorical:
     @classmethod
     def from_return_msg(cls, rep_msg) -> Categorical:
         """
-        Create categorical from return message from server
+        Create categorical from return message from server.
 
         Notes
         -----
@@ -391,6 +394,8 @@ class Categorical:
 
     def to_ndarray(self) -> np.ndarray:
         """
+        Convert the array to a np.ndarray.
+
         Convert the array to a np.ndarray, transferring array data from
         the arkouda server to Python. This conversion discards category
         information and produces an ndarray of strings. If the arrays
@@ -430,6 +435,8 @@ class Categorical:
 
     def to_list(self) -> List[str]:
         """
+        Convert the Categorical to a list.
+
         Convert the Categorical to a list, transferring data from
         the arkouda server to Python. This conversion discards category
         information and produces a list of strings. If the arrays
@@ -507,8 +514,10 @@ class Categorical:
     @typechecked
     def _binop(self, other: Union[Categorical, str_scalars], op: str_scalars) -> pdarray:
         """
-        Execute the requested binop on this Categorical instance and returns
-        the results within a pdarray object.
+        Execute the binop.
+
+        Execute the requested binop on this Categorical instance
+        and returns the results within a pdarray object.
 
         Parameters
         ----------
@@ -559,8 +568,10 @@ class Categorical:
     @typechecked
     def _r_binop(self, other: Union[Categorical, str_scalars], op: str_scalars) -> pdarray:
         """
-        Execute the requested reverse binop on this Categorical instance and
-        returns the results within a pdarray object.
+        Execute the reverse binop.
+
+        Execute the requested reverse binop on this Categorical instance
+        and return the results within a pdarray object.
 
         Parameters
         ----------
@@ -606,8 +617,9 @@ class Categorical:
 
     def reset_categories(self) -> Categorical:
         """
-        Recompute the category labels, discarding any unused labels. This
-        method is often useful after slicing or indexing a Categorical array,
+        Recompute the category labels, discarding any unused labels.
+
+        This method is often useful after slicing or indexing a Categorical array,
         when the resulting array only contains a subset of the original
         categories. In this case, eliminating unused categories can speed up
         other operations.
@@ -754,8 +766,7 @@ class Categorical:
     @typechecked
     def in1d(self, test: Union[Strings, Categorical]) -> pdarray:
         """
-        Test whether each element of the Categorical object is
-        also present in the test Strings or Categorical object.
+        Whether each element is also present in the test Strings or Categorical object.
 
         Returns a boolean array the same length as `self` that is True
         where an element of `self` is in `test` and False otherwise.
@@ -844,8 +855,9 @@ class Categorical:
 
     def group(self) -> pdarray:
         """
-        Return the permutation that groups the array, placing equivalent
-        categories together. All instances of the same category are guaranteed
+        Return the permutation that groups the array, placing equivalent categories together.
+
+        All instances of the same category are guaranteed
         to lie in one contiguous block of the permuted array, but the blocks
         are not necessarily ordered.
 
@@ -901,6 +913,8 @@ class Categorical:
     @typechecked
     def concatenate(self, others: Sequence[Categorical], ordered: bool = True) -> Categorical:
         """
+        Merge this Categorical with other Categorical objects in the array.
+
         Merge this Categorical with other Categorical objects in the array,
         concatenating the arrays and synchronizing the categories.
 
@@ -960,7 +974,9 @@ class Categorical:
         file_type="distribute",
     ):
         """
-        Save the Categorical to HDF5. The result is a collection of HDF5 files, one file
+        Save the Categorical to HDF5.
+
+        The result is a collection of HDF5 files, one file
         per locale of the arkouda server, where each filename starts with prefix_path.
 
         Parameters
@@ -1005,8 +1021,9 @@ class Categorical:
 
     def update_hdf(self, prefix_path, dataset="categorical_array", repack=True):
         """
-        Overwrite the dataset with the name provided with this Categorical object. If
-        the dataset does not exist it is added.
+        Overwrite the dataset with the name provided with this Categorical object.
+
+        If the dataset does not exist it is added.
 
         Parameters
         ----------
@@ -1211,6 +1228,8 @@ class Categorical:
 
     def unregister(self) -> None:
         """
+        Unregister this Categorical object.
+
         Unregister this Categorical object in the arkouda server which was previously
         registered using register() and/or attached to using attach()
 
@@ -1239,8 +1258,7 @@ class Categorical:
 
     def is_registered(self) -> np.bool_:
         """
-         Return True iff the object is contained in the registry or is a component of a
-         registered object.
+        Return True iff the object is contained in the registry or is a component of a registered object.
 
         Returns
         -------
@@ -1278,7 +1296,7 @@ class Categorical:
 
     def _get_components_dict(self) -> Dict:
         """
-        Return a dictionary with all required or non-None components of self
+        Return a dictionary with all required or non-None components of self.
 
         Required Categorical components (Codes and Categories) are always included in
         returned components_dict
@@ -1321,7 +1339,7 @@ class Categorical:
 
     def info(self) -> str:
         """
-        Return a JSON formatted string containing information about all components of self
+        Return a JSON formatted string containing information about all components of self.
 
         Parameters
         ----------
@@ -1337,7 +1355,7 @@ class Categorical:
 
     def pretty_print_info(self) -> None:
         """
-        Print information about all components of self in a human readable format
+        Print information about all components of self in a human-readable format.
 
         Parameters
         ----------
@@ -1356,8 +1374,11 @@ class Categorical:
         d: Mapping[str, Union[pdarray, Strings]],
     ) -> Tuple[List[str], Dict[str, Categorical]]:
         """
+        Parse mapping of pdarray and Stings objects from hdf5 files.
+
         Parse mapping of pdarray and Stings objects
         in order to reconstitute Categoricals objects from hdf5 files.
+
         This function should be used in conjunction with the load_all function which reads hdf5 files
         and reconstitutes Categorical objects.
         Categorical objects use a naming convention and HDF5 structure so they can be identified and

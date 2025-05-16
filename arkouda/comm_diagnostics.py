@@ -88,8 +88,9 @@ def reset_comm_diagnostics():
 
 def print_comm_diagnostics_table(print_empty_columns=False):
     """
-    Print the current communication counts in a markdown table
-    using a row per locale and a column per operation.
+    Print the current communication counts in a markdown table.
+
+    Uses a row per locale and a column per operation.
     By default, operations for which all locales have a count of zero are not displayed in the table,
     though an argument can be used to reverse that behavior.
 
@@ -362,6 +363,7 @@ def get_comm_diagnostics_execute_on_nb():
 def get_comm_diagnostics_cache_get_hits():
     """
     Return number of gets that were handled by the cache.
+
     Gets counted here did not require the cache to communicate in order to return the result.
 
     Returns
@@ -380,7 +382,7 @@ def get_comm_diagnostics_cache_get_hits():
 
 def get_comm_diagnostics_cache_get_misses():
     """
-    Return number of gets that were not handled by the cache
+    Return number of gets that were not handled by the cache.
 
     Returns
     -------
@@ -435,6 +437,7 @@ def get_comm_diagnostics_cache_put_misses():
 def get_comm_diagnostics_cache_num_prefetches():
     """
     Return number of prefetches issued to the remote cache at the granularity of cache pages.
+
     This counter is specifically triggered via calls to chpl_comm_remote_prefetch
 
     Returns
@@ -471,6 +474,8 @@ def get_comm_diagnostics_cache_num_page_readaheads():
 
 def get_comm_diagnostics_cache_prefetch_unused():
     """
+    Return number of cache pages that were prefetched but unused.
+
     Return number of cache pages that were prefetched but evicted from the cache before being accessed
     (i.e., the prefetches were too early).
 
@@ -490,8 +495,9 @@ def get_comm_diagnostics_cache_prefetch_unused():
 
 def get_comm_diagnostics_cache_prefetch_waited():
     """
-    Return number of cache pages that were prefetched
-    but did not arrive in the cache before being accessed
+    Return number of cache pages that were prefetched but waited.
+
+    Number of cache pages that were prefetched but did not arrive in the cache before being accessed
     (i.e., the prefetches were too late).
 
     Returns
@@ -510,7 +516,9 @@ def get_comm_diagnostics_cache_prefetch_waited():
 
 def get_comm_diagnostics_cache_readahead_unused():
     """
-    Return number of cache pages that were read ahead but evicted from the cache before being accessed
+    Return number of cache pages that were read ahead but unused.
+
+    The number of cache pages that were read ahead but evicted from the cache before being accessed
     (i.e., the readaheads were too early).
 
     Returns
@@ -529,6 +537,8 @@ def get_comm_diagnostics_cache_readahead_unused():
 
 def get_comm_diagnostics_cache_readahead_waited():
     """
+    Return number of cache pages that were read ahead but waited.
+
     Return number of cache pages that were read ahead
     but did not arrive in the cache before being accessed
     (i.e., the readaheads were too late).

@@ -34,7 +34,7 @@ class ParameterObject:
     @typechecked
     def _build_pdarray_param(key: str, val) -> ParameterObject:
         """
-        Create a ParameterObject from a pdarray value
+        Create a ParameterObject from a pdarray value.
 
         Parameters
         ----------
@@ -54,7 +54,7 @@ class ParameterObject:
     @typechecked
     def _build_sparray_param(key: str, val) -> ParameterObject:
         """
-        Create a ParameterObject from a sparray value
+        Create a ParameterObject from a sparray value.
 
         Parameters
         ----------
@@ -74,7 +74,7 @@ class ParameterObject:
     @typechecked
     def _build_strings_param(key: str, val) -> ParameterObject:
         """
-        Create a ParameterObject from a Strings value
+        Create a ParameterObject from a Strings value.
 
         Parameters
         ----------
@@ -96,7 +96,7 @@ class ParameterObject:
     @typechecked
     def _build_segarray_param(key: str, val) -> ParameterObject:
         """
-        Create a ParameterObject from a SegArray value
+        Create a ParameterObject from a SegArray value.
 
         Parameters
         ----------
@@ -135,7 +135,7 @@ class ParameterObject:
     @typechecked
     def _build_tuple_param(key: str, val: tuple) -> ParameterObject:
         """
-        Create a ParameterObject from a tuple
+        Create a ParameterObject from a tuple.
 
         Parameters
         ----------
@@ -155,7 +155,7 @@ class ParameterObject:
     @typechecked
     def _build_list_param(key: str, val: list) -> ParameterObject:
         """
-        Create a ParameterObject from a list
+        Create a ParameterObject from a list.
 
         Parameters
         ----------
@@ -212,7 +212,7 @@ class ParameterObject:
     @typechecked
     def _build_gen_param(key: str, val) -> ParameterObject:
         """
-        Create a ParameterObject from a single value
+        Create a ParameterObject from a single value.
 
         Parameters
         ----------
@@ -315,15 +315,17 @@ class MessageFormat(Enum):
 
     def __str__(self) -> str:
         """
-        Overridden method returns value, which is useful in outputting
-        a MessageFormat object to JSON.
+        Return value.
+
+        Overridden method returns value, which is useful in outputting a MessageFormat object to JSON.
         """
         return self.value
 
     def __repr__(self) -> str:
         """
-        Overridden method returns value, which is useful in outputting
-        a MessageFormat object to JSON.
+        Return value.
+
+        Overridden method returns value, which is useful in outputting a MessageFormat object to JSON.
         """
         return self.value
 
@@ -340,17 +342,11 @@ class MessageType(Enum):
     ERROR = "ERROR"
 
     def __str__(self) -> str:
-        """
-        Overridden method returns value, which is useful in outputting
-        a MessageType object to JSON.
-        """
+        """Return value, which is useful in outputting a MessageType object to JSON (override)."""
         return self.value
 
     def __repr__(self) -> str:
-        """
-        Overridden method returns value, which is useful in outputting
-        a MessageType object to JSON.
-        """
+        """Return value, which is useful in outputting a MessageType object to JSON (override)."""
         return self.value
 
 
@@ -381,8 +377,10 @@ class RequestMessage:
         size: int = -1,
     ) -> None:
         """
-        Overridden __init__ method sets instance attributes to
-        default values if the corresponding init params are missing.
+        Initiate request message.
+
+        Overridden __init__ method sets instance attributes to default values
+        if the corresponding init params are missing.
 
         Parameters
         ----------
@@ -414,6 +412,8 @@ class RequestMessage:
 
     def asdict(self) -> Dict:
         """
+        Return a dictionary encapsulating ReplyMessage state.
+
         Overridden asdict implementation sets the values of non-required
         fields to an empty space (for Chapel JSON processing) and invokes
         str() on the format instance attribute.
@@ -455,8 +455,10 @@ class ReplyMessage:
     @staticmethod
     def fromdict(values: Dict) -> ReplyMessage:
         """
-        Generate a ReplyMessage from a dict encapsulating the data and
-        metadata from a reply returned by the Arkouda server.
+        Generate a ReplyMessage from a dictionary
+
+        Generate a ReplyMessage from a dict encapsulating the data
+        and metadata from a reply from the Arkouda server.
 
         Parameters
         ----------

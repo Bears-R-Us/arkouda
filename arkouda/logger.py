@@ -75,8 +75,7 @@ class ArkoudaLogger(Logger):
         logFormat: Optional[str] = "[%(name)s] Line %(lineno)d %(levelname)s: %(message)s",
     ) -> None:
         """
-        Initialize the ArkoudaLogger with the name, level, logFormat, and
-        handlers parameters.
+        Initialize the ArkoudaLogger with the name, level, logFormat, and handlers parameters.
 
         Parameters
         ----------
@@ -137,8 +136,7 @@ class ArkoudaLogger(Logger):
     @typechecked
     def changeLogLevel(self, level: LogLevel, handlerNames: Optional[List[str]] = None) -> None:
         """
-        Dynamically changes the logging level for ArkoudaLogger and 1..n
-        of configured Handlers.
+        Dynamically changes the logging level for ArkoudaLogger and 1..n of configured Handlers.
 
         Parameters
         ----------
@@ -178,8 +176,7 @@ class ArkoudaLogger(Logger):
 
     def enableVerbose(self) -> None:
         """
-        Enable verbose output by setting the log level for all handlers
-        to DEBUG.
+        Enable verbose output by setting the log level for all handlers to DEBUG.
 
         Returns
         -------
@@ -191,6 +188,8 @@ class ArkoudaLogger(Logger):
     @typechecked
     def disableVerbose(self, logLevel: LogLevel = LogLevel.INFO) -> None:
         """
+        Disables verbose output.
+
         Disables verbose output by setting the log level for all handlers
         to a level other than DEBUG, with a default of INFO
 
@@ -249,8 +248,7 @@ def getArkoudaLogger(
     logLevel: Optional[LogLevel] = None,
 ) -> ArkoudaLogger:
     """
-    Instantiate an ArkoudaLogger that retrieves the
-    logging level from the ARKOUDA_LOG_LEVEL env variable.
+    Instantiate an ArkoudaLogger that retrieves the logging level from ARKOUDA_LOG_LEVEL env variable.
 
     Parameters
     ----------
@@ -292,6 +290,8 @@ def getArkoudaLogger(
 @typechecked
 def getArkoudaClientLogger(name: str) -> ArkoudaLogger:
     """
+    Instantiate an ArkoudaLogger that retrieves the logging level from ARKOUDA_LOG_LEVEL env variable.
+
     Instantiate an ArkoudaLogger that retrieves the
     logging level from the ARKOUDA_LOG_LEVEL env variable and outputs log
     messages without any formatting to stdout.
@@ -329,6 +329,8 @@ def enableVerbose() -> None:
 @typechecked
 def disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None:
     """
+    Disables verbose logging.
+
     Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
     the log level for each to the logLevel parameter.
 
