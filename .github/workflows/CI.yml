@@ -24,6 +24,33 @@ jobs:
     - name: Run doc-example check
       run: make check-doc-examples
 
+  chpl-lint:
+    runs-on: ubuntu-latest
+    env:
+      CHPL_HOME: /opt/chapel-2.4.0
+    container:
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Set Python version to 3.13
+      run: |
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+    - name: Install dependencies
+      run: |
+        (cd $CHPL_HOME && make chplcheck)
+        update-alternatives --install /usr/bin/chplcheck chplcheck /opt/chapel-2.4.0/tools/chplcheck/chplcheck 1
+    - name: Ensure ignore file exists
+      # .chplcheckignore should live at your repo root
+      run: |
+        if [ ! -f .chplcheckignore ]; then
+          echo "# add paths/globs to ignore, e.g. src/generated/*" > .chplcheckignore
+        fi
+
+    - name: Run chplcheck (respecting .chplcheckignore)
+      run: |
+        make chplcheck
+
   darglint:
     runs-on: ubuntu-latest
     steps:

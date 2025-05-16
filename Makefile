@@ -716,6 +716,10 @@ docstr-coverage:
 	docstr-coverage arkouda --config .docstr.yaml
 
 
+chplcheck:
+	#   Check chapel linter, ignoring files in .chplcheckignore:
+	find src -type f -name '*.chpl'   | grep -v -f .chplcheckignore   | xargs chplcheck --add-rules src/scripts/chplcheck_ak_prefix.py --disable-rule CamelCaseFunctions  
+
 #################
 #### Test.mk ####
 #################
