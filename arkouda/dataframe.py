@@ -2653,7 +2653,7 @@ class DataFrame(UserDict):
         self.update_nrows()
         if self._nrows <= n:
             return self
-        return self[array(random.sample(range(self._nrows), n))]
+        return self[array(random.sample(range(int(self._nrows)), n))]
 
     from arkouda.groupbyclass import GroupBy as GroupBy_class
 

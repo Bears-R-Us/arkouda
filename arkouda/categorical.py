@@ -71,8 +71,8 @@ class Categorical:
     """
 
     categories: Strings
-    codes: pdarray  # Union[pdarray]#, akint64]
-    permutation: Union[pdarray, None]  # Union[pdarray, akint64]
+    codes: pdarray
+    permutation: Union[pdarray, None]
     segments: Union[pdarray, None]
     size: int_scalars
     nlevels: int_scalars

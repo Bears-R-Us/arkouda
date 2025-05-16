@@ -53,7 +53,7 @@ class Strings:
         The rank of the array (currently only rank 1 arrays supported)
     shape : tuple
         The sizes of each dimension of the array
-    dtype : ak.str_
+    dtype : type
         The dtype is ak.str_
     logger : ArkoudaLogger
         Used for all logging operations
