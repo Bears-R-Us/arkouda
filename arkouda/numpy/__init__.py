@@ -1,4 +1,5 @@
 # flake8: noqa
+# isort: skip_file
 from numpy import (  # noqa
     False_,
     ScalarType,

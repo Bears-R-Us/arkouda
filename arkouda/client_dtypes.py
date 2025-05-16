@@ -1,18 +1,23 @@
 from functools import partial
 from ipaddress import ip_address as _ip_address
-from typing import Optional, Union
+from typing import TYPE_CHECKING, TypeVar, Optional, Union
 
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.groupbyclass import GroupBy, broadcast
-from arkouda.numpy import cast as akcast
-from arkouda.numpy import where
+from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.numpy.dtypes import bitType, intTypes, isSupportedInt
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.numpy.strings import Strings
+
+if TYPE_CHECKING:
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import where
+else:
+    akcast = TypeVar("akcast")
+    where = TypeVar("where")
 
 
 def BitVectorizer(width=64, reverse=False):
@@ -683,7 +688,7 @@ class IPv4(pdarray):
         from typing import cast as typecast
 
         from arkouda.client import generic_msg
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return typecast(
             str,
@@ -704,7 +709,7 @@ class IPv4(pdarray):
     def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
         """Override the pdarray implementation so that the special object type will be used."""
         from arkouda.client import generic_msg
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,

@@ -1,3 +1,4 @@
+# isort: skip_file
 from ._generator import Generator, default_rng  # noqa
 from ._legacy import randint, standard_normal, uniform
 

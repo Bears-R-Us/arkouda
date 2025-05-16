@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 import json
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, TypeVar, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -10,9 +10,8 @@ from numpy import array as ndarray
 from numpy import dtype as npdtype
 from typeguard import typechecked
 
-from arkouda.categorical import Categorical
-from arkouda.groupbyclass import GroupBy, unique
-from arkouda.numpy import cast as akcast
+from arkouda.pandas.categorical import Categorical
+from arkouda.pandas.groupbyclass import GroupBy, unique
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -26,7 +25,9 @@ from arkouda.numpy.util import convert_if_categorical, generic_concat, get_callb
 
 if TYPE_CHECKING:
     from arkouda.pandas.series import Series
-
+    from arkouda.numpy import cast as akcast
+else:
+    akcast = TypeVar("akcast")
 
 class Index:
     objType = "Index"
@@ -414,7 +415,7 @@ class Index:
         arkouda.numpy.pdarrayclass.nbytes
         arkouda.index.MultiIndex.memory_usage
         arkouda.pandas.series.Series.memory_usage
-        arkouda.dataframe.DataFrame.memory_usage
+        arkouda.pandas.dataframe.DataFrame.memory_usage
 
         Examples
         --------
@@ -769,9 +770,9 @@ class Index:
         """
         from typing import cast as typecast
 
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         if isinstance(self.values, list):
             raise TypeError("Unable to write Index to hdf when values are a list.")
@@ -854,9 +855,9 @@ class Index:
           file with the new data
 
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,
@@ -1198,7 +1199,7 @@ class MultiIndex(Index):
         arkouda.numpy.pdarrayclass.nbytes
         arkouda.index.Index.memory_usage
         arkouda.pandas.series.Series.memory_usage
-        arkouda.dataframe.DataFrame.memory_usage
+        arkouda.pandas.dataframe.DataFrame.memory_usage
 
         Examples
         --------
@@ -1423,9 +1424,9 @@ class MultiIndex(Index):
         """
         from typing import cast as typecast
 
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         index_data = [
             (
@@ -1500,9 +1501,9 @@ class MultiIndex(Index):
           file with the new data
 
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,

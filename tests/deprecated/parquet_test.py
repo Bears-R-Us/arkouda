@@ -11,7 +11,7 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 from pandas.testing import assert_series_equal
 
-from arkouda import io_util
+from arkouda.pandas import io_util
 
 TYPES = ("int64", "uint64", "bool", "float64", "str")
 COMPRESSIONS = ["snappy", "gzip", "brotli", "zstd", "lz4"]

@@ -8,7 +8,7 @@ from pathlib import Path
 
 from typeguard import typechecked
 
-from arkouda import io_util
+from arkouda.pandas import io_util
 
 username_tokenizer = defaultdict(lambda x: x.split("/"))  # type:ignore
 username_tokenizer["Windows"] = lambda x: x.split("\\")
