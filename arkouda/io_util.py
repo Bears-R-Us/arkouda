@@ -152,3 +152,14 @@ def delete_directory(dir: str) -> None:
             shutil.rmtree(dir)
         except OSError as e:
             print("Error: %s - %s." % (e.filename, e.strerror))
+
+def directory_exists(dir: str) -> bool:
+    """
+    Return True if the directory exists.
+
+    Parameters
+    ----------
+    dir : str
+        The path to the directory
+    """
+    return isdir(dir)
