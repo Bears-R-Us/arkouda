@@ -169,6 +169,7 @@ setup(
             "darglint>=1.8.1",
             "pydoclint[flake8]==0.6.6",
             "pytest-subtests",
+            "numba",
         ],
     },
     # replace original install command with version that also builds

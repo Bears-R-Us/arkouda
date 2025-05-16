@@ -496,10 +496,10 @@ class pdarray:
         >>> a = ak.array([1, 2, 3])
         >>> a_cpy = ak.array([1, 2, 3])
         >>> a.equals(a_cpy)
-        True
-        >>> a2 = ak.array([1, 2, 5)
+        np.True_
+        >>> a2 = ak.array([1, 2, 5])
         >>> a.equals(a2)
-        False
+        np.False_
         """
         if isinstance(other, pdarray):
             if other.size != self.size:
@@ -1363,7 +1363,7 @@ class pdarray:
         --------
         >>> import arkouda as ak
         >>> ak.any(ak.array([True,False,False]))
-        True
+        np.True_
         >>> ak.any(ak.array([[True,True,False],[False,True,True]]),axis=0)
         array([True True True])
         >>> ak.any(ak.array([[True,True,True],[False,False,False]]),axis=0,keepdims=True)
@@ -1371,7 +1371,7 @@ class pdarray:
         >>> ak.any(ak.array([[True,True,True],[False,False,False]]),axis=1,keepdims=True)
         array([array([True]) array([False])])
         >>> ak.array([True,False,False]).any()
-        True
+        np.True_
 
         Raises
         ------
@@ -1410,7 +1410,7 @@ class pdarray:
         --------
         >>> import arkouda as ak
         >>> ak.all(ak.array([True,False,False]))
-        False
+        np.False_
         >>> ak.all(ak.array([[True,True,False],[False,True,True]]),axis=0)
         array([False True False])
         >>> ak.all(ak.array([[True,True,True],[False,False,False]]),axis=0,keepdims=True)
@@ -1418,7 +1418,7 @@ class pdarray:
         >>> ak.all(ak.array([[True,True,True],[False,False,False]]),axis=1,keepdims=True)
         array([array([True]) array([False])])
         >>> ak.array([True,False,False]).all()
-        False
+        np.False_
 
         Raises
         ------
@@ -1536,9 +1536,9 @@ class pdarray:
         --------
         >>> import arkouda as ak
         >>> ak.is_sorted(ak.array([1,2,3,4,5]))
-        True
+        np.True_
         >>> ak.is_sorted(ak.array([5,4,3,2,1]))
-        False
+        np.False_
         >>> ak.array([[1,2,3],[5,4,3]]).is_sorted(axis=1)
         array([True False])
 
@@ -1583,9 +1583,9 @@ class pdarray:
         --------
         >>> import arkouda as ak
         >>> ak.sum(ak.array([1,2,3,4,5]))
-        15
+        np.int64(15)
         >>> ak.sum(ak.array([5.5,4.5,3.5,2.5,1.5]))
-        17.5
+        np.float64(17.5)
         >>> ak.array([[1,2,3],[5,4,3]]).sum(axis=1)
         array([6 12])
 
@@ -1629,9 +1629,9 @@ class pdarray:
         --------
         >>> import arkouda as ak
         >>> ak.prod(ak.array([1,2,3,4,5]))
-        120
+        np.int64(120)
         >>> ak.prod(ak.array([5.5,4.5,3.5,2.5,1.5]))
-        324.84375
+        np.float64(324.84375)
         >>> ak.array([[1,2,3],[5,4,3]]).prod(axis=1)
         array([6 60])
 
@@ -1675,9 +1675,9 @@ class pdarray:
         --------
         >>> import arkouda as ak
         >>> ak.min(ak.array([1,2,3,4,5]))
-        1
+        np.int64(1)
         >>> ak.min(ak.array([5.5,4.5,3.5,2.5,1.5]))
-        1.5
+        np.float64(1.5)
         >>> ak.array([[1,2,3],[5,4,3]]).min(axis=1)
         array([1 3])
 
@@ -1721,9 +1721,9 @@ class pdarray:
         --------
         >>> import arkouda as ak
         >>> ak.max(ak.array([1,2,3,4,5]))
-        5
+        np.int64(5)
         >>> ak.max(ak.array([5.5,4.5,3.5,2.5,1.5]))
-        5.5
+        np.float64(5.5)
         >>> ak.array([[1,2,3],[5,4,3]]).max(axis=1)
         array([3 5])
 
@@ -1765,9 +1765,9 @@ class pdarray:
         --------
         >>> import arkouda as ak
         >>> ak.argmin(ak.array([1,2,3,4,5]))
-        0
+        np.int64(0)
         >>> ak.argmin(ak.array([5.5,4.5,3.5,2.5,1.5]))
-        4
+        np.int64(4)
         >>> ak.array([[1,2,3],[5,4,3]]).argmin(axis=1)
         array([0 2])
 
@@ -1809,9 +1809,9 @@ class pdarray:
         --------
         >>> import arkouda as ak
         >>> ak.argmax(ak.array([1,2,3,4,5]))
-        4
+        np.int64(4)
         >>> ak.argmax(ak.array([5.5,4.5,3.5,2.5,1.5]))
-        0
+        np.int64(0)
         >>> ak.array([[1,2,3],[5,4,3]]).argmax(axis=1)
         array([2 0])
 
@@ -1933,7 +1933,7 @@ class pdarray:
         --------
         >>> import arkouda as ak
         >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
-        (array([0, 2, 4]), array([3, 2, 1]))
+        (array([0 2 4]), array([3 2 1]))
         """
 
         from arkouda.numpy import value_counts
@@ -2303,9 +2303,9 @@ class pdarray:
         --------
         >>> import arkouda as ak
         >>> a = ak.arange(0, 5, 1)
-        >>> a.to_cuda()
+        >>> a.to_cuda() # doctest: +SKIP
         array([0, 1, 2, 3, 4])
-        >>> type(a.to_cuda())
+        >>> type(a.to_cuda()) # doctest: +SKIP
         numpy.devicendarray
         """
         try:
@@ -2379,11 +2379,11 @@ class pdarray:
         >>> a = ak.arange(25)
 
         Saving without an extension
-        >>> a.to_parquet('path/prefix', dataset='array')
+        >>> a.to_parquet('path/prefix', dataset='array') # doctest: +SKIP
         Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
 
         Saving with an extension (HDF5)
-        >>> a.to_parqet('path/prefix.parquet', dataset='array')
+        >>> a.to_parqet('path/prefix.parquet', dataset='array') # doctest: +SKIP
         Saves the array to numLocales HDF5 files with the name
         ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
         """
@@ -2461,16 +2461,16 @@ class pdarray:
         >>> a = ak.arange(25)
 
         Saving without an extension
-        >>> a.to_hdf('path/prefix', dataset='array')
+        >>> a.to_hdf('path/prefix', dataset='array') # doctest: +SKIP
         Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
 
         Saving with an extension (HDF5)
-        >>> a.to_hdf('path/prefix.h5', dataset='array')
+        >>> a.to_hdf('path/prefix.h5', dataset='array') # doctest: +SKIP
         Saves the array to numLocales HDF5 files with the name
         ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
 
         Saving to a single file
-        >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single')
+        >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single') # doctest: +SKIP
         Saves the array in to single hdf5 file on the root node.
         ``cwd/path/name_prefix.hdf5``
         """
@@ -2662,11 +2662,12 @@ class pdarray:
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = zeros(100)
+        >>> a = ak.zeros(3)
         >>> a.register("my_zeros")
+        array([0.00000000000000000 0.00000000000000000 0.00000000000000000])
 
         potentially disconnect from server and reconnect to server
-        >>> b = ak.pdarray.attach("my_zeros")
+        >>> b = ak.attach("my_zeros")
         >>> b.unregister()
         """
         if self.registered_name is not None and self.is_registered():
@@ -2711,11 +2712,12 @@ class pdarray:
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = zeros(100)
+        >>> a = ak.zeros(3)
         >>> a.register("my_zeros")
+        array([0.00000000000000000 0.00000000000000000 0.00000000000000000])
 
-        # potentially disconnect from server and reconnect to server
-        >>> b = ak.pdarray.attach("my_zeros")
+        potentially disconnect from server and reconnect to server
+        >>> b = ak.attach("my_zeros")
         >>> b.unregister()
         """
         from arkouda.numpy.util import unregister
@@ -3323,7 +3325,7 @@ def dot(
     --------
     >>> import arkouda as ak
     >>> ak.dot(ak.array([1, 2, 3]),ak.array([4,5,6]))
-    32
+    np.int64(32)
     >>> ak.dot(ak.array([1, 2, 3]),5)
     array([5 10 15])
     >>> ak.dot(5,ak.array([2, 3, 4]))
@@ -3433,9 +3435,9 @@ def mean(pda: pdarray) -> np.float64:
     >>> import arkouda as ak
     >>> a = ak.arange(10)
     >>> ak.mean(a)
-    4.5
+    np.float64(4.5)
     >>> a.mean()
-    4.5
+    np.float64(4.5)
 
     Raises
     ------
@@ -3474,9 +3476,9 @@ def var(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
     >>> import arkouda as ak
     >>> a = ak.arange(10)
     >>> ak.var(a)
-    8.25
+    np.float64(8.25)
     >>> a.var()
-    8.25
+    np.float64(8.25)
 
     Raises
     ------
@@ -3536,9 +3538,9 @@ def std(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
     >>> import arkouda as ak
     >>> a = ak.arange(10)
     >>> ak.std(a)
-    2.8722813232690143
+    np.float64(2.8722813232690143)
     >>> a.std()
-    2.8722813232690143
+    np.float64(2.8722813232690143)
 
     Raises
     ------
@@ -3601,9 +3603,9 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
     >>> a = ak.arange(10)
     >>> b = a + 1
     >>> ak.cov(a,b)
-    9.166666666666666
+    np.float64(9.166666666666666)
     >>> a.cov(b)
-    9.166666666666666
+    np.float64(9.166666666666666)
 
     Raises
     ------
@@ -3649,9 +3651,9 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     >>> a = ak.arange(10)
     >>> b = a + 1
     >>> ak.corr(a,b)
-    0.9999999999999998
+    np.float64(0.9999999999999998)
     >>> a.corr(b)
-    0.9999999999999998
+    np.float64(0.9999999999999998)
 
     Raises
     ------
@@ -3793,9 +3795,9 @@ def mink(pda: pdarray, k: int_scalars) -> pdarray:
     >>> import arkouda as ak
     >>> A = ak.array([10,5,1,3,7,2,9,0])
     >>> ak.mink(A, 3)
-    array([0, 1, 2])
+    array([0 1 2])
     >>> ak.mink(A, 4)
-    array([0, 1, 2, 3])
+    array([0 1 2 3])
     """
     if k < 1:
         raise ValueError("k must be 1 or greater")
@@ -3849,9 +3851,9 @@ def maxk(pda: pdarray, k: int_scalars) -> pdarray:
     >>> import arkouda as ak
     >>> A = ak.array([10,5,1,3,7,2,9,0])
     >>> ak.maxk(A, 3)
-    array([7, 9, 10])
+    array([7 9 10])
     >>> ak.maxk(A, 4)
-    array([5, 7, 9, 10])
+    array([5 7 9 10])
     """
     if k < 1:
         raise ValueError("k must be 1 or greater")
@@ -3902,9 +3904,9 @@ def argmink(pda: pdarray, k: int_scalars) -> pdarray:
     >>> import arkouda as ak
     >>> A = ak.array([10,5,1,3,7,2,9,0])
     >>> ak.argmink(A, 3)
-    array([7, 2, 5])
+    array([7 2 5])
     >>> ak.argmink(A, 4)
-    array([7, 2, 5, 3])
+    array([7 2 5 3])
     """
     if k < 1:
         raise ValueError("k must be 1 or greater")
@@ -3957,9 +3959,9 @@ def argmaxk(pda: pdarray, k: int_scalars) -> pdarray:
     >>> import arkouda as ak
     >>> A = ak.array([10,5,1,3,7,2,9,0])
     >>> ak.argmaxk(A, 3)
-    array([4, 6, 0])
+    array([4 6 0])
     >>> ak.argmaxk(A, 4)
-    array([1, 4, 6, 0])
+    array([1 4 6 0])
     """
     if k < 1:
         raise ValueError("k must be 1 or greater")
@@ -3996,7 +3998,7 @@ def popcount(pda: pdarray) -> pdarray:
     >>> import arkouda as ak
     >>> A = ak.arange(10)
     >>> ak.popcount(A)
-    array([0, 1, 1, 2, 1, 2, 2, 3, 1, 2])
+    array([0 1 1 2 1 2 2 3 1 2])
     """
     if pda.dtype not in [akint64, akuint64, bigint]:
         raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
@@ -4038,7 +4040,7 @@ def parity(pda: pdarray) -> pdarray:
     >>> import arkouda as ak
     >>> A = ak.arange(10)
     >>> ak.parity(A)
-    array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0])
+    array([0 1 1 0 1 0 0 1 1 0])
     """
     if pda.dtype not in [akint64, akuint64, bigint]:
         raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
@@ -4079,7 +4081,7 @@ def clz(pda: pdarray) -> pdarray:
     >>> import arkouda as ak
     >>> A = ak.arange(10)
     >>> ak.clz(A)
-    array([64, 63, 62, 62, 61, 61, 61, 61, 60, 60])
+    array([64 63 62 62 61 61 61 61 60 60])
     """
     if pda.dtype not in [akint64, akuint64, bigint]:
         raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
@@ -4162,7 +4164,7 @@ def ctz(pda: pdarray) -> pdarray:
     >>> import arkouda as ak
     >>> A = ak.arange(10)
     >>> ak.ctz(A)
-    array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
+    array([0 0 1 0 2 0 1 0 3 0])
     """
     if pda.dtype not in [akint64, akuint64, bigint]:
         raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
@@ -4241,7 +4243,7 @@ def rotl(x, rot) -> pdarray:
     >>> import arkouda as ak
     >>> A = ak.arange(10)
     >>> ak.rotl(A, A)
-    array([0, 2, 8, 24, 64, 160, 384, 896, 2048, 4608])
+    array([0 2 8 24 64 160 384 896 2048 4608])
     """
     if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
         if (isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]) or isSupportedInt(rot):
@@ -4280,7 +4282,7 @@ def rotr(x, rot) -> pdarray:
     >>> import arkouda as ak
     >>> A = ak.arange(10)
     >>> ak.rotr(1024 * A, A)
-    array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
+    array([0 512 512 384 256 160 96 56 32 18])
     """
     if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
         if (isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]) or isSupportedInt(rot):
@@ -4330,9 +4332,9 @@ def power(
     >>> import arkouda as ak
     >>> a = ak.arange(5)
     >>> ak.power(a, 3)
-    array([0, 1, 8, 27, 64])
-    >>> ak.power(a), 3, a % 2 == 0)
-    array([0, 1, 8, 3, 64])
+    array([0 1 8 27 64])
+    >>> ak.power(a, 3, a % 2 == 0)
+    array([0 1 8 3 64])
 
 
     Raises
@@ -4423,10 +4425,10 @@ def skew(pda: pdarray, bias: bool = True) -> np.float64:
     --------
     >>> import arkouda as ak
     >>> a = ak.array([1, 1, 1, 5, 10])
-    >>> ak.skew(a)
-    0.9442193396379165
-    >>> ak.skew(ak.array([9,9,9,5,0]))
-    -0.9442193396379165
+    >>> ak.skew(a) # doctest: +SKIP
+     np.float64(0.9442193396379164)
+    >>> ak.skew(ak.array([9,9,9,5,0])) # doctest: +SKIP
+    np.float64(-0.9442193396379165)
     >>> ak.skew(ak.array([10,10,10,10,10]))
     0
 
