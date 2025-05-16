@@ -57,7 +57,7 @@ class TestIdleAndInterval:
 
         delete_directory(autockptDir)  # start with a clean slate
         a = ak.ones(pytest.prob_size[0])
-        sleep(.5)
+        sleep(0.5)
         assert not directory_exists(autockptDir)
         sleep(1)
         assert directory_exists_delayed(autockptDir, 10)
@@ -68,4 +68,4 @@ class TestIdleAndInterval:
         sleep(1)
         assert directory_exists_delayed(autockptDir, 10)
         delete_directory(autockptDir)
-        usethem(a,b)
+        usethem(a, b)

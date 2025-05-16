@@ -17,11 +17,9 @@
 
 import importlib
 from typing import Iterator
+
 import pytest
-from server_util.test.server_test_util import (
-    start_arkouda_server,
-    stop_arkouda_server,
-)
+from server_util.test.server_test_util import start_arkouda_server, stop_arkouda_server
 
 
 def _ensure_plugins_installed():
@@ -98,6 +96,7 @@ def _class_server(request) -> Iterator[None]:
             raise RuntimeError("neither " + _module_args(r) + "nor " + _class_args(r) + "is given")
 
         yield
+
 
 # This fixture in the parent conftest.py runs ak.connect() and ak.disconnect():
 #  @pytest.fixture(scope="class", autouse=True)
