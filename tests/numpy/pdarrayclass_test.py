@@ -308,3 +308,39 @@ class TestPdarrayClass:
             assert_arkouda_array_equivalent(ak.dot(pda1, pda2), np.dot(nda1, nda2))
 
         #   higher dimension testing may not be feasible at this time
+
+    @pytest.mark.parametrize("dtype", DTYPES)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_diff_1d(self, dtype, size):
+        if dtype == "bool":
+            a = ak.randint(0, 2, size, dtype=dtype, seed=SEED)
+        else:
+            a = ak.randint(0, 100, size, dtype=dtype, seed=SEED)
+        anp = a.to_ndarray()
+
+        a_d = ak.diff(a, n=1)
+        anp_d = np.diff(anp, n=1)
+        assert_arkouda_array_equivalent(a_d, anp_d)
+
+        a_d = ak.diff(a, n=5)
+        anp_d = np.diff(anp, n=5)
+        assert_arkouda_array_equivalent(a_d, anp_d)
+
+    @pytest.mark.parametrize("dtype", DTYPES)
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("axis", [None, 0, 1, 2])
+    @pytest.mark.parametrize("n", [1, 2])
+    def test_diff_multidim(self, dtype, axis, n):
+        if dtype == "bool":
+            a = ak.randint(0, 2, (5, 6, 7), dtype=dtype, seed=SEED)
+        else:
+            a = ak.randint(0, 100, (5, 6, 7), dtype=dtype, seed=SEED)
+        anp = a.to_ndarray()
+
+        if axis is not None:
+            a_d = ak.diff(a, n=n, axis=axis)
+            anp_d = np.diff(anp, n=n, axis=axis)
+        else:
+            a_d = ak.diff(a, n=n)
+            anp_d = np.diff(anp, n=n)
+        assert_arkouda_array_equivalent(a_d, anp_d)
