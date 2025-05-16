@@ -71,16 +71,19 @@ def argsort(
     Examples
     --------
     >>> import arkouda as ak
-    >>> a = ak.randint(0, 10, 10)
+    >>> a = ak.randint(0, 10, 10, seed=1)
+    >>> a
+    array([7 9 5 1 4 1 8 5 5 0])
+
     >>> perm = ak.argsort(a)
     >>> a[perm]
-    array([0 1 3 3 5 5 5 6 6 6])
+    array([0 1 1 4 5 5 5 7 8 9])
 
     >>> ak.argsort(a, ak.sorting.SortingAlgorithm["RadixSortLSD"])
-    array([0 2 9 6 8 1 3 5 7 4])
+    array([9 3 5 4 2 7 8 0 6 1])
 
     >>> ak.argsort(a, ak.sorting.SortingAlgorithm["TwoArrayRadixSort"])
-    array([0 2 9 6 8 1 3 5 7 4])
+    array([9 3 5 4 2 7 8 0 6 1])
     """
     from arkouda.categorical import Categorical
 
@@ -269,10 +272,12 @@ def sort(
     Examples
     --------
     >>> import arkouda as ak
-    >>> a = ak.randint(0, 10, 10)
+    >>> a = ak.randint(0, 10, 10, seed=1)
+    >>> a
+    array([7 9 5 1 4 1 8 5 5 0])
     >>> sorted = ak.sort(a)
     >>> sorted
-    array([0 1 1 3 4 5 7 8 8 9])
+    array([0 1 1 4 5 5 5 7 8 9])
     """
     if pda.dtype == bigint:
         return pda[coargsort(pda.bigint_to_uint_arrays(), algorithm)]
