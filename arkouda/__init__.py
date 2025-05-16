@@ -1,4 +1,5 @@
 # flake8: noqa
+# isort: skip_file
 # do not run isort, imports are order dependent
 """
 Arkouda: Exploratory data science at scale.
