@@ -38,6 +38,8 @@ module ServerDaemon {
     
     var serverDaemonTypes = try! getDaemonTypes();
 
+    private var numAsyncTasks: atomic int;
+
     /**
      * Retrieves a list of 1..n ServerDaemonType objects generated 
      * from the comma-delimited list of ServerDaemonType strings
@@ -75,7 +77,7 @@ module ServerDaemon {
      * Returns a boolean indicating if there are multiple ServerDaemons
      */
     proc multipleServerDaemons() {
-        return serverDaemonTypes.size > 1;
+        return ( serverDaemonTypes.size + numAsyncTasks.read() ) > 1;
     }
 
     /**
@@ -510,15 +512,18 @@ module ServerDaemon {
                 this.printServerSplashMessage(this.serverToken,this.arkDirectory);
             }
             this.registerServerCommands();
+            startAsyncCheckpointTask();
                     
             var startTime = timeSinceEpoch().totalSeconds();
         
             while !this.shutdownDaemon {
+                serverIdleStart();
+
                 // receive message on the zmq socket
                 var reqMsgRaw = socket.recv(bytes);
 
+                serverIdleStop();
                 this.reqCount += 1;
-
                 var s0 = timeSinceEpoch().totalSeconds();
 
                 /*
@@ -659,6 +664,9 @@ module ServerDaemon {
                         }
                         otherwise { // Look up in CommandMap
                             if commandMap.contains(cmd) {
+                                activityMutex.writeEF("server");
+                                defer { activityMutex.readFE(); }
+
                                 repMsg = executeCommand(cmd, msgArgs, st);
                             } else {
                                 const errorMsg = "Unrecognized command: %s".format(cmd);
@@ -723,6 +731,30 @@ module ServerDaemon {
                                                                             repCount,
                                                                             elapsed));
             this.shutdown(); 
+        }
+
+        // Guard mutually-exclusive activities such as the main "server"
+        // and asynchronous checkpointing.
+        var activityMutex: sync string;
+
+        // Time stamp when the server started being idle.
+        // 0 if it is currently not idle.
+        var idlePeriodStart: atomic real;
+
+        /* Starts a task for asynchronous checkpointing. */
+        proc startAsyncCheckpointTask() {
+          numAsyncTasks.add(1);
+          const taskStarted = funStartAsyncCheckpointDaemon(this);
+          if ! taskStarted then
+            numAsyncTasks.sub(1);
+        }
+
+        proc serverIdleStart() {
+          idlePeriodStart.write(timeSinceEpoch().totalSeconds());
+        }
+
+        proc serverIdleStop() {
+          idlePeriodStart.write(0);
         }
     }
 
