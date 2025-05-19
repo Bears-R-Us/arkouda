@@ -40,7 +40,8 @@ def plot_dist(b, h, log=True, xlabel=None, newfig=True):
     >>> import arkouda as ak
     >>> from matplotlib import pyplot as plt
     >>> b, h = ak.histogram(ak.arange(10), 3)
-    >>> ak.plot_dist(b, h.to_ndarray())
+    >>> h = h[:-1]
+    >>> ak.plot_dist(b.to_ndarray(), h.to_ndarray())
 
     Show the plot:
     >>> plt.show()
@@ -81,12 +82,14 @@ def hist_all(ak_df: DataFrame, cols: list = []):
     Examples
     --------
     >>> import arkouda as ak
+    >>> import numpy as np
     >>> from arkouda.plotting import hist_all
-    >>> ak_df = ak.DataFrame({"a": ak.array(np.random.randn(100)),
-                              "b": ak.array(np.random.randn(100)),
-                              "c": ak.array(np.random.randn(100)),
-                              "d": ak.array(np.random.randn(100))
-                              })
+    >>> ak_df = ak.DataFrame({
+    ...     "a": ak.array(np.random.randn(100)),
+    ...     "b": ak.array(np.random.randn(100)),
+    ...     "c": ak.array(np.random.randn(100)),
+    ...     "d": ak.array(np.random.randn(100))
+    ... })
     >>> hist_all(ak_df)
 
     """
@@ -107,7 +110,13 @@ def hist_all(ak_df: DataFrame, cols: list = []):
 
     for col in cols:
         try:
-            ax = axes[cols.index(col)]
+            from typing import List
+
+            cols_idx = cols.index
+            if isinstance(cols_idx, List):
+                ax = axes[cols_idx.index(col)]
+            else:
+                ax = axes[cols_idx(col)]
             x = ak_df[col]
 
             if x.dtype == "float64":
@@ -143,7 +152,7 @@ def hist_all(ak_df: DataFrame, cols: list = []):
         else:
             bins = np.linspace(x.min(), x.max(), num_bins + 1)[:-1]
 
-        ax.bar(bins, h[1].to_ndarray(), width=bins[1] - bins[0])
+        ax.bar(bins, h[1][:-1].to_ndarray(), width=bins[1] - bins[0])
         ax.set_title(col, size=8)
         if x.max() > 100 * x.min():
             ax.set_yscale("log")
