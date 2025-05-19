@@ -18,6 +18,21 @@ from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.strings import Strings
 
+__all__ = [
+    "NonUniqueError",
+    "align",
+    "find",
+    "in1d_intervals",
+    "interval_lookup",
+    "is_cosorted",
+    "left_align",
+    "lookup",
+    "right_align",
+    "search_intervals",
+    "unsqueeze",
+    "zero_up",
+]
+
 
 def unsqueeze(p):
     if isinstance(p, pdarray) or isinstance(p, Strings) or isinstance(p, Categorical):

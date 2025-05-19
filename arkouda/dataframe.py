@@ -293,7 +293,6 @@ class DataFrameGroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> from arkouda import *
         >>> df = ak.DataFrame({"a":ak.arange(10) %3 , "b":ak.arange(10)})
 
         +----+-----+-----+
@@ -368,7 +367,6 @@ class DataFrameGroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> from arkouda import *
         >>> df = ak.DataFrame({"a":ak.arange(10) %3 , "b":ak.arange(10)})
 
         +----+-----+-----+

@@ -998,22 +998,23 @@ def generic_msg(
         raise RuntimeError("client is not connected to a server")
 
     size, msg_args = _json_args_to_str(args)
+    from typing import cast as type_cast
 
     try:
         if send_binary:
             assert payload is not None
-            return cast(Channel, channel).send_binary_message(
+            return type_cast(Channel, channel).send_binary_message(
                 cmd=cmd, payload=payload, recv_binary=recv_binary, args=msg_args, size=size
             )
         else:
             assert payload is None
-            return cast(Channel, channel).send_string_message(
+            return type_cast(Channel, channel).send_string_message(
                 cmd=cmd, args=msg_args, size=size, recv_binary=recv_binary
             )
     except KeyboardInterrupt as e:
         # if the user interrupts during command execution, the socket gets out
         # of sync reset the socket before raising the interrupt exception
-        cast(Channel, channel).connect(timeout=0)
+        type_cast(Channel, channel).connect(timeout=0)
         raise e
 
 

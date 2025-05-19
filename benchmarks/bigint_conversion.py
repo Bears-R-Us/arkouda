@@ -86,10 +86,15 @@ def create_parser():
         "--max-bits",
         type=int,
         default=-1,
-        help="Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum",
+        help="Maximum number of bits, so values > 2**max_bits will wraparound. "
+        "-1 is interpreted as no maximum",
     )
     parser.add_argument(
-        "-t", "--trials", type=int, default=6, help="Number of times to run the benchmark"
+        "-t",
+        "--trials",
+        type=int,
+        default=6,
+        help="Number of times to run the benchmark",
     )
     parser.add_argument(
         "--correctness-only",
@@ -98,7 +103,11 @@ def create_parser():
         help="Only check correctness, not performance.",
     )
     parser.add_argument(
-        "-s", "--seed", default=None, type=int, help="Value to initialize random number generator"
+        "-s",
+        "--seed",
+        default=None,
+        type=int,
+        help="Value to initialize random number generator",
     )
     return parser
 

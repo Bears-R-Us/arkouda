@@ -22,7 +22,15 @@ class FileFormat(Enum):
 
 
 def time_ak_write(
-    N_per_locale, numfiles, trials, dtype, path, seed, fileFormat, comps=None, fixed_size=-1
+    N_per_locale,
+    numfiles,
+    trials,
+    dtype,
+    path,
+    seed,
+    fileFormat,
+    comps=None,
+    fixed_size=-1,
 ):
     if comps is None or comps == [""]:
         comps = COMPRESSIONS
@@ -57,7 +65,10 @@ def time_ak_write(
                 for i in range(trials):
                     for j in range(numfiles):
                         start = time.time()
-                        a.to_parquet(f"{path}{comp}{j:04}", compression=None if comp == "none" else comp)
+                        a.to_parquet(
+                            f"{path}{comp}{j:04}",
+                            compression=None if comp == "none" else comp,
+                        )
                         end = time.time()
                         writetimes.append(end - start)
                 times[comp] = sum(writetimes) / trials
@@ -181,7 +192,11 @@ def check_correctness(dtype, path, seed, fileFormat, multifile=False):
 
     file_format_actions = {
         FileFormat.HDF5: (a.to_hdf, b.to_hdf if b is not None else None, ak.read_hdf),
-        FileFormat.PARQUET: (a.to_parquet, b.to_parquet if b is not None else None, ak.read_parquet),
+        FileFormat.PARQUET: (
+            a.to_parquet,
+            b.to_parquet if b is not None else None,
+            ak.read_parquet,
+        ),
         FileFormat.CSV: (a.to_csv, b.to_csv if b is not None else None, ak.read_csv),
     }
 
@@ -216,16 +231,30 @@ def create_parser():
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
     parser.add_argument(
-        "-n", "--size", type=int, default=10**8, help="Problem size: length of array to write/read"
+        "-n",
+        "--size",
+        type=int,
+        default=10**8,
+        help="Problem size: length of array to write/read",
     )
     parser.add_argument(
-        "--fixed-size", type=int, default=-1, help="Fixed size length of string for Parquet"
+        "--fixed-size",
+        type=int,
+        default=-1,
+        help="Fixed size length of string for Parquet",
     )
     parser.add_argument(
-        "-t", "--trials", type=int, default=1, help="Number of times to run the benchmark"
+        "-t",
+        "--trials",
+        type=int,
+        default=1,
+        help="Number of times to run the benchmark",
     )
     parser.add_argument(
-        "-d", "--dtype", default="int64", help="Dtype of array ({})".format(", ".join(TYPES))
+        "-d",
+        "--dtype",
+        default="int64",
+        help="Dtype of array ({})".format(", ".join(TYPES)),
     )
     parser.add_argument(
         "-p",
@@ -240,11 +269,19 @@ def create_parser():
         help="Only check correctness, not performance.",
     )
     parser.add_argument(
-        "-s", "--seed", default=None, type=int, help="Value to initialize random number generator"
+        "-s",
+        "--seed",
+        default=None,
+        type=int,
+        help="Value to initialize random number generator",
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
-        "-q", "--parquet", default=False, action="store_true", help="Perform Parquet operations"
+        "-q",
+        "--parquet",
+        default=False,
+        action="store_true",
+        help="Perform Parquet operations",
     )
     group.add_argument("-v", "--csv", default=False, action="store_true", help="Perform CSV operations")
     parser.add_argument(
@@ -269,14 +306,19 @@ def create_parser():
         help="Only delete files created from writing with this benchmark",
     )
     parser.add_argument(
-        "-l", "--files-per-loc", type=int, default=1, help="Number of files to create per locale"
+        "-l",
+        "--files-per-loc",
+        type=int,
+        default=1,
+        help="Number of files to create per locale",
     )
     parser.add_argument(
         "-c",
         "--compression",
         default="",
         action="store",
-        help="Compression types to run Parquet benchmarks against. Comma delimited list (NO SPACES) allowing "
+        help="Compression types to run Parquet benchmarks against. "
+        "Comma delimited list (NO SPACES) allowing "
         "for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4",
     )
     return parser
@@ -317,7 +359,13 @@ if __name__ == "__main__":
         )
     elif args.only_read:
         time_ak_read(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, fileFormat, comp_types
+            args.size,
+            args.files_per_loc,
+            args.trials,
+            args.dtype,
+            args.path,
+            fileFormat,
+            comp_types,
         )
     else:
         time_ak_write(
@@ -331,7 +379,13 @@ if __name__ == "__main__":
             comp_types,
         )
         time_ak_read(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, fileFormat, comp_types
+            args.size,
+            args.files_per_loc,
+            args.trials,
+            args.dtype,
+            args.path,
+            fileFormat,
+            comp_types,
         )
         remove_files(args.path)
 

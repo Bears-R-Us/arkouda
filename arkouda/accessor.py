@@ -2,6 +2,15 @@ from arkouda.categorical import Categorical
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime
 
+__all__ = [
+    "CachedAccessor",
+    "DatetimeAccessor",
+    "Properties",
+    "StringAccessor",
+    "date_operators",
+    "string_operators",
+]
+
 
 class CachedAccessor:
     """

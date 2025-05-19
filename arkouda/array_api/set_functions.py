@@ -7,6 +7,16 @@ from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
 
 from .array_object import Array
 
+__all__ = [
+    "UniqueAllResult",
+    "UniqueCountsResult",
+    "UniqueInverseResult",
+    "unique_all",
+    "unique_counts",
+    "unique_inverse",
+    "unique_values",
+]
+
 
 class UniqueAllResult(NamedTuple):
     values: Array

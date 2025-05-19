@@ -31,7 +31,7 @@ def time_ak_stream(N_per_locale, trials, alpha, max_bits, random, seed):
     timings = []
     for i in range(trials):
         start = time.time()
-        c = a + b * alpha
+        c = a + b * alpha  # noqa: F841
         end = time.time()
         timings.append(end - start)
     tavg = sum(timings) / trials
@@ -66,16 +66,25 @@ def create_parser():
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
     parser.add_argument(
-        "-n", "--size", type=int, default=10**8, help="Problem size: length of arrays A and B"
+        "-n",
+        "--size",
+        type=int,
+        default=10**8,
+        help="Problem size: length of arrays A and B",
     )
     parser.add_argument(
-        "-t", "--trials", type=int, default=6, help="Number of times to run the benchmark"
+        "-t",
+        "--trials",
+        type=int,
+        default=6,
+        help="Number of times to run the benchmark",
     )
     parser.add_argument(
         "--max-bits",
         type=int,
         default=-1,
-        help="Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum",
+        help="Maximum number of bits, so values > 2**max_bits will wraparound. "
+        "-1 is interpreted as no maximum",
     )
     parser.add_argument(
         "-r",
@@ -92,7 +101,11 @@ def create_parser():
         help="Only check correctness, not performance.",
     )
     parser.add_argument(
-        "-s", "--seed", default=None, type=int, help="Value to initialize random number generator"
+        "-s",
+        "--seed",
+        default=None,
+        type=int,
+        help="Value to initialize random number generator",
     )
     return parser
 

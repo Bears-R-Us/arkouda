@@ -11,6 +11,23 @@ from arkouda.numpy.util import broadcast_dims
 
 from .array_object import Array, implements_numpy
 
+__all__ = [
+    "broadcast_arrays",
+    "broadcast_to",
+    "concat",
+    "expand_dims",
+    "flip",
+    "moveaxis",
+    "permute_dims",
+    "repeat",
+    "reshape",
+    "roll",
+    "squeeze",
+    "stack",
+    "tile",
+    "unstack",
+]
+
 
 def broadcast_arrays(*arrays: Array) -> List[Array]:
     """

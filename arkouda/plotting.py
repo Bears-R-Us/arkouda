@@ -10,6 +10,11 @@ from arkouda.numpy.pdarrayclass import skew
 from arkouda.numpy.pdarraycreation import arange
 from arkouda.numpy.timeclass import Datetime, Timedelta, date_range, timedelta_range
 
+__all__ = [
+    "hist_all",
+    "plot_dist",
+]
+
 
 def plot_dist(b, h, log=True, xlabel=None, newfig=True):
     """

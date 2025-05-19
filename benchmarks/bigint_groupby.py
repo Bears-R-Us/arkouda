@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
+import argparse
 
-from groupby import *
+from groupby import check_correctness, time_ak_groupby
+
+import arkouda as ak
 
 
 def create_parser():
@@ -17,13 +20,18 @@ def create_parser():
         help="Problem size: total length of all arrays to group",
     )
     parser.add_argument(
-        "-t", "--trials", type=int, default=1, help="Number of times to run the benchmark"
+        "-t",
+        "--trials",
+        type=int,
+        default=1,
+        help="Number of times to run the benchmark",
     )
     parser.add_argument(
         "--max-bits",
         type=int,
         default=-1,
-        help="Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum",
+        help="Maximum number of bits, so values > 2**max_bits will wraparound. "
+        "-1 is interpreted as no maximum",
     )
     parser.add_argument(
         "--correctness-only",
@@ -32,7 +40,11 @@ def create_parser():
         help="Only check correctness, not performance.",
     )
     parser.add_argument(
-        "-s", "--seed", default=None, type=int, help="Value to initialize random number generator"
+        "-s",
+        "--seed",
+        default=None,
+        type=int,
+        help="Value to initialize random number generator",
     )
     return parser
 

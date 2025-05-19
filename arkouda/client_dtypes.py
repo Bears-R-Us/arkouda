@@ -14,6 +14,16 @@ from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.numpy.strings import Strings
 
+__all__ = [
+    "BitVector",
+    "BitVectorizer",
+    "Fields",
+    "IPv4",
+    "ip_address",
+    "is_ipv4",
+    "is_ipv6",
+]
+
 
 def BitVectorizer(width=64, reverse=False):
     """

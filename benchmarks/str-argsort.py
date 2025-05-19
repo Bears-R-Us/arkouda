@@ -2,7 +2,9 @@
 
 import argparse
 
-from argsort import *
+from argsort import check_correctness, time_ak_argsort, time_np_argsort
+
+import arkouda as ak
 
 TYPES = ("str",)
 
@@ -14,13 +16,24 @@ def create_parser():
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
     parser.add_argument(
-        "-n", "--size", type=int, default=10**8, help="Problem size: length of array to argsort"
+        "-n",
+        "--size",
+        type=int,
+        default=10**8,
+        help="Problem size: length of array to argsort",
     )
     parser.add_argument(
-        "-t", "--trials", type=int, default=1, help="Number of times to run the benchmark"
+        "-t",
+        "--trials",
+        type=int,
+        default=1,
+        help="Number of times to run the benchmark",
     )
     parser.add_argument(
-        "-d", "--dtype", default="str", help="Dtype of array ({})".format(", ".join(TYPES))
+        "-d",
+        "--dtype",
+        default="str",
+        help="Dtype of array ({})".format(", ".join(TYPES)),
     )
     parser.add_argument(
         "--numpy",
@@ -35,7 +48,11 @@ def create_parser():
         help="Only check correctness, not performance.",
     )
     parser.add_argument(
-        "-s", "--seed", default=None, type=int, help="Value to initialize random number generator"
+        "-s",
+        "--seed",
+        default=None,
+        type=int,
+        help="Value to initialize random number generator",
     )
     return parser
 

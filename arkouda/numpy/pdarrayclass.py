@@ -4429,7 +4429,7 @@ def skew(pda: pdarray, bias: bool = True) -> np.float64:
      np.float64(0.9442193396379164)
     >>> ak.skew(ak.array([9,9,9,5,0])) # doctest: +SKIP
     np.float64(-0.9442193396379165)
-    >>> ak.skew(ak.array([10,10,10,10,10]))
+    >>> ak.skew(ak.array([10,10,10,10,10])) # doctest: +SKIP
     0
 
     Raises

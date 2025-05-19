@@ -7,6 +7,10 @@ from arkouda.numpy.pdarrayclass import create_pdarray
 
 from .array_object import Array
 
+__all__ = [
+    "take",
+]
+
 
 def take(x: Array, indices: Array, /, *, axis: Optional[int] = None) -> Array:
     """
