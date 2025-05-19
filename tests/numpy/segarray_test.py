@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 import arkouda as ak
-from arkouda import io_util
+from arkouda.pandas import io_util
 
 DTYPES = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.bool_, ak.str_]
 NO_BOOL = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.str_]

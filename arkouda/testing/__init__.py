@@ -1,3 +1,4 @@
+# isort: skip_file
 from ._asserters import (
     assert_almost_equal,
     assert_arkouda_array_equal,

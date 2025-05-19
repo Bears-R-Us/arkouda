@@ -4,6 +4,8 @@ import itertools
 import json
 from collections import defaultdict
 from typing import (
+    TYPE_CHECKING,
+    TypeVar,
     DefaultDict,
     Dict,
     List,
@@ -19,12 +21,9 @@ import numpy as np
 from pandas import Categorical as pd_Categorical
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
-from arkouda.groupbyclass import GroupBy, unique
+from arkouda.pandas.groupbyclass import GroupBy, unique
 from arkouda.infoclass import information
 from arkouda.logger import getArkoudaLogger
-from arkouda.numpy import cast as akcast
-from arkouda.numpy import where
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
@@ -38,6 +37,16 @@ from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort
 from arkouda.numpy.sorting import sort as pda_sort
 from arkouda.numpy.strings import Strings
+
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import where
+else:
+    generic_msg = TypeVar("generic_msg")
+    akcast = TypeVar("akcast")
+    where = TypeVar("where")
+
 
 __all__ = ["Categorical"]
 
@@ -835,6 +844,7 @@ class Categorical:
         values is negligible.
 
         """
+        from arkouda.client import generic_msg
         rep_msg = generic_msg(
             cmd="categoricalHash",
             args={"objType": self.objType, "categories": self.categories, "codes": self.codes},
@@ -982,8 +992,8 @@ class Categorical:
         load
 
         """
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
-
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.client import generic_msg
         args = {
             "codes": self.codes,
             "categories": self.categories,
@@ -1035,7 +1045,8 @@ class Categorical:
           automatic creation of a file without the inaccessible data.
 
         """
-        from arkouda.io import (
+        from arkouda.client import generic_msg
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,
@@ -1192,6 +1203,7 @@ class Categorical:
         they are unregistered.
 
         """
+        from arkouda.client import generic_msg
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         generic_msg(
@@ -1438,6 +1450,7 @@ class Categorical:
             a supported dtype
 
         """
+        from arkouda.client import generic_msg
         # hostname is the hostname to send to
         args = {
             "codes": self.codes,

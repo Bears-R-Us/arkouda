@@ -4,7 +4,7 @@ from typing import Optional, Sequence, Tuple, Union, cast
 
 from typeguard import typechecked
 
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.numpy.dtypes import bool_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
@@ -36,6 +36,7 @@ def flip(
     ----
     This differs from numpy as it actually reverses the data, rather than presenting a view.
     """
+    from arkouda.client import generic_msg
     axisList = []
     if axis is not None:
         axisList = list(axis) if isinstance(axis, tuple) else [axis]
@@ -125,7 +126,7 @@ def repeat(
     array([array([1 2]) array([3 4]) array([3 4])])
     """
     from arkouda.pdarrayclass import any as akany
-
+    from arkouda.client import generic_msg
     if isinstance(repeats, int):
         ak_repeats = ak_array([repeats], int)
         if isinstance(ak_repeats, pdarray):
@@ -253,7 +254,7 @@ def squeeze(
     (10,)
     """
     from arkouda.numpy.dtypes import _val_isinstance_of_union
-
+    from arkouda.client import generic_msg
     if _val_isinstance_of_union(x, numeric_scalars) or _val_isinstance_of_union(x, bool_scalars):
         ret = ak_array([x])
         if isinstance(ret, pdarray):
@@ -335,6 +336,7 @@ Thus for an A of shape (2, 3, 4, 5), a reps of (2, 2) is treated as (1, 1, 2, 2)
     >>> ak.tile(c, (4, 1))
     array([array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4])])
     """
+    from arkouda.client import generic_msg
     # Ensure 'reps' is a list
     if isinstance(reps, int):
         reps_2 = [cast(int, reps)]

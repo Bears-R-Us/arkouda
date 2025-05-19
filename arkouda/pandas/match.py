@@ -1,9 +1,13 @@
 import json
 from enum import Enum
-from typing import cast
+from typing import TYPE_CHECKING, TypeVar, cast
 
-from arkouda.client import generic_msg
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+else:
+    generic_msg = TypeVar("generic_msg")
 
 __all__ = ["Match"]
 
@@ -161,7 +165,7 @@ class Match:
 
         """
         from arkouda.numpy.strings import Strings
-
+        from arkouda.client import generic_msg
         repMsg = cast(
             str,
             generic_msg(
@@ -216,7 +220,7 @@ class Match:
         (array(['Newton', 'Leibniz']), array([0 2]))
 
         """
-        from arkouda.client import regexMaxCaptures
+        from arkouda.client import generic_msg, regexMaxCaptures
         from arkouda.numpy.strings import Strings
 
         if group_num < 0:

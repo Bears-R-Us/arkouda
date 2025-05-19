@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 import json
-from typing import Optional, Sequence, Tuple
+from typing import TYPE_CHECKING, TypeVar, Optional, Sequence, Tuple
 from typing import cast as type_cast
 
 import numpy as np
 
-from arkouda.client import generic_msg
-from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.logger import getArkoudaLogger
-from arkouda.numpy import cumsum
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, isSupportedInt, str_
@@ -29,6 +27,12 @@ SEG_SUFFIX = "_segments"
 VAL_SUFFIX = "_values"
 LEN_SUFFIX = "_lengths"
 
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+    from arkouda.numpy import cumsum
+else:
+    generic_msg = TypeVar("generic_msg")
+    cumsum = TypeVar("cumsum")
 
 def _aggregator(func):
     aggdoc = """
@@ -812,6 +816,7 @@ class SegArray:
             A tuple of two int64 pdarrays. The ith hash value is the concatenation
             of the ith values from each array.
         """
+        from arkouda.client import generic_msg
         repMsg = type_cast(
             str,
             generic_msg(
@@ -861,8 +866,8 @@ class SegArray:
         ---------
         load
         """
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
-
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.client import generic_msg
         return type_cast(
             str,
             generic_msg(
@@ -916,7 +921,8 @@ class SegArray:
         - Because HDF5 deletes do not release memory, this will create a copy of the
           file with the new data
         """
-        from arkouda.io import (
+        from arkouda.client import generic_msg
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,
@@ -994,8 +1000,8 @@ class SegArray:
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
         """
-        from arkouda.io import _mode_str_to_int
-
+        from arkouda.pandas.io import _mode_str_to_int
+        from arkouda.client import generic_msg
         if mode.lower() == "append":
             raise ValueError("Append mode is not supported for SegArray.")
 
@@ -1032,7 +1038,7 @@ class SegArray:
         -------
         SegArray
         """
-        from arkouda.io import read_hdf
+        from arkouda.pandas.io import read_hdf
 
         return read_hdf(prefix_path, datasets=dataset)
 
@@ -1326,6 +1332,7 @@ class SegArray:
         --------
         unregister, attach, is_registered
         """
+        from arkouda.client import generic_msg
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         generic_msg(
@@ -1423,6 +1430,7 @@ class SegArray:
             Raised if other is not a pdarray or the pdarray.dtype is not
             a supported dtype
         """
+        from arkouda.client import generic_msg
         return generic_msg(
             cmd="sendArray",
             args={

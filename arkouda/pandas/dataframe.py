@@ -24,15 +24,12 @@ from numpy import ndarray
 from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
 from typeguard import typechecked
 
-from arkouda.categorical import Categorical
-from arkouda.client import generic_msg, maxTransferBytes
+from arkouda.pandas.categorical import Categorical
 from arkouda.client_dtypes import BitVector, Fields, IPv4
-from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
-from arkouda.groupbyclass import GroupBy as akGroupBy
-from arkouda.groupbyclass import unique
-from arkouda.index import Index, MultiIndex
-from arkouda.numpy import cast as akcast
-from arkouda.numpy import cumsum, where
+from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES
+from arkouda.pandas.groupbyclass import GroupBy as akGroupBy
+from arkouda.pandas.groupbyclass import unique
+from arkouda.pandas.index import Index, MultiIndex
 from arkouda.numpy.dtypes import _is_dtype_in_union, bigint
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -52,9 +49,17 @@ from arkouda.pandas.row import Row
 if TYPE_CHECKING:
     from arkouda.numpy.segarray import SegArray
     from arkouda.pandas.series import Series
+    from arkouda.client import generic_msg, maxTransferBytes
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import cumsum, where
 else:
     Series = TypeVar("Series")
     SegArray = TypeVar("SegArray")
+    generic_msg = TypeVar("generic_msg")
+    maxTransferBytes = TypeVar("maxTransferBytes")
+    akcast = TypeVar("akcast")
+    cumsum = TypeVar("cumsum")
+    where = TypeVar("where")
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -110,10 +115,10 @@ class DataFrameGroupBy:
 
     Attributes
     ----------
-    gb : arkouda.groupbyclass.GroupBy
+    gb : arkouda.pandas.groupbyclass.GroupBy
         GroupBy object, where the aggregation keys are values of column(s) of a dataframe,
         usually in preparation for aggregating with respect to the other columns.
-    df : arkouda.dataframe.DataFrame
+    df : arkouda.pandas.dataframe.DataFrame
         The dataframe containing the original data.
     gb_key_names : str or list(str)
         The column name(s) associated with the aggregated columns.
@@ -223,14 +228,14 @@ class DataFrameGroupBy:
         Parameters
         ----------
         as_series : bool, default=None
-            Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
+            Indicates whether to return arkouda.pandas.dataframe.DataFrame (if as_series = False) or
             arkouda.pandas.series.Series (if as_series = True)
         sort_index : bool, default=True
             If True, results will be returned with index values sorted in ascending order.
 
         Returns
         -------
-        arkouda.dataframe.DataFrame or arkouda.pandas.series.Series
+        arkouda.pandas.dataframe.DataFrame or arkouda.pandas.series.Series
 
         Examples
         --------
@@ -558,7 +563,7 @@ class DataFrameGroupBy:
 
                 series = Series(values, index=Index(self.gb.unique_keys, name=self.gb_key_names[0]))
             elif isinstance(self.gb_key_names, list) and len(self.gb_key_names) > 1:
-                from arkouda.index import MultiIndex
+                from arkouda.pandas.index import MultiIndex
 
                 # handle when values is a tuple/list containing data and index
                 # since we are also sending the index keyword
@@ -681,7 +686,7 @@ class DataFrameGroupBy:
         --------
         >>> import arkouda as ak
         >>> ak.connect()
-        >>> from arkouda.dataframe import DataFrameGroupBy
+        >>> from arkouda.pandas.dataframe import DataFrameGroupBy
         >>> df = ak.DataFrame({"A":[1,2,2,3],"B":[3,4,5,6]})
 
         +----+-----+-----+
@@ -733,7 +738,7 @@ class DiffAggregate:
 
     Attributes
     ----------
-    gb : arkouda.groupbyclass.GroupBy
+    gb : arkouda.pandas.groupbyclass.GroupBy
         GroupBy object, where the aggregation keys are values of column(s) of a dataframe.
     values : arkouda.pandas.series.Series.
         A column to compute the difference on.
@@ -1249,7 +1254,7 @@ class DataFrame(UserDict):
 
     def _get_head_tail_server(self):
         from arkouda.numpy.segarray import SegArray
-
+        from arkouda.client import generic_msg
         if self._empty:
             return pd.DataFrame()
         self.update_nrows()
@@ -1373,6 +1378,7 @@ class DataFrame(UserDict):
             a supported dtype
 
         """
+        from arkouda.client import generic_msg
         self.update_nrows()
         idx = self._index
         msg_list = []
@@ -1438,7 +1444,7 @@ class DataFrame(UserDict):
     @classmethod
     def from_pandas(cls, pd_df):
         """
-        Copy the data from a pandas DataFrame into a new arkouda.dataframe.DataFrame.
+        Copy the data from a pandas DataFrame into a new arkouda.pandas.dataframe.DataFrame.
 
         Parameters
         ----------
@@ -1469,7 +1475,7 @@ class DataFrame(UserDict):
 
         >>> ak_df = DataFrame.from_pandas(pd_df)
         >>> type(ak_df)
-        arkouda.dataframe.DataFrame
+        arkouda.pandas.dataframe.DataFrame
         >>> display(ak_df)
 
         +----+-----+-----+
@@ -2526,7 +2532,7 @@ class DataFrame(UserDict):
 
         See Also
         --------
-        arkouda.dataframe.head
+        arkouda.pandas.dataframe.head
 
         Examples
         --------
@@ -2645,7 +2651,7 @@ class DataFrame(UserDict):
             return self
         return self[array(random.sample(range(self._nrows), n))]
 
-    from arkouda.groupbyclass import GroupBy as GroupBy_class
+    from arkouda.pandas.groupbyclass import GroupBy as GroupBy_class
 
     def GroupBy(
         self, keys, use_series=False, as_index=True, dropna=True
@@ -2658,8 +2664,8 @@ class DataFrame(UserDict):
         keys : str or list of str
             An (ordered) list of column names or a single string to group by.
         use_series : bool, default=False
-            If True, returns an arkouda.dataframe.DataFrameGroupBy object.
-            Otherwise an arkouda.groupbyclass.GroupBy object.
+            If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
+            Otherwise an arkouda.pandas.groupbyclass.GroupBy object.
         as_index: bool, default=True
             If True, groupby columns will be set as index
             otherwise, the groupby columns will be treated as DataFrame columns.
@@ -2670,9 +2676,9 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrameGroupBy or arkouda.groupbyclass.GroupBy
-            If use_series = True, returns an arkouda.dataframe.DataFrameGroupBy object.
-            Otherwise returns an arkouda.groupbyclass.GroupBy object.
+        arkouda.pandas.dataframe.DataFrameGroupBy or arkouda.pandas.groupbyclass.GroupBy
+            If use_series = True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
+            Otherwise returns an arkouda.pandas.groupbyclass.GroupBy object.
 
         See Also
         --------
@@ -2698,7 +2704,7 @@ class DataFrame(UserDict):
         +----+--------+--------+
 
         >>> df.GroupBy("col1")
-        <arkouda.groupbyclass.GroupBy at 0x7f2cf23e10c0>
+        <arkouda.pandas.groupbyclass.GroupBy at 0x7f2cf23e10c0>
         >>> df.GroupBy("col1").size()
         (array([1.00000000000000000 2.00000000000000000]), array([2 1]))
 
@@ -2728,7 +2734,7 @@ class DataFrame(UserDict):
         else:
             cols = [self.data[col] for col in keys]
 
-        from arkouda.groupbyclass import GroupBy as GroupBy_class
+        from arkouda.pandas.groupbyclass import GroupBy as GroupBy_class
 
         gb: Union[DataFrameGroupBy, GroupBy_class] = akGroupBy(cols, dropna=dropna)
         if use_series:
@@ -2906,7 +2912,7 @@ class DataFrame(UserDict):
         >>> ak.connect()
         >>> ak_df = ak.DataFrame({"A": ak.arange(2), "B": -1 * ak.arange(2)})
         >>> type(ak_df)
-        arkouda.dataframe.DataFrame
+        arkouda.pandas.dataframe.DataFrame
         >>> display(ak_df)
 
         +----+-----+-----+
@@ -3116,7 +3122,7 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
-        from arkouda.io import to_hdf
+        from arkouda.pandas.io import to_hdf
 
         data = self._prep_data(index=index, columns=columns)
         to_hdf(data, prefix_path=path, file_type=file_type)
@@ -3154,10 +3160,10 @@ class DataFrame(UserDict):
             Raised if a server-side error is thrown saving the pdarray
 
         """
-        from arkouda.categorical import Categorical as Categorical_
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.categorical import Categorical as Categorical_
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
         from arkouda.numpy.segarray import SegArray
-
+        from arkouda.client import generic_msg
         column_data = [
             (
                 obj.name
@@ -3280,7 +3286,7 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
-        from arkouda.io import update_hdf
+        from arkouda.pandas.io import update_hdf
 
         data = self._prep_data(index=index, columns=columns)
         return update_hdf(data, prefix_path=prefix_path, repack=repack)
@@ -3350,7 +3356,7 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
-        from arkouda.io import to_parquet
+        from arkouda.pandas.io import to_parquet
 
         data = self._prep_data(index=index, columns=columns)
         if not convert_categoricals and any(isinstance(val, Categorical) for val in data.values()):
@@ -3442,7 +3448,7 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
-        from arkouda.io import to_csv
+        from arkouda.pandas.io import to_csv
 
         data = self._prep_data(index=index, columns=columns)
         to_csv(data, path, names=columns, col_delim=col_delim, overwrite=overwrite)
@@ -3515,7 +3521,7 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
-        from arkouda.io import read_csv
+        from arkouda.pandas.io import read_csv
 
         data = read_csv(filename, column_delim=col_delim)
         return cls(data)
@@ -3570,7 +3576,7 @@ class DataFrame(UserDict):
         +----+-----+-----+
 
         """
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _dict_recombine_segarrays_categoricals,
             get_filetype,
             load_all,
@@ -4081,8 +4087,8 @@ class DataFrame(UserDict):
         keys : str or list of str
             An (ordered) list of column names or a single string to group by.
         use_series : bool, default=True
-            If True, returns an arkouda.dataframe.DataFrameGroupBy object.
-            Otherwise an arkouda.groupbyclass.GroupBy object.
+            If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
+            Otherwise an arkouda.pandas.groupbyclass.GroupBy object.
         as_index: bool, default=True
             If True, groupby columns will be set as index
             otherwise, the groupby columns will be treated as DataFrame columns.
@@ -4093,9 +4099,9 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.dataframe.DataFrameGroupBy or arkouda.groupbyclass.GroupBy
-            If use_series = True, returns an arkouda.dataframe.DataFrameGroupBy object.
-            Otherwise returns an arkouda.groupbyclass.GroupBy object.
+        arkouda.pandas.dataframe.DataFrameGroupBy or arkouda.pandas.groupbyclass.GroupBy
+            If use_series = True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
+            Otherwise returns an arkouda.pandas.groupbyclass.GroupBy object.
 
         See Also
         --------
@@ -4121,7 +4127,7 @@ class DataFrame(UserDict):
         +----+--------+--------+
 
         >>> df.GroupBy("col1")
-        <arkouda.groupbyclass.GroupBy at 0x7f2cf23e10c0>
+        <arkouda.pandas.groupbyclass.GroupBy at 0x7f2cf23e10c0>
         >>> df.GroupBy("col1").size()
         (array([1.00000000000000000 2.00000000000000000]), array([2 1]))
 
@@ -5176,9 +5182,9 @@ class DataFrame(UserDict):
         False
 
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.numpy.segarray import SegArray
-
+        from arkouda.client import generic_msg
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         column_data = [
@@ -5375,7 +5381,7 @@ class DataFrame(UserDict):
         DataFrame
 
         """
-        from arkouda.categorical import Categorical as Categorical_
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.numpy.segarray import SegArray
 
         data = json.loads(rep_msg)
