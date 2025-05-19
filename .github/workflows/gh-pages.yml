@@ -13,15 +13,27 @@ jobs:
   docs:
     if: github.repository == 'Bears-R-Us/arkouda'
     runs-on: ubuntu-latest
+    env:
+      CHPL_HOME: /opt/chapel-2.4.0
     container:
-      image: chapel/chapel:2.1.0
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Set Python version to 3.13
+      run: |
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1  
+        python3 -m ensurepip --default-pip    
+    - name: Set Chapel version to 2.4.0
+      run: |
+        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.4.0/bin/linux64-x86_64/chpl 1
+        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.4.0/bin/linux64-x86_64/chpldoc 1
+    - name: check chpldoc version
+      run: |  
+        chpldoc --version
     - name: Install dependencies
       run: |
-        apt-get update && apt-get install -y python3-pip rsync libhdf5-dev hdf5-tools libzmq3-dev
-        python3 -m pip install versioneer
-        python3 -m pip install -e .[dev]
+        python3 -m pip install .[dev]
     - name: Arkouda make doc
       run: |
         make doc
