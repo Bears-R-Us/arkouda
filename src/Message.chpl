@@ -71,6 +71,24 @@ module Message {
         );
     }
 
+    proc type MsgTuple.warning(msg: string): MsgTuple {
+        return new MsgTuple(
+            msg = msg,
+            msgType = MsgType.WARNING,
+            msgFormat = MsgFormat.STRING,
+            payload = b""
+        );
+    }
+
+    proc type MsgTuple.error(msg: string): MsgTuple {
+        return new MsgTuple(
+            msg = msg,
+            msgType = MsgType.ERROR,
+            msgFormat = MsgFormat.STRING,
+            payload = b""
+        );
+    }
+
     /*
         Create a MsgTuple indicating to the client that a new symbol was created
     */
@@ -126,15 +144,6 @@ module Message {
         return new MsgTuple(
             msg = "%s %s".format(dTypeName, NumPyDType.type2fmt(t)).format(scalar),
             msgType = MsgType.NORMAL,
-            msgFormat = MsgFormat.STRING,
-            payload = b""
-        );
-    }
-
-    proc type MsgTuple.error(msg: string): MsgTuple {
-        return new MsgTuple(
-            msg = msg,
-            msgType = MsgType.ERROR,
             msgFormat = MsgFormat.STRING,
             payload = b""
         );
@@ -492,7 +501,7 @@ module Message {
                 }
             }
 
-            throw new owned ErrorWithContext("JSON argument key Not Found; %s".format(key),
+            throw new owned ErrorWithContext("JSON argument key Not Found: %s".format(key),
                                              getLineNumber(),
                                              getRoutineName(),
                                              getModuleName(),

@@ -158,7 +158,7 @@ def _module_server() -> Iterator[None]:
 
 
 @pytest.fixture(scope="class", autouse=True)
-def manage_connection():
+def manage_connection(_class_server):
     import arkouda as ak
 
     try:
@@ -175,6 +175,12 @@ def manage_connection():
         ak.disconnect()
     except Exception as e:
         raise ConnectionError(e)
+
+
+# subdirectories can override this, for example to start per-class server
+@pytest.fixture(scope="class", autouse=True)
+def _class_server(request):
+    yield
 
 
 @pytest.fixture(autouse=True)
