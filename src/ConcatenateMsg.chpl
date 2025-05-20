@@ -615,7 +615,7 @@ module ConcatenateMsg
 
             forall i in 0..#numLocales {
                 mySendOffsets[i][numStringsSending[here.id][i]] = numBytesSending[here.id][i];
-                recvOffsets[i][here.id][0..#(numStringsSending[here.id][i]+1)] = mySendOffsets[i][0..#numStringsSending[here.id][i]];
+                recvOffsets[i][here.id][0..#(numStringsSending[here.id][i]+1)] = mySendOffsets[i][0..#(numStringsSending[here.id][i]+1)];
                 recvBytes[i][here.id][0..#numBytesSending[here.id][i]] = mySendBytes[i][0..#numBytesSending[here.id][i]];
             }
         }

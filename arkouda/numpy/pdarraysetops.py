@@ -305,8 +305,8 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
     remove some values to ensure that query has entries
     which don't appear in space
 
-    >>> space = space[arr2 != 9]
-    >>> space = space[arr2 != 3]
+    >>> space = space[space != 9]
+    >>> space = space[space != 3]
 
     >>> ak.indexof1d(query, space)
     array([0 4 1 3 10 2 6 12 13 5 7 8 9 14 5 7 11 15 5 7 0 4])
@@ -545,15 +545,13 @@ def union1d(
 
     Examples
     --------
-
     >>> import arkouda as ak
-    1D Example
 
+    1D Example
     >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
     array([-2 -1 0 1 2])
 
     Multi-Array Example
-
     >>> a = ak.arange(1, 6)
     >>> b = ak.array([1, 5, 3, 4, 2])
     >>> c = ak.array([1, 4, 3, 2, 5])
@@ -562,6 +560,7 @@ def union1d(
     >>> multib = [b, c, d]
     >>> ak.union1d(multia, multib)
     [array([1 2 2 3 4 4 5 5]), array([1 2 5 3 2 4 4 5]), array([1 2 4 3 5 4 2 5])]
+
     """
     from arkouda.categorical import Categorical as Categorical_
 
@@ -630,15 +629,13 @@ def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Unio
 
     Examples
     --------
-
     >>> import arkouda as ak
-    1D Example
 
+    1D Example
     >>> ak.intersect1d(ak.array([1, 3, 4, 3]), ak.array([3, 1, 2, 1]))
     array([1 3])
 
     Multi-Array Example
-
     >>> a = ak.arange(5)
     >>> b = ak.array([1, 5, 3, 4, 2])
     >>> c = ak.array([1, 4, 3, 2, 5])
@@ -647,6 +644,7 @@ def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Unio
     >>> multib = [b, c, d]
     >>> ak.intersect1d(multia, multib)
     [array([1 3]), array([1 3]), array([1 3])]
+
     """
     from arkouda.categorical import Categorical as Categorical_
 

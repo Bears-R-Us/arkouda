@@ -164,6 +164,8 @@ class TestNumpyManipulationFunctions:
 
         x = ak.arange(size, dtype=dtype).reshape((1, size, 1))
         assert_equal(ak.squeeze(x, axis=None), ak.arange(size, dtype=dtype))
+        assert_equal(ak.squeeze(x, axis=-3), ak.arange(size, dtype=dtype).reshape((size, 1)))
+        assert_equal(ak.squeeze(x, axis=-1), ak.arange(size, dtype=dtype).reshape((1, size)))
         assert_equal(ak.squeeze(x, axis=0), ak.arange(size, dtype=dtype).reshape((size, 1)))
         assert_equal(ak.squeeze(x, axis=2), ak.arange(size, dtype=dtype).reshape((1, size)))
         assert_equal(ak.squeeze(x, axis=(0, 2)), ak.arange(size, dtype=dtype))

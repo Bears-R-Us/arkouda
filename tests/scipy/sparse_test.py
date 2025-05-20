@@ -9,6 +9,16 @@ from arkouda.scipy.sparsematrix import (
 
 
 class TestSparse:
+    def test_sparrayclass_docstrings(self):
+        import doctest
+
+        from arkouda.scipy import sparrayclass
+
+        result = doctest.testmod(
+            sparrayclass, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     def test_utils(self):
         csc = random_sparse_matrix(10, 0.2, "CSC")
         csr = random_sparse_matrix(10, 0.2, "CSR")

@@ -672,9 +672,10 @@ class SegArray:
         >>> import arkouda as ak
         >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
         >>> segarr.to_ndarray()
-        array([array([1, 2, 3, 4]), array([5, 6, 7]), array([8, 9, 10, 11, 12])])
+        array([array([0, 1, 2, 3]), array([4, 5, 6]), array([ 7,  8,  9, 10, 11])],
+          dtype=object)
         >>> type(segarr.to_ndarray())
-        numpy.ndarray
+        <class 'numpy.ndarray'>
         """
         ndvals = self.values.to_ndarray()
         ndsegs = self.segments.to_ndarray()
@@ -703,7 +704,7 @@ class SegArray:
         >>> segarr.to_list()
         [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
         >>> type(segarr.to_list())
-        list
+        <class 'list'>
         """
         return [arr.tolist() for arr in self.to_ndarray()]
 
@@ -1064,7 +1065,7 @@ class SegArray:
         >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
         >>> seg_a.intersect(seg_b)
         SegArray([
-        [1, 3],
+        [1 3]
         [4]
         ])
         """
@@ -1119,8 +1120,8 @@ class SegArray:
         >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
         >>> seg_a.union(seg_b)
         SegArray([
-        [1, 2, 3, 4, 5],
-        [1, 2, 3, 4, 5]
+        [1 2 3 4 5]
+        [1 2 3 4 5]
         ])
         """
         from arkouda.numpy.pdarraysetops import union1d
@@ -1174,8 +1175,8 @@ class SegArray:
         >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
         >>> seg_a.setdiff(seg_b)
         SegArray([
-        [2, 4],
-        [1, 3, 5]
+        [2 4]
+        [1 3 5]
         ])
         """
         from arkouda.numpy.pdarraysetops import setdiff1d
@@ -1229,8 +1230,8 @@ class SegArray:
         >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
         >>> seg_a.setxor(seg_b)
         SegArray([
-        [2, 4, 5],
-        [1, 3, 5, 2]
+        [2 4 5]
+        [1 2 3 5]
         ])
         """
         from arkouda.numpy.pdarraysetops import setxor1d

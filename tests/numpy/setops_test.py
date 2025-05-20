@@ -11,13 +11,15 @@ NUMERIC_TYPES = [ak.int64, ak.uint64, ak.bigint, ak.bool_]
 
 
 class TestSetOps:
-    # def test_pdarraysetops_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(
-    #         pdarraysetops, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
-    #     )
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    def test_pdarraysetops_docstrings(self):
+        import doctest
+
+        from arkouda.numpy import pdarraysetops
+
+        result = doctest.testmod(
+            pdarraysetops, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @staticmethod
     def make_np_arrays(size, dtype):

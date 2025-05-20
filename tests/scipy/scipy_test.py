@@ -37,6 +37,16 @@ def bumpup(a):
 
 
 class TestStats:
+    from arkouda.scipy import _stats_py as stats
+
+    def test_scipy_stats_py_docstrings(self):
+        import doctest
+
+        from arkouda.scipy import _stats_py as stats
+
+        result = doctest.testmod(stats, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.skip_if_scipy_version_greater_than("1.13.1")
     @pytest.mark.parametrize(
         "lambda_",
