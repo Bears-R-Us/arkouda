@@ -145,17 +145,17 @@ __all__ = [
 
 NUMBER_FORMAT_STRINGS = {
     "bool": "{}",
-    "int64": "{:n}",
+    "int64": "{:d}",
     "float64": "{:.17f}",
-    "uint8": "{:n}",
-    "np.float64": "f",
-    "uint64": "{:n}",
-    "bigint": "{:n}",
+    "uint8": "{:d}",
+    "np.float64": "{f}",
+    "uint64": "{:d}",
+    "bigint": "{:d}",
 }
 
 
 def _datatype_check(the_dtype, allowed_list, name):
-    if not (the_dtype in allowed_list):
+    if the_dtype not in allowed_list:
         raise TypeError(f"{name} only implements types {allowed_list}")
 
 
@@ -389,7 +389,7 @@ ARKOUDA_SUPPORTED_INTS = (
     bigint,
 )
 
-ARKOUDA_SUPPORTED_FLOATS = (float, np.float64)
+ARKOUDA_SUPPORTED_FLOATS = (float, np.float64, np.float32)
 ARKOUDA_SUPPORTED_NUMBERS = (
     int,
     np.int8,

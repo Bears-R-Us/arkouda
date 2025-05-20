@@ -97,6 +97,14 @@ def randint(
     if dtype.name not in DTypes:
         raise TypeError(f"unsupported dtype {dtype}")
 
+    from arkouda.numpy.dtypes import isSupportedFloat
+
+    if dtype == akint64:
+        if isSupportedFloat(low):
+            low = int(low)
+        if isSupportedFloat(high):
+            high = int(high)
+
     repMsg = generic_msg(
         cmd=f"randint<{dtype.name},{ndim}>",
         args={
