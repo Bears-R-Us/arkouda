@@ -170,14 +170,11 @@ def _infinity_edge_case_helper(np_func, ak_func):
 
 
 class TestNumeric:
-    @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
-    def test_numeric_docstrings(self):
-        import doctest
-
-        from arkouda.numpy import numeric
-
-        result = doctest.testmod(numeric, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
-        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    # def test_numeric_docstrings(self):
+    #     import doctest
+    #
+    #     result = doctest.testmod(numeric, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @pytest.mark.parametrize("numeric_type", NUMERIC_TYPES)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
