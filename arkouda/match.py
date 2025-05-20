@@ -56,7 +56,7 @@ class Match:
 
     def matched(self) -> pdarray:
         """
-        Return a boolean array indiciating whether each element matched
+        Return a boolean array indiciating whether each element matched.
 
         Returns
         -------
@@ -94,7 +94,7 @@ class Match:
 
     def end(self) -> pdarray:
         """
-        Return the ends of matches
+        Return the ends of matches.
 
         Returns
         -------
@@ -113,7 +113,7 @@ class Match:
 
     def match_type(self) -> str:
         """
-        Return the type of the Match object
+        Return the type of the Match object.
 
         Returns
         -------
@@ -132,7 +132,7 @@ class Match:
 
     def find_matches(self, return_match_origins: bool = False):
         """
-        Return all matches as a new Strings object
+        Return all matches as a new Strings object.
 
         Parameters
         ----------
@@ -186,7 +186,8 @@ class Match:
     def group(self, group_num: int = 0, return_group_origins: bool = False):
         r"""
         Return a new Strings containing the capture group corresponding to group_num.
-        For the default, group_num=0, return the full match
+
+        For the default, group_num=0, return the full match.
 
         Parameters
         ----------
