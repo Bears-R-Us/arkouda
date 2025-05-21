@@ -17,12 +17,10 @@ from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.pdarraycreation import array, create_pdarray
-from arkouda.numpy.pdarraysetops import argsort
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
+from arkouda.numpy.pdarraycreation import array, ones
+from arkouda.numpy.pdarraysetops import argsort, in1d
 from arkouda.numpy.strings import Strings
-from arkouda.pdarrayclass import RegistrationError, pdarray
-from arkouda.pdarraycreation import array, create_pdarray, ones
-from arkouda.pdarraysetops import argsort, in1d
 from arkouda.sorting import coargsort
 from arkouda.util import convert_if_categorical, generic_concat, get_callback
 
@@ -402,28 +400,29 @@ class Index:
 
     @typechecked
     def sort_values(
-        self, ascending: bool = True, return_indexer: bool = False, na_position="last"
+        self, return_indexer: bool = False, ascending: bool = True, na_position="last"
     ) -> Union[Index, Tuple]:
         """
-        Return a sorted copy of the index,
-        and optionally return the indices that sorted the index itself.
+        Return a sorted copy of the index.
 
         Parameters
         ----------
         return_indexer : bool, default False
-            Should the indices that would sort the index be returned.
+            If True, also return the integer positions that sort the index.
         ascending : bool, default True
-            Should the index values be sorted in an ascending order.
-        na_position : {'first' or 'last'}, default 'last'
-            Argument 'first' puts NaNs at the beginning, 'last' puts NaNs at
-            the end.
+            Sort in ascending order. Use False for descending.
+        na_position : {'first', 'last'}, default 'last'
+            Where to position NaNs. 'first' puts NaNs at the beginning,
+            'last' at the end.
 
         Returns
         -------
-        sorted_index : arkouda.Index
-            Sorted copy of the index.
-        indexer : arkouda.pdarray or list, optional
-            The indices that the index itself was sorted by.
+        Union[Index, (Index, Union[pdarray, list])]
+            sorted_index : arkouda.Index
+                A new Index whose values are sorted.
+            indexer : Union[arkouda.pdarray, list], optional
+                The indices that would sort the original index.
+                Only returned when ``return_indexer=True``.
 
         Examples
         --------
@@ -431,19 +430,19 @@ class Index:
         >>> idx
         Index([10, 100, 1, 1000], dtype='int64')
 
-        Sort values in ascending order (default behavior).
-
+        Sort in ascending order (default):
         >>> idx.sort_values()
         Index([1, 10, 100, 1000], dtype='int64')
 
-        Sort values in descending order, and also get the indices `idx` was
-        sorted by.
-
+        Sort in descending order and get the sort positions:
         >>> idx.sort_values(ascending=False, return_indexer=True)
-        (Index([1000, 100, 10, 1], dtype='int64'), array([3, 1, 0, 2]))
+        (Index([1000, 100, 10, 1], dtype='int64'),
+         array([3, 1, 0, 2]))
 
         """
         from arkouda.util import is_float
+
+        perm: Union[pdarray, list]
 
         if na_position not in ["first", "last"]:
             raise ValueError('na_position must be "first" or "last".')
@@ -460,25 +459,33 @@ class Index:
 
             from numpy import isnan as np_isnan
 
-            if isinstance(perm, list):
+            from arkouda.numpy.dtypes import isSupportedNumber
+
+            # if builtins.all(isinstance(x, (float, np.number)) for x in self.values):
+            if builtins.all(isSupportedNumber(x) for x in self.values):
                 is_nan = np_isnan(self.values)[perm]
 
                 if na_position == "last":
-                    perm = np.concatenate([perm[~is_nan], perm[is_nan]]).tolist()
+                    perm = np.concatenate([np.array(perm)[~is_nan], np.array(perm)[is_nan]]).tolist()
                 else:
-                    perm = np.concatenate([perm[is_nan], perm[~is_nan]]).tolist()
+                    perm = np.concatenate([np.array(perm)[is_nan], np.array(perm)[~is_nan]]).tolist()
 
-        elif isinstance(self.values, pdarray) and is_float(self.values):
+        elif isinstance(self.values, (Strings, Categorical, pdarray)):
             from arkouda import concatenate
             from arkouda import isnan as ak_isnan
 
             perm = argsort(self.values, ascending=ascending)
 
-            is_nan = ak_isnan(self.values)[perm]
-            if na_position == "last":
-                perm = concatenate([perm[~is_nan], perm[is_nan]])
-            else:
-                perm = concatenate([perm[is_nan], perm[~is_nan]])
+            if is_float(self.values):
+                is_nan = ak_isnan(self.values)[perm]
+                if na_position == "last":
+                    perm = concatenate([perm[~is_nan], perm[is_nan]])
+                else:
+                    perm = concatenate([perm[is_nan], perm[~is_nan]])
+        else:
+            # catch anything else early
+
+            raise TypeError(f"Unsupported index dtype: {type(self.values)}")
 
         if return_indexer:
             return self._reindex(perm), perm

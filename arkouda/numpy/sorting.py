@@ -7,15 +7,7 @@ import numpy as np
 from typeguard import check_type, typechecked
 
 from arkouda.client import generic_msg
-from arkouda.numpy.dtypes import (
-    bigint,
-    bool_,
-    dtype,
-    float64,
-    int64,
-    int_scalars,
-    uint64,
-)
+from arkouda.numpy.dtypes import bigint, dtype, float64, int64, int_scalars, uint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import array, zeros
 from arkouda.numpy.strings import Strings
@@ -99,7 +91,7 @@ def argsort(
 
     check_type(argname="argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
 
-    if hasattr(pda, "argsort"):
+    if isinstance(pda, Categorical):
         return cast(Categorical, pda).argsort(ascending=ascending)
     if pda.size == 0 and hasattr(pda, "dtype"):
         return zeros(0, dtype=pda.dtype)
@@ -129,7 +121,9 @@ def argsort(
     if ascending is True or (hasattr(pda, "ndim") and pda.ndim != 1):
         return sorted_array
     else:
-        return sorted_array[::-1]
+        from arkouda.numpy.manipulation_functions import flip
+
+        return flip(sorted_array)  # sorted_array[::-1]
 
 
 def coargsort(
@@ -246,7 +240,9 @@ def coargsort(
     if ascending is True or max_dim > 1:
         return sorted_array
     else:
-        return sorted_array[::-1]
+        from arkouda.numpy.manipulation_functions import flip
+
+        return flip(sorted_array)  # sorted_array[::-1]
 
 
 @typechecked

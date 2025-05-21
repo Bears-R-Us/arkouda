@@ -18,7 +18,7 @@ from arkouda.index import Index, MultiIndex
 from arkouda.numpy import cast as akcast
 from arkouda.numpy import isnan, value_counts
 from arkouda.numpy.dtypes import bool_scalars, dtype, int64
-from arkouda.numpy.pdarraycreation import arange, array, full, zeros
+from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, full, zeros
 from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import get_callback, is_float
@@ -762,7 +762,9 @@ class Series:
                 # For numeric values, negation reverses sort order
                 perm = argsort(-self.values)
             else:
-                perm = argsort(self.values)[::-1]
+                from arkouda.numpy.manipulation_functions import flip
+
+                perm = flip(argsort(self.values))  # argsort(self.values)[::-1]
         else:
             perm = argsort(self.values)
         return self._reindex(perm)

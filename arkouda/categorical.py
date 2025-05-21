@@ -906,8 +906,10 @@ class Categorical:
         -------
         pdarray, int64
             The indices that sort the Categorical.
+
         """
         from arkouda import arange
+        from arkouda.numpy.manipulation_functions import flip
 
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
@@ -917,7 +919,7 @@ class Categorical:
         if ascending is True:
             return sorted_array
         else:
-            return sorted_array[::-1]
+            return flip(sorted_array)  # sorted_array[::-1]
 
     def sort_values(self):
         # __doc__ = sort.__doc__
