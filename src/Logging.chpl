@@ -149,19 +149,19 @@ module Logging {
             }
         }
         
-        proc critical(moduleName, routineName, lineNumber, msg: string) throws {
+        proc error(moduleName, routineName, lineNumber, msg: string) throws {
             try {
                 this.outputHandler.write(generateLogMessage(moduleName, routineName, lineNumber, 
-                                            msg, "CRITICAL"));
+                                            msg, "ERROR"));
             } catch (e: Error) {
                 writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
             }            
         }
         
-        proc error(moduleName, routineName, lineNumber, msg: string) throws {
+        proc critical(moduleName, routineName, lineNumber, msg: string) throws {
             try {
                 this.outputHandler.write(generateLogMessage(moduleName, routineName, lineNumber, 
-                                            msg, "ERROR"));
+                                            msg, "CRITICAL"));
             } catch (e: Error) {
                 writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
             }

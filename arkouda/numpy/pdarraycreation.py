@@ -917,6 +917,7 @@ def full_like(pda: pdarray, fill_value: numeric_scalars) -> Union[pdarray, Strin
     return full(tuple(pda.shape), fill_value, pda.dtype, pda.max_bits)
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def arange(
     __arg1: int_scalars,
@@ -926,6 +927,7 @@ def arange(
 ) -> pdarray: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def arange(
     __arg1: int_scalars,
@@ -936,6 +938,7 @@ def arange(
 ) -> pdarray: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def arange(
     __arg1: int_scalars,
