@@ -1,6 +1,3 @@
-ApplyMsg.chpl
-ArgSortMsg.chpl
-arkouda_server.chpl
 ArraySetops.chpl
 ArraySetopsMsg.chpl
 AryUtil.chpl
@@ -15,7 +12,6 @@ Codecs.chpl
 CommAggregation.chpl
 CommandMap.chpl
 CommDiagnosticsMsg.chpl
-CommPrimitives.chpl
 compat
 ConcatenateMsg.chpl
 CSVMsg.chpl
