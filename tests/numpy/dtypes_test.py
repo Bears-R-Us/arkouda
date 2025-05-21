@@ -229,9 +229,9 @@ class TestDTypes:
 
     def test_number_format_strings(self):
         assert "{}" == dtypes.NUMBER_FORMAT_STRINGS["bool"]
-        assert "{:n}" == dtypes.NUMBER_FORMAT_STRINGS["int64"]
+        assert "{:d}" == dtypes.NUMBER_FORMAT_STRINGS["int64"]
         assert "{:.17f}" == dtypes.NUMBER_FORMAT_STRINGS["float64"]
-        assert "f" == dtypes.NUMBER_FORMAT_STRINGS["np.float64"]
-        assert "{:n}" == dtypes.NUMBER_FORMAT_STRINGS["uint8"]
-        assert "{:n}" == dtypes.NUMBER_FORMAT_STRINGS["uint64"]
-        assert "{:n}" == dtypes.NUMBER_FORMAT_STRINGS["bigint"]
+        assert "{f}" == dtypes.NUMBER_FORMAT_STRINGS["np.float64"]
+        assert "{:d}" == dtypes.NUMBER_FORMAT_STRINGS["uint8"]
+        assert "{:d}" == dtypes.NUMBER_FORMAT_STRINGS["uint64"]
+        assert "{:d}" == dtypes.NUMBER_FORMAT_STRINGS["bigint"]

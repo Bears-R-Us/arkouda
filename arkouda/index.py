@@ -213,6 +213,7 @@ class Index:
     def nlevels(self):
         """
         Integer number of levels in this Index.
+
         An Index will always have 1 level.
 
         See Also
@@ -289,7 +290,7 @@ class Index:
     @property
     def is_unique(self):
         """
-        Property indicating if all values in the index are unique
+        Property indicating if all values in the index are unique.
 
         Returns
         -------
@@ -455,7 +456,7 @@ class Index:
 
     def set_dtype(self, dtype):
         """
-        Change the data type of the index
+        Change the data type of the index.
 
         Currently only aku.ip_address and ak.array are supported.
         """
@@ -465,7 +466,7 @@ class Index:
 
     def register(self, user_defined_name):
         """
-        Register this Index object and underlying components with the Arkouda server
+        Register this Index object and underlying components with the Arkouda server.
 
         Parameters
         ----------
@@ -543,7 +544,9 @@ class Index:
 
     def unregister(self):
         """
-        Unregister this Index object in the arkouda server which was previously
+        Unregister this Index object in the arkouda server.
+
+        Unregister this Index object in the arkouda server, which was previously
         registered using register() and/or attached to using attach()
 
         Raises
@@ -571,8 +574,10 @@ class Index:
 
     def is_registered(self):
         """
-         Return True iff the object is contained in the registry or is a component of a
-         registered object.
+        Return whether the object is registered.
+
+        Return True iff the object is contained in the registry or is a component of a
+        registered object.
 
         Returns
         -------
@@ -724,6 +729,7 @@ class Index:
     ) -> str:
         """
         Save the Index to HDF5.
+
         The object can be saved to a collection of files or single file.
 
         Parameters
@@ -824,8 +830,9 @@ class Index:
         repack: bool = True,
     ):
         """
-        Overwrite the dataset with the name provided with this Index object. If
-        the dataset does not exist it is added.
+        Overwrite the dataset with the name provided with this Index object.
+
+        If the dataset does not exist it is added.
 
         Parameters
         ----------
@@ -919,7 +926,9 @@ class Index:
         compression: Optional[str] = None,
     ):
         """
-        Save the Index to Parquet. The result is a collection of files,
+        Save the Index to Parquet.
+
+        The result is a collection of files,
         one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the array to its
         corresponding file.
@@ -976,7 +985,9 @@ class Index:
         overwrite: bool = False,
     ):
         r"""
-        Write Index to CSV file(s). File will contain a single column with the pdarray data.
+        Write Index to CSV file(s).
+
+        File will contain a single column with the pdarray data.
         All CSV Files written by Arkouda include a header denoting data types of the columns.
 
         Parameters
@@ -1227,7 +1238,7 @@ class MultiIndex(Index):
 
     def set_dtype(self, dtype):
         """
-        Change the data type of the index
+        Change the data type of the index.
 
         Currently only aku.ip_address and ak.array are supported.
         """
@@ -1243,7 +1254,7 @@ class MultiIndex(Index):
 
     def register(self, user_defined_name):
         """
-        Register this Index object and underlying components with the Arkouda server
+        Register this Index object and underlying components with the Arkouda server.
 
         Parameters
         ----------
@@ -1380,6 +1391,7 @@ class MultiIndex(Index):
     ) -> str:
         """
         Save the Index to HDF5.
+
         The object can be saved to a collection of files or single file.
 
         Parameters
@@ -1468,8 +1480,9 @@ class MultiIndex(Index):
         repack: bool = True,
     ):
         """
-        Overwrite the dataset with the name provided with this Index object. If
-        the dataset does not exist it is added.
+        Overwrite the dataset with the name provided with this Index object.
+
+        If the dataset does not exist it is added.
 
         Parameters
         ----------

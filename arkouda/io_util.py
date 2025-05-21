@@ -6,8 +6,7 @@ from typing import Any, Dict, Mapping
 
 def get_directory(path: str) -> Path:
     """
-    Create the directory if it does not exist and then
-    returns the corresponding Path object
+    Create the directory if it does not exist and returns the corresponding Path object.
 
     Parameters
     ----------
@@ -35,7 +34,9 @@ def get_directory(path: str) -> Path:
 
 def write_line_to_file(path: str, line: str) -> None:
     """
-    Write a line to the requested file. Note: if the file
+    Write a line to the requested file.
+
+    Note: if the file
     does not exist, the file is created first and then
     the specified line is written to it.
 
@@ -63,9 +64,12 @@ def write_line_to_file(path: str, line: str) -> None:
 
 def delimited_file_to_dict(path: str, delimiter: str = ",") -> Dict[str, str]:
     """
+    Return a dictionary populated by lines from a file.
+
     Return a dictionary populated by lines from a file where
     the first delimited element of each line is the key and
     the second delimited element is the value.
+    If the file does not exist, return an empty dictionary.
 
     Parameters
     ----------
@@ -84,21 +88,28 @@ def delimited_file_to_dict(path: str, delimiter: str = ",") -> Dict[str, str]:
     ------
     UnsupportedOperation
         Raised if there's an error in reading the file
+    ValueError
+        Raised if a line has more or fewer than two delimited elements
 
     """
     values: Dict[str, str] = {}
 
-    with open(path, "a+") as f:
-        f.seek(0)
-        for line in f:
-            line = line.rstrip()
-            key, value = line.split(delimiter)
-            values[key] = value
+    try:
+        with open(path, "r") as f:
+            for line in f:
+                line = line.rstrip()
+                key, value = line.split(delimiter)
+                values[key] = value
+    except FileNotFoundError:
+        pass  # return an empty dictionary
+
     return values
 
 
 def dict_to_delimited_file(path: str, values: Mapping[Any, Any], delimiter: str = ",") -> None:
     """
+    Write a dictionary to delimited lines in a file.
+
     Write a dictionary to delimited lines in a file where
     the first delimited element of each line is the dict key
     and the second delimited element is the dict value. If the
@@ -152,3 +163,20 @@ def delete_directory(dir: str) -> None:
             shutil.rmtree(dir)
         except OSError as e:
             print("Error: %s - %s." % (e.filename, e.strerror))
+
+
+def directory_exists(dir: str) -> bool:
+    """
+    Return True if the directory exists.
+
+    Parameters
+    ----------
+    dir : str
+        The path to the directory
+
+    Returns
+    -------
+    True if the directory exists, False otherwise.
+
+    """
+    return isdir(dir)

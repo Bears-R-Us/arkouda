@@ -716,6 +716,10 @@ docstr-coverage:
 	docstr-coverage arkouda --config .docstr.yaml
 
 
+chplcheck:
+	#   Check chapel linter, ignoring files in .chplcheckignore:
+	find src -type f -name '*.chpl'   | grep -v -f .chplcheckignore   | xargs chplcheck --add-rules src/scripts/chplcheck_ak_prefix.py --disable-rule CamelCaseFunctions  
+
 #################
 #### Test.mk ####
 #################
@@ -768,6 +772,7 @@ print-%:
 size=100
 test-python:
 	python3 -m pytest -c pytest.ini --size=$(size) $(ARKOUDA_PYTEST_OPTIONS)
+	python3 -m pytest -c pytest.opts.ini --size=$(size) $(ARKOUDA_PYTEST_OPTIONS)
 
 CLEAN_TARGETS += test-clean
 .PHONY: test-clean

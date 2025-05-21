@@ -76,6 +76,8 @@ def align(*args):
 
 def right_align(left, right):
     """
+    Map two arrays of sparse values to the 0-up index.
+
     Map two arrays of sparse values to the 0-up index set implied by the right array,
     discarding values from left that do not appear in right.
 
@@ -104,6 +106,8 @@ def right_align(left, right):
 
 def left_align(left, right):
     """
+    Map two arrays of sparse identifiers to the 0-up index.
+
     Map two arrays of sparse identifiers to the 0-up index set implied by the left array,
     discarding values from right that do not appear in left.
     """
@@ -339,8 +343,7 @@ def lookup(keys, values, arguments, fillvalue=-1):
 
 def in1d_intervals(vals, intervals, symmetric=False):
     """
-    Test each value for membership in *any* of a set of half-open (pythonic)
-    intervals.
+    Test each value for membership in *any* of a set of half-open (pythonic) intervals.
 
     Parameters
     ----------
@@ -390,6 +393,8 @@ def in1d_intervals(vals, intervals, symmetric=False):
 
 def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
     """
+    Return the index of the best interval containing each query value.
+
     Given an array of query vals and non-overlapping, closed intervals, return
     the index of the best (see tiebreak) interval containing each query value,
     or -1 if not present in any interval.
@@ -662,6 +667,8 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
 
 def is_cosorted(arrays):
     """
+    Return True iff the arrays are cosorted.
+
     Return True iff the arrays are cosorted, i.e., if the arrays were columns in a table
     then the rows are sorted.
 

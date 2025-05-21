@@ -17,8 +17,7 @@ from arkouda.numpy.strings import Strings
 
 def BitVectorizer(width=64, reverse=False):
     """
-    Make a callback (i.e. function) that can be called on an
-    array to create a BitVector.
+    Make a callback (i.e. function) that can be called on an array to create a BitVector.
 
     Parameters
     ----------
@@ -196,7 +195,7 @@ class BitVector(pdarray):
 
     def register(self, user_defined_name):
         """
-        Register this BitVector object and underlying components with the Arkouda server
+        Register this BitVector object and underlying components with the Arkouda server.
 
         Parameters
         ----------
@@ -527,6 +526,8 @@ class IPv4(pdarray):
 
     def normalize(self, x):
         """
+        Normalize IP adress.
+
         Take in an IP address as a string, integer, or IPAddress object,
         and convert it to an integer.
         """
@@ -624,7 +625,7 @@ class IPv4(pdarray):
 
     def register(self, user_defined_name):
         """
-        Register this IPv4 object and underlying components with the Arkouda server
+        Register this IPv4 object and underlying components with the Arkouda server.
 
         Parameters
         ----------

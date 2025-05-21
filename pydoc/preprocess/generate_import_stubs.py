@@ -10,7 +10,7 @@ def insert_spaces_after_newlines(input_string, spaces):
         if len(starting_indents) > 0:
             old_indent_pattern = "^" + starting_indents[0]
         else:
-            return input_string
+            old_indent_pattern = "^"
 
         lines = input_string.split("\n")
         result = []
@@ -160,7 +160,6 @@ def main():
         all_only=False,
         allow_arkouda=True,
     )
-    write_stub(aknp.random, "arkouda/numpy/random.pyi", all_only=False, allow_arkouda=True)
     write_stub(akscipy, "arkouda/scipy.pyi", all_only=True, allow_arkouda=True)
     write_stub(akscipyStats, "arkouda/scipy/stats.pyi", all_only=True, allow_arkouda=True)
     write_stub(akscipySpecial, "arkouda/scipy/special.pyi", all_only=True, allow_arkouda=True)
@@ -173,6 +172,7 @@ def main():
         all_only=True,
         allow_arkouda=True,
     )
+    write_stub(aknp.imports, "arkouda/numpy/imports.pyi", all_only=True, allow_arkouda=False)
 
 
 if __name__ == "__main__":

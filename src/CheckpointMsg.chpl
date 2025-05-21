@@ -2,12 +2,13 @@ module CheckpointMsg {
   use FileSystem;
   use List;
   use ArkoudaJSONCompat;
-  import IO, Path;
+  import IO, Path, Time;
   import Reflection.{getModuleName as M,
                      getRoutineName as R,
                      getLineNumber as L};
 
   use ServerErrors, ServerConfig;
+  import ServerDaemon.DefaultServerDaemon;
   use MultiTypeSymbolTable, MultiTypeSymEntry;
   use Message;
   use ParquetMsg;
@@ -25,17 +26,55 @@ module CheckpointMsg {
   private config const logChannel = ServerConfig.logChannel;
   const cpLogger = new Logger(logLevel,logChannel);
 
+  /* Perform checkpointing automatically when memory usage exceeds this many percent
+     of available memory. By default / if <=0, auto-checkpointing is not triggered by memory usage. */
+  config const checkpointMemPct = 0;
 
-  proc saveCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
-                         st: borrowed SymTab): MsgTuple throws {
-    var basePath = msgArgs.getValueOf("path");
-    const nameArg = msgArgs.getValueOf("name");
-    const mode = msgArgs.getValueOf("mode");
+  /* When memory exceeds the `checkpointMemPct` threhsold, wait for this many seconds
+     of idle time before checkpointing. By default / if <=0, uses 5 seconds. */
+  config var checkpointMemPctDelay = 0;
 
+  /* Perform checkpointing automatically when the server is idle for this many seconds.
+     By default / if <=0, auto-checkpointing is not triggered by idle time. */
+  config const checkpointIdleTime = 0;
+
+  /* The auto-checkpoint implementation will wake up every this many seconds to check
+     if a checkpoint needs to be saved due to memory usage or idle time.
+     By default / if <=0, uses min(checkpointMemPctDelay,checkpointIdleTime). */
+  config var checkpointCheckInterval = 0;
+
+  // The smaller of the active delays, 0 if no checking is requested.
+  private var minRequestedDelay = 0;
+
+  // The biggest of the active delays.
+  private var maxRequestedDelay = 0;
+
+  /* Automatic checkpointing due to memory usage or idle time will wait for at least this many seconds
+     after any completed checkpoint save or load operations, whether automatic or client-initiated.
+     By default / if <=0, uses 3600 (one hour). This avoids overly-frequent auto-checkpointing.
+     The server does not need not be idle during this interval.
+     Checkpoint operations requested by the client are not subject to this delay. */
+  config var checkpointInterval = 0;
+
+  /* The directory to save the automatic checkpoint, like the `path` argument of save_checkpoint(). */
+  config const checkpointPath = ".akdata";
+
+  /* The name for the automatic checkpoint, like the `name` argument of save_checkpoint(). */
+  config const checkpointName = "auto_checkpoint";
+
+  // Time stamp of a successful checkpointing operation.
+  // Note: this is shared across all daemons.
+  private var lastCkptCompletion: atomic real = 0;
+
+  private proc updateLastCkptCompletion() {
+    lastCkptCompletion.write(Time.timeSinceEpoch().totalSeconds());
+  }
+
+
+  private proc saveCheckpointImpl(basePath, cpName, mode, st) throws {
     if !exists(basePath) then
       mkdir(basePath);
 
-    const cpName = if nameArg.isEmpty() then st.serverid else nameArg;
     const cpPath = Path.joinPath(basePath, cpName);
 
     if exists(cpPath) {
@@ -80,6 +119,19 @@ module CheckpointMsg {
         cpLogger.debug(M(), R(), L(), "Cannot save %s".format(name));
       }
     }
+
+    updateLastCkptCompletion();
+  }
+
+  proc saveCheckpointMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                         st: borrowed SymTab): MsgTuple throws {
+    const basePath = msgArgs.getValueOf("path");
+    const nameArg = msgArgs.getValueOf("name");
+    const cpName = if nameArg.isEmpty() then st.serverid else nameArg;
+    const mode = msgArgs.getValueOf("mode");
+
+    saveCheckpointImpl(basePath, cpName, mode, st);
+
     return Msg.send(cpName);
   }
 
@@ -128,7 +180,138 @@ module CheckpointMsg {
                      "Loaded array with metadata %s".format(mdName));
 
     }
+    updateLastCkptCompletion();
     return Msg.send(nameArg);
+  }
+
+  // the smaller of those argument that are positive
+  private proc minOfPos(x, y: x.type) {
+    if x <= 0 && y <= 0 then return 0: x.type;
+    if x <= 0 then return y;
+    if y <= 0 then return x;
+    return min(x, y);
+  }
+
+  // returns true if the daemon was started
+  proc startAsyncCheckpointDaemon(sd: borrowed DefaultServerDaemon) {
+    if checkpointMemPct <= 0 && checkpointIdleTime <= 0 {
+      try! cpLogger.info(M(), R(), L(), "asynchronous checkpointing was not requested");
+      return false;
+    }
+
+    // tidy up the delays and 'minRequestedDelay'
+
+    if checkpointMemPct <= 0 then checkpointMemPctDelay = 0;
+    else if checkpointMemPctDelay <= 0 then checkpointMemPctDelay = 5;
+
+    if checkpointInterval <= 0 then checkpointInterval = 3600;
+
+    minRequestedDelay = minOfPos(checkpointMemPctDelay, checkpointIdleTime);
+
+    if checkpointCheckInterval <= 0 then checkpointCheckInterval = minRequestedDelay;
+
+    maxRequestedDelay = max(checkpointInterval, checkpointCheckInterval,
+                            checkpointIdleTime, checkpointMemPctDelay);
+
+    // start the asynchronous task
+    begin asyncCheckpointDaemon(sd);
+
+    try! cpLogger.info(M(), R(), L(), "started the asynchronous checkpointing daemon");
+    return true;
+  }
+
+  //
+  // This function runs asynchronously. It creates automatic checkpoints.
+  //
+  private proc asyncCheckpointDaemon(sd: borrowed DefaultServerDaemon) {
+    var idleStartForLastCheckpoint: real = 0;
+    var idleStartForLastMemCheck: real = 0;
+    var delay: real = minRequestedDelay;
+
+    // The only way to end this task is exit() in DefaultServerDaemon.shutdown().
+    while true {
+      try {
+        Time.sleep(max(delay, checkpointCheckInterval));
+
+        // Check and checkpoint within the same mutex region
+        // to avoid the server firing up when we are about to checkpoint.
+        sd.activityMutex.writeEF("async checkpointing");
+        defer { sd.activityMutex.readFE(); }
+
+        const curTime = Time.timeSinceEpoch().totalSeconds();
+        const lastCkpt = lastCkptCompletion.read();
+
+        if lastCkpt > 0 && curTime < lastCkpt + checkpointInterval {
+          // There was a recent checkpoint activity. Wait.
+          delay = lastCkpt + checkpointInterval - curTime;
+          continue;
+        }
+
+        const idleStart = sd.idlePeriodStart.read();
+        if idleStart == 0 {
+          // The server is not idle. Do not checkpoint now.
+          delay = minRequestedDelay;
+          continue;
+        }
+
+        if idleStart == idleStartForLastCheckpoint {
+          // There has been no action on the server since we last checkpointed.
+          try! cpLogger.debug(M(), R(), L(), "no action since last checkpoint");
+          delay = minRequestedDelay;
+          continue;
+        }
+
+        const idleTime = curTime - idleStart;
+        if idleTime < minRequestedDelay {
+          // The server has not been idle long enough. Check back later.
+          try! cpLogger.debug(M(), R(), L(), "the server has not been idle for long enough");
+          delay = minRequestedDelay - idleTime;
+          continue;
+        }
+
+        const ckptReason = needToCheckpoint(idleTime, idleStart, idleStartForLastMemCheck);
+        if ! ckptReason.isEmpty() {
+          // Save a checkpoint.
+          const ref basePath = checkpointPath;
+          const ref cpName = checkpointName;
+          cpLogger.info(M(), R(), L(), "starting autoCheckpoint: " + ckptReason +
+                        "; saving into " + basePath + "/" + cpName);
+
+          saveCheckpointImpl(basePath, cpName, "overwrite", sd.st);
+
+          idleStartForLastCheckpoint = idleStart;
+          cpLogger.info(M(), R(), L(), "finished autoCheckpoint into " +
+                        basePath + "/" + cpName);
+
+          // Fulfill all waiting periods before a next checkpoint.
+          delay = maxRequestedDelay;
+          continue;
+        }
+
+        // Nothing came up. Check back later.
+        delay = checkpointCheckInterval;
+
+      } catch err {
+          try! cpLogger.error(M(), R(), L(), err.message());
+      }
+    }
+  }
+
+  private proc needToCheckpoint(idleTime, idleStart, ref idleStartForLastMemCheck) {
+    if checkpointIdleTime > 0 && idleTime >= checkpointIdleTime then
+      return "server was idle for over " + checkpointIdleTime:string + " seconds";
+
+    if checkpointMemPctDelay > 0 && idleTime >= checkpointMemPctDelay &&
+        // no need to check if no server action since we last checked
+        idleStart > idleStartForLastMemCheck {
+      idleStartForLastMemCheck = idleStart;
+      // check whether memory use exceeds checkpointMemPct
+      if (getMemUsed():real / getMemLimit()) >= checkpointMemPct / 100.0 then
+        return "memory usage exceeded " + checkpointMemPct:string + "%";
+    }
+
+    // no need to checkpoint
+    return "";
   }
 
   private proc getSEType(type t) type {
@@ -282,6 +465,7 @@ module CheckpointMsg {
   use CommandMap;
   registerFunction("save_checkpoint", saveCheckpointMsg, M());
   registerFunction("load_checkpoint", loadCheckpointMsg, M());
+  funStartAsyncCheckpointDaemon = startAsyncCheckpointDaemon;
 
   /* Thrown while loading a checkpoint. The cases for this error type is limited
      to the logic of checkpointing itself. Other errors related to IO etc can

@@ -85,8 +85,9 @@ clientLogger = getArkoudaLogger(name="Arkouda User Logger", logFormat="%(message
 
 class ClientMode(Enum):
     """
-    The ClientMode enum provides controlled vocabulary indicating whether the
-    Arkouda client is in UI mode or API mode. If in API mode, it is assumed the
+    Provide controlled vocabulary indicating whether the Arkouda client is in UI mode or API mode.
+
+    If in API mode, it is assumed the
     Arkouda client is being used via an API call instead of a Python shell or notebook.
     """
 
@@ -103,10 +104,7 @@ class ClientMode(Enum):
 
 
 class ShellMode(Enum):
-    """
-    The ShellMode Enum indicates whether the Python shell corresponds
-    to a REPL shell, Jupyter notebook, or IPython shell.
-    """
+    """Indicate whether the Python shell corresponds to a Jupyter notebook, or REPL or IPython shell."""
 
     IPYTHON_NOTEBOOK = "TerminalInteractiveShell"
     JUPYTER_NOTEBOOK = "ZMQInteractiveShell"
@@ -122,10 +120,7 @@ class ShellMode(Enum):
 
 
 class RequestMode(Enum):
-    """
-    The RequestMode Enum indicates whether the Arkouda client-server
-    communication pattern will be synchronous or asynchronous.
-    """
+    """The Arkouda client-server communication pattern (synchronous or asynchronous)."""
 
     SYNCHRONOUS = "SYNCHRONOUS"
     ASYNCHRONOUS = "ASYNCHRONOUS"
@@ -140,10 +135,7 @@ class RequestMode(Enum):
 
 
 class RequestStatus(Enum):
-    """
-    The RequestStatus Enum indicates whether an asynchronous method
-    invocation has completed.
-    """
+    """The RequestStatus Enum indicates whether an asynchronous method invocation has completed."""
 
     PENDING = "PENDING"
     RUNNING = "RUNNING"
@@ -160,8 +152,7 @@ class RequestStatus(Enum):
 
 def get_shell_mode():
     """
-    Determine the Python shell type and returns the corresponding
-    ShellMode enum.
+    Determine the Python shell type and returns the corresponding ShellMode enum.
 
     Returns
     -------
@@ -193,8 +184,7 @@ if mode == ClientMode.UI:
 # reset settings to default values
 def set_defaults() -> None:
     """
-    Set client variables including verbose, maxTransferBytes and
-    pdarrayIterThresh to default values.
+    Set client variables including verbose, maxTransferBytes and pdarrayIterThresh to default values.
 
     Returns
     -------
@@ -208,10 +198,7 @@ def set_defaults() -> None:
 
 
 class ChannelType(Enum):
-    """
-    The ChannelType Enum specifies which Channel implementation is
-    to be used for an Arkouda client deployment.
-    """
+    """Specify which Channel implementation is to be used for an Arkouda client deployment."""
 
     ZMQ = "ZMQ"
     GRPC = "GRPC"
@@ -229,8 +216,7 @@ class ChannelType(Enum):
 
 class Channel:
     """
-    The Channel class defines methods for connecting to and communicating with
-    the Arkouda server.
+    The Channel class defines methods for connecting to and communicating with the Arkouda server.
 
     Attributes
     ----------
@@ -257,6 +243,8 @@ class Channel:
         connect_url: Optional[str] = None,
     ) -> None:
         """
+        Initiate chanel for connecting to and communicating with the Arkouda server.
+
         Parameters
         ----------
         user : str
@@ -279,6 +267,8 @@ class Channel:
 
     def _set_url(self, server: str, port: int, connect_url: Optional[str] = None) -> None:
         """
+        Generate and sets the Channel url.
+
         If the connect_url is None, generates and sets the Channel url per the
         Channel protocol as well as host and port. Otherwise, sets the Channel url
         to the supplied connect_url value.
@@ -365,6 +355,8 @@ class Channel:
         request_id: Optional[str] = None,
     ) -> Union[str, memoryview]:
         """
+        Generate and send a RequestMessage encapsulating to the Arkouda server.
+
         Generate a RequestMessage encapsulating command and requesting
         user information, sends it to the Arkouda server, and returns
         either a string or binary depending upon the message format.
@@ -413,6 +405,8 @@ class Channel:
         request_id: Optional[str] = None,
     ) -> Union[str, memoryview]:
         """
+        Generate and send a RequestMessage binary request to the Arkouda server.
+
         Generate a RequestMessage encapsulating command and requesting user information,
         information prepends the binary payload, sends the binary request to the Arkouda
         server, and returns either a string or binary depending upon the message format.
@@ -452,7 +446,7 @@ class Channel:
 
     def connect(self, timeout: int = 0) -> None:
         """
-        Establish a connection to the Arkouda server
+        Establish a connection to the Arkouda server.
 
         Parameters
         ----------
@@ -470,7 +464,7 @@ class Channel:
 
     def disconnect(self) -> None:
         """
-        Disconnects from the Arkouda server
+        Disconnects from the Arkouda server.
 
         Raises
         ------
@@ -484,8 +478,9 @@ class Channel:
 
 class ZmqChannel(Channel):
     """
-    The ZmqChannel class implements the Channel methods for ZMQ request/reply communication
-    patterns, which is the Arkouda-Chapel default
+    Implement the Channel methods for ZMQ request/reply communication patterns.
+
+    ZMQ the Arkouda-Chapel default.
     """
 
     __slots__ = "socket"
@@ -616,7 +611,7 @@ def get_channel(
     connect_url: Optional[str] = None,
 ) -> Channel:
     """
-    Return the configured Channel implementation
+    Return the configured Channel implementation.
 
     Parameters
     ----------
@@ -797,7 +792,7 @@ def _parse_url(url: str) -> Tuple[str, int, Optional[str]]:
 
 def _start_tunnel(addr: str, tunnel_server: str) -> Tuple[str, object]:
     """
-    Start a ssh tunnel.
+    Start an ssh tunnel.
 
     Parameters
     ----------
@@ -839,7 +834,7 @@ def _start_tunnel(addr: str, tunnel_server: str) -> Tuple[str, object]:
 # message arkouda server the client is disconnecting from the server
 def disconnect() -> None:
     """
-    Disconnects the client from the Arkouda server
+    Disconnects the client from the Arkouda server.
 
     Returns
     -------
@@ -872,6 +867,8 @@ def disconnect() -> None:
 
 def shutdown() -> None:
     """
+    Send a shutdown message.
+
     Send a shutdown message to the Arkouda server that does the
     following:
 
@@ -911,8 +908,10 @@ def shutdown() -> None:
 
 def _json_args_to_str(json_obj: Optional[Dict] = None) -> Tuple[int, str]:
     """
+    Convert Python Dictionary into a JSON formatted string.
+
     Convert Python Dictionary into a JSON formatted string that can be parsed by the msg
-    processing system on the Arkouda Server
+    processing system on the Arkouda Server.
 
     Parameters
     ----------
@@ -957,6 +956,8 @@ def generic_msg(
     recv_binary: bool = False,
 ) -> Union[str, memoryview]:
     """
+    Send a binary or string message to the arkouda_server, returning the response sent by the server.
+
     Send a binary or string message composed of a command and corresponding
     arguments to the arkouda_server, returning the response sent by the server.
 
@@ -1044,7 +1045,7 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
 
 def get_max_array_rank() -> int:
     """
-    Get the maximum pdarray rank the server was compiled to support
+    Get the maximum pdarray rank the server was compiled to support.
 
     This value corresponds to the maximum number in
     parameter_classes -> array -> nd in the `registration-config.json`
@@ -1064,7 +1065,7 @@ def get_max_array_rank() -> int:
 
 def get_array_ranks() -> list[int]:
     """
-    Get the list of pdarray ranks the server was compiled to support
+    Get the list of pdarray ranks the server was compiled to support.
 
     This value corresponds to
     parameter_classes -> array -> nd in the `registration-config.json`
@@ -1223,7 +1224,7 @@ def get_mem_status() -> List[Mapping[str, Union[str, int, float]]]:
 
 def get_server_commands() -> Mapping[str, str]:
     """
-    Return a dictionary of available server commands and the functions they map to
+    Return a dictionary of available server commands and the functions they map to.
 
     Returns
     -------
@@ -1258,7 +1259,7 @@ def print_server_commands():
 
 def _no_op() -> str:
     """
-    Send a no-op message just to gather round trip time
+    Send a no-op message just to gather round trip time.
 
     Returns
     -------
@@ -1276,7 +1277,9 @@ def _no_op() -> str:
 
 def ruok() -> str:
     """
-    Simply sends an "ruok" message to the server and, if the return message is
+    Send a "ruok" message to the arkouda_server.
+
+    Simply sends a "ruok" message to the server and, if the return message is
     "imok", this means the arkouda_server is up and operating normally. A return
     message of "imnotok" indicates an error occurred or the connection timed out.
 
@@ -1305,6 +1308,8 @@ def generate_history(
     num_commands: Optional[int] = None, command_filter: Optional[str] = None
 ) -> List[str]:
     """
+    Generate list of commands executed.
+
     Generate list of commands executed within the Python shell, Jupyter notebook,
     or IPython notebook, with an optional cmd_filter and number of commands to return.
 
