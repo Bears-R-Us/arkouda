@@ -31,15 +31,7 @@ def apply(
     and return a new value. The function will then be called on each element in
     the pdarray.
 
-    For example,
-    >>> ak.apply(ak.array([1, 2, 3]), lambda x: x+1)
 
-    Or,
-    >>> import math
-    >>> arr = ak.randint(0, 10, 10_000)
-    >>> def times_pi(x):
-            return x*math.pi
-    >>> ak.apply(arr, times_pi, "float64")
 
     Warning: This function is experimental and may not work as expected.
     Known limitations:
@@ -70,6 +62,22 @@ def apply(
     -------
     pdarray
         The pdarray resulting from applying the function to the input array
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> arr = ak.apply(ak.array([1, 2, 3]), lambda x: x+1)
+    >>> arr
+    array([2 3 4])
+
+    Or,
+    >>> import math
+    >>> arr = ak.randint(0, 10, 4, seed=1)
+    >>> def times_pi(x):
+    ...        return x*math.pi
+    >>> arr = ak.apply(arr, times_pi, "float64")
+    >>> arr
+    array([21.991148575128552 28.274333882308138 15.707963267948966 3.1415926535897931])
 
     """
     if getattr(apply, "is_apply_supported", None) is None:
