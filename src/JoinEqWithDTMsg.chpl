@@ -93,8 +93,8 @@ module JoinEqWithDTMsg
                       t1: [a1D] int, t2: [a2D] int, dt: int, pred: int,
                       resLimitPerLocale: int) throws {
 
-        try! jeLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                            "resLimitPerLocale = %?".format(resLimitPerLocale));
+        jeLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                      "resLimitPerLocale = ", resLimitPerLocale: string);
         
         // allocate result arrays per locale
         var locResI: [PrivateSpace] [0..#resLimitPerLocale] int;
@@ -147,7 +147,7 @@ module JoinEqWithDTMsg
                                             addResFlag = true;
                                         }
                                         otherwise {
-                                            try! jeLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                            jeLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                                                            "OOPS! bad predicate number!"); 
                                         }
                                     }

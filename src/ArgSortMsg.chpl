@@ -357,8 +357,8 @@ module ArgSortMsg
                   );
         }
       }
-      try! asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                             "argsort time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
+      asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                     "argsort time = ", (Time.timeSinceEpoch().totalSeconds() - t1): string);
       return iv;
     }
 
@@ -412,8 +412,8 @@ module ArgSortMsg
                   );
         }
       }
-      try! asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                             "argsort time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
+      asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                     "argsort time = ", (Time.timeSinceEpoch().totalSeconds() - t1): string);
       return iv;
     }
 

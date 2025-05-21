@@ -75,11 +75,11 @@ module Logging {
     /*
      * getOutputHandler is a factory method for OutputHandler implementations.
      */
-    proc getOutputHandler(channel: LogChannel) : owned OutputHandler throws {
+    proc getOutputHandler(channel: LogChannel) : owned OutputHandler  {
         if channel == LogChannel.CONSOLE {
             return new owned ConsoleOutputHandler();
         } else {
-            return new owned FileOutputHandler("%s/.arkouda/arkouda.log".format(here.cwd()));
+            return new owned FileOutputHandler((try! here.cwd()) + "/.arkouda/arkouda.log");
         }
     }
     
@@ -90,20 +90,9 @@ module Logging {
     class Logger {
         var level: LogLevel = LogLevel.INFO;
         
-        var warnLevels = new set(LogLevel,[LogLevel.WARN, LogLevel.INFO,
-                           LogLevel.DEBUG]);
-        
-        var criticalLevels =  new set(LogLevel, [LogLevel.CRITICAL, LogLevel.WARN,
-                                         LogLevel.INFO,LogLevel.DEBUG]);
-                                         
-        var errorLevels =  new set(LogLevel,[LogLevel.ERROR, LogLevel.CRITICAL,
-                           LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG]);
-                             
-        var infoLevels = new set(LogLevel,[LogLevel.INFO,LogLevel.DEBUG]);  
-        
         var printDate: bool = true;
         
-        var outputHandler: owned OutputHandler = try! getOutputHandler(LogChannel.CONSOLE);
+        var outputHandler: owned OutputHandler = getOutputHandler(LogChannel.CONSOLE);
         
         proc init() {}
        
@@ -113,82 +102,61 @@ module Logging {
         
         proc init(level: LogLevel, channel: LogChannel) {
             this.level = level;
-            this.outputHandler = try! getOutputHandler(channel);
+            this.outputHandler = getOutputHandler(channel);
         }
 
-        proc debug(moduleName, routineName, lineNumber, msg: string) throws {
+        // Emit `msg` into the handler.
+        proc emit(msg: string...) {
             try {
-                if this.level == LogLevel.DEBUG  {
-                    this.outputHandler.write(generateLogMessage(moduleName, routineName, lineNumber, 
-                                            msg, "DEBUG"));
-                }
+                this.outputHandler.write(if msg.size == 1 then msg[0]
+                                         else "".join(msg));
             } catch (e: Error) {
-                writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
+                writeln("Error while logging message <", (...msg), "> : ", e.message());
             }
         }
-        
-        proc info(moduleName, routineName, lineNumber, msg: string) throws {
-            try {
-                if infoLevels.contains(level) {
-                    this.outputHandler.write(generateLogMessage(moduleName, routineName, lineNumber, 
-                                            msg, "INFO"));
-                }
-            } catch (e: Error) {
-                writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
-            }
+
+        // Emit `msg`, depending on `level`.
+        proc report(moduleName: string, routineName: string, lineNumber: int,
+                    level: LogLevel, msg:string...)
+        {
+            if level < this.level then return;
+
+            emit((...generateLogMessage(moduleName, routineName, lineNumber,
+                                        level, (...msg))));
         }
+
+        inline proc debug(moduleName, routineName, lineNumber, msg...) do
+          report(moduleName, routineName, lineNumber, LogLevel.DEBUG, (...msg));
+
+        inline proc info(moduleName, routineName, lineNumber, msg...) do
+          report(moduleName, routineName, lineNumber, LogLevel.INFO, (...msg));
+
+        inline proc warn(moduleName, routineName, lineNumber, msg...) do
+          report(moduleName, routineName, lineNumber, LogLevel.WARN, (...msg));
+
+        inline proc error(moduleName, routineName, lineNumber, msg...) do
+          report(moduleName, routineName, lineNumber, LogLevel.ERROR, (...msg));
         
-        proc warn(moduleName, routineName, lineNumber, msg: string) throws {
-            try {
-                if warnLevels.contains(level) {
-                    this.outputHandler.write(generateLogMessage(moduleName, routineName, lineNumber, 
-                                            msg, "WARN"));
-                }
-            } catch (e: Error) {
-                writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
-            }
-        }
+        inline proc critical(moduleName, routineName, lineNumber, msg...) do
+          report(moduleName, routineName, lineNumber, LogLevel.CRITICAL, (...msg));
         
-        proc error(moduleName, routineName, lineNumber, msg: string) throws {
-            try {
-                this.outputHandler.write(generateLogMessage(moduleName, routineName, lineNumber, 
-                                            msg, "ERROR"));
-            } catch (e: Error) {
-                writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
-            }            
-        }
-        
-        proc critical(moduleName, routineName, lineNumber, msg: string) throws {
-            try {
-                this.outputHandler.write(generateLogMessage(moduleName, routineName, lineNumber, 
-                                            msg, "CRITICAL"));
-            } catch (e: Error) {
-                writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
-            }
-        }
-        
-        proc generateErrorMsg(moduleName: string, routineName, lineNumber, 
-                           error) throws {
-            return "Error in logging message for %s %s %i: %?".format(
-                    moduleName, routineName, lineNumber, error.message());                
-        }
-        
-        proc generateLogMessage(moduleName: string, routineName, lineNumber, 
-                           msg, level: string) throws {
-            var lineStr: string = if lineNumber != 0 then "Line %i ".format(lineNumber) else "";
-             if printDate {
-                 return "%s [%s] %s %s%s [Chapel] %s".format(
-                 generateDateTimeString(), moduleName,routineName,lineStr, 
-                                     level,msg);
-             } else {
-                 return "[%s] %s %s%s [Chapel] %s".format(moduleName, 
-                 routineName,lineStr,level,msg);            
-             }
+        proc generateLogMessage(moduleName: string, routineName: string, lineNumber: int,
+                                level: LogLevel, msg: string...) {
+            var lineStr = if lineNumber != 0 then "Line " + lineNumber:string + " " else "";
+            var dateStr = if printDate then generateDateTimeString(" ") else "";
+            return (dateStr, "[", moduleName, "] ", routineName, " ", lineStr, level:string,
+                    " [Chapel ] ", (...msg));
         }
          
-        proc generateDateTimeString() throws {
+        proc generateDateTimeString(tail = "") {
             const t = dateTime.now();
-            return "%i-%02i-%02i %02i:%02i:%02i".format(t.year, t.month, t.day, t.hour, t.minute, t.second);
+            try {
+                return "%i-%02i-%02i %02i:%02i:%02i%s".format(t.year, t.month, t.day,
+                                                              t.hour, t.minute, t.second, tail);
+            } catch {
+                return "".join(t.year:string, "-", t.month:string, "-", t.day:string, " ",
+                               t.hour:string, ":", t.minute:string, ":", t.second:string, tail);
+            }
         }
     }
 }

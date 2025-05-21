@@ -195,7 +195,7 @@ module CheckpointMsg {
   // returns true if the daemon was started
   proc startAsyncCheckpointDaemon(sd: borrowed DefaultServerDaemon) {
     if checkpointMemPct <= 0 && checkpointIdleTime <= 0 {
-      try! cpLogger.info(M(), R(), L(), "asynchronous checkpointing was not requested");
+      cpLogger.info(M(), R(), L(), "asynchronous checkpointing was not requested");
       return false;
     }
 
@@ -216,7 +216,7 @@ module CheckpointMsg {
     // start the asynchronous task
     begin asyncCheckpointDaemon(sd);
 
-    try! cpLogger.info(M(), R(), L(), "started the asynchronous checkpointing daemon");
+    cpLogger.info(M(), R(), L(), "started the asynchronous checkpointing daemon");
     return true;
   }
 
@@ -256,7 +256,6 @@ module CheckpointMsg {
 
         if idleStart == idleStartForLastCheckpoint {
           // There has been no action on the server since we last checkpointed.
-          try! cpLogger.debug(M(), R(), L(), "no action since last checkpoint");
           delay = minRequestedDelay;
           continue;
         }
@@ -264,7 +263,6 @@ module CheckpointMsg {
         const idleTime = curTime - idleStart;
         if idleTime < minRequestedDelay {
           // The server has not been idle long enough. Check back later.
-          try! cpLogger.debug(M(), R(), L(), "the server has not been idle for long enough");
           delay = minRequestedDelay - idleTime;
           continue;
         }
@@ -292,7 +290,7 @@ module CheckpointMsg {
         delay = checkpointCheckInterval;
 
       } catch err {
-          try! cpLogger.error(M(), R(), L(), err.message());
+          cpLogger.error(M(), R(), L(), err.message());
       }
     }
   }
