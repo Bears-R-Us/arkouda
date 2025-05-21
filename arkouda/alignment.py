@@ -307,8 +307,8 @@ def lookup(keys, values, arguments, fillvalue=-1):
     Examples
     --------
     >>> import arkouda as ak
-    Lookup numbers by two-word name
 
+    Lookup numbers by two-word name
     >>> keys1 = ak.array(['twenty' for _ in range(5)])
     >>> keys2 = ak.array(['one', 'two', 'three', 'four', 'five'])
     >>> values = ak.array([21, 22, 23, 24, 25])
@@ -318,7 +318,6 @@ def lookup(keys, values, arguments, fillvalue=-1):
     array([24 -1 22])
 
     Other direction requires an intermediate index
-
     >>> revkeys = values
     >>> revindices = ak.arange(values.size)
     >>> revargs = ak.array([24, 21, 22])

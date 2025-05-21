@@ -6,13 +6,13 @@ DATA_TYPES = [ak.int64, ak.uint64, ak.float64]
 
 
 class TestAlignment:
-    # def test_alignment_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(
-    #         alignment, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
-    #     )
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    def test_alignment_docstrings(self):
+        import doctest
+
+        from arkouda import alignment
+
+        result = doctest.testmod(alignment, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @staticmethod
     def get_interval_info(lower_bound, upper_bound, vals, dtype):
