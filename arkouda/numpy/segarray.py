@@ -25,6 +25,11 @@ from arkouda.numpy.pdarraysetops import concatenate
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.join import gen_ranges
 
+__all__ = [
+    "SegArray",
+]
+
+
 SEG_SUFFIX = "_segments"
 VAL_SUFFIX = "_values"
 LEN_SUFFIX = "_lengths"

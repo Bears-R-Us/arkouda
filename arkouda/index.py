@@ -24,6 +24,12 @@ from arkouda.numpy.sorting import coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import convert_if_categorical, generic_concat, get_callback
 
+__all__ = [
+    "Index",
+    "MultiIndex",
+]
+
+
 if TYPE_CHECKING:
     from arkouda.pandas.series import Series
 

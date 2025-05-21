@@ -3,6 +3,12 @@ from typing import List, Optional
 
 from IPython.core.history import HistoryAccessor
 
+__all__ = [
+    "HistoryRetriever",
+    "NotebookHistoryRetriever",
+    "ShellHistoryRetriever",
+]
+
 
 class HistoryRetriever:
     """

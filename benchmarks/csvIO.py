@@ -3,8 +3,16 @@
 import argparse
 import os
 
-from IO import *
+from IO import (
+    COMPRESSIONS,
+    FileFormat,
+    check_correctness,
+    remove_files,
+    time_ak_read,
+    time_ak_write,
+)
 
+import arkouda as ak
 from server_util.test.server_test_util import get_default_temp_directory
 
 TYPES = ("int64", "float64", "uint64", "str")
@@ -15,13 +23,24 @@ def create_parser():
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
     parser.add_argument(
-        "-n", "--size", type=int, default=10**6, help="Problem size: length of array to read/write"
+        "-n",
+        "--size",
+        type=int,
+        default=10**6,
+        help="Problem size: length of array to read/write",
     )
     parser.add_argument(
-        "-t", "--trials", type=int, default=1, help="Number of times to run the benchmark"
+        "-t",
+        "--trials",
+        type=int,
+        default=1,
+        help="Number of times to run the benchmark",
     )
     parser.add_argument(
-        "-d", "--dtype", default="int64", help="Dtype of array ({})".format(", ".join(TYPES))
+        "-d",
+        "--dtype",
+        default="int64",
+        help="Dtype of array ({})".format(", ".join(TYPES)),
     )
     parser.add_argument(
         "--correctness-only",
@@ -36,7 +55,11 @@ def create_parser():
         help="Target path for measuring read/write rates",
     )
     parser.add_argument(
-        "-s", "--seed", default=None, type=int, help="Value to initialize random number generator"
+        "-s",
+        "--seed",
+        default=None,
+        type=int,
+        help="Value to initialize random number generator",
     )
     parser.add_argument(
         "-w",
@@ -60,14 +83,19 @@ def create_parser():
         help="Only delete files created from writing with this benchmark",
     )
     parser.add_argument(
-        "-l", "--files-per-loc", type=int, default=1, help="Number of files to create per locale"
+        "-l",
+        "--files-per-loc",
+        type=int,
+        default=1,
+        help="Number of files to create per locale",
     )
     parser.add_argument(
         "-c",
         "--compression",
         default="",
         action="store",
-        help="Compression types to run Parquet benchmarks against. Comma delimited list (NO SPACES) allowing "
+        help="Compression types to run Parquet benchmarks against. "
+        "Comma delimited list (NO SPACES) allowing "
         "for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4",
     )
     return parser
@@ -106,7 +134,13 @@ if __name__ == "__main__":
         )
     elif args.only_read:
         time_ak_read(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, FileFormat.CSV, comp_types
+            args.size,
+            args.files_per_loc,
+            args.trials,
+            args.dtype,
+            args.path,
+            FileFormat.CSV,
+            comp_types,
         )
     else:
         time_ak_write(
@@ -120,7 +154,13 @@ if __name__ == "__main__":
             comp_types,
         )
         time_ak_read(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, FileFormat.CSV, comp_types
+            args.size,
+            args.files_per_loc,
+            args.trials,
+            args.dtype,
+            args.path,
+            FileFormat.CSV,
+            comp_types,
         )
         remove_files(args.path)
 

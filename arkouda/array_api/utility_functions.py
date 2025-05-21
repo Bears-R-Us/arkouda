@@ -11,6 +11,16 @@ from .array_object import Array
 from .manipulation_functions import concat, reshape
 from .statistical_functions import sum
 
+__all__ = [
+    "all",
+    "any",
+    "clip",
+    "diff",
+    "pad",
+    "trapezoid",
+    "trapz",
+]
+
 
 def all(
     x: Array,

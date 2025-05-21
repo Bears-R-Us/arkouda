@@ -15,6 +15,28 @@ import re
 import subprocess
 import sys
 
+__all__ = [
+    "NotThisMethod",
+    "VersioneerConfig",
+    "get_config",
+    "get_keywords",
+    "get_versions",
+    "git_get_keywords",
+    "git_pieces_from_vcs",
+    "git_versions_from_keywords",
+    "plus_or_dot",
+    "register_vcs_handler",
+    "render",
+    "render_git_describe",
+    "render_git_describe_long",
+    "render_pep440",
+    "render_pep440_old",
+    "render_pep440_post",
+    "render_pep440_pre",
+    "run_command",
+    "versions_from_parentdir",
+]
+
 
 def get_keywords():
     """Get the keywords needed to look up the version information."""

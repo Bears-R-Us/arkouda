@@ -1,4 +1,9 @@
 """
+__all__ = [
+    'Array',
+    'implements_numpy',
+]
+
 Wrapper class around the pdarray object for the array API standard.
 
 The information below can be found online here:
@@ -207,7 +212,7 @@ class Array:
             extract_chunk(
                 cast(
                     str,
-                    ak.generic_msg(
+                    ak.client.generic_msg(
                         cmd=f"chunkInfoAsString<{self.dtype},{self.ndim}>",
                         args={"array": self._array},
                     ),

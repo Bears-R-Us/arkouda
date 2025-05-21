@@ -9,6 +9,12 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
+__all__ = [
+    "randint",
+    "standard_normal",
+    "uniform",
+]
+
 
 @typechecked
 def randint(

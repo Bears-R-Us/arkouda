@@ -9,6 +9,10 @@ from arkouda.match import Match, MatchType
 from arkouda.numpy.dtypes import str_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
+__all__ = [
+    "Matcher",
+]
+
 
 class Matcher:
     LocationsInfo = frozenset(

@@ -6,6 +6,10 @@ import numpy as np
 from arkouda.numpy import log
 from arkouda.numpy.pdarrayclass import pdarray
 
+__all__ = [
+    "xlogy",
+]
+
 
 def xlogy(x: Union[pdarray, np.float64], y: pdarray):
     """

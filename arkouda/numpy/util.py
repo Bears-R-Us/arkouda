@@ -26,6 +26,30 @@ from arkouda.numpy.sorting import coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
 
+__all__ = [
+    "attach",
+    "attach_all",
+    "broadcast_dims",
+    "convert_bytes",
+    "convert_if_categorical",
+    "generic_concat",
+    "get_callback",
+    "identity",
+    "invert_permutation",
+    "is_float",
+    "is_int",
+    "is_numeric",
+    "is_registered",
+    "map",
+    "register",
+    "register_all",
+    "report_mem",
+    "sparse_sum_help",
+    "unregister",
+    "unregister_all",
+]
+
+
 if TYPE_CHECKING:
     from arkouda.index import Index
     from arkouda.numpy.segarray import SegArray

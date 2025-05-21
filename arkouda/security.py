@@ -10,6 +10,15 @@ from typeguard import typechecked
 
 from arkouda import io_util
 
+__all__ = [
+    "generate_token",
+    "generate_username_token_json",
+    "get_arkouda_client_directory",
+    "get_home_directory",
+    "get_username",
+]
+
+
 username_tokenizer = defaultdict(lambda x: x.split("/"))  # type:ignore
 username_tokenizer["Windows"] = lambda x: x.split("\\")
 username_tokenizer["Linux"] = lambda x: x.split("/")

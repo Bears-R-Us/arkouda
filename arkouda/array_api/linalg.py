@@ -1,5 +1,12 @@
 from .array_object import Array
 
+__all__ = [
+    "matmul",
+    "matrix_transpose",
+    "tensordot",
+    "vecdot",
+]
+
 
 def matmul(x1: Array, x2: Array, /) -> Array:
     """

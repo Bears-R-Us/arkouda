@@ -3,8 +3,9 @@
 import argparse
 import os
 
-from IO import *
+from IO import FileFormat, check_correctness, remove_files, time_ak_read, time_ak_write
 
+import arkouda as ak
 from server_util.test.server_test_util import get_default_temp_directory
 
 TYPES = (
@@ -21,13 +22,24 @@ def create_parser():
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
     parser.add_argument(
-        "-n", "--size", type=int, default=10**7, help="Problem size: length of array to write/read"
+        "-n",
+        "--size",
+        type=int,
+        default=10**7,
+        help="Problem size: length of array to write/read",
     )
     parser.add_argument(
-        "-t", "--trials", type=int, default=1, help="Number of times to run the benchmark"
+        "-t",
+        "--trials",
+        type=int,
+        default=1,
+        help="Number of times to run the benchmark",
     )
     parser.add_argument(
-        "-d", "--dtype", default="int64", help="Dtype of array ({})".format(", ".join(TYPES))
+        "-d",
+        "--dtype",
+        default="int64",
+        help="Dtype of array ({})".format(", ".join(TYPES)),
     )
     parser.add_argument(
         "-p",
@@ -42,11 +54,19 @@ def create_parser():
         help="Only check correctness, not performance.",
     )
     parser.add_argument(
-        "-s", "--seed", default=None, type=int, help="Value to initialize random number generator"
+        "-s",
+        "--seed",
+        default=None,
+        type=int,
+        help="Value to initialize random number generator",
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
-        "-q", "--parquet", default=False, action="store_true", help="Perform Parquet operations"
+        "-q",
+        "--parquet",
+        default=False,
+        action="store_true",
+        help="Perform Parquet operations",
     )
     group.add_argument("-v", "--csv", default=False, action="store_true", help="Perform CSV operations")
 
@@ -72,7 +92,11 @@ def create_parser():
         help="Only delete files created from writing with this benchmark",
     )
     parser.add_argument(
-        "-l", "--files-per-loc", type=int, default=10, help="Number of files to create per locale"
+        "-l",
+        "--files-per-loc",
+        type=int,
+        default=10,
+        help="Number of files to create per locale",
     )
     return parser
 
@@ -99,17 +123,43 @@ if __name__ == "__main__":
 
     if args.only_write:
         time_ak_write(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, fileFormat
+            args.size,
+            args.files_per_loc,
+            args.trials,
+            args.dtype,
+            args.path,
+            args.seed,
+            fileFormat,
         )
     elif args.only_read:
-        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, fileFormat)
+        time_ak_read(
+            args.size,
+            args.files_per_loc,
+            args.trials,
+            args.dtype,
+            args.path,
+            fileFormat,
+        )
     elif args.only_delete:
         remove_files(args.path)
     else:
         time_ak_write(
-            args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, fileFormat
+            args.size,
+            args.files_per_loc,
+            args.trials,
+            args.dtype,
+            args.path,
+            args.seed,
+            fileFormat,
         )
-        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, fileFormat)
+        time_ak_read(
+            args.size,
+            args.files_per_loc,
+            args.trials,
+            args.dtype,
+            args.path,
+            fileFormat,
+        )
         remove_files(args.path)
 
     sys.exit(0)
