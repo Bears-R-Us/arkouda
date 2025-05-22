@@ -5,6 +5,7 @@ from numpy import asarray
 from scipy.stats import chi2  # type: ignore
 
 import arkouda as ak
+from arkouda.numpy import float64
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.scipy.special import xlogy
 
@@ -17,9 +18,12 @@ class Power_divergenceResult(namedtuple("Power_divergenceResult", ("statistic", 
 
     Attributes
     ----------
-    statistic :    numpy.float64
-    pvalue :    numpy.float64
+    statistic :    float64
+    pvalue :    float64
     """
+
+    statistic: float64
+    pvalue: float64
 
 
 # Map from names to lambda_ values used in power_divergence().

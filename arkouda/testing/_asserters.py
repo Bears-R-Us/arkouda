@@ -316,7 +316,7 @@ def assert_index_equal(
             else:
                 mismatch = left != right
 
-            diff = aksum(mismatch.astype(int)).astype(float) * 100.0 / len(left)
+            diff = aksum(mismatch) * 100.0 / len(left)
             msg = f"{obj} values are different ({np.round(diff, 5)} %)"
             raise_assert_detail(obj, msg, left, right)
     else:
@@ -584,9 +584,9 @@ def assert_arkouda_pdarray_equal(
             if left.shape != right.shape:
                 raise_assert_detail(obj, f"{obj} shapes are different", left.shape, right.shape)
 
-            diff = aksum(left != right).astype(float)
+            diff = aksum(left != right)
 
-            diff = diff * 100.0 / left.size
+            diff = diff * 100.0 / float(left.size)
             msg = f"{obj} values are different ({np.round(diff, 5)} %)"
             raise_assert_detail(obj, msg, left, right, index_values=index_values)
 
@@ -727,8 +727,8 @@ def assert_arkouda_strings_equal(
 
     def _raise(left: Strings, right: Strings, err_msg):
         if err_msg is None:
-            diff = aksum(left != right).astype(float)
-            diff = diff * 100.0 / left.size
+            diff = aksum(left != right)
+            diff = diff * 100.0 / float(left.size)
             msg = f"{obj} values are different ({np.round(diff, 5)} %)"
             raise_assert_detail(obj, msg, left, right, index_values=index_values)
 

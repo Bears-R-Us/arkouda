@@ -3,11 +3,13 @@ import math
 import numpy as np
 from matplotlib import pyplot as plt
 
+from arkouda.categorical import Categorical
 from arkouda.dataframe import DataFrame
 from arkouda.groupbyclass import GroupBy
 from arkouda.numpy import histogram, isnan
-from arkouda.numpy.pdarrayclass import skew
+from arkouda.numpy.pdarrayclass import pdarray, skew
 from arkouda.numpy.pdarraycreation import arange
+from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta, date_range, timedelta_range
 
 __all__ = [
@@ -132,6 +134,13 @@ def hist_all(ak_df: DataFrame, cols: list = []):
 
         except ValueError:
             GB_df = GroupBy(ak_df[col])
+
+            if not isinstance(GB_df.unique_keys, (Strings, Categorical, pdarray)):
+                raise TypeError(
+                    f"expected one of (Strings, Categorical, pdarray), "
+                    f"got {type(GB_df.unique_keys).__name__!r}"
+                )
+
             new_labels = arange(GB_df.unique_keys.size)
             newcol = GB_df.broadcast(new_labels)
             x = newcol[: ak_df.size]

@@ -27,9 +27,7 @@ from typeguard import typechecked
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
-from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES
-from arkouda.groupbyclass import GroupBy as akGroupBy
-from arkouda.groupbyclass import unique
+from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.index import Index, MultiIndex
 from arkouda.numpy import cast as akcast
 from arkouda.numpy import cumsum, where
@@ -110,17 +108,23 @@ class DataFrameGroupBy:
 
     Attributes
     ----------
-    gb : arkouda.groupbyclass.GroupBy
+    gb : GroupBy
         GroupBy object, where the aggregation keys are values of column(s) of a dataframe,
         usually in preparation for aggregating with respect to the other columns.
-    df : arkouda.dataframe.DataFrame
+    df : DataFrame
         The dataframe containing the original data.
-    gb_key_names : str or list(str)
+    gb_key_names : Union[str, List[str]]
         The column name(s) associated with the aggregated columns.
-    as_index : bool, default=True
+    as_index : bool
         If True the grouped values of the aggregation keys will be treated as an index.
+        Defaults to True.
 
     """
+
+    gb: GroupBy
+    df: DataFrame
+    gb_key_names: Union[str, List[str]]
+    as_index: bool
 
     def __init__(self, gb, df, gb_key_names=None, as_index=True):
         self.gb = gb
@@ -731,12 +735,15 @@ class DiffAggregate:
 
     Attributes
     ----------
-    gb : arkouda.groupbyclass.GroupBy
+    gb : GroupBy
         GroupBy object, where the aggregation keys are values of column(s) of a dataframe.
-    values : arkouda.pandas.series.Series.
+    values : Series
         A column to compute the difference on.
 
     """
+
+    gb: GroupBy
+    values: Series
 
     def __init__(self, gb, series):
         self.gb = gb
@@ -1668,14 +1675,14 @@ class DataFrame(UserDict):
         if len(subset) == 1:
             if subset[0] not in self.data:
                 raise KeyError(f"{subset[0]} is not a column in the DataFrame.")
-            gp = akGroupBy(self.data[subset[0]])
+            gp = GroupBy(self.data[subset[0]])
 
         else:
             for col in subset:
                 if col not in self.data:
                     raise KeyError(f"{subset[0]} is not a column in the DataFrame.")
 
-            gp = akGroupBy([self.data[col] for col in subset])
+            gp = GroupBy([self.data[col] for col in subset])
 
         if keep == "last":
             _segment_ends = concatenate([gp.segments[1:] - 1, array([gp.permutation.size - 1])])
@@ -2641,7 +2648,7 @@ class DataFrame(UserDict):
         self.update_nrows()
         if self._nrows <= n:
             return self
-        return self[array(random.sample(range(self._nrows), n))]
+        return self[array(random.sample(range(int(self._nrows)), n))]
 
     from arkouda.groupbyclass import GroupBy as GroupBy_class
 
@@ -2728,7 +2735,7 @@ class DataFrame(UserDict):
 
         from arkouda.groupbyclass import GroupBy as GroupBy_class
 
-        gb: Union[DataFrameGroupBy, GroupBy_class] = akGroupBy(cols, dropna=dropna)
+        gb: Union[DataFrameGroupBy, GroupBy_class] = GroupBy_class(cols, dropna=dropna)
         if use_series:
             gb = DataFrameGroupBy(gb, self, gb_key_names=keys, as_index=as_index)
         return gb
@@ -5626,7 +5633,7 @@ def intersect(a, b, positions=True, unique=False):
             hash1 = concatenate([hash_a01, hash_b01])
 
             # Group by the unique hashes
-            gb = akGroupBy([hash0, hash1])
+            gb = GroupBy([hash0, hash1])
             val, cnt = gb.count()
 
             # Hash counts, in groupby order
@@ -5649,8 +5656,8 @@ def intersect(a, b, positions=True, unique=False):
 
         # a and b may have duplicate entries, so get the unique hash values
         else:
-            gba = akGroupBy([hash_a00, hash_a01])
-            gbb = akGroupBy([hash_b00, hash_b01])
+            gba = GroupBy([hash_a00, hash_a01])
+            gbb = GroupBy([hash_b00, hash_b01])
 
             # Take the unique keys as the hash we'll work with
             a0, a1 = gba.unique_keys
@@ -5659,7 +5666,7 @@ def intersect(a, b, positions=True, unique=False):
             hash1 = concatenate([a1, b1])
 
             # Group by the unique hashes
-            gb = akGroupBy([hash0, hash1])
+            gb = GroupBy([hash0, hash1])
             val, cnt = gb.count()
 
             # Hash counts, in groupby order
