@@ -1036,7 +1036,10 @@ module ManipulationMsg {
            (d2.rank == 1)) {
     param pn = Reflection.getRoutineName();
 
-    var eOut = makeDistArray((...repeatShape(eIn.shape, reps, axis)), t);
+    const (valid, axis_) = validateNegativeAxes (axis,d.rank) ;
+    if !valid then throw new Error ("Invalid axis %i in repeat".format(axis));
+
+    var eOut = makeDistArray((...repeatShape(eIn.shape, reps, axis_)), t);
 
     // In this case, every element of eIn gets repeated the same number of times along the axis.
     if reps.size == 1 {
@@ -1046,7 +1049,7 @@ module ManipulationMsg {
         var idx2 = if eIn.shape.size == 1 then (idx,) else idx;
 
         // The integer division means that the index gets incremented in the axis every reps[0] times
-        idx2[axis] = idx2[axis] / (reps[0]: int);
+        idx2[axis_] = idx2[axis_] / (reps[0]: int);
 
         agg.copy(eOut[idx], eIn[if eIn.shape.size == 1 then idx2[0] else idx2]);
       }
@@ -1069,20 +1072,20 @@ module ManipulationMsg {
     } else {
       // Fundamentally this works the same way as above but we can't do zipped iteration
       // This is because eIn may be much larger.
-      const outSize = eOut.shape[axis];
+      const outSize = eOut.shape[axis_];
 
       // Can't distribute the domain because we don't know how eIn is distributed
-      var outStarts: [0..<eIn.shape[axis]] int;
+      var outStarts: [0..<eIn.shape[axis_]] int;
 
       outStarts[1..] = (+ scan reps[..reps.size - 2]): int;
       forall inIdx in eIn.domain with (
         var agg = newDstAggregator(t)
       ) {
-        const outStart = outStarts[inIdx[axis]];
-        const numRepeats = reps[inIdx[axis]];
+        const outStart = outStarts[inIdx[axis_]];
+        const numRepeats = reps[inIdx[axis_]];
         var destIdx = inIdx;
         for destIdxComponent in outStart..#numRepeats {
-          destIdx[axis] = destIdxComponent;
+          destIdx[axis_] = destIdxComponent;
           agg.copy(eOut[destIdx], eIn[inIdx]);
         }
       }

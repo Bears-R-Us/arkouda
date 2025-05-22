@@ -25,6 +25,10 @@ class TestSearchingFunctions:
         assert aArgmax1Keepdims.shape == (4, 1, 6)
         assert aArgmax1Keepdims[3, 0, 1] == 2
 
+        aArgmax1Keepdims = xp.argmax(a, axis=-2, keepdims=True)
+        assert aArgmax1Keepdims.shape == (4, 1, 6)
+        assert aArgmax1Keepdims[3, 0, 1] == 2
+
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_argmin(self):
         a = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=SEED))
@@ -37,6 +41,10 @@ class TestSearchingFunctions:
         assert aArgmin0[2, 1] == 3
 
         aArgmin1Keepdims = xp.argmin(a, axis=1, keepdims=True)
+        assert aArgmin1Keepdims.shape == (4, 1, 6)
+        assert aArgmin1Keepdims[3, 0, 1] == 2
+
+        aArgmin1Keepdims = xp.argmin(a, axis=-2, keepdims=True)
         assert aArgmin1Keepdims.shape == (4, 1, 6)
         assert aArgmin1Keepdims[3, 0, 1] == 2
 

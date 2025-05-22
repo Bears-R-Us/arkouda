@@ -119,14 +119,19 @@ module ReductionMsgFunctions
     proc argmax(const ref x:[?d] ?t, axis: int): [] d.idxType throws
       where (t != bigint) && (d.rank > 1) {
       use SliceReductionOps;
-      const axisArry = [axis];
-      const outShape = reducedShape(x.shape, axisArry);
-      var ret = makeDistArray((...outShape), d.idxType);
-      forall sliceIdx in domOffAxis(d, axisArry) {
-        const sliceDom = domOnAxis(d, sliceIdx, axis);
-        ret[sliceIdx] = argmaxSlice(x, sliceDom)[axis]:d.idxType;
+      const (valid, axis_) = validateNegativeAxes(axis, x.rank);
+      if !valid {
+        throw new Error("Invalid axis value(s) '%?' in slicing reduction".format(axis));
+      } else {
+        const axisArry = [axis_];
+        const outShape = reducedShape(x.shape, axisArry);
+        var ret = makeDistArray((...outShape), d.idxType);
+        forall sliceIdx in domOffAxis(d, axisArry) {
+          const sliceDom = domOnAxis(d, sliceIdx, axis_);
+          ret[sliceIdx] = argmaxSlice(x, sliceDom)[axis_]:d.idxType;
+        }
+        return ret;
       }
-      return ret;
     }
 
 
@@ -147,14 +152,19 @@ module ReductionMsgFunctions
     proc argmin(const ref x:[?d] ?t, axis: int): [] d.idxType throws
       where (t != bigint) && (d.rank > 1) {
       use SliceReductionOps;
-      const axisArry = [axis];
-      const outShape = reducedShape(x.shape, axisArry);
-      var ret = makeDistArray((...outShape), d.idxType);
-      forall sliceIdx in domOffAxis(d, axisArry) {
-        const sliceDom = domOnAxis(d, sliceIdx, axis);
-        ret[sliceIdx] = argminSlice(x, sliceDom)[axis]:d.idxType;
+      const (valid, axis_) = validateNegativeAxes(axis, x.rank);
+      if !valid {
+        throw new Error("Invalid axis value(s) '%?' in slicing reduction".format(axis));
+      } else {
+        const axisArry = [axis_];
+        const outShape = reducedShape(x.shape, axisArry);
+        var ret = makeDistArray((...outShape), d.idxType);
+        forall sliceIdx in domOffAxis(d, axisArry) {
+            const sliceDom = domOnAxis(d, sliceIdx, axis_);
+            ret[sliceIdx] = argminSlice(x, sliceDom)[axis_]:d.idxType;
+        }
+        return ret;
       }
-      return ret;
     }
 
 

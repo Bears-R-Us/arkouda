@@ -142,6 +142,16 @@ module AryUtil
       :returns: a tuple of a boolean indicating whether the axes are valid,
                 and the array of modified axes
     */
+
+    proc validateNegativeAxes(axis: int, param nd: int): (bool, int) {
+      var ret: int;
+      
+      ret = if axis >= 0 then axis else nd + axis;
+      if ret >= nd then return (false, ret);
+      if ret <0    then return (false, ret);
+      return (true, ret);
+      }
+
     proc validateNegativeAxes(axes: [?d] int, param nd: int): (bool, [d] int) {
       var ret: [d] int;
       if axes.size > nd then return (false, ret);
