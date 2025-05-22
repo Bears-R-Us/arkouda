@@ -131,7 +131,7 @@ class TestSort:
             assert np.allclose(np.sort(npa), ak.sort(ak.array(npa), algo).to_ndarray(), equal_nan=True)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", [ak.float64, ak.int64, ak.bigint])
+    @pytest.mark.parametrize("dtype", [ak.float64, ak.int64, ak.bigint, ak.uint64])
     @pytest.mark.parametrize("v_shape", [(), (10,), (4, 5), (2, 2, 3)])
     @pytest.mark.parametrize("side", ["left", "right"])
     def test_searchsorted(self, size, dtype, v_shape, side):
@@ -154,10 +154,10 @@ class TestSort:
                 pytest.skip(f"Server not compiled for rank {len(v_shape)}")
             else:
                 v = ak.randint(low=low, high=high, size=v_shape, dtype=dtype_, seed=pytest.seed)
-                v = ak.array(v, dtype) + shift
+                v = ak.array(ak.array(v, dtype) + shift, dtype)
         a = ak.randint(low=low, high=high, size=size, dtype=dtype_, seed=pytest.seed)
         a = ak.sort(a)
-        a = ak.array(a, dtype) + shift
+        a = ak.array(ak.array(a, dtype) + shift, dtype)
         np_a = a.to_ndarray()
         if isinstance(v, ak.pdarray):
             np_v = v.to_ndarray()
