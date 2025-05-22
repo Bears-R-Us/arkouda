@@ -894,13 +894,32 @@ class Categorical:
         """
         return [self.codes]
 
-    def argsort(self):
-        # __doc__ = argsort.__doc__
+    def argsort(self, ascending=True):
+        """
+        Return the permutation that sorts the Categorical.
+
+        Parameters
+        ----------
+        ascending: bool = True
+
+        Returns
+        -------
+        pdarray, int64
+            The indices that sort the Categorical.
+
+        """
+        from arkouda import arange
+        from arkouda.numpy.manipulation_functions import flip
+
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
         newvals = inverse[self.codes]
-        return argsort(newvals)
+        sorted_array = argsort(newvals)
+        if ascending is True:
+            return sorted_array
+        else:
+            return flip(sorted_array)  # sorted_array[::-1]
 
     def sort_values(self):
         # __doc__ = sort.__doc__

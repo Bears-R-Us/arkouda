@@ -3,6 +3,7 @@ from __future__ import annotations
 import builtins
 import json
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+from typing import cast as type_cast
 
 import numpy as np
 import pandas as pd
@@ -17,12 +18,12 @@ from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
-from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, ones
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
+from arkouda.numpy.pdarraycreation import array, ones
 from arkouda.numpy.pdarraysetops import argsort, in1d
-from arkouda.numpy.sorting import coargsort
 from arkouda.numpy.strings import Strings
-from arkouda.numpy.util import convert_if_categorical, generic_concat, get_callback
+from arkouda.sorting import coargsort
+from arkouda.util import convert_if_categorical, generic_concat, get_callback
 
 __all__ = [
     "Index",
@@ -202,16 +203,8 @@ class Index:
         return values != other_values
 
     def _dtype_of_list_values(self, lst):
-        from arkouda.numpy.dtypes import dtype
-
         if isinstance(lst, list):
-            d = dtype(type(lst[0]))
-            for item in lst:
-                assert dtype(type(item)) == d, (
-                    f"Values of Index must all be same type.  "
-                    f"Types {d} and {dtype(type(item))} do not match."
-                )
-            return d
+            return np.array(lst).dtype
         else:
             raise TypeError("Index Types must match")
 
@@ -252,7 +245,7 @@ class Index:
                 return "integer"
             elif _is_dtype_in_union(self.dtype, float_scalars):
                 return "floating"
-            elif self.dtype == "<U":
+            elif str(self.dtype).startswith("<U"):
                 return "string"
         return self.values.inferred_type
 
@@ -401,6 +394,110 @@ class Index:
             if isinstance(result, (bool, np.bool_)):
                 return result
         return False
+
+    def _reindex(self, perm):
+        if isinstance(self, MultiIndex):
+            return MultiIndex(self[perm].levels, name=self.name, names=self.names)
+        elif isinstance(self.values, list):
+            if not isinstance(perm, list):
+                perm = perm.to_list()
+            return Index([self.values[i] for i in perm], name=self.name, allow_list=True)
+        else:
+            return Index(self.values[perm], name=self.name)
+
+    @typechecked
+    def sort_values(
+        self, return_indexer: bool = False, ascending: bool = True, na_position="last"
+    ) -> Union[Index, Tuple]:
+        """
+        Return a sorted copy of the index.
+
+        Parameters
+        ----------
+        return_indexer : bool, default False
+            If True, also return the integer positions that sort the index.
+        ascending : bool, default True
+            Sort in ascending order. Use False for descending.
+        na_position : {'first', 'last'}, default 'last'
+            Where to position NaNs. 'first' puts NaNs at the beginning,
+            'last' at the end.
+
+        Returns
+        -------
+        Union[Index, (Index, Union[pdarray, list])]
+            sorted_index : arkouda.Index
+                A new Index whose values are sorted.
+            indexer : Union[arkouda.pdarray, list], optional
+                The indices that would sort the original index.
+                Only returned when ``return_indexer=True``.
+
+        Examples
+        --------
+        >>> idx = ak.Index([10, 100, 1, 1000])
+        >>> idx
+        Index([10, 100, 1, 1000], dtype='int64')
+
+        Sort in ascending order (default):
+        >>> idx.sort_values()
+        Index([1, 10, 100, 1000], dtype='int64')
+
+        Sort in descending order and get the sort positions:
+        >>> idx.sort_values(ascending=False, return_indexer=True)
+        (Index([1000, 100, 10, 1], dtype='int64'),
+         array([3, 1, 0, 2]))
+
+        """
+        from arkouda.util import is_float
+
+        perm: Union[pdarray, list]
+
+        if na_position not in ["first", "last"]:
+            raise ValueError('na_position must be "first" or "last".')
+
+        if isinstance(self, MultiIndex):
+            perm = coargsort(self.levels, ascending=ascending)
+        elif isinstance(self.values, list):
+            from numpy import argsort as np_argsort
+
+            if ascending is True:
+                perm = type_cast(list[int], np_argsort(self.values).tolist())
+            else:
+                perm = type_cast(list[int], np_argsort(self.values)[::-1].tolist())
+
+            from numpy import isnan as np_isnan
+
+            from arkouda.numpy.dtypes import isSupportedNumber
+
+            # if builtins.all(isinstance(x, (float, np.number)) for x in self.values):
+            if builtins.all(isSupportedNumber(x) for x in self.values):
+                is_nan = np_isnan(self.values)[perm]
+
+                if na_position == "last":
+                    perm = np.concatenate([np.array(perm)[~is_nan], np.array(perm)[is_nan]]).tolist()
+                else:
+                    perm = np.concatenate([np.array(perm)[is_nan], np.array(perm)[~is_nan]]).tolist()
+
+        elif isinstance(self.values, (Strings, Categorical, pdarray)):
+            from arkouda import concatenate
+            from arkouda import isnan as ak_isnan
+
+            perm = argsort(self.values, ascending=ascending)
+
+            if is_float(self.values):
+                is_nan = ak_isnan(self.values)[perm]
+                if na_position == "last":
+                    perm = concatenate([perm[~is_nan], perm[is_nan]])
+                else:
+                    perm = concatenate([perm[is_nan], perm[~is_nan]])
+        else:
+            # catch anything else early
+
+            raise TypeError(f"Unsupported index dtype: {type(self.values)}")
+
+        if return_indexer:
+            return self._reindex(perm), perm
+        else:
+            return self._reindex(perm)
 
     def memory_usage(self, unit="B"):
         """
@@ -666,7 +763,7 @@ class Index:
             if isinstance(self.values, pdarray) and self.dtype in (akint64, akfloat64):
                 i = argsort(-self.values)
             else:
-                i = argsort(self.values)[arange(self.size - 1, -1, -1)]
+                i = argsort(self.values)[::-1]
         else:
             i = argsort(self.values)
         return i
@@ -1054,6 +1151,7 @@ class MultiIndex(Index):
         names: Optional[list[str]] = None,
     ):
         self.registered_name: Optional[str] = None
+
         if isinstance(data, MultiIndex):
             self.levels = data.levels
         elif isinstance(data, pd.MultiIndex):
@@ -1370,7 +1468,7 @@ class MultiIndex(Index):
     def argsort(self, ascending=True):
         i = coargsort(self.index)
         if not ascending:
-            i = i[arange(self.size - 1, -1, -1)]
+            i = i[::-1]
         return i
 
     def concat(self, other):

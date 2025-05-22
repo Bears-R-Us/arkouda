@@ -2881,3 +2881,21 @@ class Strings:
         )
 
         return Strings.from_return_msg(cast(str, rep_msg))
+
+    def argsort(self, ascending=True):
+        """
+        Return the permutation that sorts the Strings.
+
+        Parameters
+        ----------
+        ascending: bool = True
+
+        Returns
+        -------
+        pdarray
+            The indices that sort the Categorical.
+
+        """
+        from arkouda.numpy.sorting import argsort
+
+        return argsort(self)

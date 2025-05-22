@@ -7,15 +7,7 @@ import numpy as np
 from typeguard import check_type, typechecked
 
 from arkouda.client import generic_msg
-from arkouda.numpy.dtypes import (
-    bigint,
-    bool_,
-    dtype,
-    float64,
-    int64,
-    int_scalars,
-    uint64,
-)
+from arkouda.numpy.dtypes import bigint, dtype, float64, int64, int_scalars, uint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import array, zeros
 from arkouda.numpy.strings import Strings
@@ -36,6 +28,7 @@ def argsort(
     pda: Union[pdarray, Strings, Categorical],
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
     axis: int_scalars = 0,
+    ascending: bool = True,
 ) -> pdarray:
     """
     Return the permutation that sorts the array.
@@ -48,6 +41,8 @@ def argsort(
         The algorithm to be used for sorting the array.
     axis : int_scalars, default=0
         The axis to sort over.
+    ascending: bool = True
+        Ignored when the number of dimensions is > 1.
 
     Returns
     -------
@@ -96,8 +91,8 @@ def argsort(
 
     check_type(argname="argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
 
-    if hasattr(pda, "argsort"):
-        return cast(Categorical, pda).argsort()
+    if isinstance(pda, Categorical):
+        return cast(Categorical, pda).argsort(ascending=ascending)
     if pda.size == 0 and hasattr(pda, "dtype"):
         return zeros(0, dtype=pda.dtype)
     if isinstance(pda, pdarray) and pda.dtype == bigint:
@@ -122,12 +117,19 @@ def argsort(
             },
         )
 
-    return create_pdarray(cast(str, repMsg))
+    sorted_array = create_pdarray(cast(str, repMsg))
+    if ascending is True or (hasattr(pda, "ndim") and pda.ndim != 1):
+        return sorted_array
+    else:
+        from arkouda.numpy.manipulation_functions import flip
+
+        return flip(sorted_array)  # sorted_array[::-1]
 
 
 def coargsort(
     arrays: Sequence[Union[Strings, pdarray, Categorical]],
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+    ascending=True,
 ) -> pdarray:
     """
     Return the permutation that groups the rows (left-to-right), if the
@@ -140,6 +142,8 @@ def coargsort(
         The columns (int64, uint64, float64, Strings, or Categorical) to sort by row
     algorithm : SortingAlgorithm, default=SortingAlgorithm.RadixSortLSD
         The algorithm to be used for sorting the arrays.
+    ascending: bool = True
+        Ignored when the number of dimensions is > 1.
 
     Returns
     -------
@@ -189,8 +193,13 @@ def coargsort(
     anames = []
     atypes = []
     expanded_arrays = []
+    max_dim = 1
     for a in arrays:
-        if not isinstance(a, pdarray) or a.dtype not in [bigint, bool_]:
+        if hasattr(a, "ndim"):
+            from numpy import maximum
+
+            max_dim = maximum(a.ndim, max_dim)
+        if not isinstance(a, pdarray) or a.dtype not in [bigint, bool]:
             expanded_arrays.append(a)
         elif a.dtype == bigint:
             expanded_arrays.extend(a.bigint_to_uint_arrays())
@@ -227,7 +236,13 @@ def coargsort(
             "arr_types": atypes,
         },
     )
-    return create_pdarray(cast(str, repMsg))
+    sorted_array = create_pdarray(cast(str, repMsg))
+    if ascending is True or max_dim > 1:
+        return sorted_array
+    else:
+        from arkouda.numpy.manipulation_functions import flip
+
+        return flip(sorted_array)  # sorted_array[::-1]
 
 
 @typechecked
