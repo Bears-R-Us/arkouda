@@ -764,7 +764,7 @@ class Series:
             else:
                 from arkouda.numpy.manipulation_functions import flip
 
-                perm = flip(argsort(self.values))  # argsort(self.values)[::-1]
+                perm = flip(argsort(self.values))
         else:
             perm = argsort(self.values)
         return self._reindex(perm)

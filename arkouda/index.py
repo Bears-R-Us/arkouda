@@ -3,6 +3,7 @@ from __future__ import annotations
 import builtins
 import json
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+from typing import cast as type_cast
 
 import numpy as np
 import pandas as pd
@@ -453,9 +454,9 @@ class Index:
             from numpy import argsort as np_argsort
 
             if ascending is True:
-                perm = np_argsort(self.values).tolist()
+                perm = type_cast(list[int], np_argsort(self.values).tolist())
             else:
-                perm = np_argsort(self.values)[::-1].tolist()
+                perm = type_cast(list[int], np_argsort(self.values)[::-1].tolist())
 
             from numpy import isnan as np_isnan
 
