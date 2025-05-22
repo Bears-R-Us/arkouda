@@ -14,6 +14,7 @@ NO_BOOL = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.str_]
 NO_STR = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.bool_]
 NO_FLOAT = [ak.int64, ak.uint64, ak.bigint, ak.str_, ak.bool_]
 NO_FLOAT_STR = [ak.int64, ak.uint64, ak.bigint, ak.bool_]
+NUMERIC_DTYPES = [ak.int64, ak.uint64, ak.float64]
 SETOPS = ["intersect", "union", "setdiff", "setxor"]
 
 
@@ -246,6 +247,16 @@ class TestSegArray:
         assert isinstance(sa, ak.SegArray)
         assert sa.size == 0
         assert [] == sa.lengths.to_list()
+
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", NUMERIC_DTYPES)
+    def test_mean(self, size, dtype) :
+        c_segs, c_vals = self.make_segarray(size, dtype)
+        c_sa = ak.SegArray(ak.array(c_segs), ak.array(c_vals))
+        for i in range(len(c_sa)) :
+            assert (c_sa.mean()[i] == c_sa[i].mean())
+
 
     def test_generic_error_handling(self):
         with pytest.raises(TypeError):
