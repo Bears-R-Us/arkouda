@@ -3498,12 +3498,11 @@ def take(
     if isinstance(indices, pdarray) and indices.ndim != 1:
         raise ValueError("indices must be 1D")
 
-    if not isinstance(indices, pdarray) and isinstance(indices, list):
-        indices_ = array(indices)
-    elif not isinstance(indices, pdarray):
-        indices_ = array([indices])
-    else:
+    indices_: pdarray
+    if isinstance(indices, pdarray):
         indices_ = indices
+    else:
+        indices_ = type_cast(pdarray, array([indices]))
 
     result = create_pdarray(
         generic_msg(

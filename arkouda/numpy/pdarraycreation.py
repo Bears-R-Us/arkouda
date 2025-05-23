@@ -1,17 +1,51 @@
+from __future__ import annotations
+
+import builtins
 import itertools
-from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Tuple, TypeVar, Union, cast, overload
+
+# Convenient “any array-like” for catch-alls
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    TypeAlias,
+    TypeGuard,
+    TypeVar,
+    Union,
+)
+from typing import cast
+from typing import cast as type_cast
+from typing import overload
 
 import numpy as np
+from numpy import str_ as np_str_
+from numpy.typing import NDArray
 import pandas as pd
 from typeguard import typechecked
 
+from arkouda.client import maxTransferBytes
 from arkouda.numpy.dtypes import (
+    ARKOUDA_SUPPORTED_NUMBERS,
     NUMBER_FORMAT_STRINGS,
     DTypes,
     NumericDTypes,
     SeriesDTypes,
     bigint,
+    bool_,
     bool_scalars,
+)
+from arkouda.numpy.dtypes import (
+    float32,
+    float64,
+    get_byteorder,
+    get_server_byteorder,
+    int8,
+    int16,
+    int32,
 )
 from arkouda.numpy.dtypes import (
     int_scalars,
@@ -19,11 +53,15 @@ from arkouda.numpy.dtypes import (
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
-    str_,
 )
+from arkouda.numpy.dtypes import dtype as ak_dtype
 from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
+from arkouda.numpy.dtypes import int64
 from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import str_
+from arkouda.numpy.dtypes import str_ as ak_str_
+from arkouda.numpy.dtypes import uint8, uint16, uint32
+from arkouda.numpy.dtypes import uint64
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.strings import Strings
@@ -31,9 +69,13 @@ from arkouda.numpy.strings import Strings
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg, get_array_ranks
+    from arkouda.numpy.numeric import cast as ak_cast
+
 else:
     generic_msg = TypeVar("generic_msg")
     get_array_ranks = TypeVar("get_array_ranks")
+    ak_cast = TypeVar("ak_cast")
+
 
 __all__ = [
     "array",
@@ -164,260 +206,460 @@ def _deepcopy(a: pdarray) -> pdarray:
     return create_pdarray(rep_msg)
 
 
+_ArrayLikeNum = Union[
+    NDArray[np.bool_],
+    NDArray[np.int64],
+    NDArray[np.uint64],
+    NDArray[np.float64],
+    Iterable[int],
+    Iterable[float],
+    Iterable[bool],
+]
+
+_ArrayLikeStr = Union[
+    NDArray[np.str_],
+    Iterable[str],
+]
+
+
+# ---- dtype helper aliases ----
+_StringDType: TypeAlias = Union[Literal["str", "str_"], type[ak_str_], type[str], type[Strings]]
+# Explicitly enumerate Arkouda numeric dtypes
+
+_NumericLikeDType: TypeAlias = Union[
+    Literal["bigint", "float64", "int8", "int64", "uint8", "uint64", "bool", "bool_"],
+    type[builtins.bool],
+    type[np.bool_],
+    type[bigint],
+    type[float],
+    type[float64],
+    type[float32],
+    type[int],
+    type[int8],
+    type[int16],
+    type[int32],
+    type[int64],
+    type[uint8],
+    type[uint16],
+    type[uint32],
+    type[uint64],
+]
+
+
+def is_string_dtype_hint(x: object) -> TypeGuard["_StringDType"]:
+    # accept the spellings you want to map to Arkouda Strings
+    return x in ("str", "str_") or x is ak_str_ or x is np_str_ or x is Strings
+
+
+# ======================
+# Overloads for ak.array
+# ======================
+
+
+# Strings input -> Strings (only None or string-like dtype is permitted at runtime)
+@overload
 def array(
-    a: Union[pdarray, np.ndarray, Iterable, Strings],
-    dtype: Union[np.dtype, type, str, None] = None,
+    a: Union[pdarray, Strings, Iterable[Any], NDArray[Any]],
+    dtype: _StringDType = ...,
+    *,
+    copy: bool = ...,
+    max_bits: int = ...,
+) -> Strings: ...
+
+
+# pdarray + (no dtype or non-string dtype) -> pdarray
+@overload
+def array(
+    a: Union[pdarray, Strings, Iterable[Any], NDArray[Any]],
+    dtype: _NumericLikeDType = ...,  # object covers np.dtype, type, int/float/bool dtypes, etc.
+    *,
+    copy: bool = ...,
+    max_bits: int = ...,
+) -> pdarray: ...
+
+
+# Clearly string-like python/NumPy inputs -> Strings
+@overload
+def array(
+    a: Union[pdarray, Strings, Iterable[Any], NDArray[Any]],
+    dtype=None,
+    *,
+    copy: bool = ...,
+    max_bits: int = ...,
+) -> Union[pdarray, Strings]: ...
+
+
+def array(
+    a: Union[pdarray, Strings, Iterable[Any], NDArray[Any]],
+    dtype: Union[_StringDType, _NumericLikeDType, None] = None,
     copy: bool = False,
     max_bits: int = -1,
 ) -> Union[pdarray, Strings]:
     """
-    Convert a Python, NumPy, or Arkouda array-like into a `pdarray` or `Strings` object,
-    transferring data to the Arkouda server.
+    Create an Arkouda array (`pdarray` or `Strings`) from Python, NumPy, or Arkouda data.
+
+    This is the primary entry point for transferring array-like data to the Arkouda server.
+    It mirrors the interface of NumPy’s ``np.array`` while handling Arkouda-specific types
+    (e.g. ``Strings`` and ``bigint``). String and numeric data are automatically detected
+    and encoded efficiently for parallel computation.
 
     Parameters
     ----------
-    a : Union[pdarray, np.ndarray, Iterable, Strings]
-        The array-like input to convert. Supported types include Arkouda `Strings`, `pdarray`,
-        NumPy `ndarray`, or Python iterables such as list, tuple, range, or deque.
+    a : pdarray, Strings, ndarray, iterable
+        The input data. Can be any of the following:
+          * Arkouda ``pdarray`` or ``Strings`` (optionally copied)
+          * NumPy ``ndarray``
+          * Python iterable (list, tuple, range, etc.)
 
-    dtype : Union[np.dtype, type, str], optional
-        The target dtype to cast values to. This may be a NumPy dtype object,
-        a NumPy scalar type (e.g. `np.int64`), or a string (e.g. `'int64'`, `'str'`).
+        Scalar strings are **not supported** — pass a sequence of strings instead.
 
-    copy : bool, default=False
-        If True, a deep copy of the array is made. If False, no copy is made if the input
-        is already a `pdarray`. **Note**: Arkouda does not currently support views or shallow copies.
-        This differs from NumPy. Also, the default (`False`) is chosen to reduce performance overhead.
+    dtype : type, str, np.dtype, or None, optional
+        Target data type. If omitted, inferred from ``a``.
+        Accepts Arkouda dtypes (e.g., ``ak.int64``, ``ak.float64``, ``ak.bigint``)
+        or string aliases such as ``"int64"`` or ``"str"``.
+
+        - If ``dtype`` is string-like, a ``Strings`` object is created.
+        - If ``dtype`` is numeric, a ``pdarray`` is created.
+        - If ``dtype`` is ``bigint``, large integer encoding is used.
+
+    copy : bool, default False
+        If True, always create a new copy even if ``a`` is already a server-side object.
+        Arkouda currently performs deep copies only—views are not supported.
 
     max_bits : int, optional
-        The maximum number of bits for bigint arrays. Ignored for other dtypes.
+        Maximum bit width for ``bigint`` arrays.
+        Ignored for all other dtypes.
+        Use ``-1`` (default) for automatic sizing.
 
     Returns
     -------
-    Union[pdarray, Strings]
-        A `pdarray` stored on the Arkouda server, or a `Strings` object.
+    pdarray or Strings
+        The resulting Arkouda array residing on the server.
 
     Raises
     ------
     TypeError
-        - If `a` is not a `pdarray`, `np.ndarray`, or Python iterable.
-        - If `a` is of string type and `dtype` is not `ak.str_`.
-
-    RuntimeError
-        - If input size exceeds `ak.client.maxTransferBytes`.
-        - If `a.dtype` is unsupported or incompatible with Arkouda.
-        - If `a.size * a.itemsize > maxTransferBytes`.
-
+        If ``a`` is not array-like or scalar strings are passed.
+        If a string array is given with a non-string target dtype.
     ValueError
-        - If `a`'s rank is not supported (see `get_array_ranks()`).
-        - If the server response is malformed or missing required fields.
-
-    See Also
-    --------
-    pdarray.to_ndarray
-        Convert back from Arkouda to NumPy.
+        If the array rank is not supported by the compiled server ranks.
+    RuntimeError
+        If the transfer exceeds ``ak.client.maxTransferBytes`` or server upload fails.
 
     Notes
     -----
-    - Arkouda does not currently support shallow copies or views; all copies are deep.
-    - The number of bytes transferred to the server is limited by `ak.client.maxTransferBytes`.
-      This prevents saturating the network during large transfers. To increase this limit,
-      set `ak.client.maxTransferBytes` to a larger value manually.
-    - If the input is a Unicode string array (`dtype.kind == 'U'` or `dtype='str'`),
-      this function recursively creates a `Strings` object from two internal `pdarray`s
-      (one for offsets and one for concatenated string bytes).
+    - Always performs deep copies; no views or shared memory.
+    - String arrays are encoded as segmented byte sequences for efficient storage.
+    - NumPy object arrays of Python ints are promoted to ``bigint`` automatically
+      when exceeding 64-bit integer range.
+    - Mixed-type iterables are coerced to NumPy arrays before transfer.
+
+    See Also
+    --------
+    ak.from_series : Convert from pandas Series
+    ak.zeros, ak.ones, ak.full : Create new arrays on the server
+    ak.numpy.numeric.cast : Change dtype of existing arrays
 
     Examples
     --------
     >>> import arkouda as ak
-    >>> ak.array(np.arange(1, 10))
-    array([1 2 3 4 5 6 7 8 9])
+    >>> ak.array([1, 2, 3])
+    array([1 2 3])
 
-    >>> ak.array(range(1, 10))
-    array([1 2 3 4 5 6 7 8 9])
+    >>> ak.array(["a", "b", "c"])
+    array(['a', 'b', 'c'])
 
-    >>> strings = ak.array([f'string {i}' for i in range(5)])
-    >>> type(strings)
-    <class 'arkouda.numpy.strings.Strings'>
+    >>> import numpy as np
+    >>> ak.array(np.arange(3, dtype=np.int64))
+    array([0 1 2])
+
+    >>> p = ak.array(range(3))
+    >>> ak.array(p, copy=True) is p
+    False
+
+    >>> ak.array(["1", "2", "3"], dtype=ak.int64)
+    array([1 2 3])
     """
-    from arkouda.client import generic_msg, get_array_ranks
-    from arkouda.numpy.numeric import cast as akcast
+    dtype = ak_dtype(dtype) if dtype else None
 
-    if isinstance(a, str):
-        raise TypeError(
-            "Cannot convert a scalar string to an Arkouda array; pass a sequence of strings instead."
-        )
-
-    if isinstance(a, pdarray) and (a.dtype == dtype or dtype is None):
-        return _deepcopy(a) if copy else a
-
-    if isinstance(a, Strings):
-        if dtype and dtype != "str_":
-            raise TypeError(f"Cannot cast Strings to dtype {dtype} in ak.array")
-        return (
-            Strings(cast(pdarray, array([], dtype="int64")), 0) if a.size == 0 else a[:] if copy else a
-        )
+    # --- Fast paths for Arkouda natives ---
+    if isinstance(a, (str, str_)):
+        raise TypeError("Scalar string is not supported; pass a sequence of strings instead.")
 
     if isinstance(a, pdarray):
-        casted = akcast(a, dtype)  # the "dtype is None" case was covered above
-        if dtype == bigint and max_bits != -1:
-            casted.max_bits = max_bits
-        return casted
+        if dtype is None or a.dtype == dtype:
+            return _deepcopy(a) if copy else a
 
-    from arkouda.client import maxTransferBytes
+        from arkouda.numpy.numeric import cast as ak_cast
 
+        out = ak_cast(a, dtype)
+        if isinstance(out, pdarray) and dtype == bigint and max_bits != -1:
+            out.max_bits = max_bits
+        return out
+
+    if isinstance(a, Strings):
+        if dtype and not is_string_dtype_hint(dtype):
+            from arkouda.numpy.numeric import cast as ak_cast
+
+            pdarryOrStrings = Union[Strings, pdarray]
+            return type_cast(pdarryOrStrings, ak_cast(a, dt=dtype))
+        if not copy:
+            return a
+
+        if a.size == 0:
+            # build an empty Strings with a 0-length offsets array
+            empty_offsets = array([], dtype="int64")
+            return Strings(cast(pdarray, empty_offsets), 0)
+        # non-empty: slicing is fine
+        return a[:]
+
+    # --- Normalize iterables to numpy (if needed) ---
+    np_a = _to_numpy(a, dtype_hint=dtype)
+
+    # bigint intent via dtype or detected object-int overflow case
+    if np_a.dtype == object and _all_python_ints(np_a) and dtype is None:
+        dtype = bigint
+    if _is_string_array(np_a) and dtype == "bigint":
+        np_a = np_a.astype("O")
+
+    # Special case: negative input + dtype=bigint -> sign mask trick
+    if dtype == "bigint" and np_a.ndim >= 1 and np_a.size > 0 and (_is_numeric_not_string(np_a.dtype)):
+        if (np_a < 0).any():
+            neg_mask = array((np_a < 0) * -2 + 1)  # [-1 for negatives, +1 otherwise]
+            abs_a = array(np.abs(np_a), dtype=bigint, max_bits=max_bits)
+            assert isinstance(abs_a, pdarray)
+            return neg_mask * abs_a
+
+    # --- Strings path ---
+    if _is_string_array(np_a) and dtype != "bigint":
+        return _strings_from_numpy(np_a, dtype)
+
+    # --- Rank checks (non-string) ---
+    from arkouda.client import get_array_ranks
+
+    ranks = get_array_ranks()
+    if np_a.ndim == 0:
+        raise TypeError("array does not accept scalars or 0 dimensional arrays.")
+    elif np_a.ndim not in ranks:
+        raise ValueError(f"array rank {np_a.ndim} not in compiled ranks {ranks}")
+
+    # --- Strings input with numeric/other target (incl. bigint) ---
+    # If the numpy array is string-like but the target dtype is NOT string-like,
+    # create Strings first, then cast via ak_cast (handles parsing, errors, etc.).
+
+    if _is_string_array(np_a) and (dtype is not None) and not is_string_dtype_hint(dtype):
+        s = _strings_from_numpy(np_a, dtype_hint=None)
+
+        from arkouda.numpy.numeric import cast as ak_cast
+
+        return type_cast(pdarray, ak_cast(s, dt=dtype))
+
+    # --- bigint or unsupported numpy dtype -> decompose to uint64 arrays, then build bigint ---
+
+    if dtype == bigint or np_a.dtype.name not in DTypes:
+        return _bigint_from_numpy(np_a, max_bits=max_bits)
+
+    # --- Regular numeric upload ---
+    return _upload_numeric_numpy(np_a, dtype)
+
+
+# =========================
+# Helpers (private)
+# =========================
+
+
+def _to_numpy(a, dtype_hint: Union[_StringDType, _NumericLikeDType, None]) -> np.ndarray:
+    """Convert input to a NumPy array with best-effort dtype selection, matching previous behavior."""
+    if isinstance(a, np.ndarray):
+        return a
+
+    # Iterables that aren't already
+    # list/tuple/ndarray/Series/set/dict -> list to stabilize dtype inference
     if isinstance(a, Iterable) and not isinstance(a, (list, tuple, np.ndarray, pd.Series, set, dict)):
         a = list(a)
 
-    # If a is not already a numpy.ndarray, convert it
+    try:
+        if dtype_hint is not None and dtype_hint != bigint:
+            return np.array(a, dtype=dtype_hint)
+        # auto-upcast to uint if any int >= 2**63 and all ints are supported and non-negative
+        if _all_supported_ints(a) and _any_ge_2p63(a) and _all_nonneg(a):
+            return np.array(a, dtype=np.uint)
+        return np.array(a)
+    except (RuntimeError, TypeError, ValueError):
+        raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
 
-    if not isinstance(a, np.ndarray):
-        try:
-            if dtype is not None and dtype != bigint:
-                # if the user specified dtype, use that dtype
-                a = np.array(a, dtype=dtype)
-            elif (
-                all(isSupportedInt(i) for i in a)
-                and all(i >= 0 for i in a)
-                and any(2**64 > i >= 2**63 for i in a)
-            ):
-                # all supportedInt values but some >=2**63, default to uint (see #1297)
-                # iterating shouldn't be too expensive since
-                # this is after the `isinstance(a, pdarray)` check
-                a = np.array(a, dtype=np.uint)
-            else:
-                # let numpy decide the type
-                a = np.array(a)
-        except (RuntimeError, TypeError, ValueError):
-            raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
 
-    if a.dtype == object and all(isinstance(x, (int, np.integer)) for x in a) and dtype is None:
-        dtype = bigint
+def _strings_from_numpy(
+    np_a: np.ndarray, dtype_hint: Union[_StringDType, _NumericLikeDType, None]
+) -> Strings | pdarray:
+    from arkouda.client import generic_msg
+    from arkouda.numpy.numeric import cast as ak_cast
 
-    #   Special case, to get around error when putting negative numbers in a bigint
-
-    if (
-        not isinstance(a, Strings)
-        and not np.issubdtype(a.dtype, np.str_)
-        and dtype == bigint
-        and (a < 0).any()
-    ):
-        neg_mask = array((a < 0) * -2 + 1)
-        abs_a = array(abs(a), dtype, max_bits=max_bits)
-        assert isinstance(abs_a, pdarray)  # This is for mypy reasons
-        return neg_mask * abs_a
-
-    if a.dtype == bigint or a.dtype.name not in DTypes or dtype == bigint:
-        # We need this array whether the number of dimensions is 1 or greater.
-        uint_arrays: List[Union[pdarray, Strings]] = []
-
-    if (a.dtype == bigint or dtype == bigint) and a.ndim in get_array_ranks() and a.ndim > 1:
-        sh = a.shape
-        try:
-            # attempt to break bigint into multiple uint64 arrays
-            # early out if we would have more uint arrays than can fit in max_bits
-            early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
-            while (a != 0).any() and len(uint_arrays) < early_out:
-                low, a = a % 2**64, a // 2**64
-                uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
-            # If uint_arrays is empty, this will create an empty ak array and reshape it.
-            if not uint_arrays:
-                return zeros(size=sh, dtype=bigint, max_bits=max_bits)
-            else:
-                return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits)
-        except TypeError:
-            raise RuntimeError(f"Unhandled dtype {a.dtype}")
-
-    if a.ndim != 1 and a.dtype.name not in NumericDTypes:
-        raise TypeError("Must be an iterable or have a numeric DType")
-
-    # Return multi-dimensional pdarray if a.ndim in get_array_ranks()
-    # otherwise raise an error
-
-    if a.ndim not in get_array_ranks():
-        raise ValueError(f"array rank {a.ndim} not in compiled ranks {get_array_ranks()}")
-
-    # Check if array of strings
-    # if a.dtype == numpy.object_ need to check first element
-    if np.issubdtype(a.dtype, np.str_) or (
-        a.dtype == np.object_ and a.size > 0 and isinstance(a[0], str)
-    ):
-        # encode each string and add a null byte terminator
-        encoded = [i for i in itertools.chain.from_iterable(map(lambda x: x.encode() + b"\x00", a))]
-        nbytes = len(encoded)
-        if nbytes > maxTransferBytes:
-            raise RuntimeError(
-                f"Creating pdarray would require transferring {nbytes} bytes, which exceeds "
-                f"allowed transfer size. Increase ak.client.maxTransferBytes to force."
-            )
-        encoded_np = np.array(encoded, dtype=np.uint8)
-        rep_msg = generic_msg(
-            cmd=f"arraySegString<{encoded_np.dtype.name}>",
-            args={"size": encoded_np.size},
-            payload=_array_memview(encoded_np),
-            send_binary=True,
+    encoded = [b for b in itertools.chain.from_iterable((s.encode() + b"\x00" for s in np_a))]
+    nbytes = len(encoded)
+    if nbytes > maxTransferBytes:
+        raise RuntimeError(
+            f"Creating Strings would transfer {nbytes} bytes, exceeding max {maxTransferBytes}. "
+            "Increase ak.client.maxTransferBytes to force."
         )
-        strings = Strings.from_return_msg(cast(str, rep_msg))
-        return strings if dtype is None else akcast(strings, dtype)
+    encoded_np = np.array(encoded, dtype=np.uint8)
+    rep = generic_msg(
+        cmd=f"arraySegString<{encoded_np.dtype.name}>",
+        args={"size": encoded_np.size},
+        payload=_array_memview(encoded_np),
+        send_binary=True,
+    )
+    strings = Strings.from_return_msg(cast(str, rep))
 
-    # If not strings, then check that dtype is supported in arkouda
-    if dtype == bigint or a.dtype.name not in DTypes:
-        # 2 situations result in attempting to call `bigint_from_uint_arrays`
-        # 1. user specified i.e. dtype=ak.bigint
-        # 2. too big to fit into other numpy types (dtype = object)
-        try:
-            # attempt to break bigint into multiple uint64 arrays
-            # early out if we would have more uint arrays than can fit in max_bits
-            early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
-            if all(a == 0):
-                return zeros(a.shape, dtype=bigint, max_bits=max_bits)
-            while any(a != 0) and len(uint_arrays) < early_out:
-                if isinstance(a, np.ndarray):
-                    low, a = a.astype("O") % 2**64, a.astype("O") // 2**64
-                else:
-                    low, a = a % 2**64, a // 2**64
-                uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
-            return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits)
-        except TypeError:
-            raise RuntimeError(f"Unhandled dtype {a.dtype}")
+    if dtype_hint is None or is_string_dtype_hint(dtype_hint):
+        return strings
     else:
-        from arkouda.numpy.util import _infer_shape_from_size
+        return type_cast(pdarray, ak_cast(strings, dt=dtype_hint))
+    # refuse non-string casts here to preserve return type
+    raise TypeError(f"Cannot cast string array to dtype {dtype_hint!r} in ak.array")
 
-        shape, ndim, full_size = _infer_shape_from_size(a.shape)
 
-        # Do not allow arrays that are too large
-        if (full_size * a.itemsize) > maxTransferBytes:
-            raise RuntimeError(
-                "Array exceeds allowed transfer size. Increase ak.client.maxTransferBytes to allow"
-            )
-        if a.ndim > 1 and a.flags["F_CONTIGUOUS"] and not a.flags["OWNDATA"]:
-            # Make a copy if the array was shallow-transposed (to avoid error #3757)
-            a_ = a.copy()
+# return strings if dtype is None else akcast(strings, dtype)
+#
+def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
+    # Handle multi-dim bigint via repeated mod/div by 2**64 to make uint64 "limbs"
+    if np_a.size == 0:
+        # preserve shape for empty
+        return zeros(size=np_a.shape, dtype=bigint, max_bits=max_bits)
+
+    # early-out limb cap based on max_bits
+    limb_cap = (max_bits // 64) + (1 if (max_bits % 64) else 0) if max_bits != -1 else float("inf")
+
+    # Work on object ints safely if needed
+    a_work = np_a
+    if not isinstance(a_work, np.ndarray):
+        a_work = np.array(a_work)
+    if a_work.dtype != object and a_work.dtype.name not in DTypes:
+        a_work = a_work.astype("O")
+
+    # If we have an object array of Python ints and *any* are negative,
+    # split sign and magnitude to avoid non-terminating floor-division on negatives.
+    if a_work.dtype == object and a_work.size:
+        try:
+            it = a_work.flat
+            # Build a sign mask (-1 for negatives, +1 otherwise)
+            signs = np.fromiter((-1 if int(x) < 0 else 1 for x in it), count=a_work.size, dtype=np.int64)
+            has_neg = np.any(signs == -1)
+
+            if has_neg:
+                # reshape the sign mask to the original shape
+                signs = signs.reshape(a_work.shape)
+                # take absolute values safely as Python ints
+                abs_work = np.vectorize(lambda x: int(x) if int(x) >= 0 else -int(x), otypes=[object])(
+                    a_work
+                )
+                # recurse on magnitudes (all non-negative now)
+                mag = _bigint_from_numpy(abs_work, max_bits=max_bits)
+                # apply sign mask: (-1)*mag for negatives, (+1)*mag otherwise
+                neg_mask = array(signs)  # pdarray int64
+
+                assert isinstance(mag, pdarray)
+
+                return neg_mask * mag
+        except Exception:
+            # If anything goes wrong, fall through to the standard limb path
+            pass
+
+    uint_arrays: List[Union[pdarray, Strings]] = []
+    # zero quick path
+    if np.all(a_work == 0):
+        return zeros(size=np_a.shape, dtype=bigint, max_bits=max_bits)
+
+    while np.any(a_work != 0) and len(uint_arrays) < limb_cap:
+        if isinstance(a_work, np.ndarray):
+            low = (a_work.astype("O") % 2**64).astype(np.uint64, copy=False)
+            a_work = a_work.astype("O") // 2**64
         else:
-            a_ = a
-        # Pack binary array data into a bytes object with a command header
-        # including the dtype and size. If the server has a different byteorder
-        # than our numpy array we need to swap to match since the server expects
-        # native endian bytes
-        aview = _array_memview(a_)
+            low, a_work = a_work % 2**64, a_work // 2**64
+        uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
 
-        server_byte_order = get_server_byteorder()
-        if (server_byte_order == "big" and a.dtype.byteorder == "<") or (
-            server_byte_order == "little" and a.dtype.byteorder == ">"
-        ):
-            a = a.view(a.dtype.newbyteorder("S")).byteswap()
+    return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits)
 
-        rep_msg = generic_msg(
-            cmd=f"array<{a_.dtype.name},{ndim}>",
-            args={
-                "dtype": a_.dtype.name,
-                "shape": tuple(a_.shape),
-                "seg_string": False,
-            },
-            payload=aview,
-            send_binary=True,
+
+def _upload_numeric_numpy(
+    np_a: np.ndarray, dtype_hint: Union[_StringDType, _NumericLikeDType, None]
+) -> pdarray | Strings:
+    from arkouda.numpy.numeric import cast as ak_cast
+    from arkouda.numpy.util import _infer_shape_from_size
+
+    shape, ndim, full_size = _infer_shape_from_size(np_a.shape)
+
+    # size guard
+    nbytes = full_size * np_a.itemsize
+    if nbytes > maxTransferBytes:
+        raise RuntimeError(
+            f"Array exceeds allowed transfer size ({nbytes} > {maxTransferBytes}). "
+            "Increase ak.client.maxTransferBytes to allow."
         )
-        return create_pdarray(rep_msg) if dtype is None else akcast(create_pdarray(rep_msg), dtype)
+
+    # Avoid sending a shallow-transposed Fortran view that isn't OWNDATA (issue #3757)
+    a_send = (
+        np_a.copy()
+        if (np_a.ndim > 1 and np_a.flags["F_CONTIGUOUS"] and not np_a.flags["OWNDATA"])
+        else np_a
+    )
+
+    # Endianness swap if needed
+    server_byte_order = get_server_byteorder()
+    if (server_byte_order == "big" and a_send.dtype.byteorder == "<") or (
+        server_byte_order == "little" and a_send.dtype.byteorder == ">"
+    ):
+        a_send = a_send.view(a_send.dtype.newbyteorder("S")).byteswap()
+
+    from arkouda.client import generic_msg
+
+    rep = generic_msg(
+        cmd=f"array<{a_send.dtype.name},{ndim}>",
+        args={"dtype": a_send.dtype.name, "shape": tuple(a_send.shape), "seg_string": False},
+        payload=_array_memview(a_send),
+        send_binary=True,
+    )
+    out = create_pdarray(rep)
+    return out if dtype_hint is None else type_cast(pdarray | Strings, ak_cast(out, dtype_hint))
+
+
+def _is_string_array(np_a: np.ndarray) -> bool:
+    return np.issubdtype(np_a.dtype, np.str_) or (
+        np_a.dtype == np.object_ and np_a.size > 0 and isinstance(np_a.flat[0], str)
+    )
+
+
+def _is_numeric_not_string(dtype) -> bool:
+    return not np.issubdtype(dtype, np.str_) and dtype != np.object_
+
+
+def _all_python_ints(np_obj_like) -> bool:
+    try:
+        it = np.asarray(np_obj_like, dtype=object).flat
+        return all(isinstance(x, (int, np.integer)) for x in it)
+    except Exception:
+        return False
+
+
+def _all_supported_ints(iterable_like) -> bool:
+    try:
+        return all(isSupportedInt(i) for i in iterable_like)
+    except Exception:
+        return False
+
+
+def _any_ge_2p63(iterable_like) -> bool:
+    try:
+        return any((2**64 > i >= 2**63) for i in iterable_like)
+    except Exception:
+        return False
+
+
+def _all_nonneg(iterable_like) -> bool:
+    try:
+        return all(i >= 0 for i in iterable_like)
+    except Exception:
+        return False
 
 
 @typechecked
@@ -643,7 +885,7 @@ def ones(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
     dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
-) -> pdarray:
+) -> Union[pdarray, Strings]:
     """
     Create a pdarray filled with ones.
 
@@ -660,7 +902,7 @@ def ones(
 
     Returns
     -------
-    pdarray
+    pdarray or Strings
         Ones of the requested size or shape and dtype
 
     Raises
@@ -754,12 +996,14 @@ def full(
     array([True True True True True])
     """
     from arkouda.client import generic_msg, get_array_ranks
-    from arkouda.numpy.dtypes import dtype as ak_dtype
+    from arkouda.numpy.util import _infer_shape_from_size
+
+    shape, ndim, full_size = _infer_shape_from_size(size)
 
     if isinstance(fill_value, str):
-        return _full_string(size, fill_value)
+        return _full_string(full_size, fill_value)
     elif ak_dtype(dtype) == str_ or dtype == Strings:
-        return _full_string(size, str_(fill_value))
+        return _full_string(full_size, str_(fill_value))
 
     dtype = dtype if dtype is not None else resolve_scalar_dtype(fill_value)
 
@@ -768,9 +1012,6 @@ def full(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
-
-    shape, ndim, full_size = _infer_shape_from_size(size)
 
     if ndim not in get_array_ranks():
         raise ValueError(f"array rank {ndim} not in compiled ranks {get_array_ranks()}")
@@ -905,7 +1146,7 @@ def zeros_like(pda: pdarray) -> pdarray:
 
 
 @typechecked
-def ones_like(pda: pdarray) -> pdarray:
+def ones_like(pda: pdarray) -> Union[pdarray, Strings]:
     """
     Create a one-filled pdarray of the same size and dtype as an existing
     pdarray.
@@ -917,7 +1158,7 @@ def ones_like(pda: pdarray) -> pdarray:
 
     Returns
     -------
-    pdarray
+    pdarray or Strings
         Equivalent to ak.ones(pda.size, pda.dtype)
 
     Raises
@@ -951,7 +1192,7 @@ def ones_like(pda: pdarray) -> pdarray:
 
 
 @typechecked
-def full_like(pda: pdarray, fill_value: numeric_scalars) -> Union[pdarray, Strings]:
+def full_like(pda: pdarray, fill_value: Union[numeric_scalars, bool_, str_]) -> Union[pdarray, Strings]:
     """
     Create a pdarray filled with fill_value of the same size and dtype as an existing
     pdarray.
@@ -1133,7 +1374,7 @@ def arange(
     # This matters for several tests in tests/series_test.py
 
     if (start == stop) | ((np.sign(stop - start) * np.sign(step)) <= 0):
-        return akcast(array([], dtype=akint64), dt=aktype)
+        return type_cast(pdarray, akcast(array([], dtype=akint64), dt=aktype))
 
     if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(step):
         arg_dtypes = [resolve_scalar_dtype(arg) for arg in (start, stop, step)]
@@ -1152,7 +1393,7 @@ def arange(
             args={"start": start, "stop": stop, "step": step},
         )
         arr = create_pdarray(repMsg, max_bits=max_bits)
-        return arr if aktype == akint64 else akcast(arr, dt=aktype)
+        return type_cast(pdarray, arr if aktype == akint64 else akcast(arr, dt=aktype))
 
     raise TypeError(f"start, stop, step must be ints; got {args!r}")
 
@@ -1165,7 +1406,7 @@ def logspace(
     base: numeric_scalars = 10.0,
     endpoint: Union[None, bool] = True,
     dtype: Optional[type] = float64,
-    axis: Union[None, int_scalars] = 0,
+    axis: int_scalars = 0,
 ) -> pdarray:
     """
     Create a pdarray of numbers evenly spaced on a log scale.
@@ -1339,8 +1580,8 @@ def linspace(
     if endpoint is None:
         endpoint = True
 
-    start_ = start
-    stop_ = stop
+    start_: Union[numeric_scalars, pdarray] = start
+    stop_: Union[numeric_scalars, pdarray] = stop
 
     #   First make sure everything's a float.
 
@@ -1366,11 +1607,15 @@ def linspace(
     #   If one is a scalar and other a vector, we use full_like to "promote" the scalar one.
 
     else:
-        if isinstance(start_, pdarray) and np.isscalar(stop_):
-            stop_ = full_like(start_, stop_)
+        if isinstance(start_, pdarray) and isinstance(stop_, (ARKOUDA_SUPPORTED_NUMBERS, str_, bool_)):
+            full_pda = full_like(start_, stop_)
+            assert isinstance(full_pda, pdarray)
+            stop_ = full_pda
 
-        elif isinstance(stop_, pdarray) and np.isscalar(start_):
-            start_ = full_like(stop_, start_)
+        elif isinstance(stop_, pdarray) and isinstance(start_, (ARKOUDA_SUPPORTED_NUMBERS, str_, bool_)):
+            full_pda = full_like(stop_, start_)
+            assert isinstance(full_pda, pdarray)
+            start_ = full_pda
 
     divisor = num - 1 if endpoint else num
 
@@ -1381,9 +1626,9 @@ def linspace(
 
     if isinstance(start_, pdarray) and isinstance(stop_, pdarray):
         pad: Tuple[int, int] = (int(num), int(1))
-        start_ = tile(start_, pad).reshape((num,) + start_.shape)
-        stop_ = tile(stop_, pad).reshape((num,) + stop_.shape)
-        delta_ = (stop_ - start_) / divisor
+        start_ = type_cast(pdarray, tile(start_, pad).reshape((num,) + start_.shape))
+        stop_ = type_cast(pdarray, tile(stop_, pad).reshape((num,) + stop_.shape))
+        delta_: pdarray = (stop_ - start_) / divisor
         result = start_ + arange(num)[(...,) + (newaxis,) * (delta_.ndim - 1)] * delta_
 
         # Handle the axis parameter if needed
@@ -1399,7 +1644,7 @@ def linspace(
 
     #   Scalar case is pretty straightforward.
 
-    else:
+    elif isinstance(start_, ARKOUDA_SUPPORTED_NUMBERS):
         if axis == 0:
             delta = (stop_ - start_) / divisor
             result = full(num, start_) + arange(num).astype(float64) * delta
