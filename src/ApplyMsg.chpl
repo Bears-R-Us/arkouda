@@ -103,6 +103,7 @@ module ApplyMsg {
 
 
   @arkouda.instantiateAndRegister
+  @chplcheck.ignore("UnusedFormal")
   proc applyPickle(cmd: string,
                    msgArgs: borrowed MessageArgs,
                    st: borrowed SymTab,
@@ -123,9 +124,11 @@ module ApplyMsg {
       const pickleDataStr = msgArgs["pickleData"].toScalar(string);
       var pickleData: bytes;
       {
-        // TODO: this is a big hack, ideally we properly implement the base64 module
+        // TODO: this is a big hack,
+        // ideally we properly implement the base64 module
         // instead of using Python as a polyfill.
-        // even better, we should have a way to just send bytes from the client to the server
+        // even better, we should have a way to just
+        // send bytes from the client to the server
         var mod = new Module(getInterpreter(), "base64");
         var b64decode = new Function(mod, "b64decode");
         pickleData = b64decode(bytes, pickleDataStr);
@@ -144,7 +147,8 @@ module ApplyMsg {
           getModuleName(),
           getRoutineName(),
           getLineNumber(),
-          "Loaded pickle data on locale " + l.id:string + ", applying function");
+          "Loaded pickle data on locale " +
+          l.id:string + ", applying function");
         for sd in d.localSubdomains() {
           for i in sd {
             ret[i] = func(array_dtype_to, x[i]);

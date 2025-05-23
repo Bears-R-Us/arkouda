@@ -37,6 +37,7 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
+    @chplcheck.ignore("UnusedFormal")
     proc intersect1dMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
@@ -91,6 +92,7 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
+    @chplcheck.ignore("UnusedFormal")
     proc setxor1dMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
@@ -145,6 +147,7 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
+    @chplcheck.ignore("UnusedFormal")
     proc setdiff1dMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
@@ -199,6 +202,7 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
+    @chplcheck.ignore("UnusedFormal")
     proc union1dMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string; // response message
@@ -255,6 +259,7 @@ module ArraySetopsMsg
             errorClass="ErrorWithContext");
     }
 
+    @chplcheck.ignore("UnusedFormal")
     proc sparseSumHelpMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string; // response message

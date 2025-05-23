@@ -41,9 +41,9 @@ module AryUtil
     proc formatAry(A: [?d]):string throws {
         if d.rank == 1 {
             var s:string = "";
-            if (d.size == 0) {
+            if d.size == 0 {
                 s =  ""; // Unnecessary, but left for clarity
-            } else if (d.size < printThresh || d.size <= 6) {
+            } else if d.size < printThresh || d.size <= 6 {
                 for i in 0..(d.size-2) {s += try! "%?".format(A[i]) + " ";}
                 s += try! "%?".format(A[d.size-1]);
             } else {
@@ -424,7 +424,7 @@ module AryUtil
       on the locale id. Can be used to avoid doing communication in lockstep.
     */
     iter offset(ind) where isRange(ind) || isDomain(ind) {
-        for i in ind + (ind.size/numLocales * here.id) do {
+        for i in ind + (ind.size/numLocales * here.id) {
             yield i % ind.size + ind.first;
         }
     }
@@ -453,7 +453,7 @@ module AryUtil
      */
     proc validateArraysSameLength(n:int, names:[] string, types: [] string, st: borrowed SymTab) throws {
       // Check that fields contains the stated number of arrays
-      if (names.size != n) {
+      if names.size != n {
           var errorMsg = "Expected %i arrays but got %i".format(n, names.size);
           auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           throw new owned ErrorWithContext(errorMsg,
@@ -462,7 +462,7 @@ module AryUtil
                                            getModuleName(),
                                            "ArgumentError");
       }
-      if (types.size != n) {
+      if types.size != n {
           var errorMsg = "Expected %i types but got %i".format(n, types.size);
           auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           throw new owned ErrorWithContext(errorMsg,
@@ -534,10 +534,10 @@ module AryUtil
           }
         }
 
-        if (i == 1) {
+        if i == 1 {
             size = thisSize;
         } else {
-            if (thisSize != size) {
+            if thisSize != size {
               var errorMsg = "Arrays must all be same size; expected size %?, got size %?".format(size, thisSize);
                 auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 throw new owned ErrorWithContext(errorMsg,
@@ -575,6 +575,7 @@ module AryUtil
       return (bitWidth, negs);
     }
 
+    @chplcheck.ignore("UnusedFormal")
     inline proc getBitWidth(a: [?aD] bool): (int, bool) {
       return (1, false);
     }
@@ -583,7 +584,7 @@ module AryUtil
       const negs = false;
       var highMax = max reduce [(ai,_) in a] ai;
       var whigh = numBits(uint) - clz(highMax);
-      if (whigh == 0) {
+      if whigh == 0 {
         var lowMax = max reduce [(_,ai) in a] ai;
         var wlow = numBits(uint) - clz(lowMax);
         const bitWidth = wlow: int;
@@ -613,6 +614,7 @@ module AryUtil
       return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
     }
 
+    // @chplcheck.ignore("UnusedFormal")
     inline proc getDigit(key: uint, rshift: int, last: bool, negs: bool): int {
       return ((key >> rshift) & (maskDigit:uint)):int;
     }
@@ -636,13 +638,14 @@ module AryUtil
 
     inline proc getDigit(key: 2*uint, rshift: int, last: bool, negs: bool): int {
       const (key0,key1) = key;
-      if (rshift >= numBits(uint)) {
+      if rshift >= numBits(uint) {
         return getDigit(key0, rshift - numBits(uint), last, negs);
       } else {
         return getDigit(key1, rshift, last, negs);
       }
     }
 
+    @chplcheck.ignore("UnusedFormal")
     inline proc getDigit(key: _tuple, rshift: int, last: bool, negs: bool): int
         where isHomogeneousTuple(key) && key.type == key.size*uint(bitsPerDigit) {
       const keyHigh = key.size - 1;
