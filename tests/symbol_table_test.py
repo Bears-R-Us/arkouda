@@ -1,5 +1,7 @@
 import pytest
 
+from typeguard import TypeCheckError
+
 import arkouda as ak
 
 from arkouda.numpy.pdarrayclass import RegistrationError
@@ -620,13 +622,13 @@ class TestRegistration:
     def test_error_handling(self, dtype):
         a = self.make_pdarray(dtype, 100)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             a.register(7)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.attach(7)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.is_registered(7)
 
     @pytest.mark.parametrize("dtype", DTYPES)

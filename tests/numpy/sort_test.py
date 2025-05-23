@@ -1,6 +1,8 @@
 import numpy as np
 import pytest
 
+from typeguard import TypeCheckError
+
 import arkouda as ak
 
 from arkouda.client import get_array_ranks
@@ -122,11 +124,11 @@ class TestSort:
                 ak.sort(arr, algo)
 
         # Test TypeError from sort attempt on non-pdarray
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.sort(list(range(0, 10)), algo)
 
         # Test attempt to sort Strings object, which is unsupported
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.sort(ak.array([f"string {i}" for i in range(10)]), algo)
 
     @pytest.mark.parametrize("algo", SortingAlgorithm)

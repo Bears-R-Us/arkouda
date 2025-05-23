@@ -20,7 +20,7 @@ dependencies = [
   "numpy>=2.0",
   "pandas>=1.4.0,!=2.2.0",
   "pyzmq>=20.0.0",
-  "typeguard==2.10.0",
+  "typeguard==4.3.0",
   "tabulate",
   "pyfiglet",
   "matplotlib>=3.3.2",
@@ -64,6 +64,7 @@ dev = [
   "numba",
   "pytest-cov",
   "coverage[toml]",
+  "typeguard==4.3.0",
 ]
 
 

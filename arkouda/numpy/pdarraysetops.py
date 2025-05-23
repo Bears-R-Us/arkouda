@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Sequence, TypeVar, Union, cast
+from typing import TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar, Union, cast, overload
+from typing import cast as type_cast
 
 import numpy as np
 
@@ -9,6 +10,7 @@ from typeguard import typechecked
 from arkouda.client_dtypes import BitVector
 from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import bigint
+from arkouda.numpy.dtypes import bool_ as ak_bool
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
@@ -16,6 +18,7 @@ from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.sorting import argsort
 from arkouda.pandas.groupbyclass import GroupBy, groupable, groupable_element_type, unique
+from arkouda.pandas.typing import ArkoudaArrayLike
 
 
 if TYPE_CHECKING:
@@ -106,6 +109,7 @@ def _in1d_single(
         if pda2.size == 0:
             return zeros(pda1.size, dtype=akbool)
     if hasattr(pda1, "categories"):
+        assert isinstance(pda2, (Strings, Categorical_))
         x = cast(Categorical_, pda1).in1d(pda2)
         return x if not invert else ~x
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
@@ -138,14 +142,51 @@ def _in1d_single(
         raise TypeError("Both pda1 and pda2 must be pdarray, Strings, or Categorical")
 
 
+GroupableSeq = Sequence[ArkoudaArrayLike]
+
+
+@overload
+def in1d(
+    A: ArkoudaArrayLike,
+    B: ArkoudaArrayLike,
+    assume_unique: bool = ...,
+    *,
+    symmetric: Literal[False] = ...,
+    invert: bool = ...,
+) -> pdarray: ...
+
+
+@overload
+def in1d(
+    A: ArkoudaArrayLike,
+    B: ArkoudaArrayLike,
+    assume_unique: bool = ...,
+    *,
+    symmetric: Literal[True],
+    invert: bool = ...,
+) -> Tuple[pdarray, pdarray]: ...
+
+
+@overload
+def in1d(
+    A: GroupableSeq,
+    B: GroupableSeq,
+    assume_unique: bool = ...,
+    *,
+    symmetric: bool = ...,
+    invert: bool = ...,
+) -> pdarray: ...
+
+
 @typechecked
 def in1d(
     A: groupable,
     B: groupable,
     assume_unique: bool = False,
+    *,
     symmetric: bool = False,
     invert: bool = False,
-) -> groupable:
+) -> Union[pdarray, Tuple[pdarray, pdarray]]:
     """
     Test whether each element of a 1-D array is also present in a second array.
 
@@ -213,9 +254,10 @@ def in1d(
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical as Categorical_
 
-    ua: groupable
-    ub: groupable
+    ua_seq: Sequence[ArkoudaArrayLike]
+    ub_seq: Sequence[ArkoudaArrayLike]
 
+    # ---- Single-array cases ----
     if isinstance(A, (pdarray, Strings, Categorical_)):
         if isinstance(A, (Strings, Categorical_)) and not isinstance(B, (Strings, Categorical_)):
             raise TypeError("Arguments must have compatible types, Strings/Categorical")
@@ -223,55 +265,79 @@ def in1d(
             raise TypeError("If A is pdarray, B must also be pdarray")
         elif isinstance(B, (pdarray, Strings, Categorical_)):
             if symmetric:
-                return _in1d_single(A, B), _in1d_single(B, A, invert)
-            return _in1d_single(A, B, invert)
+                return (
+                    type_cast(pdarray, _in1d_single(A, B, invert)),
+                    type_cast(pdarray, _in1d_single(B, A, invert)),
+                )
+            return type_cast(pdarray, _in1d_single(A, B, invert))
         else:
             raise TypeError(
                 "Inputs should both be Union[pdarray, Strings, Categorical] or both be "
                 "Sequence[pdarray, Strings, Categorical]."
                 "  (Do not mix and match.)"
             )
+
+    # ---- Multi-level (sequence) cases ----
+    # Narrow A, B to sequences of Single for mypy
+    if not (isinstance(A, Sequence) and isinstance(B, Sequence)):
+        raise TypeError(
+            "Inputs should both be Union[pdarray, Strings, Categorical] or both be "
+            "Sequence[pdarray, Strings, Categorical]."
+        )
+
     atypes = np.array([ai.dtype for ai in A])
     btypes = np.array([bi.dtype for bi in B])
     if not (atypes == btypes).all():
         raise TypeError("Array dtypes of arguments must match")
     if not assume_unique:
-        ag = GroupBy(A)
-        ua = ag.unique_keys
-        bg = GroupBy(B)
-        ub = bg.unique_keys
+        ag = GroupBy(type_cast(Sequence[ArkoudaArrayLike], A))
+        ua_seq = type_cast(Sequence[ArkoudaArrayLike], ag.unique_keys)
+        bg = GroupBy(type_cast(Sequence[ArkoudaArrayLike], B))
+        ub_seq = type_cast(Sequence[ArkoudaArrayLike], bg.unique_keys)
     else:
-        ua = A
-        ub = B
+        ua_seq = type_cast(Sequence[ArkoudaArrayLike], A)
+        ub_seq = type_cast(Sequence[ArkoudaArrayLike], B)
+
     # Key for deinterleaving result
-    isa = concatenate((ones(ua[0].size, dtype=akbool), zeros(ub[0].size, dtype=akbool)), ordered=False)
-    c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
+    isa = concatenate(
+        (ones(ua_seq[0].size, dtype=ak_bool), zeros(ub_seq[0].size, dtype=ak_bool)),
+        ordered=False,
+    )
+    isa_bool = type_cast(pdarray, isa)  # boolean mask
+
+    # Build concatenated columns (narrow each concatenate call to Single)
+    c: List[ArkoudaArrayLike] = [
+        type_cast(ArkoudaArrayLike, concatenate(x, ordered=False)) for x in zip(ua_seq, ub_seq)
+    ]
+
     g = GroupBy(c)
-    k, ct = g.size()
+    _, ct = g.size()
+
     if assume_unique:
-        # need to verify uniqueness, otherwise answer will be wrong
-        if (g.sum(isa)[1] > 1).any():
+        # verify uniqueness using the mask
+        if (g.sum(isa_bool)[1] > 1).any():
             raise NonUniqueError("Called with assume_unique=True, but first argument is not unique")
-        if (g.sum(~isa)[1] > 1).any():
+        if (g.sum(~isa_bool)[1] > 1).any():
             raise NonUniqueError("Called with assume_unique=True, but second argument is not unique")
-    # Where value appears twice, it is present in both a and b
-    # truth = answer in c domain
-    truth = g.broadcast(ct == 2, permute=True)
+
+    # presence mask in concatenated domain
+    truth = type_cast(pdarray, g.broadcast(ct == 2, permute=True))
+
     if assume_unique:
         # Deinterleave truth into a and b domains
+        a_truth = type_cast(pdarray, truth[isa_bool])
         if symmetric:
-            return truth[isa], truth[~isa] if not invert else ~truth[isa], ~truth[~isa]
-        else:
-            return truth[isa] if not invert else ~truth[isa]
+            b_truth = type_cast(pdarray, truth[~isa_bool])
+            return ((~a_truth) if invert else a_truth, (~b_truth) if invert else b_truth)
+        return (~a_truth) if invert else a_truth
     else:
         # If didn't start unique, first need to deinterleave into ua domain,
         # then broadcast to a domain
-        atruth = ag.broadcast(truth[isa], permute=True)
+        atruth = type_cast(pdarray, ag.broadcast(type_cast(pdarray, truth[isa_bool]), permute=True))
         if symmetric:
-            btruth = bg.broadcast(truth[~isa], permute=True)
-            return atruth, btruth if not invert else ~atruth, ~btruth
-        else:
-            return atruth if not invert else ~atruth
+            btruth = type_cast(pdarray, bg.broadcast(type_cast(pdarray, truth[~isa_bool]), permute=True))
+            return ((~atruth) if invert else atruth, (~btruth) if invert else btruth)
+        return (~atruth) if invert else atruth
 
 
 def in1dmulti(a, b, assume_unique=False, symmetric=False):
@@ -612,21 +678,34 @@ def union1d(
     elif isinstance(ar1, Sequence) and isinstance(ar2, Sequence):
         multiarray_setop_validation(ar1, ar2)
         ag = GroupBy(ar1)
-        ua = ag.unique_keys
+        # ua = ag.unique_keys
         bg = GroupBy(ar2)
-        ub = bg.unique_keys
+        # ub = bg.unique_keys
 
-        c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
-        g = GroupBy(c)
+        ag = GroupBy(type_cast(Sequence[ArkoudaArrayLike], ar1))
+        ua = type_cast(Sequence[ArkoudaArrayLike], ag.unique_keys)
+
+        bg = GroupBy(type_cast(Sequence[ArkoudaArrayLike], ar2))
+        ub = type_cast(Sequence[ArkoudaArrayLike], bg.unique_keys)
+
+        # Pairwise concat across levels; each zip-pair is a Sequence[ArkoudaArrayLike] for concatenate
+        c: List[ArkoudaArrayLike] = [
+            type_cast(
+                ArkoudaArrayLike, concatenate(type_cast(Sequence[ArkoudaArrayLike], pair), ordered=False)
+            )
+            for pair in zip(ua, ub)
+        ]
+
+        g = GroupBy(type_cast(Sequence[ArkoudaArrayLike], c))
         k, ct = g.size()
-        return list(k)
+        # k is a sequence of ArkoudaArrayLike (keys per level); return as a Python list
+        return list(type_cast(Sequence[ArkoudaArrayLike], k))
     else:
         raise TypeError(
             f"Both A and B must be pdarray, List, or Tuple. Received {type(ar1)} and {type(ar2)}"
         )
 
 
-# (A & B) Set Intersection: elements have to be in both arrays
 @typechecked
 def intersect1d(
     ar1: groupable, ar2: groupable, assume_unique: bool = False
@@ -684,9 +763,7 @@ def intersect1d(
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical as Categorical_
 
-    ua: groupable
-    ub: groupable
-
+    # ---- single-array branch -------------------------------------------------
     if (
         isinstance(ar1, (pdarray, Strings, Categorical_))
         and isinstance(ar2, (pdarray, Strings, Categorical_))
@@ -721,31 +798,50 @@ def intersect1d(
             bg = GroupBy(ar2)
             ub = bg.unique_keys
         else:
-            ua = ar1
-            ub = ar2
+            ua = type_cast(pdarray | Strings | Categorical | Tuple[pdarray | Strings | Categorical], ar1)
+            ub = type_cast(pdarray | Strings | Categorical | Tuple[pdarray | Strings | Categorical], ar2)
 
-        # Key for deinterleaving result
+        # mask for deinterleaving back into A/B domains
         isa = concatenate(
-            (ones(ua[0].size, dtype=akbool), zeros(ub[0].size, dtype=akbool)), ordered=False
+            (ones(ua[0].size, dtype=ak_bool), zeros(ub[0].size, dtype=ak_bool)),
+            ordered=False,
         )
-        c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
-        g = GroupBy(c)
+        isa_bool = type_cast(pdarray, isa)
+
+        # pairwise concatenate corresponding levels; narrow each item to Single
+        c: List[Union[pdarray, Strings, Categorical]] = [
+            type_cast(
+                Union[pdarray, Strings, Categorical],
+                concatenate(
+                    type_cast(Sequence[Union[pdarray, Strings, Categorical]], pair), ordered=False
+                ),
+            )
+            for pair in zip(ua, ub)
+        ]
+
+        g = GroupBy(type_cast(Sequence[Union[pdarray, Strings, Categorical]], c))
+
         if assume_unique:
-            # need to verify uniqueness, otherwise answer will be wrong
-            if (g.sum(isa)[1] > 1).any():
+            # verify uniqueness using the boolean mask (must be pdarray)
+            if (g.sum(isa_bool)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but first argument is not unique")
-            if (g.sum(~isa)[1] > 1).any():
+            if (g.sum(~isa_bool)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
+
         k, ct = g.size()
-        in_union = ct == 2
-        return [x[in_union] for x in k]
+        in_union = type_cast(pdarray, ct == 2)  # boolean pdarray
+        # k is a sequence of columns; select intersecting rows from each column
+        return [
+            type_cast(Union[pdarray, Strings, Categorical], col[in_union])
+            for col in type_cast(Sequence[Union[pdarray, Strings, Categorical]], k)
+        ]
+
     else:
         raise TypeError(
             f"Both A and B must be pdarray, List, or Tuple. Received {type(ar1)} and {type(ar2)}"
         )
 
 
-# (A - B) Set Difference: elements have to be in first array but not second
 @typechecked
 def setdiff1d(ar1: groupable, ar2: groupable, assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
@@ -805,9 +901,7 @@ def setdiff1d(ar1: groupable, ar2: groupable, assume_unique: bool = False) -> Un
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical as Categorical_
 
-    ua: groupable
-    ub: groupable
-
+    # ---- single-array branch -------------------------------------------------
     if (
         isinstance(ar1, (pdarray, Strings, Categorical_))
         and isinstance(ar2, (pdarray, Strings, Categorical_))
@@ -838,25 +932,44 @@ def setdiff1d(ar1: groupable, ar2: groupable, assume_unique: bool = False) -> Un
             bg = GroupBy(ar2)
             ub = bg.unique_keys
         else:
-            ua = ar1
-            ub = ar2
+            ua = type_cast(pdarray | Strings | Categorical | Tuple[pdarray | Strings | Categorical], ar1)
+            ub = type_cast(pdarray | Strings | Categorical | Tuple[pdarray | Strings | Categorical], ar2)
 
-        # Key for deinterleaving result
+        # Deinterleave mask (A part then B part)
         isa = concatenate(
-            (ones(ua[0].size, dtype=akbool), zeros(ub[0].size, dtype=akbool)), ordered=False
+            (ones(ua[0].size, dtype=ak_bool), zeros(ub[0].size, dtype=ak_bool)),
+            ordered=False,
         )
-        c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
-        g = GroupBy(c)
+        isa_bool = type_cast(pdarray, isa)
+
+        # Pairwise concatenate levels, narrow each to Single
+        c: List[Union[pdarray, Strings, Categorical]] = [
+            type_cast(
+                Union[pdarray, Strings, Categorical],
+                concatenate(
+                    type_cast(Sequence[Union[pdarray, Strings, Categorical]], pair), ordered=False
+                ),
+            )
+            for pair in zip(ua, ub)
+        ]
+
+        g = GroupBy(type_cast(Sequence[Union[pdarray, Strings, Categorical]], c))
+
         if assume_unique:
-            # need to verify uniqueness, otherwise answer will be wrong
-            if (g.sum(isa)[1] > 1).any():
+            if (g.sum(isa_bool)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but first argument is not unique")
-            if (g.sum(~isa)[1] > 1).any():
+            if (g.sum(~isa_bool)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
+
         k, ct = g.size()
-        truth = g.broadcast(ct == 1, permute=True)
-        atruth = truth[isa]
-        return [x[atruth] for x in ua]
+        truth = type_cast(pdarray, g.broadcast(ct == 1, permute=True))  # present in exactly one side
+        atruth = type_cast(pdarray, truth[isa_bool])  # rows belonging to A
+        # Select from each original A-level
+        return [
+            type_cast(Union[pdarray, Strings, Categorical], col[atruth])
+            for col in type_cast(Sequence[Union[pdarray, Strings, Categorical]], ua)
+        ]
+
     else:
         raise TypeError(
             f"Both A and B must be pdarray, List, or Tuple. Received {type(ar1)} and {type(ar2)}"
@@ -917,9 +1030,7 @@ def setxor1d(ar1: groupable, ar2: groupable, assume_unique: bool = False) -> Uni
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical as Categorical_
 
-    ua: groupable
-    ub: groupable
-
+    # ---- single-array branch -------------------------------------------------
     if (
         isinstance(ar1, (pdarray, Strings, Categorical_))
         and isinstance(ar2, (pdarray, Strings, Categorical_))
@@ -933,6 +1044,7 @@ def setxor1d(ar1: groupable, ar2: groupable, assume_unique: bool = False) -> Uni
             rep_msg = generic_msg(
                 cmd="setxor1d", args={"arg1": ar1, "arg2": ar2, "assume_unique": assume_unique}
             )
+
             return create_pdarray(cast(str, rep_msg))
         if not assume_unique:
             ar1 = cast(pdarray, unique(ar1))
@@ -953,24 +1065,40 @@ def setxor1d(ar1: groupable, ar2: groupable, assume_unique: bool = False) -> Uni
             bg = GroupBy(ar2)
             ub = bg.unique_keys
         else:
-            ua = ar1
-            ub = ar2
+            ua = type_cast(pdarray | Strings | Categorical | Tuple[pdarray | Strings | Categorical], ar1)
+            ub = type_cast(pdarray | Strings | Categorical | Tuple[pdarray | Strings | Categorical], ar2)
 
-        # Key for deinterleaving result
+        # Deinterleave mask
         isa = concatenate(
-            (ones(ua[0].size, dtype=akbool), zeros(ub[0].size, dtype=akbool)), ordered=False
+            (ones(ua[0].size, dtype=ak_bool), zeros(ub[0].size, dtype=ak_bool)),
+            ordered=False,
         )
-        c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
-        g = GroupBy(c)
+        isa_bool = type_cast(pdarray, isa)
+
+        # Pairwise concat per level; narrow each to Single
+        c: List[Union[pdarray, Strings, Categorical]] = [
+            type_cast(
+                Union[pdarray, Strings, Categorical],
+                concatenate(
+                    type_cast(Sequence[Union[pdarray, Strings, Categorical]], pair), ordered=False
+                ),
+            )
+            for pair in zip(ua, ub)
+        ]
+
+        g = GroupBy(type_cast(Sequence[Union[pdarray, Strings, Categorical]], c))
+
         if assume_unique:
-            # need to verify uniqueness, otherwise answer will be wrong
-            if (g.sum(isa)[1] > 1).any():
+            if (g.sum(isa_bool)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but first argument is not unique")
-            if (g.sum(~isa)[1] > 1).any():
+            if (g.sum(~isa_bool)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
+
         k, ct = g.size()
-        single = ct == 1
-        return [x[single] for x in k]
+        single = type_cast(pdarray, ct == 1)  # boolean: present in exactly one side
+        cols = type_cast(Sequence[Union[pdarray, Strings, Categorical]], k)
+        return [type_cast(Union[pdarray, Strings, Categorical], col[single]) for col in cols]
+
     else:
         raise TypeError(
             f"Both A and B must be pdarray, List, or Tuple. Received {type(ar1)} and {type(ar2)}"

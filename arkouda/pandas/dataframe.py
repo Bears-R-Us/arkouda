@@ -62,6 +62,7 @@ from typing import (
     Union,
     cast,
 )
+from typing import cast as type_cast
 from warnings import warn
 
 import numpy as np  # type: ignore
@@ -87,6 +88,7 @@ from arkouda.numpy.timeclass import Datetime, Timedelta
 from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.pandas.join import inner_join
 from arkouda.pandas.row import Row
+from arkouda.pandas.typing import ArkoudaArrayLike
 
 
 if TYPE_CHECKING:
@@ -312,28 +314,54 @@ class DataFrameGroupBy:
         self,
         n: int = 5,
         sort_index: bool = True,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         """
-        Return the first n rows from each group.
+        Return the first ``n`` rows from each group.
+
+        This method selects the first ``n`` rows from each group in the grouped
+        DataFrame. It can optionally sort the concatenated result by the original
+        DataFrame index to match the behavior of ``pandas.DataFrameGroupBy.head``.
 
         Parameters
         ----------
-        n: int, optional, default = 5
-            Maximum number of rows to return for each group.
-            If the number of rows in a group is less than n,
-            all the values from that group will be returned.
-        sort_index: bool, default = True
-            If true, return the DataFrame with indices sorted.
+        n : int, default 5
+            The number of rows to include from each group. If a group has fewer
+            than ``n`` rows, all of its rows are returned.
+        sort_index : bool, default True
+            If True, sort the concatenated result by the original index of the
+            grouped data (pandas-compatible). If False, keep the group order as
+            produced by the grouping operation (keys in grouped order, one after
+            another).
 
         Returns
         -------
         DataFrame
+            A new DataFrame containing the first ``n`` rows per group, in either
+            grouped or globally sorted order depending on ``sort_index``.
+
+        See Also
+        --------
+        DataFrameGroupBy.tail : Return the last n rows per group.
+        pandas.DataFrameGroupBy.head : Pandas equivalent method.
 
         Examples
         --------
         >>> import arkouda as ak
-        >>> df = ak.DataFrame({"a":ak.arange(10) %3 , "b":ak.arange(10)})
-        >>> df
+        >>> df = ak.DataFrame({
+        ...     "a": ak.array([0, 1, 2, 0, 1, 2, 0, 1, 2]),
+        ...     "b": ak.arange(9),
+        ... })
+        >>> df.groupby("a").head(2)
+           a  b
+        0  0  0
+        1  0  3
+        2  1  1
+        3  1  4
+        4  2  2
+        5  2  5
+
+        With sorting enabled (default):
+        >>> df.groupby("a").head(2, sort_index=True)
            a  b
         0  0  0
         1  1  1
@@ -341,78 +369,94 @@ class DataFrameGroupBy:
         3  0  3
         4  1  4
         5  2  5
-        6  0  6
-        7  1  7
-        8  2  8
-        9  0  9 (10 rows x 2 columns)
-
-        >>> df.groupby("a").head(2)
-           a  b
-        0  0  0
-        1  1  1
-        2  2  2
-        3  0  3
-        4  1  4
-        5  2  5 (6 rows x 2 columns)
-
         """
-        _, indx = self.gb.head(self.df.index.values, n=n, return_indices=True)
+        _, idx = self.gb.head(
+            self.df.index.values,
+            n=n,
+            return_indices=True,
+            sort_index=sort_index,
+        )
+        idx = type_cast(pdarray, idx)
+
+        # Defensive: ensure sorted when requested, even if backend changes
         if sort_index:
-            indx = aksort(indx)
-        return self.df[indx]
+            idx = aksort(idx)
+
+        return self.df[idx]
 
     def tail(
         self,
         n: int = 5,
         sort_index: bool = True,
-    ) -> DataFrame:
+    ) -> "DataFrame":
         """
-        Return the last n rows from each group.
+        Return the last ``n`` rows from each group.
+
+        This method selects the last ``n`` rows from each group in the grouped
+        DataFrame. It can optionally sort the concatenated result by the original
+        DataFrame index to match the behavior of ``pandas.DataFrameGroupBy.tail``.
 
         Parameters
         ----------
-        n: int, optional, default = 5
-            Maximum number of rows to return for each group.
-            If the number of rows in a group is less than n,
-            all the rows from that group will be returned.
-        sort_index: bool, default = True
-            If true, return the DataFrame with indices sorted.
+        n : int, default 5
+            The number of rows to include from each group. If a group has fewer
+            than ``n`` rows, all of its rows are returned.
+        sort_index : bool, default True
+            If True, sort the concatenated result by the original index of the
+            grouped data (pandas-compatible). If False, keep the group order as
+            produced by the grouping operation (keys in grouped order, one after
+            another).
 
         Returns
         -------
         DataFrame
+            A new DataFrame containing the last ``n`` rows per group, in either
+            grouped or globally sorted order depending on ``sort_index``.
+
+        See Also
+        --------
+        DataFrameGroupBy.head : Return the first n rows per group.
+        pandas.DataFrameGroupBy.tail : Pandas equivalent method.
 
         Examples
         --------
         >>> import arkouda as ak
-        >>> df = ak.DataFrame({"a":ak.arange(10) %3 , "b":ak.arange(10)})
-        >>> df
-           a  b
-        0  0  0
-        1  1  1
-        2  2  2
-        3  0  3
-        4  1  4
-        5  2  5
-        6  0  6
-        7  1  7
-        8  2  8
-        9  0  9 (10 rows x 2 columns)
-
+        >>> df = ak.DataFrame({
+        ...     "a": ak.array([0, 1, 2, 0, 1, 2, 0, 1, 2]),
+        ...     "b": ak.arange(9),
+        ... })
         >>> df.groupby("a").tail(2)
            a  b
-        4  1  4
-        5  2  5
-        6  0  6
-        7  1  7
-        8  2  8
-        9  0  9 (6 rows x 2 columns)
+        0  0  6
+        1  0  8
+        2  1  4
+        3  1  7
+        4  2  5
+        5  2  8
 
+        With sorting enabled (default):
+        >>> df.groupby("a").tail(2, sort_index=True)
+           a  b
+        0  1  4
+        1  2  5
+        2  0  6
+        3  1  7
+        4  2  8
+        5  0  8
         """
-        _, indx = self.gb.tail(self.df.index.values, n=n, return_indices=True)
+        _, idx = self.gb.tail(
+            self.df.index.values,
+            n=n,
+            return_indices=True,
+            sort_index=sort_index,
+        )
+        idx = type_cast(pdarray, idx)
+
+        # Defensive: ensure sorted when requested, even if backend changes
         if sort_index:
-            indx = aksort(indx)
-        return self.df[indx]
+            idx = aksort(idx)
+
+        return self.df[idx]
 
     def sample(self, n=None, frac=None, replace=False, weights=None, random_state=None):
         """
@@ -3813,15 +3857,24 @@ class DataFrame(UserDict):
         from arkouda.pandas.series import Series
 
         if isinstance(values, pdarray):
-            # flatten the DataFrame so single in1d can be used.
-            flat_in1d = in1d(concatenate(list(self.data.values())), values)
+            # flatten the DataFrame so single in1d can be used.f
+            k = type_cast(ArkoudaArrayLike, concatenate(list(self.data.values())))
+            flat_in1d = in1d(k, values)
             segs = concatenate(
                 [
-                    array([0]),
-                    cumsum(array([self.data[col].size for col in self.columns.values])),
+                    type_cast(pdarray, array([0])),
+                    cumsum(
+                        type_cast(pdarray, array([self.data[col].size for col in self.columns.values]))
+                    ),
                 ]
             )
-            df_def = {col: flat_in1d[segs[i] : segs[i + 1]] for i, col in enumerate(self.columns.values)}
+
+            segs_arr = type_cast(pdarray, segs)
+
+            df_def = {
+                col: flat_in1d[segs_arr[i] : segs_arr[i + 1]]
+                for i, col in enumerate(self.columns.values)
+            }
         elif isinstance(values, Dict):
             # key is column name, val is the list of values to check
             df_def = {
@@ -3957,12 +4010,12 @@ class DataFrame(UserDict):
                         count_values += ~isnan(self[col])
                 elif not numeric_only or self[col].dtype == bool:
                     if first:
-                        count_values = full(self.index.size, 1, dtype=akint64)
+                        count_values = type_cast(pdarray, full(self.index.size, 1, dtype=akint64))
                         first = False
                     else:
                         count_values += 1
                 if first:
-                    count_values = full(self.index.size, 0, dtype=akint64)
+                    count_values = type_cast(pdarray, full(self.index.size, 0, dtype=akint64))
             if self.index is not None:
                 idx = self.index[:]
                 return Series(array(count_values), index=idx)
@@ -4309,6 +4362,8 @@ class DataFrame(UserDict):
         from arkouda import array, full
         from arkouda.pandas.series import Series
 
+        mask: Union[tuple, list, pdarray, Strings, Categorical, Series, SegArray]
+
         if self.empty:
             if axis is None:
                 return False
@@ -4322,7 +4377,6 @@ class DataFrame(UserDict):
                 index=Index(bool_cols),
             )
         elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
-            mask = None
             first = True
             for col in bool_cols:
                 if first:
@@ -4401,6 +4455,8 @@ class DataFrame(UserDict):
         from arkouda import array, full
         from arkouda.pandas.series import Series
 
+        mask: Union[tuple, list, pdarray, Strings, Categorical, Series, SegArray]
+
         if self.empty:
             if axis is None:
                 return True
@@ -4414,7 +4470,6 @@ class DataFrame(UserDict):
                 index=Index(bool_cols),
             )
         elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
-            mask = None
             first = True
             for col in bool_cols:
                 if first:
@@ -4521,6 +4576,8 @@ class DataFrame(UserDict):
         from arkouda import all as akall
         from arkouda.pandas.series import Series
 
+        mask: Union[bool, Series]
+
         if (how is not None) and (thresh is not None):
             raise TypeError("You cannot set both the how and thresh arguments at the same time.")
 
@@ -4543,8 +4600,9 @@ class DataFrame(UserDict):
         else:
             raise ValueError(f"invalid how option: {how}")
 
+        values = mask.values if hasattr(mask, "values") else None
         if (isinstance(mask, bool) and mask is True) or (
-            isinstance(mask, Series) and akall(mask.values) is True
+            isinstance(mask, Series) and (not isinstance(values, pdarray) or akall(values) is True)
         ):
             result = self.copy(deep=None)
         else:
@@ -5525,7 +5583,7 @@ def __nulls_like(
     elif isinstance(arry, Categorical):
         return Categorical.from_codes(
             categories=arry.categories,
-            codes=full(size, len(arry.categories) - 1, dtype=akint64),
+            codes=type_cast(pdarray, full(size, len(arry.categories) - 1, dtype=akint64)),
         )
     else:
         return full(size, np.nan, arry.dtype)

@@ -6,6 +6,7 @@ import sys
 
 from math import prod as maprod
 from typing import TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar, Union, cast
+from typing import cast as type_cast
 
 from typeguard import typechecked
 
@@ -300,7 +301,9 @@ def attach(name: str):
     ]
 
     rep_msg = json.loads(cast(str, generic_msg(cmd="attach", args={"name": name})))
+
     rtn_obj: attachable | None = None
+
     if rep_msg["objType"].lower() == pdarray.objType.lower():
         rtn_obj = create_pdarray(rep_msg["create"])
     elif rep_msg["objType"].lower() == Strings.objType.lower():
@@ -1015,7 +1018,7 @@ def map(
 
     keys = values
     gb = GroupBy(keys, dropna=False)
-    gb_keys = gb.unique_keys
+    gb_keys = type_cast(pdarray, gb.unique_keys)
 
     if isinstance(mapping, dict):
         mapping = Series([array(list(mapping.keys())), array(list(mapping.values()))])
@@ -1033,7 +1036,8 @@ def map(
                 xtra_keys = xtra_keys.to_strings()
 
             xtra_series = Series(nans, index=xtra_keys)
-            mapping = Series.concat([mapping, xtra_series])
+            concatenated = Series.concat([mapping, xtra_series])
+            mapping = concatenated if isinstance(concatenated, Series) else concatenated.data
 
         if isinstance(gb_keys, Categorical):
             mapping = mapping[gb_keys.to_strings()]

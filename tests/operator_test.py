@@ -6,6 +6,8 @@ from itertools import product
 import numpy as np
 import pytest
 
+from typeguard import TypeCheckError
+
 import arkouda as ak
 
 from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equivalent
@@ -834,7 +836,7 @@ class TestOperator:
             with pytest.raises(NotImplementedError):
                 iter(arr)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.ones(100).any([0])
 
         with pytest.raises(AttributeError):

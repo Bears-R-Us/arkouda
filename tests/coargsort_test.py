@@ -3,6 +3,8 @@ from itertools import permutations
 import numpy as np
 import pytest
 
+from typeguard import TypeCheckError
+
 import arkouda as ak
 
 from arkouda.numpy.sorting import SortingAlgorithm
@@ -112,7 +114,8 @@ class TestCoargsort:
         ones, short_ones = ak.ones(100), ak.ones(10)
         with pytest.raises(ValueError):
             ak.coargsort([ones, short_ones], algo)
-        with pytest.raises(TypeError):
+
+        with pytest.raises(TypeCheckError):
             ak.coargsort([[0, 1], [1, 2]], algo)
 
     @pytest.mark.parametrize("ascending", [True, False])
