@@ -45,6 +45,7 @@ array([ 1, 99,  3])
 """
 
 from typing import TYPE_CHECKING, Optional, Tuple, TypeVar, Union
+from typing import cast as type_cast
 
 import numpy as np
 
@@ -601,15 +602,17 @@ class ArkoudaExtensionArray(ExtensionArray):
 
         perm: pdarray
 
-        if isinstance(self._data, (Strings, Categorical, pdarray)):
-            perm = argsort(self._data, ascending=ascending)
+        data = self._data
+        if isinstance(data, (pdarray, Strings, Categorical)):
+            perm = argsort(data, ascending=ascending)
 
-            if is_float(self._data):
-                is_nan = ak_isnan(self._data)[perm]
+            if isinstance(data, pdarray) and is_float(data):
+                is_nan = ak_isnan(data)[perm]
+
                 if na_position == "last":
-                    perm = concatenate([perm[~is_nan], perm[is_nan]])
+                    perm = type_cast(pdarray, concatenate([perm[~is_nan], perm[is_nan]]))
                 else:
-                    perm = concatenate([perm[is_nan], perm[~is_nan]])
+                    perm = type_cast(pdarray, concatenate([perm[is_nan], perm[~is_nan]]))
         else:
             raise TypeError(f"Unsupported argsort dtype: {type(self._data)}")
 
