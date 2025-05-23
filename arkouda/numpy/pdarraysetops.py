@@ -340,6 +340,7 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
 @typechecked
 def concatenate(
     arrays: Sequence[Union[pdarray, Strings, "Categorical", ]],
+    axis: int = 0,
     ordered: bool = True,
 ) -> Union[pdarray, Strings, Categorical, Sequence[Categorical]]:
     """
@@ -350,6 +351,10 @@ def concatenate(
     ----------
     arrays : Sequence[Union[pdarray,Strings,Categorical]]
         The arrays to concatenate. Must all have same dtype.
+    axis : int, default = 0
+        The axis along which the arrays will be joined.
+        If axis is None, arrays are flattened before use. Only for use with pdarray, and when
+        ordered is True. Default is 0.
     ordered : bool
         If True (default), the arrays will be appended in the
         order given. If False, array data may be interleaved
@@ -444,6 +449,9 @@ def concatenate(
         else:
             return arrays[0]
     if objtype == pdarray.objType and ordered:
+        if axis is None:
+            axis = 0
+            arrays = [a.flatten() for a in arrays]
         dtype_ = arrays[0].dtype
         if dtype_ == bigint:
             max_bit_list = []
@@ -466,7 +474,7 @@ def concatenate(
             cmd=f"concatenate<{akdtype(dtype_).name},{arrays[0].ndim}>",
             args={
                 "names": list(arrays),
-                "axis": 0,
+                "axis": axis,
                 "offsets": offsets,
             })
         if dtype_ == bigint:
