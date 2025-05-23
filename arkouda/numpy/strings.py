@@ -3,9 +3,7 @@ from __future__ import annotations
 import codecs
 import itertools
 import re
-from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Tuple, TypeVar, Union
-from typing import cast
-from typing import cast as type_cast
+from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Tuple, TypeVar, Union, cast
 
 import numpy as np
 from numpy import dtype as npdtype
@@ -2514,7 +2512,9 @@ class Strings:
         """
         from arkouda.numpy import cast as akcast
 
-        return type_cast(Union[pdarray, Strings], akcast(self, dtype))
+        retval = akcast(self, dtype)
+        assert isinstance(retval, pdarray)
+        return retval
 
     def to_parquet(
         self,
@@ -2935,6 +2935,8 @@ class Strings:
             Raised if there's a server-side error thrown
         """
         from arkouda.numpy.util import is_registered
+
+        assert self.name, "Cannot register pdarray with name=None"
 
         if self.registered_name is None:
             return np.bool_(is_registered(self.name, as_component=True))

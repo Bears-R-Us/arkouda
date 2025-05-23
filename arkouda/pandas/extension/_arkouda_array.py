@@ -1,7 +1,4 @@
-from typing import Any
-
 import numpy as np
-from numpy import ndarray
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.dtypes import dtype as ak_dtype
@@ -105,14 +102,14 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         # Fallback: local cast
         return self.to_ndarray().astype(npdt, copy=copy)
 
-    def isna(self) -> ExtensionArray | ndarray[Any, Any]:
+    def isna(self) -> ExtensionArray:
         from arkouda.numpy import isnan
         from arkouda.numpy.util import is_float
 
         if not is_float(self._data):
-            return ak_full(self._data.size, False, dtype=bool)
+            return ArkoudaArray(ak_full(self._data.size, False, dtype=bool))
 
-        return isnan(self._data)
+        return ArkoudaArray(isnan(self._data))
 
     #   TODO:  use pdarray.copy()
     def copy(self):

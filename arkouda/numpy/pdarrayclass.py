@@ -5,7 +5,9 @@ from functools import reduce
 import json
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, List, Optional, Tuple, TypeVar, Union, cast, overload
+from typing import TYPE_CHECKING, List, Literal, Optional, Sequence, Tuple, TypeAlias, TypeVar, Union
+from typing import cast as type_cast
+from typing import overload
 
 import numpy as np
 from typeguard import typechecked
@@ -31,6 +33,8 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
 
+
+ShapeLike: TypeAlias = Union[int_scalars, Sequence[int_scalars], "pdarray"]
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg, get_array_ranks
@@ -1674,7 +1678,7 @@ class pdarray:
             },
         )
 
-        sorted_array = create_pdarray(cast(str, repMsg))
+        sorted_array = create_pdarray(type_cast(str, repMsg))
 
         if ascending:
             return sorted_array
@@ -2470,9 +2474,9 @@ class pdarray:
         This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
 
         """
-        from arkouda.numpy import cast as akcast
+        from arkouda.numpy import cast as ak_cast
 
-        return akcast(self, dtype)
+        return type_cast(pdarray, ak_cast(self, dtype))
 
     def slice_bits(self, low, high) -> pdarray:
         """
@@ -2558,7 +2562,13 @@ class pdarray:
         ret_list = json.loads(generic_msg(cmd=cmd, args={"array": self}))
         return list(reversed([create_pdarray(a) for a in ret_list]))
 
-    def reshape(self, *shape):
+    @overload
+    def reshape(self, *shape: int_scalars) -> "pdarray": ...
+
+    @overload
+    def reshape(self, shape: Union[Sequence[int_scalars], "pdarray"]) -> "pdarray": ...
+
+    def reshape(self, *shape: object, **kw: object) -> "pdarray":
         """
         Gives a new shape to an array without changing its data.
 
@@ -2594,20 +2604,49 @@ class pdarray:
         # passed
         from arkouda.client import generic_msg
 
+        # Allow keyword `shape=...` to satisfy overload #2
+        if "shape" in kw:
+            if shape:
+                raise TypeError("reshape() got multiple values for argument 'shape'")
+            shape = (kw["shape"],)
+
+        # Build the kernel argument: int | list[int] | pdarray
+        shape_arg: Union[int, List[int], "pdarray"]
+        lenshape: int
+
+        def _to_int(x: object) -> int:
+            # Narrow to int-like before calling int(...)
+            if isinstance(x, bool):
+                return int(x)
+            if isinstance(x, int):
+                return x
+            if isinstance(x, np.integer):
+                return int(x)
+            # Add other int-like cases here if your int_scalars includes them.
+            raise TypeError(f"reshape() expected an integer dimension, got {type(x)}")
+
         if len(shape) == 1:
-            shape = shape[0]
-            lenshape = 1
-        if (not isinstance(shape, int)) and (not isinstance(shape, pdarray)):
-            shape = [i for i in shape]
-            lenshape = len(shape)
+            s0 = shape[0]
+            if isinstance(s0, pdarray):
+                shape_arg = s0
+                lenshape = 1
+            elif isinstance(s0, Sequence) and not isinstance(s0, (str, bytes)):
+                dims: List[int] = [_to_int(x) for x in s0]
+                shape_arg = dims
+                lenshape = len(dims)
+            else:
+                # single integer scalar
+                shape_arg = _to_int(s0)
+                lenshape = 1
+        else:
+            dims2: List[int] = [_to_int(x) for x in shape]
+            shape_arg = dims2
+            lenshape = len(dims2)
 
         return create_pdarray(
             generic_msg(
                 cmd=f"reshape<{self.dtype},{self.ndim},{lenshape}>",
-                args={
-                    "name": self.name,
-                    "shape": shape,
-                },
+                args={"name": self.name, "shape": shape_arg},
             ),
             max_bits=self.max_bits,
         )
@@ -2686,9 +2725,11 @@ class pdarray:
             # convert uint pdarrays into object ndarrays and recombine
             if self.ndim > 1:
                 arrs = [n.to_ndarray().astype("O") for n in self.bigint_to_uint_arrays()]
-                return builtins.sum(n << (64 * (len(arrs) - i - 1)) for i, n in enumerate(arrs))
+                return np.array(
+                    builtins.sum(n << (64 * (len(arrs) - i - 1)) for i, n in enumerate(arrs))
+                )
             arrs = [n.to_ndarray().astype("O") for n in self.bigint_to_uint_arrays()]
-            return builtins.sum(n << (64 * (len(arrs) - i - 1)) for i, n in enumerate(arrs))
+            return np.array(builtins.sum(n << (64 * (len(arrs) - i - 1)) for i, n in enumerate(arrs)))
 
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
@@ -2698,7 +2739,7 @@ class pdarray:
                 "Array exceeds allowed size for transfer. Increase client.maxTransferBytes to allow"
             )
         # The reply from the server will be binary data
-        data = cast(
+        data = type_cast(
             memoryview,
             generic_msg(
                 cmd=f"tondarray<{self.dtype},{self.ndim}>",
@@ -2769,7 +2810,7 @@ class pdarray:
         >>> type(a.tolist())
         <class 'list'>
         """
-        return cast(List[numeric_scalars], self.to_ndarray().tolist())
+        return type_cast(List[numeric_scalars], self.to_ndarray().tolist())
 
     def to_cuda(self):
         """
@@ -2835,7 +2876,7 @@ class pdarray:
         self,
         prefix_path: str,
         dataset: str = "array",
-        mode: str = "truncate",
+        mode: Literal["truncate", "append"] = "truncate",
         compression: Optional[str] = None,
     ) -> str:
         """
@@ -2850,7 +2891,7 @@ class pdarray:
             Directory and filename prefix that all output files share
         dataset : str
             Name of the dataset to create in files (must not already exist)
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate', 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
         compression : str (Optional)
@@ -2897,7 +2938,7 @@ class pdarray:
         from arkouda.client import generic_msg
         from arkouda.pandas.io import _mode_str_to_int
 
-        return cast(
+        return type_cast(
             str,
             generic_msg(
                 cmd="writeParquet",
@@ -2918,8 +2959,8 @@ class pdarray:
         self,
         prefix_path: str,
         dataset: str = "array",
-        mode: str = "truncate",
-        file_type: str = "distribute",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ) -> str:
         """
         Save the pdarray to HDF5.
@@ -2931,10 +2972,10 @@ class pdarray:
             Directory and filename prefix that all output files share
         dataset : str
             Name of the dataset to create in files (must not already exist)
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate', 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
-        file_type: str ("single" | "distribute")
+        file_type: {"single", "distribute"}
             Default: "distribute"
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.
@@ -2985,7 +3026,7 @@ class pdarray:
         from arkouda.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
-        return cast(
+        return type_cast(
             str,
             generic_msg(
                 cmd="tohdf",
@@ -3111,7 +3152,7 @@ class pdarray:
         """
         from arkouda.client import generic_msg
 
-        return cast(
+        return type_cast(
             str,
             generic_msg(
                 cmd="writecsv",
@@ -3247,9 +3288,9 @@ class pdarray:
         must return a list of arrays that can be (co)argsorted.
         """
         if self.dtype == akbool:
-            from arkouda.numpy import cast as akcast
+            from arkouda.numpy import cast as ak_cast
 
-            return [akcast(self, akint64)]
+            return [type_cast(pdarray, ak_cast(self, akint64))]
         elif self.dtype in (akint64, akuint64):
             # Integral pdarrays are their own grouping keys
             return [self]
@@ -3302,7 +3343,7 @@ class pdarray:
 #       all values have been checked by python module and...
 #       server has created pdarray already before this is called
 @typechecked
-def create_pdarray(repMsg: Union[str, memoryview], max_bits=None) -> pdarray:
+def create_pdarray(repMsg: Union[str, memoryview], max_bits: Union[int, None] = None) -> pdarray:
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
     The user should not call this function directly.
@@ -3416,7 +3457,7 @@ def _make_reduction_func(
         pda: pdarray,
         axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None,
         keepdims: bool = False,
-    ) -> Union[numeric_scalars, np.bool_, pdarray]:
+    ) -> Union[numpy_scalars, np.bool_, int, pdarray]:
         return _common_reduction(op, pda, axis, keepdims=keepdims)
 
     op_func.__doc__ = f"""
@@ -3463,7 +3504,7 @@ def _make_stats_reduction_func(
         ddof: int_scalars = 0,
         axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None,
         keepdims: bool = False,
-    ) -> Union[numpy_scalars, pdarray]:
+    ) -> Union[numpy_scalars, int, pdarray]:
         return _common_stats_reduction(op, pda, ddof, axis, keepdims=keepdims)
 
     op_func.__doc__ = f"""
@@ -3510,7 +3551,7 @@ def _make_index_reduction_func(
         pda: pdarray,
         axis: Optional[Union[int_scalars, None]] = None,
         keepdims: bool = False,
-    ) -> Union[akuint64, akint64, pdarray]:
+    ) -> Union[numpy_scalars, int, pdarray]:
         return _common_index_reduction(op, pda, axis, keepdims=keepdims)
 
     op_func.__doc__ = f"""
@@ -3529,7 +3570,7 @@ def _make_index_reduction_func(
 
     Returns
     -------
-    pdarray or {return_dtype}
+    pdarray or numpy_scalars or int
         {return_descriptor}
 
     Raises
@@ -3570,7 +3611,7 @@ def _common_reduction(
     pda: pdarray,
     axis: Optional[Union[int_scalars, Tuple[int_scalars, ...], None]] = None,
     keepdims: bool = False,
-) -> Union[numeric_scalars, np.bool_, pdarray]:
+) -> Union[numpy_scalars, np.bool_, int, pdarray]:
     """
     Return reduction of a pdarray by an operation along an axis.
 
@@ -3588,7 +3629,7 @@ def _common_reduction(
 
     Returns
     -------
-    numeric_scalars, pdarray
+    numpy_scalars | bool_ | int | pdarray
 
     Raises
     ------
@@ -3608,7 +3649,7 @@ def _common_reduction(
 
     if _reduces_to_single_value(axis_, pda.ndim):
         return parse_single_value(
-            cast(
+            type_cast(
                 str,
                 generic_msg(
                     cmd=f"{kind}All<{pda.dtype.name},{pda.ndim}>",
@@ -3628,7 +3669,7 @@ def _common_reduction(
         else:
             from arkouda.numpy import squeeze
 
-            return squeeze(result, axis)
+            return squeeze(type_cast(pdarray, result), axis)
 
 
 # helper function for var, std
@@ -3639,7 +3680,7 @@ def _common_stats_reduction(
     ddof: int_scalars = 0,
     axis: Optional[Union[int_scalars, Tuple[int_scalars, ...], None]] = None,
     keepdims: bool = False,
-) -> Union[numpy_scalars, pdarray]:
+) -> Union[numpy_scalars, int, pdarray]:
     """
     Return reduction of a pdarray by an operation along an axis.
 
@@ -3658,7 +3699,7 @@ def _common_stats_reduction(
 
     Returns
     -------
-    numpy_scalars, pdarray
+    numpy_scalars | int | pdarray
 
     Raises
     ------
@@ -3678,7 +3719,7 @@ def _common_stats_reduction(
 
     if _reduces_to_single_value(axis_, pda.ndim):
         return parse_single_value(
-            cast(
+            type_cast(
                 str,
                 generic_msg(
                     cmd=f"{kind}All<{pda.dtype.name},{pda.ndim}>",
@@ -3708,7 +3749,7 @@ def _common_index_reduction(
     pda: pdarray,
     axis: Optional[Union[int_scalars, Tuple[int_scalars, ...], None]] = None,
     keepdims: bool = False,
-) -> Union[akuint64, akint64, pdarray]:
+) -> Union[numpy_scalars, int, pdarray]:
     """
     Return reduction of a pdarray by an operation along an axis.
 
@@ -3726,7 +3767,7 @@ def _common_index_reduction(
 
     Returns
     -------
-    int64
+    numpy_scalars | int | pdarray
 
     Raises
     ------
@@ -3740,9 +3781,12 @@ def _common_index_reduction(
 
     if pda.ndim == 1 or axis is None:
         return parse_single_value(
-            generic_msg(
-                cmd=f"{kind}All<{pda.dtype.name},{pda.ndim}>",
-                args={"x": pda},
+            type_cast(
+                str,
+                generic_msg(
+                    cmd=f"{kind}All<{pda.dtype.name},{pda.ndim}>",
+                    args={"x": pda},
+                ),
             )
         )
     elif isinstance(axis, int):
@@ -4035,13 +4079,13 @@ def dot(
         Raised if either pdda1 or pda2 is not an allowed type, or if shapes are incompatible.
     """
     from arkouda.client import generic_msg, get_array_ranks
-    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import cast as ak_cast
     from arkouda.numpy.numeric import _matmul2D as akmatmul2D
 
     specialCase = int_uint_case(pda1, pda2)  # used to handle the (int,uint)->(float) case
 
     def ship(result, flag):  # "ship" converts to float for the (int,uint) case
-        return akcast(result, akfloat64) if flag else result  # else leaves type alone
+        return ak_cast(result, akfloat64) if flag else result  # else leaves type alone
 
     #   Cases are handled (mostly) in the order specified in the np.dot documentation
 
@@ -4161,8 +4205,13 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
     """
     from arkouda.client import generic_msg
 
-    return parse_single_value(
-        generic_msg(cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
+    return np.float64(
+        parse_single_value(
+            type_cast(
+                str,
+                generic_msg(cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y}),
+            )
+        )
     )
 
 
@@ -4276,8 +4325,13 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     """
     from arkouda.client import generic_msg
 
-    return parse_single_value(
-        generic_msg(cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
+    return np.float64(
+        parse_single_value(
+            type_cast(
+                str,
+                generic_msg(cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y}),
+            )
+        )
     )
 
 
@@ -4330,7 +4384,7 @@ def divmod(
     >>> ak.divmod(x,y, x % 2 == 0)
     (array([5 6 7 1 9]), array([5 0 7 3 9]))
     """
-    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import cast as ak_cast
     from arkouda.numpy import where as akwhere
     from arkouda.pdarraycreation import full
 
@@ -4349,14 +4403,16 @@ def divmod(
         return x // y, x % y  # type: ignore
     elif where is False:
         if not isinstance(x, pdarray) and isinstance(y, pdarray):
-            x = full(y.size, x)
+            x = type_cast(pdarray, full(y.size, x))
         return x, x  # type: ignore
     else:
-        div = cast(pdarray, x // y)
-        mod = cast(pdarray, x % y)
+        div = type_cast(pdarray, x // y)
+        mod = type_cast(pdarray, x % y)
+        assert isinstance(where, pdarray)
+        assert isinstance(x, pdarray)
         return (
-            akwhere(where, div, akcast(x, div.dtype)),
-            akwhere(where, mod, akcast(x, mod.dtype)),
+            type_cast(pdarray, akwhere(where, div, type_cast(pdarray, ak_cast(x, div.dtype)))),
+            type_cast(pdarray, akwhere(where, mod, type_cast(pdarray, ak_cast(x, mod.dtype)))),
         )
 
 
@@ -4414,7 +4470,7 @@ def mink(pda: pdarray, k: int_scalars) -> pdarray:
         raise ValueError(f"mink is only implemented for 1D arrays; got {pda.ndim}")
 
     repMsg = generic_msg(cmd="mink", args={"array": pda, "k": k, "rtnInd": False})
-    return create_pdarray(cast(str, repMsg))
+    return create_pdarray(type_cast(str, repMsg))
 
 
 @typechecked
@@ -4732,8 +4788,9 @@ def clz(pda: pdarray) -> pdarray:
             # if a bit was set somewhere in the higher bits,
             # we don't want to add its clz to our leading zeros count
             # so only update positions where we've only seen zeros
-
-            lz += where(previously_non_zero, 0, clz(a)).astype(akuint64)
+            additions = where(previously_non_zero, 0, clz(a))
+            assert isinstance(additions, pdarray)
+            lz += additions.astype(akuint64)
             # note: the above cast is required or the += will fail on mixed types
 
             # OR in the places where the current bits have a bit set
@@ -4813,8 +4870,9 @@ def ctz(pda: pdarray) -> pdarray:
             # if a bit was set somewhere in the lower bits,
             # we don't want to add its ctz to our trailing zeros count
             # so only update positions where we've only seen zeros
-
-            tz += where(previously_non_zero, 0, num_zeros).astype(akuint64)
+            additions = where(previously_non_zero, 0, num_zeros)
+            assert isinstance(additions, pdarray)
+            tz += additions.astype(akuint64)
             # note: the above cast is required or the += will fail on mixed types
 
             # OR in the places where the current bits have a bit set
@@ -4964,7 +5022,7 @@ def power(
     ValueError
         raised if pda and power are of incompatible dimensions
     """
-    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import cast as ak_cast
     from arkouda.numpy import where as akwhere
 
     if where is True:
@@ -4973,7 +5031,12 @@ def power(
         return pda
     else:
         exp = pda**pwr
-        return akwhere(where, exp, akcast(pda, exp.dtype))
+        assert isinstance(where, pdarray)
+        casted_pda = ak_cast(pda, exp.dtype)
+        assert isinstance(casted_pda, pdarray)
+        result = akwhere(where, exp, casted_pda)
+        assert isinstance(result, pdarray)
+        return result
 
 
 @typechecked
@@ -5193,7 +5256,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         cmdstring = f"{acmd}<{divisor.dtype},{divisor.ndim}>"  # type: ignore[union-attr]
 
     return create_pdarray(
-        cast(
+        type_cast(
             str,
             generic_msg(
                 cmd=cmdstring,
@@ -5318,7 +5381,7 @@ def diff(a: pdarray, n: int = 1, axis: int = -1, prepend=None, append=None) -> p
     else:
         a_ = a
     return create_pdarray(
-        cast(
+        type_cast(
             str,
             generic_msg(
                 cmd=f"diff<{a.dtype},{a.ndim}>",

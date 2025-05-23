@@ -81,10 +81,13 @@ if TYPE_CHECKING:
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import where
     from arkouda.numpy.sorting import SortingAlgorithm
+
+
 else:
     generic_msg = TypeVar("generic_msg")
     akcast = TypeVar("akcast")
     where = TypeVar("where")
+
     from enum import Enum
 
     class SortingAlgorithm(Enum):
@@ -190,7 +193,7 @@ class Categorical:
                 if not isinstance(g.unique_keys, Strings):
                     raise TypeError(f"expected Strings, got {type(g.unique_keys).__name__!r}")
                 self.categories = g.unique_keys
-                self.codes = g.broadcast(arange(self.categories.size), permute=True)
+                self.codes = type_cast(pdarray, g.broadcast(arange(self.categories.size), permute=True))
                 self.permutation = type_cast(pdarray, g.permutation)
                 self.segments = g.segments
                 # Make a copy because N/A value must be added below
@@ -220,7 +223,9 @@ class Categorical:
                 )
             else:
                 # Append NA value
-                self.categories = concatenate((self.categories, array([self.NAvalue])))
+                self.categories = type_cast(
+                    Strings, concatenate((self.categories, array([self.NAvalue])))
+                )
                 self._NAcode = self.categories.size - 1
             self._akNAcode = array([self._NAcode])
         # Always set these values
@@ -655,6 +660,7 @@ class Categorical:
         if op not in self.BinOps:
             raise NotImplementedError(f"Categorical: unsupported operator: {op}")
         if np.isscalar(other) and resolve_scalar_dtype(other) == "str":
+            assert isinstance(other, (Strings, str_, str))
             idxresult = self.categories._binop(other, op)
             return idxresult[self.codes]
         if self.size != type_cast(Categorical, other).size:
@@ -800,7 +806,7 @@ class Categorical:
         """
         g = GroupBy(self.codes)
         idx = self.categories[g.unique_keys]
-        newvals = g.broadcast(arange(idx.size), permute=True)
+        newvals = type_cast(pdarray, g.broadcast(arange(idx.size), permute=True))
         return Categorical.from_codes(
             newvals, idx, permutation=g.permutation, segments=g.segments, NAvalue=self.NAvalue
         )
@@ -1523,6 +1529,7 @@ class Categorical:
 
         if self.registered_name is None:
             result = True
+            assert isinstance(self.categories.name, str)
             result &= is_registered(self.codes.name, as_component=True)
             result &= is_registered(self.categories.name, as_component=True)
             result &= is_registered(self._akNAcode.name, as_component=True)
@@ -1625,6 +1632,7 @@ class Categorical:
             if "." not in full_key:
                 continue
             base, attr = full_key.rsplit(".", 1)
+
             grouped[base][attr] = value
             keys_to_remove.append(full_key)
 
@@ -1643,6 +1651,7 @@ class Categorical:
                 raise TypeError(
                     f"'categories' must be a Strings object in '{base_name}', got {type(categories)}"
                 )
+
             if not isinstance(categories, Strings):
                 try:
                     categories = Strings(categories)

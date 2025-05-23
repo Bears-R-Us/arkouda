@@ -6,6 +6,7 @@ import os
 import numpy as np
 import pytest
 from scipy import stats as sp_stats
+from typeguard import TypeCheckError
 
 import arkouda as ak
 from arkouda.numpy import random
@@ -683,13 +684,13 @@ class TestRandom:
         with pytest.raises(ValueError, match="low >= high"):
             ak.random.randint(low=1, high=1, size=10, dtype=ak.bool_)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random.randint(0, 1, "1000")
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random.randint("0", 1, 1000)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random.randint(0, "1", 1000)
 
         # Test that int_scalars covers uint8, uint16, uint32
@@ -772,13 +773,13 @@ class TestRandom:
             uArray.tolist(),
         )
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random.uniform(low="0", high=5, size=100)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random.uniform(low=0, high="5", size=100)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random.uniform(low=0, high=5, size="100")
 
         # Test that int_scalars covers uint8, uint16, uint32
@@ -805,10 +806,10 @@ class TestRandom:
 
         assert np.allclose(npda.tolist(), pda.tolist())
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random.standard_normal("100")
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random.standard_normal(100.0)
 
         with pytest.raises(ValueError, match="The size parameter must be > 0"):
