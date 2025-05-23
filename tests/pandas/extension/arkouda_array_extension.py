@@ -82,7 +82,7 @@ class TestArkoudaArrayExtension:
         ak_data = ak.array([1, np.nan, 2])
         arr = ArkoudaArray(ak_data)
         na = arr.isna()
-        expected = ak.array([False, True, False])
+        expected = ArkoudaArray(ak.array([False, True, False]))
         assert_equal(na, expected)
 
     def test_copy(self):

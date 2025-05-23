@@ -57,9 +57,7 @@ class TestArkoudaCategoricalExtension:
     #     assert isna_np.tolist() == [False, True, False, True]
 
     def test_take_categorical_allow_fill_with_existing_category(self, cat_arr):
-        """
-        Fill with a known category value ('b').
-        """
+        """Fill with a known category value ('b')."""
         out = cat_arr.take([0, -1, 3, -1], allow_fill=True, fill_value="b")
         np_out = out.to_numpy().tolist()
         assert np_out == ["a", "b", "c", "b"]

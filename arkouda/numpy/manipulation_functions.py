@@ -272,7 +272,9 @@ def repeat(
 
 @typechecked
 def squeeze(
-    x: Union[pdarray, numeric_scalars, bool_scalars], /, axis: Union[None, int, Tuple[int, ...]] = None
+    x: Union[pdarray, numeric_scalars, bool_scalars],
+    /,
+    axis: Union[None, int_scalars, Tuple[int_scalars, ...]] = None,
 ) -> pdarray:
     """
     Remove degenerate (size one) dimensions from an array.

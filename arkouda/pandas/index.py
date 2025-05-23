@@ -700,11 +700,11 @@ class Index:
             perm = argsort(self.values, ascending=ascending)
 
             if is_float(self.values):
-                is_nan = ak_isnan(self.values)[perm]
+                is_nan = ak_isnan(type_cast(pdarray, self.values))[perm]
                 if na_position == "last":
-                    perm = concatenate([perm[~is_nan], perm[is_nan]])
+                    perm = type_cast(pdarray, concatenate([perm[~is_nan], perm[is_nan]]))
                 else:
-                    perm = concatenate([perm[is_nan], perm[~is_nan]])
+                    perm = type_cast(pdarray, concatenate([perm[is_nan], perm[~is_nan]]))
         else:
             raise TypeError(f"Unsupported index dtype: {type(self.values)}")
 

@@ -21,9 +21,7 @@ def compute_nbytes(N):
 @pytest.mark.benchmark(group="Bigint Bitwise Binops")
 @pytest.mark.parametrize("op", OPS)
 def bench_bitwise_binops(benchmark, op):
-    """
-    Measures the performance of bigint bitwise binops.
-    """
+    """Measures the performance of bigint bitwise binops."""
     N = pytest.N
     num_bytes = compute_nbytes(N)
 

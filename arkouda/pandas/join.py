@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Callable, Optional, Sequence, Tuple, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Callable, Optional, Sequence, Tuple, TypeVar, Union
+from typing import cast
+from typing import cast as type_cast
 
 import numpy as np
 from typeguard import typechecked
@@ -12,6 +14,7 @@ from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
+from arkouda.pandas.typing import ArkoudaArrayLike
 
 
 if TYPE_CHECKING:
@@ -27,6 +30,7 @@ if TYPE_CHECKING:
 
 else:
     Categorical = TypeVar("Categorical")
+
 
 __all__ = ["join_on_eq_with_dt", "gen_ranges", "compute_join_size"]
 
@@ -199,8 +203,8 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
     ua, asize = bya.size()
     byb = GroupBy(b)
     ub, bsize = byb.size()
-    afact = asize[in1d(ua, ub)]
-    bfact = bsize[in1d(ub, ua)]
+    afact = asize[in1d(type_cast(ArkoudaArrayLike, ua), type_cast(ArkoudaArrayLike, ub))]
+    bfact = bsize[in1d(type_cast(ArkoudaArrayLike, ub), type_cast(ArkoudaArrayLike, ua))]
     nelem = (afact * bfact).sum()
     nbytes = 3 * 8 * nelem
     return nelem, nbytes
@@ -257,6 +261,7 @@ def inner_join(
     from arkouda.numpy import cumsum
     from arkouda.pandas.categorical import Categorical
 
+    filtSegSizes: pdarray
     is_sequence = isinstance(left, Sequence) and isinstance(right, Sequence)
 
     # Reduce processing to codes to prevent groupby on entire Categorical
@@ -342,11 +347,14 @@ def inner_join(
             filtRanges = ranges[whereSatisfied]
             scan = cumsum(whereSatisfied) - whereSatisfied
             filtSegsWithZeros = scan[fullSegs]
-            filtSegSizes = concatenate(
-                (
-                    filtSegsWithZeros[1:] - filtSegsWithZeros[:-1],
-                    array([whereSatisfied.sum() - filtSegsWithZeros[-1]]),
-                )
+            filtSegSizes = type_cast(
+                pdarray,
+                concatenate(
+                    (
+                        filtSegsWithZeros[1:] - filtSegsWithZeros[:-1],
+                        array([whereSatisfied.sum() - filtSegsWithZeros[-1]]),
+                    )
+                ),
             )
             keep2 = filtSegSizes > 0
             filtSegs = filtSegsWithZeros[keep2]

@@ -1,24 +1,24 @@
 from .generator import Generator, default_rng
-
 from .legacy import (
-    randint,
-    standard_normal,
-    uniform,
     choice,
-    seed,
-    integers,
     exponential,
-    standard_exponential,
+    integers,
     logistic,
     lognormal,
     normal,
     permutation,
     poisson,
-    random,
     rand,
+    randint,
+    random,
+    seed,
     shuffle,
+    standard_exponential,
     standard_gamma,
+    standard_normal,
+    uniform,
 )
+
 
 __all__ = [
     "Generator",

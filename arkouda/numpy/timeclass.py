@@ -1,6 +1,7 @@
 import datetime
 import json
-from typing import TYPE_CHECKING, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Literal, Optional, TypeVar, Union
+from typing import cast as type_cast
 
 import numpy as np
 from pandas import Series as pdSeries
@@ -104,7 +105,7 @@ class _AbstractBaseTime(pdarray):
             self.unit: str = pda.unit
             self._factor: int = pda._factor
             # Make a copy to avoid unknown symbol errors
-            self.values: pdarray = akcast(pda.values, int64)
+            self.values: pdarray = type_cast(pdarray, akcast(pda.values, int64))
         # Convert the input to int64 pdarray of nanoseconds
         elif isinstance(pda, pdarray):
             if pda.dtype not in intTypes:
@@ -125,7 +126,7 @@ class _AbstractBaseTime(pdarray):
                 self.unit = np.datetime_data(pda.values.dtype)[0]  # type: ignore [arg-type]
                 self._factor = _get_factor(self.unit)
                 # Create pdarray
-                self.values = from_series(pda)
+                self.values = type_cast(pdarray, from_series(pda))
                 # Scale if necessary
                 # This is futureproofing; it will not be used unless pandas
                 # changes its Datetime implementation
@@ -229,8 +230,8 @@ class _AbstractBaseTime(pdarray):
         self,
         prefix_path: str,
         dataset: str = "array",
-        mode: str = "truncate",
-        file_type: str = "distribute",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ):
         """Override of the pdarray to_hdf to store the special dtype."""
         from typing import cast as typecast
