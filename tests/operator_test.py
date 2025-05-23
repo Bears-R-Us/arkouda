@@ -777,14 +777,20 @@ class TestOperator:
             other_arr = other_arr % 5
 
         np_bigint = bigint_arr.to_ndarray()  # noqa: F841
-        np_other = other_arr.to_ndarray()  # noqa: F841
+        np_other = other_arr.to_ndarray().astype("float64")  # noqa: F841
+        assert np_other.dtype is np.dtype("float64")
 
         op_fcn = OP_MAP[op]
 
         ak_result = op_fcn(bigint_arr, other_arr)
-        np_result = op_fcn(np_bigint, np_other)
+        np_result = op_fcn(np_bigint, np_other).astype("float64")
+        assert np_result.dtype is np.dtype("float64")
 
-        np_result = ak.array(np_result, dtype="float64")
+        np_result = ak.array(np_result)
+
+        assert ak_result.dtype is ak.dtype("float64")
+        assert np_result.dtype is ak.dtype("float64")
+
         assert_almost_equivalent(ak_result, np_result)
 
     @pytest.mark.parametrize("op", BOOL_OPS)

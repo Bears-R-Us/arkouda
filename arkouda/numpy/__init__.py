@@ -55,6 +55,7 @@ from arkouda.numpy.imports import (
 from arkouda.numpy.lib import add_docstring, add_newdoc, emath
 from arkouda.numpy.char import bool_, character, int_, integer, object_, str_
 from arkouda.numpy.ctypeslib import integer
+from arkouda.numpy._bigint import     bigint,bigint_
 from arkouda.numpy.dtypes import (
     ARKOUDA_SUPPORTED_DTYPES,
     ARKOUDA_SUPPORTED_INTS,
@@ -101,7 +102,6 @@ from arkouda.numpy.dtypes import (
     _is_dtype_in_union,
     _val_isinstance_of_union,
     all_scalars,
-    bigint,
     bitType,
     bool,
     bool_scalars,
