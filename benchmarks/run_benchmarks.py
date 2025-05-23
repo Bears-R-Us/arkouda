@@ -111,9 +111,7 @@ def add_to_dat(benchmark, output, dat_dir, graph_infra):
 
 
 def generate_graphs(args):
-    """
-    Generate graphs using the existing .dat files and graph infrastructure.
-    """
+    """Generate graphs using the existing .dat files and graph infrastructure."""
     genGraphs = os.path.join(get_chpl_util_dir(), "genGraphs")
     cmd = [
         genGraphs,

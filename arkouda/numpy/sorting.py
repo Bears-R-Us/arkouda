@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Literal, Sequence, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Literal, Sequence, TypeVar, Union
+from typing import cast
+from typing import cast as type_cast
 
 from typeguard import check_type, typechecked
 
@@ -89,7 +91,7 @@ def argsort(
     from arkouda.numpy.util import _integer_axis_validation
     from arkouda.pandas.categorical import Categorical
 
-    check_type("argsort", pda, Union[pdarray, Strings, Categorical])
+    check_type("pda", value=pda, expected_type=Union[pdarray, Strings, Categorical])
 
     ndim = pda.ndim
     valid, axis_ = _integer_axis_validation(axis, ndim)
@@ -99,6 +101,7 @@ def argsort(
     size = pda.size
     if size == 0:
         return zeros(0, dtype=int64)
+    check_type("pda", value=pda, expected_type=Union[pdarray, Strings, Categorical])
 
     # Categorical / Strings (always 1D; axis must be 0)
     if isinstance(pda, Categorical):
@@ -179,11 +182,7 @@ def coargsort(
     from arkouda.numpy import cast as akcast
     from arkouda.pandas.categorical import Categorical
 
-    check_type(
-        argname="coargsort",
-        value=arrays,
-        expected_type=Sequence[Union[pdarray, Strings, Categorical]],
-    )
+    check_type("arrays", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]])
 
     size: int_scalars = -1
     anames, atypes, expanded_arrays = [], [], []
@@ -199,11 +198,11 @@ def coargsort(
             if a.dtype == bigint:
                 expanded_arrays.extend(a.bigint_to_uint_arrays())
             elif a.dtype == bool:
-                expanded_arrays.append(akcast(a, "int"))
+                expanded_arrays.append(type_cast(pdarray, akcast(a, "int")))
             else:
                 expanded_arrays.append(a)
         else:
-            expanded_arrays.append(a)
+            expanded_arrays.append(type_cast(pdarray, a))
 
     for a in expanded_arrays:
         if isinstance(a, pdarray):

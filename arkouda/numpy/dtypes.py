@@ -509,6 +509,7 @@ class DType(Enum):
 
 ARKOUDA_SUPPORTED_BOOLS = (builtins.bool, np.bool_)
 
+
 ARKOUDA_SUPPORTED_INTS = (
     int,
     np.int8,

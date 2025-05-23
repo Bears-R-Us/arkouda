@@ -271,9 +271,7 @@ def bench_read_parquet(benchmark, dtype, comp):
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
 def bench_read_parquet_multi(benchmark, dtype, comp):
-    """
-    Read files written by parquet multicolumn and parquet append modes.
-    """
+    """Read files written by parquet multicolumn and parquet append modes."""
     if (
         pytest.io_read
         or (not pytest.io_write and not pytest.io_delete)
