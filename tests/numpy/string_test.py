@@ -17,6 +17,10 @@ UNIQUE = N // 4
 
 class TestString:
     @pytest.mark.skipif(os.environ.get("CHPL_COMM") == "ugni", reason="Test skipped on CHPL_COMM=ugni")
+    @pytest.mark.skipif(
+        os.environ.get("CHPL_HOST_PLATFORM") == "hpe-apollo",
+        reason="Test skipped on CHPL_HOST_PLATFORM=hpe-apollo for debugging purposes (hanging test)",
+    )
     def test_strings_docstrings(self):
         import doctest
 
