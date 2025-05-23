@@ -83,12 +83,12 @@ from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.sorting import sort as aksort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
-from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.pandas.join import inner_join
 from arkouda.pandas.row import Row
 
 if TYPE_CHECKING:
+    from arkouda.categorical import Categorical
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import cumsum, where
     from arkouda.numpy.segarray import SegArray
@@ -99,6 +99,8 @@ else:
     akcast = TypeVar("akcast")
     cumsum = TypeVar("cumsum")
     where = TypeVar("where")
+    Categorical = TypeVar("Categorical")
+
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -798,8 +800,6 @@ class DataFrame(UserDict):
 
     """
 
-    _COLUMN_CLASSES = (pdarray, Strings, Categorical, SegArray)
-
     objType = "DataFrame"
 
     def __init__(self, initialdata=None, index=None, columns=None):
@@ -807,6 +807,7 @@ class DataFrame(UserDict):
         self.registered_name = None
 
         from arkouda.numpy.segarray import SegArray
+        from arkouda.pandas.categorical import Categorical
 
         self._COLUMN_CLASSES = (pdarray, Strings, Categorical, SegArray)
 
@@ -1176,6 +1177,8 @@ class DataFrame(UserDict):
         return "DataFrame([" + keystr + "], {:,}".format(self._nrows) + rows + ", " + str(mem) + ")"
 
     def _get_head_tail(self):
+        from arkouda.pandas.categorical import Categorical
+
         if self._empty:
             return pd.DataFrame()
         self.update_nrows()
@@ -1205,6 +1208,7 @@ class DataFrame(UserDict):
     def _get_head_tail_server(self):
         from arkouda.client import generic_msg
         from arkouda.numpy.segarray import SegArray
+        from arkouda.pandas.categorical import Categorical
 
         if self._empty:
             return pd.DataFrame()
@@ -1655,6 +1659,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.numpy.segarray import SegArray
+        from arkouda.pandas.categorical import Categorical
 
         dtypes = []
         keys = []
@@ -2631,6 +2636,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.numpy.segarray import SegArray
+        from arkouda.pandas.categorical import Categorical
 
         # Estimate how much memory would be required for this DataFrame
         nbytes = 0
@@ -3023,6 +3029,7 @@ class DataFrame(UserDict):
         1  4  2 (2 rows x 2 columns)
 
         """
+        from arkouda.pandas.categorical import Categorical
         from arkouda.pandas.io import to_parquet
 
         data = self._prep_data(index=index, columns=columns)
@@ -3955,6 +3962,7 @@ class DataFrame(UserDict):
         col2  -1.0   1.0 (2 rows x 2 columns)
 
         """
+        from arkouda.pandas.categorical import Categorical
 
         def numeric_help(d):
             if isinstance(d, Strings):
@@ -5146,6 +5154,8 @@ def _inner_join_merge(
         Inner-Joined Arkouda DataFrame
 
     """
+    from arkouda.pandas.categorical import Categorical
+
     left_cols, right_cols = left.columns.values.copy(), right.columns.values.copy()
     col_intersect_ = col_intersect.copy() if isinstance(col_intersect, list) else [col_intersect[:]]
     left_on_ = [left_on] if isinstance(left_on, str) else left_on
@@ -5424,6 +5434,8 @@ def __nulls_like(
         ]
     ] = None,
 ):
+    from arkouda.pandas.categorical import Categorical
+
     if size is None:
         size = arry.size
 
@@ -5556,6 +5568,8 @@ def merge(
     6     8     NaN     8.0 (7 rows x 3 columns)
 
     """
+    from arkouda.pandas.categorical import Categorical
+
     col_intersect = list(set(left.columns) & set(right.columns))
     on = on if on is not None else col_intersect
     if left_on is None and right_on is None:

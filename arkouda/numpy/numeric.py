@@ -2560,7 +2560,7 @@ def median(pda: pdarray) -> np.float64:
         )
 
 
-def count_nonzero(pda: pdarray) -> np.int64:
+def count_nonzero(pda: pdarray) -> int_scalars:
     """
     Compute the nonzero count of a given array. 1D case only, for now.
 
@@ -2571,7 +2571,7 @@ def count_nonzero(pda: pdarray) -> np.int64:
 
     Returns
     -------
-    np.int64
+    int_scalars
         The nonzero count of the entire pdarray
 
     Raises
@@ -2928,7 +2928,7 @@ def tril(pda: pdarray, diag: int_scalars = 0) -> pdarray:
 
 
 @typechecked
-def transpose(pda: pdarray, axes: Optional[Tuple[int, ...]] = None) -> pdarray:
+def transpose(pda: pdarray, axes: Optional[Tuple[int_scalars, ...]] = None) -> pdarray:
     """
     Compute the transpose of a matrix.
 
@@ -2969,10 +2969,10 @@ def transpose(pda: pdarray, axes: Optional[Tuple[int, ...]] = None) -> pdarray:
 
     if axes is not None:  # if axes was supplied, check that it's valid
         r = tuple(np.arange(pda.ndim))
-        if not (np.sort(axes) == r).all():
+        if not (np.sort(np.array(axes)) == r).all():
             raise ValueError(f"{axes} is not a valid set of axes for pdarray of rank {pda.ndim}")
     else:  # if axes is None, create a tuple of the axes in reverse order
-        axes = tuple(((pda.ndim - 1) - np.arange(pda.ndim)))
+        axes = tuple(reversed(range(pda.ndim)))
 
     return create_pdarray(
         generic_msg(

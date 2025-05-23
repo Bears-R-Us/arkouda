@@ -20,7 +20,6 @@ from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.strings import Strings
-from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
 
 if TYPE_CHECKING:
@@ -29,6 +28,13 @@ if TYPE_CHECKING:
 else:
     generic_msg = TypeVar("generic_msg")
     cumsum = TypeVar("cumsum")
+
+
+if TYPE_CHECKING:
+    from arkouda.categorical import Categorical
+
+else:
+    Categorical = TypeVar("Categorical")
 
 __all__ = ["join_on_eq_with_dt", "gen_ranges", "compute_join_size"]
 
@@ -257,6 +263,7 @@ def inner_join(
     from inspect import signature
 
     from arkouda.numpy import cumsum
+    from arkouda.pandas.categorical import Categorical
 
     is_sequence = isinstance(left, Sequence) and isinstance(right, Sequence)
 
