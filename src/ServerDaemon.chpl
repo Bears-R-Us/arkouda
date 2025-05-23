@@ -773,11 +773,8 @@ module ServerDaemon {
             this.port = try! getEnv('METRICS_SERVER_PORT','5556'):int;
 
             try! this.socket.bind("tcp://*:%?".format(this.port));
-            try! sdLogger.debug(getModuleName(), 
-                                getRoutineName(), 
-                                getLineNumber(),
-                                "initialized and listening in port %i".format(
-                                this.port));
+            sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                           "initialized and listening in port ", this.port: string);
         }
 
         override proc run() throws {
@@ -877,11 +874,8 @@ module ServerDaemon {
             this.port = try! getEnv('SERVER_STATUS_PORT','5557'):int;
 
             try! this.socket.bind("tcp://*:%?".format(this.port));
-            try! sdLogger.debug(getModuleName(), 
-                                getRoutineName(), 
-                                getLineNumber(),
-                                "initialized and listening in port %i".format(
-                                this.port));
+            sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                           "initialized and listening in port ", this.port: string);
         }
 
         override proc run() throws {
