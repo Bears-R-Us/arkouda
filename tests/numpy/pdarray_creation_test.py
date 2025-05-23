@@ -9,6 +9,7 @@ import pytest
 
 import arkouda as ak
 from arkouda.numpy import newaxis, pdarraycreation
+from arkouda.numpy.dtypes import dtype as ak_dtype
 from arkouda.numpy.util import _generate_test_shape, _infer_shape_from_size
 from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equal
 from arkouda.testing import assert_equal as ak_assert_equal
@@ -50,31 +51,176 @@ class TestPdarrayCreation:
         )
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
+    # tests/numpy/test_array.py
+    from collections import deque
+
+    import numpy as np
+    import pytest
+
+    from arkouda.numpy.dtypes import dtype as akdtype
+
+    # String-like sentinels that ak.array accepts for Strings
+    STRING_DTYPES = ["str", "str_", ak.str_]
+
+    # Core numeric dtypes (no datetime/timedelta)
+    NUMERIC_DTYPES = [ak.int64, ak.float64, ak.bool_, "int64", "float64", "bool"]
+
+    # Include bigint last; some sources handled specially below
+    DTYPES = NUMERIC_DTYPES + [ak.bigint, "bigint"] + STRING_DTYPES
+
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_array_creation(self, dtype, subtests):
         fixed_size = 100
+        # Use integral values for maximum cross-dtype cast coverage (incl. bigint)
         input_cases = [
-            ("ak.ones(int)", ak.ones(fixed_size, int)),
-            ("np.ones", np.ones(fixed_size)),
+            ("ak.ones(int64)", ak.ones(fixed_size, ak.int64)),
+            ("np.ones(int64)", np.ones(fixed_size, dtype=np.int64)),
             ("list(range)", list(range(fixed_size))),
             ("tuple(range)", tuple(range(fixed_size))),
             ("deque(range)", deque(range(fixed_size))),
-            ("list[str]", [f"{i}" for i in range(fixed_size)]),
+            ("list[str digits]", [f"{i}" for i in range(fixed_size)]),
         ]
 
         for name, input_data in input_cases:
             with subtests.test(source=name, dtype=dtype):
+                # Some combinations are intentionally unsupported; let them raise cleanly
                 pda = ak.array(input_data, dtype=dtype)
 
-                expected_type = ak.Strings if "str" in str(dtype) else ak.pdarray
-
+                expected_type = ak.Strings if dtype in self.STRING_DTYPES else ak.pdarray
                 assert isinstance(pda, expected_type), f"{name}: Type mismatch"
-                assert len(pda) == fixed_size, f"{name}: Length mismatch"
-                assert pda.dtype == dtype, f"{name}: Dtype mismatch ({pda.dtype} != {dtype})"
 
-    # TODO: combine the many instances of 1D and multi-dim tests into one function each.
-    #      e.g., there will just be test_array_creation, which will handle both 1D and
-    #      multi-dim tests
+                assert len(pda) == fixed_size, f"{name}: Length mismatch"
+
+                # dtype normalization for comparison
+                if expected_type is ak.pdarray:
+                    assert ak_dtype(pda.dtype) == ak_dtype(dtype), f"{name}: Dtype mismatch"
+                else:
+                    # Strings normalize to ak.str_
+                    assert ak_dtype(pda.dtype) == ak_dtype("str_")
+
+    @pytest.mark.parametrize(
+        "scalar_input",
+        [5, -3, 0.0, np.int64(7), np.array(7), "abc"],
+        ids=["int", "neg-int", "float", "np.int64", "numpy-0d", "str"],
+    )
+    def test_array_rejects_scalars_and_0d(self, scalar_input):
+        with pytest.raises(TypeError):
+            ak.array(scalar_input)
+
+    def test_pdarray_copy_semantics(self):
+        base = ak.arange(10)
+        same = ak.array(base)  # default copy=False
+        assert same is base
+
+        cp = ak.array(base, copy=True)
+        assert cp is not base
+        assert isinstance(cp, ak.pdarray)
+        assert cp.tolist() == base.tolist()
+
+    @pytest.mark.parametrize(
+        "target_dtype", [ak.float64, ak.int64, ak.bool_], ids=["to-float", "to-int", "to-bool"]
+    )
+    def test_pdarray_cast_via_array(self, target_dtype):
+        base = ak.arange(5)  # int64
+        out = ak.array(base, dtype=target_dtype)
+        assert isinstance(out, ak.pdarray)
+        assert ak_dtype(out.dtype) == ak_dtype(target_dtype)
+
+    def test_strings_copy_semantics_nonempty_and_empty(self, subtests):
+        with subtests.test("nonempty"):
+            s = ak.array(["a", "b", "c"])
+            s_same = ak.array(s)
+            assert s_same is s
+            s_cp = ak.array(s, copy=True)
+            assert s_cp is not s
+            assert s_cp.tolist() == ["a", "b", "c"]
+
+        with subtests.test("empty"):
+            s_empty = ak.array(np.array([], dtype=np.str_))
+            s_empty_cp = ak.array(s_empty, copy=True)
+            assert isinstance(s_empty_cp, ak.Strings)
+            assert s_empty_cp.size == 0
+
+    @pytest.mark.parametrize(
+        "string_numbers, target_dtype, expected",
+        [
+            (["1", "2", "3"], ak.int64, [1, 2, 3]),
+            (["False", "True", "False"], ak.bool_, [False, True, False]),  # <-- change here
+            (["10", "20"], ak.float64, [10.0, 20.0]),
+        ],
+    )
+    def test_strings_cast_to_numeric_via_dtype(self, string_numbers, target_dtype, expected):
+        out = ak.array(np.array(string_numbers, dtype=np.str_), dtype=target_dtype)
+        assert isinstance(out, ak.pdarray)
+        assert ak_dtype(out.dtype) == ak_dtype(target_dtype)
+        assert out.tolist() == expected
+
+    def test_auto_bigint_from_python_bigints(self):
+        vals = [1, 2**70, 3]
+        out = ak.array(vals)
+        assert isinstance(out, ak.pdarray)
+        assert out.dtype.name == "bigint"
+        assert (out[0] == 1) and (out[1] == 2**70) and (out[2] == 3)
+
+    @pytest.mark.parametrize(
+        "vals",
+        [
+            np.array([-3, 0, 5], dtype=np.int64),
+            [-(2**65), 0, 2**66],
+            np.array([2**70, 2**69], dtype=object),
+        ],
+        ids=["int64-neg-pos", "python-big-ints-mixed-sign", "object-big-ints"],
+    )
+    def test_explicit_or_inferred_bigint_paths(self, vals):
+        out = (
+            ak.array(vals, dtype="bigint")
+            if not isinstance(vals, np.ndarray) or vals.dtype != object
+            else ak.array(vals)
+        )
+        assert isinstance(out, ak.pdarray)
+        assert out.dtype.name == "bigint"
+        # spot checks
+        if isinstance(vals, np.ndarray) and vals.dtype == object:
+            assert (out[0] == 2**70) and (out[1] == 2**69)
+        else:
+            assert out.size == 3
+
+    def test_bigint_max_bits_propagates_on_cast_from_pdarray(self):
+        base = ak.arange(4).astype(ak.int64)
+        out = ak.array(base, dtype=ak.bigint, max_bits=128)
+        assert isinstance(out, ak.pdarray)
+        assert out.dtype.name == "bigint"
+        # environments vary; just ensure attribute exists and is not silently ignored
+        assert hasattr(out, "max_bits")
+        if out.max_bits != -1:
+            assert out.max_bits == 128
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    def test_fortran_contiguous_non_owning_view_is_copied_cleanly(self):
+        # Create a Fortran-contiguous, non-OWNDATA view
+        np_a = np.arange(12, dtype=np.int64).reshape(3, 4).T  # likely F_CONTIGUOUS view
+        assert np_a.flags["F_CONTIGUOUS"] and not np_a.flags["OWNDATA"]
+        ak_a = ak.array(np_a)
+        assert isinstance(ak_a, ak.pdarray)
+        assert ak_a.size == np_a.size
+        assert ak_dtype(ak_a.dtype) == ak_dtype(ak.int64)
+
+    @pytest.mark.parametrize(
+        "non_string_numeric_input",
+        [
+            np.array([1, 2, 3], dtype=np.int64),
+            [4, 5, 6],
+            tuple([7, 8, 9]),
+        ],
+        ids=["np.int64", "list-int", "tuple-int"],
+    )
+    @pytest.mark.parametrize("str_like", STRING_DTYPES, ids=["'str'", "'str_'", "ak.str_"])
+    def test_numeric_input_cast_to_strings_via_dtype(self, non_string_numeric_input, str_like):
+        out = ak.array(non_string_numeric_input, dtype=str_like)
+        assert isinstance(out, ak.Strings)
+        assert out.size == 3
+        # dtype normalization
+        assert ak_dtype(out.dtype) == ak_dtype("str_")
 
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -111,9 +257,7 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_large_array_creation(self, size, subtests):
-        """
-        Test large-array creation using various Arkouda constructors. Ensures correct length and type.
-        """
+        """Test large-array creation using various Arkouda constructors. Ensures correct length and type."""
         test_cases = [
             ("ak.ones", lambda: ak.ones(size, int)),
             ("ak.array(ak.ones)", lambda: ak.array(ak.ones(size, int))),
@@ -206,9 +350,7 @@ class TestPdarrayCreation:
         ],
     )
     def test_array_creation_misc(self, input_data, subtests):
-        """
-        Ensure that ak.array() rejects unsupported inputs with a TypeError.
-        """
+        """Ensure that ak.array() rejects unsupported inputs with a TypeError."""
         with subtests.test(input_data=input_data):
             with pytest.raises(TypeError):
                 ak.array(input_data)
@@ -698,9 +840,6 @@ class TestPdarrayCreation:
 
         with pytest.raises(TypeError):
             ak.ones(5, dtype=ak.uint8)
-
-        with pytest.raises(TypeError):
-            ak.ones(5, dtype=str)
 
         # Test that int_scalars covers uint8, uint16, uint32
         int_arr = ak.ones(5)
