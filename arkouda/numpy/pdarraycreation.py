@@ -22,6 +22,7 @@ from arkouda.numpy.dtypes import (
     NumericDTypes,
     SeriesDTypes,
     bigint,
+    bool_scalars,
 )
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
@@ -685,8 +686,8 @@ def ones(
 @typechecked
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
-    fill_value: Union[numeric_scalars, str],
-    dtype: Optional[Union[np.dtype, type, str, bigint]] = None,
+    fill_value: Union[numeric_scalars, np.bool, str],
+    dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
 ) -> Union[pdarray, Strings]:
     """
@@ -776,7 +777,8 @@ def full(
 
 @typechecked
 def scalar_array(
-    value: numeric_scalars, dtype: Optional[Union[np.dtype, type, str, bigint]] = None
+    value: Union[numeric_scalars, bool_scalars],
+    dtype: Optional[Union[np.dtype, type, str, bigint]] = None,
 ) -> pdarray:
     """
     Create a pdarray from a single scalar value.
@@ -785,6 +787,8 @@ def scalar_array(
     ----------
     value: numeric_scalars
         Value to create pdarray from
+    dtype: np.dtype, type, str, bigint, or None
+        The data type of the created array.
 
     Returns
     -------
