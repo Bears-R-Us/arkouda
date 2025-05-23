@@ -746,7 +746,7 @@ class TestPdarrayCreation:
         rank = ak.client.get_max_array_rank() + 1
         shape, local_size = _generate_test_shape(rank, 2**rank)
         with pytest.raises(ValueError):
-            ak.full(shape, dtype)
+            ak.full(shape, 1, dtype)
 
     def test_full_misc(self):
         for arg in -1, False:
