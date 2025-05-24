@@ -917,11 +917,9 @@ module IndexingMsg
               idx = st[msgArgs['indices']]: SymEntry(array_dtype_idx, 1),
               axis = msgArgs['axis'].getPositiveIntValue(array_nd);
 
-        var y = makeDistArray((...x.tupShape), array_dtype_x);
-
-        if x.tupShape[axis] != idx.size {
-            return MsgTuple.error("index array length does not match x's length along the provided axis");
-        }
+        var newShape = x.tupShape;
+        newShape[axis] = idx.size;
+        var y = makeDistArray((...newShape), array_dtype_x);
 
         const minIdx = min reduce idx.a,
               maxIdx = max reduce idx.a;
