@@ -318,10 +318,10 @@ class Categorical:
         >>> c = Categorical(ak.array(["a", "b", "c"]))
         >>> c_cpy = Categorical(ak.array(["a", "b", "c"]))
         >>> c.equals(c_cpy)
-        True
+        np.True_
         >>> c2 = Categorical(ak.array(["a", "x", "c"]))
         >>> c.equals(c2)
-        False
+        np.False_
 
         """
         if isinstance(other, Categorical):

@@ -27,13 +27,15 @@ def df_test_base_tmp(request):
 
 
 class TestCategorical:
-    # def test_categorical_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(
-    #         categorical, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
-    #     )
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    def test_categorical_docstrings(self):
+        import doctest
+
+        from arkouda import categorical
+
+        result = doctest.testmod(
+            categorical, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @classmethod
     def setup_class(cls):
