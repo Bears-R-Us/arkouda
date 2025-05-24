@@ -834,6 +834,7 @@ module ManipulationMsg {
     const name = msgArgs["name"],
           nAxes = msgArgs["nAxes"].toScalar(int),
           axes = msgArgs["axes"].toScalarArray(int, nAxes);
+
     var eIn = st[name]: borrowed SymEntry(array_dtype, array_nd_in),
         (valid, shape, mapping) = validateSqueeze(eIn.tupShape, axes, array_nd_out);
 
