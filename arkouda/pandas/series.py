@@ -10,7 +10,7 @@ import pandas as pd
 from pandas._config import get_option
 from typeguard import typechecked
 
-import arkouda.dataframe
+import arkouda.pandas.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
 from arkouda.categorical import Categorical
@@ -469,7 +469,7 @@ class Series:
         arkouda.numpy.pdarrayclass.nbytes
         arkouda.Index.memory_usage
         arkouda.pandas.series.Series.memory_usage
-        arkouda.datafame.DataFrame.memory_usage
+        arkouda.pandas.datafame.DataFrame.memory_usage
 
         Examples
         --------
@@ -928,9 +928,9 @@ class Series:
     @typechecked
     def to_dataframe(
         self,
-        index_labels: Union[List[builtin_str], None] = None,
-        value_label: Union[builtin_str, None] = None,
-    ) -> arkouda.dataframe.DataFrame:
+        index_labels: Union[List[str], None] = None,
+        value_label: Union[str, None] = None,
+    ) -> arkouda.pandas.dataframe.DataFrame:
         """
         Convert the Series to an Arkouda DataFrame.
 
@@ -1165,7 +1165,7 @@ class Series:
         index_labels: Union[List[builtin_str], None] = None,
         value_labels: Union[List[builtin_str], None] = None,
         ordered: bool = False,
-    ) -> Union[arkouda.dataframe.DataFrame, Series]:
+    ) -> Union[arkouda.pandas.dataframe.DataFrame, Series]:
         """
         Concatenate a list of Arkouda Series or grouped arrays horizontally or vertically.
 
@@ -1233,7 +1233,7 @@ class Series:
                     for col, label in zip(arrays, value_labels):
                         data[str(label)] = lookup(col.index.index, col.values, idx.index, fillvalue=0)
 
-            return arkouda.dataframe.DataFrame(data)
+            return arkouda.pandas.dataframe.DataFrame(data)
         else:
             # Vertical concat
             idx = arrays[0].index

@@ -10,7 +10,7 @@ from typeguard import typechecked
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.client_dtypes import IPv4
-from arkouda.dataframe import DataFrame
+from arkouda.pandas.dataframe import DataFrame
 from arkouda.groupbyclass import GroupBy
 from arkouda.index import Index, MultiIndex
 from arkouda.numpy.dtypes import float32, float64, int32, int64
@@ -1036,7 +1036,7 @@ def import_data(
     - Import can only be performed from hdf5 or parquet files written by pandas.
 
     """
-    from arkouda.dataframe import DataFrame
+    from arkouda.pandas.dataframe import DataFrame
 
     # verify file path
     is_glob = not os.path.isfile(read_path)
@@ -1126,7 +1126,7 @@ def export(
       the same file type, but formatted to be read by Pandas.
 
     """
-    from arkouda.dataframe import DataFrame
+    from arkouda.pandas.dataframe import DataFrame
 
     # get the filetype
     prefix, extension = os.path.splitext(read_path)
@@ -2214,7 +2214,7 @@ def snapshot(filename):
     import inspect
     from types import ModuleType
 
-    from arkouda.dataframe import DataFrame
+    from arkouda.pandas.dataframe import DataFrame
     from arkouda.numpy.segarray import SegArray
 
     filename = filename + "_SNAPSHOT"
