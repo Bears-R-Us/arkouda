@@ -1,3 +1,4 @@
+# isort: skip_file
 # flake8: noqa
 # isort: skip_file
 # do not run isort, imports are order dependent

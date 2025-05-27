@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 import arkouda as ak
-from arkouda.categorical import Categorical
+from arkouda.pandas.categorical import Categorical
 from arkouda.testing import assert_arkouda_array_equivalent, assert_equal
 
 seed = pytest.seed

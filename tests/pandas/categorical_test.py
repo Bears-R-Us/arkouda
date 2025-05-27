@@ -6,8 +6,8 @@ import pytest
 from pandas import Categorical as pd_Categorical
 
 import arkouda as ak
-from arkouda import io, io_util
-from arkouda.categorical import Categorical
+from arkouda.pandas import io, io_util
+from arkouda.pandas.categorical import Categorical
 from arkouda.testing import assert_categorical_equal
 
 

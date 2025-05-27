@@ -3,7 +3,6 @@ from typing import Literal, Optional, Sequence, Union, cast
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import result_type as ak_result_type
@@ -62,6 +61,7 @@ def hstack(
     >>> ak.hstack((a, b))
     array([array([1 4]) array([2 5]) array([3 6])])
     """
+    from arkouda.client import generic_msg
 
     if casting != "same_kind":
         # TODO: align with https://numpy.org/doc/stable/glossary.html#term-casting
@@ -186,6 +186,7 @@ def vstack(
     array([array([1]) array([2]) array([3]) array([4]) array([5]) array([6])])
 
     """
+    from arkouda.client import generic_msg
 
     if casting != "same_kind":
         # TODO: align with https://numpy.org/doc/stable/glossary.html#term-casting
@@ -286,6 +287,7 @@ def delete(
     >>> ak.delete(arr, [1, 3, 5], None)
     array([1 3 5 7 8 9 10 11 12])
     """
+    from arkouda.client import generic_msg
 
     shape = arr.shape
 
@@ -375,6 +377,7 @@ def append(
     >>> ak.append(b, b, axis = 0)
     array([array([4 5 6]) array([7 8 9]) array([4 5 6]) array([7 8 9])])
     """
+    from arkouda.client import generic_msg
 
     if axis is None:
         axis = 0

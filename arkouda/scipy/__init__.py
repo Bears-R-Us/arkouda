@@ -1,4 +1,5 @@
 # flake8: noqa
+# isort: skip_file
 
 from ._stats_py import Power_divergenceResult, chisquare, power_divergence
 from .sparrayclass import create_sparray, sparray

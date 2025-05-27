@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 import arkouda as ak
-from arkouda import match, matcher
+from arkouda.pandas import match, matcher
 
 
 class TestRegex:

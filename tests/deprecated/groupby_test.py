@@ -4,7 +4,7 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 
 from arkouda.numpy.dtypes import float64, int64
-from arkouda.groupbyclass import GroupByReductionType
+from arkouda.pandas.groupbyclass import GroupByReductionType
 from arkouda.scipy import chisquare as akchisquare
 
 SIZE = 100
