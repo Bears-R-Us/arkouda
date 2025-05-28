@@ -217,6 +217,7 @@ from arkouda.numpy.pdarrayclass import (
     corr,
     cov,
     ctz,
+    diff,
     divmod,
     dot,
     fmod,

@@ -173,6 +173,7 @@ __all__ = [
     "RegistrationError",
     "broadcast_to_shape",
     "_to_pdarray",
+    "diff",
 ]
 logger = getArkoudaLogger(name="pdarrayclass")
 
@@ -4745,6 +4746,94 @@ def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
                 args={
                     "name": pda,
                     "shape": shape,
+                },
+            ),
+        )
+    )
+
+
+def diff(a: pdarray, n: int = 1, axis: int = -1, prepend=None, append=None) -> pdarray:
+    """
+    Calculate the n-th discrete difference along the given axis.
+
+    The first difference is given by ``out[i] = a[i+1] - a[i]`` along the given axis,
+    higher differences are calculated by using diff iteratively.
+
+    Parameters
+    ----------
+    a : pdarray
+        The array to calculate the difference
+    n : int, optional
+        The order of the finite difference. Default is 1.
+    axis : int, optional
+        The axis along which to calculate the difference. Default is the last axis.
+    prepend : pdarray, optional
+        The pdarray to prepend to `a` along `axis` before calculating the difference.
+    append : pdarray, optional
+        The pdarray to append to `a` along `axis` before calculating the difference.
+
+    Returns
+    -------
+    pdarray
+        The n-th differences. The shape of the output is the same as `a`
+        except along `axis` where the dimension is smaller by `n`. The
+        type of the output is the same as the type of the difference
+        between any two elements of `a`. This is the same as the type of
+        `a` in most cases. A notable exception is `datetime64`, which
+        results in a `timedelta64` output array.
+
+    Notes
+    -----
+    Type is preserved for boolean arrays, so the result will contain
+    `False` when consecutive elements are the same and `True` when they
+    differ.
+
+    For unsigned integer arrays, the results will also be unsigned. This
+    should not be surprising, as the result is consistent with
+    calculating the difference directly.
+
+    If this is not desirable, then the array should be cast to a larger
+    integer type first:
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.array([1, 2, 4, 7, 0])
+    >>> ak.diff(a)
+    array([1 2 3 -7])
+    >>> ak.diff(a, n=2)
+    array([1 1 -10])
+
+    >>> a = ak.array([[1, 3, 6, 10], [0, 5, 6, 8]])
+    >>> ak.diff(a)
+    array([array([2 3 4]) array([5 1 2])])
+    >>> ak.diff(a, axis=0)
+    array([array([-1 2 0 -2])])
+
+    """
+    if a.dtype == bigint:
+        raise RuntimeError(f"Error executing command: diff does not support dtype {a.dtype}")
+    from arkouda.numpy.pdarraysetops import concatenate
+
+    if prepend is not None and append is not None:
+        a_ = concatenate((prepend, a, append), axis=axis)
+    elif prepend is not None:
+        a_ = concatenate((prepend, a), axis=axis)
+    elif append is not None:
+        a_ = concatenate((a, append), axis=axis)
+    else:
+        a_ = a
+    if axis < 0:
+        axis = a_.ndim + axis
+    return create_pdarray(
+        cast(
+            str,
+            generic_msg(
+                cmd=f"diff<{a.dtype},{a.ndim}>",
+                args={
+                    "x": a_,
+                    "n": n,
+                    "axis": axis,
                 },
             ),
         )
