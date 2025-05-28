@@ -628,7 +628,7 @@ def ones(
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
     fill_value: Union[numeric_scalars, str],
-    dtype: Union[np.dtype, type, str, bigint] = float64,
+    dtype: Optional[Union[np.dtype, type, str, bigint]] = None,
     max_bits: Optional[int] = None,
 ) -> Union[pdarray, Strings]:
     """
@@ -685,6 +685,8 @@ def full(
         return _full_string(size, fill_value)
     elif ak_dtype(dtype) == str_ or dtype == Strings:
         return _full_string(size, str_(fill_value))
+
+    dtype = dtype if dtype is not None else resolve_scalar_dtype(fill_value)
 
     dtype = akdtype(dtype)  # normalize dtype
     dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
