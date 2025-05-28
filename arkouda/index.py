@@ -1084,7 +1084,10 @@ class MultiIndex(Index):
                 if col_size != self.size:
                     raise ValueError("All columns in MultiIndex must have same length")
 
-        self._name = data.name if not name and isinstance(data, (MultiIndex, pd.MultiIndex)) else name
+        if not name and isinstance(data, (MultiIndex, pd.MultiIndex)) and isinstance(data.name, str):
+            self._name = data.name
+        else:
+            self._name = name
 
         if names is not None:
             self._names = list(names)
