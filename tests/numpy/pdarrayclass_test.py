@@ -308,3 +308,21 @@ class TestPdarrayClass:
             assert_arkouda_array_equivalent(ak.dot(pda1, pda2), np.dot(nda1, nda2))
 
         #   higher dimension testing may not be feasible at this time
+
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_copy(self, dtype):
+        fixed_size = 100
+        a = ak.arange(fixed_size, dtype=dtype)
+        a_cpy = a.copy()
+
+        assert not a_cpy is a
+        ak_assert_equal(a, a_cpy)
+
+    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.parametrize("dtype", DTYPES)
+    def test_copy(self, dtype):
+        a = ak.arange(1000, dtype=dtype).reshape((10, 10, 10))
+        a_cpy = a.copy()
+
+        assert not a_cpy is a
+        ak_assert_equal(a, a_cpy)
