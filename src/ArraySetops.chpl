@@ -27,7 +27,7 @@ module ArraySetops
     // returns intersection of 2 arrays
     proc intersect1d(a: [] ?t, b: [] t, assume_unique: bool) throws {
       //if not unique, unique sort arrays then perform operation
-      if (!assume_unique) {
+      if !assume_unique {
         var a1  = uniqueSort(a, false);
         var b1  = uniqueSort(b, false);
         return intersect1dHelper(a1, b1);
@@ -51,7 +51,7 @@ module ArraySetops
     // returns the exclusive-or of 2 arrays
     proc setxor1d(a: [] ?t, b: [] t, assume_unique: bool) throws {
       //if not unique, unique sort arrays then perform operation
-      if (!assume_unique) {
+      if !assume_unique {
         var a1  = uniqueSort(a, false);
         var b1  = uniqueSort(b, false);
         return  setxor1dHelper(a1, b1);
@@ -88,7 +88,7 @@ module ArraySetops
     // returns the set difference of 2 arrays
     proc setdiff1d(ref a: [] ?t, ref b: [] t, assume_unique: bool) throws {
       //if not unique, unique sort arrays then perform operation
-      if (!assume_unique) {
+      if !assume_unique {
         var a1  = uniqueSort(a, false);
         var b1  = uniqueSort(b, false);
         return setdiff1dHelper(a1, b1);
@@ -121,7 +121,15 @@ module ArraySetops
       return uniqueSort(aux, false);
     }
 
-    proc mergeHelper(ref sortedIdx: [?sD] ?t, ref permutedVals: [] ?t2, const ref idx1: [?D] t, const ref idx2: [] t, const ref val1: [] t2, const ref val2: [] t2, percentTransferLimit:int = 100) throws {
+    proc mergeHelper(
+      ref sortedIdx: [?sD] ?t,
+      ref permutedVals: [] ?t2,
+      const ref idx1: [] t,
+      const ref idx2: [] t,
+      const ref val1: [] t2,
+      const ref val2: [] t2,
+      percentTransferLimit:int = 100
+    ) throws {
       const allocSize = sD.size;
       // create refs to arrays so it's easier to swap them if we come up with a good heuristic
       //  for which causes fewer data shuffles between locales
@@ -172,7 +180,7 @@ module ArraySetops
               // binary search local chunk of a to find where b_min_loc_(i-1) falls,
               //  so we know how many vals to send to loc_(i-1)
               var (status, binSearchIdx) = search(a.localSlice[aDom], bMax, sorted=true);
-              if (binSearchIdx == (aDom.last+1)) {
+              if binSearchIdx == (aDom.last+1) {
                 toGiveUp = true;
               }
               // the number of elements the previous locale will need to fetch from here
@@ -185,7 +193,7 @@ module ArraySetops
               // binary search local chunk of b to find where a_min_loc_(i-1) falls,
               //  so we know how many vals to send to loc_(i-1)
               var (status, binSearchIdx) = search(b.localSlice[bDom], aMax, sorted=true);
-              if (binSearchIdx == (bDom.last+1)) {
+              if binSearchIdx == (bDom.last+1) {
                 toGiveUp = true;
               }
               // the number of elements the previous locale will need to fetch from here
@@ -281,7 +289,14 @@ module ArraySetops
       }
     }
 
-    proc sortHelper(ref sortedIdx: [?sD] ?t, ref permutedVals: [] ?t2, const ref idx1: [?D] t, const ref idx2: [] t, const ref val1: [] t2, const ref val2: [] t2) throws {
+    proc sortHelper(
+      ref sortedIdx: [?sD] ?t,
+      ref permutedVals: [] ?t2,
+      const ref idx1: [] t,
+      const ref idx2: [] t,
+      const ref val1: [] t2,
+      const ref val2: [] t2
+    ) throws {
       const allocSize = sD.size;
       var perm = makeDistArray(allocSize, int);
       forall (s, p, sp) in zip(sortedIdx, perm, radixSortLSD(concatArrays(idx1, idx2, ordered=false))) {
@@ -294,13 +309,22 @@ module ArraySetops
       }
     }
 
-    proc combineHelper(const ref idx1: [?D] ?t, const ref idx2: [] t, const ref val1: [] ?t2, const ref val2: [] t2, doMerge = false, percentTransferLimit:int = 100) throws {
-      // combine two sorted lists of indices and apply the sort permutation to their associated values
+    proc combineHelper(
+      const ref idx1: [] ?t,
+      const ref idx2: [] t,
+      const ref val1: [] ?t2,
+      const ref val2: [] t2,
+      doMerge = false,
+      percentTransferLimit:int = 100
+    ) throws {
+      // combine two sorted lists of indices
+      // and apply the sort permutation to their associated values
       const allocSize = idx1.size + idx2.size;
       var sortedIdx = makeDistArray(allocSize, t);
       var permutedVals = makeDistArray(allocSize, t2);
       if doMerge {
-        // attempt to use merge workflow. if certain conditions are met, fall back to radixsort
+        // attempt to use merge workflow. 
+        // if certain conditions are met, fall back to radixsort
         mergeHelper(sortedIdx, permutedVals, idx1, idx2, val1, val2, percentTransferLimit);
       }
       else {
