@@ -298,6 +298,7 @@ from arkouda.numpy import (
     str_scalars,
     strings,
     sum,
+    take,
     tan,
     tanh,
     tile,

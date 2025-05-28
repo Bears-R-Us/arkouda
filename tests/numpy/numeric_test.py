@@ -1524,3 +1524,40 @@ class TestNumeric:
             )
             ak_assert_almost_equivalent(pr, nr)
             keepdims = not keepdims  # switch this each time through the loop
+
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_take_1d(self, dtype, size):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        if dtype == "bool":
+            a = ak.randint(0, 2, size, dtype=dtype, seed=seed)
+        else:
+            a = ak.randint(0, 100, size, dtype=dtype, seed=seed)
+        anp = a.to_ndarray()
+
+        indices = ak.randint(0, size, size // 2, dtype="int64", seed=seed)
+        indices_np = indices.to_ndarray()
+
+        a_taken = ak.take(a, indices)
+        anp_taken = np.take(anp, indices_np)
+
+        assert np.array_equal(a_taken.to_ndarray(), anp_taken)
+
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("axis", [None, 0, 1, 2])
+    def test_take_multidim(self, dtype, axis):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        if dtype == "bool":
+            a = ak.randint(0, 2, (5, 6, 7), dtype=dtype, seed=seed)
+        else:
+            a = ak.randint(0, 100, (5, 6, 7), dtype=dtype, seed=seed)
+        anp = a.to_ndarray()
+
+        indices = ak.randint(0, 6, 3, dtype="int64", seed=seed)
+        indices_np = indices.to_ndarray()
+
+        a_taken = ak.take(a, indices, axis=axis)
+        anp_taken = np.take(anp, indices_np, axis=axis)
+
+        assert np.array_equal(a_taken.to_ndarray(), anp_taken)

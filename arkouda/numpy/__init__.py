@@ -190,6 +190,7 @@ from arkouda.numpy.numeric import (
     sin,
     sinh,
     square,
+    take,
     tan,
     tanh,
     transpose,
