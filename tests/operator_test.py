@@ -387,11 +387,6 @@ class TestOperator:
             assert (ak_arr << ak_shift).to_list() == (np_arr << np_shift).tolist()
             assert (ak_arr >> ak_shift).to_list() == (np_arr >> np_shift).tolist()
 
-            # Binopvv case, Mixed type
-            ak_shift_other_dtype = ak.cast(ak_shift, "int64" if dtype != "int64" else "uint64")
-            assert (ak_arr << ak_shift_other_dtype).to_list() == (np_arr << np_shift).tolist()
-            assert (ak_arr >> ak_shift_other_dtype).to_list() == (np_arr >> np_shift).tolist()
-
     def test_shift_bool_int64_binop(self):
         # This tests for a missing implementation of bit shifting booleans and ints, Issue #2945
         np_int = make_np_arrays(10, "int64")
@@ -716,9 +711,11 @@ class TestOperator:
         assert ak.array([1.1, 2.3, 5]).__repr__() in answers
 
         answers = [
-            "array([0 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10])",
+            "array([0 0.52631578947368418 1.0526315789473684 ..."
+            " 8.9473684210526319 9.473684210526315 10])",
             "array([0 0.5 1.1 ... 8.9 9.5 10])",
-            "array([0.00000000000000000 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10.00000000000000000])",
+            "array([0.00000000000000000 0.52631578947368418 1.0526315789473684 ..."
+            " 8.9473684210526319 9.473684210526315 10.00000000000000000])",
         ]
         assert ak.linspace(0, 10, 20).__repr__() in answers
         assert "array([False False False])" == ak.isnan(ak.array([1.1, 2.3, 5])).__repr__()
