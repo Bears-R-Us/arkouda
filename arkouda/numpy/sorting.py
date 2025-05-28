@@ -324,6 +324,7 @@ def searchsorted(
         If `a` has more than one dimension.
     TypeError
         If `a` has an unsupported dtype (i.e., not int64, uint64, bigint, or float64).
+        If the dtype of `a` and `v` does not match
 
 
     Examples
@@ -352,6 +353,9 @@ def searchsorted(
     else:
         scalar_input = True
         v_ = cast(pdarray, array([v]))
+
+    if a.dtype != v_.dtype:
+        raise TypeError(f"The dtype of a ({a.dtype}) and v ({v_.dtype}) must match.")
 
     repMsg = generic_msg(
         cmd=f"searchSorted<{a.dtype},{a.ndim},{v_.ndim}>",

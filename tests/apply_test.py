@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 import arkouda as ak
@@ -12,13 +14,14 @@ def supports_apply():
 
 
 class TestApply:
-    # def test_apply_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(
-    #         apply_module, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
-    #     )
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    def test_apply_docstrings(self):
+        import doctest
+
+        apply_module = sys.modules["arkouda.apply"]
+        result = doctest.testmod(
+            apply_module, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @classmethod
     def setup_class(cls):

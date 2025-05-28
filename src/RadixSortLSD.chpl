@@ -76,8 +76,8 @@ module RadixSortLSD
         // loop over digits
         for rshift in {0..#nBits by bitsPerDigit} {
             const last = (rshift + bitsPerDigit) >= nBits;
-            try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "rshift = %?".format(rshift));
+            rsLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                           "rshift = ", rshift: string);
             // count digits
             coforall loc in Locales with (ref globalCounts) {
                 on loc {
