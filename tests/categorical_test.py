@@ -27,6 +27,14 @@ def df_test_base_tmp(request):
 
 
 class TestCategorical:
+    @pytest.mark.skipif(
+        os.environ.get("CHPL_HOST_PLATFORM") == "hpe-apollo",
+        reason="Test skipped on CHPL_HOST_PLATFORM=hpe-apollo for debugging purposes (hanging test)",
+    )
+    @pytest.mark.skipif(
+        os.environ.get("CHPL_HOST_PLATFORM") == "cray-xc",
+        reason="Test skipped on CHPL_HOST_PLATFORM=cray-xc for debugging purposes (hanging test)",
+    )
     def test_categorical_docstrings(self):
         import doctest
 
