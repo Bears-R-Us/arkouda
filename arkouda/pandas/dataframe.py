@@ -34,9 +34,6 @@ from arkouda.pandas.groupbyclass import GroupBy as akGroupBy
 from arkouda.pandas.groupbyclass import unique
 from arkouda.pandas.index import Index, MultiIndex
 
-from arkouda.numpy import cast as akcast
-from arkouda.numpy import cumsum, where
-
 from arkouda.numpy.dtypes import _is_dtype_in_union, bigint
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import float64 as akfloat64

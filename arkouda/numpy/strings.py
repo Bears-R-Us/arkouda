@@ -12,7 +12,7 @@ from typeguard import typechecked
 import arkouda.numpy.dtypes
 from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import ArkoudaLogger, getArkoudaLogger
-from arkouda.match import Match, MatchType
+from arkouda.match import Match #, MatchType XXXXXXXX
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     bool_scalars,

@@ -1,5 +1,5 @@
 import itertools
-from typing import Any, Iterable, List, Optional, Tuple, Union, cast, overload
+from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Tuple, TypeVar, Union, cast, overload
 
 import numpy as np
 import pandas as pd
