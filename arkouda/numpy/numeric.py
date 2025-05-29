@@ -646,6 +646,13 @@ def log10(pda: pdarray) -> pdarray:
     -------
     pdarray
          pdarray containing base 10 log values of the input array elements
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.arange(1,5)
+    >>> ak.log10(a)
+    array([0.00000000000000000 0.3010299956639812 0.47712125471966244 0.6020599913279624])
     """
     repMsg = generic_msg(
         cmd=f"log10<{pda.dtype},{pda.ndim}>",
@@ -670,6 +677,13 @@ def log2(pda: pdarray) -> pdarray:
     -------
     pdarray
          pdarray containing base 2 log values of the input array elements
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.arange(1,5)
+    >>> ak.log2(a)
+    array([0.00000000000000000 1.00000000000000000 1.5849625007211561 2.00000000000000000])
     """
     repMsg = generic_msg(
         cmd=f"log2<{pda.dtype},{pda.ndim}>",
@@ -1004,6 +1018,13 @@ def sin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-1.5,0.75,4)
+    >>> ak.sin(a)
+    array([-0.99749498660405445 -0.68163876002333412 0.00000000000000000 0.68163876002333412])
     """
     return _trig_helper(pda, "sin", where)
 
@@ -1031,6 +1052,13 @@ def cos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-1.5,0.75,4)
+    >>> ak.cos(a)
+    array([0.070737201667702906 0.7316888688738209 1.00000000000000000 0.7316888688738209])
     """
     return _trig_helper(pda, "cos", where)
 
@@ -1058,6 +1086,13 @@ def tan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-1.5,0.75,4)
+    >>> ak.tan(a)
+    array([-14.101419947171719 -0.93159645994407247 0.00000000000000000 0.93159645994407247])
     """
     return _trig_helper(pda, "tan", where)
 
@@ -1085,6 +1120,13 @@ def arcsin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-0.7,0.5,4)
+    >>> ak.arcsin(a)
+    array([-0.77539749661075297 -0.30469265401539752 0.10016742116155977 0.52359877559829893])
     """
     return _trig_helper(pda, "arcsin", where)
 
@@ -1112,6 +1154,13 @@ def arccos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-0.7,0.5,4)
+    >>> ak.arccos(a)
+    array([2.3461938234056494 1.8754889808102941 1.4706289056333368 1.0471975511965979])
     """
     return _trig_helper(pda, "arccos", where)
 
@@ -1139,6 +1188,13 @@ def arctan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-10.7,10.5,4)
+    >>> ak.arctan(a)
+    array([-1.4776090650260174 -1.3022168962760161 1.2873750736468446 1.4758446204521403])
     """
     return _trig_helper(pda, "arctan", where)
 
@@ -1180,6 +1236,14 @@ def arctan2(
         | Raised if any element of pdarrays num and denom is not a supported type
         | Raised if both num and denom are scalars
         | Raised if where is neither boolean nor a pdarray of boolean
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> x = ak.array([1,-1,-1,1])
+    >>> y = ak.array([1,1,-1,-1])
+    >>> ak.arctan2(y,x)
+    array([0.78539816339744828 2.3561944901923448 -2.3561944901923448 -0.78539816339744828])
     """
     if not all(isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
         raise TypeError(
@@ -1273,6 +1337,13 @@ def sinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-0.9,0.7,4)
+    >>> ak.sinh(a)
+    array([-1.0265167257081753 -0.37493812328444776 0.16743934398751592 0.75858370183953339])
     """
     return _trig_helper(pda, "sinh", where)
 
@@ -1300,6 +1371,13 @@ def cosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-0.9,0.7,4)
+    >>> ak.cosh(a)
+    array([1.4330863854487745 1.0679787433708894 1.0139210688781299 1.255169005630943])
     """
     return _trig_helper(pda, "cosh", where)
 
@@ -1327,6 +1405,13 @@ def tanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-0.9,0.7,4)
+    >>> ak.tanh(a)
+    array([-0.71629787019902447 -0.35107264597890853 0.1651404129246293 0.60436777711716361])
     """
     return _trig_helper(pda, "tanh", where)
 
@@ -1354,6 +1439,13 @@ def arcsinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-500,500,4)
+    >>> ak.arcsinh(a)
+    array([-6.9077562789806368 -5.8091519901925297 5.8091519901925297 6.9077562789806368])
     """
     return _trig_helper(pda, "arcsinh", where)
 
@@ -1381,6 +1473,13 @@ def arccosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(1,500,4)
+    >>> ak.arccosh(a)
+    array([0.00000000000000000 5.8131260830342795 6.5032874256927515 6.9077542789806374])
     """
     return _trig_helper(pda, "arccosh", where)
 
@@ -1408,6 +1507,13 @@ def arctanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameters are not a pdarray or numeric scalar.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-.999,.999,4)
+    >>> ak.arctanh(a)
+    array([-3.8002011672501994 -0.34619863713154242 0.34619863713154253 3.8002011672501994])
     """
     return _trig_helper(pda, "arctanh", where)
 
@@ -1488,6 +1594,13 @@ def rad2deg(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(0,6.28,4)
+    >>> ak.rad2deg(a)
+    array([0.00000000000000000 119.93916511405233 239.87833022810466 359.81749534215703])
     """
     if where is True:
         return 180 * (pda / np.pi)
@@ -1520,6 +1633,13 @@ def deg2rad(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(0,359,4)
+    >>> ak.deg2rad(a)
+    array([0.00000000000000000 2.0885773382198809 4.1771546764397618 6.2657320146596422])
     """
     if where is True:
         return np.pi * pda / 180
@@ -1584,6 +1704,16 @@ def hash(
     ------
     TypeError
         Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.randint(0,65536,3,seed=8675309)
+    >>> ak.hash(a,full=False)
+    array([6132219720275344925 189443193828113335 14797568559700425150])
+    >>> ak.hash(a)
+    (array([12228890592923494910 17773622519799422780 16661993598191972647]),
+        array([2936052102410048944 15730675498625067356 4746877828134486787]))
 
     Notes
     -----

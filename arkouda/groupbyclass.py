@@ -335,9 +335,12 @@ class GroupBy:
         ):
             self.keys = cast(groupable, kwargs.get("orig_keys", None))
             drop_na_keys()
-            self.unique_keys = kwargs.get("unique_keys", None)
-            self.permutation = kwargs.get("permutation", None)
-            self.segments = kwargs.get("segments", None)
+            self.unique_keys = cast(
+                Union[pdarray, Strings, Categorical, Tuple[Union[pdarray, Strings, Categorical], ...]],
+                kwargs["unique_keys"],
+            )
+            self.permutation = cast(pdarray, kwargs["permutation"])
+            self.segments = cast(pdarray, kwargs["segments"])
             self.nkeys = len(self.keys)
             self._uki = self.permutation[self.segments]
         elif (
@@ -349,8 +352,8 @@ class GroupBy:
             self.keys = cast(groupable, kwargs.get("orig_keys", None))
             drop_na_keys()
             self._uki = kwargs.get("uki", None)
-            self.permutation = kwargs.get("permutation", None)
-            self.segments = kwargs.get("segments", None)
+            self.permutation = cast(pdarray, kwargs["permutation"])
+            self.segments = cast(pdarray, kwargs["segments"])
             self.nkeys = len(self.keys) if isinstance(self.keys, Sequence) else 1
             if not isinstance(self.keys, Sequence):
                 self.unique_keys = self.keys[self._uki]
