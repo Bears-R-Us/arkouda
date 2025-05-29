@@ -271,7 +271,7 @@ def start_arkouda_server(
     :param int numlocals: the number of arkouda_server locales
     :param bool trace: indicates whether to start the arkouda_server with tracing
     :param int port: the desired arkouda_server port, defaults to 5555
-    :param str host: the desired arkouda_server host, defaults to None
+    :param str host: the host that arkouda_server is or will run on, if known, None otherwise
     :param list server_args: additional arguments to pass to the server
     :param within_slurm_alloc: whether the current script is running within a slurm allocation.
                                in which case, special care needs to be taken when launching the server.
@@ -318,9 +318,13 @@ def start_arkouda_server(
         If host is None, this means the host and port are to be retrieved
         via the read_server_and_port_from_file method
         """
+        requested_port = port
         host, port, connect_url = read_server_and_port_from_file(
             connection_file, process=process, server_cmd=cmd
         )
+        if port != requested_port:
+            logging.error(f"requested port {requested_port}, got {port}")
+
     server_info = ServerInfo(host, port, process)
     set_server_info(server_info)
     return server_info
@@ -366,7 +370,7 @@ def run_client(client, client_args=None, timeout=get_client_timeout()):
     :rtype: str
     """
     server_info = get_server_info()
-    cmd = ["python3"] + [client] + [server_info.host, str(server_info.port)]
+    cmd = ["python3", client, server_info.host, str(server_info.port)]
     if client_args:
         cmd += client_args
     logging.info('Running client "{}"'.format(cmd))
@@ -384,7 +388,7 @@ def run_client_live(client, client_args=None, timeout=get_client_timeout()):
     :rtype: int
     """
     server_info = get_server_info()
-    cmd = ["python3"] + [client] + [server_info.host, str(server_info.port)]
+    cmd = ["python3", client, server_info.host, str(server_info.port)]
     if client_args:
         cmd += client_args
     logging.info('Running client "{}"'.format(cmd))
