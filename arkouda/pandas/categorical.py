@@ -50,7 +50,7 @@ from __future__ import annotations
 import itertools
 import json
 from collections import defaultdict
-from typing import DefaultDict, Dict, List, Mapping, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, DefaultDict, Dict, List, Mapping, Optional, Sequence, Tuple, TypeVar, Union
 from typing import cast as type_cast
 
 import numpy as np

@@ -18,7 +18,6 @@ from typing import (
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
 from arkouda.logger import ArkoudaLogger, getArkoudaLogger
 from arkouda.numpy.dtypes import _val_isinstance_of_union, bigint
 from arkouda.numpy.dtypes import dtype as akdtype

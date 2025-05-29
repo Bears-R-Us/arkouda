@@ -5,7 +5,7 @@ import json
 from functools import reduce
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast, overload
+from typing import TYPE_CHECKING, List, Optional, Tuple, TypeVar, Union, cast, overload
 
 import numpy as np
 from typeguard import typechecked
