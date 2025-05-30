@@ -1,3 +1,75 @@
+"""
+Client-side message protocol classes for Arkouda server communication.
+
+The `arkouda.message` module defines the classes and enums used to format,
+serialize, and deserialize messages exchanged between the Arkouda client and server.
+These classes encapsulate both command requests and reply messages, and provide
+tools for converting Python objects to a format compatible with the Chapel server.
+
+Exports
+-------
+__all__ = [
+    "MessageFormat",
+    "MessageType",
+    "ParameterObject",
+    "ReplyMessage",
+    "RequestMessage",
+]
+
+Classes
+-------
+ParameterObject
+    Represents a typed key-value parameter used in Arkouda command messages.
+    Provides factory methods for constructing parameters from a wide variety
+    of Arkouda types (e.g., `pdarray`, `Strings`, `SegArray`, scalars, lists, etc.).
+
+MessageFormat (Enum)
+    Specifies the format of a message being sent (`STRING` or `BINARY`).
+
+MessageType (Enum)
+    Classifies the type of message returned by the server (`NORMAL`, `WARNING`, or `ERROR`).
+
+RequestMessage
+    Dataclass encapsulating the client-to-server command structure, including user info,
+    command name, arguments, format, and parameter count.
+
+ReplyMessage
+    Dataclass encapsulating the server's response message, including status, message body,
+    and originating user.
+
+Key Features
+------------
+- Serialization of heterogeneous argument structures (scalars, arrays, nested dicts)
+- Explicit typing and metadata for Chapel compatibility
+- Structured error handling and deserialization
+- Uses `__slots__` and `@dataclass(frozen=True)` for performance and immutability
+
+Examples
+--------
+>>> from arkouda.message import ParameterObject
+>>> import arkouda as ak
+>>> arr = ak.array([1, 2, 3])
+>>> param = ParameterObject.factory("x", arr)
+>>> param.dict  # doctest: +SKIP
+{'key': 'x', 'dtype': 'int64', 'val': 'id_gHZzPBV_1'}
+
+>>> from arkouda.message import RequestMessage
+>>> msg = RequestMessage(user="user", cmd="add", args="x=1;y=2", format=MessageFormat.STRING)
+>>> msg.asdict()
+{'user': 'user', 'token': '', 'cmd': 'add', 'format': 'STRING', 'args': 'x=1;y=2', 'size': -1}
+
+Notes
+-----
+These classes are primarily used internally by Arkouda's `generic_msg()` mechanism and are not
+typically used directly by end users.
+
+See Also
+--------
+- arkouda.client.generic_msg
+- arkouda.pdarray
+
+"""
+
 from __future__ import annotations
 
 import json
