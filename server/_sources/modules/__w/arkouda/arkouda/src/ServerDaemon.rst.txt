@@ -196,6 +196,8 @@ or
 
    .. attribute:: var idlePeriodStart: atomic real
 
+   .. attribute:: var seenNotableActivity: atomic bool
+
    .. method:: proc startAsyncCheckpointTask()
 
       Starts a task for asynchronous checkpointing. 
@@ -203,6 +205,8 @@ or
    .. method:: proc serverIdleStart()
 
    .. method:: proc serverIdleStop()
+
+   .. method:: proc serverActivityMark()
 
 .. class:: MetricsServerDaemon : ArkoudaServerDaemon
 

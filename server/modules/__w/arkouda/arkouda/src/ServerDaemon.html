@@ -436,6 +436,11 @@ which stops the arkouda_server listener thread and closes socket.</p>
 <em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">idlePeriodStart</span></span><em class="property"> <span class="pre">:</span> <span class="pre">atomic</span> <span class="pre">real</span></em><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.idlePeriodStart" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.seenNotableActivity">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">seenNotableActivity</span></span><em class="property"> <span class="pre">:</span> <span class="pre">atomic</span> <span class="pre">bool</span></em><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.seenNotableActivity" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.startAsyncCheckpointTask">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">startAsyncCheckpointTask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.startAsyncCheckpointTask" title="Link to this definition">¶</a></dt>
@@ -450,6 +455,11 @@ which stops the arkouda_server listener thread and closes socket.</p>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.serverIdleStop">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">serverIdleStop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.serverIdleStop" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.serverActivityMark">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">serverActivityMark</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.serverActivityMark" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
