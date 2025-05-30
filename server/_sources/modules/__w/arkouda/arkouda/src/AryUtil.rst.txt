@@ -67,7 +67,7 @@ or
    :arg axisIdx: the axis to check
    
 
-.. function:: proc validateNegativeAxes(axes: [?d] int, param nd: int): (bool, [d] int)
+.. function:: proc validateNegativeAxes(axis: int, param nd: int): (bool, int)
 
    
    Modifies an array of (potentially negative) axis arguments to be
@@ -83,6 +83,8 @@ or
    :returns: a tuple of a boolean indicating whether the axes are valid,
              and the array of modified axes
    
+
+.. function:: proc validateNegativeAxes(axes: [?d] int, param nd: int): (bool, [d] int)
 
 .. function:: proc validateNegativeAxes(axes: list(int), param nd: int): (bool, list(int))
 

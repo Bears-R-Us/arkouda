@@ -1,0 +1,871 @@
+arkouda.pandas.series
+=====================
+
+.. py:module:: arkouda.pandas.series
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   arkouda.pandas.series.Series
+
+
+Module Contents
+---------------
+
+.. py:class:: Series(data: Union[Tuple, List, arkouda.groupbyclass.groupable_element_type, Series, arkouda.numpy.segarray.SegArray, pandas.Series, pandas.Categorical], name=None, index: Optional[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Tuple, List, arkouda.index.Index]] = None)
+
+   One-dimensional arkouda array with axis labels.
+
+   :param index: an array of indices associated with the data array.
+                 If empty, it will default to a range of ints whose size match the size of the data.
+                 optional
+   :type index: pdarray, Strings
+   :param data: a 1D array. Must not be None.
+   :type data: Tuple, List, groupable_element_type, Series, SegArray
+
+   :raises TypeError: Raised if index is not a pdarray or Strings object
+       Raised if data is not a pdarray, Strings, or Categorical object
+   :raises ValueError: Raised if the index size does not match data size
+
+   .. rubric:: Notes
+
+   The Series class accepts either positional arguments or keyword arguments.
+   If entering positional arguments,
+       2 arguments entered:
+           argument 1 - data
+           argument 2 - index
+       1 argument entered:
+           argument 1 - data
+   If entering 1 positional argument, it is assumed that this is the data argument.
+   If only 'data' argument is passed in, Index will automatically be generated.
+   If entering keywords,
+       'data' (see Parameters)
+       'index' (optional) must match size of 'data'
+
+
+   .. py:method:: add(b: Series) -> Series
+
+
+   .. py:property:: at
+      :type: _LocIndexer
+
+
+      Accesses entries of a Series by label.
+
+      :returns: An indexer for label-based access to Series entries.
+      :rtype: _LocIndexer
+
+
+   .. py:method:: concat(arrays: List, axis: int = 0, index_labels: Union[List[str], None] = None, value_labels: Union[List[str], None] = None, ordered: bool = False) -> Union[arkouda.dataframe.DataFrame, Series]
+      :staticmethod:
+
+
+      Concatenate a list of Arkouda Series or grouped arrays horizontally or vertically.
+
+      If a list of grouped Arkouda arrays is passed, they are converted to Series. Each grouping
+      is a 2-tuple where the first item is the key(s) and the second is the value. If concatenating
+      horizontally (axis=1), all series/groupings must have the same length and the same index.
+      The index is converted to a column in the resulting DataFrame; if it's a MultiIndex,
+      each level is converted to a separate column.
+
+      :param arrays: A list of Series or groupings (tuples of index and values) to concatenate.
+      :type arrays: List
+      :param axis: The axis to concatenate along:
+                   - 0 = vertical (stack series into one)
+                   - 1 = horizontal (align by index and produce a DataFrame)
+      :type axis: int, default=0
+      :param index_labels: Column name(s) to label the index when axis=1.
+      :type index_labels: List of str or None, optional
+      :param value_labels: Column names to label the values of each Series.
+      :type value_labels: List of str or None, optional
+      :param ordered: Unused parameter. Reserved for future support of deterministic
+                      vs. performance-optimized concatenation.
+      :type ordered: bool, default=False
+
+      :returns:
+
+                - If axis=0: a new Series
+                - If axis=1: a new DataFrame
+      :rtype: Series or DataFrame
+
+
+
+   .. py:method:: diff() -> Series
+
+      Diffs consecutive values of the series.
+
+      Returns a new series with the same index and length.  First value is set to NaN.
+
+
+
+   .. py:attribute:: dt
+
+
+   .. py:property:: dtype
+      :type: numpy.dtype
+
+
+
+   .. py:method:: fillna(value: Union[supported_scalars, Series, arkouda.numpy.pdarrayclass.pdarray]) -> Series
+
+      Fill NA/NaN values using the specified method.
+
+      :param value: Value to use to fill holes (e.g. 0), alternately a
+                    Series of values specifying which value to use for
+                    each index.  Values not in the Series will not be filled.
+                    This value cannot be a list.
+      :type value: supported_scalars, Series, or pdarray
+
+      :returns: Object with missing values filled.
+      :rtype: Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> from arkouda import Series
+
+      >>> data = ak.Series([1, np.nan, 3, np.nan, 5])
+      >>> data
+
+      +----+-------+
+      |    |   0   |
+      +====+=======+
+      |  0 |   1.0 |
+      +----+-------+
+      |  1 |   nan |
+      +----+-------+
+      |  2 |   3.0 |
+      +----+-------+
+      |  3 |   nan |
+      +----+-------+
+      |  4 |   5.0 |
+      +----+-------+
+
+      >>> fill_values1 = ak.ones(5)
+      >>> data.fillna(fill_values1)
+
+      +----+-------+
+      |    |   0   |
+      +====+=======+
+      |  0 |   1.0 |
+      +----+-------+
+      |  1 |   1.0 |
+      +----+-------+
+      |  2 |   3.0 |
+      +----+-------+
+      |  3 |   1.0 |
+      +----+-------+
+      |  4 |   5.0 |
+      +----+-------+
+
+      >>> fill_values2 = Series(ak.ones(5))
+      >>> data.fillna(fill_values2)
+
+      +----+-------+
+      |    |   0   |
+      +====+=======+
+      |  0 |   1.0 |
+      +----+-------+
+      |  1 |   1.0 |
+      +----+-------+
+      |  2 |   3.0 |
+      +----+-------+
+      |  3 |   1.0 |
+      +----+-------+
+      |  4 |   5.0 |
+      +----+-------+
+
+      >>> fill_values3 = 100.0
+      >>> data.fillna(fill_values3)
+
+      +----+---------+
+      |    |     0   |
+      +====+=========+
+      |  0 |     1.0 |
+      +----+---------+
+      |  1 |   100.0 |
+      +----+---------+
+      |  2 |     3.0 |
+      +----+---------+
+      |  3 |   100.0 |
+      +----+---------+
+      |  4 |     5.0 |
+      +----+---------+
+
+
+
+   .. py:method:: from_return_msg(repMsg: str) -> Series
+      :classmethod:
+
+
+      Return a Series instance pointing to components created by the arkouda server.
+      The user should not call this function directly.
+
+      :param repMsg:
+                     + delimited string containing the values and indexes
+      :type repMsg: str
+
+      :returns: A Series representing a set of pdarray components on the server
+      :rtype: Series
+
+      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+          the Series instance
+
+
+
+   .. py:method:: has_repeat_labels() -> bool
+
+      Return whether the Series has any labels that appear more than once.
+
+
+
+   .. py:method:: hasnans() -> arkouda.numpy.dtypes.bool_scalars
+
+      Return True if there are any NaNs.
+
+      :rtype: bool
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> from arkouda import Series
+      >>> import numpy as np
+
+      >>> s = ak.Series(ak.array([1, 2, 3, np.nan]))
+      >>> s
+
+      +----+-------+
+      |    |   0   |
+      +====+=======+
+      |  0 |   1.0 |
+      +----+-------+
+      |  1 |   2.0 |
+      +----+-------+
+      |  2 |   3.0 |
+      +----+-------+
+      |  3 |   nan |
+      +----+-------+
+
+      >>> s.hasnans()
+      True
+
+
+
+   .. py:method:: head(n: int = 10) -> Series
+
+      Return the first n values of the series
+
+
+
+   .. py:property:: iat
+      :type: _iLocIndexer
+
+
+      Accesses entries of a Series by position.
+
+      :returns: An indexer for position-based access to a single element.
+      :rtype: _iLocIndexer
+
+
+   .. py:property:: iloc
+      :type: _iLocIndexer
+
+
+      Accesses entries of a Series by position.
+
+      :returns: An indexer for position-based access to Series entries.
+      :rtype: _iLocIndexer
+
+
+   .. py:method:: is_registered() -> bool
+
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: bool
+
+      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
+
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`unregister`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+
+   .. py:method:: isin(lst: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, List]) -> Series
+
+      Find Series elements whose values are in the specified list.
+
+      :param lst: Either a Python list or an Arkouda array to check membership against.
+      :type lst: pdarray, Strings, or List
+
+      :returns: A Series of booleans that is True for elements found in the list,
+                and False otherwise.
+      :rtype: Series
+
+
+
+   .. py:method:: isna() -> Series
+
+      Detect missing values.
+
+      Return a boolean same-sized object indicating if the values are NA. NA values,
+      such as numpy.NaN, gets mapped to True values.
+      Everything else gets mapped to False values.
+      Characters such as empty strings '' are not considered NA values.
+
+      :returns: Mask of bool values for each element in Series
+                that indicates whether an element is an NA value.
+      :rtype: Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> from arkouda import Series
+      >>> import numpy as np
+
+      >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
+      >>> s.isna()
+
+      +----+---------+
+      |    |   0     |
+      +====+=========+
+      |  1 |   False |
+      +----+---------+
+      |  2 |   False |
+      +----+---------+
+      |  4 |   True  |
+      +----+---------+
+
+
+
+   .. py:method:: isnull() -> Series
+
+      Series.isnull is an alias for Series.isna.
+
+      Detect missing values.
+
+      Return a boolean same-sized object indicating if the values are NA. NA values,
+      such as numpy.NaN, gets mapped to True values.
+      Everything else gets mapped to False values.
+      Characters such as empty strings '' are not considered NA values.
+
+      :returns: Mask of bool values for each element in Series
+                that indicates whether an element is an NA value.
+      :rtype: Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> from arkouda import Series
+      >>> import numpy as np
+
+      >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
+      >>> s.isnull()
+
+      +----+---------+
+      |    |   0     |
+      +====+=========+
+      |  1 |   False |
+      +----+---------+
+      |  2 |   False |
+      +----+---------+
+      |  4 |   True  |
+      +----+---------+
+
+
+
+   .. py:property:: loc
+      :type: _LocIndexer
+
+
+      Accesses entries of a Series by label.
+
+      :returns: An indexer for label-based access to Series entries.
+      :rtype: _LocIndexer
+
+
+   .. py:method:: locate(key: Union[int, arkouda.numpy.pdarrayclass.pdarray, arkouda.index.Index, Series, List, Tuple]) -> Series
+
+      Lookup values by index label.
+
+      :param key: The key or keys to look up. This can be:
+                  - A scalar
+                  - A list of scalars
+                  - A list of lists (for MultiIndex)
+                  - A Series (in which case labels are preserved, and its values are used as keys)
+
+                  Keys will be converted to Arkouda arrays as needed.
+      :type key: int, pdarray, Index, Series, List, or Tuple
+
+      :returns: A Series containing the values corresponding to the key.
+      :rtype: Series
+
+
+
+   .. py:method:: map(arg: Union[dict, arkouda.Series]) -> arkouda.Series
+
+      Map values of Series according to an input mapping.
+
+      :param arg: The mapping correspondence.
+      :type arg: dict or Series
+
+      :returns: A new series with the same index as the caller.
+                When the input Series has Categorical values,
+                the return Series will have Strings values.
+                Otherwise, the return type will match the input type.
+      :rtype: Series
+
+      :raises TypeError: Raised if arg is not of type dict or arkouda.Series.
+          Raised if series values not of type pdarray, Categorical, or Strings.
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> s = ak.Series(ak.array([2, 3, 2, 3, 4]))
+      >>> s
+
+      +----+-----+
+      |    | 0   |
+      +====+=====+
+      |  0 | 2   |
+      +----+-----+
+      |  1 | 3   |
+      +----+-----+
+      |  2 | 2   |
+      +----+-----+
+      |  3 | 3   |
+      +----+-----+
+      |  4 | 4   |
+      +----+-----+
+
+      >>> s.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
+
+      +----+-----+
+      |    | 0   |
+      +====+=====+
+      |  0 | 30.0|
+      +----+-----+
+      |  1 | 5.0 |
+      +----+-----+
+      |  2 | 30.0|
+      +----+-----+
+      |  3 | 5.0 |
+      +----+-----+
+      |  4 | 25.0|
+      +----+-----+
+
+      >>> s2 = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
+      >>> s.map(s2)
+
+      +----+-----+
+      |    | 0   |
+      +====+=====+
+      |  0 | b   |
+      +----+-----+
+      |  1 | d   |
+      +----+-----+
+      |  2 | b   |
+      +----+-----+
+      |  3 | d   |
+      +----+-----+
+      |  4 | a   |
+      +----+-----+
+
+
+
+   .. py:method:: memory_usage(index: bool = True, unit: Literal['B', 'KB', 'MB', 'GB'] = 'B') -> int
+
+      Return the memory usage of the Series.
+
+      The memory usage can optionally include the contribution of
+      the index.
+
+      :param index: Specifies whether to include the memory usage of the Series index.
+      :type index: bool, default=True
+      :param unit: Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+      :type unit: {"B", "KB", "MB", "GB"}, default = "B"
+
+      :returns: Bytes of memory consumed.
+      :rtype: int
+
+      .. seealso:: :py:obj:`arkouda.numpy.pdarrayclass.nbytes`, :py:obj:`arkouda.Index.memory_usage`, :py:obj:`arkouda.pandas.series.Series.memory_usage`, :py:obj:`arkouda.datafame.DataFrame.memory_usage`
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> from arkouda.series import Series
+      >>> s = ak.Series(ak.arange(3))
+      >>> s.memory_usage()
+      48
+
+      Not including the index gives the size of the rest of the data, which
+      is necessarily smaller:
+
+      >>> s.memory_usage(index=False)
+      24
+
+      Select the units:
+
+      >>> s = ak.Series(ak.arange(3000))
+      >>> s.memory_usage(unit="KB")
+      46.875
+
+
+
+   .. py:property:: ndim
+      :type: int
+
+
+
+   .. py:method:: notna() -> Series
+
+      Detect existing (non-missing) values.
+
+      Return a boolean same-sized object indicating if the values are not NA.
+      Non-missing values get mapped to True.
+      Characters such as empty strings '' are not considered NA values.
+      NA values, such as numpy.NaN, get mapped to False values.
+
+      :returns: Mask of bool values for each element in Series
+                that indicates whether an element is not an NA value.
+      :rtype: Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> from arkouda import Series
+      >>> import numpy as np
+
+      >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
+      >>> s.notna()
+
+      +----+---------+
+      |    |   0     |
+      +====+=========+
+      |  1 |   True  |
+      +----+---------+
+      |  2 |   True  |
+      +----+---------+
+      |  4 |   False |
+      +----+---------+
+
+
+
+   .. py:method:: notnull() -> Series
+
+      Series.notnull is an alias for Series.notna.
+
+      Detect existing (non-missing) values.
+
+      Return a boolean same-sized object indicating if the values are not NA.
+      Non-missing values get mapped to True.
+      Characters such as empty strings '' are not considered NA values.
+      NA values, such as numpy.NaN, get mapped to False values.
+
+      :returns: Mask of bool values for each element in Series
+                that indicates whether an element is not an NA value.
+      :rtype: Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> from arkouda import Series
+      >>> import numpy as np
+
+      >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
+      >>> s.notnull()
+
+      +----+---------+
+      |    |   0     |
+      +====+=========+
+      |  1 |   True  |
+      +----+---------+
+      |  2 |   True  |
+      +----+---------+
+      |  4 |   False |
+      +----+---------+
+
+
+
+   .. py:attribute:: objType
+      :value: 'Series'
+
+
+
+   .. py:method:: pdconcat(arrays: List, axis: int = 0, labels: Union[arkouda.numpy.strings.Strings, None] = None) -> Union[pandas.Series, pandas.DataFrame]
+      :staticmethod:
+
+
+      Concatenate a list of Arkouda Series or grouped arrays, returning a local pandas object.
+
+      If a list of grouped Arkouda arrays is passed, they are converted to Series. Each grouping
+      is a 2-tuple with the first item being the key(s) and the second the value.
+
+      If `axis=1` (horizontal), each Series or grouping must have the same length and the same index.
+      The index is converted to a column in the resulting DataFrame. If it is a MultiIndex,
+      each level is converted to a separate column.
+
+      :param arrays: A list of Series or groupings (tuples of index and values) to concatenate.
+      :type arrays: List
+      :param axis: The axis along which to concatenate:
+                   - 0 = vertical (stack into a Series)
+                   - 1 = horizontal (align by index into a DataFrame)
+      :type axis: int, default=0
+      :param labels: Names to assign to the resulting columns in the DataFrame.
+      :type labels: Strings or None, optional
+
+      :returns:
+
+                - If axis=0: a local pandas Series
+                - If axis=1: a local pandas DataFrame
+      :rtype: Series or DataFrame
+
+
+
+   .. py:method:: register(user_defined_name: str)
+
+      Register this Series object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name the Series is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same Series which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different Series with the same name.
+      :rtype: Series
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the Series with the user_defined_name
+
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
+
+
+
+   .. py:property:: shape
+      :type: Tuple[int]
+
+
+
+   .. py:attribute:: size
+
+
+   .. py:method:: sort_index(ascending: bool = True) -> Series
+
+      Sort the Series by its index.
+
+      :param ascending: Whether to sort the index in ascending (default) or descending order.
+      :type ascending: bool, default=True
+
+      :returns: A new Series sorted by index.
+      :rtype: Series
+
+
+
+   .. py:method:: sort_values(ascending: bool = True) -> Series
+
+      Sort the Series by its values.
+
+      :param ascending: Whether to sort values in ascending (default) or descending order.
+      :type ascending: bool, default=True
+
+      :returns: A new Series sorted by its values.
+      :rtype: Series
+
+
+
+   .. py:attribute:: str_acc
+
+
+   .. py:method:: tail(n: int = 10) -> Series
+
+      Return the last n values of the series
+
+
+
+   .. py:method:: to_dataframe(index_labels: Union[List[str], None] = None, value_label: Union[str, None] = None) -> arkouda.dataframe.DataFrame
+
+      Convert the Series to an Arkouda DataFrame.
+
+      :param index_labels: Column name(s) to label the index.
+      :type index_labels: list of str or None, optional
+      :param value_label: Column name to label the values.
+      :type value_label: str or None, optional
+
+      :returns: An Arkouda DataFrame representing the Series.
+      :rtype: DataFrame
+
+
+
+   .. py:method:: to_list() -> list
+
+
+   .. py:method:: to_markdown(mode='wt', index=True, tablefmt='grid', storage_options=None, **kwargs)
+
+      Print Series in Markdown-friendly format.
+
+      :param mode: Mode in which file is opened, "wt" by default.
+      :type mode: str, optional
+      :param index: Add index (row) labels.
+      :type index: bool, optional, default True
+      :param tablefmt: Table format to call from tablulate:
+                       https://pypi.org/project/tabulate/
+      :type tablefmt: str = "grid"
+      :param storage_options: Extra options that make sense for a particular storage connection,
+                              e.g. host, port, username, password, etc., if using a URL that will be parsed by fsspec,
+                              e.g., starting “s3://”, “gcs://”.
+                              An error will be raised if providing this argument with a non-fsspec URL.
+                              See the fsspec and backend storage implementation docs for the set
+                              of allowed keys and values.
+      :type storage_options: dict, optional
+      :param \*\*kwargs: These parameters will be passed to tabulate.
+
+      .. note::
+
+         This function should only be called on small Series as it calls pandas.Series.to_markdown:
+         https://pandas.pydata.org/docs/reference/api/pandas.Series.to_markdown.html
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> ak.connect()
+      >>> s = ak.Series(["elk", "pig", "dog", "quetzal"], name="animal")
+      >>> print(s.to_markdown())
+      |    | animal   |
+      |---:|:---------|
+      |  0 | elk      |
+      |  1 | pig      |
+      |  2 | dog      |
+      |  3 | quetzal  |
+
+      Output markdown with a tabulate option.
+
+      >>> print(s.to_markdown(tablefmt="grid"))
+      +----+----------+
+      |    | animal   |
+      +====+==========+
+      |  0 | elk      |
+      +----+----------+
+      |  1 | pig      |
+      +----+----------+
+      |  2 | dog      |
+      +----+----------+
+      |  3 | quetzal  |
+      +----+----------+
+
+
+
+   .. py:method:: to_ndarray() -> numpy.ndarray
+
+
+   .. py:method:: to_pandas() -> pandas.Series
+
+      Convert the series to a local PANDAS series
+
+
+
+   .. py:method:: topn(n: int = 10) -> Series
+
+      Return the top values of the Series.
+
+      :param n: Number of values to return. The default of 10 returns the top 10 values.
+      :type n: int, default=10
+
+      :returns: A new Series containing the top `n` values.
+      :rtype: Series
+
+
+
+   .. py:method:: unregister()
+
+      Unregister this Series object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :raises RegistrationError: If the object is already unregistered or if there is a server error
+          when attempting to unregister
+
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+
+   .. py:method:: validate_key(key: Union[Series, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, List, supported_scalars, arkouda.numpy.segarray.SegArray]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, supported_scalars, arkouda.numpy.segarray.SegArray]
+
+      Validate type requirements for keys when reading or writing the Series.
+      Also converts list and tuple arguments into pdarrays.
+
+      :param key: The key or container of keys that might be used to index into the Series.
+      :type key: Series, pdarray, Strings, Categorical, List, supported_scalars, or SegArray
+
+      :rtype: The validated key(s), with lists and tuples converted to pdarrays
+
+      :raises TypeError: Raised if keys are not boolean values or the type of the labels
+          Raised if key is not one of the supported types
+      :raises KeyError: Raised if container of keys has keys not present in the Series
+      :raises IndexError: Raised if the length of a boolean key array is different
+          from the Series
+
+
+
+   .. py:method:: validate_val(val: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, supported_scalars, List]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, supported_scalars]
+
+      Validate type requirements for values being written into the Series.
+      Also converts list and tuple arguments into pdarrays.
+
+      :param val: The value or container of values that might be assigned into the Series.
+      :type val: pdarray, Strings, supported_scalars, or List
+
+      :rtype: The validated value, with lists converted to pdarrays
+
+      :raises TypeError: Raised if val is not the same type or a container with elements
+            of the same time as the Series
+          Raised if val is a string or Strings type.
+          Raised if val is not one of the supported types
+
+
+
+   .. py:method:: value_counts(sort: bool = True) -> Series
+
+      Return a Series containing counts of unique values.
+
+      :param sort: Whether to sort the result by count in descending order. If False,
+                   the order of the results is not guaranteed.
+      :type sort: bool, default=True
+
+      :returns: A Series where the index contains the unique values and the values are
+                their counts in the original Series.
+      :rtype: Series
+
+
+

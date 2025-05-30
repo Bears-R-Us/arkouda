@@ -94,7 +94,7 @@ Module Contents
 
       :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`unregister`
 
       .. rubric:: Notes
 
@@ -138,7 +138,7 @@ Module Contents
       :raises TypeError: Raised if user_defined_name is not a str
       :raises RegistrationError: If the server was unable to register the Datetimes with the user_defined_name
 
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -165,19 +165,20 @@ Module Contents
       :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
       :type keepdims: bool, optional, default = False
 
-      :returns: numpy_scalar if axis is omitted, in which case operation is done over entire array
+      :returns: numeric_scalars if axis is omitted, in which case operation is done over entire array
                 pdarray if axis is supplied, in which case the operation is done along that axis
-      :rtype: numpy_scalar or pdarray
+      :rtype: numeric_scalars or pdarray
 
       :raises TypeError: Raised if pda is not a pdarray instance
       :raises RuntimeError: Raised if there's a server-side error thrown
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.sum(ak.array([1,2,3,4,5]))
-      15
+      np.int64(15)
       >>> ak.sum(ak.array([5.5,4.5,3.5,2.5,1.5]))
-      17.5
+      np.float64(17.5)
       >>> ak.array([[1,2,3],[5,4,3]]).sum(axis=1)
       array([6 12])
 
@@ -213,7 +214,7 @@ Module Contents
       Convert array to a pandas DatetimeIndex. Note: if the array size
       exceeds client.maxTransferBytes, a RuntimeError is raised.
 
-      .. seealso:: :obj:`to_ndarray`
+      .. seealso:: :py:obj:`to_ndarray`
 
 
 
@@ -225,7 +226,7 @@ Module Contents
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -302,7 +303,7 @@ Module Contents
 
       :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`unregister`
 
       .. rubric:: Notes
 
@@ -334,7 +335,7 @@ Module Contents
       :raises TypeError: Raised if user_defined_name is not a str
       :raises RegistrationError: If the server was unable to register the timedelta with the user_defined_name
 
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -367,19 +368,20 @@ Module Contents
       :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
       :type keepdims: bool, optional, default = False
 
-      :returns: numpy_scalar if axis is omitted, in which case operation is done over entire array
+      :returns: numeric_scalars if axis is omitted, in which case operation is done over entire array
                 pdarray if axis is supplied, in which case the operation is done along that axis
-      :rtype: numpy_scalar or pdarray
+      :rtype: numeric_scalars or pdarray
 
       :raises TypeError: Raised if pda is not a pdarray instance
       :raises RuntimeError: Raised if there's a server-side error thrown
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.sum(ak.array([1,2,3,4,5]))
-      15
+      np.int64(15)
       >>> ak.sum(ak.array([5.5,4.5,3.5,2.5,1.5]))
-      17.5
+      np.float64(17.5)
       >>> ak.array([[1,2,3],[5,4,3]]).sum(axis=1)
       array([6 12])
 
@@ -415,7 +417,7 @@ Module Contents
       Convert array to a pandas TimedeltaIndex. Note: if the array size
       exceeds client.maxTransferBytes, a RuntimeError is raised.
 
-      .. seealso:: :obj:`to_ndarray`
+      .. seealso:: :py:obj:`to_ndarray`
 
 
 
@@ -430,7 +432,7 @@ Module Contents
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -439,9 +441,9 @@ Module Contents
 
 
 
-.. py:function:: date_range(start=None, end=None, periods=None, freq=None, tz=None, normalize=False, name=None, closed=None, inclusive='both', **kwargs)
+.. py:function:: date_range(start=None, end=None, periods=None, freq=None, tz=None, normalize=False, name=None, inclusive='both', **kwargs)
 
-   Creates a fixed frequency Datetime range. Alias for
+   Create a fixed frequency Datetime range. Alias for
    ``ak.Datetime(pd.date_range(args))``. Subject to size limit
    imposed by client.maxTransferBytes.
 
@@ -463,10 +465,6 @@ Module Contents
    :type normalize: bool, default False
    :param name: Name of the resulting DatetimeIndex.
    :type name: str, default None
-   :param closed: Make the interval closed with respect to the given frequency to
-                  the 'left', 'right', or both sides (None, the default).
-                  *Deprecated*
-   :type closed: {None, 'left', 'right'}, optional
    :param inclusive: Include boundaries. Whether to set each bound as closed or open.
    :type inclusive: {"both", "neither", "left", "right"}, default "both"
    :param \*\*kwargs: For compatibility. Has no effect on the result.

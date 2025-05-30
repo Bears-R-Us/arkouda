@@ -21,7 +21,7 @@ Module Contents
 
 .. py:function:: argmax(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
-   Returns an array with the indices of the maximum values along a given axis.
+   Return an array with the indices of the maximum values along a given axis.
 
    :param x: The array to search for maximum values
    :type x: Array
@@ -34,7 +34,7 @@ Module Contents
 
 .. py:function:: argmin(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
-   Returns an array with the indices of the minimum values along a given axis.
+   Return an array with the indices of the minimum values along a given axis.
 
    :param x: The array to search for minimum values
    :type x: Array
@@ -47,7 +47,7 @@ Module Contents
 
 .. py:function:: nonzero(x: arkouda.array_api.array_object.Array, /) -> Tuple[arkouda.array_api.array_object.Array, Ellipsis]
 
-   Returns a tuple of arrays containing the indices of the non-zero elements of the input array.
+   Return a tuple of arrays containing the indices of the non-zero elements of the input array.
 
 
 .. py:function:: searchsorted(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /, *, side: Literal['left', 'right'] = 'left', sorter: Optional[arkouda.array_api.array_object.Array] = None) -> arkouda.array_api.array_object.Array

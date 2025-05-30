@@ -40,6 +40,12 @@ or
    * function signature & MsgTuple return type
    
 
+.. function:: proc emptyStartAsyncCheckpointDaemon(sd: borrowed ServerDaemon.DefaultServerDaemon)
+
+   Support for asynchronous checkpointing. 
+
+.. data:: var funStartAsyncCheckpointDaemon = emptyStartAsyncCheckpointDaemon
+
 .. function:: proc writeUsedModulesJson(ref mods: set(string))
 
 .. function:: proc writeUsedModules(fmt: string = "cfg")

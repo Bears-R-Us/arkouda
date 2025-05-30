@@ -61,7 +61,7 @@ Module Contents
 
 .. py:function:: disconnect() -> None
 
-   Disconnects the client from the Arkouda server
+   Disconnects the client from the Arkouda server.
 
    :rtype: None
 
@@ -70,7 +70,9 @@ Module Contents
 
 .. py:function:: generate_history(num_commands: Optional[int] = None, command_filter: Optional[str] = None) -> List[str]
 
-   Generates list of commands executed within the Python shell, Jupyter notebook,
+   Generate list of commands executed.
+
+   Generate list of commands executed within the Python shell, Jupyter notebook,
    or IPython notebook, with an optional cmd_filter and number of commands to return.
 
    :param num_commands: The number of commands from history to retrieve
@@ -83,6 +85,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.connect()
    connected to arkouda server tcp://*:5555
    >>> ak.get_config()
@@ -113,7 +116,7 @@ Module Contents
 
 .. py:function:: get_max_array_rank() -> int
 
-   Get the maximum pdarray rank the server was compiled to support
+   Get the maximum pdarray rank the server was compiled to support.
 
    This value corresponds to the maximum number in
    parameter_classes -> array -> nd in the `registration-config.json`
@@ -127,77 +130,55 @@ Module Contents
 
    Compute the amount of memory available to be used.
 
-   Parameters
-    ----------
-    unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
-        unit of return ('b' by default)
-    as_percent : bool
-        If True, return the percent (as an int) of the memory that's available to be used
-        False by default
+   :param unit: unit of return ('b' by default)
+   :type unit: str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
+   :param as_percent: If True, return the percent (as an int) of the memory that's available to be used
+                      False by default
+   :type as_percent: bool
 
-    Returns
-    -------
-    int
-        Indicates the amount of memory available to be used.
+   :returns: Indicates the amount of memory available to be used.
+   :rtype: int
 
-    Raises
-    ------
-    RuntimeError
-        Raised if there is a server-side error in getting memory available
-    ValueError
-        Raised if the returned value is not an int-formatted string
+   :raises RuntimeError: Raised if there is a server-side error in getting memory available
+   :raises ValueError: Raised if the returned value is not an int-formatted string
 
 
 .. py:function:: get_mem_status() -> List[Mapping[str, Union[str, int, float]]]
 
-   Retrieves the memory status for each locale
+   Retrieve the memory status for each locale
 
-   Returns
-    -------
-   :
-    List[Mapping[str, Union[str, int, float]]]
-        total_mem: total physical memory on locale host
-        avail_mem: current available memory on locale host
-        arkouda_mem_alloc: memory allocated to Arkouda chapel process on locale host
-        pct_avail_mem: percentage of physical memory currently available on locale host
-        locale_id: locale id which is between 0 and numLocales-1
-        locale_hostname: host name of locale host
+   :returns: total_mem: total physical memory on locale host
+             avail_mem: current available memory on locale host
+             arkouda_mem_alloc: memory allocated to Arkouda chapel process on locale host
+             pct_avail_mem: percentage of physical memory currently available on locale host
+             locale_id: locale id which is between 0 and numLocales-1
+             locale_hostname: host name of locale host
+   :rtype: List[Mapping[str, Union[str, int, float]]]
 
-   Raises
-    ------
-    RuntimeError
-        Raised if there is a server-side error in getting per-locale
-        memory status information
+   :raises RuntimeError: Raised if there is a server-side error in getting per-locale
+       memory status information
 
 
 .. py:function:: get_mem_used(unit: str = 'b', as_percent: bool = False) -> int
 
    Compute the amount of memory used by objects in the server's symbol table.
 
-   Parameters
-    ----------
-    unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
-        unit of return ('b' by default)
-    as_percent : bool
-        If True, return the percent (as an int) of the available memory that's been used
-        False by default
+   :param unit: unit of return ('b' by default)
+   :type unit: str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
+   :param as_percent: If True, return the percent (as an int) of the available memory that's been used
+                      False by default
+   :type as_percent: bool
 
-    Returns
-    -------
-    int
-        Indicates the amount of memory allocated to symbol table objects.
+   :returns: Indicates the amount of memory allocated to symbol table objects.
+   :rtype: int
 
-    Raises
-    ------
-    RuntimeError
-        Raised if there is a server-side error in getting memory used
-    ValueError
-        Raised if the returned value is not an int-formatted string
+   :raises RuntimeError: Raised if there is a server-side error in getting memory used
+   :raises ValueError: Raised if the returned value is not an int-formatted string
 
 
 .. py:function:: get_server_commands() -> Mapping[str, str]
 
-   Return a dictionary of available server commands and the functions they map to
+   Return a dictionary of available server commands and the functions they map to.
 
    :returns: String to String mapping of available server commands to functions
    :rtype: dict
@@ -208,12 +189,14 @@ Module Contents
 
 .. py:function:: print_server_commands()
 
-   Print the list of the available Server commands
+   Print the list of the available Server commands.
 
 
 .. py:function:: ruok() -> str
 
-   Simply sends an "ruok" message to the server and, if the return message is
+   Send a "ruok" message to the arkouda_server.
+
+   Simply sends a "ruok" message to the server and, if the return message is
    "imok", this means the arkouda_server is up and operating normally. A return
    message of "imnotok" indicates an error occurred or the connection timed out.
 
@@ -228,7 +211,9 @@ Module Contents
 
 .. py:function:: shutdown() -> None
 
-   Sends a shutdown message to the Arkouda server that does the
+   Send a shutdown message.
+
+   Send a shutdown message to the Arkouda server that does the
    following:
 
    1. Delete all objects in the SymTable

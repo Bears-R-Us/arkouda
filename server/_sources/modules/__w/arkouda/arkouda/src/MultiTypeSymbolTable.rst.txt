@@ -120,8 +120,6 @@ or
       Clears all unregistered entries from the symTable
       
 
-   .. method:: proc lookup(name: string): borrowed AbstractSymEntry throws
-
    .. method:: proc this(name: string): borrowed AbstractSymEntry throws
 
       

@@ -22,13 +22,13 @@ Module Contents
 
    .. py:method:: find_locations() -> None
 
-      Populates Matcher object by finding the positions of matches
+      Populate Matcher object by finding the positions of matches.
 
 
 
    .. py:method:: findall(return_match_origins: bool = False)
 
-      Return all non-overlapping matches of pattern in Strings as a new Strings object
+      Return all non-overlapping matches of pattern in Strings as a new Strings object.
 
 
 
@@ -42,7 +42,7 @@ Module Contents
 
    .. py:method:: get_match(match_type: arkouda.match.MatchType, parent: object = None) -> arkouda.match.Match
 
-      Create a Match object of type match_type
+      Create a Match object of type match_type.
 
 
 
@@ -92,7 +92,9 @@ Module Contents
 
    .. py:method:: split(maxsplit: int = 0, return_segments: bool = False)
 
-      Split string by the occurrences of pattern. If maxsplit is nonzero, at most maxsplit splits occur
+      Split string by the occurrences of pattern.
+
+      If maxsplit is nonzero, at most maxsplit splits occur.
 
 
 
@@ -102,8 +104,11 @@ Module Contents
 
    .. py:method:: sub(repl: str, count: int = 0, return_num_subs: bool = False)
 
+      Substitute pattern.
+
       Return the Strings obtained by replacing non-overlapping occurrences of pattern
       with the replacement repl.
+
       If count is nonzero, at most count substitutions occur
       If return_num_subs is True, return the number of substitutions that occurred
 

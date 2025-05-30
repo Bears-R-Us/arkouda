@@ -56,6 +56,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CommAggregation/BigIntegerAggregation.html">BigIntegerAggregation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommandMap.html">CommandMap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DynamicSort.html">DynamicSort</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ExternalIntegration.html">ExternalIntegration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
@@ -204,7 +205,7 @@ within a slice domain.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.validateNegativeAxes">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">validateNegativeAxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?d]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(bool,</span> <span class="pre">[d]</span> <span class="pre">int)</span></em><a class="headerlink" href="#AryUtil.validateNegativeAxes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">validateNegativeAxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(bool,</span> <span class="pre">int)</span></em><a class="headerlink" href="#AryUtil.validateNegativeAxes" title="Link to this definition">¶</a></dt>
 <dd><p>Modifies an array of (potentially negative) axis arguments to be
 positive and within the range of the number of dimensions, while
 confirming that the axes are valid.</p>
@@ -223,6 +224,11 @@ and the array of modified axes</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">validateNegativeAxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?d]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(bool,</span> <span class="pre">[d]</span> <span class="pre">int)</span></em></dt>
+<dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">

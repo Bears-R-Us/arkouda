@@ -22,9 +22,9 @@ Module Contents
    :param a: Input array.
    :type a: pdarray, Strings, or all_scalars
 
-   :returns: **shape** -- The elements of the shape tuple give the lengths of the
+   :returns: The elements of the shape tuple give the lengths of the
              corresponding array dimensions.
-   :rtype: tuple of ints
+   :rtype: Tuple
 
    .. rubric:: Examples
 

@@ -81,7 +81,7 @@ or
       * Writes to file, creating file if it does not exist
       
 
-.. function:: proc getOutputHandler(channel: LogChannel): owned OutputHandler throws
+.. function:: proc getOutputHandler(channel: LogChannel): owned OutputHandler
 
    
    * getOutputHandler is a factory method for OutputHandler implementations.
@@ -96,17 +96,9 @@ or
 
    .. attribute:: var level: LogLevel = LogLevel.INFO
 
-   .. attribute:: var warnLevels = new set(LogLevel, [LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG])
-
-   .. attribute:: var criticalLevels = new set(LogLevel, [LogLevel.CRITICAL, LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG])
-
-   .. attribute:: var errorLevels = new set(LogLevel, [LogLevel.ERROR, LogLevel.CRITICAL, LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG])
-
-   .. attribute:: var infoLevels = new set(LogLevel, [LogLevel.INFO, LogLevel.DEBUG])
-
    .. attribute:: var printDate: bool = true
 
-   .. attribute:: var outputHandler: owned OutputHandler = try! getOutputHandler(LogChannel.CONSOLE)
+   .. attribute:: var outputHandler: owned OutputHandler = getOutputHandler(LogChannel.CONSOLE)
 
    .. method:: proc init()
 
@@ -114,19 +106,21 @@ or
 
    .. method:: proc init(level: LogLevel, channel: LogChannel)
 
-   .. method:: proc debug(moduleName, routineName, lineNumber, msg: string) throws
+   .. method:: proc emit(msg: string ...)
 
-   .. method:: proc info(moduleName, routineName, lineNumber, msg: string) throws
+   .. method:: proc report(moduleName: string, routineName: string, lineNumber: int, level: LogLevel, msg: string ...)
 
-   .. method:: proc warn(moduleName, routineName, lineNumber, msg: string) throws
+   .. method:: proc debug(moduleName, routineName, lineNumber, msg ...)
 
-   .. method:: proc critical(moduleName, routineName, lineNumber, msg: string) throws
+   .. method:: proc info(moduleName, routineName, lineNumber, msg ...)
 
-   .. method:: proc error(moduleName, routineName, lineNumber, msg: string) throws
+   .. method:: proc warn(moduleName, routineName, lineNumber, msg ...)
 
-   .. method:: proc generateErrorMsg(moduleName: string, routineName, lineNumber, error) throws
+   .. method:: proc error(moduleName, routineName, lineNumber, msg ...)
 
-   .. method:: proc generateLogMessage(moduleName: string, routineName, lineNumber, msg, level: string) throws
+   .. method:: proc critical(moduleName, routineName, lineNumber, msg ...)
 
-   .. method:: proc generateDateTimeString() throws
+   .. method:: proc generateLogMessage(moduleName: string, routineName: string, lineNumber: int, level: LogLevel, msg: string ...)
+
+   .. method:: proc generateDateTimeString(tail = "")
 

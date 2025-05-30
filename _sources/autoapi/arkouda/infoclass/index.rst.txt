@@ -37,7 +37,7 @@ Module Contents
 
 .. py:function:: information(names: Union[List[str], str] = RegisteredSymbols) -> str
 
-   Returns JSON formatted string containing information about the objects in names
+   Return a JSON formatted string containing information about the objects in names
 
    :param names: names is either the name of an object or list of names of objects to retrieve info
                  if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
@@ -79,7 +79,7 @@ Module Contents
 
 .. py:function:: pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -> None
 
-   Prints verbose information for each object in names in a human readable format
+   Print verbose information for each object in names in a human readable format
 
    :param names: names is either the name of an object or list of names of objects to retrieve info
                  if names is ak.AllSymbols, retrieves info for all symbols in the symbol table

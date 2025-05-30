@@ -30,7 +30,9 @@ Module Contents
 .. py:class:: CachedAccessor(name: str, accessor)
 
    Custom property-like object.
+
    A descriptor for caching accessors.
+
    :param name: Namespace that will be accessed under, e.g. ``df.foo``.
    :type name: str
    :param accessor: Class with the extension methods.

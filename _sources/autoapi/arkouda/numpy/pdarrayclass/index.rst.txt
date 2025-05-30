@@ -27,13 +27,13 @@ Functions
 
    arkouda.numpy.pdarrayclass.argmaxk
    arkouda.numpy.pdarrayclass.argmink
-   arkouda.numpy.pdarrayclass.attach_pdarray
    arkouda.numpy.pdarrayclass.broadcast_to_shape
    arkouda.numpy.pdarrayclass.clear
    arkouda.numpy.pdarrayclass.clz
    arkouda.numpy.pdarrayclass.corr
    arkouda.numpy.pdarrayclass.cov
    arkouda.numpy.pdarrayclass.ctz
+   arkouda.numpy.pdarrayclass.diff
    arkouda.numpy.pdarrayclass.divmod
    arkouda.numpy.pdarrayclass.dot
    arkouda.numpy.pdarrayclass.fmod
@@ -48,7 +48,6 @@ Functions
    arkouda.numpy.pdarrayclass.rotr
    arkouda.numpy.pdarrayclass.sqrt
    arkouda.numpy.pdarrayclass.std
-   arkouda.numpy.pdarrayclass.unregister_pdarray_by_name
    arkouda.numpy.pdarrayclass.var
 
 
@@ -75,7 +74,7 @@ Module Contents
    :type k: int_scalars
 
    :returns: The indices of the maximum `k` values from the pda, sorted
-   :rtype: pdarray, int
+   :rtype: pdarray
 
    :raises TypeError: Raised if pda is not a pdarray or k is not an integer
    :raises ValueError: Raised if the pda is empty, or pda.ndim > 1, or k < 1
@@ -91,11 +90,12 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> A = ak.array([10,5,1,3,7,2,9,0])
    >>> ak.argmaxk(A, 3)
-   array([4, 6, 0])
+   array([4 6 0])
    >>> ak.argmaxk(A, 4)
-   array([1, 4, 6, 0])
+   array([1 4 6 0])
 
 
 .. py:function:: argmink(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
@@ -108,7 +108,7 @@ Module Contents
    :type k: int_scalars
 
    :returns: The indices of the minimum `k` values from the pda, sorted
-   :rtype: pdarray, int
+   :rtype: pdarray
 
    :raises TypeError: Raised if pda is not a pdarray or k is not an integer
    :raises ValueError: Raised if the pda is empty, or pda.ndim > 1, or k < 1
@@ -124,42 +124,12 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> A = ak.array([10,5,1,3,7,2,9,0])
    >>> ak.argmink(A, 3)
-   array([7, 2, 5])
+   array([7 2 5])
    >>> ak.argmink(A, 4)
-   array([7, 2, 5, 3])
-
-
-.. py:function:: attach_pdarray(user_defined_name: str) -> pdarray
-
-   class method to return a pdarray attached to the registered name in the arkouda
-   server which was registered using register()
-
-   :param user_defined_name: user defined name which array was registered under
-   :type user_defined_name: str
-
-   :returns: pdarray which is bound to the corresponding server side component which was registered
-             with user_defined_name
-   :rtype: pdarray
-
-   :raises TypeError: Raised if user_defined_name is not a str
-
-   .. seealso:: :obj:`attach`, :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
-
-   .. rubric:: Notes
-
-   Registered names/pdarrays in the server are immune to deletion
-   until they are unregistered.
-
-   .. rubric:: Examples
-
-   >>> a = zeros(100)
-   >>> a.register("my_zeros")
-   >>> # potentially disconnect from server and reconnect to server
-   >>> b = ak.attach_pdarray("my_zeros")
-   >>> # ...other work...
-   >>> b.unregister()
+   array([7 2 5 3])
 
 
 .. py:function:: broadcast_to_shape(pda: pdarray, shape: Tuple[int, Ellipsis]) -> pdarray
@@ -194,6 +164,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.arange(2).reshape(1,2,1)
    >>> ak.broadcast_to_shape(a,(2,2,2))
    array([array([array([0 0]) array([1 1])]) array([array([0 0]) array([1 1])])])
@@ -220,16 +191,17 @@ Module Contents
    :param pda: Input array (must be integral).
    :type pda: pdarray, int64, uint64, bigint
 
-   :returns: **lz** -- The number of leading zeros of each element.
+   :returns: The number of leading zeros of each element.
    :rtype: pdarray
 
    :raises TypeError: If input array is not int64, uint64, or bigint
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> A = ak.arange(10)
    >>> ak.clz(A)
-   array([64, 63, 62, 62, 61, 61, 61, 61, 60, 60])
+   array([64 63 62 62 61 61 61 61 60 60])
 
 
 .. py:function:: corr(x: pdarray, y: pdarray) -> numpy.float64
@@ -246,17 +218,18 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.arange(10)
    >>> b = a + 1
    >>> ak.corr(a,b)
-   0.9999999999999998
+   np.float64(0.9999999999999998)
    >>> a.corr(b)
-   0.9999999999999998
+   np.float64(0.9999999999999998)
 
    :raises TypeError: Raised if x or y is not a pdarray instance
    :raises RuntimeError: Raised if there's a server-side error thrown
 
-   .. seealso:: :obj:`std`, :obj:`cov`
+   .. seealso:: :py:obj:`std`, :py:obj:`cov`
 
    .. rubric:: Notes
 
@@ -278,17 +251,18 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.arange(10)
    >>> b = a + 1
    >>> ak.cov(a,b)
-   9.166666666666666
+   np.float64(9.166666666666666)
    >>> a.cov(b)
-   9.166666666666666
+   np.float64(9.166666666666666)
 
    :raises TypeError: Raised if x or y is not a pdarray instance
    :raises RuntimeError: Raised if there's a server-side error thrown
 
-   .. seealso:: :obj:`mean`, :obj:`var`
+   .. seealso:: :py:obj:`mean`, :py:obj:`var`
 
    .. rubric:: Notes
 
@@ -303,7 +277,7 @@ Module Contents
    :param pda: Input array (must be integral).
    :type pda: pdarray, int64, uint64, bigint
 
-   :returns: **lz** -- The number of trailing zeros of each element.
+   :returns: The number of trailing zeros of each element.
    :rtype: pdarray
 
    .. rubric:: Notes
@@ -314,9 +288,65 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> A = ak.arange(10)
    >>> ak.ctz(A)
-   array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
+   array([0 0 1 0 2 0 1 0 3 0])
+
+
+.. py:function:: diff(a: pdarray, n: int = 1, axis: int = -1, prepend=None, append=None) -> pdarray
+
+   Calculate the n-th discrete difference along the given axis.
+
+   The first difference is given by ``out[i] = a[i+1] - a[i]`` along the given axis,
+   higher differences are calculated by using diff iteratively.
+
+   :param a: The array to calculate the difference
+   :type a: pdarray
+   :param n: The order of the finite difference. Default is 1.
+   :type n: int, optional
+   :param axis: The axis along which to calculate the difference. Default is the last axis.
+   :type axis: int, optional
+   :param prepend: The pdarray to prepend to `a` along `axis` before calculating the difference.
+   :type prepend: pdarray, optional
+   :param append: The pdarray to append to `a` along `axis` before calculating the difference.
+   :type append: pdarray, optional
+
+   :returns: The n-th differences. The shape of the output is the same as `a`
+             except along `axis` where the dimension is smaller by `n`. The
+             type of the output is the same as the type of the difference
+             between any two elements of `a`. This is the same as the type of
+             `a` in most cases. A notable exception is `datetime64`, which
+             results in a `timedelta64` output array.
+   :rtype: pdarray
+
+   .. rubric:: Notes
+
+   Type is preserved for boolean arrays, so the result will contain
+   `False` when consecutive elements are the same and `True` when they
+   differ.
+
+   For unsigned integer arrays, the results will also be unsigned. This
+   should not be surprising, as the result is consistent with
+   calculating the difference directly.
+
+   If this is not desirable, then the array should be cast to a larger
+   integer type first:
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.array([1, 2, 4, 7, 0])
+   >>> ak.diff(a)
+   array([1 2 3 -7])
+   >>> ak.diff(a, n=2)
+   array([1 1 -10])
+
+   >>> a = ak.array([[1, 3, 6, 10], [0, 5, 6, 8]])
+   >>> ak.diff(a)
+   array([array([2 3 4]) array([5 1 2])])
+   >>> ak.diff(a, axis=0)
+   array([array([-1 2 0 -2])])
 
 
 .. py:function:: divmod(x: Union[arkouda.numpy.dtypes.numeric_scalars, pdarray], y: Union[arkouda.numpy.dtypes.numeric_scalars, pdarray], where: Union[arkouda.numpy.dtypes.bool_scalars, pdarray] = True) -> Tuple[pdarray, pdarray]
@@ -346,6 +376,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> x = ak.arange(5, 10)
    >>> y = ak.array([2, 1, 4, 5, 8])
    >>> ak.divmod(x,y)
@@ -354,30 +385,55 @@ Module Contents
    (array([5 6 7 1 9]), array([5 0 7 3 9]))
 
 
-.. py:function:: dot(pda1: Union[numpy.int64, numpy.float64, numpy.uint64, pdarray], pda2: Union[numpy.int64, numpy.float64, numpy.uint64, pdarray]) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
+.. py:function:: dot(pda1: Union[numpy.int64, numpy.float64, numpy.uint64, pdarray], pda2: Union[numpy.int64, numpy.float64, numpy.uint64, pdarray]) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
-   Returns the sum of the elementwise product of two arrays of the same size (the dot product) or
-   the product of a singleton element and an array.
+   Computes dot product of two arrays.
+
+   If pda1 and pda2 are 1-D vectors of identical length, returns the conventional dot product.
+
+   If both pda1 and pda2 are scalars, returns their product.
+
+   If one of pda1, pda2 is a scalar, and the other a pdarray, returns the pdarray multiplied
+   by the scalar.
+
+   If both pda1 and pda2 are 2-D arrays, returns the matrix multiplication.
+
+   If pda1 is M-D and pda2 is 1-D, returns a sum product over the last axis of pda1 and pda2.
+
+   If pda1 is M-D and pda2 is N-D, returns a sum product over the last axis of pda1 and the
+   next-to-last axis of pda2, e.g.:
+
+   For example, If pda1 has rank (3,3,4) and pda2 has rank (4,2), then the result of
+   ak.dot(pda1,pda2) has rank (3,3,2), and
+
+   result[i,j,k] = sum( pda1[i, j, :] * pda2[:, k] )
 
    :param pda1:
-   :type pda1: Union[numeric_scalars, pdarray]
+   :type pda1: Union[np.int64, np.float64, np.uint64, pdarray],
    :param pda2:
-   :type pda2: Union[numeric_scalars, pdarray]
+   :type pda2: Union[np.int64, np.float64, np.uint64, pdarray],
 
-   :returns: The sum of the elementwise product pda1 and pda2 or
-             the product of a singleton element and an array.
+   :returns: as described above
    :rtype: Union[numeric_scalars, pdarray]
-
-   :raises ValueError: Raised if the size of pda1 is not the same as pda2
 
    .. rubric:: Examples
 
-   >>> x = ak.array([2, 3])
-   >>> y = ak.array([4, 5])
-   >>> ak.dot(x,y)
-   23
-   >>> ak.dot(x,2)
-   array([4 6])
+   >>> import arkouda as ak
+   >>> ak.dot(ak.array([1, 2, 3]),ak.array([4,5,6]))
+   np.int64(32)
+   >>> ak.dot(ak.array([1, 2, 3]),5)
+   array([5 10 15])
+   >>> ak.dot(5,ak.array([2, 3, 4]))
+   array([10 15 20])
+   >>> ak.dot(ak.arange(9).reshape(3,3),ak.arange(6).reshape(3,2))
+   array([array([10 13]) array([28 40]) array([46 67])])
+   >>> ak.dot(ak.arange(27).reshape(3,3,3),ak.array([2,3,4]))
+   array([array([11 38 65]) array([92 119 146]) array([173 200 227])])
+   >>> ak.dot(ak.arange(36).reshape(3,3,4),ak.arange(8).reshape(4,2))
+   array([array([array([28 34]) array([76 98]) array([124 162])]) array([array([172 226])
+       array([220 290]) array([268 354])]) array([array([316 418]) array([364 482]) array([412 546])])])
+
+   :raises ValueError: Raised if either pdda1 or pda2 is not an allowed type, or if shapes are incompatible.
 
 
 .. py:function:: fmod(dividend: Union[pdarray, arkouda.numpy.dtypes.numeric_scalars], divisor: Union[pdarray, arkouda.numpy.dtypes.numeric_scalars]) -> pdarray
@@ -410,7 +466,7 @@ Module Contents
    :type k: int_scalars
 
    :returns: The maximum `k` values from pda, sorted
-   :rtype: pdarray, int
+   :rtype: pdarray
 
    :raises TypeError: Raised if pda is not a pdarray or k is not an integer
    :raises ValueError: Raised if the pda is empty, or pda.ndim > 1, or k < 1
@@ -427,11 +483,12 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> A = ak.array([10,5,1,3,7,2,9,0])
    >>> ak.maxk(A, 3)
-   array([7, 9, 10])
+   array([7 9 10])
    >>> ak.maxk(A, 4)
-   array([5, 7, 9, 10])
+   array([5 7 9 10])
 
 
 .. py:function:: mean(pda: pdarray) -> numpy.float64
@@ -446,11 +503,12 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.arange(10)
    >>> ak.mean(a)
-   4.5
+   np.float64(4.5)
    >>> a.mean()
-   4.5
+   np.float64(4.5)
 
    :raises TypeError: Raised if pda is not a pdarray instance
    :raises RuntimeError: Raised if there's a server-side error thrown
@@ -484,11 +542,12 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> A = ak.array([10,5,1,3,7,2,9,0])
    >>> ak.mink(A, 3)
-   array([0, 1, 2])
+   array([0 1 2])
    >>> ak.mink(A, 4)
-   array([0, 1, 2, 3])
+   array([0 1 2 3])
 
 
 .. py:function:: mod(dividend, divisor) -> pdarray
@@ -506,6 +565,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
    >>> b = ak.array([2,2,2,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8])
    >>> ak.mod(a,b)
@@ -521,19 +581,20 @@ Module Contents
    :param pda: Input array (must be integral).
    :type pda: pdarray, int64, uint64, bigint
 
-   :returns: **parity** -- The parity of each element: 0 if even number of bits set, 1 if odd.
+   :returns: The parity of each element: 0 if even number of bits set, 1 if odd.
    :rtype: pdarray
 
    :raises TypeError: If input array is not int64, uint64, or bigint
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> A = ak.arange(10)
    >>> ak.parity(A)
-   array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0])
+   array([0 1 1 0 1 0 0 1 1 0])
 
 
-.. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.numpy.dtypes.int_scalars, ndim: arkouda.numpy.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.numpy.dtypes.int_scalars, max_bits: Optional[int] = None)
+.. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.numpy.dtypes.int_scalars, ndim: arkouda.numpy.dtypes.int_scalars, shape: Tuple[int, Ellipsis], itemsize: arkouda.numpy.dtypes.int_scalars, max_bits: Optional[int] = None)
 
    The basic arkouda array class. This class contains only the
    attributes of the array; the data resides on the arkouda
@@ -550,9 +611,9 @@ Module Contents
 
    .. attribute:: dtype
 
-      The element type of the array
+      The element dtype of the array
 
-      :type: dtype
+      :type: type
 
    .. attribute:: size
 
@@ -568,9 +629,9 @@ Module Contents
 
    .. attribute:: shape
 
-      A list or tuple containing the sizes of each dimension of the array
+      A tuple containing the sizes of each dimension of the array
 
-      :type: Sequence[int]
+      :type: Tuple[int, ...]
 
    .. attribute:: itemsize
 
@@ -600,8 +661,9 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.all(ak.array([True,False,False]))
-      False
+      np.False_
       >>> ak.all(ak.array([[True,True,False],[False,True,True]]),axis=0)
       array([False True False])
       >>> ak.all(ak.array([[True,True,True],[False,False,False]]),axis=0,keepdims=True)
@@ -609,7 +671,7 @@ Module Contents
       >>> ak.all(ak.array([[True,True,True],[False,False,False]]),axis=1,keepdims=True)
       array([array([True]) array([False])])
       >>> ak.array([True,False,False]).all()
-      False
+      np.False_
 
       :raises TypeError: Raised if pda is not a pdarray instance
       :raises RuntimeError: Raised if there's a server-side error thrown
@@ -635,8 +697,9 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.any(ak.array([True,False,False]))
-      True
+      np.True_
       >>> ak.any(ak.array([[True,True,False],[False,True,True]]),axis=0)
       array([True True True])
       >>> ak.any(ak.array([[True,True,True],[False,False,False]]),axis=0,keepdims=True)
@@ -644,7 +707,7 @@ Module Contents
       >>> ak.any(ak.array([[True,True,True],[False,False,False]]),axis=1,keepdims=True)
       array([array([True]) array([False])])
       >>> ak.array([True,False,False]).any()
-      True
+      np.True_
 
       :raises TypeError: Raised if pda is not a pdarray instance
       :raises RuntimeError: Raised if there's a server-side error thrown
@@ -674,10 +737,11 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.argmax(ak.array([1,2,3,4,5]))
-      4
+      np.int64(4)
       >>> ak.argmax(ak.array([5.5,4.5,3.5,2.5,1.5]))
-      0
+      np.int64(0)
       >>> ak.array([[1,2,3],[5,4,3]]).argmax(axis=1)
       array([2 0])
 
@@ -713,10 +777,11 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.argmin(ak.array([1,2,3,4,5]))
-      0
+      np.int64(0)
       >>> ak.argmin(ak.array([5.5,4.5,3.5,2.5,1.5]))
-      4
+      np.int64(4)
       >>> ak.array([[1,2,3],[5,4,3]]).argmin(axis=1)
       array([0 2])
 
@@ -742,6 +807,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.array([1,2,3]).astype(ak.float64)
       array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
       >>> ak.array([1.5,2.5]).astype(ak.int64)
@@ -758,43 +824,9 @@ Module Contents
 
 
 
-   .. py:method:: attach(user_defined_name: str) -> pdarray
-      :staticmethod:
-
-
-      class method to return a pdarray attached to the registered name in the arkouda
-      server which was registered using register()
-
-      :param user_defined_name: user defined name which array was registered under
-      :type user_defined_name: str
-
-      :returns: pdarray which is bound to the corresponding server side component which was registered
-                with user_defined_name
-      :rtype: pdarray
-
-      :raises TypeError: Raised if user_defined_name is not a str
-
-      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
-
-      .. rubric:: Notes
-
-      Registered names/pdarrays in the server are immune to deletion
-      until they are unregistered.
-
-      .. rubric:: Examples
-
-      >>> a = zeros(100)
-      >>> a.register("my_zeros")
-      >>> # potentially disconnect from server and reconnect to server
-      >>> b = ak.pdarray.attach("my_zeros")
-      >>> # ...other work...
-      >>> b.unregister()
-
-
-
    .. py:method:: bigint_to_uint_arrays() -> List[pdarray]
 
-      Creates a list of uint pdarrays from a bigint pdarray.
+      Create a list of uint pdarrays from a bigint pdarray.
       The first item in return will be the highest 64 bits of the
       bigint pdarray and the last item will be the lowest 64 bits.
 
@@ -805,10 +837,11 @@ Module Contents
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`pdarraycreation.bigint_from_uint_arrays`
+      .. seealso:: :py:obj:`pdarraycreation.bigint_from_uint_arrays`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.arange(2**64, 2**64 + 5)
       >>> a
       array([18446744073709551616 18446744073709551617 18446744073709551618
@@ -844,6 +877,7 @@ Module Contents
 
 
    .. py:attribute:: dtype
+      :type:  numpy.dtype
 
 
    .. py:method:: equals(other) -> arkouda.numpy.dtypes.bool_scalars
@@ -854,17 +888,18 @@ Module Contents
       :type other: object
 
       :returns: True if the pdarrays are the same, o.w. False.
-      :rtype: bool
+      :rtype: bool_scalars
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.array([1, 2, 3])
       >>> a_cpy = ak.array([1, 2, 3])
       >>> a.equals(a_cpy)
-      True
-      >>> a2 = ak.array([1, 2, 5)
+      np.True_
+      >>> a2 = ak.array([1, 2, 5])
       >>> a.equals(a2)
-      False
+      np.False_
 
 
 
@@ -887,6 +922,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.array([[3,2,1],[2,3,1]])
       >>> a.flatten()
       array([3 2 1 2 3 1])
@@ -918,7 +954,7 @@ Module Contents
 
    .. py:method:: info() -> str
 
-      Returns a JSON formatted string containing information about all components of self
+      Return a JSON formatted string containing information about all components of self
 
       :param None:
 
@@ -963,10 +999,11 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.is_sorted(ak.array([1,2,3,4,5]))
-      True
+      np.True_
       >>> ak.is_sorted(ak.array([5,4,3,2,1]))
-      False
+      np.False_
       >>> ak.array([[1,2,3],[5,4,3]]).is_sorted(axis=1)
       array([True False])
 
@@ -978,9 +1015,10 @@ Module Contents
 
 
    .. py:attribute:: itemsize
+      :type:  arkouda.numpy.dtypes.int_scalars
 
 
-   .. py:method:: max(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
+   .. py:method:: max(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return max of array elements along the given axis.
 
@@ -990,19 +1028,20 @@ Module Contents
       :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
       :type keepdims: bool, optional, default = False
 
-      :returns: numpy_scalar if axis is omitted, in which case operation is done over entire array
+      :returns: numeric_scalar if axis is omitted, in which case operation is done over entire array
                 pdarray if axis is supplied, in which case the operation is done along that axis
-      :rtype: numpy_scalar or pdarray
+      :rtype: numeric_scalar or pdarray
 
       :raises TypeError: Raised if pda is not a pdarray instance
       :raises RuntimeError: Raised if there's a server-side error thrown
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.max(ak.array([1,2,3,4,5]))
-      5
+      np.int64(5)
       >>> ak.max(ak.array([5.5,4.5,3.5,2.5,1.5]))
-      5.5
+      np.float64(5.5)
       >>> ak.array([[1,2,3],[5,4,3]]).max(axis=1)
       array([3 5])
 
@@ -1027,7 +1066,7 @@ Module Contents
 
 
 
-   .. py:method:: min(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
+   .. py:method:: min(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return min of array elements along the given axis.
 
@@ -1037,19 +1076,20 @@ Module Contents
       :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
       :type keepdims: bool, optional, default = False
 
-      :returns: numpy_scalar if axis is omitted, in which case operation is done over entire array
+      :returns: numeric_scalar if axis is omitted, in which case operation is done over entire array
                 pdarray if axis is supplied, in which case the operation is done along that axis
-      :rtype: numpy_scalar or pdarray
+      :rtype: numeric_scalar or pdarray
 
       :raises TypeError: Raised if pda is not a pdarray instance
       :raises RuntimeError: Raised if there's a server-side error thrown
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.min(ak.array([1,2,3,4,5]))
-      1
+      np.int64(1)
       >>> ak.min(ak.array([5.5,4.5,3.5,2.5,1.5]))
-      1.5
+      np.float64(1.5)
       >>> ak.array([[1,2,3],[5,4,3]]).min(axis=1)
       array([1 3])
 
@@ -1066,6 +1106,7 @@ Module Contents
 
 
    .. py:attribute:: name
+      :type:  str
 
 
    .. py:property:: nbytes
@@ -1077,6 +1118,7 @@ Module Contents
 
 
    .. py:attribute:: ndim
+      :type:  arkouda.numpy.dtypes.int_scalars
 
 
    .. py:attribute:: objType
@@ -1101,7 +1143,7 @@ Module Contents
 
    .. py:method:: pretty_print_info() -> None
 
-      Prints information about all components of self in a human readable format
+      Print information about all components of self in a human readable format
 
       :param None:
 
@@ -1109,7 +1151,7 @@ Module Contents
 
 
 
-   .. py:method:: prod(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
+   .. py:method:: prod(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return prod of array elements along the given axis.
 
@@ -1119,19 +1161,20 @@ Module Contents
       :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
       :type keepdims: bool, optional, default = False
 
-      :returns: numpy_scalar if axis is omitted, in which case operation is done over entire array
+      :returns: numeric_scalars if axis is omitted, in which case operation is done over entire array
                 pdarray if axis is supplied, in which case the operation is done along that axis
-      :rtype: numpy_scalar or pdarray
+      :rtype: numeric_scalars or pdarray
 
       :raises TypeError: Raised if pda is not a pdarray instance
       :raises RuntimeError: Raised if there's a server-side error thrown
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.prod(ak.array([1,2,3,4,5]))
-      120
+      np.int64(120)
       >>> ak.prod(ak.array([5.5,4.5,3.5,2.5,1.5]))
-      324.84375
+      np.float64(324.84375)
       >>> ak.array([[1,2,3],[5,4,3]]).prod(axis=1)
       array([6 60])
 
@@ -1163,7 +1206,7 @@ Module Contents
           If the user is attempting to register more than one pdarray with the same name,
           the former should be unregistered first to free up the registration name.
 
-      .. seealso:: :obj:`attach`, :obj:`unregister`, :obj:`is_registered`, :obj:`list_registry`, :obj:`unregister_pdarray_by_name`
+      .. seealso:: :py:obj:`attach`, :py:obj:`unregister`, :py:obj:`is_registered`, :py:obj:`list_registry`, :py:obj:`unregister_pdarray_by_name`
 
       .. rubric:: Notes
 
@@ -1172,11 +1215,13 @@ Module Contents
 
       .. rubric:: Examples
 
-      >>> a = zeros(100)
+      >>> import arkouda as ak
+      >>> a = ak.zeros(3)
       >>> a.register("my_zeros")
-      >>> # potentially disconnect from server and reconnect to server
-      >>> b = ak.pdarray.attach("my_zeros")
-      >>> # ...other work...
+      array([0.00000000000000000 0.00000000000000000 0.00000000000000000])
+
+      potentially disconnect from server and reconnect to server
+      >>> b = ak.attach("my_zeros")
       >>> b.unregister()
 
 
@@ -1199,6 +1244,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.array([[3,2,1],[2,3,1]])
       >>> a.reshape((3,2))
       array([array([3 2]) array([1 2]) array([3 1])])
@@ -1226,78 +1272,6 @@ Module Contents
 
 
 
-   .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
-
-      DEPRECATED
-      Save the pdarray to HDF5 or Parquet. The result is a collection of files,
-      one file per locale of the arkouda server, where each filename starts
-      with prefix_path. HDF5 support single files, in which case the file name will
-      only be that provided. Each locale saves its chunk of the array to its
-      corresponding file.
-
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
-                          Sets the compression type used with Parquet files
-      :type compression: str (Optional)
-      :param file_format: By default, saved files will be written to the HDF5 file format. If
-                          'Parquet', the files will be written to the Parquet file format. This
-                          is case insensitive.
-      :type file_format: str {'HDF5', 'Parquet'}
-      :param file_type: Default: "distribute"
-                        When set to single, dataset is written to a single file.
-                        When distribute, dataset is written on a file per locale.
-                        This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
-          file write location or if the mode parameter is neither truncate
-          nor append
-      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
-          is not a string
-
-      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`, :obj:`to_parquet`, :obj:`to_hdf`
-
-      .. rubric:: Notes
-
-      The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales``. If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
-      This will require you to use load as if you saved the file with the extension. Try this if
-      an older file is not being found.
-      Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(25)
-      >>> # Saving without an extension
-      >>> a.save('path/prefix', dataset='array')
-      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
-      >>> # Saving with an extension (HDF5)
-      >>> a.save('path/prefix.h5', dataset='array')
-      Saves the array to numLocales HDF5 files with the name
-      ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
-      >>> # Saving with an extension (Parquet)
-      >>> a.save('path/prefix.parquet', dataset='array', file_format='Parquet')
-      Saves the array in numLocales Parquet files with the name
-      ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
-
-
-
    .. py:property:: shape
 
       Return the shape of an array.
@@ -1307,11 +1281,12 @@ Module Contents
 
 
    .. py:attribute:: size
+      :type:  arkouda.numpy.dtypes.int_scalars
 
 
    .. py:method:: slice_bits(low, high) -> pdarray
 
-      Returns a pdarray containing only bits from low to high of self.
+      Return a pdarray containing only bits from low to high of self.
 
       This is zero indexed and inclusive on both ends, so slicing the bottom 64 bits is
       pda.slice_bits(0, 63)
@@ -1329,6 +1304,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> p = ak.array([2**65 + (2**64 - 1)])
       >>> bin(p[0])
       '0b101111111111111111111111111111111111111111111111111111111111111111'
@@ -1350,7 +1326,7 @@ Module Contents
 
 
 
-   .. py:method:: sum(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numpy_scalars, pdarray]
+   .. py:method:: sum(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
       Return sum of array elements along the given axis.
 
@@ -1360,19 +1336,20 @@ Module Contents
       :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
       :type keepdims: bool, optional, default = False
 
-      :returns: numpy_scalar if axis is omitted, in which case operation is done over entire array
+      :returns: numeric_scalars if axis is omitted, in which case operation is done over entire array
                 pdarray if axis is supplied, in which case the operation is done along that axis
-      :rtype: numpy_scalar or pdarray
+      :rtype: numeric_scalars or pdarray
 
       :raises TypeError: Raised if pda is not a pdarray instance
       :raises RuntimeError: Raised if there's a server-side error thrown
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.sum(ak.array([1,2,3,4,5]))
-      15
+      np.int64(15)
       >>> ak.sum(ak.array([5.5,4.5,3.5,2.5,1.5]))
-      17.5
+      np.float64(17.5)
       >>> ak.array([[1,2,3],[5,4,3]]).sum(axis=1)
       array([6 12])
 
@@ -1443,14 +1420,15 @@ Module Contents
       may override this limit by setting client.maxTransferBytes to a larger
       value, but proceed with caution.
 
-      .. seealso:: :obj:`array`
+      .. seealso:: :py:obj:`array`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.arange(0, 5, 1)
-      >>> a.to_cuda()
+      >>> a.to_cuda() # doctest: +SKIP
       array([0, 1, 2, 3, 4])
-      >>> type(a.to_cuda())
+      >>> type(a.to_cuda()) # doctest: +SKIP
       numpy.devicendarray
 
 
@@ -1493,29 +1471,33 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.arange(25)
-      >>> # Saving without an extension
-      >>> a.to_hdf('path/prefix', dataset='array')
+
+      Saving without an extension
+      >>> a.to_hdf('path/prefix', dataset='array') # doctest: +SKIP
       Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
-      >>> # Saving with an extension (HDF5)
-      >>> a.to_hdf('path/prefix.h5', dataset='array')
+
+      Saving with an extension (HDF5)
+      >>> a.to_hdf('path/prefix.h5', dataset='array') # doctest: +SKIP
       Saves the array to numLocales HDF5 files with the name
       ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
-      >>> # Saving to a single file
-      >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single')
+
+      Saving to a single file
+      >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single') # doctest: +SKIP
       Saves the array in to single hdf5 file on the root node.
       ``cwd/path/name_prefix.hdf5``
 
 
 
-   .. py:method:: to_list() -> List
+   .. py:method:: to_list() -> List[arkouda.numpy.dtypes.numeric_scalars]
 
       Convert the array to a list, transferring array data from the
       Arkouda server to client-side Python. Note: if the pdarray size exceeds
       client.maxTransferBytes, a RuntimeError is raised.
 
       :returns: A list with the same data as the pdarray
-      :rtype: list
+      :rtype: List[numeric_scalars]
 
       :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
           exceeds the built-in client.maxTransferBytes size limit, or if the bytes
@@ -1531,10 +1513,11 @@ Module Contents
       may override this limit by setting client.maxTransferBytes to a larger
       value, but proceed with caution.
 
-      .. seealso:: :obj:`to_ndarray`
+      .. seealso:: :py:obj:`to_ndarray`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.arange(0, 5, 1)
       >>> a.to_list()
       [0, 1, 2, 3, 4]
@@ -1566,10 +1549,11 @@ Module Contents
       may override this limit by setting client.maxTransferBytes to a larger
       value, but proceed with caution.
 
-      .. seealso:: :obj:`array`, :obj:`to_list`
+      .. seealso:: :py:obj:`array`, :py:obj:`to_list`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.arange(0, 5, 1)
       >>> a.to_ndarray()
       array([0, 1, 2, 3, 4])
@@ -1616,12 +1600,15 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.arange(25)
-      >>> # Saving without an extension
-      >>> a.to_parquet('path/prefix', dataset='array')
+
+      Saving without an extension
+      >>> a.to_parquet('path/prefix', dataset='array') # doctest: +SKIP
       Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
-      >>> # Saving with an extension (HDF5)
-      >>> a.to_parqet('path/prefix.parquet', dataset='array')
+
+      Saving with an extension (HDF5)
+      >>> a.to_parqet('path/prefix.parquet', dataset='array') # doctest: +SKIP
       Saves the array to numLocales HDF5 files with the name
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
@@ -1629,7 +1616,7 @@ Module Contents
 
    .. py:method:: transfer(hostname: str, port: arkouda.numpy.dtypes.int_scalars)
 
-      Sends a pdarray to a different Arkouda server
+      Send a pdarray to a different Arkouda server.
 
       :param hostname: The hostname where the Arkouda server intended to
                        receive the pdarray is running.
@@ -1664,7 +1651,7 @@ Module Contents
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
 
-      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
+      .. seealso:: :py:obj:`register`, :py:obj:`unregister`, :py:obj:`is_registered`, :py:obj:`unregister_pdarray_by_name`, :py:obj:`list_registry`
 
       .. rubric:: Notes
 
@@ -1673,11 +1660,13 @@ Module Contents
 
       .. rubric:: Examples
 
-      >>> a = zeros(100)
+      >>> import arkouda as ak
+      >>> a = ak.zeros(3)
       >>> a.register("my_zeros")
-      >>> # potentially disconnect from server and reconnect to server
-      >>> b = ak.pdarray.attach("my_zeros")
-      >>> # ...other work...
+      array([0.00000000000000000 0.00000000000000000 0.00000000000000000])
+
+      potentially disconnect from server and reconnect to server
+      >>> b = ak.attach("my_zeros")
       >>> b.unregister()
 
 
@@ -1714,13 +1703,20 @@ Module Contents
 
       Count the occurrences of the unique values of self.
 
-      :returns: * **unique_values** (*pdarray*) -- The unique values, sorted in ascending order
-                * **counts** (*pdarray, int64*) -- The number of times the corresponding unique value occurs
+      :returns:
+
+                unique_values : pdarray
+                    The unique values, sorted in ascending order
+
+                counts : pdarray, int64
+                    The number of times the corresponding unique value occurs
+      :rtype: pdarray, pdarray|int64
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
-      (array([0, 2, 4]), array([3, 2, 1]))
+      (array([0 2 4]), array([3 2 1]))
 
 
 
@@ -1737,16 +1733,17 @@ Module Contents
    :param pda: Input array (must be integral).
    :type pda: pdarray, int64, uint64, bigint
 
-   :returns: **population** -- The number of bits set (1) in each element
+   :returns: The number of bits set (1) in each element
    :rtype: pdarray
 
    :raises TypeError: If input array is not int64, uint64, or bigint
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> A = ak.arange(10)
    >>> ak.popcount(A)
-   array([0, 1, 1, 2, 1, 2, 2, 3, 1, 2])
+   array([0 1 1 2 1 2 2 3 1 2])
 
 
 .. py:function:: power(pda: pdarray, pwr: Union[int, float, pdarray], where: Union[arkouda.numpy.dtypes.bool_scalars, pdarray] = True) -> pdarray
@@ -1774,11 +1771,12 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.arange(5)
    >>> ak.power(a, 3)
-   array([0, 1, 8, 27, 64])
-   >>> ak.power(a), 3, a % 2 == 0)
-   array([0, 1, 8, 3, 64])
+   array([0 1 8 27 64])
+   >>> ak.power(a, 3, a % 2 == 0)
+   array([0 1 8 3 64])
 
    :raises TypeError: raised if pda is not a pdarray, or if pwe is not an int, float, or pdarray
    :raises ValueError: raised if pda and power are of incompatible dimensions
@@ -1793,16 +1791,17 @@ Module Contents
    :param rot: Amount(s) to rotate by.
    :type rot: pdarray(int64/uint64) or integer
 
-   :returns: **rotated** -- The rotated elements of x.
-   :rtype: pdarray(int64/uint64)
+   :returns: The rotated elements of x.
+   :rtype: pdarray
 
    :raises TypeError: If input array is not int64 or uint64
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> A = ak.arange(10)
    >>> ak.rotl(A, A)
-   array([0, 2, 8, 24, 64, 160, 384, 896, 2048, 4608])
+   array([0 2 8 24 64 160 384 896 2048 4608])
 
 
 .. py:function:: rotr(x, rot) -> pdarray
@@ -1814,16 +1813,17 @@ Module Contents
    :param rot: Amount(s) to rotate by.
    :type rot: pdarray(int64/uint64) or integer
 
-   :returns: **rotated** -- The rotated elements of x.
-   :rtype: pdarray(int64/uint64)
+   :returns: The rotated elements of x.
+   :rtype: pdarray
 
    :raises TypeError: If input array is not int64 or uint64
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> A = ak.arange(10)
    >>> ak.rotr(1024 * A, A)
-   array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
+   array([0 512 512 384 256 160 96 56 32 18])
 
 
 .. py:function:: sqrt(pda: pdarray, where: Union[arkouda.numpy.dtypes.bool_scalars, pdarray] = True) -> pdarray
@@ -1844,6 +1844,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.arange(5)
    >>> ak.sqrt(a)
    array([0.00000000000000000 1.00000000000000000 1.4142135623730951
@@ -1874,17 +1875,18 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.arange(10)
    >>> ak.std(a)
-   2.8722813232690143
+   np.float64(2.8722813232690143)
    >>> a.std()
-   2.8722813232690143
+   np.float64(2.8722813232690143)
 
    :raises TypeError: Raised if pda is not a pdarray instance or ddof is not an integer
    :raises ValueError: Raised if ddof is an integer < 0
    :raises RuntimeError: Raised if there's a server-side error thrown
 
-   .. seealso:: :obj:`mean`, :obj:`var`
+   .. seealso:: :py:obj:`mean`, :py:obj:`var`
 
    .. rubric:: Notes
 
@@ -1902,35 +1904,6 @@ Module Contents
    unbiased estimate of the standard deviation per se.
 
 
-.. py:function:: unregister_pdarray_by_name(user_defined_name: str) -> None
-
-   Unregister a named pdarray in the arkouda server which was previously
-   registered using register() and/or attahced to using attach_pdarray()
-
-   :param user_defined_name: user defined name which array was registered under
-   :type user_defined_name: str
-
-   :rtype: None
-
-   :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
-
-   .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`list_registry`, :obj:`attach`
-
-   .. rubric:: Notes
-
-   Registered names/pdarrays in the server are immune to deletion until
-   they are unregistered.
-
-   .. rubric:: Examples
-
-   >>> a = zeros(100)
-   >>> a.register("my_zeros")
-   >>> # potentially disconnect from server and reconnect to server
-   >>> b = ak.attach_pdarray("my_zeros")
-   >>> # ...other work...
-   >>> ak.unregister_pdarray_by_name(b)
-
-
 .. py:function:: var(pda: pdarray, ddof: arkouda.numpy.dtypes.int_scalars = 0) -> numpy.float64
 
    Return the variance of values in the array.
@@ -1945,17 +1918,18 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.arange(10)
    >>> ak.var(a)
-   8.25
+   np.float64(8.25)
    >>> a.var()
-   8.25
+   np.float64(8.25)
 
    :raises TypeError: Raised if pda is not a pdarray instance
    :raises ValueError: Raised if the ddof >= pdarray size
    :raises RuntimeError: Raised if there's a server-side error thrown
 
-   .. seealso:: :obj:`mean`, :obj:`std`
+   .. seealso:: :py:obj:`mean`, :py:obj:`std`
 
    .. rubric:: Notes
 

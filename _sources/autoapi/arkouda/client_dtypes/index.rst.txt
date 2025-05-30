@@ -73,7 +73,7 @@ Module Contents
 
    .. py:method:: register(user_defined_name)
 
-      Register this BitVector object and underlying components with the Arkouda server
+      Register this BitVector object and underlying components with the Arkouda server.
 
       :param user_defined_name: user defined name the BitVector is to be registered under,
                                 this will be the root name for underlying components
@@ -88,7 +88,7 @@ Module Contents
       :raises TypeError: Raised if user_defined_name is not a str
       :raises RegistrationError: If the server was unable to register the BitVector with the user_defined_name
 
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -134,8 +134,7 @@ Module Contents
 
 .. py:function:: BitVectorizer(width=64, reverse=False)
 
-   Make a callback (i.e. function) that can be called on an
-   array to create a BitVector.
+   Make a callback (i.e. function) that can be called on an array to create a BitVector.
 
    :param width: The number of bit fields in the vector
    :type width: int
@@ -262,6 +261,8 @@ Module Contents
 
    .. py:method:: normalize(x)
 
+      Normalize IP adress.
+
       Take in an IP address as a string, integer, or IPAddress object,
       and convert it to an integer.
 
@@ -272,7 +273,7 @@ Module Contents
 
    .. py:method:: register(user_defined_name)
 
-      Register this IPv4 object and underlying components with the Arkouda server
+      Register this IPv4 object and underlying components with the Arkouda server.
 
       :param user_defined_name: user defined name the IPv4 is to be registered under,
                                 this will be the root name for underlying components
@@ -287,7 +288,7 @@ Module Contents
       :raises TypeError: Raised if user_defined_name is not a str
       :raises RegistrationError: If the server was unable to register the IPv4 with the user_defined_name
 
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -303,7 +304,7 @@ Module Contents
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute')
 
-      Override of the pdarray to_hdf to store the special object type
+      Override of the pdarray to_hdf to store the special object type.
 
 
 
@@ -359,7 +360,7 @@ Module Contents
 
    :rtype: pdarray of bools indicating which indexes are IPv4.
 
-   .. seealso:: :obj:`ak.is_ipv6`
+   .. seealso:: :py:obj:`ak.is_ipv6`
 
 
 .. py:function:: is_ipv6(ip: Union[arkouda.numpy.pdarrayclass.pdarray, IPv4], ip2: Optional[arkouda.numpy.pdarrayclass.pdarray] = None) -> arkouda.numpy.pdarrayclass.pdarray
@@ -375,6 +376,6 @@ Module Contents
 
    :rtype: pdarray of bools indicating which indexes are IPv6.
 
-   .. seealso:: :obj:`ak.is_ipv4`
+   .. seealso:: :py:obj:`ak.is_ipv4`
 
 

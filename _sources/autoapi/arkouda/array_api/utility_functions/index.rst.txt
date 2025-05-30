@@ -72,13 +72,13 @@ Module Contents
    :param append: Array to append to `a` along `axis` before calculating the difference.
    :type append: Array, optional
 
-   :returns: **diff** -- The n-th differences. The shape of the output is the same as `a`
+   :returns: The n-th differences. The shape of the output is the same as `a`
              except along `axis` where the dimension is smaller by `n`. The
              type of the output is the same as the type of the difference
              between any two elements of `a`. This is the same as the type of
              `a` in most cases. A notable exception is `datetime64`, which
              results in a `timedelta64` output array.
-   :rtype: ndarray
+   :rtype: Array
 
    .. rubric:: Notes
 
@@ -153,11 +153,11 @@ Module Contents
    :param axis: The axis along which to integrate.
    :type axis: int, optional
 
-   :returns: **trapezoid** -- Definite integral of `y` = n-dimensional array as approximated along
+   :returns: Definite integral of `y` = n-dimensional array as approximated along
              a single axis by the trapezoidal rule. If `y` is a 1-dimensional array,
              then the result is a float. If `n` is greater than 1, then the result
              is an `n`-1 dimensional array.
-   :rtype: float or pdarray
+   :rtype: Array
 
    .. rubric:: Notes
 
@@ -176,6 +176,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> y = xp.asarray(ak.array([1, 2, 3]))
 
    Use the trapezoidal rule on evenly spaced points:

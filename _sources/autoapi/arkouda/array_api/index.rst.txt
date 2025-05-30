@@ -125,7 +125,7 @@ Package Contents
       will fail if the array is too large (see:
       :func:`~arkouda.client.maxTransferBytes`)
 
-      .. seealso:: :obj:`pdarray.to_ndarray`
+      .. seealso:: :py:obj:`pdarray.to_ndarray`
 
 
 
@@ -138,7 +138,7 @@ Package Contents
       will fail if the array is too large (see:
       :func:`~arkouda.client.maxTransferBytes`)
 
-      .. seealso:: :obj:`pdarray.to_list`
+      .. seealso:: :py:obj:`pdarray.to_list`
 
 
 
@@ -148,7 +148,7 @@ Package Contents
 
       For axes=None, reverse all the dimensions of the array.
 
-      .. seealso:: :obj:`ak.transpose`
+      .. seealso:: :py:obj:`ak.transpose`
 
 
 

@@ -4,14 +4,6 @@ arkouda.numpy.util
 .. py:module:: arkouda.numpy.util
 
 
-Attributes
-----------
-
-.. autoapisummary::
-
-   arkouda.numpy.util.Index
-
-
 Functions
 ---------
 
@@ -20,11 +12,8 @@ Functions
    arkouda.numpy.util.attach
    arkouda.numpy.util.attach_all
    arkouda.numpy.util.broadcast_dims
-   arkouda.numpy.util.concatenate
    arkouda.numpy.util.convert_bytes
    arkouda.numpy.util.convert_if_categorical
-   arkouda.numpy.util.enrich_inplace
-   arkouda.numpy.util.expand
    arkouda.numpy.util.generic_concat
    arkouda.numpy.util.get_callback
    arkouda.numpy.util.identity
@@ -34,7 +23,6 @@ Functions
    arkouda.numpy.util.is_numeric
    arkouda.numpy.util.is_registered
    arkouda.numpy.util.map
-   arkouda.numpy.util.most_common
    arkouda.numpy.util.register
    arkouda.numpy.util.register_all
    arkouda.numpy.util.report_mem
@@ -46,66 +34,152 @@ Functions
 Module Contents
 ---------------
 
-.. py:data:: Index
-
 .. py:function:: attach(name: str)
+
+   Attach a previously created Arkouda object by its registered name.
+
+   This function retrieves an Arkouda object (e.g., `pdarray`, `DataFrame`,
+   `Series`, etc.) associated with a given `name`. It returns the corresponding
+   object based on the type of object stored under that name.
+
+   :param name: The name of the object to attach.
+   :type name: str
+
+   :returns: The Arkouda object associated with the given `name`. The returned object
+             could be of any supported type, such as `pdarray`, `DataFrame`, `Series`,
+             etc.
+   :rtype: object
+
+   :raises ValueError: If the object type in the response message does not match any known types.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+
+   Attach an existing pdarray
+   >>> obj = ak.array([1, 2, 3])
+   >>> registered_obj = obj.register("my_array")
+   >>> arr = ak.attach("my_array")
+   >>> print(arr)
+   [1 2 3]
+   >>> registered_obj.unregister()
+
 
 .. py:function:: attach_all(names: list)
 
-   Attach to all objects registered with the names provide
+   Attach to all objects registered with the provided names.
 
-   :param names: List of names to attach to
-   :type names: list
+   This function returns a dictionary mapping each name in the input list
+   to the corresponding Arkouda object retrieved using `attach`.
 
+   :param names: A list of names corresponding to registered Arkouda objects.
+   :type names: List of str
+
+   :returns: A dictionary mapping each name to the attached Arkouda object.
    :rtype: dict
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> data = { "arr1": ak.array([0, 1, 2]), "arr2": ak.array([3, 4, 5]) }
+   >>> ak.register_all(data)
+
+   Assuming "arr1" and "arr2" were previously registered
+   >>> attached_objs = ak.attach_all(["arr1", "arr2"])
+   >>> print(attached_objs["arr1"])
+   [0 1 2]
+   >>> print(type(attached_objs["arr2"]))
+   <class 'arkouda.numpy.pdarrayclass.pdarray'>
+   >>> ak.unregister_all(["arr1", "arr2"])
 
 
 .. py:function:: broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, Ellipsis]
 
-   Algorithm to determine shape of broadcasted PD array given two array shapes
+   Determine the broadcasted shape of two arrays given their shapes.
 
-   see: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
+   This function implements the broadcasting rules from the Array API standard
+   to compute the shape resulting from broadcasting two arrays together.
 
+   See: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
 
-.. py:function:: concatenate(items, ordered=True)
+   :param sa: The shape of the first array.
+   :type sa: Sequence[int]
+   :param sb: The shape of the second array.
+   :type sb: Sequence[int]
+
+   :returns: The broadcasted shape resulting from combining `sa` and `sb`.
+   :rtype: Tuple[int, ...]
+
+   :raises ValueError: If the shapes are not compatible for broadcasting.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> from arkouda.util import broadcast_dims
+   >>> broadcast_dims((5, 1), (1, 3))
+   (5, 3)
+
+   >>> broadcast_dims((4,), (3, 1))
+   (3, 4)
+
 
 .. py:function:: convert_bytes(nbytes: arkouda.numpy.dtypes.int_scalars, unit: Literal['B', 'KB', 'MB', 'GB'] = 'B') -> arkouda.numpy.dtypes.numeric_scalars
 
-   Convert the number of bytes to KB, MB, or GB.
+   Convert a number of bytes to a larger unit: KB, MB, or GB.
 
-   :param nbytes: The number of bytes to convert
+   :param nbytes: The number of bytes to convert.
    :type nbytes: int_scalars
-   :param unit: Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+   :param unit: The unit to convert to. One of {"B", "KB", "MB", "GB"}.
    :type unit: {"B", "KB", "MB", "GB"}, default="B"
 
-   :rtype: int
+   :returns: The converted value in the specified unit.
+   :rtype: numeric_scalars
+
+   :raises ValueError: If `unit` is not one of {"B", "KB", "MB", "GB"}.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> from arkouda.util import convert_bytes
+   >>> convert_bytes(2048, unit="KB")
+   2.0
+
+   >>> convert_bytes(1048576, unit="MB")
+   1.0
+
+   >>> convert_bytes(1073741824, unit="GB")
+   1.0
 
 
 .. py:function:: convert_if_categorical(values)
 
-   Convert a Categorical array to Strings for display
+   Convert a Categorical array to a Strings array for display purposes.
 
+   If the input is a Categorical, it is converted to its string labels
+   based on its codes. If not, the input is returned unchanged.
 
-.. py:function:: enrich_inplace(data, keynames, aggregations, **kwargs)
+   :param values: The input array, which may be a Categorical.
+   :type values: Categorical or any
 
-.. py:function:: expand(size: Union[int, numpy.int64, numpy.uint64], segs: arkouda.numpy.pdarrayclass.pdarray, vals: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+   :returns: The string labels if `values` is a Categorical, otherwise the original input.
+   :rtype: Strings or original type
 
-   Expand an array with values placed into the indicated segments.
+   .. rubric:: Examples
 
-   :param size: The size of the array to be expanded
-   :type size: int, np.int64, or np.uint64
-   :param segs: The indices where the values should be placed
-   :type segs: pdarray
-   :param vals: The values to be placed in each segment
-   :type vals: pdarray
+   >>> import arkouda as ak
 
-   :returns: The expanded array.
-   :rtype: pdarray
+   Example with a Categorical
+   >>> categories = ak.array(["apple", "banana", "cherry"])
+   >>> cat = ak.Categorical(categories)
+   >>> result = convert_if_categorical(cat)
+   >>> print(result)
+   ['apple', 'banana', 'cherry']
 
-   .. rubric:: Notes
-
-   This function (with different order of arguments) is now in arkouda
-   proper as ak.broadcast. It is retained here for backwards compatibility.
+   Example with a non-Categorical input
+   >>> values = ak.array([1, 2, 3])
+   >>> result = convert_if_categorical(values)
+   >>> print(result)
+   [1 2 3]
 
 
 .. py:function:: generic_concat(items, ordered=True)
@@ -116,28 +190,45 @@ Module Contents
 
 .. py:function:: invert_permutation(perm: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
 
-   Find the inverse of a permutation array.
+   Compute the inverse of a permutation array.
 
-   :param perm: The permutation array.
+   The inverse permutation undoes the effect of the original permutation.
+   For a valid permutation array `perm`, this function returns an array `inv`
+   such that `inv[perm[i]] == i` for all `i`.
+
+   :param perm: A permutation of the integers `[0, N-1]`, where `N` is the length of the array.
    :type perm: pdarray
 
-   :returns: The inverse of the permutation array.
+   :returns: The inverse of the input permutation.
    :rtype: pdarray
 
+   :raises ValueError: If `perm` is not a valid permutation of the range `[0, N-1]`, such as
+       containing duplicates or missing values.
 
-.. py:function:: is_float(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.series.Series, arkouda.index.Index]) -> bool
+   .. rubric:: Examples
 
-   Check if the dtype of the given array is float.
+   >>> import arkouda as ak
+   >>> from arkouda import array, invert_permutation
+   >>> perm = array([2, 0, 3, 1])
+   >>> inv = invert_permutation(perm)
+   >>> print(inv)
+   [1 3 0 2]
 
-   :param arry: The input pdarray, Strings, or Categorical object.
-   :type arry: ((pdarray, Strings, Categorical))
 
-   :returns: True if the dtype of pda is of type float, False otherwise.
+.. py:function:: is_float(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.pandas.series.Series, arkouda.index.Index]) -> bool
+
+   Check if the dtype of the given array-like object is a float type.
+
+   :param arry: The object to check.
+   :type arry: pdarray, Strings, Categorical, Series, or Index
+
+   :returns: True if the dtype of `arry` is a float type, False otherwise.
    :rtype: bool
 
    .. rubric:: Examples
 
-   >>> data = ak.array([1.0, 2, 3, 4, np.nan])
+   >>> import arkouda as ak
+   >>> data = ak.array([1.0, 2, 3, 4, float('nan')])
    >>> ak.util.is_float(data)
    True
 
@@ -145,20 +236,25 @@ Module Contents
    >>> ak.util.is_float(data2)
    False
 
+   >>> strings = ak.array(["1.0", "2.0"])
+   >>> ak.util.is_float(strings)
+   False
 
-.. py:function:: is_int(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.series.Series, arkouda.index.Index]) -> bool
 
-   Check if the dtype of the given array is int.
+.. py:function:: is_int(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.pandas.series.Series, arkouda.index.Index]) -> bool
 
-   :param arry: The input pdarray, Strings, or Categorical object.
+   Check if the dtype of the given array-like object is an integer type.
+
+   :param arry: The object to check.
    :type arry: pdarray, Strings, Categorical, Series, or Index
 
-   :returns: True if the dtype of pda is of type int, False otherwise.
+   :returns: True if the dtype of `arry` is an integer type, False otherwise.
    :rtype: bool
 
    .. rubric:: Examples
 
-   >>> data = ak.array([1.0, 2, 3, 4, np.nan])
+   >>> import arkouda as ak
+   >>> data = ak.array([1.0, 2, 3, 4, float('nan')])
    >>> ak.util.is_int(data)
    False
 
@@ -166,19 +262,24 @@ Module Contents
    >>> ak.util.is_int(data2)
    True
 
+   >>> strings = ak.array(["1", "2"])
+   >>> ak.util.is_int(strings)
+   False
 
-.. py:function:: is_numeric(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.series.Series, arkouda.index.Index]) -> bool
 
-   Check if the dtype of the given array is numeric.
+.. py:function:: is_numeric(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.pandas.series.Series, arkouda.index.Index]) -> bool
 
-   :param arry: The input pdarray, Strings, or Categorical object.
-   :type arry: ((pdarray, Strings, Categorical))
+   Check if the dtype of the given array-like object is numeric.
 
-   :returns: True if the dtype of pda is numeric, False otherwise.
+   :param arry: The object to check.
+   :type arry: pdarray, Strings, Categorical, Series, or Index
+
+   :returns: True if the dtype of `arry` is numeric, False otherwise.
    :rtype: bool
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> data = ak.array([1, 2, 3, 4, 5])
    >>> ak.util.is_numeric(data)
    True
@@ -187,42 +288,69 @@ Module Contents
    >>> ak.util.is_numeric(strings)
    False
 
+   >>> from arkouda import Categorical
+   >>> cat = Categorical(strings)
+   >>> ak.util.is_numeric(cat)
+   False
+
 
 .. py:function:: is_registered(name: str, as_component: bool = False) -> bool
 
-   Determine if the name provided is associated with a registered Object
+   Determine if the provided name is associated with a registered Arkouda object.
 
-   :param name: The name to check for in the registry
+   This function checks if the `name` is found in the registry of objects,
+   and optionally checks if it is registered as a component of a registered object.
+
+   :param name: The name to check for in the registry.
    :type name: str
-   :param as_component: When True, the name will be checked to determine if it is registered as a component of
-                        a registered object
+   :param as_component: When True, the function checks if the name is registered as a component
+                        of a registered object (rather than as a standalone object).
    :type as_component: bool, default=False
 
+   :returns: `True` if the name is found in the registry, `False` otherwise.
    :rtype: bool
 
-
-.. py:function:: map(values: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], mapping: Union[dict, arkouda.Series]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
-
-   Map values of an array according to an input mapping.
-
-   :param values: The values to be mapped.
-   :type values: pdarray, Strings, or Categorical
-   :param mapping: The mapping correspondence.
-   :type mapping: dict or Series
-
-   :returns: A new array with the values mapped by the mapping correspondence.
-             When the input Series has Categorical values,
-             the return Series will have Strings values.
-             Otherwise, the return type will match the input type.
-   :rtype: arkouda.numpy.pdarrayclass.pdarray or arkouda.numpy.strings.Strings
-
-   :raises TypeError: Raised if arg is not of type dict or arkouda.Series.
-       Raised if values not of type pdarray, Categorical, or Strings.
+   :raises KeyError: If the registry query encounters an issue (e.g., invalid registry data or access issues).
 
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> ak.connect()
+
+   Check if a name is registered as an object
+   >>> obj = ak.array([1, 2, 3])
+   >>> registered_obj = obj.register("my_array")
+   >>> result = ak.is_registered("my_array")
+   >>> print(result)
+   True
+   >>> registered_obj.unregister()
+
+   Check if a name is registered as a component
+   >>> result = ak.is_registered("my_component", as_component=True)
+   >>> print(result)
+   False
+
+
+.. py:function:: map(values: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], mapping: Union[dict, arkouda.Series]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
+
+   Map the values of an array according to an input mapping.
+
+   :param values: The values to be mapped.
+   :type values: pdarray, Strings, or Categorical
+   :param mapping: The mapping correspondence. A dictionary or Series that defines how
+                   to map the `values` array.
+   :type mapping: dict or Series
+
+   :returns: A new array with the values mapped by the provided mapping.
+             The return type matches the type of `values`. If the input `Series`
+             has Categorical values, the return type will be `Strings`.
+   :rtype: Union[pdarray, Strings]
+
+   :raises TypeError: If `mapping` is not of type `dict` or `Series`.
+       If `values` is not of type `pdarray`, `Categorical`, or `Strings`.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
    >>> from arkouda.numpy.util import map
    >>> a = ak.array([2, 3, 2, 3, 4])
    >>> a
@@ -230,59 +358,105 @@ Module Contents
    >>> ak.util.map(a, {4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
    array([30.00000000000000000 5.00000000000000000 30.00000000000000000
    5.00000000000000000 25.00000000000000000])
-   >>> s = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
+   >>> s = ak.Series(ak.array(["a", "b", "c", "d"]), index=ak.array([4, 2, 1, 3]))
    >>> ak.util.map(a, s)
    array(['b', 'd', 'b', 'd', 'a'])
 
 
-.. py:function:: most_common(g, values)
-
 .. py:function:: register(obj, name)
 
-   Register an arkouda object with a user-specified name. Backwards compatible
-   with earlier arkouda versions.
+   Register an Arkouda object with a user-specified name.
+
+   This function registers the provided Arkouda object (`obj`) under a
+   given name (`name`). It is backwards compatible with earlier versions
+   of Arkouda.
+
+   :param obj: The Arkouda object to register.
+   :type obj: Arkouda object
+   :param name: The name to associate with the object.
+   :type name: str
+
+   :returns: The input object, now registered with the specified name.
+   :rtype: Registered object
+
+   :raises AttributeError: If `obj` does not have a `register` method.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> from arkouda.util import register
+   >>> obj = ak.array([1, 2, 3])
+   >>> registered_obj = register(obj, "my_array")
+   >>> print(registered_obj)
+   [1 2 3]
+   >>> registered_obj.unregister()
+
+   Example of registering a different Arkouda object
+   >>> categories = ak.array(["apple", "banana", "cherry"])
+   >>> cat = ak.Categorical(categories)
+   >>> registered_cat = register(cat, "my_cat")
+   >>> print(registered_cat)
+   ['apple', 'banana', 'cherry']
 
 
 .. py:function:: register_all(data: dict)
 
-   Register all objects in the provided dictionary
+   Register all objects in the provided dictionary.
 
-   :param data: Maps name to register the object to the object. For example, {"MyArray": ak.array([0, 1, 2])
+   This function iterates through the dictionary `data`, registering each object
+   with its corresponding name. It is useful for batch registering multiple
+   objects in Arkouda.
+
+   :param data: A dictionary that maps the name to register the object to the object itself.
+                For example, {"MyArray": ak.array([0, 1, 2])}.
    :type data: dict
 
-   :rtype: None
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> data = { "array1": ak.array([0, 1, 2]), "array2": ak.array([3, 4, 5]) }
+   >>> ak.register_all(data)
+
+   After calling this function, "array1" and "array2" are registered
+   in Arkouda, and can be accessed by their names.
+   >>> ak.unregister_all(["array1", "array2"])
 
 
 .. py:function:: report_mem(pre='')
 
 .. py:function:: sparse_sum_help(idx1: arkouda.numpy.pdarrayclass.pdarray, idx2: arkouda.numpy.pdarrayclass.pdarray, val1: arkouda.numpy.pdarrayclass.pdarray, val2: arkouda.numpy.pdarrayclass.pdarray, merge: bool = True, percent_transfer_limit: int = 100) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
 
-   Helper for summing two sparse matrices together
+   Sum two sparse matrices together.
 
-   Return is equivalent to
-   ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((val1, val2)))
+   This function returns the result of summing two sparse matrices by combining
+   their indices and values. Internally, it performs the equivalent of:
 
-   :param idx1: indices for the first sparse matrix
+       ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((val1, val2)))
+
+   :param idx1: Indices for the first sparse matrix.
    :type idx1: pdarray
-   :param idx2: indices for the second sparse matrix
+   :param idx2: Indices for the second sparse matrix.
    :type idx2: pdarray
-   :param val1: values for the first sparse matrix
+   :param val1: Values for the first sparse matrix.
    :type val1: pdarray
-   :param val2: values for the second sparse matrix
+   :param val2: Values for the second sparse matrix.
    :type val2: pdarray
-   :param merge: If true the indices are combined using a merge based workflow,
-                 otherwise they are combine using a sort based workflow.
+   :param merge: If True, the indices are combined using a merge-based workflow.
+                 If False, a sort-based workflow is used.
    :type merge: bool, default=True
-   :param percent_transfer_limit: Only used when merge is true. This is the maximum percentage of the data allowed
-                                  to be moved between locales during the merge workflow. If we would exceed this percentage,
-                                  we fall back to using the sort based workflow.
+   :param percent_transfer_limit: Only used when `merge` is True. This defines the maximum percentage of
+                                  data allowed to move between locales during the merge. If this threshold
+                                  is exceeded, a sort-based workflow is used instead.
    :type percent_transfer_limit: int, default=100
 
-   :returns: indices and values for the summed sparse matrix
-   :rtype: (pdarray, pdarray)
+   :returns: A tuple containing:
+             - The indices of the resulting sparse matrix.
+             - The summed values associated with those indices.
+   :rtype: Tuple[pdarray, pdarray]
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> idx1 = ak.array([0, 1, 3, 4, 7, 9])
    >>> idx2 = ak.array([0, 1, 3, 6, 9])
    >>> vals1 = idx1
@@ -296,13 +470,54 @@ Module Contents
 
 .. py:function:: unregister(name: str) -> str
 
-.. py:function:: unregister_all(names: list)
+   Unregister an Arkouda object by its name.
 
-   Unregister all names provided
+   This function sends a request to unregister the Arkouda object associated
+   with the specified `name`. It returns a response message indicating the
+   success or failure of the operation.
 
-   :param names: List of names used to register objects to be unregistered
-   :type names: list
+   :param name: The name of the object to unregister.
+   :type name: str
 
-   :rtype: None
+   :returns: A message indicating the result of the unregister operation.
+   :rtype: str
+
+   :raises RuntimeError: If the object associated with the given `name` does not exist or cannot
+       be unregistered.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+
+   Unregister an existing object
+   >>> obj = ak.array([1, 2, 3])
+   >>> registered_obj = obj.register("my_array")
+   >>> response = ak.unregister("my_array")
+   >>> print(response)
+   Unregistered PDARRAY my_array
+
+
+.. py:function:: unregister_all(names: List[str])
+
+   Unregister all Arkouda objects associated with the provided names.
+
+   This function iterates through the list of `names`, unregistering each
+   corresponding object from the Arkouda server.
+
+   :param names: A list of registered names corresponding to Arkouda objects
+                 that should be unregistered.
+   :type names: List of str
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> data = { "array1": ak.array([0, 1, 2]), "array2": ak.array([3, 4, 5]) }
+   >>> ak.register_all(data)
+
+   After calling this function, "array1" and "array2" are registered
+   in Arkouda, and can be accessed by their names.
+   >>> ak.unregister_all(["array1", "array2"])
+
+   "arr1" and "arr2" are now unregistered
 
 

@@ -19,15 +19,18 @@ Module Contents
 
 .. py:class:: HistoryRetriever
 
-   HistoryRetriever is an abstract base class that defines the retrieve method signature
-   and implements _filter_arkouda_command
+   Abstract base class that defines the retrieve method signature.
+
+   Implements _filter_arkouda_command.
 
 
    .. py:method:: retrieve(command_filter: Optional[str] = None, num_commands: Optional[int] = None) -> List[str]
       :abstractmethod:
 
 
-      Generates list of commands executed within a Python REPL shell, Jupyter notebook,
+      Generate list of commands executed.
+
+      Generate list of commands executed within a Python REPL shell, Jupyter notebook,
       or IPython notebook, with an optional command filter and number of commands to return.
 
       :param num_commands: The number of commands from history to retrieve
@@ -40,18 +43,19 @@ Module Contents
 
 
 
-.. py:class:: NotebookHistoryRetriever(profile='default', hist_file='', **traits)
+.. py:class:: NotebookHistoryRetriever(profile: str = 'default', hist_file: str = '', **traits: Any)
 
    Bases: :py:obj:`IPython.core.history.HistoryAccessor`, :py:obj:`HistoryRetriever`
 
 
-   NotebookHistoryRetriever implements the retrieve method to get command history
-   from a Jupyter notebook or IPython shell.
+   Implement the retrieve method to get command history from a Jupyter notebook or IPython shell.
 
 
    .. py:method:: retrieve(command_filter: Optional[str] = None, num_commands: Optional[int] = None) -> List[str]
 
-      Generates list of commands executed within a Jupyter notebook or IPython shell,
+      Generate list of commands executed.
+
+      Generate list of commands executed within a Jupyter notebook or IPython shell,
       with an optional command filter and number of commands to return.
 
       :param num_commands: The number of commands from history to retrieve
@@ -64,6 +68,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> from arkouda.history import NotebookHistoryRetriever
       >>> h = NotebookHistoryRetriever()
       >>> 1+2
@@ -79,13 +84,14 @@ Module Contents
    Bases: :py:obj:`HistoryRetriever`
 
 
-   ShellHistoryRetriever implements the retrieve method to get command history from the
-   Python REPL shell.
+   Implement the retrieve method to get command history from the Python REPL shell.
 
 
    .. py:method:: retrieve(command_filter: Optional[str] = None, num_commands: Optional[int] = None) -> List[str]
 
-      Generates list of commands executed within the a Python REPL shell, with an
+      Generate list of commands executed.
+
+      Generate list of commands executed within the a Python REPL shell, with an
       optional command filter and number of commands to return.
 
       :param num_commands: The number of commands from history to retrieve
@@ -98,6 +104,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> from arkouda.history import ShellHistoryRetriever
       >>> import readline
       >>> h = ShellHistoryRetriever()

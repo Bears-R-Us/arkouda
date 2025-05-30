@@ -4,16 +4,6 @@ arkouda.numpy.segarray
 .. py:module:: arkouda.numpy.segarray
 
 
-Attributes
-----------
-
-.. autoapisummary::
-
-   arkouda.numpy.segarray.LEN_SUFFIX
-   arkouda.numpy.segarray.SEG_SUFFIX
-   arkouda.numpy.segarray.VAL_SUFFIX
-
-
 Classes
 -------
 
@@ -22,24 +12,8 @@ Classes
    arkouda.numpy.segarray.SegArray
 
 
-Functions
----------
-
-.. autoapisummary::
-
-   arkouda.numpy.segarray.segarray
-
-
 Module Contents
 ---------------
-
-.. py:data:: LEN_SUFFIX
-   :value: '_lengths'
-
-
-.. py:data:: SEG_SUFFIX
-   :value: '_segments'
-
 
 .. py:class:: SegArray(segments, values, lengths=None, grouping=None)
 
@@ -95,24 +69,6 @@ Module Contents
 
 
    .. py:method:: argmin(x=None)
-
-
-   .. py:method:: attach(user_defined_name)
-      :classmethod:
-
-
-      Using the defined name, attach to a SegArray that has been registered to the Symbol Table
-
-      :param user_defined_name: user defined name which the SegArray object was registered under
-      :type user_defined_name: str
-
-      :returns: The resulting SegArray
-      :rtype: SegArray
-
-      :raises RuntimeError: Raised if the server could not attach to the SegArray object
-
-      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`
-
 
 
    .. py:method:: concat(x, axis=0, ordered=True)
@@ -173,32 +129,6 @@ Module Contents
 
 
 
-   .. py:method:: from_parts(segments, values, lengths=None, grouping=None) -> SegArray
-      :classmethod:
-
-
-      DEPRECATED
-      Construct a SegArray object from its parts
-
-      :param segments: Start index of each sub-array in the flattened values array
-      :type segments: pdarray, int64
-      :param values: The flattened values of all sub-arrays
-      :type values: pdarray
-      :param lengths: The length of each segment
-      :type lengths: pdarray
-      :param grouping: grouping of segments
-      :type grouping: GroupBy
-
-      :returns: Data structure representing an array whose elements are variable-length arrays.
-      :rtype: SegArray
-
-      .. rubric:: Notes
-
-      Keyword args 'lengths' and 'grouping' are not user-facing. They are used by the
-      attach method.
-
-
-
    .. py:method:: from_return_msg(rep_msg) -> SegArray
       :classmethod:
 
@@ -221,11 +151,16 @@ Module Contents
                       for the sub-array
       :type default: scalar
 
-      :returns: * **val** (*pdarray*) -- compressed=False: The j-th value of each sub-array where j is in
-                  bounds and the default value where j is out of bounds.
-                  compressed=True: The j-th values of only the sub-arrays where j is
-                  in bounds
-                * **origin_indices** (*pdarray, bool*) -- A Boolean array that is True where j is in bounds for the sub-array.
+      :returns:
+
+                val : pdarray
+                    compressed=False: The j-th value of each sub-array where j is in
+                    bounds and the default value where j is out of bounds.
+                    compressed=True: The j-th values of only the sub-arrays where j is
+                    in bounds
+                origin_indices : pdarray, bool
+                    A Boolean array that is True where j is in bounds for the sub-array.
+      :rtype: pdarray, pdarray|bool
 
       .. rubric:: Notes
 
@@ -242,11 +177,16 @@ Module Contents
       :param return_origins: Return a logical index indicating which sub-arrays are length n
       :type return_origins: bool
 
-      :returns: * **columns** (*list of pdarray*) -- An n-long list of pdarray, where each row is one of the n-long
-                  sub-arrays from the SegArray. The number of rows is the number of
-                  True values in the returned mask.
-                * **origin_indices** (*pdarray, bool*) -- Array of bool for each element of the SegArray, True where sub-array
-                  has length n.
+      :returns:
+
+                columns : list of pdarray
+                    An n-long list of pdarray, where each row is one of the n-long
+                    sub-arrays from the SegArray. The number of rows is the number of
+                    True values in the returned mask.
+                origin_indices : pdarray, bool
+                    Array of bool for each element of the SegArray, True where sub-array
+                    has length n.
+      :rtype: List of pdarray, pdarray|bool
 
 
 
@@ -260,8 +200,13 @@ Module Contents
                              each returned n-gram came from.
       :type return_origins: bool
 
-      :returns: * **ngrams** (*list of pdarray*) -- An n-long list of pdarrays, essentially a table where each row is an n-gram.
-                * **origin_indices** (*pdarray, int*) -- The index of the sub-array from which the corresponding n-gram originated
+      :returns:
+
+                ngrams : list of pdarray
+                    An n-long list of pdarrays, essentially a table where each row is an n-gram.
+                origin_indices : pdarray, int
+                    The index of the sub-array from which the corresponding n-gram originated
+      :rtype: pdarray, pdarray|int
 
 
 
@@ -279,10 +224,15 @@ Module Contents
                      sub-array to be returned as a prefix.
       :type proper: bool
 
-      :returns: * **prefixes** (*list of pdarray*) -- An n-long list of pdarrays, essentially a table where each row is an n-prefix.
-                  The number of rows is the number of True values in the returned mask.
-                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the sub-array was long enough to return
-                  an n-suffix, False otherwise.
+      :returns:
+
+                prefixes : list of pdarray
+                    An n-long list of pdarrays, essentially a table where each row is an n-prefix.
+                    The number of rows is the number of True values in the returned mask.
+                origin_indices : pdarray, bool
+                    Boolean array that is True where the sub-array was long enough to return
+                    an n-suffix, False otherwise.
+      :rtype: List of pdarray, pdarray|bool
 
 
 
@@ -300,10 +250,15 @@ Module Contents
                      sub-array to be returned as a suffix.
       :type proper: bool
 
-      :returns: * **suffixes** (*list of pdarray*) -- An n-long list of pdarrays, essentially a table where each row is an n-suffix.
-                  The number of rows is the number of True values in the returned mask.
-                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the sub-array was long enough to return
-                  an n-suffix, False otherwise.
+      :returns:
+
+                suffixes : list of pdarray
+                    An n-long list of pdarrays, essentially a table where each row is an n-suffix.
+                    The number of rows is the number of True values in the returned mask.
+                origin_indices : pdarray, bool
+                    Boolean array that is True where the sub-array was long enough to return
+                    an n-suffix, False otherwise.
+      :rtype: List of pdarray, pdarray|bool
 
 
 
@@ -330,19 +285,20 @@ Module Contents
       :returns: Segments are the 1d intersections of the segments of self and other
       :rtype: SegArray
 
-      .. seealso:: :obj:`pdarraysetops.intersect1d`
+      .. seealso:: :py:obj:`pdarraysetops.intersect1d`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = [1, 2, 3, 1, 4]
       >>> b = [3, 1, 4, 5]
       >>> c = [1, 3, 3, 5]
       >>> d = [2, 2, 4]
-      >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
-      >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
+      >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+      >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
       >>> seg_a.intersect(seg_b)
       SegArray([
-      [1, 3],
+      [1 3]
       [4]
       ])
 
@@ -350,17 +306,12 @@ Module Contents
 
    .. py:method:: is_registered() -> bool
 
-      Checks if the name of the SegArray object is registered in the Symbol Table
+      Check if the name of the SegArray object is registered in the Symbol Table
 
       :returns: True if SegArray is registered, false if not
       :rtype: bool
 
-      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`
-
-
-
-   .. py:method:: load(prefix_path, dataset='segarray', segment_name='segments', value_name='values')
-      :classmethod:
+      .. seealso:: :py:obj:`register`, :py:obj:`unregister`, :py:obj:`attach`
 
 
 
@@ -437,7 +388,7 @@ Module Contents
       Objects registered with the server are immune to deletion until
       they are unregistered.
 
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`is_registered`
 
 
 
@@ -454,49 +405,14 @@ Module Contents
       :param return_multiplicity: If True, also return the number of times each value was repeated.
       :type return_multiplicity: bool
 
-      :returns: * **norepeats** (*SegArray*) -- Sub-arrays with runs of repeated values replaced with single value
-                * **multiplicity** (*SegArray*) -- If return_multiplicity=True, this array contains the number of times
-                  each value in the returned SegArray was repeated in the original SegArray.
+      :returns:
 
-
-
-   .. py:method:: save(prefix_path, dataset='segarray', mode='truncate', file_type='distribute')
-
-      DEPRECATED
-      Save the SegArray to HDF5.
-      The object can be saved to a collection of files or single file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param file_type: Default: "distribute"
-                        When set to single, dataset is written to a single file.
-                        When distribute, dataset is written on a file per locale.
-                        This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-
-      .. rubric:: Notes
-
-      - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-      the file name will be `prefix_path`.
-      - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
-
-      .. seealso:: :obj:`to_hdf`, :obj:`load`
+                norepeats : SegArray
+                    Sub-arrays with runs of repeated values replaced with single value
+                multiplicity : SegArray
+                    If return_multiplicity=True, this array contains the number of times
+                    each value in the returned SegArray was repeated in the original SegArray.
+      :rtype: Segarray, Segarray
 
 
 
@@ -529,20 +445,21 @@ Module Contents
       :returns: Segments are the 1d set difference of the segments of self and other
       :rtype: SegArray
 
-      .. seealso:: :obj:`pdarraysetops.setdiff1d`
+      .. seealso:: :py:obj:`pdarraysetops.setdiff1d`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = [1, 2, 3, 1, 4]
       >>> b = [3, 1, 4, 5]
       >>> c = [1, 3, 3, 5]
       >>> d = [2, 2, 4]
-      >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
-      >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
+      >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+      >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
       >>> seg_a.setdiff(seg_b)
       SegArray([
-      [2, 4],
-      [1, 3, 5]
+      [2 4]
+      [1 3 5]
       ])
 
 
@@ -557,20 +474,21 @@ Module Contents
       :returns: Segments are the 1d symmetric difference of the segments of self and other
       :rtype: SegArray
 
-      .. seealso:: :obj:`pdarraysetops.setxor1d`
+      .. seealso:: :py:obj:`pdarraysetops.setxor1d`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = [1, 2, 3, 1, 4]
       >>> b = [3, 1, 4, 5]
       >>> c = [1, 3, 3, 5]
       >>> d = [2, 2, 4]
-      >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
-      >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
+      >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+      >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
       >>> seg_a.setxor(seg_b)
       SegArray([
-      [2, 4, 5],
-      [1, 3, 5, 2]
+      [2 4 5]
+      [1 2 3 5]
       ])
 
 
@@ -601,7 +519,7 @@ Module Contents
 
       :rtype: None
 
-      .. seealso:: :obj:`load`
+      .. seealso:: :py:obj:`load`
 
 
 
@@ -612,15 +530,16 @@ Module Contents
       :returns: A list with the same sub-arrays (also list) as this segarray
       :rtype: list
 
-      .. seealso:: :obj:`to_ndarray`
+      .. seealso:: :py:obj:`to_ndarray`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
       >>> segarr.to_list()
       [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
       >>> type(segarr.to_list())
-      list
+      <class 'list'>
 
 
 
@@ -631,15 +550,17 @@ Module Contents
       :returns: A numpy ndarray with the same sub-arrays (also numpy.ndarray) as this array
       :rtype: np.ndarray
 
-      .. seealso:: :obj:`array`, :obj:`to_list`
+      .. seealso:: :py:obj:`array`, :py:obj:`to_list`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
       >>> segarr.to_ndarray()
-      array([array([1, 2, 3, 4]), array([5, 6, 7]), array([8, 9, 10, 11, 12])])
+      array([array([0, 1, 2, 3]), array([4, 5, 6]), array([ 7,  8,  9, 10, 11])],
+        dtype=object)
       >>> type(segarr.to_ndarray())
-      numpy.ndarray
+      <class 'numpy.ndarray'>
 
 
 
@@ -686,7 +607,7 @@ Module Contents
 
    .. py:method:: transfer(hostname: str, port: arkouda.numpy.dtypes.int_scalars)
 
-      Sends a Segmented Array to a different Arkouda server
+      Send a Segmented Array to a different Arkouda server.
 
       :param hostname: The hostname where the Arkouda server intended to
                        receive the Segmented Array is running.
@@ -721,20 +642,21 @@ Module Contents
       :returns: Segments are the 1d union of the segments of self and other
       :rtype: SegArray
 
-      .. seealso:: :obj:`pdarraysetops.union1d`
+      .. seealso:: :py:obj:`pdarraysetops.union1d`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = [1, 2, 3, 1, 4]
       >>> b = [3, 1, 4, 5]
       >>> c = [1, 3, 3, 5]
       >>> d = [2, 2, 4]
-      >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
-      >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
+      >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+      >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
       >>> seg_a.union(seg_b)
       SegArray([
-      [1, 2, 3, 4, 5],
-      [1, 2, 3, 4, 5]
+      [1 2 3 4 5]
+      [1 2 3 4 5]
       ])
 
 
@@ -758,8 +680,6 @@ Module Contents
       Unregister this SegArray object in the arkouda server which was previously
       registered using register() and/or attached to using attach()
 
-      :rtype: None
-
       :raises RuntimeError: Raised if the server could not unregister the SegArray object from the Symbol Table
 
       .. rubric:: Notes
@@ -767,24 +687,7 @@ Module Contents
       Objects registered with the server are immune to deletion until
       they are unregistered.
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
-
-
-
-   .. py:method:: unregister_segarray_by_name(user_defined_name)
-      :staticmethod:
-
-
-      Using the defined name, remove the registered SegArray object from the Symbol Table
-
-      :param user_defined_name: user defined name which the SegArray object was registered under
-      :type user_defined_name: str
-
-      :rtype: None
-
-      :raises RuntimeError: Raised if the server could not unregister the SegArray object from the Symbol Table
-
-      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`is_registered`
 
 
 
@@ -804,8 +707,6 @@ Module Contents
                      file sizes to expand.
       :type repack: bool
 
-      :rtype: None
-
       :raises RuntimeError: Raised if a server-side error is thrown saving the SegArray
 
       .. rubric:: Notes
@@ -822,15 +723,5 @@ Module Contents
 
 
    .. py:attribute:: values
-
-
-.. py:data:: VAL_SUFFIX
-   :value: '_values'
-
-
-.. py:function:: segarray(segments: arkouda.numpy.pdarrayclass.pdarray, values: arkouda.numpy.pdarrayclass.pdarray, lengths=None, grouping=None)
-
-   Alias for the from_parts function. Prevents user from needing to call `ak.SegArray` constructor
-   DEPRECATED
 
 

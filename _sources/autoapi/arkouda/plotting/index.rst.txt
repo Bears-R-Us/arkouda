@@ -18,7 +18,7 @@ Module Contents
 
 .. py:function:: hist_all(ak_df: arkouda.dataframe.DataFrame, cols: list = [])
 
-   Create a grid plot histogramming all numeric columns in ak dataframe
+   Create a grid plot histogramming all numeric columns in ak dataframe.
 
    :param ak_df: Full Arkouda DataFrame containing data to be visualized
    :type ak_df: ak.DataFrame
@@ -32,18 +32,20 @@ Module Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
+   >>> import numpy as np
    >>> from arkouda.plotting import hist_all
-   >>> ak_df = ak.DataFrame({"a": ak.array(np.random.randn(100)),
-                             "b": ak.array(np.random.randn(100)),
-                             "c": ak.array(np.random.randn(100)),
-                             "d": ak.array(np.random.randn(100))
-                             })
+   >>> ak_df = ak.DataFrame({
+   ...     "a": ak.array(np.random.randn(100)),
+   ...     "b": ak.array(np.random.randn(100)),
+   ...     "c": ak.array(np.random.randn(100)),
+   ...     "d": ak.array(np.random.randn(100))
+   ... })
    >>> hist_all(ak_df)
 
 
 .. py:function:: plot_dist(b, h, log=True, xlabel=None, newfig=True)
 
-   Plot the distribution and cumulative distribution of histogram Data
+   Plot the distribution and cumulative distribution of histogram Data.
 
    :param b: Bin edges
    :type b: np.ndarray
@@ -68,8 +70,10 @@ Module Contents
    >>> import arkouda as ak
    >>> from matplotlib import pyplot as plt
    >>> b, h = ak.histogram(ak.arange(10), 3)
-   >>> ak.plot_dist(b, h.to_ndarray())
-   >>> # to show the plot
+   >>> h = h[:-1]
+   >>> ak.plot_dist(b.to_ndarray(), h.to_ndarray())
+
+   Show the plot:
    >>> plt.show()
 
 

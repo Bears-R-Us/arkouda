@@ -14,8 +14,8 @@ Functions
    arkouda.join.join_on_eq_with_dt
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
 .. py:function:: compute_join_size(a: arkouda.numpy.pdarrayclass.pdarray, b: arkouda.numpy.pdarrayclass.pdarray) -> Tuple[int, int]
 
@@ -37,15 +37,20 @@ Module Contents
    :param return_lengths: Whether or not to return the lengths of each segment. Default False.
    :type return_lengths: bool, optional
 
-   :returns: * **segments** (*pdarray, int64*) -- The starting index of each range in the resulting array
-             * **ranges** (*pdarray, int64*) -- The actual ranges, flattened into a single array
-             * **lengths** (*pdarray, int64*) -- The lengths of each segment. Only returned if return_lengths=True.
+   :returns:
+
+             segments : pdarray, int64
+                 The starting index of each range in the resulting array
+             ranges : pdarray, int64
+                 The actual ranges, flattened into a single array
+             lengths : pdarray, int64
+                 The lengths of each segment. Only returned if return_lengths=True.
+   :rtype: pdarray|int64, pdarray|int64, pdarray|int64
 
 
 .. py:function:: join_on_eq_with_dt(a1: arkouda.numpy.pdarrayclass.pdarray, a2: arkouda.numpy.pdarrayclass.pdarray, t1: arkouda.numpy.pdarrayclass.pdarray, t2: arkouda.numpy.pdarrayclass.pdarray, dt: Union[int, numpy.int64], pred: str, result_limit: Union[int, numpy.int64] = 1000) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
 
-   Performs an inner-join on equality between two integer arrays where
-   the time-window predicate is also true
+   Inner-join on equality between two integer arrays where the time-window predicate is also true.
 
    :param a1: pdarray to be joined
    :type a1: pdarray, int64
@@ -62,8 +67,13 @@ Module Contents
    :param result_limit: size limit for returned result
    :type result_limit: Union[int,np.int64]
 
-   :returns: * **result_array_one** (*pdarray, int64*) -- a1 indices where a1 == a2
-             * **result_array_one** (*pdarray, int64*) -- a2 indices where a2 == a1
+   :returns:
+
+             result_array_one : pdarray, int64
+                 a1 indices where a1 == a2
+             result_array_one : pdarray, int64
+                 a2 indices where a2 == a1
+   :rtype: Tuple[pdarray, pdarray]
 
    :raises TypeError: Raised if a1, a2, t1, or t2 is not a pdarray, or if dt or
        result_limit is not an int

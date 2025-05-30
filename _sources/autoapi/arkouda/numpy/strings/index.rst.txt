@@ -56,9 +56,9 @@ Module Contents
 
    .. attribute:: dtype
 
-      The dtype is ak.str
+      The dtype is ak.str_
 
-      :type: dtype
+      :type: type
 
    .. attribute:: logger
 
@@ -84,35 +84,11 @@ Module Contents
       :type dtype: np.dtype or str
 
       :returns: An arkouda pdarray with values converted to the specified data type
-      :rtype: ak.pdarray
+      :rtype: pdarray
 
       .. rubric:: Notes
 
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
-
-
-
-   .. py:method:: attach(user_defined_name: str) -> Strings
-      :staticmethod:
-
-
-      class method to return a Strings object attached to the registered name in the arkouda
-      server which was registered using register()
-
-      :param user_defined_name: user defined name which the Strings object was registered under
-      :type user_defined_name: str
-
-      :returns: the Strings object registered with user_defined_name in the arkouda server
-      :rtype: Strings object
-
-      :raises TypeError: Raised if user_defined_name is not a str
-
-      .. seealso:: :obj:`register`, :obj:`unregister`
-
-      .. rubric:: Notes
-
-      Registered names/Strings objects in the server are immune to deletion
-      until they are unregistered.
 
 
 
@@ -124,7 +100,7 @@ Module Contents
 
    .. py:method:: capitalize() -> Strings
 
-      Returns a new Strings from the original replaced with the first letter capitilzed
+      Return a new Strings from the original replaced with the first letter capitilzed
       and the remaining letters lowercase.
 
       :returns: Strings from the original replaced with the capitalized equivalent.
@@ -132,15 +108,31 @@ Module Contents
 
       :raises RuntimeError: Raised if there is a server-side error thrown.
 
-      .. seealso:: :obj:`Strings.lower`, :obj:`String.upper`, :obj:`String.title`
+      .. seealso:: :py:obj:`Strings.lower`, :py:obj:`String.upper`, :py:obj:`String.title`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array([f'StrINgS aRe Here {i}' for i in range(5)])
       >>> strings
       array(['StrINgS aRe Here 0', 'StrINgS aRe Here 1', 'StrINgS aRe Here 2', 'StrINgS aRe Here 3', 'StrINgS aRe Here 4'])
       >>> strings.title()
       array(['Strings Are Here 0', 'Strings Are Here 1', 'Strings Are Here 2', 'Strings Are Here 3', 'Strings Are Here 4'])
+
+
+
+   .. py:method:: concatenate_uniquely(strings: List[Strings]) -> Strings
+      :staticmethod:
+
+
+      Concatenates a list of Strings into a single Strings object
+      containing only unique strings. Order may not be preserved.
+
+      :param strings: List of segmented string objects to concatenate.
+      :type strings: List[Strings]
+
+      :returns: A new Strings object containing the unique values.
+      :rtype: Strings
 
 
 
@@ -156,16 +148,17 @@ Module Contents
       :type regex: bool, default=False
 
       :returns: True for elements that contain substr, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises TypeError: Raised if the substr parameter is not bytes or str_scalars
       :raises ValueError: Rasied if substr is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.startswith`, :obj:`Strings.endswith`
+      .. seealso:: :py:obj:`Strings.startswith`, :py:obj:`Strings.endswith`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array([f'{i} string {i}' for i in range(1, 6)])
       >>> strings
       array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
@@ -194,7 +187,11 @@ Module Contents
 
 
 
-   .. py:attribute:: dtype
+   .. py:property:: dtype
+      :type: numpy.dtype
+
+
+      Return the dtype object of the underlying data.
 
 
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8') -> Strings
@@ -227,16 +224,17 @@ Module Contents
       :type regex: bool, default=False
 
       :returns: True for elements that end with substr, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises TypeError: Raised if the substr parameter is not bytes or str_scalars
       :raises ValueError: Rasied if substr is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.contains`, :obj:`Strings.startswith`
+      .. seealso:: :py:obj:`Strings.contains`, :py:obj:`Strings.startswith`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings_start = ak.array([f'{i} string' for i in range(1,6)])
       >>> strings_start
       array(['1 string', '2 string', '3 string', '4 string', '5 string'])
@@ -262,7 +260,7 @@ Module Contents
       :type other: Any
 
       :returns: True if the Strings are the same, o.w. False.
-      :rtype: bool
+      :rtype: bool_scalars
 
       .. rubric:: Examples
 
@@ -271,10 +269,10 @@ Module Contents
       >>> s = ak.array(["a", "b", "c"])
       >>> s_cpy = ak.array(["a", "b", "c"])
       >>> s.equals(s_cpy)
-      True
+      np.True_
       >>> s2 = ak.array(["a", "x", "c"])
       >>> s.equals(s2)
-      False
+      np.False_
 
 
 
@@ -286,18 +284,25 @@ Module Contents
       :param pattern: The regex pattern used to find matches
       :type pattern: bytes or str_scalars
 
-      :returns: * *pdarray, int64* -- For each original string, the number of pattern matches
-                * *pdarray, int64* -- The start positons of pattern matches
-                * *pdarray, int64* -- The lengths of pattern matches
+      :returns:
+
+                pdarray, int64
+                    For each original string, the number of pattern matches
+                pdarray, int64
+                    The start positons of pattern matches
+                pdarray, int64
+                    The lengths of pattern matches
+      :rtype: Tuple[pdarray, pdarray, pdarray]
 
       :raises TypeError: Raised if the pattern parameter is not bytes or str_scalars
       :raises ValueError: Raised if pattern is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.findall`, :obj:`Strings.match`
+      .. seealso:: :py:obj:`Strings.findall`, :py:obj:`Strings.match`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array([f'{i} string {i}' for i in range(1, 6)])
       >>> num_matches, starts, lens = strings.find_locations('\d')
       >>> num_matches
@@ -319,17 +324,23 @@ Module Contents
                                    pattern match is from
       :type return_match_origins: bool, default=False
 
-      :returns: * *Strings* -- Strings object containing only pattern matches
-                * *pdarray, int64 (optional)* -- The index of the original string each pattern match is from
+      :returns:
+
+                Strings
+                    Strings object containing only pattern matches
+                pdarray, int64 (optional)
+                    The index of the original string each pattern match is from
+      :rtype: Union[Strings, Tuple]
 
       :raises TypeError: Raised if the pattern parameter is not bytes or str_scalars
       :raises ValueError: Raised if pattern is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.find_locations`
+      .. seealso:: :py:obj:`Strings.find_locations`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.findall('_+', return_match_origins=True)
       (array(['_', '___', '____', '__', '___', '____', '___']), array([0 0 1 3 3 3 3]))
@@ -353,25 +364,32 @@ Module Contents
       :staticmethod:
 
 
-      Factory method for creating a Strings object from an Arkouda server
-      response where the arrays are separate components.
+      Assemble a Strings object from separate offset and bytes arrays.
 
-      :param offset_attrib: the array containing the offsets
+      This factory method constructs a segmented `Strings` array by sending two
+      separate components—offsets and values—to the Arkouda server and instructing
+      it to assemble them into a single `Strings` object. Use this when offsets
+      and byte data are created or transported independently.
+
+      :param offset_attrib: The array of starting positions for each string, or a string
+                            expression that can be passed to `create_pdarray` to build it.
       :type offset_attrib: pdarray or str
-      :param bytes_attrib: the array containing the string values
+      :param bytes_attrib: The array of raw byte values (e.g., uint8 character codes), or a string
+                           expression that can be passed to `create_pdarray` to build it.
       :type bytes_attrib: pdarray or str
 
-      :returns: object representing a segmented strings array on the server
+      :returns: A `Strings` object representing the assembled segmented strings array
+                on the Arkouda server.
       :rtype: Strings
 
-      :raises RuntimeError: Raised if there's an error converting a server-returned str-descriptor
+      :raises RuntimeError: If conversion of `offset_attrib` or `bytes_attrib` to `pdarray` fails,
+          or if the server is unable to assemble the parts into a `Strings`.
 
       .. rubric:: Notes
 
-      This factory method is used when we construct the parts of a Strings
-      object on the client side and transfer the offsets & bytes separately
-      to the server.  This results in two entries in the symbol table and we
-      need to instruct the server to assemble the into a composite entity.
+      - Both inputs can be existing `pdarray` instances or arguments suitable
+        for `create_pdarray`.
+      - Internally uses the `CMD_ASSEMBLE` command to merge offsets and values.
 
 
 
@@ -379,28 +397,42 @@ Module Contents
       :staticmethod:
 
 
-      Factory method for creating a Strings object from an Arkouda server
-      response message
+      Create a Strings object from an Arkouda server response message.
 
-      :param rep_msg: Server response message currently of form
-                      `created name type size ndim shape itemsize+created bytes.size 1234`
+      Parse the server’s response descriptor and construct a `Strings` array
+      with its underlying pdarray and total byte size.
+
+      :param rep_msg: Server response message of the form:
+                      ```
+                      created <name> <type> <size> <ndim> <shape> <itemsize>+... bytes.size <total_bytes>
+                      ```
+                      For example:
+                      ```
+                      "created foo Strings 3 1 (3,) 8+created bytes.size 24"
+                      ```
       :type rep_msg: str
 
-      :returns: object representing a segmented strings array on the server
+      :returns: A `Strings` object representing the segmented strings array on the server,
+                initialized with the returned pdarray and byte-size metadata.
       :rtype: Strings
 
-      :raises RuntimeError: Raised if there's an error converting a server-returned str-descriptor
+      :raises RuntimeError: If the response message cannot be parsed or does not match the expected format.
 
-      .. rubric:: Notes
+      .. rubric:: Examples
 
-      We really don't have an itemsize because these are variable length strings.
-      In the future we could probably use this position to store the total bytes.
+      >>> import arkouda as ak
+
+      # Example response message (typically from `generic_msg`)
+      >>> rep_msg = "created foo Strings 3 1 (3,) 8+created bytes.size 24"
+      >>> s = ak.Strings.from_return_msg(rep_msg)
+      >>> isinstance(s, ak.Strings)
+      True
 
 
 
    .. py:method:: fullmatch(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> arkouda.match.Match
 
-      Returns a match object where elements match only if the whole string matches the
+      Return a match object where elements match only if the whole string matches the
       regular expression pattern
 
       :param pattern: Regex used to find matches
@@ -412,6 +444,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.fullmatch('_+')
       <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False;
@@ -424,13 +457,14 @@ Module Contents
       Getter for the bytes component (uint8 pdarray) of this Strings.
 
       :returns: Pdarray of bytes of the string accessed
-      :rtype: pdarray, uint8
+      :rtype: pdarray
 
       .. rubric:: Example
 
+      >>> import arkouda as ak
       >>> x = ak.array(['one', 'two', 'three'])
       >>> x.get_bytes()
-      [111 110 101 0 116 119 111 0 116 104 114 101 101 0]
+      array([111 110 101 0 116 119 111 0 116 104 114 101 101 0])
 
 
 
@@ -439,7 +473,7 @@ Module Contents
       Return the length of each string in the array.
 
       :returns: The length of each string
-      :rtype: pdarray, int
+      :rtype: pdarray
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
@@ -450,13 +484,14 @@ Module Contents
       Getter for the offsets component (int64 pdarray) of this Strings.
 
       :returns: Pdarray of offsets of the string accessed
-      :rtype: pdarray, int64
+      :rtype: pdarray
 
       .. rubric:: Example
 
+      >>> import arkouda as ak
       >>> x = ak.array(['one', 'two', 'three'])
       >>> x.get_offsets()
-      [0 4 8]
+      array([0 4 8])
 
 
 
@@ -474,10 +509,15 @@ Module Contents
                      string to be returned as a prefix.
       :type proper: bool, default=True
 
-      :returns: * **prefixes** (*Strings*) -- The array of n-character prefixes; the number of elements is the number of
-                  True values in the returned mask.
-                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the string was long enough to return
-                  an n-character prefix, False otherwise.
+      :returns:
+
+                prefixes : Strings
+                    The array of n-character prefixes; the number of elements is the number of
+                    True values in the returned mask.
+                origin_indices : pdarray, bool
+                    Boolean array that is True where the string was long enough to return
+                    an n-character prefix, False otherwise.
+      :rtype: Union[Strings, Tuple[Strings, pdarray]]
 
 
 
@@ -495,10 +535,15 @@ Module Contents
                      string to be returned as a suffix.
       :type proper: bool, default=True
 
-      :returns: * **suffixes** (*Strings*) -- The array of n-character suffixes; the number of elements is the number of
-                  True values in the returned mask.
-                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the string was long enough to return
-                  an n-character suffix, False otherwise.
+      :returns:
+
+                suffixes : Strings
+                    The array of n-character suffixes; the number of elements is the number of
+                    True values in the returned mask.
+                origin_indices : pdarray, bool
+                    Boolean array that is True where the string was long enough to return
+                    an n-character suffix, False otherwise.
+      :rtype: Union[Strings, Tuple[Strings, pdarray]]
 
 
 
@@ -512,7 +557,7 @@ Module Contents
       :returns: The permutation that groups the array by value
       :rtype: pdarray
 
-      .. seealso:: :obj:`GroupBy`, :obj:`unique`
+      .. seealso:: :py:obj:`GroupBy`, :py:obj:`unique`
 
       .. rubric:: Notes
 
@@ -553,7 +598,7 @@ Module Contents
 
    .. py:method:: info() -> str
 
-      Returns a JSON formatted string containing information about all components of self
+      Return a JSON formatted string containing information about all components of self
 
       :param None:
 
@@ -577,18 +622,19 @@ Module Contents
 
    .. py:method:: isalnum() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Returns a boolean pdarray where index i indicates whether string i of the
+      Return a boolean pdarray where index i indicates whether string i of the
       Strings is alphanumeric.
 
       :returns: True for elements that are alphanumeric, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`
+      .. seealso:: :py:obj:`Strings.islower`, :py:obj:`Strings.isupper`, :py:obj:`Strings.istitle`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> not_alnum = ak.array([f'%Strings {i}' for i in range(3)])
       >>> alnum = ak.array([f'Strings{i}' for i in range(3)])
       >>> strings = ak.concatenate([not_alnum, alnum])
@@ -601,19 +647,20 @@ Module Contents
 
    .. py:method:: isalpha() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Returns a boolean pdarray where index i indicates whether string i of the
+      Return a boolean pdarray where index i indicates whether string i of the
       Strings is alphabetic.  This means there is at least one character,
       and all the characters are alphabetic.
 
       :returns: True for elements that are alphabetic, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`, :obj:`Strings.isalnum`
+      .. seealso:: :py:obj:`Strings.islower`, :py:obj:`Strings.isupper`, :py:obj:`Strings.istitle`, :py:obj:`Strings.isalnum`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> not_alpha = ak.array([f'%Strings {i}' for i in range(3)])
       >>> alpha = ak.array(['StringA','StringB','StringC'])
       >>> strings = ak.concatenate([not_alpha, alpha])
@@ -626,18 +673,19 @@ Module Contents
 
    .. py:method:: isdecimal() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Returns a boolean pdarray where index i indicates whether string i of the
+      Return a boolean pdarray where index i indicates whether string i of the
       Strings has all decimal characters.
 
       :returns: True for elements that are decimals, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.isdigit`
+      .. seealso:: :py:obj:`Strings.isdigit`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> not_decimal = ak.array([f'Strings {i}' for i in range(3)])
       >>> decimal = ak.array([f'12{i}' for i in range(3)])
       >>> strings = ak.concatenate([not_decimal, decimal])
@@ -658,18 +706,19 @@ Module Contents
 
    .. py:method:: isdigit() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Returns a boolean pdarray where index i indicates whether string i of the
+      Return a boolean pdarray where index i indicates whether string i of the
       Strings has all digit characters.
 
       :returns: True for elements that are digits, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`
+      .. seealso:: :py:obj:`Strings.islower`, :py:obj:`Strings.isupper`, :py:obj:`Strings.istitle`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> not_digit = ak.array([f'Strings {i}' for i in range(3)])
       >>> digit = ak.array([f'12{i}' for i in range(3)])
       >>> strings = ak.concatenate([not_digit, digit])
@@ -690,21 +739,22 @@ Module Contents
 
    .. py:method:: isempty() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Returns a boolean pdarray where index i indicates whether string i of the
+      Return a boolean pdarray where index i indicates whether string i of the
       Strings is empty.
 
 
       True for elements that are the empty string, False otherwise
 
       :returns: True for elements that are digits, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`
+      .. seealso:: :py:obj:`Strings.islower`, :py:obj:`Strings.isupper`, :py:obj:`Strings.istitle`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> not_empty = ak.array([f'Strings {i}' for i in range(3)])
       >>> empty = ak.array(['' for i in range(3)])
       >>> strings = ak.concatenate([not_empty, empty])
@@ -717,18 +767,19 @@ Module Contents
 
    .. py:method:: islower() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Returns a boolean pdarray where index i indicates whether string i of the
+      Return a boolean pdarray where index i indicates whether string i of the
       Strings is entirely lowercase
 
       :returns: True for elements that are entirely lowercase, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.isupper`
+      .. seealso:: :py:obj:`Strings.isupper`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> lower = ak.array([f'strings {i}' for i in range(3)])
       >>> upper = ak.array([f'STRINGS {i}' for i in range(3)])
       >>> strings = ak.concatenate([lower, upper])
@@ -741,18 +792,19 @@ Module Contents
 
    .. py:method:: isspace() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Returns a boolean pdarray where index i indicates whether string i has all
+      Return a boolean pdarray where index i indicates whether string i has all
       whitespace characters (‘ ’, ‘\\t’, ‘\\n’, ‘\\v’, ‘\\f’, ‘\\r’).
 
       :returns: True for elements that are whitespace, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`, :obj:`Strings.istitle`
+      .. seealso:: :py:obj:`Strings.islower`, :py:obj:`Strings.isupper`, :py:obj:`Strings.istitle`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> not_space = ak.array([f'Strings {i}' for i in range(3)])
       >>> space = ak.array([' ', '\t', '\n', '\v', '\f', '\r', ' \t\n\v\f\r'])
       >>> strings = ak.concatenate([not_space, space])
@@ -765,18 +817,19 @@ Module Contents
 
    .. py:method:: istitle() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Returns a boolean pdarray where index i indicates whether string i of the
+      Return a boolean pdarray where index i indicates whether string i of the
       Strings is titlecase
 
       :returns: True for elements that are titlecase, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.islower`, :obj:`Strings.isupper`
+      .. seealso:: :py:obj:`Strings.islower`, :py:obj:`Strings.isupper`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> mixed = ak.array([f'sTrINgs {i}' for i in range(3)])
       >>> title = ak.array([f'Strings {i}' for i in range(3)])
       >>> strings = ak.concatenate([mixed, title])
@@ -789,18 +842,19 @@ Module Contents
 
    .. py:method:: isupper() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Returns a boolean pdarray where index i indicates whether string i of the
+      Return a boolean pdarray where index i indicates whether string i of the
       Strings is entirely uppercase
 
       :returns: True for elements that are entirely uppercase, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.islower`
+      .. seealso:: :py:obj:`Strings.islower`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> lower = ak.array([f'strings {i}' for i in range(3)])
       >>> upper = ak.array([f'STRINGS {i}' for i in range(3)])
       >>> strings = ak.concatenate([lower, upper])
@@ -812,11 +866,12 @@ Module Contents
 
 
    .. py:attribute:: logger
+      :type:  arkouda.logger.ArkoudaLogger
 
 
    .. py:method:: lower() -> Strings
 
-      Returns a new Strings with all uppercase characters from the original replaced with
+      Return a new Strings with all uppercase characters from the original replaced with
       their lowercase equivalent
 
       :returns: Strings with all uppercase characters from the original replaced with
@@ -825,10 +880,11 @@ Module Contents
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.upper`
+      .. seealso:: :py:obj:`Strings.upper`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
@@ -855,10 +911,11 @@ Module Contents
           or if the other parameter is not a Strings instance
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`stick`, :obj:`peel`, :obj:`rpeel`
+      .. seealso:: :py:obj:`stick`, :py:obj:`peel`, :py:obj:`rpeel`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> s = ak.array(['a', 'c', 'e'])
       >>> t = ak.array(['b', 'd', 'f'])
       >>> s.lstick(t, delimiter='.')
@@ -868,7 +925,7 @@ Module Contents
 
    .. py:method:: match(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> arkouda.match.Match
 
-      Returns a match object where elements match only if the beginning of the string matches the
+      Return a match object where elements match only if the beginning of the string matches the
       regular expression pattern
 
       :param pattern: Regex used to find matches
@@ -880,11 +937,20 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.match('_+')
       <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False;
       matched=True, span=(0, 2); matched=False>
 
+
+
+   .. py:attribute:: nbytes
+      :type:  arkouda.numpy.dtypes.int_scalars
+
+
+   .. py:attribute:: ndim
+      :type:  arkouda.numpy.dtypes.int_scalars
 
 
    .. py:attribute:: objType
@@ -934,10 +1000,11 @@ Module Contents
       :raises ValueError: Raised if times is < 1 or if delimiter is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`rpeel`, :obj:`stick`, :obj:`lstick`
+      .. seealso:: :py:obj:`rpeel`, :py:obj:`stick`, :py:obj:`lstick`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> s = ak.array(['a.b', 'c.d', 'e.f.g'])
       >>> s.peel('.')
       (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
@@ -952,7 +1019,7 @@ Module Contents
 
    .. py:method:: pretty_print_info() -> None
 
-      Prints information about all components of self in a human readable format
+      Print information about all components of self in a human readable format
 
       :param None:
 
@@ -968,7 +1035,7 @@ Module Contents
 
    .. py:method:: regex_split(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars], maxsplit: int = 0, return_segments: bool = False) -> Union[Strings, Tuple]
 
-      Returns a new Strings split by the occurrences of pattern.
+      Return a new Strings split by the occurrences of pattern.
       If maxsplit is nonzero, at most maxsplit splits occur
 
       :param pattern: Regex used to split strings into substrings
@@ -980,12 +1047,18 @@ Module Contents
                               in return array.
       :type return_segments: bool, default=False
 
-      :returns: * *Strings* -- Substrings with pattern matches removed
-                * *pdarray, int64 (optional)* -- For each original string, the index of first corresponding substring
-                  in the return array
+      :returns:
+
+                Strings
+                    Substrings with pattern matches removed
+                pdarray, int64 (optional)
+                    For each original string, the index of first corresponding substring
+                    in the return array
+      :rtype: Union[Strings, Tuple]
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.regex_split('_+', maxsplit=2, return_segments=True)
       (array(['1', '2', '', '', '', '3', '', '4', '5____6___7', '']), array([0 3 5 6 9]))
@@ -1015,7 +1088,7 @@ Module Contents
           If the user is attempting to register more than one object with the same name,
           the former should be unregistered first to free up the registration name.
 
-      .. seealso:: :obj:`attach`, :obj:`unregister`
+      .. seealso:: :py:obj:`attach`, :py:obj:`unregister`
 
       .. rubric:: Notes
 
@@ -1067,10 +1140,11 @@ Module Contents
       :raises ValueError: Raised if times is < 1 or if delimiter is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`peel`, :obj:`stick`, :obj:`lstick`
+      .. seealso:: :py:obj:`peel`, :py:obj:`stick`, :py:obj:`lstick`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> s = ak.array(['a.b', 'c.d', 'e.f.g'])
       >>> s.rpeel('.')
       (array(['a', 'c', 'e.f']), array(['b', 'd', 'g']))
@@ -1082,52 +1156,9 @@ Module Contents
 
 
 
-   .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: Literal['truncate', 'append'] = 'truncate', save_offsets: bool = True, compression: Optional[Literal['snappy', 'gzip', 'brotli', 'zstd', 'lz4']] = None, file_format: Literal['HDF5', 'Parquet'] = 'HDF5', file_type: Literal['single', 'distribute'] = 'distribute') -> str
-
-      DEPRECATED
-      Save the Strings object to HDF5 or Parquet. The result is a collection of files,
-      one file per locale of the arkouda server, where each filename starts
-      with prefix_path. HDF5 support single files, in which case the file name will
-      only be that provided. Each locale saves its chunk of the array to its
-      corresponding file.
-
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
-      :type dataset: str, default="strings_array"
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', create a new Strings dataset within existing files.
-      :type mode: {"truncate", "append"}, default = "truncate"
-      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
-                           If False the offsets array will not be save and will be derived from the string values
-                           upon load/read. This is not supported for Parquet files.
-      :type save_offsets: bool, default=True
-      :param compression: Sets the compression type used with Parquet files
-      :type compression: {"snappy", "gzip", "brotli", "zstd", "lz4"}, optional
-      :param file_format: By default, saved files will be written to the HDF5 file format. If
-                          'Parquet', the files will be written to the Parquet file format. This
-                          is case insensitive.
-      :type file_format: {"HDF5", "Parquet"}, default = "HDF5"
-      :param file_type: Default: Distribute
-                        Distribute the dataset over a file per locale.
-                        Single file will save the dataset to one file
-      :type file_type: {"single", "distribute"}, default = "distribute"
-
-      :rtype: String message indicating result of save operation
-
-      .. rubric:: Notes
-
-      Important implementation notes: (1) Strings state is saved as two datasets
-      within an hdf5 group: one for the string characters and one for the
-      segments corresponding to the start of each string, (2) the hdf5 group is named
-      via the dataset parameter. (3) Parquet files do not store the segments,
-      only the values.
-
-
-
    .. py:method:: search(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> arkouda.match.Match
 
-      Returns a match object with the first location in each element where pattern produces a match.
+      Return a match object with the first location in each element where pattern produces a match.
       Elements match if any part of the string matches the regular expression pattern
 
       :param pattern: Regex used to find matches
@@ -1139,6 +1170,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.search('_+')
       <ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4);
@@ -1168,14 +1200,20 @@ Module Contents
                     (does not support lookaheads/lookbehinds)
       :type regex: bool, default=False
 
-      :returns: * *Strings* -- Flattened substrings with delimiters removed
-                * *pdarray, int64 (optional)* -- For each original string, the index of first corresponding substring
-                  in the return array
+      :returns:
 
-      .. seealso:: :obj:`peel`, :obj:`rpeel`
+                Strings
+                    Flattened substrings with delimiters removed
+                pdarray, int64 (optional)
+                    For each original string, the index of first corresponding substring
+                    in the return array
+      :rtype: Union[Strings, Tuple]
+
+      .. seealso:: :py:obj:`peel`, :py:obj:`rpeel`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> orig = ak.array(['one|two', 'three|four|five', 'six'])
       >>> orig.split('|')
       array(['one', 'two', 'three', 'four', 'five', 'six'])
@@ -1203,16 +1241,17 @@ Module Contents
       :type regex: bool, default=False
 
       :returns: True for elements that start with substr, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises TypeError: Raised if the substr parameter is not a bytes ior str_scalars
       :raises ValueError: Rasied if substr is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.contains`, :obj:`Strings.endswith`
+      .. seealso:: :py:obj:`Strings.contains`, :py:obj:`Strings.endswith`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings_end = ak.array([f'string {i}' for i in range(1, 6)])
       >>> strings_end
       array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
@@ -1248,10 +1287,11 @@ Module Contents
       :raises ValueError: Raised if times is < 1
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`lstick`, :obj:`peel`, :obj:`rpeel`
+      .. seealso:: :py:obj:`lstick`, :py:obj:`peel`, :py:obj:`rpeel`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> s = ak.array(['a', 'c', 'e'])
       >>> t = ak.array(['b', 'd', 'f'])
       >>> s.stick(t, delimiter='.')
@@ -1261,7 +1301,7 @@ Module Contents
 
    .. py:method:: strip(chars: Optional[Union[bytes, arkouda.numpy.dtypes.str_scalars]] = '') -> Strings
 
-      Returns a new Strings object with all leading and trailing occurrences of characters contained
+      Return a new Strings object with all leading and trailing occurrences of characters contained
       in chars removed. The chars argument is a string specifying the set of characters to be removed.
       If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
       prefix or suffix; rather, all combinations of its values are stripped.
@@ -1277,6 +1317,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(['Strings ', '  StringS  ', 'StringS   '])
       >>> s = strings.strip()
       >>> s
@@ -1310,17 +1351,18 @@ Module Contents
       :raises ValueError: Raised if pattern is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.subn`
+      .. seealso:: :py:obj:`Strings.subn`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.sub(pattern='_+', repl='-', count=2)
       array(['1-2-', '-', '3', '-4-5____6___7', ''])
 
 
 
-   .. py:method:: subn(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars], repl: Union[bytes, arkouda.numpy.dtypes.str_scalars], count: int = 0) -> Tuple
+   .. py:method:: subn(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars], repl: Union[bytes, arkouda.numpy.dtypes.str_scalars], count: int = 0) -> Tuple[Strings, arkouda.numpy.pdarrayclass.pdarray]
 
       Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions)
 
@@ -1332,17 +1374,23 @@ Module Contents
                     The default count=0 replaces all occurences of pattern with repl
       :type count: int, default=0
 
-      :returns: * *Strings* -- Strings with pattern matches replaced
-                * *pdarray, int64* -- The number of substitutions made for each element of Strings
+      :returns:
+
+                Strings
+                    Strings with pattern matches replaced
+                pdarray, int64
+                    The number of substitutions made for each element of Strings
+      :rtype: Tuple[Strings, pdarray]
 
       :raises TypeError: Raised if pattern or repl are not bytes or str_scalars
       :raises ValueError: Raised if pattern is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.sub`
+      .. seealso:: :py:obj:`Strings.sub`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.subn(pattern='_+', repl='-', count=2)
       (array(['1-2-', '-', '3', '-4-5____6___7', '']), array([2 1 0 2 0]))
@@ -1351,17 +1399,18 @@ Module Contents
 
    .. py:method:: title() -> Strings
 
-      Returns a new Strings from the original replaced with their titlecase equivalent.
+      Return a new Strings from the original replaced with their titlecase equivalent.
 
       :returns: Strings from the original replaced with their titlecase equivalent.
       :rtype: Strings
 
       :raises RuntimeError: Raised if there is a server-side error thrown.
 
-      .. seealso:: :obj:`Strings.lower`, :obj:`String.upper`
+      .. seealso:: :py:obj:`Strings.lower`, :py:obj:`String.upper`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
@@ -1429,7 +1478,8 @@ Module Contents
                         Single file will save the dataset to one file
       :type file_type: {"single", "distribute"}, default = "distribute"
 
-      :rtype: String message indicating result of save operation
+      :returns: String message indicating result of save operation
+      :rtype: str
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
 
@@ -1452,18 +1502,18 @@ Module Contents
       - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
 
-      .. seealso:: :obj:`to_hdf`
+      .. seealso:: :py:obj:`to_hdf`
 
 
 
-   .. py:method:: to_list() -> list
+   .. py:method:: to_list() -> List[str]
 
       Convert the SegString to a list, transferring data from the
       arkouda server to Python. If the SegString exceeds a built-in size limit,
       a RuntimeError is raised.
 
       :returns: A list with the same strings as this SegString
-      :rtype: list
+      :rtype: List[str]
 
       .. rubric:: Notes
 
@@ -1475,10 +1525,11 @@ Module Contents
       may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
-      .. seealso:: :obj:`to_ndarray`
+      .. seealso:: :py:obj:`to_ndarray`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.array(["hello", "my", "world"])
       >>> a.to_list()
       ['hello', 'my', 'world']
@@ -1506,10 +1557,11 @@ Module Contents
       may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
-      .. seealso:: :obj:`array`, :obj:`to_list`
+      .. seealso:: :py:obj:`array`, :py:obj:`to_list`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.array(["hello", "my", "world"])
       >>> a.to_ndarray()
       array(['hello', 'my', 'world'], dtype='<U5')
@@ -1534,7 +1586,8 @@ Module Contents
       :param compression: Sets the compression type used with Parquet files
       :type compression: {"snappy", "gzip", "brotli", "zstd", "lz4"}, optional
 
-      :rtype: string message indicating result of save operation
+      :returns: string message indicating result of save operation
+      :rtype: str
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
 
@@ -1556,7 +1609,7 @@ Module Contents
 
    .. py:method:: transfer(hostname: str, port: arkouda.numpy.dtypes.int_scalars) -> Union[str, memoryview]
 
-      Sends a Strings object to a different Arkouda server
+      Send a Strings object to a different Arkouda server.
 
       :param hostname: The hostname where the Arkouda server intended to
                        receive the Strings object is running.
@@ -1573,7 +1626,8 @@ Module Contents
                    `ak.receive_array()`.
       :type port: int_scalars
 
-      :rtype: A message indicating a complete transfer
+      :returns: A message indicating a complete transfer
+      :rtype: str
 
       :raises ValueError: Raised if the op is not within the pdarray.BinOps set
       :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
@@ -1591,25 +1645,12 @@ Module Contents
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
 
-      .. seealso:: :obj:`register`, :obj:`attach`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`
 
       .. rubric:: Notes
 
       Registered names/Strings objects in the server are immune to deletion until
       they are unregistered.
-
-
-
-   .. py:method:: unregister_strings_by_name(user_defined_name: str) -> None
-      :staticmethod:
-
-
-      Unregister a Strings object in the arkouda server previously registered via register()
-
-      :param user_defined_name: The registered name of the Strings object
-      :type user_defined_name: str
-
-      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
 
 
 
@@ -1633,7 +1674,8 @@ Module Contents
                      file sizes to expand.
       :type repack: bool, default=True
 
-      :rtype: str - success message if successful
+      :returns: success message if successful
+      :rtype: str
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the Strings object
 
@@ -1647,7 +1689,7 @@ Module Contents
 
    .. py:method:: upper() -> Strings
 
-      Returns a new Strings with all lowercase characters from the original replaced with
+      Return a new Strings with all lowercase characters from the original replaced with
       their uppercase equivalent
 
       :returns: Strings with all lowercase characters from the original replaced with
@@ -1656,10 +1698,11 @@ Module Contents
 
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.lower`
+      .. seealso:: :py:obj:`Strings.lower`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
       >>> strings
       array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])

@@ -1,0 +1,21 @@
+.. default-domain:: chpl
+
+.. module:: DynamicSort
+
+DynamicSort
+===========
+**Usage**
+
+.. code-block:: chapel
+
+   use DynamicSort;
+
+
+or
+
+.. code-block:: chapel
+
+   import DynamicSort;
+
+.. function:: proc dynamicTwoArrayRadixSort(ref Data: [], comparator: ?rec = new defaultComparator())
+

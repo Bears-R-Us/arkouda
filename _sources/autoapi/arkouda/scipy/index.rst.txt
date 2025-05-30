@@ -45,13 +45,13 @@ Module Contents
 
 
 
-      :type: numpy.float64
+      :type: float64
 
    .. attribute:: pvalue
 
 
 
-      :type: numpy.float64
+      :type: float64
 
 
 .. py:function:: chisquare(f_obs, f_exp=None, ddof=0)
@@ -70,12 +70,12 @@ Module Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> ak.connect()
-   >>> from arkouda.stats import chisquare
+   >>> from arkouda.scipy import chisquare
    >>> chisquare(ak.array([10, 20, 30, 10]), ak.array([10, 30, 20, 10]))
-   Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)
+   Power_divergenceResult(statistic=np.float64(8.333333333333334),
+       pvalue=np.float64(0.03960235520756414))
 
-   .. seealso:: :obj:`scipy.stats.chisquare`, :obj:`arkouda.akstats.power_divergence`
+   .. seealso:: :py:obj:`scipy.stats.chisquare`, :py:obj:`arkouda.akstats.power_divergence`
 
    .. rubric:: References
 
@@ -119,16 +119,17 @@ Module Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> ak.connect()
-   >>> from arkouda.stats import power_divergence
+   >>> from arkouda.scipy import power_divergence
    >>> x = ak.array([10, 20, 30, 10])
    >>> y = ak.array([10, 30, 20, 10])
    >>> power_divergence(x, y, lambda_="pearson")
-   Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)
+   Power_divergenceResult(statistic=np.float64(8.333333333333334),
+       pvalue=np.float64(0.03960235520756414))
    >>> power_divergence(x, y, lambda_="log-likelihood")
-   Power_divergenceResult(statistic=8.109302162163285, pvalue=0.04380595350226197)
+   Power_divergenceResult(statistic=np.float64(8.109302162163285),
+       pvalue=np.float64(0.04380595350226197))
 
-   .. seealso:: :obj:`scipy.stats.power_divergence`, :obj:`arkouda.akstats.chisquare`
+   .. seealso:: :py:obj:`scipy.stats.power_divergence`, :py:obj:`arkouda.akstats.chisquare`
 
    .. rubric:: Notes
 

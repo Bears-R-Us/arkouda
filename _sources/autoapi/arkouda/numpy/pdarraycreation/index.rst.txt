@@ -32,45 +32,50 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: arange(*args, **kwargs) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: arange(__arg1: arkouda.numpy.dtypes.int_scalars, *, dtype: Optional[Union[numpy.dtype, type, arkouda.numpy.dtypes.bigint]] = None, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+                 arange(__arg1: arkouda.numpy.dtypes.int_scalars, __arg2: arkouda.numpy.dtypes.int_scalars, *, dtype: Optional[Union[numpy.dtype, type, arkouda.numpy.dtypes.bigint]] = None, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+                 arange(__arg1: arkouda.numpy.dtypes.int_scalars, __arg2: arkouda.numpy.dtypes.int_scalars, __arg3: arkouda.numpy.dtypes.int_scalars, *, dtype: Optional[Union[numpy.dtype, type, arkouda.numpy.dtypes.bigint]] = None, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
-   arange([start,] stop[, stride,] dtype=int64)
+   arange([start,] stop[, step,] dtype=int64)
 
    Create a pdarray of consecutive integers within the interval [start, stop).
    If only one arg is given then arg is the stop parameter. If two args are
    given, then the first arg is start and second is stop. If three args are
-   given, then the first arg is start, second is stop, third is stride.
+   given, then the first arg is start, second is stop, third is step.
 
    The return value is cast to type dtype
 
-   :param start: Starting value (inclusive)
+   :param start:
    :type start: int_scalars, optional
-   :param stop: Stopping value (exclusive)
-   :type stop: int_scalars
-   :param stride: The difference between consecutive elements, the default stride is 1,
-                  if stride is specified then start must also be specified.
-   :type stride: int_scalars, optional
+   :param stop:
+   :type stop: int_scalars, optional
+   :param step: if one of these three is supplied, it's used as stop, and start = 0, step = 1
+                if two of them are supplied, start = start, stop = stop, step = 1
+                if all three are supplied, start = start, stop = stop, step = step
+   :type step: int_scalars, optional
    :param dtype: The target dtype to cast values to
    :type dtype: np.dtype, type, or str
    :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
    :type max_bits: int
 
-   :returns: Integers from start (inclusive) to stop (exclusive) by stride
-   :rtype: pdarray, dtype
+   :returns: Integers from start (inclusive) to stop (exclusive) by step
+   :rtype: pdarray
 
-   :raises TypeError: Raised if start, stop, or stride is not an int object
-   :raises ZeroDivisionError: Raised if stride == 0
+   :raises ValueError: Raised if none of start, stop, step was supplied
+   :raises TypeError: Raised if start, stop, or step is not an int object
+   :raises ZeroDivisionError: Raised if step == 0
 
-   .. seealso:: :obj:`linspace`, :obj:`zeros`, :obj:`ones`, :obj:`randint`
+   .. seealso:: :py:obj:`linspace`, :py:obj:`zeros`, :py:obj:`ones`, :py:obj:`randint`
 
    .. rubric:: Notes
 
-   Negative strides result in decreasing values. Currently, only int64
+   Negative steps result in decreasing values. Currently, only int64
    pdarrays can be created with this method. For float64 arrays, use
    the linspace method.
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.arange(0, 5, 1)
    array([0 1 2 3 4])
 
@@ -107,7 +112,7 @@ Module Contents
    :raises ValueError: Raised if a has rank is not in get_array_ranks(), or if the returned message is malformed or does
        not contain the fields required to generate the array.
 
-   .. seealso:: :obj:`pdarray.to_ndarray`
+   .. seealso:: :py:obj:`pdarray.to_ndarray`
 
    .. rubric:: Notes
 
@@ -124,6 +129,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.array(np.arange(1,10))
    array([1 2 3 4 5 6 7 8 9])
 
@@ -155,10 +161,11 @@ Module Contents
        if the pdarrays are not the same size.
    :raises RuntimeError: Raised if there is a server-side error thrown
 
-   .. seealso:: :obj:`pdarray.bigint_to_uint_arrays`
+   .. seealso:: :py:obj:`pdarray.bigint_to_uint_arrays`
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.bigint_from_uint_arrays([ak.ones(5, dtype=ak.uint64), ak.arange(5, dtype=ak.uint64)])
    >>> a
    array([18446744073709551616 18446744073709551617 18446744073709551618
@@ -191,6 +198,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> np.random.seed(1701)
    >>> ak.from_series(pd.Series(np.random.randint(0,10,5)))
    array([4 3 3 5 0])
@@ -202,8 +210,14 @@ Module Contents
    >>> ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=3)))
    array([0.089433234324597599 0.1153776854774361 0.51874393620990389])
 
-   >>> ak.from_series(pd.Series(['0.57600036956445599', '0.41619265571741659',
-                      '0.6615356693784662']), dtype=np.float64)
+   >>> ak.from_series(
+   ...     pd.Series([
+   ...         '0.57600036956445599',
+   ...         '0.41619265571741659',
+   ...         '0.6615356693784662',
+   ...     ]),
+   ...     dtype=np.float64,
+   ... )
    array([0.57600036956445599 0.41619265571741659 0.6615356693784662])
 
    >>> np.random.seed(1864)
@@ -230,7 +244,7 @@ Module Contents
    contains strings and sets the dtype to str
 
 
-.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
+.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_scalars, str], dtype: Optional[Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint]] = None, max_bits: Optional[int] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
 
    Create a pdarray filled with fill_value.
 
@@ -251,10 +265,11 @@ Module Contents
    :raises ValueError: Raised if the rank of the given shape is not in get_array_ranks() or is empty
        Raised if max_bits is not NONE and ndim does not equal 1
 
-   .. seealso:: :obj:`zeros`, :obj:`ones`
+   .. seealso:: :py:obj:`zeros`, :py:obj:`ones`
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.full(5, 7, dtype=ak.int64)
    array([7 7 7 7 7])
 
@@ -281,7 +296,7 @@ Module Contents
 
    :raises TypeError: Raised if the pda parameter is not a pdarray.
 
-   .. seealso:: :obj:`ones_like`, :obj:`zeros_like`
+   .. seealso:: :py:obj:`ones_like`, :py:obj:`zeros_like`
 
    .. rubric:: Notes
 
@@ -290,6 +305,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.full_like(ak.full(5,7,dtype=ak.int64),6)
    array([6 6 6 6 6])
 
@@ -313,11 +329,11 @@ Module Contents
    :type length: int_scalars
 
    :returns: Array of evenly spaced float values along the interval
-   :rtype: pdarray, float64
+   :rtype: pdarray
 
    :raises TypeError: Raised if start or stop is not a float or int or if length is not an int
 
-   .. seealso:: :obj:`arange`
+   .. seealso:: :py:obj:`arange`
 
    .. rubric:: Notes
 
@@ -326,6 +342,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.linspace(0, 1, 5)
    array([0.00000000000000000 0.25 0.5 0.75 1.00000000000000000])
 
@@ -356,10 +373,11 @@ Module Contents
    :raises RuntimeError: Raised if the size parameter is neither an int nor a str that is parseable to an int.
    :raises ValueError: Raised if the rank of the given shape is not in get_array_ranks() or is empty
 
-   .. seealso:: :obj:`zeros`, :obj:`ones_like`
+   .. seealso:: :py:obj:`zeros`, :py:obj:`ones_like`
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.ones(5, dtype=ak.int64)
    array([1 1 1 1 1])
 
@@ -388,7 +406,7 @@ Module Contents
 
    :raises TypeError: Raised if the pda parameter is not a pdarray.
 
-   .. seealso:: :obj:`ones`, :obj:`zeros_like`
+   .. seealso:: :py:obj:`ones`, :py:obj:`zeros_like`
 
    .. rubric:: Notes
 
@@ -397,6 +415,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.ones_like(ak.zeros(5,dtype=ak.int64))
    array([1 1 1 1 1])
 
@@ -420,10 +439,11 @@ Module Contents
 
    :raises TypeError: Raised if any pdarray is a non-numeric type
 
-   .. seealso:: :obj:`pdarray.promote_dtype`
+   .. seealso:: :py:obj:`pdarray.promote_dtype`
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.arange(5)
    >>> b = ak.ones(5, dtype=ak.float64)
    >>> dtype, promoted = ak.promote_to_common_dtype([a, b])
@@ -466,6 +486,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.randint(0, 10, 5, seed=1701)
    array([6 5 1 6 3])
 
@@ -499,7 +520,7 @@ Module Contents
        seed is not an int, size is not an int, or if characters is not a str
    :raises ValueError: Raised if logstd <= 0 or size < 0
 
-   .. seealso:: :obj:`random_strings_lognormal`, :obj:`randint`
+   .. seealso:: :py:obj:`random_strings_lognormal`, :py:obj:`randint`
 
    .. rubric:: Notes
 
@@ -510,6 +531,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1)
    array(['VWHJEX', 'BEBBXJHGM', 'RWOVKBUR', 'LNJCSDXD', 'NKEDQC'])
 
@@ -538,10 +560,11 @@ Module Contents
 
    :raises ValueError: Raised if minlen < 0, maxlen < minlen, or size < 0
 
-   .. seealso:: :obj:`random_strings_lognormal`, :obj:`randint`
+   .. seealso:: :py:obj:`random_strings_lognormal`, :py:obj:`randint`
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=8675309, size=5)
    array(['ECWO', 'WSS', 'TZG', 'RW', 'C'])
 
@@ -562,6 +585,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.scalar_array(5)
    array([5])
 
@@ -581,12 +605,12 @@ Module Contents
    :type seed: int_scalars
 
    :returns: The array of random numbers
-   :rtype: pdarray, float64
+   :rtype: pdarray
 
    :raises TypeError: Raised if size is not an int
    :raises ValueError: Raised if size < 0
 
-   .. seealso:: :obj:`randint`
+   .. seealso:: :py:obj:`randint`
 
    .. rubric:: Notes
 
@@ -596,6 +620,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.standard_normal(3,1)
    array([-0.68586185091150265 1.1723810583573377 0.567584107142031])
 
@@ -615,7 +640,7 @@ Module Contents
    :type seed: int_scalars, optional
 
    :returns: Values drawn uniformly from the specified range
-   :rtype: pdarray, float64
+   :rtype: pdarray
 
    :raises TypeError: Raised if dtype.name not in DTypes, size is not an int, or if
        either low or high is not an int or float
@@ -628,6 +653,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.uniform(3,seed=1701)
    array([0.011410423448327005 0.73618171558685619 0.12367222192448891])
 
@@ -656,10 +682,11 @@ Module Contents
    :raises ValueError: Raised if the rank of the given shape is not in get_array_ranks() or is empty
        Raised if max_bits is not NONE and ndim does not equal 1
 
-   .. seealso:: :obj:`ones`, :obj:`zeros_like`
+   .. seealso:: :py:obj:`ones`, :py:obj:`zeros_like`
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.zeros(5, dtype=ak.int64)
    array([0 0 0 0 0])
 
@@ -684,10 +711,11 @@ Module Contents
 
    :raises TypeError: Raised if the pda parameter is not a pdarray.
 
-   .. seealso:: :obj:`zeros`, :obj:`ones_like`
+   .. seealso:: :py:obj:`zeros`, :py:obj:`ones_like`
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.zeros_like(ak.ones(5,dtype=ak.int64))
    array([0 0 0 0 0])
 

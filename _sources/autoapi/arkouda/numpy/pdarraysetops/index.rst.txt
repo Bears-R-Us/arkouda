@@ -21,13 +21,17 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: concatenate(arrays: Sequence[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]], ordered: bool = True) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, Sequence[arkouda.categorical.Categorical]]
+.. py:function:: concatenate(arrays: Sequence[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]], axis: int = 0, ordered: bool = True) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, Sequence[arkouda.categorical.Categorical]]
 
    Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
    one ``pdarray`` or ``Strings`` object, respectively.
 
    :param arrays: The arrays to concatenate. Must all have same dtype.
    :type arrays: Sequence[Union[pdarray,Strings,Categorical]]
+   :param axis: The axis along which the arrays will be joined.
+                If axis is None, arrays are flattened before use. Only for use with pdarray, and when
+                ordered is True. Default is 0.
+   :type axis: int, default = 0
    :param ordered: If True (default), the arrays will be appended in the
                    order given. If False, array data may be interleaved
                    in blocks, which can greatly improve performance but
@@ -46,6 +50,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.concatenate([ak.array([1, 2, 3]), ak.array([4, 5, 6])])
    array([1 2 3 4 5 6])
 
@@ -82,7 +87,7 @@ Module Contents
    :type invert: bool, optional, defaults to False
 
    :returns: True for each row in a that is contained in b
-   :rtype: pdarray, bool
+   :rtype: groupable
 
    :raises TypeError: Raised if either A or B is not a pdarray, Strings, or Categorical
        object, or if both are pdarrays and either has rank > 1,
@@ -91,13 +96,14 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.in1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
    array([False True False])
 
    >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
    array([False True])
 
-   .. seealso:: :obj:`arkouda.groupbyclass.unique`, :obj:`intersect1d`, :obj:`union1d`
+   .. seealso:: :py:obj:`arkouda.groupbyclass.unique`, :py:obj:`intersect1d`, :py:obj:`union1d`
 
    .. rubric:: Notes
 
@@ -119,8 +125,8 @@ Module Contents
    :param space: The set of items in which to search. Must have same shape/dtype as query.
    :type space: (sequence of) pdarray or Strings or Categorical
 
-   :returns: **indices** -- For each item in query that is found in space, its index in space.
-   :rtype: pdarray, int64
+   :returns: For each item in query that is found in space, its index in space.
+   :rtype: pdarray
 
    .. rubric:: Notes
 
@@ -129,6 +135,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> select_from = ak.arange(10)
    >>> query = select_from[ak.randint(0, select_from.size, 20, seed=10)]
    >>> space = select_from[ak.randint(0, select_from.size, 20, seed=11)]
@@ -136,8 +143,8 @@ Module Contents
    remove some values to ensure that query has entries
    which don't appear in space
 
-   >>> space = space[arr2 != 9]
-   >>> space = space[arr2 != 3]
+   >>> space = space[space != 9]
+   >>> space = space[space != 3]
 
    >>> ak.indexof1d(query, space)
    array([0 4 1 3 10 2 6 12 13 5 7 8 9 14 5 7 11 15 5 7 0 4])
@@ -167,17 +174,17 @@ Module Contents
    :raises TypeError: Raised if either A or B is not a groupable
    :raises RuntimeError: Raised if the dtype of either pdarray is not supported
 
-   .. seealso:: :obj:`arkouda.groupbyclass.unique`, :obj:`union1d`
+   .. seealso:: :py:obj:`arkouda.groupbyclass.unique`, :py:obj:`union1d`
 
    .. rubric:: Examples
 
-   1D Example
+   >>> import arkouda as ak
 
+   1D Example
    >>> ak.intersect1d(ak.array([1, 3, 4, 3]), ak.array([3, 1, 2, 1]))
    array([1 3])
 
    Multi-Array Example
-
    >>> a = ak.arange(5)
    >>> b = ak.array([1, 5, 3, 4, 2])
    >>> c = ak.array([1, 4, 3, 2, 5])
@@ -208,7 +215,7 @@ Module Contents
    :raises TypeError: Raised if either A or B is not a pdarray
    :raises RuntimeError: Raised if the dtype of either pdarray is not supported
 
-   .. seealso:: :obj:`arkouda.groupbyclass.unique`, :obj:`setxor1d`
+   .. seealso:: :py:obj:`arkouda.groupbyclass.unique`, :py:obj:`setxor1d`
 
    .. rubric:: Notes
 
@@ -216,6 +223,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.array([1, 2, 3, 2, 4, 1])
    >>> b = ak.array([3, 4, 5, 6])
    >>> ak.setdiff1d(a, b)
@@ -257,6 +265,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.array([1, 2, 3, 2, 4])
    >>> b = ak.array([2, 3, 5, 7, 5])
    >>> ak.setxor1d(a,b)
@@ -287,22 +296,22 @@ Module Contents
    :type B: list of pdarrays, pdarray, Strings, or Categorical
 
    :returns: Unique, sorted union of the input arrays.
-   :rtype: pdarray/groupable
+   :rtype: groupable
 
    :raises TypeError: Raised if either A or B is not a groupable
    :raises RuntimeError: Raised if the dtype of either input is not supported
 
-   .. seealso:: :obj:`intersect1d`, :obj:`arkouda.groupbyclass.unique`
+   .. seealso:: :py:obj:`intersect1d`, :py:obj:`arkouda.groupbyclass.unique`
 
    .. rubric:: Examples
 
-   1D Example
+   >>> import arkouda as ak
 
+   1D Example
    >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
    array([-2 -1 0 1 2])
 
    Multi-Array Example
-
    >>> a = ak.arange(1, 6)
    >>> b = ak.array([1, 5, 3, 4, 2])
    >>> c = ak.array([1, 4, 3, 2, 5])

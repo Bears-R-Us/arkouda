@@ -29,7 +29,6 @@ Functions
    arkouda.io.receive
    arkouda.io.receive_dataframe
    arkouda.io.restore
-   arkouda.io.save_all
    arkouda.io.save_checkpoint
    arkouda.io.snapshot
    arkouda.io.to_csv
@@ -44,8 +43,10 @@ Module Contents
 
 .. py:function:: export(read_path: str, dataset_name: str = 'ak_data', write_file: Optional[str] = None, return_obj: bool = True, index: bool = False)
 
-   Export data from Arkouda file (Parquet/HDF5) to Pandas object or file formatted to be
-   readable by Pandas
+   Export data from arkouda to pandas.
+
+   Export data from Arkouda file (Parquet/HDF5)
+   to Pandas object or file formatted to be readable by Pandas.
 
    :param read_path: path to file where arkouda data is stored.
    :type read_path: str
@@ -63,7 +64,7 @@ Module Contents
    :returns: When `return_obj=True`
    :rtype: pd.DataFrame
 
-   .. seealso:: :obj:`pandas.DataFrame.to_parquet`, :obj:`pandas.DataFrame.to_hdf`, :obj:`pandas.DataFrame.read_parquet`, :obj:`pandas.DataFrame.read_hdf`, :obj:`ak.import_data`
+   .. seealso:: :py:obj:`pandas.DataFrame.to_parquet`, :py:obj:`pandas.DataFrame.to_hdf`, :py:obj:`pandas.DataFrame.read_parquet`, :py:obj:`pandas.DataFrame.read_hdf`, :py:obj:`ak.import_data`
 
    .. rubric:: Notes
 
@@ -80,7 +81,7 @@ Module Contents
 
 .. py:function:: get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False, column_delim: str = ',', read_nested: bool = True) -> List[str]
 
-   Get the names of the datasets in the provide files
+   Get the names of the datasets in the provide files.
 
    :param filenames: Name of the file/s from which to return datasets
    :type filenames: str or List[str]
@@ -105,13 +106,14 @@ Module Contents
    but similar support will be added for Parquet at that time.
    - If a list of files is provided, only the datasets in the first file will be returned
 
-   .. seealso:: :obj:`ls`
+   .. seealso:: :py:obj:`ls`
 
 
 .. py:function:: get_filetype(filenames: Union[str, List[str]]) -> str
 
-   Get the type of a file accessible to the server. Supported
-   file types and possible return strings are 'HDF5' and 'Parquet'.
+   Get the type of a file accessible to the server.
+
+   Supported file types and possible return strings are 'HDF5' and 'Parquet'.
 
    :param filenames: A file or list of files visible to the arkouda server
    :type filenames: Union[str, List[str]]
@@ -126,7 +128,7 @@ Module Contents
    - When list provided, it is assumed that all files are the same type
    - CSV Files without the Arkouda Header are not supported
 
-   .. seealso:: :obj:`read_parquet`, :obj:`read_hdf`
+   .. seealso:: :py:obj:`read_parquet`, :py:obj:`read_hdf`
 
 
 .. py:function:: get_null_indices(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, Mapping[str, arkouda.numpy.pdarrayclass.pdarray]]
@@ -146,10 +148,12 @@ Module Contents
    :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
    :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-   .. seealso:: :obj:`get_datasets`, :obj:`ls`
+   .. seealso:: :py:obj:`get_datasets`, :py:obj:`ls`
 
 
 .. py:function:: import_data(read_path: str, write_file: Optional[str] = None, return_obj: bool = True, index: bool = False)
+
+   Import data from a file saved by Pandas (HDF5/Parquet).
 
    Import data from a file saved by Pandas (HDF5/Parquet) to Arkouda object and/or
    a file formatted to be read by Arkouda.
@@ -169,7 +173,7 @@ Module Contents
    :returns: When `return_obj=True`
    :rtype: pd.DataFrame
 
-   .. seealso:: :obj:`pandas.DataFrame.to_parquet`, :obj:`pandas.DataFrame.to_hdf`, :obj:`pandas.DataFrame.read_parquet`, :obj:`pandas.DataFrame.read_hdf`, :obj:`ak.export`
+   .. seealso:: :py:obj:`pandas.DataFrame.to_parquet`, :py:obj:`pandas.DataFrame.to_hdf`, :py:obj:`pandas.DataFrame.read_parquet`, :py:obj:`pandas.DataFrame.read_hdf`, :py:obj:`ak.export`
 
    .. rubric:: Notes
 
@@ -203,7 +207,7 @@ Module Contents
    :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
        one or more of them
 
-   .. seealso:: :obj:`to_parquet`, :obj:`to_hdf`, :obj:`load_all`, :obj:`read`
+   .. seealso:: :py:obj:`to_parquet`, :py:obj:`to_hdf`, :py:obj:`load_all`, :py:obj:`read`
 
    .. rubric:: Notes
 
@@ -218,22 +222,22 @@ Module Contents
 
    .. rubric:: Examples
 
-   >>> # Loading from file without extension
+   >>> import arkouda as ak
+   Loading from file without extension
    >>> obj = ak.load('path/prefix')
    Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.
    The file type is inferred during processing.
 
-   >>> # Loading with an extension (HDF5)
+   Loading with an extension (HDF5)
    >>> obj = ak.load('path/prefix.test')
    Loads the object from numLocales files with the name ``cwd/path/name_prefix_LOCALE####.test`` where
    #### is replaced by each locale numbers. Because filetype is inferred during processing,
    the extension is not required to be a specific format.
 
 
-.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER', column_delim: str = ',', read_nested=True) -> Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical]]
+.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER', column_delim: str = ',', read_nested: bool = True) -> Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical]]
 
-   Load multiple pdarrays, Strings, SegArrays, or Categoricals previously
-   saved with ``save_all()``.
+   Load multiple pdarrays, Strings, SegArrays, or Categoricals previously saved with ``save_all()``.
 
    :param path_prefix: Filename prefix used to save the original pdarray
    :type path_prefix: str
@@ -252,14 +256,14 @@ Module Contents
              with the previously saved pdarrays, Strings, SegArrays, or Categoricals
    :rtype: Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]
 
-   :raises TypeError:: Raised if path_prefix is not a str
+   :raises TypeError: Raised if path_prefix is not a str
    :raises ValueError: Raised if file_format/extension is encountered that is not hdf5 or parquet or
        if all datasets are not present in all hdf5/parquet files or if the
        path_prefix does not correspond to files accessible to Arkouda
    :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
        one or more of them
 
-   .. seealso:: :obj:`to_parquet`, :obj:`to_hdf`, :obj:`load`, :obj:`read`
+   .. seealso:: :py:obj:`to_parquet`, :py:obj:`to_hdf`, :py:obj:`load`, :py:obj:`read`
 
    .. rubric:: Notes
 
@@ -272,7 +276,9 @@ Module Contents
 
 .. py:function:: load_checkpoint(name, path='.akdata')
 
-   Load server's state. The server metadata must match the current
+   Load server's state.
+
+   The server metadata must match the current
    configuration (e.g. same number of locales must be used).
 
    :param name: Name of the checkpoint. ``<path>/<name>`` must be a directory.
@@ -285,6 +291,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> arr = ak.zeros(10, int)
    >>> arr[2] = 2
    >>> arr[2]
@@ -297,41 +304,47 @@ Module Contents
    >>> arr[2]
    2
 
-   .. seealso:: :obj:`save_checkpoint`
+   .. seealso:: :py:obj:`save_checkpoint`
 
 
 .. py:function:: ls(filename: str, col_delim: str = ',', read_nested: bool = True) -> List[str]
 
-   This function calls the h5ls utility on a HDF5 file visible to the
-   arkouda server or calls a function that imitates the result of h5ls
-   on a Parquet file.
+   List the contents of an HDF5 or Parquet file on the Arkouda server.
 
-   :param filename: The name of the file to pass to the server
+   This function invokes the HDF5 `h5ls` utility on a file visible to the
+   Arkouda server, or simulates a similar listing for Parquet files. For CSV
+   files without headers, see `ls_csv`.
+
+   :param filename: Path to the file on the Arkouda server. Must be a non-empty string.
    :type filename: str
-   :param col_delim: The delimiter used to separate columns if the file is a csv
-   :type col_delim: str
-   :param read_nested: Default True, when True, SegArray objects will be read from the file. When False,
-                       SegArray (or other nested Parquet columns) will be ignored.
-                       Only used for Parquet files.
-   :type read_nested: bool
+   :param col_delim: Delimiter to use when interpreting CSV files.
+   :type col_delim: str, default=","
+   :param read_nested: If True, include nested Parquet columns (e.g., `SegArray`). If False,
+                       nested columns are ignored. Only applies to Parquet files.
+   :type read_nested: bool, default=True
 
-   :returns: The string output of the datasets from the server
-   :rtype: str
+   :returns: A list of lines describing each dataset or column in the file.
+   :rtype: List[str]
 
-   :raises TypeError: Raised if filename is not a str
-   :raises ValueError: Raised if filename is empty or contains only whitespace
-   :raises RuntimeError: Raised if error occurs in executing ls on an HDF5 file
-   :raises Notes: - This will need to be updated because Parquet will not technically support this when we update.
-           Similar functionality will be added for Parquet in the future
-       - For CSV files without headers, please use ls_csv
+   :raises TypeError: If `filename` is not a string.
+   :raises ValueError: If `filename` is empty or contains only whitespace.
+   :raises RuntimeError: If an error occurs when running `h5ls` or simulating the Parquet listing.
 
-   .. seealso:: :obj:`ls_csv`
+   .. rubric:: Notes
+
+   - Parquet support is limited and may change in future releases.
+   - Output lines mirror the format of the HDF5 `h5ls` output.
+   - For CSV files lacking headers, use `ls_csv`.
+
+   .. seealso::
+
+      :py:obj:`ls_csv`
+          List the contents of CSV files without headers.
 
 
 .. py:function:: ls_csv(filename: str, col_delim: str = ',') -> List[str]
 
-   Used for identifying the datasets within a file when a CSV does not
-   have a header.
+   List the datasets within a file when a CSV does not have a header.
 
    :param filename: The name of the file to pass to the server
    :type filename: str
@@ -341,12 +354,13 @@ Module Contents
    :returns: The string output of the datasets from the server
    :rtype: str
 
-   .. seealso:: :obj:`ls`
+   .. seealso:: :py:obj:`ls`
 
 
 .. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.index.Index]]]
 
    Read datasets from files.
+
    File Type is determined automatically.
 
    :param filenames: Either a list of filenames or shell expression
@@ -390,7 +404,7 @@ Module Contents
 
    :raises RuntimeError: If invalid filetype is detected
 
-   .. seealso:: :obj:`get_datasets`, :obj:`ls`, :obj:`read_parquet`, :obj:`read_hdf`
+   .. seealso:: :py:obj:`get_datasets`, :py:obj:`ls`, :py:obj:`read_parquet`, :py:obj:`read_hdf`
 
    .. rubric:: Notes
 
@@ -411,6 +425,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    Read with file Extension
    >>> x = ak.read('path/name_prefix.h5') # load HDF5 - processing determines file type not extension
    Read without file Extension
@@ -421,7 +436,9 @@ Module Contents
 
 .. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.index.Index]]]
 
-   Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
+   Read CSV file(s) into Arkouda objects.
+
+   If more than one dataset is found, the objects
    will be returned in a dictionary mapping the dataset name to the Arkouda object
    containing the data. If the file contains the appropriately formatted header, typed
    data will be returned. Otherwise, all data will be returned as a Strings object.
@@ -447,21 +464,21 @@ Module Contents
        from the server.
    :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-   .. seealso:: :obj:`to_csv`
+   .. seealso:: :py:obj:`to_csv`
 
    .. rubric:: Notes
 
    - CSV format is not currently supported by load/load_all operations
    - The column delimiter is expected to be the same for column names and data
    - Be sure that column delimiters are not found within your data.
-   - All CSV files must delimit rows using newline (``\n``) at this time.
+   - All CSV files must delimit rows using newline (``\\n``) at this time.
    - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
      bytes as uint(8).
 
 
 .. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False, tag_data=False) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.index.Index]]]
 
-   Read Arkouda objects from HDF5 file/s
+   Read Arkouda objects from HDF5 file/s.
 
    :param filenames: Filename/s to read objects from
    :type filenames: str, List[str]
@@ -513,10 +530,11 @@ Module Contents
    and read all of them. Use ``get_datasets`` to show the names of datasets
    to HDF5 files.
 
-   .. seealso:: :obj:`read_tagged_data`
+   .. seealso:: :py:obj:`read_tagged_data`
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>>
    # Read with file Extension
    >>> x = ak.read_hdf('path/name_prefix.h5') # load HDF5
@@ -526,7 +544,7 @@ Module Contents
 
 .. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.index.Index]]]
 
-   Read Arkouda objects from Parquet file/s
+   Read Arkouda objects from Parquet file/s.
 
    :param filenames: Filename/s to read objects from
    :type filenames: str, List[str]
@@ -588,10 +606,11 @@ Module Contents
    Parquet always recomputes offsets at this time
    This will need to be updated once parquets workflow is updated
 
-   .. seealso:: :obj:`read_tagged_data`
+   .. seealso:: :py:obj:`read_tagged_data`
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    Read without file Extension
    >>> x = ak.read_parquet('path/name_prefix.parquet') # load Parquet
    Read Glob Expression
@@ -601,6 +620,7 @@ Module Contents
 .. py:function:: read_tagged_data(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, read_nested: bool = True, has_non_float_nulls: bool = False)
 
    Read datasets from files and tag each record to the file it was read from.
+
    File Type is determined automatically.
 
    :param filenames: Either a list of filenames or shell expression
@@ -637,6 +657,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    Read files and return data with tagging corresponding to the Categorical returned
    cat.codes will link the codes in data to the filename. Data will contain the code `Filename_Codes`
    >>> data, cat = ak.read_tagged_data('path/name')
@@ -646,7 +667,9 @@ Module Contents
 
 .. py:function:: read_zarr(store_path: str, ndim: int, dtype)
 
-   Reads a Zarr store from disk into a pdarray. Supports multi-dimensional pdarrays of numeric types.
+   Read a Zarr store from disk into a pdarray.
+
+   Supports multi-dimensional pdarrays of numeric types.
    To use this function, ensure you have installed the blosc dependency (`make install-blosc`)
    and have included `ZarrMsg.chpl` in the `ServerModules.cfg` file.
 
@@ -732,61 +755,11 @@ Module Contents
    objects in HDF5. Thus, they are returned within the dictionary as a dataframe.
 
 
-.. py:function:: save_all(columns: Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]]], prefix_path: str, names: Optional[List[str]] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None
-
-   DEPRECATED
-   Save multiple named pdarrays to HDF5/Parquet files.
-   :param columns: Collection of arrays to save
-   :type columns: dict or list of pdarrays
-   :param prefix_path: Directory and filename prefix for output files
-   :type prefix_path: str
-   :param names: Dataset names for the pdarrays
-   :type names: list of str
-   :param file_format: 'HDF5' or 'Parquet'. Defaults to hdf5
-   :type file_format: str
-   :param mode: By default, truncate (overwrite) the output files if they exist.
-                If 'append', attempt to create new dataset in existing files.
-   :type mode: {'truncate' | 'append'}
-   :param file_type: Default: distribute
-                     Single writes the dataset to a single file
-                     Distribute writes the dataset to a file per locale
-                     Only used with HDF5
-   :type file_type: str ("single" | "distribute")
-   :param compression: Optional
-                       Select the compression to use with Parquet files.
-                       Only used with Parquet.
-   :type compression: str (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
-
-   :rtype: None
-
-   :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
-       is not 'truncate' or 'append'
-
-   .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`to_parquet`, :obj:`to_hdf`
-
-   .. rubric:: Notes
-
-   Creates one file per locale containing that locale's chunk of each pdarray.
-   If columns is a dictionary, the keys are used as the HDF5 dataset names.
-   Otherwise, if no names are supplied, 0-up integers are used. By default,
-   any existing files at path_prefix will be overwritten, unless the user
-   specifies the 'append' mode, in which case arkouda will attempt to add
-   <columns> as new datasets to existing files. If the wrong number of files
-   is present or dataset names already exist, a RuntimeError is raised.
-
-   .. rubric:: Examples
-
-   >>> a = ak.arange(25)
-   >>> b = ak.arange(25)
-   >>> # Save with mapping defining dataset names
-   >>> ak.save_all({'a': a, 'b': b}, 'path/name_prefix', file_format='Parquet')
-   >>> # Save using names instead of mapping
-   >>> ak.save_all([a, b], 'path/name_prefix', names=['a', 'b'], file_format='Parquet')
-
-
 .. py:function:: save_checkpoint(name='', path='.akdata', mode: str = 'overwrite')
 
-   Save the server's state. Records some metadata about the server, and saves
+   Save the server's state.
+
+   Records some metadata about the server, and saves
    all pdarrays into parquet files.
 
    :param name: Name of the checkpoint. The default will be the server session ID, which
@@ -813,6 +786,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> arr = ak.zeros(10, int)
    >>> arr[2] = 2
    >>> arr[2]
@@ -825,12 +799,14 @@ Module Contents
    >>> arr[2]
    2
 
-   .. seealso:: :obj:`load_checkpoint`
+   .. seealso:: :py:obj:`load_checkpoint`
 
 
 .. py:function:: snapshot(filename)
 
-   Create a snapshot of the current Arkouda namespace. All currently accessible variables containing
+   Create a snapshot of the current Arkouda namespace.
+
+   All currently accessible variables containing
    Arkouda objects will be written to an HDF5 file.
 
    Unlike other save/load functions, this maintains the integrity of dataframes.
@@ -841,14 +817,14 @@ Module Contents
    :type filename: str
    :param Name to use when storing file:
 
-   :rtype: None
-
-   .. seealso:: :obj:`ak.restore`
+   .. seealso:: :py:obj:`ak.restore`
 
 
 .. py:function:: to_csv(columns: Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]]], prefix_path: str, names: Optional[List[str]] = None, col_delim: str = ',', overwrite: bool = False)
 
-   Write Arkouda object(s) to CSV file(s). All CSV Files written by Arkouda
+   Write Arkouda object(s) to CSV file(s).
+
+   All CSV Files written by Arkouda
    include a header denoting data types of the columns.
 
    :param columns: The objects to be written to CSV file. If a mapping is used and `names` is None
@@ -867,8 +843,6 @@ Module Contents
                      be overwritten. If False, an error will be returned if existing files are found.
    :type overwrite: bool
 
-   :rtype: None
-
    :raises ValueError: Raised if any datasets are present in all csv files or if one or
        more of the specified files do not exist
    :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
@@ -876,14 +850,14 @@ Module Contents
        from the server.
    :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-   .. seealso:: :obj:`read_csv`
+   .. seealso:: :py:obj:`read_csv`
 
    .. rubric:: Notes
 
    - CSV format is not currently supported by load/load_all operations
    - The column delimiter is expected to be the same for column names and data
    - Be sure that column delimiters are not found within your data.
-   - All CSV files must delimit rows using newline (``\n``) at this time.
+   - All CSV files must delimit rows using newline (``\\n``) at this time.
    - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
      bytes as uint(8).
 
@@ -912,7 +886,7 @@ Module Contents
        is not 'truncate' or 'append'
    :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
 
-   .. seealso:: :obj:`to_parquet`, :obj:`load`, :obj:`load_all`, :obj:`read`
+   .. seealso:: :py:obj:`to_parquet`, :py:obj:`load`, :py:obj:`load_all`, :py:obj:`read`
 
    .. rubric:: Notes
 
@@ -926,13 +900,14 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.arange(25)
    >>> b = ak.arange(25)
 
-   >>> # Save with mapping defining dataset names
+   Save with mapping defining dataset names
    >>> ak.to_hdf({'a': a, 'b': b}, 'path/name_prefix')
 
-   >>> # Save using names instead of mapping
+   Save using names instead of mapping
    >>> ak.to_hdf([a, b], 'path/name_prefix', names=['a', 'b'])
 
 
@@ -966,7 +941,7 @@ Module Contents
        is not 'truncate' or 'append'
    :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
 
-   .. seealso:: :obj:`to_hdf`, :obj:`load`, :obj:`load_all`, :obj:`read`
+   .. seealso:: :py:obj:`to_hdf`, :py:obj:`load`, :py:obj:`load_all`, :py:obj:`read`
 
    .. rubric:: Notes
 
@@ -981,19 +956,22 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.arange(25)
    >>> b = ak.arange(25)
 
-   >>> # Save with mapping defining dataset names
+   Save with mapping defining dataset names
    >>> ak.to_parquet({'a': a, 'b': b}, 'path/name_prefix')
 
-   >>> # Save using names instead of mapping
+   Save using names instead of mapping
    >>> ak.to_parquet([a, b], 'path/name_prefix', names=['a', 'b'])
 
 
 .. py:function:: to_zarr(store_path: str, arr: arkouda.numpy.pdarrayclass.pdarray, chunk_shape)
 
-   Writes a pdarray to disk as a Zarr store. Supports multi-dimensional pdarrays of numeric types.
+   Write a pdarray to disk as a Zarr store.
+
+   Supports multi-dimensional pdarrays of numeric types.
    To use this function, ensure you have installed the blosc dependency (`make install-blosc`)
    and have included `ZarrMsg.chpl` in the `ServerModules.cfg` file.
 
@@ -1010,8 +988,7 @@ Module Contents
 
 .. py:function:: update_hdf(columns: Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]]], prefix_path: str, names: Optional[List[str]] = None, repack: bool = True)
 
-   Overwrite the datasets with name appearing in names or keys in columns if columns
-   is a dictionary
+   Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary
 
    :param columns: Collection of arrays to save
    :type columns: dict or list of pdarrays

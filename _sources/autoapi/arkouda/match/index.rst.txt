@@ -19,13 +19,14 @@ Module Contents
 
    .. py:method:: end() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Returns the ends of matches
+      Return the ends of matches.
 
       :returns: The end positions of matches
-      :rtype: pdarray, int64
+      :rtype: pdarray
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.search('_+').end()
       array([2 4 2])
@@ -34,7 +35,7 @@ Module Contents
 
    .. py:method:: find_matches(return_match_origins: bool = False)
 
-      Return all matches as a new Strings object
+      Return all matches as a new Strings object.
 
       :param return_match_origins: If True, return a pdarray containing the index of the original string each pattern
                                    match is from
@@ -47,6 +48,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.search('_+').find_matches(return_match_origins=True)
       (array(['_', '____', '__']), array([0 1 3]))
@@ -55,8 +57,9 @@ Module Contents
 
    .. py:method:: group(group_num: int = 0, return_group_origins: bool = False)
 
-      Returns a new Strings containing the capture group corresponding to group_num.
-      For the default, group_num=0, return the full match
+      Return a new Strings containing the capture group corresponding to group_num.
+
+      For the default, group_num=0, return the full match.
 
       :param group_num: The index of the capture group to be returned
       :type group_num: int
@@ -69,8 +72,9 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(["Isaac Newton, physics", '<-calculus->', 'Gottfried Leibniz, math'])
-      >>> m = strings.search("(\w+) (\w+)")
+      >>> m = strings.search("(\\w+) (\\w+)")
       >>> m.group()
       array(['Isaac Newton', 'Gottfried Leibniz'])
       >>> m.group(1)
@@ -82,13 +86,14 @@ Module Contents
 
    .. py:method:: match_type() -> str
 
-      Returns the type of the Match object
+      Return the type of the Match object.
 
       :returns: MatchType of the Match object
       :rtype: str
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.search('_+').match_type()
       'SEARCH'
@@ -97,13 +102,14 @@ Module Contents
 
    .. py:method:: matched() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Returns a boolean array indiciating whether each element matched
+      Return a boolean array indiciating whether each element matched.
 
       :returns: True for elements that match, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.search('_+').matched()
       array([True True False True False])
@@ -115,13 +121,14 @@ Module Contents
 
    .. py:method:: start() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Returns the starts of matches
+      Return the starts of matches
 
       :returns: The start positions of matches
-      :rtype: pdarray, int64
+      :rtype: pdarray
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.search('_+').start()
       array([1 0 0])

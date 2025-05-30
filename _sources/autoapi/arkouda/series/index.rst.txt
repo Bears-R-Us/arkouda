@@ -12,10 +12,10 @@ Classes
    arkouda.series.Series
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
-.. py:class:: Series
+.. py:class:: Series(data: Union[Tuple, List, arkouda.groupbyclass.groupable_element_type, Series, arkouda.numpy.segarray.SegArray, pandas.Series, pandas.Categorical], name=None, index: Optional[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Tuple, List, arkouda.index.Index]] = None)
 
    One-dimensional arkouda array with axis labels.
 
@@ -49,14 +49,8 @@ Module Contents
    .. py:method:: add(b: Series) -> Series
 
 
-   .. py:method:: argmax() -> Series
-
-
-   .. py:method:: argmin() -> Series
-
-
    .. py:property:: at
-      :type: Series
+      :type: _LocIndexer
 
 
       Accesses entries of a Series by label.
@@ -65,19 +59,9 @@ Module Contents
       :rtype: _LocIndexer
 
 
-   .. py:method:: attach(label: str, nkeys: int = 1) -> Series
-
-      DEPRECATED
-      Retrieve a series registered with arkouda
-
-      :param label:
-      :type label: name used to register the series
-      :param nkeys:
-      :type nkeys: number of keys, if a multi-index was registerd
-
-
-
    .. py:method:: concat(arrays: List, axis: int = 0, index_labels: Union[List[str], None] = None, value_labels: Union[List[str], None] = None, ordered: bool = False) -> Union[arkouda.dataframe.DataFrame, Series]
+      :staticmethod:
+
 
       Concatenate a list of Arkouda Series or grouped arrays horizontally or vertically.
 
@@ -113,19 +97,19 @@ Module Contents
 
       Diffs consecutive values of the series.
 
-              Returns a new series with the same index and length.  First value is set to NaN.
+      Returns a new series with the same index and length.  First value is set to NaN.
 
 
 
-
-
-   .. py:method:: dt(series)
+   .. py:attribute:: dt
 
 
    .. py:property:: dtype
+      :type: numpy.dtype
 
 
-   .. py:method:: fillna(value: Union[supported_scalars, Series, pdarray]) -> Series
+
+   .. py:method:: fillna(value: Union[supported_scalars, Series, arkouda.numpy.pdarrayclass.pdarray]) -> Series
 
       Fill NA/NaN values using the specified method.
 
@@ -215,6 +199,8 @@ Module Contents
 
 
    .. py:method:: from_return_msg(repMsg: str) -> Series
+      :classmethod:
+
 
       Return a Series instance pointing to components created by the arkouda server.
       The user should not call this function directly.
@@ -233,12 +219,11 @@ Module Contents
 
    .. py:method:: has_repeat_labels() -> bool
 
-      Returns whether the Series has any labels that appear more than once
+      Return whether the Series has any labels that appear more than once.
 
 
 
-
-   .. py:method:: hasnans() -> bool_scalars
+   .. py:method:: hasnans() -> arkouda.numpy.dtypes.bool_scalars
 
       Return True if there are any NaNs.
 
@@ -277,9 +262,8 @@ Module Contents
 
 
 
-
    .. py:property:: iat
-      :type: Series
+      :type: _iLocIndexer
 
 
       Accesses entries of a Series by position.
@@ -289,7 +273,7 @@ Module Contents
 
 
    .. py:property:: iloc
-      :type: Series
+      :type: _iLocIndexer
 
 
       Accesses entries of a Series by position.
@@ -300,15 +284,15 @@ Module Contents
 
    .. py:method:: is_registered() -> bool
 
-      Return True iff the object is contained in the registry or is a component of a
-      registered object.
+       Return True iff the object is contained in the registry or is a component of a
+       registered object.
 
       :returns: Indicates if the object is contained in the registry
-      :rtype: numpy.bool
+      :rtype: bool
 
       :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`unregister`
 
       .. rubric:: Notes
 
@@ -317,7 +301,7 @@ Module Contents
 
 
 
-   .. py:method:: isin(lst: Union[pdarray, Strings, List]) -> Series
+   .. py:method:: isin(lst: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, List]) -> Series
 
       Find Series elements whose values are in the specified list.
 
@@ -341,7 +325,7 @@ Module Contents
 
       :returns: Mask of bool values for each element in Series
                 that indicates whether an element is an NA value.
-      :rtype: arkouda.series.Series
+      :rtype: Series
 
       .. rubric:: Examples
 
@@ -378,7 +362,7 @@ Module Contents
 
       :returns: Mask of bool values for each element in Series
                 that indicates whether an element is an NA value.
-      :rtype: arkouda.series.Series
+      :rtype: Series
 
       .. rubric:: Examples
 
@@ -403,7 +387,7 @@ Module Contents
 
 
    .. py:property:: loc
-      :type: Series
+      :type: _LocIndexer
 
 
       Accesses entries of a Series by label.
@@ -412,7 +396,7 @@ Module Contents
       :rtype: _LocIndexer
 
 
-   .. py:method:: locate(key: Union[int, pdarray, Index, Series, List, Tuple]) -> Series
+   .. py:method:: locate(key: Union[int, arkouda.numpy.pdarrayclass.pdarray, arkouda.index.Index, Series, List, Tuple]) -> Series
 
       Lookup values by index label.
 
@@ -430,7 +414,7 @@ Module Contents
 
 
 
-   .. py:method:: map(arg: Union[dict, Series]) -> Series
+   .. py:method:: map(arg: Union[dict, arkouda.Series]) -> arkouda.Series
 
       Map values of Series according to an input mapping.
 
@@ -441,7 +425,7 @@ Module Contents
                 When the input Series has Categorical values,
                 the return Series will have Strings values.
                 Otherwise, the return type will match the input type.
-      :rtype: arkouda.series.Series
+      :rtype: Series
 
       :raises TypeError: Raised if arg is not of type dict or arkouda.Series.
           Raised if series values not of type pdarray, Categorical, or Strings.
@@ -502,12 +486,6 @@ Module Contents
 
 
 
-   .. py:method:: max() -> Series
-
-
-   .. py:method:: mean() -> Series
-
-
    .. py:method:: memory_usage(index: bool = True, unit: Literal['B', 'KB', 'MB', 'GB'] = 'B') -> int
 
       Return the memory usage of the Series.
@@ -523,10 +501,11 @@ Module Contents
       :returns: Bytes of memory consumed.
       :rtype: int
 
-      .. seealso:: :obj:`arkouda.numpy.pdarrayclass.nbytes`, :obj:`arkouda.index.Index.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
+      .. seealso:: :py:obj:`arkouda.numpy.pdarrayclass.nbytes`, :py:obj:`arkouda.Index.memory_usage`, :py:obj:`arkouda.pandas.series.Series.memory_usage`, :py:obj:`arkouda.datafame.DataFrame.memory_usage`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> from arkouda.series import Series
       >>> s = ak.Series(ak.arange(3))
       >>> s.memory_usage()
@@ -546,11 +525,8 @@ Module Contents
 
 
 
-   .. py:method:: min() -> Series
-
-
    .. py:property:: ndim
-      :type: Series
+      :type: int
 
 
 
@@ -565,7 +541,7 @@ Module Contents
 
       :returns: Mask of bool values for each element in Series
                 that indicates whether an element is not an NA value.
-      :rtype: arkouda.series.Series
+      :rtype: Series
 
       .. rubric:: Examples
 
@@ -602,7 +578,7 @@ Module Contents
 
       :returns: Mask of bool values for each element in Series
                 that indicates whether an element is not an NA value.
-      :rtype: arkouda.series.Series
+      :rtype: Series
 
       .. rubric:: Examples
 
@@ -626,23 +602,14 @@ Module Contents
 
 
 
-   .. py:method:: objType(*args, **kwargs)
-
-      str(object='') -> str
-      str(bytes_or_buffer[, encoding[, errors]]) -> str
-
-      Create a new string object from the given object. If encoding or
-      errors is specified, then the object must expose a data buffer
-      that will be decoded using the given encoding and error handler.
-      Otherwise, returns the result of object.__str__() (if defined)
-      or repr(object).
-      encoding defaults to sys.getdefaultencoding().
-      errors defaults to 'strict'.
+   .. py:attribute:: objType
+      :value: 'Series'
 
 
 
+   .. py:method:: pdconcat(arrays: List, axis: int = 0, labels: Union[arkouda.numpy.strings.Strings, None] = None) -> Union[pandas.Series, pandas.DataFrame]
+      :staticmethod:
 
-   .. py:method:: pdconcat(arrays: List, axis: int = 0, labels: Union[Strings, None] = None) -> Union[pd.Series, pd.DataFrame]
 
       Concatenate a list of Arkouda Series or grouped arrays, returning a local pandas object.
 
@@ -670,9 +637,6 @@ Module Contents
 
 
 
-   .. py:method:: prod() -> Series
-
-
    .. py:method:: register(user_defined_name: str)
 
       Register this Series object and underlying components with the Arkouda server
@@ -690,7 +654,7 @@ Module Contents
       :raises TypeError: Raised if user_defined_name is not a str
       :raises RegistrationError: If the server was unable to register the Series with the user_defined_name
 
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -699,7 +663,18 @@ Module Contents
 
 
 
+   .. py:attribute:: registered_name
+      :type:  Optional[str]
+      :value: None
+
+
+
    .. py:property:: shape
+      :type: Tuple[int]
+
+
+
+   .. py:attribute:: size
 
 
    .. py:method:: sort_index(ascending: bool = True) -> Series
@@ -726,19 +701,12 @@ Module Contents
 
 
 
-   .. py:method:: std() -> Series
-
-
-   .. py:method:: str_acc(series)
-
-
-   .. py:method:: sum() -> Series
+   .. py:attribute:: str_acc
 
 
    .. py:method:: tail(n: int = 10) -> Series
 
       Return the last n values of the series
-
 
 
 
@@ -814,13 +782,12 @@ Module Contents
 
 
 
-   .. py:method:: to_ndarray() -> np.ndarray
+   .. py:method:: to_ndarray() -> numpy.ndarray
 
 
-   .. py:method:: to_pandas() -> pd.Series
+   .. py:method:: to_pandas() -> pandas.Series
 
       Convert the series to a local PANDAS series
-
 
 
 
@@ -844,7 +811,7 @@ Module Contents
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -853,9 +820,9 @@ Module Contents
 
 
 
-   .. py:method:: validate_key(key: Union[Series, pdarray, Strings, Categorical, List, supported_scalars, SegArray]) -> Union[pdarray, Strings, Categorical, supported_scalars, SegArray]
+   .. py:method:: validate_key(key: Union[Series, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, List, supported_scalars, arkouda.numpy.segarray.SegArray]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, supported_scalars, arkouda.numpy.segarray.SegArray]
 
-      Validates type requirements for keys when reading or writing the Series.
+      Validate type requirements for keys when reading or writing the Series.
       Also converts list and tuple arguments into pdarrays.
 
       :param key: The key or container of keys that might be used to index into the Series.
@@ -871,9 +838,9 @@ Module Contents
 
 
 
-   .. py:method:: validate_val(val: Union[pdarray, Strings, supported_scalars, List]) -> Union[pdarray, Strings, supported_scalars]
+   .. py:method:: validate_val(val: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, supported_scalars, List]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, supported_scalars]
 
-      Validates type requirements for values being written into the Series.
+      Validate type requirements for values being written into the Series.
       Also converts list and tuple arguments into pdarrays.
 
       :param val: The value or container of values that might be assigned into the Series.
@@ -900,8 +867,5 @@ Module Contents
                 their counts in the original Series.
       :rtype: Series
 
-
-
-   .. py:method:: var() -> Series
 
 

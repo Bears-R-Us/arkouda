@@ -4,6 +4,16 @@ arkouda.numpy.random
 .. py:module:: arkouda.numpy.random
 
 
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/arkouda/numpy/random/generator/index
+   /autoapi/arkouda/numpy/random/legacy/index
+
+
 Classes
 -------
 
@@ -47,13 +57,13 @@ Package Contents
 
    .. seealso::
 
-      :obj:`default_rng`
+      :py:obj:`default_rng`
           Recommended constructor for `Generator`.
 
 
    .. py:method:: choice(a, size=None, replace=True, p=None)
 
-      Generates a randomly sample from a.
+      Generate a randomly sample from a.
 
       :param a: If a is an integer, randomly sample from ak.arange(a).
                 If a is a pdarray, randomly sample from a.
@@ -127,6 +137,7 @@ Package Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> rng = ak.random.default_rng()
       >>> rng.integers(5, 20, 10)
       array([15, 13, 10, 8, 5, 18, 16, 14, 7, 13])  # random
@@ -166,10 +177,11 @@ Package Contents
       :returns: Pdarray of floats (unless size=None, in which case a single float is returned).
       :rtype: pdarray
 
-      .. seealso:: :obj:`normal`
+      .. seealso:: :py:obj:`normal`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.random.default_rng(17).logistic(3, 2.5, 3)
       array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])
 
@@ -211,10 +223,11 @@ Package Contents
       :returns: Pdarray of floats (unless size=None, in which case a single float is returned).
       :rtype: pdarray
 
-      .. seealso:: :obj:`normal`
+      .. seealso:: :py:obj:`normal`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.random.default_rng(17).lognormal(3, 2.5, 3)
       array([7.3866978126031091 106.20159494048757 4.5424399190667666])
 
@@ -247,10 +260,11 @@ Package Contents
       :returns: Pdarray of floats (unless size=None, in which case a single float is returned).
       :rtype: pdarray
 
-      .. seealso:: :obj:`standard_normal`, :obj:`uniform`
+      .. seealso:: :py:obj:`standard_normal`, :py:obj:`uniform`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.random.default_rng(17).normal(3, 2.5, 3)
       array([2.3673425816523577 4.0532529435624589 2.0598322696795694])
 
@@ -306,6 +320,7 @@ Package Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> rng = ak.random.default_rng()
       >>> rng.poisson(lam=3, size=5)
       array([5 3 2 2 3])  # random
@@ -330,10 +345,11 @@ Package Contents
 
        ``(b - a) * random() + a``
 
-      .. seealso:: :obj:`uniform`
+      .. seealso:: :py:obj:`uniform`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> rng = ak.random.default_rng()
       >>> rng.random()
       0.47108547995356098 # random
@@ -348,8 +364,6 @@ Package Contents
 
       :param x: shuffle the elements of x randomly in place
       :type x: pdarray
-
-      :rtype: None
 
 
 
@@ -396,6 +410,7 @@ Package Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> rng = ak.random.default_rng()
       >>> rng.standard_gamma(1)
       0.8729704388729135 # random
@@ -424,10 +439,11 @@ Package Contents
       .. math::
           (\sigma \cdot \texttt{standard_normal}(size)) + \mu
 
-      .. seealso:: :obj:`normal`
+      .. seealso:: :py:obj:`normal`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> rng = ak.random.default_rng()
       >>> rng.standard_normal()
       2.1923875335537315 # random
@@ -455,10 +471,11 @@ Package Contents
       :returns: Pdarray of floats (unless size=None, in which case a single float is returned).
       :rtype: pdarray
 
-      .. seealso:: :obj:`integers`, :obj:`random`
+      .. seealso:: :py:obj:`integers`, :py:obj:`random`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> rng = ak.random.default_rng()
       >>> rng.uniform(-1, 1, 3)
       array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random
@@ -498,6 +515,7 @@ Package Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.randint(0, 10, 5)
    array([5, 7, 4, 8, 3])
 
@@ -527,12 +545,12 @@ Package Contents
    :type seed: int_scalars
 
    :returns: The array of random numbers
-   :rtype: pdarray, float64
+   :rtype: pdarray
 
    :raises TypeError: Raised if size is not an int
    :raises ValueError: Raised if size < 0
 
-   .. seealso:: :obj:`randint`
+   .. seealso:: :py:obj:`randint`
 
    .. rubric:: Notes
 
@@ -542,6 +560,7 @@ Package Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.standard_normal(3,1)
    array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
 
@@ -561,7 +580,7 @@ Package Contents
    :type seed: int_scalars, optional
 
    :returns: Values drawn uniformly from the specified range
-   :rtype: pdarray, float64
+   :rtype: pdarray
 
    :raises TypeError: Raised if dtype.name not in DTypes, size is not an int, or if
        either low or high is not an int or float
@@ -574,6 +593,7 @@ Package Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.uniform(3)
    array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
 

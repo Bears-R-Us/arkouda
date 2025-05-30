@@ -192,6 +192,18 @@ or
 
    .. method:: override proc run() throws
 
+   .. attribute:: var activityMutex: sync string
+
+   .. attribute:: var idlePeriodStart: atomic real
+
+   .. method:: proc startAsyncCheckpointTask()
+
+      Starts a task for asynchronous checkpointing. 
+
+   .. method:: proc serverIdleStart()
+
+   .. method:: proc serverIdleStop()
+
 .. class:: MetricsServerDaemon : ArkoudaServerDaemon
 
    *

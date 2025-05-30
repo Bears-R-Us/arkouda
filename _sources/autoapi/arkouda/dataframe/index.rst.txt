@@ -47,6 +47,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    Create an empty DataFrame and add a column of data:
 
    >>> import arkouda as ak
@@ -175,7 +176,7 @@ Module Contents
    +----+----------+-------+
 
 
-   .. py:method:: GroupBy(keys, use_series=False, as_index=True, dropna=True)
+   .. py:method:: GroupBy(keys, use_series=False, as_index=True, dropna=True) -> Union[DataFrameGroupBy, GroupBy_class]
 
       Group the dataframe by a column or a list of columns.
 
@@ -196,7 +197,7 @@ Module Contents
                 Otherwise returns an arkouda.groupbyclass.GroupBy object.
       :rtype: arkouda.dataframe.DataFrameGroupBy or arkouda.groupbyclass.GroupBy
 
-      .. seealso:: :obj:`arkouda.GroupBy`
+      .. seealso:: :py:obj:`arkouda.GroupBy`
 
       .. rubric:: Examples
 
@@ -239,6 +240,81 @@ Module Contents
 
 
 
+   .. py:method:: GroupBy_class(keys: Optional[groupable] = None, assume_sorted: bool = False, dropna: bool = True, **kwargs)
+
+      Group an array or list of arrays by value.
+
+      Usually in preparation
+      for aggregating the within-group values of another array.
+
+      :param keys: The array to group by value, or if list, the column arrays to group by row
+      :type keys: (list of) pdarray, Strings, or Categorical
+      :param assume_sorted: If True, assume keys is already sorted (Default: False)
+      :type assume_sorted: bool
+
+      .. attribute:: nkeys
+
+         The number of key arrays (columns)
+
+         :type: int
+
+      .. attribute:: permutation
+
+         The permutation that sorts the keys array(s) by value (row)
+
+         :type: pdarray
+
+      .. attribute:: unique_keys
+
+         The unique values of the keys array(s), in grouped order
+
+         :type: pdarray, Strings, or Categorical
+
+      .. attribute:: ngroups
+
+         The length of the unique_keys array(s), i.e. number of groups
+
+         :type: int_scalars
+
+      .. attribute:: segments
+
+         The start index of each group in the grouped array(s)
+
+         :type: pdarray
+
+      .. attribute:: logger
+
+         Used for all logging operations
+
+         :type: ArkoudaLogger
+
+      .. attribute:: dropna
+
+         If True, and the groupby keys contain NaN values,
+         the NaN values together with the corresponding row will be dropped.
+         Otherwise, the rows corresponding to NaN values will be kept.
+         The default is True
+
+         :type: bool (default=True)
+
+      :raises TypeError: Raised if keys is a pdarray with a dtype other than int64
+
+      .. rubric:: Notes
+
+      Integral pdarrays, Strings, and Categoricals are natively supported, but
+      float64 and bool arrays are not.
+
+      For a user-defined class to be groupable, it must inherit from pdarray
+      and define or overload the grouping API:
+        1) a ._get_grouping_keys() method that returns a list of pdarrays
+           that can be (co)argsorted.
+        2) (Optional) a .group() method that returns the permutation that
+           groups the array
+      If the input is a single array with a .group() method defined, method 2
+      will be used; otherwise, method 1 will be used.
+
+
+
    .. py:method:: all(axis=0) -> Union[Series, bool]
 
       Return whether all elements are True, potentially over an axis.
@@ -257,7 +333,7 @@ Module Contents
                    None : reduce all axes, return a scalar.
       :type axis: {0 or ‘index’, 1 or ‘columns’, None}, default = 0
 
-      :rtype: arkouda.series.Series or bool
+      :rtype: arkouda.pandas.series.Series or bool
 
       :raises ValueError: Raised if axis does not have a value in {0 or ‘index’, 1 or ‘columns’, None}.
 
@@ -315,7 +391,7 @@ Module Contents
                    None : reduce all axes, return a scalar.
       :type axis: {0 or ‘index’, 1 or ‘columns’, None}, default = 0
 
-      :rtype: arkouda.series.Series or bool
+      :rtype: arkouda.pandas.series.Series or bool
 
       :raises ValueError: Raised if axis does not have a value in {0 or ‘index’, 1 or ‘columns’, None}.
 
@@ -414,8 +490,9 @@ Module Contents
 
    .. py:method:: apply_permutation(perm)
 
-      Apply a permutation to an entire DataFrame.  The operation is done in
-      place and the original DataFrame will be modified.
+      Apply a permutation to an entire DataFrame.
+
+      The operation is done in place and the original DataFrame will be modified.
 
       This may be useful if you want to unsort an DataFrame, or even to
       apply an arbitrary permutation such as the inverse of a sorting
@@ -427,9 +504,7 @@ Module Contents
                    is a permutation.
       :type perm: pdarray
 
-      :rtype: None
-
-      .. seealso:: :obj:`sort`
+      .. seealso:: :py:obj:`sort`
 
       .. rubric:: Examples
 
@@ -476,7 +551,7 @@ Module Contents
       :returns: The permutation array that sorts the data on `key`.
       :rtype: arkouda.numpy.pdarrayclass.pdarray
 
-      .. seealso:: :obj:`coargsort`
+      .. seealso:: :py:obj:`coargsort`
 
       .. rubric:: Examples
 
@@ -531,7 +606,7 @@ Module Contents
 
       Assign new columns to a DataFrame.
 
-      Returns a new object with all original columns in addition to new ones.
+      Return a new object with all original columns in addition to new ones.
       Existing columns that are re-assigned will be overwritten.
 
       :param \*\*kwargs: The column names are keywords. If the values are
@@ -554,6 +629,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> df = ak.DataFrame({'temp_c': [17.0, 25.0]},
       ...                   index=['Portland', 'Berkeley'])
       >>> df
@@ -584,34 +660,6 @@ Module Contents
                 temp_c  temp_f  temp_k
       Portland    17.0    62.6  290.15
       Berkeley    25.0    77.0  298.15
-
-
-
-   .. py:method:: attach(user_defined_name: str) -> DataFrame
-
-      Function to return a DataFrame object attached to the registered name in the
-      arkouda server which was registered using register().
-
-      :param user_defined_name: user defined name which DataFrame object was registered under.
-      :type user_defined_name: str
-
-      :returns: The DataFrame object created by re-attaching to the corresponding server components.
-      :rtype: arkouda.dataframe.DataFrame
-
-      :raises RegistrationError: if user_defined_name is not registered
-
-      .. seealso:: :obj:`register`, :obj:`is_registered`, :obj:`unregister`
-
-      .. rubric:: Example
-
-      >>> df = ak.DataFrame({'col1': [1, 2, 3], 'col2': [4, 5, 6]})
-      >>> df.register("my_table_name")
-      >>> df.attach("my_table_name")
-      >>> df.is_registered()
-      True
-      >>> df.unregister()
-      >>> df.is_registered()
-      False
 
 
 
@@ -680,22 +728,20 @@ Module Contents
 
 
 
-
-
    .. py:method:: corr() -> DataFrame
 
       Return new DataFrame with pairwise correlation of columns.
 
       :returns: Arkouda DataFrame containing correlation matrix of all columns.
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
       :raises RuntimeError: Raised if there's a server-side error thrown.
 
-      .. seealso:: :obj:`pdarray.corr`
+      .. seealso:: :py:obj:`pdarray.corr`
 
       .. rubric:: Notes
 
-      Generates the correlation matrix using Pearson R for all columns.
+      Generate the correlation matrix using Pearson R for all columns.
 
       Attempts to convert to numeric values where possible for inclusion in the matrix.
 
@@ -737,11 +783,11 @@ Module Contents
       :type numeric_only: bool = False
 
       :returns: For each column/row the number of non-NA/null entries.
-      :rtype: arkouda.series.Series
+      :rtype: Series
 
       :raises ValueError: Raised if axis is not 0, 1, 'index', or 'columns'.
 
-      .. seealso:: :obj:`GroupBy.count`
+      .. seealso:: :py:obj:`GroupBy.count`
 
       .. rubric:: Examples
 
@@ -808,7 +854,7 @@ Module Contents
 
       :returns: DateFrame when `inplace=False`;
                 None when `inplace=True`
-      :rtype: arkouda.dataframe.DataFrame or None
+      :rtype: DataFrame or None
 
       .. rubric:: Examples
 
@@ -851,7 +897,7 @@ Module Contents
 
    .. py:method:: drop_duplicates(subset=None, keep='first')
 
-      Drops duplcated rows and returns resulting DataFrame.
+      Drop duplcated rows and returns resulting DataFrame.
 
       If a subset of the columns are provided then only one instance of each
       duplicated row will be returned (keep determines which row).
@@ -862,7 +908,7 @@ Module Contents
       :type keep: {'first', 'last'}, default='first'
 
       :returns: DataFrame with duplicates removed.
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
       .. rubric:: Example
 
@@ -919,7 +965,7 @@ Module Contents
       :type ignore_index: bool, default ``False``
 
       :returns: DataFrame with NA entries dropped from it.
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
       .. rubric:: Examples
 
@@ -1013,7 +1059,7 @@ Module Contents
       The dtypes of the dataframe.
 
       :returns: **dtypes** -- The dtypes of the dataframe.
-      :rtype: arkouda.row.Row
+      :rtype: arkouda.pandas.row.Row
 
       .. rubric:: Examples
 
@@ -1063,23 +1109,29 @@ Module Contents
 
    .. py:method:: filter_by_range(keys, low=1, high=None)
 
-      Find all rows where the value count of the items in a given set of
-      columns (keys) is within the range [low, high].
+      Filter rows by the size of groups defined on one or more columns.
 
-      To filter by a specific value, set low == high.
+      Group the DataFrame by the specified `keys`, compute the count of each group,
+      and return a boolean mask indicating which rows belong to groups whose sizes
+      fall within the inclusive range [`low`, `high`].
 
-      :param keys: The names of the columns to group by.
+      :param keys: Column name or list of column names to group by.
       :type keys: str or list of str
-      :param low: The lowest value count.
+      :param low: Minimum group size (inclusive). Must be >= 0.
       :type low: int, default=1
-      :param high: The highest value count, default to unlimited.
-      :type high: int, default=None
+      :param high: Maximum group size (inclusive). If `None`, no upper bound is applied.
+      :type high: int or None, default=None
 
-      :returns: An array of boolean values for qualified rows in this DataFrame.
-      :rtype: arkouda.numpy.pdarrayclass.pdarray
+      :returns: A boolean mask array of length equal to the number of rows in the DataFrame,
+                where `True` indicates the row’s group size is between `low` and `high`.
+      :rtype: pdarray of bool
 
-      .. rubric:: Example
+      :raises ValueError: If `low` is negative, or if `high` is not `None` and `high < low`.
+      :raises TypeError: If `keys` is not a string or list of strings.
 
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
       >>> df = ak.DataFrame({'col1': [1, 2, 2, 2, 3, 3], 'col2': [4, 5, 6, 7, 8, 9]})
       >>> display(df)
 
@@ -1124,7 +1176,7 @@ Module Contents
       :param pd_df: A pandas DataFrame to convert.
       :type pd_df: pandas.DataFrame
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
       .. rubric:: Examples
 
@@ -1161,18 +1213,20 @@ Module Contents
 
    .. py:method:: from_return_msg(rep_msg)
 
-      Creates a DataFrame object from an arkouda server response message.
+      Create a DataFrame object from an arkouda server response message.
 
       :param rep_msg: Server response message used to create a DataFrame.
       :type rep_msg: string
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
    .. py:method:: groupby(keys, use_series=True, as_index=True, dropna=True)
 
-      Group the dataframe by a column or a list of columns.  Alias for GroupBy.
+      Group the dataframe by a column or a list of columns.
+
+      Alias for GroupBy.
 
       :param keys: An (ordered) list of column names or a single string to group by.
       :type keys: str or list of str
@@ -1191,7 +1245,7 @@ Module Contents
                 Otherwise returns an arkouda.groupbyclass.GroupBy object.
       :rtype: arkouda.dataframe.DataFrameGroupBy or arkouda.groupbyclass.GroupBy
 
-      .. seealso:: :obj:`arkouda.GroupBy`
+      .. seealso:: :py:obj:`arkouda.GroupBy`
 
       .. rubric:: Examples
 
@@ -1246,9 +1300,9 @@ Module Contents
       :type n: int, default = 5
 
       :returns: The first `n` rows of the DataFrame.
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
-      .. seealso:: :obj:`tail`
+      .. seealso:: :py:obj:`tail`
 
       .. rubric:: Examples
 
@@ -1337,7 +1391,7 @@ Module Contents
 
    .. py:property:: info
 
-      Returns a summary string of this dataframe.
+      Return a summary string of this dataframe.
 
       :returns: A summary string of this dataframe.
       :rtype: str
@@ -1370,7 +1424,7 @@ Module Contents
 
       :raises RegistrationError: Raised if there's a server-side error or a mismatch of registered components.
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`, :obj:`unregister_dataframe_by_name`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`unregister`, :py:obj:`unregister_dataframe_by_name`
 
       .. rubric:: Notes
 
@@ -1399,9 +1453,9 @@ Module Contents
 
       :returns: Arkouda DataFrame of booleans showing whether each element in the DataFrame is
                 contained in values.
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
-      .. seealso:: :obj:`ak.Series.isin`
+      .. seealso:: :py:obj:`ak.Series.isin`
 
       .. rubric:: Notes
 
@@ -1490,7 +1544,7 @@ Module Contents
 
       :returns: Mask of bool values for each element in DataFrame
                 that indicates whether an element is an NA value.
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
       .. rubric:: Examples
 
@@ -1525,6 +1579,7 @@ Module Contents
    .. py:method:: load(prefix_path, file_format='INFER')
 
       Load dataframe from file.
+
       file_format needed for consistency with other load functions.
 
       :param prefix_path: The prefix path for the data.
@@ -1533,10 +1588,11 @@ Module Contents
       :type file_format: string, default = "INFER"
 
       :returns: A dataframe loaded from the prefix_path.
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       To store data in <my_dir>/my_data_LOCALE0000,
       use "<my_dir>/my_data" as the prefix.
 
@@ -1584,7 +1640,7 @@ Module Contents
                 is the memory usage of each column in bytes.
       :rtype: Series
 
-      .. seealso:: :obj:`arkouda.numpy.pdarrayclass.nbytes`, :obj:`arkouda.index.Index.memory_usage`, :obj:`arkouda.index.MultiIndex.memory_usage`, :obj:`arkouda.series.Series.memory_usage`
+      .. seealso:: :py:obj:`arkouda.numpy.pdarrayclass.nbytes`, :py:obj:`arkouda.index.Index.memory_usage`, :py:obj:`arkouda.index.MultiIndex.memory_usage`, :py:obj:`arkouda.pandas.series.Series.memory_usage`
 
       .. rubric:: Examples
 
@@ -1657,7 +1713,7 @@ Module Contents
 
    .. py:method:: memory_usage_info(unit='GB')
 
-      A formatted string representation of the size of this DataFrame.
+      Return a formatted string representation of the size of this DataFrame.
 
       :param unit: Unit to return. One of {'KB', 'MB', 'GB'}.
       :type unit: str, default = "GB"
@@ -1681,6 +1737,7 @@ Module Contents
    .. py:method:: merge(right: DataFrame, on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y', convert_ints: bool = True, sort: bool = True) -> DataFrame
 
       Merge Arkouda DataFrames with a database-style join.
+
       The resulting dataframe contains rows from both DataFrames as specified by
       the merge condition (based on the "how" and "on" parameters).
 
@@ -1711,7 +1768,7 @@ Module Contents
       :type sort: bool = True
 
       :returns: Joined Arkouda DataFrame.
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
       .. note:: Multiple column joins are only supported for integer columns.
 
@@ -1828,7 +1885,7 @@ Module Contents
 
       :returns: Mask of bool values for each element in DataFrame
                 that indicates whether an element is not an NA value.
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
       .. rubric:: Examples
 
@@ -1870,15 +1927,15 @@ Module Contents
       that will be decoded using the given encoding and error handler.
       Otherwise, returns the result of object.__str__() (if defined)
       or repr(object).
-      encoding defaults to sys.getdefaultencoding().
+      encoding defaults to 'utf-8'.
       errors defaults to 'strict'.
-
 
 
 
    .. py:method:: read_csv(filename: str, col_delim: str = ',')
 
       Read the columns of a CSV file into an Arkouda DataFrame.
+
       If the file contains the appropriately formatted header, typed data will be returned.
       Otherwise, all data will be returned as a Strings objects.
 
@@ -1888,7 +1945,7 @@ Module Contents
       :type col_delim: str, default=","
 
       :returns: Arkouda DataFrame containing the columns from the CSV file.
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
       :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
           more of the specified files do not exist.
@@ -1897,7 +1954,7 @@ Module Contents
           from the server.
       :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server.
 
-      .. seealso:: :obj:`to_csv`
+      .. seealso:: :py:obj:`to_csv`
 
       .. rubric:: Notes
 
@@ -1944,12 +2001,12 @@ Module Contents
                 This is an in-place modification, the original is returned to support a
                 fluid programming style.
                 Please note you cannot register two different DataFrames with the same name.
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
       :raises TypeError: Raised if user_defined_name is not a str.
       :raises RegistrationError: If the server was unable to register the DataFrame with the user_defined_name.
 
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`unregister_dataframe_by_name`, :obj:`is_registered`
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`unregister_dataframe_by_name`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -2000,7 +2057,7 @@ Module Contents
 
       :returns: DateFrame when `inplace=False`;
                 None when `inplace=True`.
-      :rtype: arkouda.dataframe.DataFrame or None
+      :rtype: DataFrame or None
 
       .. rubric:: Examples
 
@@ -2080,7 +2137,7 @@ Module Contents
 
       :returns: DateFrame when `inplace=False`;
                 None when `inplace=True`.
-      :rtype: arkouda.dataframe.DataFrame or None
+      :rtype: DataFrame or None
 
       .. note::
 
@@ -2129,7 +2186,7 @@ Module Contents
 
 
 
-   .. py:method:: sample(n=5)
+   .. py:method:: sample(n=5) -> DataFrame
 
       Return a random sample of `n` rows.
 
@@ -2137,7 +2194,7 @@ Module Contents
       :type n: int, default=5
 
       :returns: The sampled `n` rows of the DataFrame.
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
       .. rubric:: Example
 
@@ -2174,64 +2231,9 @@ Module Contents
 
 
 
-   .. py:method:: save(path, index=False, columns=None, file_format='HDF5', file_type='distribute', compression: Optional[str] = None)
-
-      DEPRECATED
-      Save DataFrame to disk, preserving column names.
-
-      :param path: File path to save data.
-      :type path: str
-      :param index: If True, save the index column. By default, do not save the index.
-      :type index: bool, default=False
-      :param columns: List of columns to include in the file. If None, writes out all columns.
-      :type columns: list, default=None
-      :param file_format: 'HDF5' or 'Parquet'. Defaults to 'HDF5'
-      :type file_format: str, default='HDF5'
-      :param file_type: "single" or "distribute"
-                        If single, will right a single file to locale 0.
-      :type file_type: str, default=distribute
-      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
-                          Compression type. Only used for Parquet
-      :type compression: str (Optional)
-
-      .. rubric:: Notes
-
-      This method saves one file per locale of the arkouda server. All
-      files are prefixed by the path argument and suffixed by their
-      locale number.
-
-      .. seealso:: :obj:`to_parquet`, :obj:`to_hdf`
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.connect()
-      >>> import os.path
-      >>> from pathlib import Path
-      >>> my_path = os.path.join(os.getcwd(), 'hdf5_output')
-      >>> Path(my_path).mkdir(parents=True, exist_ok=True)
-
-      >>> df = ak.DataFrame({"A": ak.arange(5), "B": -1 * ak.arange(5)})
-      >>> df.save(my_path + '/my_data', file_type="single")
-      >>> df.load(my_path + '/my_data')
-
-      +----+-----+-----+
-      |    |   A |   B |
-      +====+=====+=====+
-      |  0 |   0 |   0 |
-      +----+-----+-----+
-      |  1 |   1 |  -1 |
-      +----+-----+-----+
-      |  2 |   2 |  -2 |
-      +----+-----+-----+
-      |  3 |   3 |  -3 |
-      +----+-----+-----+
-      |  4 |   4 |  -4 |
-      +----+-----+-----+
-
-
-
    .. py:property:: shape
+      :type: DataFrame
+
 
       The shape of the dataframe.
 
@@ -2260,8 +2262,10 @@ Module Contents
 
 
    .. py:property:: size
+      :type: DataFrame
 
-      Returns the number of bytes on the arkouda server.
+
+      Return the number of bytes on the arkouda server.
 
       :returns: The number of bytes on the arkouda server.
       :rtype: int
@@ -2341,7 +2345,7 @@ Module Contents
       :param ascending: Sort values in ascending (default) or descending order.
       :type ascending: bool, default = True
 
-      .. seealso:: :obj:`apply_permutation`
+      .. seealso:: :py:obj:`apply_permutation`
 
       .. rubric:: Examples
 
@@ -2398,9 +2402,9 @@ Module Contents
       :type n: int, default=5
 
       :returns: The last `n` rows of the DataFrame.
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
-      .. seealso:: :obj:`arkouda.dataframe.head`
+      .. seealso:: :py:obj:`arkouda.dataframe.head`
 
       .. rubric:: Examples
 
@@ -2463,7 +2467,9 @@ Module Contents
 
    .. py:method:: to_csv(path: str, index: bool = False, columns: Optional[List[str]] = None, col_delim: str = ',', overwrite: bool = False)
 
-      Writes DataFrame to CSV file(s). File will contain a column for each column in the DataFrame.
+      Write DataFrame to CSV file(s).
+
+      File will contain a column for each column in the DataFrame.
       All CSV Files written by Arkouda include a header denoting data types of the columns.
       Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
       bytes as uint(8).
@@ -2482,8 +2488,6 @@ Module Contents
       :param overwrite: If True, any existing files matching your provided prefix_path will
                         be overwritten. If False, an error will be returned if existing files are found.
       :type overwrite: bool, default=False
-
-      :rtype: None
 
       :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
           more of the specified files do not exist.
@@ -2536,8 +2540,6 @@ Module Contents
       :param file_type: Whether to save to a single file or distribute across Locales.
       :type file_type: str (single | distribute), default=distribute
 
-      :rtype: None
-
       :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray.
 
       .. rubric:: Notes
@@ -2546,7 +2548,7 @@ Module Contents
       files are prefixed by the path argument and suffixed by their
       locale number.
 
-      .. seealso:: :obj:`to_parquet`, :obj:`load`
+      .. seealso:: :py:obj:`to_parquet`, :py:obj:`load`
 
       .. rubric:: Examples
 
@@ -2691,8 +2693,6 @@ Module Contents
                                    If set, write the equivalent Strings in place of any Categorical columns.
       :type convert_categoricals: bool, default=False
 
-      :rtype: None
-
       :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
 
       .. rubric:: Notes
@@ -2701,7 +2701,7 @@ Module Contents
       files are prefixed by the path argument and suffixed by their
       locale number.
 
-      .. seealso:: :obj:`to_hdf`, :obj:`load`
+      .. seealso:: :py:obj:`to_hdf`, :py:obj:`load`
 
       .. rubric:: Examples
 
@@ -2728,7 +2728,7 @@ Module Contents
 
    .. py:method:: transfer(hostname, port)
 
-      Sends a DataFrame to a different Arkouda server.
+      Send a DataFrame to a different Arkouda server.
 
       :param hostname: The hostname where the Arkouda server intended to
                        receive the DataFrame is running.
@@ -2756,13 +2756,15 @@ Module Contents
 
    .. py:method:: unregister()
 
+      Unregister this DataFrame object in the arkouda server.
+
       Unregister this DataFrame object in the arkouda server which was previously
       registered using register() and/or attached to using attach().
 
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister.
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister_dataframe_by_name`, :obj:`is_registered`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`unregister_dataframe_by_name`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -2782,36 +2784,11 @@ Module Contents
 
 
 
-   .. py:method:: unregister_dataframe_by_name(user_defined_name: str) -> str
-
-      Function to unregister DataFrame object by name which was registered
-      with the arkouda server via register().
-
-      :param user_defined_name: Name under which the DataFrame object was registered.
-      :type user_defined_name: str
-
-      :raises TypeError: If user_defined_name is not a string.
-      :raises RegistrationError: If there is an issue attempting to unregister any underlying components.
-
-      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
-
-      .. rubric:: Example
-
-      >>> df = ak.DataFrame({'col1': [1, 2, 3], 'col2': [4, 5, 6]})
-      >>> df.register("my_table_name")
-      >>> df.attach("my_table_name")
-      >>> df.is_registered()
-      True
-      >>> df.unregister_dataframe_by_name("my_table_name")
-      >>> df.is_registered()
-      False
-
-
-
    .. py:method:: update_hdf(prefix_path: str, index=False, columns=None, repack: bool = True)
 
-      Overwrite the dataset with the name provided with this dataframe. If
-      the dataset does not exist it is added.
+      Overwrite the dataset with the name provided with this dataframe.
+
+      If the dataset does not exist it is added.
 
       :param prefix_path: Directory and filename prefix that all output files share.
       :type prefix_path: str
@@ -2873,8 +2850,7 @@ Module Contents
 
    .. py:method:: update_nrows()
 
-      Computes the number of rows on the arkouda server and updates the size parameter.
-
+      Compute the number of rows on the arkouda server and updates the size parameter.
 
 
 
@@ -2894,25 +2870,26 @@ Module Contents
       GroupBy object, where the aggregation keys are values of column(s) of a dataframe,
       usually in preparation for aggregating with respect to the other columns.
 
-      :type: arkouda.groupbyclass.GroupBy
+      :type: GroupBy
 
    .. attribute:: df
 
       The dataframe containing the original data.
 
-      :type: arkouda.dataframe.DataFrame
+      :type: DataFrame
 
    .. attribute:: gb_key_names
 
       The column name(s) associated with the aggregated columns.
 
-      :type: str or list(str)
+      :type: Union[str, List[str]]
 
    .. attribute:: as_index
 
       If True the grouped values of the aggregation keys will be treated as an index.
+      Defaults to True.
 
-      :type: bool, default=True
+      :type: bool
 
 
    .. py:method:: all(colnames=None)
@@ -2922,7 +2899,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -2933,7 +2910,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -2944,7 +2921,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -2955,7 +2932,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -2971,7 +2948,7 @@ Module Contents
       :type permute: bool, default=True
 
       :returns: A Series with the Index of the original frame and the values of the broadcast.
-      :rtype: arkouda.series.Series
+      :rtype: arkouda.pandas.series.Series
 
       .. rubric:: Examples
 
@@ -3019,7 +2996,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -3072,7 +3049,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -3087,12 +3064,11 @@ Module Contents
       :param sort_index: If true, return the DataFrame with indices sorted.
       :type sort_index: bool, default = True
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> from arkouda import *
       >>> df = ak.DataFrame({"a":ak.arange(10) %3 , "b":ak.arange(10)})
 
       +----+-----+-----+
@@ -3146,7 +3122,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -3157,7 +3133,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -3168,7 +3144,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -3179,7 +3155,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -3190,7 +3166,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -3201,7 +3177,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -3212,13 +3188,15 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
    .. py:method:: sample(n=None, frac=None, replace=False, weights=None, random_state=None)
 
-      Return a random sample from each group. You can either specify the number of elements
+      Return a random sample from each group.
+
+      You can either specify the number of elements
       or the fraction of elements to be sampled. random_state can be used for reproducibility
 
       :param n: Number of items to return for each group.
@@ -3319,12 +3297,12 @@ Module Contents
       Compute the size of each value as the total number of rows, including NaN values.
 
       :param as_series: Indicates whether to return arkouda.dataframe.DataFrame (if as_series = False) or
-                        arkouda.series.Series (if as_series = True)
+                        arkouda.pandas.series.Series (if as_series = True)
       :type as_series: bool, default=None
       :param sort_index: If True, results will be returned with index values sorted in ascending order.
       :type sort_index: bool, default=True
 
-      :rtype: arkouda.dataframe.DataFrame or arkouda.series.Series
+      :rtype: arkouda.dataframe.DataFrame or arkouda.pandas.series.Series
 
       .. rubric:: Examples
 
@@ -3366,7 +3344,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -3377,7 +3355,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -3392,12 +3370,11 @@ Module Contents
       :param sort_index: If true, return the DataFrame with indices sorted.
       :type sort_index: bool, default = True
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> from arkouda import *
       >>> df = ak.DataFrame({"a":ak.arange(10) %3 , "b":ak.arange(10)})
 
       +----+-----+-----+
@@ -3451,7 +3428,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -3462,7 +3439,7 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
@@ -3473,26 +3450,27 @@ Module Contents
       :param colnames: Column name or list of column names to compute the aggregation over.
       :type colnames: (list of) str, default=None
 
-      :rtype: arkouda.dataframe.DataFrame
+      :rtype: DataFrame
 
 
 
 .. py:class:: DiffAggregate
 
    A column in a GroupBy that has been differenced.
+
    Aggregation operations can be done on the result.
 
    .. attribute:: gb
 
       GroupBy object, where the aggregation keys are values of column(s) of a dataframe.
 
-      :type: arkouda.groupbyclass.GroupBy
+      :type: GroupBy
 
    .. attribute:: values
 
       A column to compute the difference on.
 
-      :type: arkouda.series.Series.
+      :type: Series
 
 
    .. py:method:: all()
@@ -3594,6 +3572,7 @@ Module Contents
 .. py:function:: intx(a, b)
 
    Find all the rows that are in both dataframes.
+
    Columns should be in identical order.
 
    Note: does not work for columns of floating point values, but does work for
@@ -3675,9 +3654,10 @@ Module Contents
    array([1 2 0 4 3])
 
 
-.. py:function:: merge(left: DataFrame, right: DataFrame, on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y', convert_ints: bool = True, sort: bool = True) -> DataFrame
+.. py:function:: merge(left: DataFrame, right: DataFrame, on: Optional[Union[str, List[str]]] = None, left_on: Optional[Union[str, List[str]]] = None, right_on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y', convert_ints: bool = True, sort: bool = True) -> DataFrame
 
    Merge Arkouda DataFrames with a database-style join.
+
    The resulting dataframe contains rows from both DataFrames as specified by
    the merge condition (based on the "how" and "on" parameters).
 
@@ -3691,6 +3671,12 @@ Module Contents
    :param on: The name or list of names of the DataFrame column(s) to join on.
               If on is None, this defaults to the intersection of the columns in both DataFrames.
    :type on: Optional[Union[str, List[str]]] = None
+   :param left_on: Column name or names to join on in the left DataFrame. If this is not None, then right_on
+                   must also not be None, and this will override `on`.
+   :type left_on: str or List of str, optional
+   :param right_on: Column name or names to join on in the right DataFrame. If this is not None, then left_on
+                    must also not be None, and this will override `on`.
+   :type right_on: str or List of str, optional
    :param how: The merge condition.
                Must be one of "inner", "left", "right", or "outer".
    :type how: str, default = "inner"
@@ -3710,7 +3696,7 @@ Module Contents
    :type sort: bool = True
 
    :returns: Joined Arkouda DataFrame.
-   :rtype: arkouda.dataframe.DataFrame
+   :rtype: DataFrame
 
    .. note:: Multiple column joins are only supported for integer columns.
 
@@ -3768,17 +3754,17 @@ Module Contents
    >>> merge(left_df, right_df, on = "col1", how = "left")
 
    +----+--------+----------+----------+
-   |    |   col1 |   col2_y |   col2_x |
+   |    |   col1 |   col2_x |   col2_y |
    +====+========+==========+==========+
-   |  0 |      0 |        0 |        0 |
+   |  0 |      0 |        0 |      0.0 |
    +----+--------+----------+----------+
-   |  1 |      1 |      nan |       -1 |
+   |  1 |      1 |       -1 |      nan |
    +----+--------+----------+----------+
-   |  2 |      2 |        2 |       -2 |
+   |  2 |      2 |       -2 |      2.0 |
    +----+--------+----------+----------+
-   |  3 |      3 |      nan |       -3 |
+   |  3 |      3 |       -3 |      nan |
    +----+--------+----------+----------+
-   |  4 |      4 |        4 |       -4 |
+   |  4 |      4 |       -4 |      4.0 |
    +----+--------+----------+----------+
 
    >>> merge(left_df, right_df, on = "col1", how = "right")
@@ -3786,11 +3772,11 @@ Module Contents
    +----+--------+----------+----------+
    |    |   col1 |   col2_x |   col2_y |
    +====+========+==========+==========+
-   |  0 |      0 |        0 |        0 |
+   |  0 |      0 |      0.0 |        0 |
    +----+--------+----------+----------+
-   |  1 |      2 |       -2 |        2 |
+   |  1 |      2 |     -2.0 |        2 |
    +----+--------+----------+----------+
-   |  2 |      4 |       -4 |        4 |
+   |  2 |      4 |     -4.0 |        4 |
    +----+--------+----------+----------+
    |  3 |      6 |      nan |        6 |
    +----+--------+----------+----------+
@@ -3800,21 +3786,21 @@ Module Contents
    >>> merge(left_df, right_df, on = "col1", how = "outer")
 
    +----+--------+----------+----------+
-   |    |   col1 |   col2_y |   col2_x |
+   |    |   col1 |   col2_x |   col2_y |
    +====+========+==========+==========+
-   |  0 |      0 |        0 |        0 |
+   |  0 |      0 |      0.0 |      0.0 |
    +----+--------+----------+----------+
-   |  1 |      1 |      nan |       -1 |
+   |  1 |      1 |     -1.0 |      nan |
    +----+--------+----------+----------+
-   |  2 |      2 |        2 |       -2 |
+   |  2 |      2 |     -2.0 |      2.0 |
    +----+--------+----------+----------+
-   |  3 |      3 |      nan |       -3 |
+   |  3 |      3 |     -3.0 |      nan |
    +----+--------+----------+----------+
-   |  4 |      4 |        4 |       -4 |
+   |  4 |      4 |     -4.0 |      4.0 |
    +----+--------+----------+----------+
-   |  5 |      6 |        6 |      nan |
+   |  5 |      6 |      nan |      6.0 |
    +----+--------+----------+----------+
-   |  6 |      8 |        8 |      nan |
+   |  6 |      8 |      nan |      8.0 |
    +----+--------+----------+----------+
 
 

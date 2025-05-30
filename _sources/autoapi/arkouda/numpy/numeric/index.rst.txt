@@ -52,13 +52,17 @@ Functions
    arkouda.numpy.numeric.log2
    arkouda.numpy.numeric.matmul
    arkouda.numpy.numeric.median
+   arkouda.numpy.numeric.nextafter
+   arkouda.numpy.numeric.percentile
    arkouda.numpy.numeric.putmask
+   arkouda.numpy.numeric.quantile
    arkouda.numpy.numeric.rad2deg
    arkouda.numpy.numeric.round
    arkouda.numpy.numeric.sign
    arkouda.numpy.numeric.sin
    arkouda.numpy.numeric.sinh
    arkouda.numpy.numeric.square
+   arkouda.numpy.numeric.take
    arkouda.numpy.numeric.tan
    arkouda.numpy.numeric.tanh
    arkouda.numpy.numeric.transpose
@@ -73,14 +77,47 @@ Functions
 Module Contents
 ---------------
 
-.. py:class:: ErrorMode
+.. py:class:: ErrorMode(*args, **kwds)
 
    Bases: :py:obj:`enum.Enum`
 
 
-   Generic enumeration.
+   Create a collection of name/value pairs.
 
-   Derive from this class to define new enumerations.
+   Example enumeration:
+
+   >>> class Color(Enum):
+   ...     RED = 1
+   ...     BLUE = 2
+   ...     GREEN = 3
+
+   Access them by:
+
+   - attribute access:
+
+     >>> Color.RED
+     <Color.RED: 1>
+
+   - value lookup:
+
+     >>> Color(1)
+     <Color.RED: 1>
+
+   - name lookup:
+
+     >>> Color['RED']
+     <Color.RED: 1>
+
+   Enumerations can be iterated over, and know how many members they have:
+
+   >>> len(Color)
+   3
+
+   >>> list(Color)
+   [<Color.RED: 1>, <Color.BLUE: 2>, <Color.GREEN: 3>]
+
+   Methods can be added to enumerations, and members can have their own
+   attributes -- see the documentation for details.
 
 
    .. py:attribute:: ignore
@@ -112,6 +149,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.abs(ak.arange(-5,-1))
    array([5 4 3 2])
 
@@ -137,6 +175,13 @@ Module Contents
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(-0.7,0.5,4)
+   >>> ak.arccos(a)
+   array([2.3461938234056494 1.8754889808102941 1.4706289056333368 1.0471975511965979])
+
 
 .. py:function:: arccosh(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
 
@@ -154,6 +199,13 @@ Module Contents
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(1,500,4)
+   >>> ak.arccosh(a)
+   array([0.00000000000000000 5.8131260830342795 6.5032874256927515 6.9077542789806374])
 
 
 .. py:function:: arcsin(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
@@ -173,6 +225,13 @@ Module Contents
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(-0.7,0.5,4)
+   >>> ak.arcsin(a)
+   array([-0.77539749661075297 -0.30469265401539752 0.10016742116155977 0.52359877559829893])
+
 
 .. py:function:: arcsinh(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
 
@@ -191,6 +250,13 @@ Module Contents
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(-500,500,4)
+   >>> ak.arcsinh(a)
+   array([-6.9077562789806368 -5.8091519901925297 5.8091519901925297 6.9077562789806368])
+
 
 .. py:function:: arctan(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
 
@@ -208,6 +274,13 @@ Module Contents
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(-10.7,10.5,4)
+   >>> ak.arctan(a)
+   array([-1.4776090650260174 -1.3022168962760161 1.2873750736468446 1.4758446204521403])
 
 
 .. py:function:: arctan2(num: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars], denom: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars], where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
@@ -236,6 +309,14 @@ Module Contents
        | Raised if both num and denom are scalars
        | Raised if where is neither boolean nor a pdarray of boolean
 
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> x = ak.array([1,-1,-1,1])
+   >>> y = ak.array([1,1,-1,-1])
+   >>> ak.arctan2(y,x)
+   array([0.78539816339744828 2.3561944901923448 -2.3561944901923448 -0.78539816339744828])
+
 
 .. py:function:: arctanh(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
 
@@ -253,6 +334,13 @@ Module Contents
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameters are not a pdarray or numeric scalar.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(-.999,.999,4)
+   >>> ak.arctanh(a)
+   array([-3.8002011672501994 -0.34619863713154242 0.34619863713154253 3.8002011672501994])
 
 
 .. py:function:: array_equal(pda_a: arkouda.numpy.pdarrayclass.pdarray, pda_b: arkouda.numpy.pdarrayclass.pdarray, equal_nan: bool = False) -> bool
@@ -285,6 +373,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.randint(0,10,10,dtype=ak.float64)
    >>> b = a
    >>> ak.array_equal(a,b)
@@ -319,9 +408,14 @@ Module Contents
                   Default set to strict.
    :type errors: {strict, ignore, return_validity}, default=ErrorMode.strict
 
-   :returns: * *pdarray or Strings* -- Array of values cast to desired dtype
-             * **[validity** (*pdarray(bool)]*) -- If errors="return_validity" and input is Strings, a second array is
-               returned with True where the cast succeeded and False where it failed.
+   :returns:
+
+             pdarray or Strings
+                 Array of values cast to desired dtype
+             [validity : pdarray(bool)]
+                 If errors="return_validity" and input is Strings, a second array is
+                 returned with True where the cast succeeded and False where it failed.
+   :rtype: Union[Union[pdarray, Strings, Categorical], Tuple[pdarray, pdarray]]
 
    .. rubric:: Notes
 
@@ -331,6 +425,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
    array([1 2 3 4 5])
 
@@ -358,6 +453,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.ceil(ak.linspace(1.1,5.5,5))
    array([2.00000000000000000 3.00000000000000000 4.00000000000000000
    5.00000000000000000 6.00000000000000000])
@@ -390,10 +486,11 @@ Module Contents
              A pdarray matching pda, except that element x remains x if lo <= x <= hi,
                                                      or becomes lo if x < lo,
                                                      or becomes hi if x > hi.
-   :rtype: arkouda.numpy.pdarrayclass.pdarray
+   :rtype: pdarray
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.array([1,2,3,4,5,6,7,8,9,10])
    >>> ak.clip(a,3,8)
    array([3 3 3 4 5 6 7 8 8 8])
@@ -405,7 +502,7 @@ Module Contents
    array([1 2 3 4 5 6 7 7 7 7])
    >>> ak.clip(a,5,None)
    array([5 5 5 5 5 6 7 8 9 10])
-   >>> ak.clip(a,None,None)
+   >>> ak.clip(a,None,None) # doctest: +SKIP
    ValueError: Either min or max must be supplied.
    >>> ak.clip(a,ak.array([2,2,3,3,8,8,5,5,6,6]),8)
    array([2 2 3 4 8 8 7 8 8 8])
@@ -438,6 +535,13 @@ Module Contents
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(-1.5,0.75,4)
+   >>> ak.cos(a)
+   array([0.070737201667702906 0.7316888688738209 1.00000000000000000 0.7316888688738209])
+
 
 .. py:function:: cosh(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
 
@@ -456,6 +560,13 @@ Module Contents
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(-0.9,0.7,4)
+   >>> ak.cosh(a)
+   array([1.4330863854487745 1.0679787433708894 1.0139210688781299 1.255169005630943])
+
 
 .. py:function:: count_nonzero(pda: arkouda.numpy.pdarrayclass.pdarray) -> numpy.int64
 
@@ -472,15 +583,16 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> pda = ak.array([0,4,7,8,1,3,5,2,-1])
    >>> ak.count_nonzero(pda)
-   8
+   np.int64(8)
    >>> pda = ak.array([False,True,False,True,False])
    >>> ak.count_nonzero(pda)
-   2
+   np.int64(2)
    >>> pda = ak.array(["hello","","there"])
    >>> ak.count_nonzero(pda)
-   2
+   np.int64(2)
 
 
 .. py:function:: cumprod(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
@@ -501,12 +613,13 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.cumprod(ak.arange(1,5))
    array([1 2 6 24])
 
-   >>> ak.cumprod(ak.uniform(5,1.0,5.0))
-   array([1.5728783400481925 7.0472855509390593 33.78523998586553
-          134.05309592737584 450.21589865655358])
+   >>> ak.cumprod(ak.uniform(5,1.0,5.0, seed=1))
+   array([4.1485937992669886 5.5470437965703221 22.201091353048209
+       79.702126856955317 298.26551591732482])
 
 
 .. py:function:: cumsum(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
@@ -527,15 +640,15 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.cumsum(ak.arange(1,5))
    array([1 3 6 10])
 
-   >>> ak.cumsum(ak.uniform(5,1.0,5.0))
-   array([3.1598310770203937 5.4110385860243131 9.1622479306453748
-          12.710615785506533 13.945880905466208])
+   >>> ak.cumsum(ak.uniform(5,1.0,5.0, seed=1))
+   array([4.1485937992669886 5.4856839230459 9.4880124005630435 13.078021809988414 16.820274716898091])
 
-   >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_))
-   array([0 1 1 2 3])
+   >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_, seed=1))
+   array([1 1 2 3 4])
 
 
 .. py:function:: deg2rad(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
@@ -555,6 +668,13 @@ Module Contents
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(0,359,4)
+   >>> ak.deg2rad(a)
+   array([0.00000000000000000 2.0885773382198809 4.1771546764397618 6.2657320146596422])
+
 
 .. py:function:: exp(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
 
@@ -571,12 +691,12 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.exp(ak.arange(1,5))
    array([2.7182818284590451 7.3890560989306504 20.085536923187668 54.598150033144236])
 
-   >>> ak.exp(ak.uniform(5,1.0,5.0))
-   array([11.84010843172504 46.454368507659211 5.5571769623557188
-          33.494295836924771 13.478894913238722])
+   >>> ak.exp(ak.uniform(4, 1.0, 5.0, seed=1))
+   array([63.344862048230922 3.8079467144568273 54.725428723251447 36.234416869913829])
 
 
 .. py:function:: expm1(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
@@ -594,12 +714,13 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.expm1(ak.arange(1,5))
    array([1.7182818284590451 6.3890560989306504 19.085536923187668 53.598150033144236])
 
-   >>> ak.expm1(ak.uniform(5,1.0,5.0))
-   array([10.84010843172504 45.454368507659211 4.5571769623557188
-          32.494295836924771 12.478894913238722])
+   >>> ak.expm1(ak.uniform(5,1.0,5.0, seed=1))
+   array([62.344862048230922 2.8079467144568273 53.725428723251447
+       35.234416869913829 41.192939934258227])
 
 
 .. py:function:: eye(rows: arkouda.numpy.dtypes.int_scalars, cols: arkouda.numpy.dtypes.int_scalars, diag: arkouda.numpy.dtypes.int_scalars = 0, dt: type = ak_int64) -> arkouda.numpy.pdarrayclass.pdarray
@@ -624,6 +745,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.eye(rows=4,cols=4,diag=0,dt=ak.int64)
    array([array([1 0 0 0]) array([0 1 0 0]) array([0 0 1 0]) array([0 0 0 1])])
    >>> ak.eye(rows=3,cols=3,diag=1,dt=ak.float64)
@@ -654,6 +776,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.floor(ak.linspace(1.1,5.5,5))
    array([1.00000000000000000 2.00000000000000000 3.00000000000000000
    4.00000000000000000 5.00000000000000000])
@@ -680,6 +803,16 @@ Module Contents
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.randint(0,65536,3,seed=8675309)
+   >>> ak.hash(a,full=False)
+   array([6132219720275344925 189443193828113335 14797568559700425150])
+   >>> ak.hash(a)
+   (array([12228890592923494910 17773622519799422780 16661993598191972647]),
+       array([2936052102410048944 15730675498625067356 4746877828134486787]))
+
    .. rubric:: Notes
 
    In the case of a single pdarray being passed, this function
@@ -702,7 +835,7 @@ Module Contents
    do a rotation by the ordinal of the array.
 
 
-.. py:function:: histogram(pda: arkouda.numpy.pdarrayclass.pdarray, bins: arkouda.numpy.dtypes.int_scalars = 10) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
+.. py:function:: histogram(pda: arkouda.numpy.pdarrayclass.pdarray, bins: arkouda.numpy.dtypes.int_scalars = 10, range: Optional[Tuple[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.numeric_scalars]] = None) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
 
    Compute a histogram of evenly spaced bins over the range of an array.
 
@@ -710,6 +843,10 @@ Module Contents
    :type pda: pdarray
    :param bins: The number of equal-size bins to use (default: 10)
    :type bins: int_scalars, default=10
+   :param range: The range of the values to count.
+                 Values outside of this range are dropped.
+                 By default, all values are counted.
+   :type range: (minVal, maxVal), optional
 
    :returns: The number of values present in each bin and the bin edges
    :rtype: (pdarray, Union[pdarray, int64 or float64])
@@ -719,14 +856,16 @@ Module Contents
    :raises ValueError: Raised if bins < 1
    :raises NotImplementedError: Raised if pdarray dtype is bool or uint8
 
-   .. seealso:: :obj:`value_counts`, :obj:`histogram2d`
+   .. seealso:: :py:obj:`value_counts`, :py:obj:`histogram2d`
 
    .. rubric:: Notes
 
    The bins are evenly spaced in the interval [pda.min(), pda.max()].
+   If range parameter is provided, the interval is [range[0], range[1]].
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> import matplotlib.pyplot as plt
    >>> A = ak.arange(0, 10, 1)
    >>> nbins = 3
@@ -735,16 +874,17 @@ Module Contents
    array([3 3 4])
    >>> b
    array([0.00000000000000000 3.00000000000000000 6.00000000000000000 9.00000000000000000])
-   # To plot, export the left edges and the histogram to NumPy
+
+   To plot, export the left edges and the histogram to NumPy
    >>> b_np = b.to_ndarray()
    >>> import numpy as np
    >>> b_widths = np.diff(b_np)
    >>> plt.bar(b_np[:-1], h.to_ndarray(), width=b_widths, align='edge', edgecolor='black')
    <BarContainer object of 3 artists>
-   >>> plt.show()
+   >>> plt.show() # doctest: +SKIP
 
 
-.. py:function:: histogram2d(x: arkouda.numpy.pdarrayclass.pdarray, y: arkouda.numpy.pdarrayclass.pdarray, bins: Union[arkouda.numpy.dtypes.int_scalars, Sequence[arkouda.numpy.dtypes.int_scalars]] = 10) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
+.. py:function:: histogram2d(x: arkouda.numpy.pdarrayclass.pdarray, y: arkouda.numpy.pdarrayclass.pdarray, bins: Union[arkouda.numpy.dtypes.int_scalars, Sequence[arkouda.numpy.dtypes.int_scalars]] = 10, range: Optional[Tuple[Tuple[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.numeric_scalars], Tuple[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.numeric_scalars]]] = None) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
 
    Compute the bi-dimensional histogram of two data samples with evenly spaced bins
 
@@ -757,28 +897,43 @@ Module Contents
                 If [int, int], the number of bins in each dimension (nx, ny = bins).
                 Defaults to 10
    :type bins: int_scalars or [int, int], default=10
+   :param range: The ranges of the values in x and y to count.
+                 Values outside of these ranges are dropped.
+                 By default, all values are counted.
+   :type range: ((xMin, xMax), (yMin, yMax)), optional
 
-   :returns: * **hist** (*pdarray*) -- shape(nx, ny)
-               The bi-dimensional histogram of samples x and y.
-               Values in x are histogrammed along the first dimension and
-               values in y are histogrammed along the second dimension.
-             * **x_edges** (*pdarray*) -- The bin edges along the first dimension.
-             * **y_edges** (*pdarray*) -- The bin edges along the second dimension.
+   :returns:
+
+             hist : pdarray
+                 shape(nx, ny)
+                 The bi-dimensional histogram of samples x and y.
+                 Values in x are histogrammed along the first dimension and
+                 values in y are histogrammed along the second dimension.
+
+             x_edges : pdarray
+                 The bin edges along the first dimension.
+
+             y_edges : pdarray
+                 The bin edges along the second dimension.
+   :rtype: Tuple[pdarray, pdarray, pdarray]
 
    :raises TypeError: Raised if x or y parameters are not pdarrays or if bins is
        not an int or (int, int).
    :raises ValueError: Raised if bins < 1
    :raises NotImplementedError: Raised if pdarray dtype is bool or uint8
 
-   .. seealso:: :obj:`histogram`
+   .. seealso:: :py:obj:`histogram`
 
    .. rubric:: Notes
 
    The x bins are evenly spaced in the interval [x.min(), x.max()]
    and y bins are evenly spaced in the interval [y.min(), y.max()].
+   If range parameter is provided, the intervals are given
+   by range[0] for x and range[1] for y..
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> x = ak.arange(0, 10, 1)
    >>> y = ak.arange(9, -1, -1)
    >>> nbins = 3
@@ -793,7 +948,7 @@ Module Contents
    array([0.00000000000000000 3.00000000000000000 6.00000000000000000 9.00000000000000000])
 
 
-.. py:function:: histogramdd(sample: Sequence[arkouda.numpy.pdarrayclass.pdarray], bins: Union[arkouda.numpy.dtypes.int_scalars, Sequence[arkouda.numpy.dtypes.int_scalars]] = 10) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, Sequence[arkouda.numpy.pdarrayclass.pdarray]]
+.. py:function:: histogramdd(sample: Sequence[arkouda.numpy.pdarrayclass.pdarray], bins: Union[arkouda.numpy.dtypes.int_scalars, Sequence[arkouda.numpy.dtypes.int_scalars]] = 10, range: Optional[Sequence[Optional[Tuple[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.numeric_scalars]]]] = None) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, Sequence[arkouda.numpy.pdarrayclass.pdarray]]
 
    Compute the multidimensional histogram of data in sample with evenly spaced bins.
 
@@ -804,38 +959,49 @@ Module Contents
                 If [int, int, ...], the number of bins in each dimension (nx, ny, ... = bins).
                 Defaults to 10
    :type bins: int_scalars or Sequence of int_scalars, default=10
+   :param range: The ranges of the values to count for each array in sample.
+                 Values outside of these ranges are dropped.
+                 By default, all values are counted.
+   :type range: Sequence[optional (minVal, maxVal)], optional
 
-   :returns: * **hist** (*pdarray*) -- shape(nx, ny, ..., nd)
-               The multidimensional histogram of pdarrays in sample.
-               Values in first pdarray are histogrammed along the first dimension.
-               Values in second pdarray are histogrammed along the second dimension and so on.
-             * **edges** (*List[pdarray]*) -- A list of pdarrays containing the bin edges for each dimension.
+   :returns:
+
+             hist : pdarray
+                 shape(nx, ny, ..., nd)
+                 The multidimensional histogram of pdarrays in sample.
+                 Values in first pdarray are histogrammed along the first dimension.
+                 Values in second pdarray are histogrammed along the second dimension and so on.
+
+             edges : List[pdarray]
+                 A list of pdarrays containing the bin edges for each dimension.
+   :rtype: Tuple[pdarray, Sequence[pdarray]]
 
    :raises ValueError: Raised if bins < 1
    :raises NotImplementedError: Raised if pdarray dtype is bool or uint8
 
-   .. seealso:: :obj:`histogram`
+   .. seealso:: :py:obj:`histogram`
 
    .. rubric:: Notes
 
    The bins for each dimension, m, are evenly spaced in the interval [m.min(), m.max()]
+   or in the inverval determined by range[dimension], if provided.
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> x = ak.arange(0, 10, 1)
    >>> y = ak.arange(9, -1, -1)
    >>> z = ak.where(x % 2 == 0, x, y)
-   >>> h, edges = ak.histogramdd((x, y,z), bins=(2,2,5))
+   >>> h, edges = ak.histogramdd((x, y,z), bins=(2,2,3))
    >>> h
-   array([array([array([0 0 0 0 0])
-          array([1 1 1 1 1])])
-          array([array([1 1 1 1 1])
-          array([0 0 0 0 0])])])
+   array([array([array([0.00000000000000000 0.00000000000000000 0.00000000000000000])
+       array([2.00000000000000000 1.00000000000000000 2.00000000000000000])])
+       array([array([2.00000000000000000 1.00000000000000000 2.00000000000000000])
+       array([0.00000000000000000 0.00000000000000000 0.00000000000000000])])])
    >>> edges
    [array([0.00000000000000000 4.5 9.00000000000000000]),
-   array([0.00000000000000000 4.5 9.00000000000000000]),
-   array([0.00000000000000000 1.6000000000000001 3.2000000000000002
-   4.8000000000000007 6.4000000000000004 8.00000000000000000])]
+       array([0.00000000000000000 4.5 9.00000000000000000]),
+       array([0.00000000000000000 2.6666666666666665 5.333333333333333 8.00000000000000000])]
 
 
 .. py:function:: isfinite(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
@@ -854,6 +1020,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.isfinite(ak.array([1.0, 2.0, ak.inf]))
    array([True True False])
 
@@ -874,6 +1041,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.isinf(ak.array([1.0, 2.0, ak.inf]))
    array([False False True])
 
@@ -894,6 +1062,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.isnan(ak.array([1.0, 2.0, np.log(-1)]))
    array([False False True])
 
@@ -917,14 +1086,18 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> A = ak.array([1, 10, 100])
-   # Natural log
+
+   Natural log
    >>> ak.log(A)
    array([0.00000000000000000 2.3025850929940459 4.6051701859880918])
-   # Log base 10
+
+   Log base 10
    >>> ak.log(A) / np.log(10)
    array([0.00000000000000000 1.00000000000000000 2.00000000000000000])
-   # Log base 2
+
+   Log base 2
    >>> ak.log(A) / np.log(2)
    array([0.00000000000000000 3.3219280948873626 6.6438561897747253])
 
@@ -938,6 +1111,13 @@ Module Contents
 
    :returns: pdarray containing base 10 log values of the input array elements
    :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.arange(1,5)
+   >>> ak.log10(a)
+   array([0.00000000000000000 0.3010299956639812 0.47712125471966244 0.6020599913279624])
 
 
 .. py:function:: log1p(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
@@ -953,6 +1133,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.log1p(ak.arange(1,5))
    array([0.69314718055994529 1.0986122886681098 1.3862943611198906 1.6094379124341003])
 
@@ -966,6 +1147,13 @@ Module Contents
 
    :returns: pdarray containing base 2 log values of the input array elements
    :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.arange(1,5)
+   >>> ak.log2(a)
+   array([0.00000000000000000 1.00000000000000000 1.5849625007211561 2.00000000000000000])
 
 
 .. py:function:: matmul(pdaLeft: arkouda.numpy.pdarrayclass.pdarray, pdaRight: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
@@ -982,6 +1170,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
    >>> b = ak.array([[1,1],[2,2],[3,3],[4,4],[5,5]])
    >>> ak.matmul(a,b)
@@ -1014,17 +1203,104 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> pda = ak.array([0,4,7,8,1,3,5,2,-1])
    >>> ak.median(pda)
-   3.0
+   np.float64(3.0)
    >>> pda = ak.array([0,1,3,3,1,2,3,4,2,3])
    >>> ak.median(pda)
-   2.5
+   np.float64(2.5)
+
+
+.. py:function:: nextafter(x1: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.bigint], x2: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.bigint]) -> Union[arkouda.numpy.pdarrayclass.pdarray, float]
+
+   Return the next floating-point value after `x1` towards `x2`, element-wise.
+   Accuracy only guaranteed for 64 bit values.
+
+   :param x1: Values to find the next representable value of.
+   :type x1: pdarray, numeric_scalars, or bigint
+   :param x2: The direction where to look for the next representable value of `x1`.
+              If `x1.shape != x2.shape`, they must be broadcastable to a common shape
+              (which becomes the shape of the output).
+   :type x2: pdarray, numeric_scalars, or bigint
+
+   :returns: The next representable values of `x1` in the direction of `x2`.
+             This is a scalar if both `x1` and `x2` are scalars.
+   :rtype: pdarray or float
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> eps = np.finfo(np.float64).eps
+   >>> ak.nextafter(1, 2) == 1 + eps
+    np.True_
+   >>> a = ak.array([1, 2])
+   >>> b = ak.array([2, 1])
+   >>> ak.nextafter(a, b) == ak.array([eps + 1, 2 - eps])
+   array([True True])
+
+
+.. py:function:: percentile(a: arkouda.numpy.pdarrayclass.pdarray, q: Optional[Union[arkouda.numpy.dtypes.numeric_scalars, Tuple[arkouda.numpy.dtypes.numeric_scalars], numpy.ndarray]] = 0.5, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], None]] = None, method: Optional[str] = 'linear', keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]
+
+   Compute the q-th percentile of the data along the specified axis.
+
+   :param a: data whose percentile will be computed
+   :type a: pdarray
+   :param q: a scalar, tuple, or np.ndarray of q values for the computation.  All values
+             must be in the range 0 <= q <= 100
+   :type q: pdarray, Tuple, or np.ndarray
+   :param axis: the axis or axes along which the percentiles are computed.  The default is None,
+                which computes the percenntile along a flattened version of the array.
+   :type axis: None, int scalar, or tuple of int scalars
+   :param method: one of "inverted_cdf," "averaged_inverted_cdf", "closest_observation",
+                  "interpolated_inverted_cdf", "hazen", "weibull", "linear", 'median_unbiased",
+                  "normal_unbiased", "lower"," higher", "midpoint"
+   :type method: string
+   :param keepdims: True if the degenerate axes are to be retained after slicing, False if not
+   :type keepdims: bool
+
+   :returns: If q is a scalar and axis is None, the result is a scalar.
+             If q is a scalar and axis is supplied, the result is a pdarray of rank len(axis)
+             less than the rank of a.
+             If q is an array and axis is None, the result is a pdarray of shape q.shape
+             If q is an array and axis is None, the result is a pdarray of rank q.ndim +
+             pda.ndim - len(axis).  However, there is an intermediate result which is of rank
+             q.ndim + pda.ndim.  If this is not in the compiled ranks, an error will be thrown
+             even if the final result would be in the compiled ranks.
+   :rtype: pdarray or scalar
+
+   .. rubric:: Notes
+
+   np.percentile also supports the method "nearest," however its behavior does not match
+   the numpy documentation, so it's not supported here.
+   np.percentile also allows for weighted inputs, but only for the method "inverted_cdf."
+   That also is not supported here.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
+   >>> q = 70
+   >>> ak.percentile(a,q,axis=None,method="linear")
+   np.float64(4.0)
+   >>> ak.percentile(a,q,axis=1,method="lower")
+   array([3.00000000000000000 3.00000000000000000])
+   >>> q = np.array([40,60])
+   >>> ak.percentile(a,q,axis=None,method="weibull")
+   array([2.4000000000000004 3.5999999999999996])
+   >>> a = ak.array([[1,2],[5,3]])
+   >>> ak.percentile(a,q,axis=0,method="hazen")
+   array([array([2.2000000000000002 2.2999999999999998])
+       array([3.7999999999999998 2.6999999999999997])])
+
+   :raises ValueError: Raised if scalar q or any value of array q is outside the range [0,100]
+       Raised if the method is not one of the 12 supported methods.
+       Raised if the result would have a rank not in the compiled ranks.
 
 
 .. py:function:: putmask(A: arkouda.numpy.pdarrayclass.pdarray, mask: arkouda.numpy.pdarrayclass.pdarray, Values: arkouda.numpy.pdarrayclass.pdarray) -> None
 
-   Overwrites elements of A with elements from B based upon a mask array.
+   Overwrite elements of A with elements from B based upon a mask array.
    Similar to numpy.putmask, where mask = False, A retains its original value,
    but where mask = True, A is overwritten with the corresponding entry from Values.
 
@@ -1040,6 +1316,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.array(np.arange(10))
    >>> ak.putmask (a,a>2,a**2)
    >>> a
@@ -1068,6 +1345,64 @@ Module Contents
    multi-dim pdarrays are now implemented.
 
 
+.. py:function:: quantile(a: arkouda.numpy.pdarrayclass.pdarray, q: Optional[Union[arkouda.numpy.dtypes.numeric_scalars, Tuple[arkouda.numpy.dtypes.numeric_scalars], numpy.ndarray, arkouda.numpy.pdarrayclass.pdarray]] = 0.5, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], None]] = None, method: Optional[str] = 'linear', keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]
+
+   Compute the q-th quantile of the data along the specified axis.
+
+   :param a: data whose quantile will be computed
+   :type a: pdarray
+   :param q: a scalar, tuple, or np.ndarray of q values for the computation.  All values
+             must be in the range 0 <= q <= 1
+   :type q: pdarray, Tuple, or np.ndarray
+   :param axis: the axis or axes along which the quantiles are computed.  The default is None,
+                which computes the quantile along a flattened version of the array.
+   :type axis: None, int scalar, or tuple of int scalars
+   :param method: one of "inverted_cdf," "averaged_inverted_cdf", "closest_observation",
+                  "interpolated_inverted_cdf", "hazen", "weibull", "linear", 'median_unbiased",
+                  "normal_unbiased", "lower"," higher", "midpoint"
+   :type method: string
+   :param keepdims: True if the degenerate axes are to be retained after slicing, False if not
+   :type keepdims: bool
+
+   :returns: If q is a scalar and axis is None, the result is a scalar.
+             If q is a scalar and axis is supplied, the result is a pdarray of rank len(axis)
+             less than the rank of a.
+             If q is an array and axis is None, the result is a pdarray of shape q.shape
+             If q is an array and axis is None, the result is a pdarray of rank q.ndim +
+             pda.ndim - len(axis).  However, there is an intermediate result which is of rank
+             q.ndim + pda.ndim.  If this is not in the compiled ranks, an error will be thrown
+             even if the final result would be in the compiled ranks.
+   :rtype: pdarray or scalar
+
+   .. rubric:: Notes
+
+   np.quantile also supports the method "nearest," however its behavior does not match
+   the numpy documentation, so it's not supported here.
+   np.quantile also allows for weighted inputs, but only for the method "inverted_cdf."
+   That also is not supported here.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
+   >>> q = 0.7
+   >>> ak.quantile(a,q,axis=None,method="linear")
+   np.float64(4.0)
+   >>> ak.quantile(a,q,axis=1,method="lower")
+   array([3.00000000000000000 3.00000000000000000])
+   >>> q = np.array([0.4,0.6])
+   >>> ak.quantile(a,q,axis=None,method="weibull")
+   array([2.4000000000000004 3.5999999999999996])
+   >>> a = ak.array([[1,2],[5,3]])
+   >>> ak.quantile(a,q,axis=0,method="hazen")
+   array([array([2.2000000000000002 2.2999999999999998])
+       array([3.7999999999999998 2.6999999999999997])])
+
+   :raises ValueError: Raised if scalar q or any value of array q is outside the range [0,1]
+       Raised if the method is not one of the 12 supported methods.
+       Raised if the result would have a rank not in the compiled ranks.
+
+
 .. py:function:: rad2deg(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
 
    Converts angles element-wise from radians to degrees.
@@ -1085,6 +1420,13 @@ Module Contents
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(0,6.28,4)
+   >>> ak.rad2deg(a)
+   array([0.00000000000000000 119.93916511405233 239.87833022810466 359.81749534215703])
+
 
 .. py:function:: round(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
 
@@ -1100,6 +1442,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
    array([1.00000000000000000 3.00000000000000000 3.00000000000000000])
 
@@ -1118,6 +1461,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.sign(ak.array([-10, -5, 0, 5, 10]))
    array([-1 -1 0 1 1])
 
@@ -1139,6 +1483,13 @@ Module Contents
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(-1.5,0.75,4)
+   >>> ak.sin(a)
+   array([-0.99749498660405445 -0.68163876002333412 0.00000000000000000 0.68163876002333412])
+
 
 .. py:function:: sinh(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
 
@@ -1157,6 +1508,13 @@ Module Contents
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(-0.9,0.7,4)
+   >>> ak.sinh(a)
+   array([-1.0265167257081753 -0.37493812328444776 0.16743934398751592 0.75858370183953339])
+
 
 .. py:function:: square(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
 
@@ -1173,8 +1531,36 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.square(ak.arange(1,5))
    array([1 4 9 16])
+
+
+.. py:function:: take(a: arkouda.numpy.pdarrayclass.pdarray, indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Take elements from an array along an axis.
+
+   When axis is not None, this function does the same thing as “fancy” indexing (indexing arrays
+   using arrays); however, it can be easier to use if you need elements along a given axis.
+   A call such as ``np.take(arr, indices, axis=3)`` is equivalent to ``arr[:,:,:,indices,...]``.
+
+   :param a: The array from which to take elements
+   :type a: pdarray
+   :param indices: The indices of the values to extract. Also allow scalars for indices.
+   :type indices: numeric_scalars or pdarray
+   :param axis: The axis over which to select values. By default, the flattened input array is used.
+   :type axis: int, optional
+
+   :returns: The returned array has the same type as `a`.
+   :rtype: pdarray
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.array([4, 3, 5, 7, 6, 8])
+   >>> indices = [0, 1, 4]
+   >>> ak.take(a, indices)
+   array([4 3 6])
 
 
 .. py:function:: tan(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
@@ -1194,6 +1580,13 @@ Module Contents
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(-1.5,0.75,4)
+   >>> ak.tan(a)
+   array([-14.101419947171719 -0.93159645994407247 0.00000000000000000 0.93159645994407247])
+
 
 .. py:function:: tanh(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
 
@@ -1211,6 +1604,13 @@ Module Contents
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.linspace(-0.9,0.7,4)
+   >>> ak.tanh(a)
+   array([-0.71629787019902447 -0.35107264597890853 0.1651404129246293 0.60436777711716361])
 
 
 .. py:function:: transpose(pda: arkouda.numpy.pdarrayclass.pdarray, axes: Optional[Tuple[int, Ellipsis]] = None) -> arkouda.numpy.pdarrayclass.pdarray
@@ -1231,6 +1631,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
    >>> ak.transpose(a)
    array([array([1 1]) array([2 2]) array([3 3]) array([4 4]) array([5 5])])
@@ -1260,6 +1661,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.array([[1,2,3,4,5],[2,3,4,5,6],[3,4,5,6,7],[4,5,6,7,8],[5,6,7,8,9]])
    >>> ak.tril(a,diag=4)
    array([array([1 2 3 4 5]) array([2 3 4 5 6]) array([3 4 5 6 7])
@@ -1299,6 +1701,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.array([[1,2,3,4,5],[2,3,4,5,6],[3,4,5,6,7],[4,5,6,7,8],[5,6,7,8,9]])
    >>> ak.triu(a,diag=0)
    array([array([1 2 3 4 5]) array([0 3 4 5 6]) array([0 0 5 6 7])
@@ -1335,6 +1738,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
    array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
 
@@ -1351,7 +1755,7 @@ Module Contents
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
-   .. seealso:: :obj:`unique`, :obj:`histogram`
+   .. seealso:: :py:obj:`unique`, :py:obj:`histogram`
 
    .. rubric:: Notes
 
@@ -1362,6 +1766,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> A = ak.array([2, 0, 2, 4, 0, 0])
    >>> ak.value_counts(A)
    (array([0 2 4]), array([3 2 1]))
@@ -1382,6 +1787,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
    >>> b = ak.array([[2,2,2,2,2],[2,2,2,2,2]])
    >>> ak.vecdot(a,b)
@@ -1394,7 +1800,7 @@ Module Contents
 
 .. py:function:: where(condition: arkouda.numpy.pdarrayclass.pdarray, A: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], B: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]
 
-   Returns an array with elements chosen from A and B based upon a
+   Return an array with elements chosen from A and B based upon a
    conditioning array. As is the case with numpy.where, the return array
    consists of values from the first array (A) where the conditioning array
    elements are True and from the second array (B) where the conditioning
@@ -1419,6 +1825,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> a1 = ak.arange(1,10)
    >>> a2 = ak.ones(9, dtype=np.int64)
    >>> cond = a1 < 5

@@ -5,6 +5,11 @@ arkouda.array_api.array_object
 
 .. autoapi-nested-parse::
 
+   __all__ = [
+       'Array',
+       'implements_numpy',
+   ]
+
    Wrapper class around the pdarray object for the array API standard.
 
    The information below can be found online here:
@@ -141,7 +146,7 @@ Module Contents
       will fail if the array is too large (see:
       :func:`~arkouda.client.maxTransferBytes`)
 
-      .. seealso:: :obj:`pdarray.to_ndarray`
+      .. seealso:: :py:obj:`pdarray.to_ndarray`
 
 
 
@@ -154,7 +159,7 @@ Module Contents
       will fail if the array is too large (see:
       :func:`~arkouda.client.maxTransferBytes`)
 
-      .. seealso:: :obj:`pdarray.to_list`
+      .. seealso:: :py:obj:`pdarray.to_list`
 
 
 
@@ -164,7 +169,7 @@ Module Contents
 
       For axes=None, reverse all the dimensions of the array.
 
-      .. seealso:: :obj:`ak.transpose`
+      .. seealso:: :py:obj:`ak.transpose`
 
 
 

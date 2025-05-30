@@ -11,5 +11,6 @@ Submodules
    :maxdepth: 1
 
    /autoapi/arkouda/numpy/lib/emath/index
+   /autoapi/arkouda/numpy/lib/npyio/index
 
 

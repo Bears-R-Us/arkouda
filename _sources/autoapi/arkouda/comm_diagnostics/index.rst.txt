@@ -50,7 +50,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_amo()
 
-   atomic memory operations
+   Return atomic memory operations statistic.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -59,8 +59,9 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_cache_get_hits()
 
-   GETs that were handled by the cache.
-   GETs counted here did not require the cache to communicate in order to return the result.
+   Return number of gets that were handled by the cache.
+
+   Gets counted here did not require the cache to communicate in order to return the result.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -69,7 +70,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_cache_get_misses()
 
-   GETs that were not handled by the cache
+   Return number of gets that were not handled by the cache.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -78,7 +79,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_cache_num_page_readaheads()
 
-   Number of readaheads issued to the remote cache at the granularity of cache pages.
+   Return number of readaheads issued to the remote cache at the granularity of cache pages.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -87,7 +88,8 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_cache_num_prefetches()
 
-   Number of prefetches issued to the remote cache at the granularity of cache pages.
+   Return number of prefetches issued to the remote cache at the granularity of cache pages.
+
    This counter is specifically triggered via calls to chpl_comm_remote_prefetch
 
    :returns: A pdarray, where the size is the number of locales,
@@ -97,7 +99,9 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_cache_prefetch_unused()
 
-   Number of cache pages that were prefetched but evicted from the cache before being accessed
+   Return number of cache pages that were prefetched but unused.
+
+   Return number of cache pages that were prefetched but evicted from the cache before being accessed
    (i.e., the prefetches were too early).
 
    :returns: A pdarray, where the size is the number of locales,
@@ -106,6 +110,8 @@ Module Contents
 
 
 .. py:function:: get_comm_diagnostics_cache_prefetch_waited()
+
+   Return number of cache pages that were prefetched but waited.
 
    Number of cache pages that were prefetched but did not arrive in the cache before being accessed
    (i.e., the prefetches were too late).
@@ -117,7 +123,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_cache_put_hits()
 
-   PUTs that were stored in cache pages that already existed.
+   Return number of puts that were stored in cache pages that already existed.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -126,7 +132,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_cache_put_misses()
 
-   PUTs that required the cache to create a new page to store them.
+   Return number of puts that required the cache to create a new page to store them.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -135,7 +141,9 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_cache_readahead_unused()
 
-   Number of cache pages that were read ahead but evicted from the cache before being accessed
+   Return number of cache pages that were read ahead but unused.
+
+   The number of cache pages that were read ahead but evicted from the cache before being accessed
    (i.e., the readaheads were too early).
 
    :returns: A pdarray, where the size is the number of locales,
@@ -145,7 +153,10 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_cache_readahead_waited()
 
-   Number of cache pages that were read ahead but did not arrive in the cache before being accessed
+   Return number of cache pages that were read ahead but waited.
+
+   Return number of cache pages that were read ahead
+   but did not arrive in the cache before being accessed
    (i.e., the readaheads were too late).
 
    :returns: A pdarray, where the size is the number of locales,
@@ -155,7 +166,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_execute_on()
 
-   blocking remote executions, in which initiator waits for completion
+   Return blocking remote executions, in which initiator waits for completion.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -164,7 +175,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_execute_on_fast()
 
-   blocking remote executions performed by the target locale’s Active Message handler
+   Return blocking remote executions performed by the target locale’s Active Message handler.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -173,7 +184,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_execute_on_nb()
 
-   non-blocking remote executions
+   Return non-blocking remote executions.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -182,7 +193,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_get()
 
-   blocking GETs, in which initiator waits for completion
+   Return blocking gets, in which initiator waits for completion
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -191,7 +202,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_get_nb()
 
-   non-blocking GETs
+   Return non-blocking gets
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -200,7 +211,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_put()
 
-   blocking PUTs, in which initiator waits for completion
+   Return blocking puts, in which initiator waits for completion
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -209,7 +220,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_put_nb()
 
-   non-blocking PUTs
+   Return non-blocking puts
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -218,7 +229,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_try_nb()
 
-   tests for non-blocking GET/PUT completions
+   Return test statistics for non-blocking get/put completions
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -227,7 +238,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_wait_nb()
 
-   blocking waits for non-blocking GET/PUT completions
+   Return blocking waits for non-blocking get/put completions
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -236,8 +247,9 @@ Module Contents
 
 .. py:function:: print_comm_diagnostics_table(print_empty_columns=False)
 
-   Print the current communication counts in a markdown table
-   using a row per locale and a column per operation.
+   Print the current communication counts in a markdown table.
+
+   Uses a row per locale and a column per operation.
    By default, operations for which all locales have a count of zero are not displayed in the table,
    though an argument can be used to reverse that behavior.
 

@@ -11,6 +11,7 @@ Classes
 
    arkouda.groupbyclass.GROUPBY_REDUCTION_TYPES
    arkouda.groupbyclass.GroupBy
+   arkouda.groupbyclass.groupable
 
 
 Functions
@@ -27,80 +28,62 @@ Module Contents
 
 .. py:class:: GROUPBY_REDUCTION_TYPES
 
-   frozenset() -> empty frozenset object
-   frozenset(iterable) -> frozenset object
-
    Build an immutable unordered collection of unique elements.
 
 
-
-   .. py:method:: copy(*args, **kwargs)
+   .. py:method:: copy()
 
       Return a shallow copy of a set.
 
 
 
+   .. py:method:: difference(*others)
 
-   .. py:method:: difference(*args, **kwargs)
-
-      Return the difference of two or more sets as a new set.
-
-      (i.e. all elements that are in this set but not the others.)
+      Return a new set with elements in the set that are not in the others.
 
 
 
+   .. py:method:: intersection(*others)
 
-   .. py:method:: intersection(*args, **kwargs)
-
-      Return the intersection of two sets as a new set.
-
-      (i.e. all elements that are in both sets.)
+      Return a new set with elements common to the set and all others.
 
 
 
-
-   .. py:method:: isdisjoint(*args, **kwargs)
+   .. py:method:: isdisjoint(other, /)
 
       Return True if two sets have a null intersection.
 
 
 
-
-   .. py:method:: issubset(*args, **kwargs)
+   .. py:method:: issubset(other, /)
 
       Report whether another set contains this set.
 
 
 
-
-   .. py:method:: issuperset(*args, **kwargs)
+   .. py:method:: issuperset(other, /)
 
       Report whether this set contains another set.
 
 
 
+   .. py:method:: symmetric_difference(other, /)
 
-   .. py:method:: symmetric_difference(*args, **kwargs)
-
-      Return the symmetric difference of two sets as a new set.
-
-      (i.e. all elements that are in exactly one of the sets.)
+      Return a new set with elements in either the set or other but not both.
 
 
 
+   .. py:method:: union(*others)
 
-   .. py:method:: union(*args, **kwargs)
-
-      Return the union of sets as a new set.
-
-      (i.e. all elements that are in either set.)
-
+      Return a new set with elements from the set and all others.
 
 
 
 .. py:class:: GroupBy
 
-   Group an array or list of arrays by value, usually in preparation
+   Group an array or list of arrays by value.
+
+   Usually in preparation
    for aggregating the within-group values of another array.
 
    :param keys: The array to group by value, or if list, the column arrays to group by row
@@ -114,12 +97,6 @@ Module Contents
 
       :type: int
 
-   .. attribute:: size
-
-      The length of the input array(s), i.e. number of rows
-
-      :type: int
-
    .. attribute:: permutation
 
       The permutation that sorts the keys array(s) by value (row)
@@ -130,13 +107,13 @@ Module Contents
 
       The unique values of the keys array(s), in grouped order
 
-      :type: (list of) pdarray, Strings, or Categorical
+      :type: pdarray, Strings, or Categorical
 
    .. attribute:: ngroups
 
       The length of the unique_keys array(s), i.e. number of groups
 
-      :type: int
+      :type: int_scalars
 
    .. attribute:: segments
 
@@ -155,6 +132,7 @@ Module Contents
       If True, and the groupby keys contain NaN values,
       the NaN values together with the corresponding row will be dropped.
       Otherwise, the rows corresponding to NaN values will be kept.
+      The default is True
 
       :type: bool (default=True)
 
@@ -179,15 +157,20 @@ Module Contents
 
       Bitwise AND of values in each segment.
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and perform a bitwise AND reduction on
-      each group.
+      Group another array of values and perform a bitwise AND reduction on each group.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and reduce with AND
       :type values: pdarray, int64
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **result** (*pdarray, int64*) -- Bitwise AND of values in segments corresponding to keys
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                result : pdarray, int64
+                    Bitwise AND of values in segments corresponding to keys
+      :rtype: Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray or if the pdarray
           dtype is not int64
@@ -201,15 +184,20 @@ Module Contents
 
       Bitwise OR of values in each segment.
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and perform a bitwise OR reduction on
-      each group.
+      Group another array of values and perform a bitwise OR reduction on each group.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and reduce with OR
       :type values: pdarray, int64
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **result** (*pdarray, int64*) -- Bitwise OR of values in segments corresponding to keys
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                result : pdarray, int64
+                    Bitwise OR of values in segments corresponding to keys
+      :rtype: Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray or if the pdarray
           dtype is not int64
@@ -221,11 +209,7 @@ Module Contents
 
    .. py:method:: Reductions(*args, **kwargs)
 
-      frozenset() -> empty frozenset object
-      frozenset(iterable) -> frozenset object
-
       Build an immutable unordered collection of unique elements.
-
 
 
 
@@ -233,15 +217,20 @@ Module Contents
 
       Bitwise XOR of values in each segment.
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and perform a bitwise XOR reduction on
-      each group.
+      Group another array of values and perform a bitwise XOR reduction on each group.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and reduce with XOR
       :type values: pdarray, int64
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **result** (*pdarray, int64*) -- Bitwise XOR of values in segments corresponding to keys
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                result : pdarray, int64
+                    Bitwise XOR of values in segments corresponding to keys
+      :rtype: Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray or if the pdarray
           dtype is not int64
@@ -253,8 +242,9 @@ Module Contents
 
    .. py:method:: aggregate(values: groupable, operator: str, skipna: bool = True, ddof: int_scalars = 1) -> Tuple[groupable, groupable]
 
-      Using the permutation stored in the GroupBy instance, group another
-      array of values and apply a reduction to each group's values.
+      Group another array of values and apply a reduction to each group's values.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and reduce
       :type values: pdarray
@@ -265,8 +255,13 @@ Module Contents
       :param ddof: "Delta Degrees of Freedom" used in calculating std
       :type ddof: int_scalars
 
-      :returns: * **unique_keys** (*groupable*) -- The unique keys, in grouped order
-                * **aggregates** (*groupable*) -- One aggregate value per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : groupable
+                    The unique keys, in grouped order
+                aggregates : groupable
+                    One aggregate value per unique key in the GroupBy instance
+      :rtype: Tuple[groupable, groupable]
 
       :raises TypeError: Raised if the values array is not a pdarray
       :raises ValueError: Raised if the key array size does not match the values size or
@@ -276,6 +271,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> keys = ak.arange(0, 10)
       >>> vals = ak.linspace(-1, 1, 10)
       >>> g = ak.GroupBy(keys)
@@ -293,15 +289,20 @@ Module Contents
 
    .. py:method:: all(values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and perform an "and" reduction on
-      each group.
+      Group another array of values and perform an "and" reduction on each group.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and reduce with "and"
       :type values: pdarray, bool
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **group_any** (*pdarray, bool*) -- One bool per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                group_any : pdarray, bool
+                    One bool per unique key in the GroupBy instance
+      :rtype: Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray or if the pdarray
           dtype is not bool
@@ -313,14 +314,20 @@ Module Contents
 
    .. py:method:: any(values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
-      Using the permutation stored in the GroupBy instance, group another
-      array of values and perform an "or" reduction on each group.
+      Group another array of values and perform an "or" reduction on each group.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and reduce with "or"
       :type values: pdarray, bool
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **group_any** (*pdarray, bool*) -- One bool per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                group_any : pdarray, bool
+                    One bool per unique key in the GroupBy instance
+      :rtype: Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray or if the pdarray
           dtype is not bool
@@ -331,15 +338,20 @@ Module Contents
 
    .. py:method:: argmax(values: pdarray) -> Tuple[groupable, pdarray]
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and return the location of the first
-      maximum of each group's values.
+      Group another array of values and return the location of the first maximum of each group.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and find argmax
       :type values: pdarray
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **group_argmaxima** (*pdarray, int64*) -- One index per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                group_argmaxima : pdarray, int64
+                    One index per unique key in the GroupBy instance
+      :rtype: Tuple[groupable, pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray object or if argmax
           is not supported for the values dtype
@@ -353,6 +365,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -369,15 +382,20 @@ Module Contents
 
    .. py:method:: argmin(values: pdarray) -> Tuple[groupable, pdarray]
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and return the location of the first
-      minimum of each group's values.
+      Group another array of values and return the location of the first minimum of each group.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and find argmin
       :type values: pdarray
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **group_argminima** (*pdarray, int64*) -- One index per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                group_argminima : pdarray, int64
+                    One index per unique key in the GroupBy instance
+      :rtype: Tuple[groupable, pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray object or if argmax
           is not supported for the values dtype
@@ -392,6 +410,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -403,23 +422,6 @@ Module Contents
       array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
       >>> g.argmin(b)
       (array([2, 3, 4]), array([5, 4, 2]))
-
-
-
-   .. py:method:: attach(user_defined_name: str) -> GroupBy
-
-      Function to return a GroupBy object attached to the registered name in the
-      arkouda server which was registered using register()
-
-      :param user_defined_name: user defined name which GroupBy object was registered under
-      :type user_defined_name: str
-
-      :returns: The GroupBy object created by re-attaching to the corresponding server components
-      :rtype: GroupBy
-
-      :raises RegistrationError: if user_defined_name is not registered
-
-      .. seealso:: :obj:`register`, :obj:`is_registered`, :obj:`unregister`, :obj:`unregister_groupby_by_name`
 
 
 
@@ -450,6 +452,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.array([0, 1, 0, 1, 0])
       >>> values = ak.array([3, 5])
       >>> g = ak.GroupBy(a)
@@ -475,7 +478,7 @@ Module Contents
 
    .. py:method:: build_from_components(user_defined_name: Optional[str] = None, **kwargs) -> GroupBy
 
-      function to build a new GroupBy object from component keys and permutation.
+      Build a new GroupBy object from component keys and permutation.
 
       :param user_defined_name: and assign it the given name
       :type user_defined_name: str (Optional) Passing a name will init the new GroupBy
@@ -489,16 +492,24 @@ Module Contents
 
    .. py:method:: count(values: pdarray) -> Tuple[groupable, pdarray]
 
-      Count the number of elements in each group.  NaN values will be excluded from the total.
+      Count the number of elements in each group.
+
+      NaN values will be excluded from the total.
 
       :param values: The values to be count by group (excluding NaN values).
       :type values: pdarray
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **counts** (*pdarray, int64*) -- The number of times each unique key appears (excluding NaN values).
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                counts : pdarray, int64
+                    The number of times each unique key appears (excluding NaN values).
+      :rtype: List[pdarray|Strings], pdarray|int64
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.array([1, 0, -1, 1, 0, -1])
       >>> a
       array([1 0 -1 1 0 -1])
@@ -521,8 +532,13 @@ Module Contents
       :param values: The values from which to take the first of each group
       :type values: pdarray-like
 
-      :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
-                * **result** (*pdarray-like*) -- The first value of each group
+      :returns:
+
+                unique_keys : (list of) pdarray-like
+                    The unique keys, in grouped order
+                result : pdarray-like
+                    The first value of each group
+      :rtype: Tuple[groupable, groupable_element_type]
 
 
 
@@ -543,13 +559,19 @@ Module Contents
                              Otherwise, return the selected values.
       :type return_indices: bool, default False
 
-      :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
-                * **result** (*pdarray-like*) -- The first n items of each group.
-                  If return_indices is True, the result are indices.
-                  O.W. the result are values.
+      :returns:
+
+                unique_keys : (list of) pdarray-like
+                    The unique keys, in grouped order
+                result : pdarray-like
+                    The first n items of each group.
+                    If return_indices is True, the result are indices.
+                    O.W. the result are values.
+      :rtype: Tuple[groupable, groupable_element_type]
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.arange(10) %3
       >>> a
       array([0 1 2 0 1 2 0 1 2 0])
@@ -580,14 +602,14 @@ Module Contents
 
    .. py:method:: is_registered() -> bool
 
-      Return True if the object is contained in the registry
+      Return True if the object is contained in the registry.
 
       :returns: Indicates if the object is contained in the registry
       :rtype: bool
 
       :raises RegistrationError: Raised if there's a server-side error or a mismatch of registered components
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`, :obj:`unregister_groupby_by_name`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`unregister`, :py:obj:`unregister_groupby_by_name`
 
       .. rubric:: Notes
 
@@ -598,17 +620,22 @@ Module Contents
 
    .. py:method:: max(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and return the maximum of each
-      group's values.
+      Group another array of values and return the maximum of each group's values.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and find maxima
       :type values: pdarray
       :param skipna: boolean which determines if NANs should be skipped
       :type skipna: bool
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **group_maxima** (*pdarray*) -- One maximum per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                group_maxima : pdarray
+                    One maximum per unique key in the GroupBy instance
+      :rtype: Tuple[groupable, pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray object or if max is
           not supported for the values dtype
@@ -618,6 +645,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -634,17 +662,22 @@ Module Contents
 
    .. py:method:: mean(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and compute the mean of each group's
-      values.
+      Group another array of values and compute the mean of each group's values.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and average
       :type values: pdarray
       :param skipna: boolean which determines if NANs should be skipped
       :type skipna: bool
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **group_means** (*pdarray, float64*) -- One mean value per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                group_means : pdarray, float64
+                    One mean value per unique key in the GroupBy instance
+      :rtype: Tuple[groupable, pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray object
       :raises ValueError: Raised if the key array size does not match the values size
@@ -656,6 +689,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -672,17 +706,22 @@ Module Contents
 
    .. py:method:: median(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and compute the median of each group's
-      values.
+      Group another array of values and compute the median of each group's values.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and find median
       :type values: pdarray
       :param skipna: boolean which determines if NANs should be skipped
       :type skipna: bool
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **group_medians** (*pdarray, float64*) -- One median value per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                group_medians : pdarray, float64
+                    One median value per unique key in the GroupBy instance
+      :rtype: Tuple[groupable, pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray object
       :raises ValueError: Raised if the key array size does not match the values size
@@ -694,6 +733,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.randint(1,5,9)
       >>> a
       array([4 1 4 3 2 2 2 3 3])
@@ -710,17 +750,22 @@ Module Contents
 
    .. py:method:: min(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and return the minimum of each group's
-      values.
+      Group another array of values and return the minimum of each group's values.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and find minima
       :type values: pdarray
       :param skipna: boolean which determines if NANs should be skipped
       :type skipna: bool
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **group_minima** (*pdarray*) -- One minimum per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                group_minima : pdarray
+                    One minimum per unique key in the GroupBy instance
+      :rtype: Tuple[groupable, pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray object or if min is
           not supported for the values dtype
@@ -730,6 +775,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -746,34 +792,40 @@ Module Contents
 
    .. py:method:: mode(values: groupable) -> Tuple[groupable, groupable]
 
-      Most common value in each group. If a group is multi-modal, return the
+      Return the most common value in each group.
+
+      If a group is multi-modal, return the
       modal value that occurs first.
 
       :param values: The values from which to take the mode of each group
       :type values: (list of) pdarray-like
 
-      :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
-                * **result** (*(list of) pdarray-like*) -- The most common value of each group
+      :returns:
 
-
-
-   .. py:method:: most_common(values)
-
-      (Deprecated) See `GroupBy.mode()`.
-
+                unique_keys : (list of) pdarray-like
+                    The unique keys, in grouped order
+                result : (list of) pdarray-like
+                    The most common value of each group
+      :rtype: Tuple[groupable, groupable]
 
 
 
    .. py:method:: nunique(values: groupable) -> Tuple[groupable, pdarray]
 
-      Using the permutation stored in the GroupBy instance, group another
-      array of values and return the number of unique values in each group.
+      Group another array of values and return the number of unique values in each group.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and find unique values
       :type values: pdarray, int64
 
-      :returns: * **unique_keys** (*groupable*) -- The unique keys, in grouped order
-                * **group_nunique** (*groupable*) -- Number of unique values per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : groupable
+                    The unique keys, in grouped order
+                group_nunique : groupable
+                    Number of unique values per unique key in the GroupBy instance
+      :rtype: Tuple[groupable, pdarray]
 
       :raises TypeError: Raised if the dtype(s) of values array(s) does/do not support
           the nunique method
@@ -783,6 +835,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> data = ak.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])
       >>> data
       array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])
@@ -811,25 +864,29 @@ Module Contents
       that will be decoded using the given encoding and error handler.
       Otherwise, returns the result of object.__str__() (if defined)
       or repr(object).
-      encoding defaults to sys.getdefaultencoding().
+      encoding defaults to 'utf-8'.
       errors defaults to 'strict'.
-
 
 
 
    .. py:method:: prod(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and compute the product of each group's
-      values.
+      Group another array of values and compute the product of each group's values.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and multiply
       :type values: pdarray
       :param skipna: boolean which determines if NANs should be skipped
       :type skipna: bool
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **group_products** (*pdarray, float64*) -- One product per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                group_products : pdarray, float64
+                    One product per unique key in the GroupBy instance
+      :rtype: Tuple[groupable, pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray object
       :raises ValueError: Raised if the key array size does not match the values size
@@ -842,6 +899,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -858,7 +916,7 @@ Module Contents
 
    .. py:method:: register(user_defined_name: str) -> GroupBy
 
-      Register this GroupBy object and underlying components with the Arkouda server
+      Register this GroupBy object and underlying components with the Arkouda server.
 
       :param user_defined_name: user defined name the GroupBy is to be registered under,
                                 this will be the root name for underlying components
@@ -873,7 +931,7 @@ Module Contents
       :raises TypeError: Raised if user_defined_name is not a str
       :raises RegistrationError: If the server was unable to register the GroupBy with the user_defined_name
 
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`unregister_groupby_by_name`, :obj:`is_registered`
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`unregister_groupby_by_name`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -884,7 +942,9 @@ Module Contents
 
    .. py:method:: sample(values: groupable, n=None, frac=None, replace=False, weights=None, random_state=None, return_indices=False, permute_samples=False)
 
-      Return a random sample from each group. You can either specify the number of elements
+      Return a random sample from each group.
+
+      You can either specify the number of elements
       or the fraction of elements to be sampled. random_state can be used for reproducibility
 
       :param values: The values from which to sample, according to their group membership.
@@ -921,18 +981,25 @@ Module Contents
 
    .. py:method:: size() -> Tuple[groupable, pdarray]
 
-      Count the number of elements in each group, i.e. the number of times
-      each key appears.  This counts the total number of rows (including NaN values).
+      Count the number of elements in each group, i.e. the number of times each key appears.
+
+      This counts the total number of rows (including NaN values).
 
       :param none:
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **counts** (*pdarray, int64*) -- The number of times each unique key appears
+      :returns:
 
-      .. seealso:: :obj:`count`
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                counts : pdarray, int64
+                    The number of times each unique key appears
+      :rtype: List[pdarray|Strings], pdarray|int64
+
+      .. seealso:: :py:obj:`count`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
@@ -947,9 +1014,9 @@ Module Contents
 
    .. py:method:: std(values: pdarray, skipna: bool = True, ddof: int_scalars = 1) -> Tuple[groupable, pdarray]
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and compute the standard deviation of
-      each group's values.
+      Group another array of values and compute the standard deviation of each group's values.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and find standard deviation
       :type values: pdarray
@@ -958,8 +1025,13 @@ Module Contents
       :param ddof: "Delta Degrees of Freedom" used in calculating std
       :type ddof: int_scalars
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **group_stds** (*pdarray, float64*) -- One std value per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                group_stds : pdarray, float64
+                    One std value per unique key in the GroupBy instance
+      :rtype: Tuple[groupable, pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray object
       :raises ValueError: Raised if the key array size does not match the values size
@@ -984,6 +1056,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -1000,16 +1073,22 @@ Module Contents
 
    .. py:method:: sum(values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and sum each group's values.
+      Group another array of values and sum each group's values.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and sum
       :type values: pdarray
       :param skipna: boolean which determines if NANs should be skipped
       :type skipna: bool
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **group_sums** (*pdarray*) -- One sum per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                group_sums : pdarray
+                    One sum per unique key in the GroupBy instance
+      :rtype: Tuple[groupable, pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray object
       :raises ValueError: Raised if the key array size does not match the values size or
@@ -1021,6 +1100,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -1049,13 +1129,19 @@ Module Contents
                              Otherwise, return the selected values.
       :type return_indices: bool, default False
 
-      :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
-                * **result** (*pdarray-like*) -- The last n items of each group.
-                  If return_indices is True, the result are indices.
-                  O.W. the result are values.
+      :returns:
+
+                unique_keys : (list of) pdarray-like
+                    The unique keys, in grouped order
+                result : pdarray-like
+                    The last n items of each group.
+                    If return_indices is True, the result are indices.
+                    O.W. the result are values.
+      :rtype: Tuple[groupable, groupable_element_type]
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.arange(10) %3
       >>> a
       array([0 1 2 0 1 2 0 1 2 0])
@@ -1086,7 +1172,9 @@ Module Contents
 
    .. py:method:: to_hdf(prefix_path, dataset='groupby', mode='truncate', file_type='distribute')
 
-      Save the GroupBy to HDF5. The result is a collection of HDF5 files, one file
+      Save the GroupBy to HDF5.
+
+      The result is a collection of HDF5 files, one file
       per locale of the arkouda server, where each filename starts with prefix_path.
 
       :param prefix_path: Directory and filename prefix that all output files will share
@@ -1102,8 +1190,9 @@ Module Contents
                         This is only supported by HDF5 files and will have no impact of Parquet Files.
       :type file_type: str ("single" | "distribute")
 
-      :returns: * *None*
-                * *GroupBy is not currently supported by Parquet*
+      .. rubric:: Notes
+
+      GroupBy is not currently supported by Parquet
 
 
 
@@ -1114,8 +1203,13 @@ Module Contents
       :param values: The values to unique
       :type values: (list of) pdarray-like
 
-      :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
-                * **result** (*(list of) SegArray*) -- The unique values of each group
+      :returns:
+
+                unique_keys : (list of) pdarray-like
+                    The unique keys, in grouped order
+                result : (list of) SegArray
+                    The unique values of each group
+      :rtype: (list of) pdarray-like, (list of) SegArray
 
       :raises TypeError: Raised if values is or contains Strings or Categorical
 
@@ -1123,13 +1217,15 @@ Module Contents
 
    .. py:method:: unregister()
 
+      Unregister this GroupBy object.
+
       Unregister this GroupBy object in the arkouda server which was previously
       registered using register() and/or attached to using attach()
 
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister_groupby_by_name`, :obj:`is_registered`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`unregister_groupby_by_name`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -1138,29 +1234,14 @@ Module Contents
 
 
 
-   .. py:method:: unregister_groupby_by_name(user_defined_name: str) -> None
-
-      Function to unregister GroupBy object by name which was registered
-      with the arkouda server via register()
-
-      :param user_defined_name: Name under which the GroupBy object was registered
-      :type user_defined_name: str
-
-      :raises TypeError: if user_defined_name is not a string
-      :raises RegistrationError: if there is an issue attempting to unregister any underlying components
-
-      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
-
-
-
    .. py:method:: update_hdf(prefix_path: str, dataset: str = 'groupby', repack: bool = True)
 
 
    .. py:method:: var(values: pdarray, skipna: bool = True, ddof: int_scalars = 1) -> Tuple[groupable, pdarray]
 
-      Using the permutation stored in the GroupBy instance, group
-      another array of values and compute the variance of
-      each group's values.
+      Group another array of values and compute the variance of each group's values.
+
+      Group using the permutation stored in the GroupBy instance.
 
       :param values: The values to group and find variance
       :type values: pdarray
@@ -1169,8 +1250,13 @@ Module Contents
       :param ddof: "Delta Degrees of Freedom" used in calculating var
       :type ddof: int_scalars
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
-                * **group_vars** (*pdarray, float64*) -- One var value per unique key in the GroupBy instance
+      :returns:
+
+                unique_keys : (list of) pdarray or Strings
+                    The unique keys, in grouped order
+                group_vars : pdarray, float64
+                    One var value per unique key in the GroupBy instance
+      :rtype: Tuple[groupable, pdarray]
 
       :raises TypeError: Raised if the values array is not a pdarray object
       :raises ValueError: Raised if the key array size does not match the values size
@@ -1192,6 +1278,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
@@ -1235,6 +1322,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>>
    # Define a sparse matrix with 3 rows and 7 nonzeros
    >>> row_starts = ak.array([0, 2, 5])
@@ -1247,6 +1335,27 @@ Module Contents
    >>> permutation = ak.arange(6, -1, -1)
    >>> ak.broadcast(row_starts, row_number, permutation=permutation)
    array([2 2 1 1 1 0 0])
+
+
+.. py:class:: groupable
+
+   Bases: :py:obj:`_NotIterable`
+
+
+   Mixin to prevent iteration, without being compatible with Iterable.
+
+   That is, we could do::
+
+       def __iter__(self): raise TypeError()
+
+   But this would make users of this mixin duck type-compatible with
+   collections.abc.Iterable - isinstance(foo, Iterable) would be True.
+
+   Luckily, we can instead prevent iteration by setting __iter__ to None, which
+   is treated specially.
+
+
+   .. py:method:: copy_with(params)
 
 
 .. py:function:: unique(pda: groupable, return_groups: bool = False, assume_sorted: bool = False, return_indices: bool = False) -> Union[groupable, Tuple[groupable, pdarray, pdarray, int]]
@@ -1267,9 +1376,15 @@ Module Contents
                           If True, return unique key indices along with other groups
    :type return_indices: bool, optional
 
-   :returns: * **unique** (*(list of) pdarray, Strings, or Categorical*) -- The unique values. If input dtype is int64, return values will be sorted.
-             * **permutation** (*pdarray, optional*) -- Permutation that groups equivalent values together (only when return_groups=True)
-             * **segments** (*pdarray, optional*) -- The offset of each group in the permuted array (only when return_groups=True)
+   :returns:
+
+             unique : (list of) pdarray, Strings, or Categorical
+                 The unique values. If input dtype is int64, return values will be sorted.
+             permutation : pdarray, optional
+                 Permutation that groups equivalent values together (only when return_groups=True)
+             segments : pdarray, optional
+                 The offset of each group in the permuted array (only when return_groups=True)
+   :rtype: Union[groupable, Tuple[groupable, pdarray, pdarray, int]]
 
    :raises TypeError: Raised if pda is not a pdarray or Strings object
    :raises RuntimeError: Raised if the pdarray or Strings dtype is unsupported
@@ -1282,6 +1397,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> A = ak.array([3, 2, 1, 1, 2, 3])
    >>> ak.unique(A)
    array([1, 2, 3])

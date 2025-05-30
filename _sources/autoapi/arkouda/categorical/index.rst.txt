@@ -17,8 +17,9 @@ Module Contents
 
 .. py:class:: Categorical(values, **kwargs)
 
-   Represents an array of values belonging to named categories. Converting a
-   Strings object to Categorical often saves memory and speeds up operations,
+   Represents an array of values belonging to named categories.
+
+   Converting a Strings object to Categorical often saves memory and speeds up operations,
    especially if there are many repeated values, at the cost of some one-time
    work in initialization.
 
@@ -49,25 +50,25 @@ Module Contents
 
       When values are grouped, the starting offset of each group
 
-      :type: pdarray, int64
+      :type: Union[pdarray, None]
 
    .. attribute:: size
 
       The number of items in the array
 
-      :type: Union[int,np.int64]
+      :type: int_scalars
 
    .. attribute:: nlevels
 
       The number of distinct categories
 
-      :type: Union[int,np.int64]
+      :type: int_scalars
 
    .. attribute:: ndim
 
       The rank of the array (currently only rank 1 arrays supported)
 
-      :type: Union[int,np.int64]
+      :type: int_scalars
 
    .. attribute:: shape
 
@@ -88,27 +89,17 @@ Module Contents
    .. py:method:: argsort()
 
 
-   .. py:method:: attach(user_defined_name: str) -> Categorical
-      :staticmethod:
+   .. py:attribute:: categories
+      :type:  arkouda.numpy.strings.Strings
 
 
-      DEPRECATED
-      Function to return a Categorical object attached to the registered name in the
-      arkouda server which was registered using register()
-
-      :param user_defined_name: user defined name which Categorical object was registered under
-      :type user_defined_name: str
-
-      :returns: The Categorical object created by re-attaching to the corresponding server components
-      :rtype: Categorical
-
-      :raises TypeError: if user_defined_name is not a string
-
-      .. seealso:: :obj:`register`, :obj:`is_registered`, :obj:`unregister`, :obj:`unregister_categorical_by_name`
-
+   .. py:attribute:: codes
+      :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
    .. py:method:: concatenate(others: Sequence[Categorical], ordered: bool = True) -> Categorical
+
+      Merge this Categorical with other Categorical objects in the array.
 
       Merge this Categorical with other Categorical objects in the array,
       concatenating the arrays and synchronizing the categories.
@@ -144,13 +135,13 @@ Module Contents
       :type regex: bool
 
       :returns: True for elements that contain substr, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises TypeError: Raised if the substr parameter is not bytes or str_scalars
       :raises ValueError: Rasied if substr is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.endswith`
+      .. seealso:: :py:obj:`Categorical.startswith`, :py:obj:`Categorical.endswith`
 
       .. rubric:: Notes
 
@@ -175,13 +166,13 @@ Module Contents
       :type regex: bool
 
       :returns: True for elements that end with substr, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises TypeError: Raised if the substr parameter is not bytes or str_scalars
       :raises ValueError: Rasied if substr is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.contains`
+      .. seealso:: :py:obj:`Categorical.startswith`, :py:obj:`Categorical.contains`
 
       .. rubric:: Notes
 
@@ -199,7 +190,7 @@ Module Contents
       :type other: object
 
       :returns: True if the Categoricals are the same, o.w. False.
-      :rtype: bool
+      :rtype: bool_scalars
 
       .. rubric:: Examples
 
@@ -208,10 +199,10 @@ Module Contents
       >>> c = Categorical(ak.array(["a", "b", "c"]))
       >>> c_cpy = Categorical(ak.array(["a", "b", "c"]))
       >>> c.equals(c_cpy)
-      True
+      np.True_
       >>> c2 = Categorical(ak.array(["a", "x", "c"]))
       >>> c.equals(c2)
-      False
+      np.False_
 
 
 
@@ -219,7 +210,9 @@ Module Contents
       :classmethod:
 
 
-      Make a Categorical from codes and categories arrays. If codes and
+      Make a Categorical from codes and categories arrays.
+
+      If codes and
       categories have already been pre-computed, this constructor saves
       time. If not, please use the normal constructor.
 
@@ -245,7 +238,7 @@ Module Contents
       :classmethod:
 
 
-      Create categorical from return message from server
+      Create categorical from return message from server.
 
       .. rubric:: Notes
 
@@ -255,15 +248,16 @@ Module Contents
 
    .. py:method:: group() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Return the permutation that groups the array, placing equivalent
-      categories together. All instances of the same category are guaranteed
+      Return the permutation that groups the array, placing equivalent categories together.
+
+      All instances of the same category are guaranteed
       to lie in one contiguous block of the permuted array, but the blocks
       are not necessarily ordered.
 
       :returns: The permutation that groups the array by value
       :rtype: pdarray
 
-      .. seealso:: :obj:`GroupBy`, :obj:`unique`
+      .. seealso:: :py:obj:`GroupBy`, :py:obj:`unique`
 
       .. rubric:: Notes
 
@@ -295,8 +289,7 @@ Module Contents
 
    .. py:method:: in1d(test: Union[arkouda.numpy.strings.Strings, Categorical]) -> arkouda.numpy.pdarrayclass.pdarray
 
-      Test whether each element of the Categorical object is
-      also present in the test Strings or Categorical object.
+      Whether each element is also present in the test Strings or Categorical object.
 
       Returns a boolean array the same length as `self` that is True
       where an element of `self` is in `test` and False otherwise.
@@ -305,11 +298,11 @@ Module Contents
       :type test: Union[Strings,Categorical]
 
       :returns: The values `self[in1d]` are in the `test` Strings or Categorical object.
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises TypeError: Raised if test is not a Strings or Categorical object
 
-      .. seealso:: :obj:`unique`, :obj:`intersect1d`, :obj:`union1d`
+      .. seealso:: :py:obj:`unique`, :py:obj:`intersect1d`, :py:obj:`union1d`
 
       .. rubric:: Notes
 
@@ -320,6 +313,7 @@ Module Contents
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> strings = ak.array([f'String {i}' for i in range(0,5)])
       >>> cat = ak.Categorical(strings)
       >>> ak.in1d(cat,strings)
@@ -340,7 +334,7 @@ Module Contents
 
    .. py:method:: info() -> str
 
-      Returns a JSON formatted string containing information about all components of self
+      Return a JSON formatted string containing information about all components of self.
 
       :param None:
 
@@ -351,15 +345,14 @@ Module Contents
 
    .. py:method:: is_registered() -> numpy.bool_
 
-       Return True iff the object is contained in the registry or is a component of a
-       registered object.
+      Return True iff the object is contained in the registry or is a component of a registered object.
 
       :returns: Indicates if the object is contained in the registry
       :rtype: numpy.bool
 
       :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`, :obj:`unregister_categorical_by_name`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`unregister`, :py:obj:`unregister_categorical_by_name`
 
       .. rubric:: Notes
 
@@ -370,7 +363,7 @@ Module Contents
 
    .. py:method:: isna()
 
-      Find where values are missing or null (as defined by self.NAvalue)
+      Find where values are missing or null (as defined by self.NAvalue).
 
 
 
@@ -386,9 +379,11 @@ Module Contents
 
 
    .. py:attribute:: ndim
+      :type:  arkouda.numpy.dtypes.int_scalars
 
 
    .. py:attribute:: nlevels
+      :type:  arkouda.numpy.dtypes.int_scalars
 
 
    .. py:attribute:: objType
@@ -396,36 +391,13 @@ Module Contents
 
 
 
-   .. py:method:: parse_hdf_categoricals(d: Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]]) -> Tuple[List[str], Dict[str, Categorical]]
-      :staticmethod:
-
-
-      This function should be used in conjunction with the load_all function which reads hdf5 files
-      and reconstitutes Categorical objects.
-      Categorical objects use a naming convention and HDF5 structure so they can be identified and
-      constructed for the user.
-
-      In general you should not call this method directly
-
-      :param d:
-      :type d: Dictionary of String to either Pdarray or Strings object
-
-      :returns: * *2-Tuple of List of strings containing key names which should be removed and Dictionary of*
-                * *base name to Categorical object*
-
-      .. seealso:: :obj:`Categorical.save`, :obj:`load_all`
-
-
-
    .. py:attribute:: permutation
       :type:  Union[arkouda.numpy.pdarrayclass.pdarray, None]
-      :value: None
-
 
 
    .. py:method:: pretty_print_info() -> None
 
-      Prints information about all components of self in a human readable format
+      Print information about all components of self in a human-readable format.
 
       :param None:
 
@@ -450,7 +422,7 @@ Module Contents
       :raises TypeError: Raised if user_defined_name is not a str
       :raises RegistrationError: If the server was unable to register the Categorical with the user_defined_name
 
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`unregister_categorical_by_name`, :obj:`is_registered`
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`unregister_categorical_by_name`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -467,8 +439,9 @@ Module Contents
 
    .. py:method:: reset_categories() -> Categorical
 
-      Recompute the category labels, discarding any unused labels. This
-      method is often useful after slicing or indexing a Categorical array,
+      Recompute the category labels, discarding any unused labels.
+
+      This method is often useful after slicing or indexing a Categorical array,
       when the resulting array only contains a subset of the original
       categories. In this case, eliminating unused categories can speed up
       other operations.
@@ -478,52 +451,8 @@ Module Contents
 
 
 
-   .. py:method:: save(prefix_path: str, dataset: str = 'categorical_array', file_format: str = 'HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> str
-
-      DEPRECATED
-      Save the Categorical object to HDF5 or Parquet. The result is a collection of HDF5/Parquet files,
-      one file per locale of the arkouda server, where each filename starts
-      with prefix_path and dataset. Each locale saves its chunk of the Strings array to its
-      corresponding file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in HDF5 files (must not already exist)
-      :type dataset: str
-      :param file_format: The format to save the file to.
-      :type file_format: str {'HDF5 | 'Parquet'}
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', create a new Categorical dataset within existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param file_type: Default: "distribute"
-                        When set to single, dataset is written to a single file.
-                        When distribute, dataset is written on a file per locale.
-                        This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
-      :param compression: {None | 'snappy' | 'gzip' | 'brotli' | 'zstd' | 'lz4'}
-                          The compression type to use when writing.
-                          This is only supported for Parquet files and will not be used with HDF5.
-      :type compression: str (Optional)
-
-      :rtype: String message indicating result of save operation
-
-      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
-          neither 'truncate' nor 'append'
-      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
-
-      .. rubric:: Notes
-
-      Important implementation notes: (1) Strings state is saved as two datasets
-      within an hdf5 group: one for the string characters and one for the
-      segments corresponding to the start of each string, (2) the hdf5 group is named
-      via the dataset parameter.
-
-      .. seealso:: :obj:`-`, :obj:`-`
-
-
-
    .. py:attribute:: segments
-      :value: None
-
+      :type:  Union[arkouda.numpy.pdarrayclass.pdarray, None]
 
 
    .. py:method:: set_categories(new_categories, NAvalue=None)
@@ -543,6 +472,7 @@ Module Contents
 
 
    .. py:attribute:: shape
+      :type:  tuple
 
 
    .. py:attribute:: size
@@ -580,13 +510,13 @@ Module Contents
       :type regex: bool
 
       :returns: True for elements that start with substr, False otherwise
-      :rtype: pdarray, bool
+      :rtype: pdarray
 
       :raises TypeError: Raised if the substr parameter is not bytes or str_scalars
       :raises ValueError: Rasied if substr is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Categorical.contains`, :obj:`Categorical.endswith`
+      .. seealso:: :py:obj:`Categorical.contains`, :py:obj:`Categorical.endswith`
 
       .. rubric:: Notes
 
@@ -598,7 +528,9 @@ Module Contents
 
    .. py:method:: to_hdf(prefix_path, dataset='categorical_array', mode='truncate', file_type='distribute')
 
-      Save the Categorical to HDF5. The result is a collection of HDF5 files, one file
+      Save the Categorical to HDF5.
+
+      The result is a collection of HDF5 files, one file
       per locale of the arkouda server, where each filename starts with prefix_path.
 
       :param prefix_path: Directory and filename prefix that all output files will share
@@ -613,13 +545,13 @@ Module Contents
                         When distribute, dataset is written on a file per locale.
       :type file_type: str ("single" | "distribute")
 
-      :rtype: None
-
-      .. seealso:: :obj:`load`
+      .. seealso:: :py:obj:`load`
 
 
 
-   .. py:method:: to_list() -> List
+   .. py:method:: to_list() -> List[str]
+
+      Convert the Categorical to a list.
 
       Convert the Categorical to a list, transferring data from
       the arkouda server to Python. This conversion discards category
@@ -628,7 +560,7 @@ Module Contents
 
       :returns: A list of strings corresponding to the values in
                 this Categorical
-      :rtype: list
+      :rtype: List[str]
 
       .. rubric:: Notes
 
@@ -643,6 +575,8 @@ Module Contents
 
 
    .. py:method:: to_ndarray() -> numpy.ndarray
+
+      Convert the array to a np.ndarray.
 
       Convert the array to a np.ndarray, transferring array data from
       the arkouda server to Python. This conversion discards category
@@ -673,54 +607,59 @@ Module Contents
 
    .. py:method:: to_parquet(prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate', compression: Optional[str] = None) -> str
 
-      This functionality is currently not supported and will also raise a RuntimeError.
-      Support is in development.
-      Save the Categorical to Parquet. The result is a collection of files,
-      one file per locale of the arkouda server, where each filename starts
-      with prefix_path. Each locale saves its chunk of the array to its
-      corresponding file.
+      [Not Yet Implemented] Save the Categorical to a Parquet dataset.
 
-      :param prefix_path: Directory and filename prefix that all output files share
+      !!! This method is currently not supported and will raise a RuntimeError. !!!
+      Parquet support for Categorical is under development.
+
+      When implemented, this method will write the Categorical to a set of Parquet
+      files, one file per locale on the Arkouda server. Each file will be named
+      using the `prefix_path` with locale-specific suffixes.
+
+      :param prefix_path: The directory and filename prefix shared by all output files.
       :type prefix_path: str
-      :param dataset: Name of the dataset to create in HDF5 files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', create a new Categorical dataset within existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param compression: Default None
-                          Provide the compression type to use when writing the file.
-                          Supported values: snappy, gzip, brotli, zstd, lz4
-      :type compression: str (Optional)
+      :param dataset: The dataset name to use to create the Parquet files.
+      :type dataset: str, default="categorical_array"
+      :param mode: Specifies write behavior. Use 'truncate' to overwrite existing files or
+                   'append' to add to them. (Appending is not yet efficient.)
+      :type mode: {'truncate', 'append'}, default='truncate'
+      :param compression: Compression algorithm to use when writing the file.
+                          Supported values include: 'snappy', 'gzip', 'brotli', 'zstd', 'lz4'.
+                          Default is None (no compression).
+      :type compression: str, optional
 
-      :rtype: String message indicating result of save operation
+      :returns: A message indicating the result of the operation.
+      :rtype: str
 
-      :raises RuntimeError: On run due to compatability issues of Categorical with Parquet.
+      :raises RuntimeError: Always raised. Parquet export for Categorical is not yet supported.
 
       .. rubric:: Notes
 
-      - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`.
-      - 'append' write mode is supported, but is not efficient.
+      - The specified `prefix_path` must be writable and accessible to the Arkouda server.
+      - The user must have write permission.
+      - Output files will be named as ``<prefix_path>_LOCALE<i>`` for each locale `i`.
+      - Appending mode requires that the existing files already match the server’s locale layout.
+      - Appending mode is supported, but is not efficient.
+      - File extensions are not used to determine file type.
       - If any of the output files already exist and
       the mode is 'truncate', they will be overwritten. If the mode is 'append'
       and the number of output files is less than the number of locales or a
       dataset with the same name already exists, a ``RuntimeError`` will result.
-      - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
 
-      .. seealso:: :obj:`to_hdf`
+      .. seealso::
+
+         :py:obj:`to_hdf`
+             Save the Categorical to HDF5 format (currently supported).
 
 
 
-   .. py:method:: to_strings() -> List
+   .. py:method:: to_strings() -> arkouda.numpy.strings.Strings
 
       Convert the Categorical to Strings.
 
       :returns: A Strings object corresponding to the values in
                 this Categorical.
-      :rtype: arkouda.numpy.strings.Strings
+      :rtype: Strings
 
       .. rubric:: Examples
 
@@ -740,7 +679,7 @@ Module Contents
 
    .. py:method:: transfer(hostname: str, port: arkouda.numpy.dtypes.int_scalars)
 
-      Sends a Categorical object to a different Arkouda server
+      Send a Categorical object to a different Arkouda server.
 
       :param hostname: The hostname where the Arkouda server intended to
                        receive the Categorical is running.
@@ -770,13 +709,15 @@ Module Contents
 
    .. py:method:: unregister() -> None
 
+      Unregister this Categorical object.
+
       Unregister this Categorical object in the arkouda server which was previously
       registered using register() and/or attached to using attach()
 
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister_categorical_by_name`, :obj:`is_registered`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`unregister_categorical_by_name`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -785,27 +726,11 @@ Module Contents
 
 
 
-   .. py:method:: unregister_categorical_by_name(user_defined_name: str) -> None
-      :staticmethod:
-
-
-      Function to unregister Categorical object by name which was registered
-      with the arkouda server via register()
-
-      :param user_defined_name: Name under which the Categorical object was registered
-      :type user_defined_name: str
-
-      :raises TypeError: if user_defined_name is not a string
-      :raises RegistrationError: if there is an issue attempting to unregister any underlying components
-
-      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
-
-
-
    .. py:method:: update_hdf(prefix_path, dataset='categorical_array', repack=True)
 
-      Overwrite the dataset with the name provided with this Categorical object. If
-      the dataset does not exist it is added.
+      Overwrite the dataset with the name provided with this Categorical object.
+
+      If the dataset does not exist it is added.
 
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
@@ -817,8 +742,6 @@ Module Contents
                      inaccessible. Setting to false will yield better performance, but will cause
                      file sizes to expand.
       :type repack: bool
-
-      :rtype: None
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the Categorical
 

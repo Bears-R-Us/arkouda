@@ -22,153 +22,180 @@ Module Contents
 
    A chi-squared continuous random variable.
 
-       For the noncentral chi-square distribution, see `ncx2`.
+   For the noncentral chi-square distribution, see `ncx2`.
 
-       As an instance of the `rv_continuous` class, `chi2` object inherits from it
-       a collection of generic methods (see below for the full list),
-       and completes them with details specific for this particular distribution.
+   As an instance of the `rv_continuous` class, `chi2` object inherits from it
+   a collection of generic methods (see below for the full list),
+   and completes them with details specific for this particular distribution.
 
-       Methods
-       -------
-       rvs(df, loc=0, scale=1, size=1, random_state=None)
-           Random variates.
-       pdf(x, df, loc=0, scale=1)
-           Probability density function.
-       logpdf(x, df, loc=0, scale=1)
-           Log of the probability density function.
-       cdf(x, df, loc=0, scale=1)
-           Cumulative distribution function.
-       logcdf(x, df, loc=0, scale=1)
-           Log of the cumulative distribution function.
-       sf(x, df, loc=0, scale=1)
-           Survival function  (also defined as ``1 - cdf``, but `sf` is sometimes more accurate).
-       logsf(x, df, loc=0, scale=1)
-           Log of the survival function.
-       ppf(q, df, loc=0, scale=1)
-           Percent point function (inverse of ``cdf`` --- percentiles).
-       isf(q, df, loc=0, scale=1)
-           Inverse survival function (inverse of ``sf``).
-       moment(order, df, loc=0, scale=1)
-           Non-central moment of the specified order.
-       stats(df, loc=0, scale=1, moments='mv')
-           Mean('m'), variance('v'), skew('s'), and/or kurtosis('k').
-       entropy(df, loc=0, scale=1)
-           (Differential) entropy of the RV.
-       fit(data)
-           Parameter estimates for generic data.
-           See `scipy.stats.rv_continuous.fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.rv_continuous.fit.html#scipy.stats.rv_continuous.fit>`__ for detailed documentation of the
-           keyword arguments.
-       expect(func, args=(df,), loc=0, scale=1, lb=None, ub=None, conditional=False, **kwds)
-           Expected value of a function (of one argument) with respect to the distribution.
-       median(df, loc=0, scale=1)
-           Median of the distribution.
-       mean(df, loc=0, scale=1)
-           Mean of the distribution.
-       var(df, loc=0, scale=1)
-           Variance of the distribution.
-       std(df, loc=0, scale=1)
-           Standard deviation of the distribution.
-       interval(confidence, df, loc=0, scale=1)
-           Confidence interval with equal areas around the median.
+   .. method:: rvs(df, loc=0, scale=1, size=1, random_state=None)
 
-       See Also
-       --------
-       ncx2
+      Random variates.
 
-       Notes
-       -----
-       The probability density function for `chi2` is:
+   .. method:: pdf(x, df, loc=0, scale=1)
 
-       .. math::
+      Probability density function.
 
-           f(x, k) = \frac{1}{2^{k/2} \Gamma \left( k/2 \right)}
-                      x^{k/2-1} \exp \left( -x/2 \right)
+   .. method:: logpdf(x, df, loc=0, scale=1)
 
-       for :math:`x > 0`  and :math:`k > 0` (degrees of freedom, denoted ``df``
-       in the implementation).
+      Log of the probability density function.
 
-       `chi2` takes ``df`` as a shape parameter.
+   .. method:: cdf(x, df, loc=0, scale=1)
 
-       The chi-squared distribution is a special case of the gamma
-       distribution, with gamma parameters ``a = df/2``, ``loc = 0`` and
-       ``scale = 2``.
+      Cumulative distribution function.
 
-       The probability density above is defined in the "standardized" form. To shift
-       and/or scale the distribution use the ``loc`` and ``scale`` parameters.
-       Specifically, ``chi2.pdf(x, df, loc, scale)`` is identically
-       equivalent to ``chi2.pdf(y, df) / scale`` with
-       ``y = (x - loc) / scale``. Note that shifting the location of a distribution
-       does not make it a "noncentral" distribution; noncentral generalizations of
-       some distributions are available in separate classes.
+   .. method:: logcdf(x, df, loc=0, scale=1)
 
-       Examples
-       --------
-       >>> import numpy as np
-       >>> from scipy.stats import chi2
-       >>> import matplotlib.pyplot as plt
-       >>> fig, ax = plt.subplots(1, 1)
+      Log of the cumulative distribution function.
 
-       Calculate the first four moments:
+   .. method:: sf(x, df, loc=0, scale=1)
 
-       >>> df = 55
-       >>> mean, var, skew, kurt = chi2.stats(df, moments='mvsk')
+      Survival function  (also defined as ``1 - cdf``, but `sf` is sometimes more accurate).
 
-       Display the probability density function (``pdf``):
+   .. method:: logsf(x, df, loc=0, scale=1)
 
-       >>> x = np.linspace(chi2.ppf(0.01, df),
-       ...                 chi2.ppf(0.99, df), 100)
-       >>> ax.plot(x, chi2.pdf(x, df),
-       ...        'r-', lw=5, alpha=0.6, label='chi2 pdf')
+      Log of the survival function.
 
-       Alternatively, the distribution object can be called (as a function)
-       to fix the shape, location and scale parameters. This returns a "frozen"
-       RV object holding the given parameters fixed.
+   .. method:: ppf(q, df, loc=0, scale=1)
 
-       Freeze the distribution and display the frozen ``pdf``:
+      Percent point function (inverse of ``cdf`` --- percentiles).
 
-       >>> rv = chi2(df)
-       >>> ax.plot(x, rv.pdf(x), 'k-', lw=2, label='frozen pdf')
+   .. method:: isf(q, df, loc=0, scale=1)
 
-       Check accuracy of ``cdf`` and ``ppf``:
+      Inverse survival function (inverse of ``sf``).
 
-       >>> vals = chi2.ppf([0.001, 0.5, 0.999], df)
-       >>> np.allclose([0.001, 0.5, 0.999], chi2.cdf(vals, df))
-       True
+   .. method:: moment(order, df, loc=0, scale=1)
 
-       Generate random numbers:
+      Non-central moment of the specified order.
 
-       >>> r = chi2.rvs(df, size=1000)
+   .. method:: stats(df, loc=0, scale=1, moments='mv')
 
-       And compare the histogram:
+      Mean('m'), variance('v'), skew('s'), and/or kurtosis('k').
 
-       >>> ax.hist(r, density=True, bins='auto', histtype='stepfilled', alpha=0.2)
-       >>> ax.set_xlim([x[0], x[-1]])
-       >>> ax.legend(loc='best', frameon=False)
-       >>> plt.show()
+   .. method:: entropy(df, loc=0, scale=1)
+
+      (Differential) entropy of the RV.
+
+   .. method:: fit(data)
+
+      Parameter estimates for generic data.
+      See `scipy.stats.rv_continuous.fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.rv_continuous.fit.html#scipy.stats.rv_continuous.fit>`__ for detailed documentation of the
+      keyword arguments.
+
+   .. method:: expect(func, args=(df,), loc=0, scale=1, lb=None, ub=None, conditional=False, \*\*kwds)
+
+      Expected value of a function (of one argument) with respect to the distribution.
+
+   .. method:: median(df, loc=0, scale=1)
+
+      Median of the distribution.
+
+   .. method:: mean(df, loc=0, scale=1)
+
+      Mean of the distribution.
+
+   .. method:: var(df, loc=0, scale=1)
+
+      Variance of the distribution.
+
+   .. method:: std(df, loc=0, scale=1)
+
+      Standard deviation of the distribution.
+
+   .. method:: interval(confidence, df, loc=0, scale=1)
+
+      Confidence interval with equal areas around the median.
 
 
+   .. seealso:: :py:obj:`ncx2`
 
+   .. rubric:: Notes
 
+   The probability density function for `chi2` is:
+
+   .. math::
+
+       f(x, k) = \frac{1}{2^{k/2} \Gamma \left( k/2 \right)}
+                  x^{k/2-1} \exp \left( -x/2 \right)
+
+   for :math:`x > 0`  and :math:`k > 0` (degrees of freedom, denoted ``df``
+   in the implementation).
+
+   `chi2` takes ``df`` as a shape parameter.
+
+   The chi-squared distribution is a special case of the gamma
+   distribution, with gamma parameters ``a = df/2``, ``loc = 0`` and
+   ``scale = 2``.
+
+   The probability density above is defined in the "standardized" form. To shift
+   and/or scale the distribution use the ``loc`` and ``scale`` parameters.
+   Specifically, ``chi2.pdf(x, df, loc, scale)`` is identically
+   equivalent to ``chi2.pdf(y, df) / scale`` with
+   ``y = (x - loc) / scale``. Note that shifting the location of a distribution
+   does not make it a "noncentral" distribution; noncentral generalizations of
+   some distributions are available in separate classes.
+
+   .. rubric:: Examples
+
+   >>> import numpy as np
+   >>> from scipy.stats import chi2
+   >>> import matplotlib.pyplot as plt
+   >>> fig, ax = plt.subplots(1, 1)
+
+   Calculate the first four moments:
+
+   >>> df = 55
+   >>> mean, var, skew, kurt = chi2.stats(df, moments='mvsk')
+
+   Display the probability density function (``pdf``):
+
+   >>> x = np.linspace(chi2.ppf(0.01, df),
+   ...                 chi2.ppf(0.99, df), 100)
+   >>> ax.plot(x, chi2.pdf(x, df),
+   ...        'r-', lw=5, alpha=0.6, label='chi2 pdf')
+
+   Alternatively, the distribution object can be called (as a function)
+   to fix the shape, location and scale parameters. This returns a "frozen"
+   RV object holding the given parameters fixed.
+
+   Freeze the distribution and display the frozen ``pdf``:
+
+   >>> rv = chi2(df)
+   >>> ax.plot(x, rv.pdf(x), 'k-', lw=2, label='frozen pdf')
+
+   Check accuracy of ``cdf`` and ``ppf``:
+
+   >>> vals = chi2.ppf([0.001, 0.5, 0.999], df)
+   >>> np.allclose([0.001, 0.5, 0.999], chi2.cdf(vals, df))
+   True
+
+   Generate random numbers:
+
+   >>> r = chi2.rvs(df, size=1000)
+
+   And compare the histogram:
+
+   >>> ax.hist(r, density=True, bins='auto', histtype='stepfilled', alpha=0.2)
+   >>> ax.set_xlim([x[0], x[-1]])
+   >>> ax.legend(loc='best', frameon=False)
+   >>> plt.show()
 
 
    .. py:method:: a(*args, **kwargs)
 
-      Convert a string or number to a floating point number, if possible.
-
+      Convert a string or number to a floating-point number, if possible.
 
 
 
    .. py:method:: b(*args, **kwargs)
 
-      Convert a string or number to a floating point number, if possible.
-
+      Convert a string or number to a floating-point number, if possible.
 
 
 
    .. py:method:: badvalue(*args, **kwargs)
 
-      Convert a string or number to a floating point number, if possible.
-
+      Convert a string or number to a floating-point number, if possible.
 
 
 
@@ -181,7 +208,7 @@ Module Contents
       int(x, base=10) -> integer
 
       Convert a number or string to an integer, or return 0 if no arguments
-      are given.  If x is a number, return x.__int__().  For floating point
+      are given.  If x is a number, return x.__int__().  For floating-point
       numbers, this truncates towards zero.
 
       If x is not a number or if base is given, then x must be a string,
@@ -191,7 +218,6 @@ Module Contents
       Base 0 means to interpret the base from the string as an integer literal.
       >>> int('0b100', base=0)
       4
-
 
 
 
@@ -205,9 +231,8 @@ Module Contents
       that will be decoded using the given encoding and error handler.
       Otherwise, returns the result of object.__str__() (if defined)
       or repr(object).
-      encoding defaults to sys.getdefaultencoding().
+      encoding defaults to 'utf-8'.
       errors defaults to 'strict'.
-
 
 
 
@@ -217,7 +242,7 @@ Module Contents
       int(x, base=10) -> integer
 
       Convert a number or string to an integer, or return 0 if no arguments
-      are given.  If x is a number, return x.__int__().  For floating point
+      are given.  If x is a number, return x.__int__().  For floating-point
       numbers, this truncates towards zero.
 
       If x is not a number or if base is given, then x must be a string,
@@ -227,7 +252,6 @@ Module Contents
       Base 0 means to interpret the base from the string as an integer literal.
       >>> int('0b100', base=0)
       4
-
 
 
 
@@ -241,9 +265,8 @@ Module Contents
       that will be decoded using the given encoding and error handler.
       Otherwise, returns the result of object.__str__() (if defined)
       or repr(object).
-      encoding defaults to sys.getdefaultencoding().
+      encoding defaults to 'utf-8'.
       errors defaults to 'strict'.
-
 
 
 
@@ -252,8 +275,7 @@ Module Contents
 
    .. py:method:: xtol(*args, **kwargs)
 
-      Convert a string or number to a floating point number, if possible.
-
+      Convert a string or number to a floating-point number, if possible.
 
 
 

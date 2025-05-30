@@ -4,14 +4,6 @@ arkouda.security
 .. py:module:: arkouda.security
 
 
-Attributes
-----------
-
-.. autoapisummary::
-
-   arkouda.security.username_tokenizer
-
-
 Functions
 ---------
 
@@ -29,8 +21,7 @@ Module Contents
 
 .. py:function:: generate_token(length: int = 32) -> str
 
-   Uses the secrets.token_hex() method to generate a
-   a hexidecimal token
+   Use the secrets.token_hex() method to generate a hexidecimal token.
 
    :param length: The desired length of token
    :type length: int
@@ -45,9 +36,10 @@ Module Contents
 
 .. py:function:: generate_username_token_json(token: str) -> str
 
-   Generates a JSON object encapsulating the user's username
-   and token for connecting to an arkouda server with basic
-   authentication enabled
+   Generate a JSON object encapsulating the user's username and token.
+
+   These credentials are for connecting to an arkouda server with basic
+   authentication enabled.
 
    :param token: The token to be used to access arkouda server
    :type token: string
@@ -58,9 +50,10 @@ Module Contents
 
 .. py:function:: get_arkouda_client_directory() -> pathlib.Path
 
-   A platform-independent means of finding path to
-   the current user's .arkouda directory where artifacts
-   such as server access tokens are stored.
+   Find a path to the current user's .arkouda directory.
+
+   Artifacts such as server access tokens are stored in a platform-independent manner
+   in the .arkouda directory.
 
    :returns: Path corresponding to the user's .arkouda directory path
    :rtype: Path
@@ -76,8 +69,7 @@ Module Contents
 
 .. py:function:: get_home_directory() -> str
 
-   A platform-independent means of finding path to
-   the current user's home directory
+   Find a path to the current user's home directory in a platform-independent manner.
 
    :returns: The user's home directory path
    :rtype: str
@@ -90,8 +82,7 @@ Module Contents
 
 .. py:function:: get_username() -> str
 
-   A platform-independent means of retrieving the current
-   user's username for the host system.
+   Retrieve the current user's username for the host system in a platform-independent manner.
 
    :returns: The username in the form of string
    :rtype: str
@@ -103,6 +94,4 @@ Module Contents
    The currently supported operating systems are Windows, Linux,
    and MacOS AKA Darwin
 
-
-.. py:data:: username_tokenizer
 

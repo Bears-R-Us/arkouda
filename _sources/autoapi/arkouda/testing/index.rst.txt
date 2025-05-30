@@ -82,7 +82,7 @@ Package Contents
       This function cannot be used on pdarray of size > ak.client.maxTransferBytes
       because it converts pdarrays to numpy arrays and calls np.allclose.
 
-   .. seealso:: :obj:`assert_almost_equal`
+   .. seealso:: :py:obj:`assert_almost_equal`
 
 
 .. py:function:: assert_arkouda_array_equal(left: arkouda.pdarray | arkouda.Strings | arkouda.Categorical | arkouda.SegArray, right: arkouda.pdarray | arkouda.Strings | arkouda.Categorical | arkouda.SegArray, check_dtype: bool = True, err_msg=None, check_same=None, obj: str = 'pdarray', index_values=None) -> None
@@ -132,7 +132,7 @@ Package Contents
    :param index_values: optional index (shared by both left and right), used in output.
    :type index_values: Index | arkouda.pdarray, default None
 
-   .. seealso:: :obj:`assert_arkouda_array_equal`
+   .. seealso:: :py:obj:`assert_arkouda_array_equal`
 
 
 .. py:function:: assert_arkouda_pdarray_equal(left: arkouda.pdarray, right: arkouda.pdarray, check_dtype: bool = True, err_msg=None, check_same=None, obj: str = 'pdarray', index_values=None) -> None
@@ -158,7 +158,7 @@ Package Contents
 
 .. py:function:: assert_arkouda_segarray_equal(left: arkouda.SegArray, right: arkouda.SegArray, check_dtype: bool = True, err_msg=None, check_same=None, obj: str = 'segarray') -> None
 
-   Check that the two 'ak.segarray's are equivalent.
+   Check that the two 'ak.SegArray's are equivalent.
 
    :param left: The two segarrays to be compared.
    :type left: arkouda.numpy.SegArray
@@ -231,7 +231,7 @@ Package Contents
 
 .. py:function:: assert_class_equal(left, right, exact: bool = True, obj: str = 'Input') -> None
 
-   Checks classes are equal.
+   Check classes are equal.
 
 
 .. py:function:: assert_contains_all(iterable, dic) -> None
@@ -245,7 +245,7 @@ Package Contents
 
 .. py:function:: assert_copy(iter1, iter2, **eql_kwargs) -> None
 
-   Checks that the elements are equal, but not the same object.
+   Check that the elements are equal, but not the same object.
    (Does not check that items in sequences are also not the same object.)
 
    :param iter1: Iterables that produce elements comparable with assert_almost_equal.
@@ -341,11 +341,12 @@ Package Contents
 
    .. seealso::
 
-      :obj:`assert_series_equal`
+      :py:obj:`assert_series_equal`
           Equivalent method for asserting Series equality.
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    This example shows comparing two DataFrames that are equal
    but with columns of differing dtypes.
 
@@ -419,10 +420,11 @@ Package Contents
                assertion message.
    :type obj: str, default 'DataFrame'
 
-   .. seealso:: :obj:`assert_frame_equal`
+   .. seealso:: :py:obj:`assert_frame_equal`
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    This example shows comparing two DataFrames that are equal
    but with columns of differing dtypes.
 
@@ -464,6 +466,7 @@ Package Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> from arkouda import testing as tm
    >>> a = ak.Index([1, 2, 3])
    >>> b = ak.Index([1, 2, 3])
@@ -502,10 +505,11 @@ Package Contents
                assertion message.
    :type obj: str, default 'Index'
 
-   .. seealso:: :obj:`assert_index_equal`
+   .. seealso:: :py:obj:`assert_index_equal`
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> from arkouda import testing as tm
    >>> import pandas as pd
    >>> a = ak.Index([1, 2, 3])
@@ -556,6 +560,7 @@ Package Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> from arkouda import testing as tm
    >>> a = ak.Series([1, 2, 3, 4])
    >>> b = ak.Series([1, 2, 3, 4])
@@ -601,10 +606,11 @@ Package Contents
                       Note: same labels must be with the same data.
    :type check_like: bool, default False
 
-   .. seealso:: :obj:`assert_series_equal`
+   .. seealso:: :py:obj:`assert_series_equal`
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> from arkouda import testing as tm
    >>> import pandas as pd
    >>> a = ak.Series([1, 2, 3, 4])

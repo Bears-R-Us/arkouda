@@ -53,6 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/CommAggregation/BigIntegerAggregation.html">BigIntegerAggregation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/CommPrimitives.html">CommPrimitives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/CommandMap.html">CommandMap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/DynamicSort.html">DynamicSort</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html">ExternalIntegration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/FileIO.html">FileIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/GenSymIO.html">GenSymIO</a></li>
@@ -174,6 +175,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix/SpsMatUtil.html#SpsMatUtil.merge.accumulate">accumulate() (SpsMatUtil.merge method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix/SpsMatUtil.html#SpsMatUtil.merge.accumulateOntoState">accumulateOntoState() (SpsMatUtil.merge method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.activityMutex">activityMutex (ServerDaemon.DefaultServerDaemon attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SymEntry.aD">aD() (MultiTypeSymEntry.SymEntry method)</a>
 </li>
@@ -545,8 +548,6 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.critical">critical() (Logging.Logger method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.criticalLevels">criticalLevels (Logging.Logger attribute)</a>
-</li>
       <li><a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.cROUNDS">cROUNDS (in module SipHash)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.CURLINFO_RESPONSE_CODE">CURLINFO_RESPONSE_CODE (in module ExternalIntegration)</a>
@@ -649,10 +650,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.denseMatMatMult">denseMatMatMult() (in module SparseMatrix)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.Deployment">Deployment (enum in ServerConfig)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.deployment">deployment (in module ServerConfig)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.deregisterFromExternalSystem">deregisterFromExternalSystem() (in module ExternalIntegration)</a>
@@ -715,6 +716,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommandMap.html#CommandMap.dumpCommandMap">dumpCommandMap() (in module CommandMap)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/DynamicSort.html#module-DynamicSort">DynamicSort (module)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/DynamicSort.html#DynamicSort.dynamicTwoArrayRadixSort">dynamicTwoArrayRadixSort() (in module DynamicSort)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -739,7 +744,11 @@
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix/SpsMatUtil.html#SpsMatUtil.merge.eltType">eltType (SpsMatUtil.merge attribute)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.emit">emit() (Logging.Logger method)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix/SpsMatUtil.html#SpsMatUtil.emptySparseDomLike">emptySparseDomLike() (in module SpsMatUtil)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/CommandMap.html#CommandMap.emptyStartAsyncCheckpointDaemon">emptyStartAsyncCheckpointDaemon() (in module CommandMap)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.ensureClose">ensureClose() (in module FileIO)</a>
 </li>
@@ -757,14 +766,14 @@
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SymEntry.entry__str__">(MultiTypeSymEntry.SymEntry method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.AbstractRegEntry.entryType">entryType (MultiTypeRegEntry.AbstractRegEntry attribute)</a>
 
       <ul>
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.AbstractSymEntry.entryType">(MultiTypeSymEntry.AbstractSymEntry attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.error">error() (Logging.Logger method)</a>
 
       <ul>
@@ -772,8 +781,6 @@
 </li>
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ErrorWithContext.errorClass">errorClass (ServerErrors.ErrorWithContext attribute)</a>
-</li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.errorLevels">errorLevels (Logging.Logger attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.errorMetrics">errorMetrics (in module MetricsMsg)</a>
 </li>
@@ -879,6 +886,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/eq-22/ArkoudaPythonCompat.html#ArkoudaPythonCompat.Function">Function (class in ArkoudaPythonCompat)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/CommandMap.html#CommandMap.funStartAsyncCheckpointDaemon">funStartAsyncCheckpointDaemon (in module CommandMap)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -892,8 +901,6 @@
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.generateDateTimeString">generateDateTimeString() (Logging.Logger method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.generateErrorContext">generateErrorContext() (in module ServerErrors)</a>
-</li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.generateErrorMsg">generateErrorMsg() (Logging.Logger method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.generateFilename">generateFilename() (in module FileIO)</a>
 </li>
@@ -1007,10 +1014,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.getGenericTypedArrayEntry">getGenericTypedArrayEntry() (in module MultiTypeSymbolTable)</a>, <a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.getGenericTypedArrayEntry">[1]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.getGrid">getGrid() (in module SparseMatrix)</a>, <a href="modules/__w/arkouda/arkouda/src/SparseMatrix.html#SparseMatrix.getGrid">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getIntValue">getIntValue() (Message.ParameterObj method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.getKubernetesDeregisterParameters">getKubernetesDeregisterParameters() (in module ExternalIntegration)</a>
@@ -1165,6 +1172,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SparseMatrix/SpsMatUtil.html#SpsMatUtil.merge.identity">identity() (SpsMatUtil.merge method)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.idlePeriodStart">idlePeriodStart (ServerDaemon.DefaultServerDaemon attribute)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.DataFrameRegEntry.idx">idx (MultiTypeRegEntry.DataFrameRegEntry attribute)</a>
 
       <ul>
@@ -1205,8 +1214,6 @@
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.info">(MultiTypeSymbolTable.SymTab method)</a>
 </li>
       </ul></li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.infoLevels">infoLevels (Logging.Logger attribute)</a>
-</li>
       <li><a href="modules/__w/arkouda/arkouda/src/MsgProcessing.html#MsgProcessing.infoMsg">infoMsg() (in module MsgProcessing)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.lowLevelLocalizingSlice.init">init() (AryUtil.lowLevelLocalizingSlice method)</a>
@@ -1475,10 +1482,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleInfo">LocaleInfo (class in MetricsMsg)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.localeMemAvailable">localeMemAvailable() (in module MemoryMgmt)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.localeMemAvailable">localeMemAvailable() (in module MemoryMgmt)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/MemoryMgmt.html#MemoryMgmt.LocaleMemoryStatus">LocaleMemoryStatus (record in MemoryMgmt)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleMetric">LocaleMetric (class in MetricsMsg)</a>
@@ -1503,12 +1510,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.logLevel">logLevel (in module ServerConfig)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.lookup">lookup() (MultiTypeSymbolTable.SymTab method)</a>
-
-      <ul>
-        <li><a href="modules/__w/arkouda/arkouda/src/Registry.html#Registry.RegTab.lookup">(Registry.RegTab method)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/Registry.html#Registry.RegTab.lookup">lookup() (Registry.RegTab method)</a>
 </li>
-      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.lower">lower() (SegmentedString.SegString method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.lowLevelLocalizingSlice">lowLevelLocalizingSlice (record in AryUtil)</a>
@@ -1545,7 +1548,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.makeArrayFromBytes">makeArrayFromBytes() (in module GenSymIO)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">makeDistArray() (in module SymArrayDmap)</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[2]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[3]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[4]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[5]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[6]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[7]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[8]</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">makeDistArray() (in module SymArrayDmap)</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[2]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[3]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[4]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[5]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[6]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[7]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[8]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[9]</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistArray">[10]</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistDom">makeDistDom() (in module SymArrayDmap)</a>, <a href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html#SymArrayDmap.makeDistDom">[1]</a>
 </li>
@@ -1961,10 +1964,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Registry.html#module-Registry">Registry (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.registry">registry (MultiTypeSymbolTable.SymTab attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.RegistryEntryType">RegistryEntryType (enum in MultiTypeRegEntry)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeRegEntry.html#MultiTypeRegEntry.regLogger">regLogger (in module MultiTypeRegEntry)</a>
@@ -1982,6 +1985,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.removeDegenRanks">removeDegenRanks() (in module AryUtil)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.repCount">repCount (ServerDaemon.DefaultServerDaemon attribute)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.report">report() (Logging.Logger method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MsgProcessing.html#MsgProcessing.reprMsg">reprMsg() (in module MsgProcessing)</a>
 </li>
@@ -2129,6 +2134,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.serverid">serverid (MultiTypeSymbolTable.SymTab attribute)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.serverIdleStart">serverIdleStart() (ServerDaemon.DefaultServerDaemon method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.serverIdleStop">serverIdleStop() (ServerDaemon.DefaultServerDaemon method)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.ServerInfo">ServerInfo (class in MetricsMsg)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.serverInfoNoSplash">serverInfoNoSplash (in module ServerConfig)</a>
@@ -2262,6 +2271,8 @@
 </li>
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.ArkoudaServerDaemon.st">st (ServerDaemon.ArkoudaServerDaemon attribute)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.startAsyncCheckpointTask">startAsyncCheckpointTask() (ServerDaemon.DefaultServerDaemon method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.GeneratorSymEntry.state">state (MultiTypeSymEntry.GeneratorSymEntry attribute)</a>
 </li>
@@ -2539,7 +2550,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.validateArraysSameLength">validateArraysSameLength() (in module AryUtil)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.validateNegativeAxes">validateNegativeAxes() (in module AryUtil)</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.validateNegativeAxes">[1]</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.validateNegativeAxes">validateNegativeAxes() (in module AryUtil)</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.validateNegativeAxes">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.validateNegativeAxes">[2]</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/compat/eq-22/ArkoudaPythonCompat.html#ArkoudaPythonCompat.Value">Value (class in ArkoudaPythonCompat)</a>
 </li>
@@ -2571,7 +2582,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.warn">warn() (Logging.Logger method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.warnLevels">warnLevels (Logging.Logger attribute)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MsgTuple.warning">warning() (Message.MsgTuple method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/NumPyDType.html#NumPyDType.whichDtype">whichDtype() (in module NumPyDType)</a>
 </li>

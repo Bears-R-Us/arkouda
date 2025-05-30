@@ -115,11 +115,9 @@ Module Contents
    If the argument is a tuple, the return value is the same object.
 
 
-
    .. py:method:: count(value, /)
 
       Return number of occurrences of value.
-
 
 
 
@@ -128,7 +126,6 @@ Module Contents
       Return first index of value.
 
       Raises ValueError if the value is not present.
-
 
 
 
@@ -142,11 +139,9 @@ Module Contents
    If the argument is a tuple, the return value is the same object.
 
 
-
    .. py:method:: count(value, /)
 
       Return number of occurrences of value.
-
 
 
 
@@ -155,7 +150,6 @@ Module Contents
       Return first index of value.
 
       Raises ValueError if the value is not present.
-
 
 
 
@@ -169,11 +163,9 @@ Module Contents
    If the argument is a tuple, the return value is the same object.
 
 
-
    .. py:method:: count(value, /)
 
       Return number of occurrences of value.
-
 
 
 
@@ -182,7 +174,6 @@ Module Contents
       Return first index of value.
 
       Raises ValueError if the value is not present.
-
 
 
 
@@ -196,11 +187,9 @@ Module Contents
    If the argument is a tuple, the return value is the same object.
 
 
-
    .. py:method:: count(value, /)
 
       Return number of occurrences of value.
-
 
 
 
@@ -209,7 +198,6 @@ Module Contents
       Return first index of value.
 
       Raises ValueError if the value is not present.
-
 
 
 
@@ -223,11 +211,9 @@ Module Contents
    If the argument is a tuple, the return value is the same object.
 
 
-
    .. py:method:: count(value, /)
 
       Return number of occurrences of value.
-
 
 
 
@@ -239,21 +225,7 @@ Module Contents
 
 
 
-
-.. py:class:: BoolDType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
-
-
-   DType class corresponding to the scalar type and dtype of the same name.
-
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
-
-
-
-.. py:class:: ByteDType(obj, align=False, copy=False)
+.. py:class:: BoolDType
 
    Bases: :py:obj:`numpy.dtype`
 
@@ -265,8 +237,19 @@ Module Contents
    information.
 
 
+.. py:class:: ByteDType
 
-.. py:class:: BytesDType(obj, align=False, copy=False)
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
+
+
+   DType class corresponding to the scalar type and dtype of the same name.
+
+   Please see `numpy.dtype` for the typical way to create
+   dtype instances and :ref:`arrays.dtypes` for additional
+   information.
+
+
+.. py:class:: BytesDType
 
    Bases: :py:obj:`numpy.dtype`
 
@@ -278,23 +261,9 @@ Module Contents
    information.
 
 
+.. py:class:: CLongDoubleDType
 
-.. py:class:: CLongDoubleDType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
-
-
-   DType class corresponding to the scalar type and dtype of the same name.
-
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
-
-
-
-.. py:class:: Complex128DType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
+   Bases: :py:obj:`numpy.dtypes._ComplexAbstractDType`
 
 
    DType class corresponding to the scalar type and dtype of the same name.
@@ -304,10 +273,9 @@ Module Contents
    information.
 
 
+.. py:class:: Complex128DType
 
-.. py:class:: Complex64DType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
+   Bases: :py:obj:`numpy.dtypes._ComplexAbstractDType`
 
 
    DType class corresponding to the scalar type and dtype of the same name.
@@ -316,144 +284,78 @@ Module Contents
    dtype instances and :ref:`arrays.dtypes` for additional
    information.
 
+
+.. py:class:: Complex64DType
+
+   Bases: :py:obj:`numpy.dtypes._ComplexAbstractDType`
+
+
+   DType class corresponding to the scalar type and dtype of the same name.
+
+   Please see `numpy.dtype` for the typical way to create
+   dtype instances and :ref:`arrays.dtypes` for additional
+   information.
 
 
 .. py:class:: DType
 
-   An enumeration.
-
-
-
    .. py:method:: BIGINT(*args, **kwargs)
-
-      An enumeration.
-
-
 
 
    .. py:method:: BOOL(*args, **kwargs)
 
-      An enumeration.
-
-
-
 
    .. py:method:: COMPLEX128(*args, **kwargs)
-
-      An enumeration.
-
-
 
 
    .. py:method:: COMPLEX64(*args, **kwargs)
 
-      An enumeration.
-
-
-
 
    .. py:method:: FLOAT(*args, **kwargs)
-
-      An enumeration.
-
-
 
 
    .. py:method:: FLOAT32(*args, **kwargs)
 
-      An enumeration.
-
-
-
 
    .. py:method:: FLOAT64(*args, **kwargs)
-
-      An enumeration.
-
-
 
 
    .. py:method:: INT(*args, **kwargs)
 
-      An enumeration.
-
-
-
 
    .. py:method:: INT16(*args, **kwargs)
-
-      An enumeration.
-
-
 
 
    .. py:method:: INT32(*args, **kwargs)
 
-      An enumeration.
-
-
-
 
    .. py:method:: INT64(*args, **kwargs)
-
-      An enumeration.
-
-
 
 
    .. py:method:: INT8(*args, **kwargs)
 
-      An enumeration.
-
-
-
 
    .. py:method:: STR(*args, **kwargs)
-
-      An enumeration.
-
-
 
 
    .. py:method:: UINT(*args, **kwargs)
 
-      An enumeration.
-
-
-
 
    .. py:method:: UINT16(*args, **kwargs)
-
-      An enumeration.
-
-
 
 
    .. py:method:: UINT32(*args, **kwargs)
 
-      An enumeration.
-
-
-
 
    .. py:method:: UINT64(*args, **kwargs)
 
-      An enumeration.
-
-
-
 
    .. py:method:: UINT8(*args, **kwargs)
-
-      An enumeration.
-
-
 
 
    .. py:method:: name(*args, **kwargs)
 
       The name of the Enum member.
-
 
 
 
@@ -463,154 +365,113 @@ Module Contents
 
 
 
-
 .. py:class:: DTypeObjects
-
-   frozenset() -> empty frozenset object
-   frozenset(iterable) -> frozenset object
 
    Build an immutable unordered collection of unique elements.
 
 
-
-   .. py:method:: copy(*args, **kwargs)
+   .. py:method:: copy()
 
       Return a shallow copy of a set.
 
 
 
+   .. py:method:: difference(*others)
 
-   .. py:method:: difference(*args, **kwargs)
-
-      Return the difference of two or more sets as a new set.
-
-      (i.e. all elements that are in this set but not the others.)
+      Return a new set with elements in the set that are not in the others.
 
 
 
+   .. py:method:: intersection(*others)
 
-   .. py:method:: intersection(*args, **kwargs)
-
-      Return the intersection of two sets as a new set.
-
-      (i.e. all elements that are in both sets.)
+      Return a new set with elements common to the set and all others.
 
 
 
-
-   .. py:method:: isdisjoint(*args, **kwargs)
+   .. py:method:: isdisjoint(other, /)
 
       Return True if two sets have a null intersection.
 
 
 
-
-   .. py:method:: issubset(*args, **kwargs)
+   .. py:method:: issubset(other, /)
 
       Report whether another set contains this set.
 
 
 
-
-   .. py:method:: issuperset(*args, **kwargs)
+   .. py:method:: issuperset(other, /)
 
       Report whether this set contains another set.
 
 
 
+   .. py:method:: symmetric_difference(other, /)
 
-   .. py:method:: symmetric_difference(*args, **kwargs)
-
-      Return the symmetric difference of two sets as a new set.
-
-      (i.e. all elements that are in exactly one of the sets.)
+      Return a new set with elements in either the set or other but not both.
 
 
 
+   .. py:method:: union(*others)
 
-   .. py:method:: union(*args, **kwargs)
-
-      Return the union of sets as a new set.
-
-      (i.e. all elements that are in either set.)
-
+      Return a new set with elements from the set and all others.
 
 
 
 .. py:class:: DTypes
 
-   frozenset() -> empty frozenset object
-   frozenset(iterable) -> frozenset object
-
    Build an immutable unordered collection of unique elements.
 
 
-
-   .. py:method:: copy(*args, **kwargs)
+   .. py:method:: copy()
 
       Return a shallow copy of a set.
 
 
 
+   .. py:method:: difference(*others)
 
-   .. py:method:: difference(*args, **kwargs)
-
-      Return the difference of two or more sets as a new set.
-
-      (i.e. all elements that are in this set but not the others.)
+      Return a new set with elements in the set that are not in the others.
 
 
 
+   .. py:method:: intersection(*others)
 
-   .. py:method:: intersection(*args, **kwargs)
-
-      Return the intersection of two sets as a new set.
-
-      (i.e. all elements that are in both sets.)
+      Return a new set with elements common to the set and all others.
 
 
 
-
-   .. py:method:: isdisjoint(*args, **kwargs)
+   .. py:method:: isdisjoint(other, /)
 
       Return True if two sets have a null intersection.
 
 
 
-
-   .. py:method:: issubset(*args, **kwargs)
+   .. py:method:: issubset(other, /)
 
       Report whether another set contains this set.
 
 
 
-
-   .. py:method:: issuperset(*args, **kwargs)
+   .. py:method:: issuperset(other, /)
 
       Report whether this set contains another set.
 
 
 
+   .. py:method:: symmetric_difference(other, /)
 
-   .. py:method:: symmetric_difference(*args, **kwargs)
-
-      Return the symmetric difference of two sets as a new set.
-
-      (i.e. all elements that are in exactly one of the sets.)
+      Return a new set with elements in either the set or other but not both.
 
 
 
+   .. py:method:: union(*others)
 
-   .. py:method:: union(*args, **kwargs)
-
-      Return the union of sets as a new set.
-
-      (i.e. all elements that are in either set.)
+      Return a new set with elements from the set and all others.
 
 
 
-
-.. py:class:: DateTime64DType(obj, align=False, copy=False)
+.. py:class:: DateTime64DType
 
    Bases: :py:obj:`numpy.dtype`
 
@@ -620,59 +481,52 @@ Module Contents
    Please see `numpy.dtype` for the typical way to create
    dtype instances and :ref:`arrays.dtypes` for additional
    information.
-
 
 
 .. py:class:: Enum
 
-   Generic enumeration.
+   Create a collection of name/value pairs.
 
-   Derive from this class to define new enumerations.
+   Example enumeration:
 
+   >>> class Color(Enum):
+   ...     RED = 1
+   ...     BLUE = 2
+   ...     GREEN = 3
 
+   Access them by:
 
-.. py:class:: Float16DType(obj, align=False, copy=False)
+   - attribute access:
 
-   Bases: :py:obj:`numpy.dtype`
+     >>> Color.RED
+     <Color.RED: 1>
 
+   - value lookup:
 
-   DType class corresponding to the scalar type and dtype of the same name.
+     >>> Color(1)
+     <Color.RED: 1>
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   - name lookup:
 
+     >>> Color['RED']
+     <Color.RED: 1>
 
+   Enumerations can be iterated over, and know how many members they have:
 
-.. py:class:: Float32DType(obj, align=False, copy=False)
+   >>> len(Color)
+   3
 
-   Bases: :py:obj:`numpy.dtype`
+   >>> list(Color)
+   [<Color.RED: 1>, <Color.BLUE: 2>, <Color.GREEN: 3>]
 
-
-   DType class corresponding to the scalar type and dtype of the same name.
-
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
-
-
-
-.. py:class:: Float64DType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
-
-
-   DType class corresponding to the scalar type and dtype of the same name.
-
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   Methods can be added to enumerations, and members can have their own
+   attributes -- see the documentation for details.
 
 
 
-.. py:class:: Int16DType(obj, align=False, copy=False)
+.. py:class:: Float16DType
 
-   Bases: :py:obj:`numpy.dtype`
+   Bases: :py:obj:`numpy.dtypes._FloatAbstractDType`
 
 
    DType class corresponding to the scalar type and dtype of the same name.
@@ -682,23 +536,9 @@ Module Contents
    information.
 
 
+.. py:class:: Float32DType
 
-.. py:class:: Int32DType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
-
-
-   DType class corresponding to the scalar type and dtype of the same name.
-
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
-
-
-
-.. py:class:: Int64DType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
+   Bases: :py:obj:`numpy.dtypes._FloatAbstractDType`
 
 
    DType class corresponding to the scalar type and dtype of the same name.
@@ -708,23 +548,9 @@ Module Contents
    information.
 
 
+.. py:class:: Float64DType
 
-.. py:class:: Int8DType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
-
-
-   DType class corresponding to the scalar type and dtype of the same name.
-
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
-
-
-
-.. py:class:: IntDType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
+   Bases: :py:obj:`numpy.dtypes._FloatAbstractDType`
 
 
    DType class corresponding to the scalar type and dtype of the same name.
@@ -734,23 +560,9 @@ Module Contents
    information.
 
 
+.. py:class:: Int16DType
 
-.. py:class:: LongDType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
-
-
-   DType class corresponding to the scalar type and dtype of the same name.
-
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
-
-
-
-.. py:class:: LongDoubleDType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
    DType class corresponding to the scalar type and dtype of the same name.
@@ -760,10 +572,9 @@ Module Contents
    information.
 
 
+.. py:class:: Int32DType
 
-.. py:class:: LongLongDType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
    DType class corresponding to the scalar type and dtype of the same name.
@@ -772,6 +583,77 @@ Module Contents
    dtype instances and :ref:`arrays.dtypes` for additional
    information.
 
+
+.. py:class:: Int64DType
+
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
+
+
+   DType class corresponding to the scalar type and dtype of the same name.
+
+   Please see `numpy.dtype` for the typical way to create
+   dtype instances and :ref:`arrays.dtypes` for additional
+   information.
+
+
+.. py:class:: Int8DType
+
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
+
+
+   DType class corresponding to the scalar type and dtype of the same name.
+
+   Please see `numpy.dtype` for the typical way to create
+   dtype instances and :ref:`arrays.dtypes` for additional
+   information.
+
+
+.. py:class:: IntDType
+
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
+
+
+   DType class corresponding to the scalar type and dtype of the same name.
+
+   Please see `numpy.dtype` for the typical way to create
+   dtype instances and :ref:`arrays.dtypes` for additional
+   information.
+
+
+.. py:class:: LongDType
+
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
+
+
+   DType class corresponding to the scalar type and dtype of the same name.
+
+   Please see `numpy.dtype` for the typical way to create
+   dtype instances and :ref:`arrays.dtypes` for additional
+   information.
+
+
+.. py:class:: LongDoubleDType
+
+   Bases: :py:obj:`numpy.dtypes._FloatAbstractDType`
+
+
+   DType class corresponding to the scalar type and dtype of the same name.
+
+   Please see `numpy.dtype` for the typical way to create
+   dtype instances and :ref:`arrays.dtypes` for additional
+   information.
+
+
+.. py:class:: LongLongDType
+
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
+
+
+   DType class corresponding to the scalar type and dtype of the same name.
+
+   Please see `numpy.dtype` for the typical way to create
+   dtype instances and :ref:`arrays.dtypes` for additional
+   information.
 
 
 .. py:class:: NUMBER_FORMAT_STRINGS
@@ -787,18 +669,15 @@ Module Contents
        in the keyword argument list.  For example:  dict(one=1, two=2)
 
 
+   .. py:method:: clear()
 
-   .. py:method:: clear(*args, **kwargs)
-
-      D.clear() -> None.  Remove all items from D.
-
+      Remove all items from the dict.
 
 
 
-   .. py:method:: copy(*args, **kwargs)
+   .. py:method:: copy()
 
-      D.copy() -> a shallow copy of D
-
+      Return a shallow copy of the dict.
 
 
 
@@ -808,25 +687,21 @@ Module Contents
 
 
 
-
    .. py:method:: get(key, default=None, /)
 
       Return the value for key if key is in the dictionary, else default.
 
 
 
+   .. py:method:: items()
 
-   .. py:method:: items(*args, **kwargs)
-
-      D.items() -> a set-like object providing a view on D's items
-
+      Return a set-like object providing a view on the dict's items.
 
 
 
-   .. py:method:: keys(*args, **kwargs)
+   .. py:method:: keys()
 
-      D.keys() -> a set-like object providing a view on D's keys
-
+      Return a set-like object providing a view on the dict's keys.
 
 
 
@@ -834,8 +709,8 @@ Module Contents
 
       D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
 
-      If key is not found, default is returned if given, otherwise KeyError is raised
-
+      If the key is not found, return the default if given; otherwise,
+      raise a KeyError.
 
 
 
@@ -848,7 +723,6 @@ Module Contents
 
 
 
-
    .. py:method:: setdefault(key, default=None, /)
 
       Insert key with a value of default if key is not in the dictionary.
@@ -857,98 +731,75 @@ Module Contents
 
 
 
-
    .. py:method:: update(*args, **kwargs)
 
-      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
-      If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+      D.update([E, ]**F) -> None.  Update D from mapping/iterable E and F.
+      If E is present and has a .keys() method, then does:  for k in E.keys(): D[k] = E[k]
       If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
       In either case, this is followed by: for k in F:  D[k] = F[k]
 
 
 
+   .. py:method:: values()
 
-   .. py:method:: values(*args, **kwargs)
-
-      D.values() -> an object providing a view on D's values
-
+      Return an object providing a view on the dict's values.
 
 
 
 .. py:class:: NumericDTypes
 
-   frozenset() -> empty frozenset object
-   frozenset(iterable) -> frozenset object
-
    Build an immutable unordered collection of unique elements.
 
 
-
-   .. py:method:: copy(*args, **kwargs)
+   .. py:method:: copy()
 
       Return a shallow copy of a set.
 
 
 
+   .. py:method:: difference(*others)
 
-   .. py:method:: difference(*args, **kwargs)
-
-      Return the difference of two or more sets as a new set.
-
-      (i.e. all elements that are in this set but not the others.)
+      Return a new set with elements in the set that are not in the others.
 
 
 
+   .. py:method:: intersection(*others)
 
-   .. py:method:: intersection(*args, **kwargs)
-
-      Return the intersection of two sets as a new set.
-
-      (i.e. all elements that are in both sets.)
+      Return a new set with elements common to the set and all others.
 
 
 
-
-   .. py:method:: isdisjoint(*args, **kwargs)
+   .. py:method:: isdisjoint(other, /)
 
       Return True if two sets have a null intersection.
 
 
 
-
-   .. py:method:: issubset(*args, **kwargs)
+   .. py:method:: issubset(other, /)
 
       Report whether another set contains this set.
 
 
 
-
-   .. py:method:: issuperset(*args, **kwargs)
+   .. py:method:: issuperset(other, /)
 
       Report whether this set contains another set.
 
 
 
+   .. py:method:: symmetric_difference(other, /)
 
-   .. py:method:: symmetric_difference(*args, **kwargs)
-
-      Return the symmetric difference of two sets as a new set.
-
-      (i.e. all elements that are in exactly one of the sets.)
+      Return a new set with elements in either the set or other but not both.
 
 
 
+   .. py:method:: union(*others)
 
-   .. py:method:: union(*args, **kwargs)
-
-      Return the union of sets as a new set.
-
-      (i.e. all elements that are in either set.)
+      Return a new set with elements from the set and all others.
 
 
 
-
-.. py:class:: ObjectDType(obj, align=False, copy=False)
+.. py:class:: ObjectDType
 
    Bases: :py:obj:`numpy.dtype`
 
@@ -960,77 +811,56 @@ Module Contents
    information.
 
 
-
 .. py:class:: ScalarDTypes
-
-   frozenset() -> empty frozenset object
-   frozenset(iterable) -> frozenset object
 
    Build an immutable unordered collection of unique elements.
 
 
-
-   .. py:method:: copy(*args, **kwargs)
+   .. py:method:: copy()
 
       Return a shallow copy of a set.
 
 
 
+   .. py:method:: difference(*others)
 
-   .. py:method:: difference(*args, **kwargs)
-
-      Return the difference of two or more sets as a new set.
-
-      (i.e. all elements that are in this set but not the others.)
+      Return a new set with elements in the set that are not in the others.
 
 
 
+   .. py:method:: intersection(*others)
 
-   .. py:method:: intersection(*args, **kwargs)
-
-      Return the intersection of two sets as a new set.
-
-      (i.e. all elements that are in both sets.)
+      Return a new set with elements common to the set and all others.
 
 
 
-
-   .. py:method:: isdisjoint(*args, **kwargs)
+   .. py:method:: isdisjoint(other, /)
 
       Return True if two sets have a null intersection.
 
 
 
-
-   .. py:method:: issubset(*args, **kwargs)
+   .. py:method:: issubset(other, /)
 
       Report whether another set contains this set.
 
 
 
-
-   .. py:method:: issuperset(*args, **kwargs)
+   .. py:method:: issuperset(other, /)
 
       Report whether this set contains another set.
 
 
 
+   .. py:method:: symmetric_difference(other, /)
 
-   .. py:method:: symmetric_difference(*args, **kwargs)
-
-      Return the symmetric difference of two sets as a new set.
-
-      (i.e. all elements that are in exactly one of the sets.)
+      Return a new set with elements in either the set or other but not both.
 
 
 
+   .. py:method:: union(*others)
 
-   .. py:method:: union(*args, **kwargs)
-
-      Return the union of sets as a new set.
-
-      (i.e. all elements that are in either set.)
-
+      Return a new set with elements from the set and all others.
 
 
 
@@ -1047,18 +877,15 @@ Module Contents
        in the keyword argument list.  For example:  dict(one=1, two=2)
 
 
+   .. py:method:: clear()
 
-   .. py:method:: clear(*args, **kwargs)
-
-      D.clear() -> None.  Remove all items from D.
-
+      Remove all items from the dict.
 
 
 
-   .. py:method:: copy(*args, **kwargs)
+   .. py:method:: copy()
 
-      D.copy() -> a shallow copy of D
-
+      Return a shallow copy of the dict.
 
 
 
@@ -1068,25 +895,21 @@ Module Contents
 
 
 
-
    .. py:method:: get(key, default=None, /)
 
       Return the value for key if key is in the dictionary, else default.
 
 
 
+   .. py:method:: items()
 
-   .. py:method:: items(*args, **kwargs)
-
-      D.items() -> a set-like object providing a view on D's items
-
+      Return a set-like object providing a view on the dict's items.
 
 
 
-   .. py:method:: keys(*args, **kwargs)
+   .. py:method:: keys()
 
-      D.keys() -> a set-like object providing a view on D's keys
-
+      Return a set-like object providing a view on the dict's keys.
 
 
 
@@ -1094,8 +917,8 @@ Module Contents
 
       D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
 
-      If key is not found, default is returned if given, otherwise KeyError is raised
-
+      If the key is not found, return the default if given; otherwise,
+      raise a KeyError.
 
 
 
@@ -1108,7 +931,6 @@ Module Contents
 
 
 
-
    .. py:method:: setdefault(key, default=None, /)
 
       Insert key with a value of default if key is not in the dictionary.
@@ -1117,25 +939,34 @@ Module Contents
 
 
 
-
    .. py:method:: update(*args, **kwargs)
 
-      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
-      If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+      D.update([E, ]**F) -> None.  Update D from mapping/iterable E and F.
+      If E is present and has a .keys() method, then does:  for k in E.keys(): D[k] = E[k]
       If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
       In either case, this is followed by: for k in F:  D[k] = F[k]
 
 
 
+   .. py:method:: values()
 
-   .. py:method:: values(*args, **kwargs)
-
-      D.values() -> an object providing a view on D's values
-
+      Return an object providing a view on the dict's values.
 
 
 
-.. py:class:: ShortDType(obj, align=False, copy=False)
+.. py:class:: ShortDType
+
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
+
+
+   DType class corresponding to the scalar type and dtype of the same name.
+
+   Please see `numpy.dtype` for the typical way to create
+   dtype instances and :ref:`arrays.dtypes` for additional
+   information.
+
+
+.. py:class:: StrDType
 
    Bases: :py:obj:`numpy.dtype`
 
@@ -1147,21 +978,7 @@ Module Contents
    information.
 
 
-
-.. py:class:: StrDType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
-
-
-   DType class corresponding to the scalar type and dtype of the same name.
-
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
-
-
-
-.. py:class:: TimeDelta64DType(obj, align=False, copy=False)
+.. py:class:: TimeDelta64DType
 
    Bases: :py:obj:`numpy.dtype`
 
@@ -1173,23 +990,9 @@ Module Contents
    information.
 
 
+.. py:class:: UByteDType
 
-.. py:class:: UByteDType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
-
-
-   DType class corresponding to the scalar type and dtype of the same name.
-
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
-
-
-
-.. py:class:: UInt16DType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
    DType class corresponding to the scalar type and dtype of the same name.
@@ -1199,23 +1002,9 @@ Module Contents
    information.
 
 
+.. py:class:: UInt16DType
 
-.. py:class:: UInt32DType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
-
-
-   DType class corresponding to the scalar type and dtype of the same name.
-
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
-
-
-
-.. py:class:: UInt64DType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
    DType class corresponding to the scalar type and dtype of the same name.
@@ -1225,23 +1014,9 @@ Module Contents
    information.
 
 
+.. py:class:: UInt32DType
 
-.. py:class:: UInt8DType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
-
-
-   DType class corresponding to the scalar type and dtype of the same name.
-
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
-
-
-
-.. py:class:: UIntDType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
    DType class corresponding to the scalar type and dtype of the same name.
@@ -1251,23 +1026,9 @@ Module Contents
    information.
 
 
+.. py:class:: UInt64DType
 
-.. py:class:: ULongDType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
-
-
-   DType class corresponding to the scalar type and dtype of the same name.
-
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
-
-
-
-.. py:class:: ULongLongDType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
    DType class corresponding to the scalar type and dtype of the same name.
@@ -1277,10 +1038,9 @@ Module Contents
    information.
 
 
+.. py:class:: UInt8DType
 
-.. py:class:: UShortDType(obj, align=False, copy=False)
-
-   Bases: :py:obj:`numpy.dtype`
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
    DType class corresponding to the scalar type and dtype of the same name.
@@ -1289,6 +1049,53 @@ Module Contents
    dtype instances and :ref:`arrays.dtypes` for additional
    information.
 
+
+.. py:class:: UIntDType
+
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
+
+
+   DType class corresponding to the scalar type and dtype of the same name.
+
+   Please see `numpy.dtype` for the typical way to create
+   dtype instances and :ref:`arrays.dtypes` for additional
+   information.
+
+
+.. py:class:: ULongDType
+
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
+
+
+   DType class corresponding to the scalar type and dtype of the same name.
+
+   Please see `numpy.dtype` for the typical way to create
+   dtype instances and :ref:`arrays.dtypes` for additional
+   information.
+
+
+.. py:class:: ULongLongDType
+
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
+
+
+   DType class corresponding to the scalar type and dtype of the same name.
+
+   Please see `numpy.dtype` for the typical way to create
+   dtype instances and :ref:`arrays.dtypes` for additional
+   information.
+
+
+.. py:class:: UShortDType
+
+   Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
+
+
+   DType class corresponding to the scalar type and dtype of the same name.
+
+   Please see `numpy.dtype` for the typical way to create
+   dtype instances and :ref:`arrays.dtypes` for additional
+   information.
 
 
 .. py:class:: Union
@@ -1298,33 +1105,36 @@ Module Contents
 
    Union type; Union[X, Y] means either X or Y.
 
-       To define a union, use e.g. Union[int, str].  Details:
-       - The arguments must be types and there must be at least one.
-       - None as an argument is a special case and is replaced by
-         type(None).
-       - Unions of unions are flattened, e.g.::
+   On Python 3.10 and higher, the | operator
+   can also be used to denote unions;
+   X | Y means the same thing to the type checker as Union[X, Y].
 
-           Union[Union[int, str], float] == Union[int, str, float]
+   To define a union, use e.g. Union[int, str]. Details:
+   - The arguments must be types and there must be at least one.
+   - None as an argument is a special case and is replaced by
+     type(None).
+   - Unions of unions are flattened, e.g.::
 
-       - Unions of a single argument vanish, e.g.::
+       assert Union[Union[int, str], float] == Union[int, str, float]
 
-           Union[int] == int  # The constructor actually returns int
+   - Unions of a single argument vanish, e.g.::
 
-       - Redundant arguments are skipped, e.g.::
+       assert Union[int] == int  # The constructor actually returns int
 
-           Union[int, str, int] == Union[int, str]
+   - Redundant arguments are skipped, e.g.::
 
-       - When comparing unions, the argument order is ignored, e.g.::
+       assert Union[int, str, int] == Union[int, str]
 
-           Union[int, str] == Union[str, int]
+   - When comparing unions, the argument order is ignored, e.g.::
 
-       - You cannot subclass or instantiate a union.
-       - You can use Optional[X] as a shorthand for Union[X, None].
+       assert Union[int, str] == Union[str, int]
+
+   - You cannot subclass or instantiate a union.
+   - You can use Optional[X] as a shorthand for Union[X, None].
 
 
 
-
-.. py:class:: VoidDType(obj, align=False, copy=False)
+.. py:class:: VoidDType
 
    Bases: :py:obj:`numpy.dtype`
 
@@ -1336,19 +1146,25 @@ Module Contents
    information.
 
 
+.. py:class:: all_scalars
 
-.. py:class:: all_scalars(origin, params, *, inst=True, name=None)
-
-   Bases: :py:obj:`_GenericAlias`
+   Bases: :py:obj:`_NotIterable`
 
 
-   The central part of internal API.
+   Mixin to prevent iteration, without being compatible with Iterable.
 
-   This represents a generic version of type 'origin' with type arguments 'params'.
-   There are two kind of these aliases: user defined and special. The special ones
-   are wrappers around builtin collections and ABCs in collections.abc. These must
-   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
-   this is used by e.g. typing.List and typing.Dict.
+   That is, we could do::
+
+       def __iter__(self): raise TypeError()
+
+   But this would make users of this mixin duck type-compatible with
+   collections.abc.Iterable - isinstance(foo, Iterable) would be True.
+
+   Luckily, we can instead prevent iteration by setting __iter__ to None, which
+   is treated specially.
+
+
+   .. py:method:: copy_with(params)
 
 
 .. py:class:: annotations
@@ -1359,7 +1175,7 @@ Module Contents
       int(x, base=10) -> integer
 
       Convert a number or string to an integer, or return 0 if no arguments
-      are given.  If x is a number, return x.__int__().  For floating point
+      are given.  If x is a number, return x.__int__().  For floating-point
       numbers, this truncates towards zero.
 
       If x is not a number or if base is given, then x must be a string,
@@ -1372,14 +1188,12 @@ Module Contents
 
 
 
-
    .. py:method:: getMandatoryRelease()
 
       Return release in which this feature will become mandatory.
 
-              This is a 5-tuple, of the same form as sys.version_info, or, if
-              the feature was dropped, is None.
-
+      This is a 5-tuple, of the same form as sys.version_info, or, if
+      the feature was dropped, or the release date is undetermined, is None.
 
 
 
@@ -1388,21 +1202,14 @@ Module Contents
 
       Return first release in which this feature was recognized.
 
-              This is a 5-tuple, of the same form as sys.version_info.
-
+      This is a 5-tuple, of the same form as sys.version_info.
 
 
 
 
    .. py:method:: mandatory(*args, **kwargs)
 
-      Built-in immutable sequence.
-
-      If no argument is given, the constructor returns an empty tuple.
-      If iterable is specified the tuple is initialized from iterable's items.
-
-      If the argument is a tuple, the return value is the same object.
-
+      The type of the None singleton.
 
 
 
@@ -1414,7 +1221,6 @@ Module Contents
       If iterable is specified the tuple is initialized from iterable's items.
 
       If the argument is a tuple, the return value is the same object.
-
 
 
 
@@ -1432,7 +1238,7 @@ Module Contents
       int(x, base=10) -> integer
 
       Convert a number or string to an integer, or return 0 if no arguments
-      are given.  If x is a number, return x.__int__().  For floating point
+      are given.  If x is a number, return x.__int__().  For floating-point
       numbers, this truncates towards zero.
 
       If x is not a number or if base is given, then x must be a string,
@@ -1442,7 +1248,6 @@ Module Contents
       Base 0 means to interpret the base from the string as an integer literal.
       >>> int('0b100', base=0)
       4
-
 
 
 
@@ -1456,9 +1261,8 @@ Module Contents
       that will be decoded using the given encoding and error handler.
       Otherwise, returns the result of object.__str__() (if defined)
       or repr(object).
-      encoding defaults to sys.getdefaultencoding().
+      encoding defaults to 'utf-8'.
       errors defaults to 'strict'.
-
 
 
 
@@ -1468,7 +1272,7 @@ Module Contents
       int(x, base=10) -> integer
 
       Convert a number or string to an integer, or return 0 if no arguments
-      are given.  If x is a number, return x.__int__().  For floating point
+      are given.  If x is a number, return x.__int__().  For floating-point
       numbers, this truncates towards zero.
 
       If x is not a number or if base is given, then x must be a string,
@@ -1478,7 +1282,6 @@ Module Contents
       Base 0 means to interpret the base from the string as an integer literal.
       >>> int('0b100', base=0)
       4
-
 
 
 
@@ -1493,16 +1296,16 @@ Module Contents
 
 
 
-
    .. py:method:: type(x)
 
 
-.. py:class:: bitType(value)
+.. py:class:: bitType
 
    Bases: :py:obj:`numpy.unsignedinteger`
 
 
-   Unsigned integer type, compatible with C ``unsigned long``.
+   Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit
+       systems.
 
        :Character code: ``'L'``
        :Canonical name: `numpy.uint`
@@ -1510,8 +1313,7 @@ Module Contents
        :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
 
 
-
-   .. py:method:: bit_count(*args, **kwargs)
+   .. py:method:: bit_count(/)
 
       uint64.bit_count() -> int
 
@@ -1525,8 +1327,7 @@ Module Contents
 
 
 
-
-.. py:class:: bool_(value)
+.. py:class:: bool_
 
    Bases: :py:obj:`numpy.generic`
 
@@ -1535,27 +1336,33 @@ Module Contents
 
        .. warning::
 
-          The :class:`bool_` type is not a subclass of the :class:`int_` type
-          (the :class:`bool_` is not even a number type). This is different
+          The :class:`bool` type is not a subclass of the :class:`int_` type
+          (the :class:`bool` is not even a number type). This is different
           than Python's default implementation of :class:`bool` as a
           sub-class of :class:`int`.
 
        :Character code: ``'?'``
 
 
+.. py:class:: bool_scalars
 
-.. py:class:: bool_scalars(origin, params, *, inst=True, name=None)
-
-   Bases: :py:obj:`_GenericAlias`
+   Bases: :py:obj:`_NotIterable`
 
 
-   The central part of internal API.
+   Mixin to prevent iteration, without being compatible with Iterable.
 
-   This represents a generic version of type 'origin' with type arguments 'params'.
-   There are two kind of these aliases: user defined and special. The special ones
-   are wrappers around builtin collections and ABCs in collections.abc. These must
-   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
-   this is used by e.g. typing.List and typing.Dict.
+   That is, we could do::
+
+       def __iter__(self): raise TypeError()
+
+   But this would make users of this mixin duck type-compatible with
+   collections.abc.Iterable - isinstance(foo, Iterable) would be True.
+
+   Luckily, we can instead prevent iteration by setting __iter__ to None, which
+   is treated specially.
+
+
+   .. py:method:: copy_with(params)
 
 
 .. py:function:: can_cast(from_, to) -> bool
@@ -1575,31 +1382,27 @@ Module Contents
 
    Cast a value to a type.
 
-       This returns the value unchanged.  To the type checker this
-       signals that the return value has the designated type, but at
-       runtime we intentionally don't check anything (we want this
-       to be as fast as possible).
+   This returns the value unchanged.  To the type checker this
+   signals that the return value has the designated type, but at
+   runtime we intentionally don't check anything (we want this
+   to be as fast as possible).
 
 
 
-
-.. py:class:: complex128(value)
+.. py:class:: complex128
 
    Bases: :py:obj:`numpy.complexfloating`
 
 
    Complex number type composed of two double-precision floating-point
-       numbers, compatible with Python `complex`.
+       numbers, compatible with Python :class:`complex`.
 
        :Character code: ``'D'``
        :Canonical name: `numpy.cdouble`
-       :Alias: `numpy.cfloat`
-       :Alias: `numpy.complex_`
        :Alias on this platform (Linux x86_64): `numpy.complex128`: Complex number type composed of 2 64-bit-precision floating-point numbers.
 
 
-
-.. py:class:: complex64(value)
+.. py:class:: complex64
 
    Bases: :py:obj:`numpy.complexfloating`
 
@@ -1609,9 +1412,7 @@ Module Contents
 
        :Character code: ``'F'``
        :Canonical name: `numpy.csingle`
-       :Alias: `numpy.singlecomplex`
        :Alias on this platform (Linux x86_64): `numpy.complex64`: Complex number type composed of 2 32-bit-precision floating-point numbers.
-
 
 
 .. py:function:: dtype(dtype)
@@ -1624,7 +1425,7 @@ Module Contents
    :rtype: type
 
 
-.. py:class:: float16(value)
+.. py:class:: float16
 
    Bases: :py:obj:`numpy.floating`
 
@@ -1636,8 +1437,7 @@ Module Contents
        :Alias on this platform (Linux x86_64): `numpy.float16`: 16-bit-precision floating-point number type: sign bit, 5 bits exponent, 10 bits mantissa.
 
 
-
-   .. py:method:: as_integer_ratio(*args, **kwargs)
+   .. py:method:: as_integer_ratio(/)
 
       half.as_integer_ratio() -> (int, int)
 
@@ -1654,8 +1454,7 @@ Module Contents
 
 
 
-
-   .. py:method:: is_integer(*args, **kwargs)
+   .. py:method:: is_integer(/)
 
       half.is_integer() -> bool
 
@@ -1673,8 +1472,7 @@ Module Contents
 
 
 
-
-.. py:class:: float32(value)
+.. py:class:: float32
 
    Bases: :py:obj:`numpy.floating`
 
@@ -1686,8 +1484,7 @@ Module Contents
        :Alias on this platform (Linux x86_64): `numpy.float32`: 32-bit-precision floating-point number type: sign bit, 8 bits exponent, 23 bits mantissa.
 
 
-
-   .. py:method:: as_integer_ratio(*args, **kwargs)
+   .. py:method:: as_integer_ratio(/)
 
       single.as_integer_ratio() -> (int, int)
 
@@ -1704,8 +1501,7 @@ Module Contents
 
 
 
-
-   .. py:method:: is_integer(*args, **kwargs)
+   .. py:method:: is_integer(/)
 
       single.is_integer() -> bool
 
@@ -1723,23 +1519,20 @@ Module Contents
 
 
 
-
-.. py:class:: float64(value)
+.. py:class:: float64
 
    Bases: :py:obj:`numpy.floating`
 
 
-   Double-precision floating-point number type, compatible with Python `float`
-       and C ``double``.
+   Double-precision floating-point number type, compatible with Python
+       :class:`float` and C ``double``.
 
        :Character code: ``'d'``
        :Canonical name: `numpy.double`
-       :Alias: `numpy.float_`
        :Alias on this platform (Linux x86_64): `numpy.float64`: 64-bit precision floating-point number type: sign bit, 11 bits exponent, 52 bits mantissa.
 
 
-
-   .. py:method:: as_integer_ratio(*args, **kwargs)
+   .. py:method:: as_integer_ratio(/)
 
       double.as_integer_ratio() -> (int, int)
 
@@ -1756,7 +1549,6 @@ Module Contents
 
 
 
-
    .. py:method:: fromhex(string, /)
 
       Create a floating-point number from a hexadecimal string.
@@ -1765,7 +1557,6 @@ Module Contents
       2047.984375
       >>> float.fromhex('-0x1p-1074')
       -5e-324
-
 
 
 
@@ -1780,8 +1571,7 @@ Module Contents
 
 
 
-
-   .. py:method:: is_integer(*args, **kwargs)
+   .. py:method:: is_integer(/)
 
       double.is_integer() -> bool
 
@@ -1799,19 +1589,25 @@ Module Contents
 
 
 
+.. py:class:: float_scalars
 
-.. py:class:: float_scalars(origin, params, *, inst=True, name=None)
-
-   Bases: :py:obj:`_GenericAlias`
+   Bases: :py:obj:`_NotIterable`
 
 
-   The central part of internal API.
+   Mixin to prevent iteration, without being compatible with Iterable.
 
-   This represents a generic version of type 'origin' with type arguments 'params'.
-   There are two kind of these aliases: user defined and special. The special ones
-   are wrappers around builtin collections and ABCs in collections.abc. These must
-   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
-   this is used by e.g. typing.List and typing.Dict.
+   That is, we could do::
+
+       def __iter__(self): raise TypeError()
+
+   But this would make users of this mixin duck type-compatible with
+   collections.abc.Iterable - isinstance(foo, Iterable) would be True.
+
+   Luckily, we can instead prevent iteration by setting __iter__ to None, which
+   is treated specially.
+
+
+   .. py:method:: copy_with(params)
 
 
 .. py:function:: get_byteorder(dt: np.dtype) -> str
@@ -1828,6 +1624,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.get_byteorder(ak.dtype(ak.int64))
    '<'
 
@@ -1843,11 +1640,12 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.get_server_byteorder()
    'little'
 
 
-.. py:class:: int16(value)
+.. py:class:: int16
 
    Bases: :py:obj:`numpy.signedinteger`
 
@@ -1859,8 +1657,7 @@ Module Contents
        :Alias on this platform (Linux x86_64): `numpy.int16`: 16-bit signed integer (``-32_768`` to ``32_767``).
 
 
-
-   .. py:method:: bit_count(*args, **kwargs)
+   .. py:method:: bit_count(/)
 
       int16.bit_count() -> int
 
@@ -1876,8 +1673,7 @@ Module Contents
 
 
 
-
-.. py:class:: int32(value)
+.. py:class:: int32
 
    Bases: :py:obj:`numpy.signedinteger`
 
@@ -1889,8 +1685,7 @@ Module Contents
        :Alias on this platform (Linux x86_64): `numpy.int32`: 32-bit signed integer (``-2_147_483_648`` to ``2_147_483_647``).
 
 
-
-   .. py:method:: bit_count(*args, **kwargs)
+   .. py:method:: bit_count(/)
 
       int32.bit_count() -> int
 
@@ -1906,13 +1701,13 @@ Module Contents
 
 
 
-
-.. py:class:: int64(value)
+.. py:class:: int64
 
    Bases: :py:obj:`numpy.signedinteger`
 
 
-   Signed integer type, compatible with Python `int` and C ``long``.
+   Default signed integer type, 64bit on 64bit systems and 32bit on 32bit
+       systems.
 
        :Character code: ``'l'``
        :Canonical name: `numpy.int_`
@@ -1920,8 +1715,7 @@ Module Contents
        :Alias on this platform (Linux x86_64): `numpy.intp`: Signed integer large enough to fit pointer, compatible with C ``intptr_t``.
 
 
-
-   .. py:method:: bit_count(*args, **kwargs)
+   .. py:method:: bit_count(/)
 
       int64.bit_count() -> int
 
@@ -1937,8 +1731,7 @@ Module Contents
 
 
 
-
-.. py:class:: int8(value)
+.. py:class:: int8
 
    Bases: :py:obj:`numpy.signedinteger`
 
@@ -1950,8 +1743,7 @@ Module Contents
        :Alias on this platform (Linux x86_64): `numpy.int8`: 8-bit signed integer (``-128`` to ``127``).
 
 
-
-   .. py:method:: bit_count(*args, **kwargs)
+   .. py:method:: bit_count(/)
 
       int8.bit_count() -> int
 
@@ -1967,92 +1759,78 @@ Module Contents
 
 
 
-
 .. py:class:: intTypes
-
-   frozenset() -> empty frozenset object
-   frozenset(iterable) -> frozenset object
 
    Build an immutable unordered collection of unique elements.
 
 
-
-   .. py:method:: copy(*args, **kwargs)
+   .. py:method:: copy()
 
       Return a shallow copy of a set.
 
 
 
+   .. py:method:: difference(*others)
 
-   .. py:method:: difference(*args, **kwargs)
-
-      Return the difference of two or more sets as a new set.
-
-      (i.e. all elements that are in this set but not the others.)
+      Return a new set with elements in the set that are not in the others.
 
 
 
+   .. py:method:: intersection(*others)
 
-   .. py:method:: intersection(*args, **kwargs)
-
-      Return the intersection of two sets as a new set.
-
-      (i.e. all elements that are in both sets.)
+      Return a new set with elements common to the set and all others.
 
 
 
-
-   .. py:method:: isdisjoint(*args, **kwargs)
+   .. py:method:: isdisjoint(other, /)
 
       Return True if two sets have a null intersection.
 
 
 
-
-   .. py:method:: issubset(*args, **kwargs)
+   .. py:method:: issubset(other, /)
 
       Report whether another set contains this set.
 
 
 
-
-   .. py:method:: issuperset(*args, **kwargs)
+   .. py:method:: issuperset(other, /)
 
       Report whether this set contains another set.
 
 
 
+   .. py:method:: symmetric_difference(other, /)
 
-   .. py:method:: symmetric_difference(*args, **kwargs)
-
-      Return the symmetric difference of two sets as a new set.
-
-      (i.e. all elements that are in exactly one of the sets.)
+      Return a new set with elements in either the set or other but not both.
 
 
 
+   .. py:method:: union(*others)
 
-   .. py:method:: union(*args, **kwargs)
-
-      Return the union of sets as a new set.
-
-      (i.e. all elements that are in either set.)
+      Return a new set with elements from the set and all others.
 
 
 
+.. py:class:: int_scalars
 
-.. py:class:: int_scalars(origin, params, *, inst=True, name=None)
-
-   Bases: :py:obj:`_GenericAlias`
+   Bases: :py:obj:`_NotIterable`
 
 
-   The central part of internal API.
+   Mixin to prevent iteration, without being compatible with Iterable.
 
-   This represents a generic version of type 'origin' with type arguments 'params'.
-   There are two kind of these aliases: user defined and special. The special ones
-   are wrappers around builtin collections and ABCs in collections.abc. These must
-   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
-   this is used by e.g. typing.List and typing.Dict.
+   That is, we could do::
+
+       def __iter__(self): raise TypeError()
+
+   But this would make users of this mixin duck type-compatible with
+   collections.abc.Iterable - isinstance(foo, Iterable) would be True.
+
+   Luckily, we can instead prevent iteration by setting __iter__ to None, which
+   is treated specially.
+
+
+   .. py:method:: copy_with(params)
 
 
 .. py:function:: isSupportedBool(num)
@@ -2067,9 +1845,10 @@ Module Contents
 
    .. rubric:: Examples
 
-   >>> ak.isSupportedBool(ak.int64)
+   >>> import arkouda as ak
+   >>> ak.isSupportedBool("True")
    False
-   >>> ak.isSupportedBool(bool)
+   >>> ak.isSupportedBool(True)
    True
 
 
@@ -2085,7 +1864,8 @@ Module Contents
 
    .. rubric:: Examples
 
-   >>> ak.isSupportedDType(ak.int64)
+   >>> import arkouda as ak
+   >>> ak.isSupportedDType(ak.int64(64))
    True
    >>> ak.isSupportedDType(np.complex128(1+2j))
    False
@@ -2103,9 +1883,10 @@ Module Contents
 
    .. rubric:: Examples
 
-   >>> ak.isSupportedFloat(ak.int64)
+   >>> import arkouda as ak
+   >>> ak.isSupportedFloat(56)
    False
-   >>> ak.isSupportedFloat(ak.float64)
+   >>> ak.isSupportedFloat(56.7)
    True
 
 
@@ -2121,9 +1902,10 @@ Module Contents
 
    .. rubric:: Examples
 
-   >>> ak.isSupportedInt(ak.int64)
+   >>> import arkouda as ak
+   >>> ak.isSupportedInt(79)
    True
-   >>> ak.isSupportedInt(ak.float64)
+   >>> ak.isSupportedInt(54.9)
    False
 
 
@@ -2139,52 +1921,74 @@ Module Contents
 
    .. rubric:: Examples
 
-   >>> ak.isSupportedNumber(ak.int64)
+   >>> import arkouda as ak
+   >>> ak.isSupportedNumber(45.9)
    True
-   >>> ak.isSupportedNumber(ak.str_)
+   >>> ak.isSupportedNumber("string")
    False
 
 
-.. py:class:: numeric_and_bool_scalars(origin, params, *, inst=True, name=None)
+.. py:class:: numeric_and_bool_scalars
 
-   Bases: :py:obj:`_GenericAlias`
-
-
-   The central part of internal API.
-
-   This represents a generic version of type 'origin' with type arguments 'params'.
-   There are two kind of these aliases: user defined and special. The special ones
-   are wrappers around builtin collections and ABCs in collections.abc. These must
-   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
-   this is used by e.g. typing.List and typing.Dict.
+   Bases: :py:obj:`_NotIterable`
 
 
-.. py:class:: numeric_scalars(origin, params, *, inst=True, name=None)
+   Mixin to prevent iteration, without being compatible with Iterable.
 
-   Bases: :py:obj:`_GenericAlias`
+   That is, we could do::
 
+       def __iter__(self): raise TypeError()
 
-   The central part of internal API.
+   But this would make users of this mixin duck type-compatible with
+   collections.abc.Iterable - isinstance(foo, Iterable) would be True.
 
-   This represents a generic version of type 'origin' with type arguments 'params'.
-   There are two kind of these aliases: user defined and special. The special ones
-   are wrappers around builtin collections and ABCs in collections.abc. These must
-   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
-   this is used by e.g. typing.List and typing.Dict.
-
-
-.. py:class:: numpy_scalars(origin, params, *, inst=True, name=None)
-
-   Bases: :py:obj:`_GenericAlias`
+   Luckily, we can instead prevent iteration by setting __iter__ to None, which
+   is treated specially.
 
 
-   The central part of internal API.
+   .. py:method:: copy_with(params)
 
-   This represents a generic version of type 'origin' with type arguments 'params'.
-   There are two kind of these aliases: user defined and special. The special ones
-   are wrappers around builtin collections and ABCs in collections.abc. These must
-   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
-   this is used by e.g. typing.List and typing.Dict.
+
+.. py:class:: numeric_scalars
+
+   Bases: :py:obj:`_NotIterable`
+
+
+   Mixin to prevent iteration, without being compatible with Iterable.
+
+   That is, we could do::
+
+       def __iter__(self): raise TypeError()
+
+   But this would make users of this mixin duck type-compatible with
+   collections.abc.Iterable - isinstance(foo, Iterable) would be True.
+
+   Luckily, we can instead prevent iteration by setting __iter__ to None, which
+   is treated specially.
+
+
+   .. py:method:: copy_with(params)
+
+
+.. py:class:: numpy_scalars
+
+   Bases: :py:obj:`_NotIterable`
+
+
+   Mixin to prevent iteration, without being compatible with Iterable.
+
+   That is, we could do::
+
+       def __iter__(self): raise TypeError()
+
+   But this would make users of this mixin duck type-compatible with
+   collections.abc.Iterable - isinstance(foo, Iterable) would be True.
+
+   Luckily, we can instead prevent iteration by setting __iter__ to None, which
+   is treated specially.
+
+
+   .. py:method:: copy_with(params)
 
 
 .. py:function:: resolve_scalar_dtype(val: object) -> str
@@ -2199,6 +2003,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> ak.resolve_scalar_dtype(1)
    'int64'
    >>> ak.resolve_scalar_dtype(2.0)
@@ -2215,8 +2020,8 @@ Module Contents
        >>> s
        'abc'
 
-       Unlike the builtin `str`, this supports the :ref:`python:bufferobjects`, exposing its
-       contents as UCS4:
+       Unlike the builtin :class:`str`, this supports the
+       :ref:`python:bufferobjects`, exposing its contents as UCS4:
 
        >>> m = memoryview(np.str_("abc"))
        >>> m.format
@@ -2225,8 +2030,6 @@ Module Contents
        b'a\x00\x00\x00b\x00\x00\x00c\x00\x00\x00'
 
        :Character code: ``'U'``
-       :Alias: `numpy.unicode_`
-
 
 
    .. py:method:: T(*args, **kwargs)
@@ -2234,7 +2037,6 @@ Module Contents
       Scalar attribute identical to the corresponding array attribute.
 
           Please see `ndarray.T`.
-
 
 
 
@@ -2246,13 +2048,11 @@ Module Contents
 
 
 
-
    .. py:method:: any(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.any`.
-
 
 
 
@@ -2264,13 +2064,11 @@ Module Contents
 
 
 
-
    .. py:method:: argmin(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.argmin`.
-
 
 
 
@@ -2282,13 +2080,11 @@ Module Contents
 
 
 
-
    .. py:method:: astype(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.astype`.
-
 
 
 
@@ -2300,13 +2096,11 @@ Module Contents
 
 
 
-
    .. py:method:: byteswap(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.byteswap`.
-
 
 
 
@@ -2318,7 +2112,6 @@ Module Contents
 
 
 
-
    .. py:method:: clip(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
@@ -2327,13 +2120,11 @@ Module Contents
 
 
 
-
    .. py:method:: compress(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.compress`.
-
 
 
 
@@ -2348,13 +2139,11 @@ Module Contents
 
 
 
-
    .. py:method:: copy(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.copy`.
-
 
 
 
@@ -2366,7 +2155,6 @@ Module Contents
 
 
 
-
    .. py:method:: cumsum(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
@@ -2375,12 +2163,13 @@ Module Contents
 
 
 
-
    .. py:method:: data(*args, **kwargs)
 
       Pointer to start of data.
 
 
+
+   .. py:method:: device(*args, **kwargs)
 
 
    .. py:method:: diagonal(*args, **kwargs)
@@ -2391,11 +2180,9 @@ Module Contents
 
 
 
-
    .. py:method:: dtype(*args, **kwargs)
 
       Get array data-descriptor.
-
 
 
 
@@ -2407,13 +2194,11 @@ Module Contents
 
 
 
-
    .. py:method:: dumps(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.dumps`.
-
 
 
 
@@ -2425,18 +2210,15 @@ Module Contents
 
 
 
-
    .. py:method:: flags(*args, **kwargs)
 
       The integer value of flags.
 
 
 
-
    .. py:method:: flat(*args, **kwargs)
 
       A 1-D view of the scalar.
-
 
 
 
@@ -2448,7 +2230,6 @@ Module Contents
 
 
 
-
    .. py:method:: getfield(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
@@ -2457,11 +2238,9 @@ Module Contents
 
 
 
-
    .. py:method:: imag(*args, **kwargs)
 
       The imaginary part of the scalar.
-
 
 
 
@@ -2473,20 +2252,12 @@ Module Contents
 
 
 
-
    .. py:method:: itemset(*args, **kwargs)
-
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.itemset`.
-
-
 
 
    .. py:method:: itemsize(*args, **kwargs)
 
       The length of one element in bytes.
-
 
 
 
@@ -2498,13 +2269,11 @@ Module Contents
 
 
 
-
    .. py:method:: mean(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.mean`.
-
 
 
 
@@ -2516,12 +2285,7 @@ Module Contents
 
 
 
-
    .. py:method:: nbytes(*args, **kwargs)
-
-      The length of the scalar in bytes.
-
-
 
 
    .. py:method:: ndim(*args, **kwargs)
@@ -2530,37 +2294,7 @@ Module Contents
 
 
 
-
    .. py:method:: newbyteorder(*args, **kwargs)
-
-      newbyteorder(new_order='S', /)
-
-          Return a new `dtype` with a different byte order.
-
-          Changes are also made in all fields and sub-arrays of the data type.
-
-          The `new_order` code can be any from the following:
-
-          * 'S' - swap dtype from current to opposite endian
-          * {'<', 'little'} - little endian
-          * {'>', 'big'} - big endian
-          * {'=', 'native'} - native order
-          * {'|', 'I'} - ignore (no change to byte order)
-
-          Parameters
-          ----------
-          new_order : str, optional
-              Byte order to force; a value from the byte order specifications
-              above.  The default value ('S') results in swapping the current
-              byte order.
-
-
-          Returns
-          -------
-          new_dtype : dtype
-              New `dtype` object with the given change to the byte order.
-
-
 
 
    .. py:method:: nonzero(*args, **kwargs)
@@ -2568,7 +2302,6 @@ Module Contents
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.nonzero`.
-
 
 
 
@@ -2580,14 +2313,7 @@ Module Contents
 
 
 
-
    .. py:method:: ptp(*args, **kwargs)
-
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.ptp`.
-
-
 
 
    .. py:method:: put(*args, **kwargs)
@@ -2595,7 +2321,6 @@ Module Contents
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.put`.
-
 
 
 
@@ -2607,11 +2332,9 @@ Module Contents
 
 
 
-
    .. py:method:: real(*args, **kwargs)
 
       The real part of the scalar.
-
 
 
 
@@ -2623,13 +2346,11 @@ Module Contents
 
 
 
-
    .. py:method:: reshape(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.reshape`.
-
 
 
 
@@ -2641,13 +2362,11 @@ Module Contents
 
 
 
-
    .. py:method:: round(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.round`.
-
 
 
 
@@ -2659,13 +2378,11 @@ Module Contents
 
 
 
-
    .. py:method:: setfield(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.setfield`.
-
 
 
 
@@ -2677,18 +2394,15 @@ Module Contents
 
 
 
-
    .. py:method:: shape(*args, **kwargs)
 
       Tuple of array dimensions.
 
 
 
-
    .. py:method:: size(*args, **kwargs)
 
       The number of elements in the gentype.
-
 
 
 
@@ -2700,13 +2414,11 @@ Module Contents
 
 
 
-
    .. py:method:: squeeze(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.squeeze`.
-
 
 
 
@@ -2718,11 +2430,9 @@ Module Contents
 
 
 
-
    .. py:method:: strides(*args, **kwargs)
 
       Tuple of bytes steps in each dimension.
-
 
 
 
@@ -2734,13 +2444,11 @@ Module Contents
 
 
 
-
    .. py:method:: swapaxes(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.swapaxes`.
-
 
 
 
@@ -2751,6 +2459,8 @@ Module Contents
           Please see `ndarray.take`.
 
 
+
+   .. py:method:: to_device(*args, **kwargs)
 
 
    .. py:method:: tobytes(*args, **kwargs)
@@ -2764,13 +2474,11 @@ Module Contents
 
 
 
-
    .. py:method:: tolist(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.tolist`.
-
 
 
 
@@ -2782,13 +2490,11 @@ Module Contents
 
 
 
-
    .. py:method:: trace(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.trace`.
-
 
 
 
@@ -2800,13 +2506,11 @@ Module Contents
 
 
 
-
    .. py:method:: var(*args, **kwargs)
 
       Scalar method identical to the corresponding array attribute.
 
           Please see `ndarray.var`.
-
 
 
 
@@ -2818,22 +2522,28 @@ Module Contents
 
 
 
+.. py:class:: str_scalars
 
-.. py:class:: str_scalars(origin, params, *, inst=True, name=None)
-
-   Bases: :py:obj:`_GenericAlias`
-
-
-   The central part of internal API.
-
-   This represents a generic version of type 'origin' with type arguments 'params'.
-   There are two kind of these aliases: user defined and special. The special ones
-   are wrappers around builtin collections and ABCs in collections.abc. These must
-   have 'name' always set. If 'inst' is False, then the alias can't be instantiated,
-   this is used by e.g. typing.List and typing.Dict.
+   Bases: :py:obj:`_NotIterable`
 
 
-.. py:class:: uint16(value)
+   Mixin to prevent iteration, without being compatible with Iterable.
+
+   That is, we could do::
+
+       def __iter__(self): raise TypeError()
+
+   But this would make users of this mixin duck type-compatible with
+   collections.abc.Iterable - isinstance(foo, Iterable) would be True.
+
+   Luckily, we can instead prevent iteration by setting __iter__ to None, which
+   is treated specially.
+
+
+   .. py:method:: copy_with(params)
+
+
+.. py:class:: uint16
 
    Bases: :py:obj:`numpy.unsignedinteger`
 
@@ -2845,8 +2555,7 @@ Module Contents
        :Alias on this platform (Linux x86_64): `numpy.uint16`: 16-bit unsigned integer (``0`` to ``65_535``).
 
 
-
-   .. py:method:: bit_count(*args, **kwargs)
+   .. py:method:: bit_count(/)
 
       uint16.bit_count() -> int
 
@@ -2860,8 +2569,7 @@ Module Contents
 
 
 
-
-.. py:class:: uint32(value)
+.. py:class:: uint32
 
    Bases: :py:obj:`numpy.unsignedinteger`
 
@@ -2873,8 +2581,7 @@ Module Contents
        :Alias on this platform (Linux x86_64): `numpy.uint32`: 32-bit unsigned integer (``0`` to ``4_294_967_295``).
 
 
-
-   .. py:method:: bit_count(*args, **kwargs)
+   .. py:method:: bit_count(/)
 
       uint32.bit_count() -> int
 
@@ -2888,13 +2595,13 @@ Module Contents
 
 
 
-
-.. py:class:: uint64(value)
+.. py:class:: uint64
 
    Bases: :py:obj:`numpy.unsignedinteger`
 
 
-   Unsigned integer type, compatible with C ``unsigned long``.
+   Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit
+       systems.
 
        :Character code: ``'L'``
        :Canonical name: `numpy.uint`
@@ -2902,8 +2609,7 @@ Module Contents
        :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
 
 
-
-   .. py:method:: bit_count(*args, **kwargs)
+   .. py:method:: bit_count(/)
 
       uint64.bit_count() -> int
 
@@ -2917,8 +2623,7 @@ Module Contents
 
 
 
-
-.. py:class:: uint8(value)
+.. py:class:: uint8
 
    Bases: :py:obj:`numpy.unsignedinteger`
 
@@ -2930,8 +2635,7 @@ Module Contents
        :Alias on this platform (Linux x86_64): `numpy.uint8`: 8-bit unsigned integer (``0`` to ``255``).
 
 
-
-   .. py:method:: bit_count(*args, **kwargs)
+   .. py:method:: bit_count(/)
 
       uint8.bit_count() -> int
 
@@ -2942,7 +2646,6 @@ Module Contents
               --------
               >>> np.uint8(127).bit_count()
               7
-
 
 
 

@@ -56,6 +56,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CommAggregation/BigIntegerAggregation.html">BigIntegerAggregation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommandMap.html">CommandMap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DynamicSort.html">DynamicSort</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ExternalIntegration.html">ExternalIntegration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
@@ -423,6 +424,32 @@ which stops the arkouda_server listener thread and closes socket.</p>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.run">
 <em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.run" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.activityMutex">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">activityMutex</span></span><em class="property"> <span class="pre">:</span> <span class="pre">sync</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.activityMutex" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.idlePeriodStart">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">idlePeriodStart</span></span><em class="property"> <span class="pre">:</span> <span class="pre">atomic</span> <span class="pre">real</span></em><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.idlePeriodStart" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.startAsyncCheckpointTask">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">startAsyncCheckpointTask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.startAsyncCheckpointTask" title="Link to this definition">¶</a></dt>
+<dd><p>Starts a task for asynchronous checkpointing.</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.serverIdleStart">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">serverIdleStart</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.serverIdleStart" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.serverIdleStop">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">serverIdleStop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.serverIdleStop" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

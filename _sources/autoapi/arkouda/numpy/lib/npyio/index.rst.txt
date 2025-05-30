@@ -1,0 +1,6 @@
+arkouda.numpy.lib.npyio
+=======================
+
+.. py:module:: arkouda.numpy.lib.npyio
+
+

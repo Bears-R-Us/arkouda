@@ -62,13 +62,17 @@ or
 
 .. function:: proc makeDistArray(in a: [?D] ?etype) throws where D.rank > 1 && (MyDmap == Dmap.defaultRectangular || !a.isDefaultRectangular())
 
-.. function:: proc makeDistArray(D: domain(?), type etype) throws where D.rank == 1
+.. function:: proc makeDistArray(D: domain(?), type etype) throws where MyDmap != Dmap.defaultRectangular && D.isDefaultRectangular()
 
-.. function:: proc makeDistArray(D: domain(?), type etype) throws where D.rank > 1
+.. function:: proc makeDistArray(D: domain(?), type etype) throws where D.rank == 1 && (MyDmap == Dmap.defaultRectangular || !D.isDefaultRectangular())
 
-.. function:: proc makeDistArray(D: domain(?), initExpr: ?t) throws where D.rank == 1
+.. function:: proc makeDistArray(D: domain(?), type etype) throws where D.rank > 1 && (MyDmap == Dmap.defaultRectangular || !D.isDefaultRectangular())
 
-.. function:: proc makeDistArray(D: domain(?), initExpr: ?t) throws where D.rank > 1
+.. function:: proc makeDistArray(D: domain(?), initExpr) throws where MyDmap != Dmap.defaultRectangular && D.isDefaultRectangular()
+
+.. function:: proc makeDistArray(D: domain(?), initExpr: ?t) throws where D.rank == 1 && (MyDmap == Dmap.defaultRectangular || !D.isDefaultRectangular())
+
+.. function:: proc makeDistArray(D: domain(?), initExpr: ?t) throws where D.rank > 1 && (MyDmap == Dmap.defaultRectangular || !D.isDefaultRectangular())
 
 .. function:: proc makeDistDomType(size: int) type
 

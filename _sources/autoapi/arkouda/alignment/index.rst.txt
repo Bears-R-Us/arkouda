@@ -80,6 +80,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> select_from = ak.arange(10)
    >>> arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]
    >>> arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]
@@ -129,8 +130,7 @@ Module Contents
 
 .. py:function:: in1d_intervals(vals, intervals, symmetric=False)
 
-   Test each value for membership in *any* of a set of half-open (pythonic)
-   intervals.
+   Test each value for membership in *any* of a set of half-open (pythonic) intervals.
 
    :param vals: Values to test for membership in intervals
    :type vals: pdarray(int, float)
@@ -189,6 +189,8 @@ Module Contents
 
 .. py:function:: is_cosorted(arrays)
 
+   Return True iff the arrays are cosorted.
+
    Return True iff the arrays are cosorted, i.e., if the arrays were columns in a table
    then the rows are sorted.
 
@@ -203,6 +205,8 @@ Module Contents
 
 
 .. py:function:: left_align(left, right)
+
+   Map two arrays of sparse identifiers to the 0-up index.
 
    Map two arrays of sparse identifiers to the 0-up index set implied by the left array,
    discarding values from right that do not appear in left.
@@ -234,8 +238,9 @@ Module Contents
 
    .. rubric:: Examples
 
-   Lookup numbers by two-word name
+   >>> import arkouda as ak
 
+   Lookup numbers by two-word name
    >>> keys1 = ak.array(['twenty' for _ in range(5)])
    >>> keys2 = ak.array(['one', 'two', 'three', 'four', 'five'])
    >>> values = ak.array([21, 22, 23, 24, 25])
@@ -245,7 +250,6 @@ Module Contents
    array([24 -1 22])
 
    Other direction requires an intermediate index
-
    >>> revkeys = values
    >>> revindices = ak.arange(values.size)
    >>> revargs = ak.array([24, 21, 22])
@@ -257,6 +261,8 @@ Module Contents
 
 .. py:function:: right_align(left, right)
 
+   Map two arrays of sparse values to the 0-up index.
+
    Map two arrays of sparse values to the 0-up index set implied by the right array,
    discarding values from left that do not appear in right.
 
@@ -265,11 +271,18 @@ Module Contents
    :param right: Right-hand identifiers that define the index
    :type right: pdarray or a sequence of pdarrays
 
-   :returns: * **keep** (*pdarray, bool*) -- Logical index of left-hand values that survived
-             * **aligned** (*(pdarray, pdarray)*) -- Left and right arrays with values replaced by 0-up indices
+   :returns:
+
+             keep : pdarray, bool
+                 Logical index of left-hand values that survived
+             aligned : (pdarray, pdarray)
+                 Left and right arrays with values replaced by 0-up indices
+   :rtype: pdarray, (pdarray, pdarray)
 
 
 .. py:function:: search_intervals(vals, intervals, tiebreak=None, hierarchical=True)
+
+   Return the index of the best interval containing each query value.
 
    Given an array of query vals and non-overlapping, closed intervals, return
    the index of the best (see tiebreak) interval containing each query value,
@@ -302,6 +315,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> starts = (ak.array([0, 5]), ak.array([0, 11]))
    >>> ends = (ak.array([5, 9]), ak.array([10, 20]))
    >>> vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))

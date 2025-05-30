@@ -10,6 +10,7 @@ Functions
 .. autoapisummary::
 
    arkouda.numpy.pdarraymanipulation.delete
+   arkouda.numpy.pdarraymanipulation.hstack
    arkouda.numpy.pdarraymanipulation.vstack
 
 
@@ -34,6 +35,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   >>> import arkouda as ak
    >>> arr = ak.array([[1,2,3,4], [5,6,7,8], [9,10,11,12]])
    >>> arr
    array([array([1 2 3 4]) array([5 6 7 8]) array([9 10 11 12])])
@@ -46,23 +48,82 @@ Module Contents
    array([1 3 5 7 8 9 10 11 12])
 
 
-.. py:function:: vstack(tup: Union[Tuple[arkouda.numpy.pdarrayclass.pdarray], List[arkouda.numpy.pdarrayclass.pdarray]], *, dtype: Optional[Union[type, str]] = None, casting: Literal['no', 'equiv', 'safe', 'same_kind', 'unsafe'] = 'same_kind') -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: hstack(tup: Sequence[arkouda.numpy.pdarrayclass.pdarray], *, dtype: Optional[Union[str, type]] = None, casting: Literal['no', 'equiv', 'safe', 'same_kind', 'unsafe'] = 'same_kind') -> arkouda.numpy.pdarrayclass.pdarray
 
-   Stack a sequence of arrays vertically (row-wise).
+   Stack arrays in sequence horizontally (column wise).
 
-   This is equivalent to concatenation along the first axis after 1-D arrays of
-   shape `(N,)` have been reshaped to `(1,N)`.
+   This is equivalent to concatenation along the second axis, except for 1-D arrays
+   where it concatenates along the first axis. Rebuilds arrays divided by ``hsplit``.
 
-   :param tup: The arrays to be stacked
-   :type tup: Tuple[pdarray]
-   :param dtype: The data-type of the output array. If not provided, the output
-                 array will be determined using `np.common_type` on the
-                 input arrays Defaults to None
-   :type dtype: Optional[Union[type, str]], optional
-   :param casting: Controls what kind of data casting may occur - currently unused
+   This function makes most sense for arrays with up to 3 dimensions. For instance, for pixel-data
+   with a height (first axis), width (second axis), and r/g/b channels (third axis). The functions
+   ``concatenate``, ``stack`` and ``block`` provide more general stacking and concatenation operations.
+
+   :param tup: The arrays must have the same shape along all but the second axis, except 1-D arrays which
+               can be any length. In the case of a single array_like input, it will be treated as a sequence of
+               arrays; i.e., each element along the zeroth axis is treated as a separate array.
+   :type tup: sequence of pdarray
+   :param dtype: If provided, the destination array will have this type.
+   :type dtype: str or type, optional
+   :param casting: Controls what kind of data casting may occur. Defaults to ‘same_kind’. Currently unused.
+   :type casting: {‘no’, ‘equiv’, ‘safe’, ‘same_kind’, ‘unsafe’}, optional
+
+   :returns: The array formed by stacking the given arrays.
+   :rtype: pdarray
+
+   .. seealso:: :py:obj:`concatenate`, :py:obj:`stack`, :py:obj:`block`, :py:obj:`vstack`, :py:obj:`dstack`, :py:obj:`column_stack`, :py:obj:`hsplit`, :py:obj:`unstack`
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.array([1, 2, 3])
+   >>> b = ak.array([4, 5, 6])
+   >>> ak.hstack((a, b))
+   array([1 2 3 4 5 6])
+   >>> a = ak.array([[1],[2],[3]])
+   >>> b = ak.array([[4],[5],[6]])
+   >>> ak.hstack((a, b))
+   array([array([1 4]) array([2 5]) array([3 6])])
+
+
+.. py:function:: vstack(tup: Sequence[arkouda.numpy.pdarrayclass.pdarray], *, dtype: Optional[Union[str, type]] = None, casting: Literal['no', 'equiv', 'safe', 'same_kind', 'unsafe'] = 'same_kind') -> arkouda.numpy.pdarrayclass.pdarray
+
+   Stack arrays in sequence vertically (row wise).
+
+   This is equivalent to concatenation along the first axis after
+   1-D arrays of shape `(N,)` have been reshaped to `(1,N)`. Rebuilds arrays divided by ``vsplit``.
+
+   This function makes most sense for arrays with up to 3 dimensions.
+   For instance, for pixel-data with a height (first axis), width (second axis),
+   and r/g/b channels (third axis). The functions ``concatenate``, ``stack`` and ``block``
+   provide more general stacking and concatenation operations.
+
+   :param tup: The arrays must have the same shape along all but the first axis. 1-D arrays
+               must have the same length. In the case of a single array_like input, it will be
+               treated as a sequence of arrays; i.e., each element along the zeroth axis is treated
+               as a separate array.
+   :type tup: sequence of pdarray
+   :param dtype: If provided, the destination array will have this dtype.
+   :type dtype: str or type, optional
+   :param casting: Controls what kind of data casting may occur. Defaults to ‘same_kind’. Currently unused.
    :type casting: {"no", "equiv", "safe", "same_kind", "unsafe"], optional
 
-   :returns: *
-             * *pdarray* -- The stacked array
+   :returns: The array formed by stacking the given arrays, will be at least 2-D.
+   :rtype: pdarray
+
+   .. seealso:: :py:obj:`concatenate`, :py:obj:`stack`, :py:obj:`block`, :py:obj:`hstack`, :py:obj:`dstack`, :py:obj:`column_stack`, :py:obj:`hsplit`, :py:obj:`unstack`
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.array([1, 2, 3])
+   >>> b = ak.array([4, 5, 6])
+   >>> ak.vstack((a, b))
+   array([array([1 2 3]) array([4 5 6])])
+
+   >>> a = ak.array([[1],[2],[3]])
+   >>> b = ak.array([[4],[5],[6]])
+   >>> ak.vstack((a, b))
+   array([array([1]) array([2]) array([3]) array([4]) array([5]) array([6])])
 
 

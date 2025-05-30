@@ -73,6 +73,10 @@ or
 
 .. method:: proc type MsgTuple.success(msg: string = ""): MsgTuple
 
+.. method:: proc type MsgTuple.warning(msg: string): MsgTuple
+
+.. method:: proc type MsgTuple.error(msg: string): MsgTuple
+
 .. method:: proc type MsgTuple.newSymbol(name: string, sym: borrowed AbstractSymEntry): MsgTuple throws
 
    
@@ -91,8 +95,6 @@ or
    
 
 .. method:: proc type MsgTuple.fromScalar(scalar: ?t): MsgTuple throws
-
-.. method:: proc type MsgTuple.error(msg: string): MsgTuple
 
 .. method:: proc type MsgTuple.payload(in data: bytes): MsgTuple
 

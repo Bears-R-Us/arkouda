@@ -16,7 +16,7 @@ Classes
 Module Contents
 ---------------
 
-.. py:class:: Index(values: Union[List, arkouda.numpy.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical, pandas.Index, Index, pandas.Categorical], name: Optional[str] = None, allow_list=False, max_list_size=1000)
+.. py:class:: Index(values: Union[List, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, pandas.Index, Index, pandas.Categorical], name: Optional[str] = None, allow_list=False, max_list_size=1000)
 
    .. py:method:: argsort(ascending=True)
 
@@ -32,7 +32,7 @@ Module Contents
       :type other: object
 
       :returns: True if the Indexes are the same, o.w. False.
-      :rtype: bool
+      :rtype: bool_scalars
 
       .. rubric:: Examples
 
@@ -71,7 +71,23 @@ Module Contents
 
    .. py:property:: index
 
-      This is maintained to support older code
+      Deprecated alias for `values`.
+
+      This property is maintained for backward compatibility and returns the same
+      array as the `values` attribute. It will be removed in a future release;
+      use `values` directly instead.
+
+      :returns: * *arkouda.numpy.pdarray* -- The underlying values of this object (same as `values`).
+                * *Deprecated*
+                * *----------*
+                * Use the `values` attribute directly. This alias will be removed in a future release.
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> idx = ak.Index(ak.array([1, 2, 3]))
+      >>> idx.index
+      array([1 2 3])
 
 
    .. py:property:: inferred_type
@@ -83,15 +99,17 @@ Module Contents
 
    .. py:method:: is_registered()
 
-       Return True iff the object is contained in the registry or is a component of a
-       registered object.
+      Return whether the object is registered.
+
+      Return True iff the object is contained in the registry or is a component of a
+      registered object.
 
       :returns: Indicates if the object is contained in the registry
       :rtype: numpy.bool
 
       :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`unregister`
 
       .. rubric:: Notes
 
@@ -102,14 +120,15 @@ Module Contents
 
    .. py:property:: is_unique
 
-      Property indicating if all values in the index are unique
+      Property indicating if all values in the index are unique.
+
       :rtype: bool - True if all values are unique, False otherwise.
 
 
    .. py:method:: lookup(key)
 
 
-   .. py:method:: map(arg: Union[dict, arkouda.series.Series]) -> Index
+   .. py:method:: map(arg: Union[dict, arkouda.pandas.series.Series]) -> Index
 
       Map values of Index according to an input mapping.
 
@@ -119,7 +138,7 @@ Module Contents
       :returns: A new index with the values transformed by the mapping correspondence.
       :rtype: arkouda.index.Index
 
-      :raises TypeError: Raised if arg is not of type dict or arkouda.Series.
+      :raises TypeError: Raised if arg is not of type dict or arkouda.pandas.Series.
           Raised if index values not of type pdarray, Categorical, or Strings.
 
       .. rubric:: Examples
@@ -153,7 +172,7 @@ Module Contents
       :returns: Bytes of memory consumed.
       :rtype: int
 
-      .. seealso:: :obj:`arkouda.numpy.pdarrayclass.nbytes`, :obj:`arkouda.index.MultiIndex.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
+      .. seealso:: :py:obj:`arkouda.numpy.pdarrayclass.nbytes`, :py:obj:`arkouda.index.MultiIndex.memory_usage`, :py:obj:`arkouda.pandas.series.Series.memory_usage`, :py:obj:`arkouda.dataframe.DataFrame.memory_usage`
 
       .. rubric:: Examples
 
@@ -174,14 +193,16 @@ Module Contents
 
       Number of dimensions of the underlying data, by definition 1.
 
-      .. seealso:: :obj:`MultiIndex.ndim`
+      .. seealso:: :py:obj:`MultiIndex.ndim`
 
 
    .. py:property:: nlevels
 
       Integer number of levels in this Index.
+
       An Index will always have 1 level.
-      .. seealso:: :obj:`MultiIndex.nlevels`
+
+      .. seealso:: :py:obj:`MultiIndex.nlevels`
 
 
    .. py:attribute:: objType
@@ -204,10 +225,11 @@ Module Contents
 
       :raises ValueError: Raised if allow_list=True and the size of values is > max_list_size.
 
-      .. seealso:: :obj:`MultiIndex`
+      .. seealso:: :py:obj:`MultiIndex`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.Index([1, 2, 3])
       Index(array([1 2 3]), dtype='int64')
 
@@ -220,7 +242,7 @@ Module Contents
 
    .. py:method:: register(user_defined_name)
 
-      Register this Index object and underlying components with the Arkouda server
+      Register this Index object and underlying components with the Arkouda server.
 
       :param user_defined_name: user defined name the Index is to be registered under,
                                 this will be the root name for underlying components
@@ -235,7 +257,7 @@ Module Contents
       :raises TypeError: Raised if user_defined_name is not a str
       :raises RegistrationError: If the server was unable to register the Index with the user_defined_name
 
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -250,65 +272,9 @@ Module Contents
 
 
 
-   .. py:method:: save(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
-
-      DEPRECATED
-      Save the index to HDF5 or Parquet. The result is a collection of files,
-      one file per locale of the arkouda server, where each filename starts
-      with prefix_path. Each locale saves its chunk of the array to its
-      corresponding file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
-                          Sets the compression type used with Parquet files
-      :type compression: str (Optional)
-      :param file_format: By default, saved files will be written to the HDF5 file format. If
-                          'Parquet', the files will be written to the Parquet file format. This
-                          is case insensitive.
-      :type file_format: str {'HDF5', 'Parquet'}
-      :param file_type: Default: "distribute"
-                        When set to single, dataset is written to a single file.
-                        When distribute, dataset is written on a file per locale.
-                        This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
-          file write location or if the mode parameter is neither truncate
-          nor append
-      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
-          is not a string.
-          Raised if the Index values are a list.
-
-      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`, :obj:`to_parquet`, :obj:`to_hdf`
-
-      .. rubric:: Notes
-
-      The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales``. If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
-      This will require you to use load as if you saved the file with the extension. Try this if
-      an older file is not being found.
-      Any file extension can be used. The file I/O does not rely on the extension to determine the
-      file format.
-
-
-
    .. py:method:: set_dtype(dtype)
 
-      Change the data type of the index
+      Change the data type of the index.
 
       Currently only aku.ip_address and ak.array are supported.
 
@@ -319,48 +285,39 @@ Module Contents
 
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'index', col_delim: str = ',', overwrite: bool = False)
 
-              Write Index to CSV file(s). File will contain a single column with the pdarray data.
-              All CSV Files written by Arkouda include a header denoting data types of the columns.
+      Write Index to CSV file(s).
 
-              Parameters
-              -----------
-              prefix_path: str
-                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
-                  when they are written to disk.
-              dataset: str
-                  Column name to save the pdarray under. Defaults to "array".
-              col_delim: str
-                  Defaults to ",". Value to be used to separate columns within the file.
-                  Please be sure that the value used DOES NOT appear in your dataset.
-              overwrite: bool
-                  Defaults to False. If True, any existing files matching your provided prefix_path will
-                  be overwritten. If False, an error will be returned if existing files are found.
+      File will contain a single column with the pdarray data.
+      All CSV Files written by Arkouda include a header denoting data types of the columns.
 
-              Returns
-              --------
-              str reponse message
+      :param prefix_path: The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                          when they are written to disk.
+      :type prefix_path: str
+      :param dataset: Column name to save the pdarray under. Defaults to "array".
+      :type dataset: str
+      :param col_delim: Defaults to ",". Value to be used to separate columns within the file.
+                        Please be sure that the value used DOES NOT appear in your dataset.
+      :type col_delim: str
+      :param overwrite: Defaults to False. If True, any existing files matching your provided prefix_path will
+                        be overwritten. If False, an error will be returned if existing files are found.
+      :type overwrite: bool
 
-              Raises
-              ------
-              ValueError
-                  Raised if all datasets are not present in all parquet files or if one or
-                  more of the specified files do not exist.
-              RuntimeError
-                  Raised if one or more of the specified files cannot be opened.
-                  If `allow_errors` is true this may be raised if no values are returned
-                  from the server.
-              TypeError
-                  Raised if we receive an unknown arkouda_type returned from the server.
-                  Raised if the Index values are a list.
+      :rtype: str reponse message
 
-              Notes
-              ------
-              - CSV format is not currently supported by load/load_all operations
-              - The column delimiter is expected to be the same for column names and data
-              - Be sure that column delimiters are not found within your data.
-              - All CSV files must delimit rows using newline (`
-      `) at this time.
+      :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
+          more of the specified files do not exist.
+      :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+          If `allow_errors` is true this may be raised if no values are returned
+          from the server.
+      :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server.
+          Raised if the Index values are a list.
 
+      .. rubric:: Notes
+
+      - CSV format is not currently supported by load/load_all operations
+      - The column delimiter is expected to be the same for column names and data
+      - Be sure that column delimiters are not found within your data.
+      - All CSV files must delimit rows using newline (`\n`) at this time.
 
 
 
@@ -370,7 +327,9 @@ Module Contents
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
       Save the Index to HDF5.
+
       The object can be saved to a collection of files or single file.
+
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
       :param dataset: Name of the dataset to create in files (must not already exist)
@@ -419,10 +378,13 @@ Module Contents
 
    .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None)
 
-      Save the Index to Parquet. The result is a collection of files,
+      Save the Index to Parquet.
+
+      The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
       corresponding file.
+
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
       :param dataset: Name of the dataset to create in files (must not already exist)
@@ -457,13 +419,15 @@ Module Contents
 
    .. py:method:: unregister()
 
-      Unregister this Index object in the arkouda server which was previously
+      Unregister this Index object in the arkouda server.
+
+      Unregister this Index object in the arkouda server, which was previously
       registered using register() and/or attached to using attach()
 
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -474,8 +438,9 @@ Module Contents
 
    .. py:method:: update_hdf(prefix_path: str, dataset: str = 'index', repack: bool = True)
 
-      Overwrite the dataset with the name provided with this Index object. If
-      the dataset does not exist it is added.
+      Overwrite the dataset with the name provided with this Index object.
+
+      If the dataset does not exist it is added.
 
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
@@ -487,8 +452,6 @@ Module Contents
                      inaccessible. Setting to false will yield better performance, but will cause
                      file sizes to expand.
       :type repack: bool
-
-      :rtype: str - success message if successful
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the index
 
@@ -522,8 +485,7 @@ Module Contents
 
    .. py:method:: equal_levels(other: MultiIndex) -> bool
 
-      Return True if the levels of both MultiIndex objects are the same
-
+      Return True if the levels of both MultiIndex objects are the same.
 
 
 
@@ -532,7 +494,23 @@ Module Contents
 
    .. py:property:: index
 
-      This is maintained to support older code
+      Deprecated alias for `values`.
+
+      This property is maintained for backward compatibility and returns the same
+      array as the `values` attribute. It will be removed in a future release;
+      use `values` directly instead.
+
+      :returns: * *arkouda.numpy.pdarray* -- The underlying values of this object (same as `values`).
+                * *Deprecated*
+                * *----------*
+                * Use the `values` attribute directly. This alias will be removed in a future release.
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> idx = ak.Index(ak.array([1, 2, 3]))
+      >>> idx.index
+      array([1 2 3])
 
 
    .. py:property:: inferred_type
@@ -544,15 +522,17 @@ Module Contents
 
    .. py:method:: is_registered()
 
-       Return True iff the object is contained in the registry or is a component of a
-       registered object.
+      Return whether the object is registered.
+
+      Return True iff the object is contained in the registry or is a component of a
+      registered object.
 
       :returns: Indicates if the object is contained in the registry
       :rtype: numpy.bool
 
       :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`unregister`
 
       .. rubric:: Notes
 
@@ -578,7 +558,7 @@ Module Contents
       :returns: Bytes of memory consumed.
       :rtype: int
 
-      .. seealso:: :obj:`arkouda.numpy.pdarrayclass.nbytes`, :obj:`arkouda.index.Index.memory_usage`, :obj:`arkouda.series.Series.memory_usage`, :obj:`arkouda.dataframe.DataFrame.memory_usage`
+      .. seealso:: :py:obj:`arkouda.numpy.pdarrayclass.nbytes`, :py:obj:`arkouda.index.Index.memory_usage`, :py:obj:`arkouda.pandas.series.Series.memory_usage`, :py:obj:`arkouda.dataframe.DataFrame.memory_usage`
 
       .. rubric:: Examples
 
@@ -604,7 +584,7 @@ Module Contents
 
       Number of dimensions of the underlying data, by definition 1.
 
-      .. seealso:: :obj:`Index.ndim`
+      .. seealso:: :py:obj:`Index.ndim`
 
 
    .. py:property:: nlevels
@@ -613,7 +593,7 @@ Module Contents
 
       Integer number of levels in this MultiIndex.
 
-      .. seealso:: :obj:`Index.nlevels`
+      .. seealso:: :py:obj:`Index.nlevels`
 
 
    .. py:attribute:: objType
@@ -636,10 +616,11 @@ Module Contents
 
       :raises ValueError: Raised if allow_list=True and the size of values is > max_list_size.
 
-      .. seealso:: :obj:`MultiIndex`
+      .. seealso:: :py:obj:`MultiIndex`
 
       .. rubric:: Examples
 
+      >>> import arkouda as ak
       >>> ak.Index([1, 2, 3])
       Index(array([1 2 3]), dtype='int64')
 
@@ -652,7 +633,7 @@ Module Contents
 
    .. py:method:: register(user_defined_name)
 
-      Register this Index object and underlying components with the Arkouda server
+      Register this Index object and underlying components with the Arkouda server.
 
       :param user_defined_name: user defined name the Index is to be registered under,
                                 this will be the root name for underlying components
@@ -667,7 +648,7 @@ Module Contents
       :raises TypeError: Raised if user_defined_name is not a str
       :raises RegistrationError: If the server was unable to register the Index with the user_defined_name
 
-      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -684,7 +665,7 @@ Module Contents
 
    .. py:method:: set_dtype(dtype)
 
-      Change the data type of the index
+      Change the data type of the index.
 
       Currently only aku.ip_address and ak.array are supported.
 
@@ -696,7 +677,9 @@ Module Contents
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
       Save the Index to HDF5.
+
       The object can be saved to a collection of files or single file.
+
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
       :param dataset: Name of the dataset to create in files (must not already exist)
@@ -744,13 +727,15 @@ Module Contents
 
    .. py:method:: unregister()
 
-      Unregister this Index object in the arkouda server which was previously
+      Unregister this Index object in the arkouda server.
+
+      Unregister this Index object in the arkouda server, which was previously
       registered using register() and/or attached to using attach()
 
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister
 
-      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`is_registered`
 
       .. rubric:: Notes
 
@@ -761,8 +746,9 @@ Module Contents
 
    .. py:method:: update_hdf(prefix_path: str, dataset: str = 'index', repack: bool = True)
 
-      Overwrite the dataset with the name provided with this Index object. If
-      the dataset does not exist it is added.
+      Overwrite the dataset with the name provided with this Index object.
+
+      If the dataset does not exist it is added.
 
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
@@ -774,8 +760,6 @@ Module Contents
                      inaccessible. Setting to false will yield better performance, but will cause
                      file sizes to expand.
       :type repack: bool
-
-      :rtype: str - success message if successful
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the index
       :raises TypeError: Raised if the Index levels are a list.

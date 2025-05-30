@@ -21,7 +21,7 @@ Module Contents
 
 .. py:function:: delete_directory(dir: str) -> None
 
-   Deletes the directory if it exists.
+   Delete the directory if it exists.
 
    :param dir: The path to the directory
    :type dir: str
@@ -31,9 +31,12 @@ Module Contents
 
 .. py:function:: delimited_file_to_dict(path: str, delimiter: str = ',') -> Dict[str, str]
 
-   Returns a dictionary populated by lines from a file where
+   Return a dictionary populated by lines from a file.
+
+   Return a dictionary populated by lines from a file where
    the first delimited element of each line is the key and
    the second delimited element is the value.
+   If the file does not exist, return an empty dictionary.
 
    :param path: Path to the file
    :type path: str
@@ -45,11 +48,14 @@ Module Contents
    :rtype: Mapping[str,str]
 
    :raises UnsupportedOperation: Raised if there's an error in reading the file
+   :raises ValueError: Raised if a line has more or fewer than two delimited elements
 
 
 .. py:function:: dict_to_delimited_file(path: str, values: Mapping[Any, Any], delimiter: str = ',') -> None
 
-   Writes a dictionary to delimited lines in a file where
+   Write a dictionary to delimited lines in a file.
+
+   Write a dictionary to delimited lines in a file where
    the first delimited element of each line is the dict key
    and the second delimited element is the dict value. If the
    file does not exist, it is created and then written to.
@@ -67,14 +73,13 @@ Module Contents
 
 .. py:function:: get_directory(path: str) -> pathlib.Path
 
-   Creates the directory if it does not exist and then
-   returns the corresponding Path object
+   Create the directory if it does not exist and returns the corresponding Path object.
 
    :param path: The path to the directory
    :type path: str
 
-   :returns: Path object corresponding to the directory
-   :rtype: str
+   :returns: Object corresponding to the directory
+   :rtype: Path
 
    :raises ValueError: Raised if there's an error in reading an
        existing directory or creating a new one
@@ -82,7 +87,9 @@ Module Contents
 
 .. py:function:: write_line_to_file(path: str, line: str) -> None
 
-   Writes a line to the requested file. Note: if the file
+   Write a line to the requested file.
+
+   Note: if the file
    does not exist, the file is created first and then
    the specified line is written to it.
 
