@@ -18,7 +18,9 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: flip(x: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]
+.. py:function:: flip(x: arkouda.numpy.pdarrayclass.pdarray, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.numpy.pdarrayclass.pdarray
+                 flip(x: arkouda.numpy.strings.Strings, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.numpy.strings.Strings
+                 flip(x: arkouda.categorical.Categorical, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.categorical.Categorical
 
    Reverse an array's values along a particular axis or axes.
 
@@ -81,7 +83,6 @@ Module Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> ak.connect()
    >>> x = ak.arange(10).reshape((1, 10, 1))
    >>> x
    array([array([array([0]) array([1]) array([2]) array([3])....

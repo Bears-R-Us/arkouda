@@ -386,15 +386,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_type</span><span class="p">,</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">bigint</span><span class="p">,</span>
-    <span class="n">bool_</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="p">,</span>
-    <span class="n">float64</span><span class="p">,</span>
-    <span class="n">int64</span><span class="p">,</span>
-    <span class="n">int_scalars</span><span class="p">,</span>
-    <span class="n">uint64</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bigint</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">int64</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">uint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">zeros</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
@@ -512,29 +504,31 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">coargsort</span><span class="p">(</span>
     <span class="n">arrays</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]],</span>
     <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
+    <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the permutation that groups the rows (left-to-right), if the</span>
 <span class="sd">    input arrays are treated as columns. The permutation sorts numeric</span>
-<span class="sd">    columns, but not strings/Categoricals -- strings/Categoricals are grouped, but not ordered.</span>
+<span class="sd">    columns, but not Strings or Categoricals — those are grouped, not ordered.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    arrays : Sequence of Strings, pdarray, or Categorical</span>
-<span class="sd">        The columns (int64, uint64, float64, Strings, or Categorical) to sort by row</span>
+<span class="sd">        The columns (int64, uint64, float64, Strings, or Categorical) to sort by row.</span>
 <span class="sd">    algorithm : SortingAlgorithm, default=SortingAlgorithm.RadixSortLSD</span>
 <span class="sd">        The algorithm to be used for sorting the arrays.</span>
+<span class="sd">    ascending : bool, default=True</span>
+<span class="sd">        Whether to sort in ascending order. Ignored when arrays have ndim &gt; 1.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
-<span class="sd">        The indices that permute the rows to grouped order</span>
+<span class="sd">        The indices that permute the rows into grouped order.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if the pdarrays are not of the same size or if the parameter</span>
-<span class="sd">        is not an Iterable containing pdarrays, Strings, or Categoricals</span>
+<span class="sd">        If the inputs are not all the same size or not valid array types.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -544,11 +538,10 @@
 <span class="sd">    -----</span>
 <span class="sd">    Uses a least-significant-digit radix sort, which is stable and resilient</span>
 <span class="sd">    to non-uniformity in data but communication intensive. Starts with the</span>
-<span class="sd">    last array and moves forward. This sort operates directly on numeric types,</span>
-<span class="sd">    but for Strings, it operates on a hash. Thus, while grouping of equivalent</span>
-<span class="sd">    strings is guaranteed, lexicographic ordering of the groups is not. For Categoricals,</span>
-<span class="sd">    coargsort sorts based on Categorical.codes which guarantees grouping of equivalent categories</span>
-<span class="sd">    but not lexicographic ordering of those groups.</span>
+<span class="sd">    last array and moves forward.</span>
+
+<span class="sd">    For Strings, sorting is based on a hash. This ensures grouping of identical strings,</span>
+<span class="sd">    but not lexicographic order. For Categoricals, sorting is based on the internal codes.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -562,25 +555,32 @@
 <span class="sd">    array([0 0 1 1])</span>
 <span class="sd">    &gt;&gt;&gt; b[perm]</span>
 <span class="sd">    array([0 1 0 1])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
 
-    <span class="n">check_type</span><span class="p">(</span>
-        <span class="n">argname</span><span class="o">=</span><span class="s2">&quot;coargsort&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">arrays</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]]</span>
-    <span class="p">)</span>
+    <span class="n">check_type</span><span class="p">(</span><span class="s2">&quot;coargsort&quot;</span><span class="p">,</span> <span class="n">arrays</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]])</span>
+
     <span class="n">size</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="n">anames</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">atypes</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">expanded_arrays</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">anames</span><span class="p">,</span> <span class="n">atypes</span><span class="p">,</span> <span class="n">expanded_arrays</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">max_dim</span> <span class="o">=</span> <span class="mi">1</span>
+
     <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">bigint</span><span class="p">,</span> <span class="n">bool_</span><span class="p">]:</span>
-            <span class="n">expanded_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
-            <span class="n">expanded_arrays</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;ndim&quot;</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">maximum</span>
+
+            <span class="n">max_dim</span> <span class="o">=</span> <span class="n">maximum</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">max_dim</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
+                <span class="n">expanded_arrays</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">())</span>
+            <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+                <span class="n">expanded_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">akcast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">expanded_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># cast bool arrays to int</span>
-            <span class="n">expanded_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">akcast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">))</span>
+            <span class="n">expanded_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">expanded_arrays</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
@@ -590,17 +590,19 @@
             <span class="n">anames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="n">atypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">objType</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
-            <span class="n">atypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">objType</span><span class="p">)</span>
             <span class="n">anames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">atypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">objType</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument must be an iterable of pdarrays, Strings, or Categoricals&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Each array must be a pdarray, Strings, or Categorical&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">size</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span>
         <span class="k">elif</span> <span class="n">size</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All pdarrays, Strings, or Categoricals must be of the same size&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All arrays must have the same size&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">))</span> <span class="k">else</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="nb">int</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">))</span> <span class="k">else</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
 
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;coargsort&quot;</span><span class="p">,</span>
@@ -611,7 +613,15 @@
             <span class="s2">&quot;arr_types&quot;</span><span class="p">:</span> <span class="n">atypes</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+
+    <span class="n">sorted_array</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">ascending</span> <span class="ow">or</span> <span class="n">max_dim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sorted_array</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.manipulation_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">flip</span>
+
+        <span class="k">return</span> <span class="n">flip</span><span class="p">(</span><span class="n">sorted_array</span><span class="p">)</span></div>
 
 
 

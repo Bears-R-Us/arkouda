@@ -12721,22 +12721,23 @@ Package Contents
    array([64 63 62 62 61 61 61 61 60 60])
 
 
-.. py:function:: coargsort(arrays: Sequence[Union[arkouda.numpy.strings.Strings, arkouda.numpy.pdarrayclass.pdarray, arkouda.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: coargsort(arrays: Sequence[Union[arkouda.numpy.strings.Strings, arkouda.numpy.pdarrayclass.pdarray, arkouda.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, ascending: bool = True) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the permutation that groups the rows (left-to-right), if the
    input arrays are treated as columns. The permutation sorts numeric
-   columns, but not strings/Categoricals -- strings/Categoricals are grouped, but not ordered.
+   columns, but not Strings or Categoricals — those are grouped, not ordered.
 
-   :param arrays: The columns (int64, uint64, float64, Strings, or Categorical) to sort by row
+   :param arrays: The columns (int64, uint64, float64, Strings, or Categorical) to sort by row.
    :type arrays: Sequence of Strings, pdarray, or Categorical
    :param algorithm: The algorithm to be used for sorting the arrays.
    :type algorithm: SortingAlgorithm, default=SortingAlgorithm.RadixSortLSD
+   :param ascending: Whether to sort in ascending order. Ignored when arrays have ndim > 1.
+   :type ascending: bool, default=True
 
-   :returns: The indices that permute the rows to grouped order
+   :returns: The indices that permute the rows into grouped order.
    :rtype: pdarray
 
-   :raises ValueError: Raised if the pdarrays are not of the same size or if the parameter
-       is not an Iterable containing pdarrays, Strings, or Categoricals
+   :raises ValueError: If the inputs are not all the same size or not valid array types.
 
    .. seealso:: :py:obj:`argsort`
 
@@ -12744,11 +12745,10 @@ Package Contents
 
    Uses a least-significant-digit radix sort, which is stable and resilient
    to non-uniformity in data but communication intensive. Starts with the
-   last array and moves forward. This sort operates directly on numeric types,
-   but for Strings, it operates on a hash. Thus, while grouping of equivalent
-   strings is guaranteed, lexicographic ordering of the groups is not. For Categoricals,
-   coargsort sorts based on Categorical.codes which guarantees grouping of equivalent categories
-   but not lexicographic ordering of those groups.
+   last array and moves forward.
+
+   For Strings, sorting is based on a hash. This ensures grouping of identical strings,
+   but not lexicographic order. For Categoricals, sorting is based on the internal codes.
 
    .. rubric:: Examples
 
@@ -13849,7 +13849,9 @@ Package Contents
        instantiation.
 
 
-.. py:function:: flip(x: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]
+.. py:function:: flip(x: arkouda.numpy.pdarrayclass.pdarray, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.numpy.pdarrayclass.pdarray
+                 flip(x: arkouda.numpy.strings.Strings, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.numpy.strings.Strings
+                 flip(x: arkouda.categorical.Categorical, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.categorical.Categorical
 
    Reverse an array's values along a particular axis or axes.
 
@@ -19781,7 +19783,6 @@ Package Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> ak.connect()
    >>> x = ak.arange(10).reshape((1, 10, 1))
    >>> x
    array([array([array([0]) array([1]) array([2]) array([3])....
