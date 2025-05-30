@@ -232,7 +232,6 @@ def squeeze(
     Examples
     --------
     >>> import arkouda as ak
-    >>> ak.connect()
     >>> x = ak.arange(10).reshape((1, 10, 1))
     >>> x
     array([array([array([0]) array([1]) array([2]) array([3])....

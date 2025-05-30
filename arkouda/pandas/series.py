@@ -1268,7 +1268,6 @@ class Series:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
         >>> s = ak.Series(ak.array([2, 3, 2, 3, 4]))
         >>> s
 
@@ -1343,7 +1342,6 @@ class Series:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
         >>> from arkouda import Series
         >>> import numpy as np
 
@@ -1386,7 +1384,6 @@ class Series:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
         >>> from arkouda import Series
         >>> import numpy as np
 
@@ -1424,7 +1421,6 @@ class Series:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
         >>> from arkouda import Series
         >>> import numpy as np
 
@@ -1467,7 +1463,6 @@ class Series:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
         >>> from arkouda import Series
         >>> import numpy as np
 
@@ -1498,7 +1493,6 @@ class Series:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
         >>> from arkouda import Series
         >>> import numpy as np
 
@@ -1548,7 +1542,6 @@ class Series:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
         >>> from arkouda import Series
 
         >>> data = ak.Series([1, np.nan, 3, np.nan, 5])
