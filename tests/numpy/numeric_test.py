@@ -1561,3 +1561,98 @@ class TestNumeric:
         anp_taken = np.take(anp, indices_np, axis=axis)
 
         assert np.array_equal(a_taken.to_ndarray(), anp_taken)
+
+    @pytest.mark.parametrize("dtype", NO_BOOL)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_vecdot2_1d(self, dtype, size):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        a = ak.randint(0, 100, size, dtype=dtype, seed=seed)
+        b = ak.randint(0, 100, size, dtype=dtype)
+        np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray())
+        ak_vecdot_f = ak.vecdot2(a, b)
+        ak_vecdot_r = ak.vecdot2(a, b)
+        assert isclose(np_vecdot, ak_vecdot_f)  # for 1D case, results are scalar
+        assert isclose(ak_vecdot_f, ak_vecdot_r)
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("dtype", NO_BOOL)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("same_shape", YES_NO)
+    def test_vecdot2_2d(self, dtype, size, same_shape):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        if same_shape:
+            a_shape = (2, size // 2)
+            b_shape = (2, size // 2)
+        else:
+            a_shape = (1, size // 2)
+            b_shape = (2, size // 2)
+        a = ak.randint(0, 100, a_shape, dtype=dtype, seed=seed)
+        b = ak.randint(0, 100, b_shape, dtype=dtype)
+        np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray())
+        ak_vecdot_f = ak.vecdot2(a, b)
+        ak_vecdot_r = ak.vecdot2(b, a)
+        ak_assert_almost_equivalent(np_vecdot, ak_vecdot_f)
+        ak_assert_almost_equivalent(ak_vecdot_f, ak_vecdot_r)
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("dtype", NO_BOOL)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("same_shape", YES_NO)
+    def test_vecdot2_3d(self, dtype, size, same_shape):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        if same_shape:
+            a_shape = (2, 2, size // 4)
+            b_shape = (2, 2, size // 4)
+        else:
+            a_shape = (1, size // 4)
+            b_shape = (2, 2, size // 4)
+        a = ak.randint(0, 100, a_shape, dtype=dtype, seed=seed)
+        b = ak.randint(0, 100, b_shape, dtype=dtype)
+        np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray())
+        ak_vecdot_f = ak.vecdot2(a, b)
+        ak_vecdot_r = ak.vecdot2(b, a)
+        ak_assert_almost_equivalent(np_vecdot, ak_vecdot_f)
+        ak_assert_almost_equivalent(ak_vecdot_f, ak_vecdot_r)
+
+    #   The broadcast test creates compatible shapes that have to be broadcast
+    #   to perform the computation
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("dtype", NO_BOOL)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_vecdot2_with_broadcast(self, dtype, size):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        ashape = [1, 1]
+        bshape = [1, 1]
+        for i in range(2):
+            cointoss = random.choice([True, False])
+            alteration = np.random.randint(2, 4)
+            if cointoss:
+                ashape[i] = alteration
+            else:
+                bshape[i] = alteration
+        lastdim = max(2, size // (prod(ashape) * prod(bshape)))
+        ashape.append(lastdim)
+        bshape.append(lastdim)
+        a = ak.randint(0, 100, tuple(ashape), dtype=dtype, seed=seed)
+        b = ak.randint(0, 100, tuple(bshape), dtype=dtype)
+        np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray())
+        ak_vecdot_f = ak.vecdot2(a, b)
+        ak_vecdot_r = ak.vecdot2(b, a)
+        ak_assert_almost_equivalent(np_vecdot, ak_vecdot_f)
+        ak_assert_almost_equivalent(ak_vecdot_f, ak_vecdot_r)
+
+    #   The error test sends incompatible shapes to vecdot2, which passes them to
+    #   ak.broadcast_dims, which is where the error is raised.
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("dtype", NO_BOOL)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_vecdot2_error(self, dtype, size):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        a_shape = (1, size // 2)
+        b_shape = (2, size // 4)
+        with pytest.raises(ValueError):
+            a = ak.randint(0, 100, a_shape, dtype=dtype, seed=seed)
+            b = ak.randint(0, 100, b_shape, dtype=dtype)
+            ak.vecdot2(a, b)  # causes the ValueError

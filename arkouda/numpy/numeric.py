@@ -89,6 +89,7 @@ __all__ = [
     "tril",
     "transpose",
     "vecdot",
+    "vecdot2",
     "cumsum",
     "cumprod",
     "sin",
@@ -2916,6 +2917,58 @@ def vecdot(x1: pdarray, x2: pdarray) -> pdarray:
         del x2
 
     return create_pdarray(repMsg)
+
+
+@typechecked
+def vecdot2(x1: pdarray, x2: pdarray) -> Union[numeric_scalars, pdarray]:
+    """
+    Computes the numpy-style vecdot product of two matrices.  This differs from the
+    vecdot function above.  See https://numpy.org/doc/stable/reference/index.html.
+
+    Parameters
+    ----------
+    x1 : pdarray
+    x2 : pdarray
+
+    Returns
+    -------
+    pdarray, numeric_scalar
+        x1 vecdot x2
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
+    >>> b = ak.array([[2,2,2,2,2],[2,2,2,2,2]])
+    >>> ak.vecdot2(a,b)
+    array([30 30])
+    >>> ak.vecdot2(b,a)
+    array([30 30])
+
+    Raises
+    ------
+    ValueError
+        Raised if x1 and x2 can not be broadcast to a compatible shape
+        or if the last dimensions of x1 and x2 don't match.
+
+    Notes
+    -----
+    This matches the behavior of numpy vecdot, but as commented above, it is not the
+    behavior of the existing vecdot, which calls the chapel-side vecdot function.
+    This function only uses broadcast_dims, broadcast_to_shape, ak.sum, and the
+    binops pdarray multiplication function.  The last dimension of x1 and x2 must
+    match, and it must be possible to broadcast them to a compatible shape.
+
+    """
+    #  Imports are here because they caused circular import otherwise
+    from arkouda.numpy.pdarrayclass import broadcast_to_shape
+    from arkouda.numpy.util import broadcast_dims
+
+    if x1.shape[-1] != x2.shape[-1]:
+        raise ValueError("Last dimensions of inputs must match for vecdot2.")
+
+    ns = broadcast_dims(x1.shape, x2.shape)
+    return sum((broadcast_to_shape(x1, ns) * broadcast_to_shape(x2, ns)), axis=-1)
 
 
 def quantile(

@@ -330,6 +330,7 @@ from arkouda.numpy import (
     value_counts,
     var,
     vecdot,
+    vecdot2,
     void,
     vstack,
     where,
