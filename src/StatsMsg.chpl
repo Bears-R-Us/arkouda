@@ -19,57 +19,77 @@ module StatsMsg {
     const sLogger = new Logger(logLevel, logChannel);
 
     @arkouda.registerCommand()
-    proc mean(const ref x: [?d] ?t, skipNan: bool): real throws {
+    proc meanAll(const ref x: [?d] ?t, skipNan: bool): real throws {
       if canBeNan(t) && skipNan
           then return meanSkipNan(x, d);
           else return (+ reduce x:real) / x.size:real;
     }
 
     @arkouda.registerCommand()
-    proc meanReduce(const ref x: [?d] ?t, skipNan: bool, axes: list(int)): [] real throws {
-      var meanArr = makeDistArray(domOffAxis(d, axes), real);
-      forall (slice, sliceIdx) in axisSlices(d, axes) {
-        if canBeNan(t) && skipNan
-          then meanArr[sliceIdx] = meanSkipNan(x, slice);
-          else meanArr[sliceIdx] = meanOver(x, slice);
+    proc mean(const ref x: [?d] ?t, skipNan: bool, axis: list(int)): [] real throws {
+      const (valid, axes_) = validateNegativeAxes (axis, d.rank);
+      if !valid {
+        throw new Error("Invalid axis value(s) '%?' in mean reduction".format(axis));
+      } else {
+        var meanArr = makeDistArray(domOffAxis(d, axes_), real);
+        forall (slice, sliceIdx) in axisSlices(d, axes_) {
+            if canBeNan(t) && skipNan
+            then meanArr[sliceIdx] = meanSkipNan(x, slice);
+            else meanArr[sliceIdx] = meanOver(x, slice);
+        }
+        return meanArr;
       }
-      return meanArr;
     }
 
-    @arkouda.registerCommand(name="var")
-    proc variance(const ref x: [?d] ?t, skipNan: bool, ddof: real): real throws {
+    @arkouda.registerCommand()
+    proc varAll(const ref x: [?d] ?t, skipNan: bool, ddof: real): real throws {
       if canBeNan(t) && skipNan
         then return varianceSkipNan(x, d, ddof);
         else return variance(x, ddof);
     }
 
+    // Note that this proc is named varReduce instead of just "var", because "var"
+    // is a reserved Chapel keyword.  Because var and std are part of the same
+    // reduction grouping python-side, the corresponding std function is also
+    // named stdReduce.
+
     @arkouda.registerCommand()
-    proc varReduce(const ref x: [?d] ?t, skipNan: bool, ddof: real, axes: list(int)): [] real throws {
-      var varArr = makeDistArray(domOffAxis(d, axes), real);
-      forall (slice, sliceIdx) in axisSlices(d, axes) {
-        if canBeNan(t) && skipNan
-          then varArr[sliceIdx] = varianceSkipNan(x, slice, ddof);
-          else varArr[sliceIdx] = varianceOver(x, slice, ddof);
+    proc varReduce(const ref x: [?d] ?t, skipNan: bool, ddof: real, axis: list(int)): [] real throws {
+      const (valid, axes_) = validateNegativeAxes (axis, d.rank);
+      if !valid {
+        throw new Error("Invalid axis value(s) '%?' in var reduction".format(axis));
+      } else {
+        var varArr = makeDistArray(domOffAxis(d, axes_), real);
+        forall (slice, sliceIdx) in axisSlices(d, axes_) {
+            if canBeNan(t) && skipNan
+              then varArr[sliceIdx] = varianceSkipNan(x, slice, ddof);
+              else varArr[sliceIdx] = varianceOver(x, slice, ddof);
+        }
+        return varArr;
       }
-      return varArr;
     }
 
     @arkouda.registerCommand()
-    proc std(const ref x: [?d] ?t, skipNan: bool, ddof: real): real throws {
+    proc stdAll(const ref x: [?d] ?t, skipNan: bool, ddof: real): real throws {
       if canBeNan(t) && skipNan
         then return stdSkipNan(x, d, ddof);
         else return std(x, ddof);
     }
 
     @arkouda.registerCommand()
-    proc stdReduce(const ref x: [?d] ?t, skipNan: bool, ddof: real, axes: list(int)): [] real throws {
-      var stdArr = makeDistArray(domOffAxis(d, axes), real);
-      forall (slice, sliceIdx) in axisSlices(d, axes) {
-        if canBeNan(t) && skipNan
-          then stdArr[sliceIdx] = stdSkipNan(x, slice, ddof);
-          else stdArr[sliceIdx] = stdOver(x, slice, ddof);
+    proc stdReduce(const ref x: [?d] ?t, skipNan: bool, ddof: real, axis: list(int)): [] real throws {
+      const (valid, axes_) = validateNegativeAxes (axis, d.rank);
+      if !valid {
+        throw new Error("Invalid axis value(s) '%?' in std reduction".format(axis));
+      } else {
+        var stdArr = makeDistArray(domOffAxis(d, axes_), real);
+        forall (slice, sliceIdx) in axisSlices(d, axes_) {
+            if canBeNan(t) && skipNan
+                then stdArr[sliceIdx] = stdSkipNan(x, slice, ddof);
+                else stdArr[sliceIdx] = stdOver(x, slice, ddof);
+        }
+        return stdArr;
       }
-      return stdArr;
     }
 
     @arkouda.registerCommand()

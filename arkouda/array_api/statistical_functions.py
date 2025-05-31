@@ -107,10 +107,10 @@ def mean(
     arr = Array._new(
         create_pdarray(
             generic_msg(
-                cmd=f"meanReduce<{x.dtype},{x.ndim}>",
+                cmd=f"mean<{x.dtype},{x.ndim}>",
                 args={
                     "x": x._array,
-                    "axes": axis_list,
+                    "axis": axis_list,
                     "skipNan": True,  # TODO: handle all-nan slices
                 },
             )
@@ -231,7 +231,7 @@ def std(
                 args={
                     "x": x._array,
                     "ddof": correction,
-                    "axes": axis_list,
+                    "axis": axis_list,
                     "skipNan": True,
                 },
             )
@@ -325,7 +325,7 @@ def var(
                 args={
                     "x": x._array,
                     "ddof": correction,
-                    "axes": axis_list,
+                    "axis": axis_list,
                     "skipNan": True,
                 },
             )

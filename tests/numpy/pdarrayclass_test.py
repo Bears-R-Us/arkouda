@@ -6,6 +6,7 @@ import pytest
 import arkouda as ak
 from arkouda.client import get_array_ranks, get_max_array_rank
 from arkouda.dtypes import bigint
+from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
 from arkouda.testing import assert_arkouda_array_equivalent
 from arkouda.testing import assert_equal as ak_assert_equal
 from arkouda.testing import assert_equivalent as ak_assert_equivalent
@@ -307,7 +308,7 @@ class TestPdarrayClass:
             pda2 = ak.array(nda2)
             assert_arkouda_array_equivalent(ak.dot(pda1, pda2), np.dot(nda1, nda2))
 
-        #   higher dimension testing may not be feasible at this time
+        #   higher dimension testing of dot may not be feasible at this time
 
     @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -344,3 +345,120 @@ class TestPdarrayClass:
             a_d = ak.diff(a, n=n)
             anp_d = np.diff(anp, n=n)
         assert_arkouda_array_equivalent(a_d, anp_d)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
+    def test_mean_1D(self, size, dtype):
+        nda = np.random.randint(0, size, size).astype(dtype)
+        pda = ak.array(nda)
+        ak_assert_almost_equivalent(np.mean(nda), pda.mean())
+        ak.assert_almost_equivalent(np.mean(nda), ak.mean(pda))
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
+    def test_mean_2D(self, size, dtype):
+        nda = np.random.randint(0, size, (2, size // 2)).astype(dtype)
+        pda = ak.array(nda)
+        ak_assert_almost_equivalent(np.mean(nda), pda.mean())
+        ak.assert_almost_equivalent(np.mean(nda), ak.mean(pda))
+        for axis in range(-2, 2):
+            ak_assert_almost_equivalent(np.mean(nda, axis=axis), pda.mean(axis=axis))
+            ak.assert_almost_equivalent(np.mean(nda, axis=axis), ak.mean(pda, axis=axis))
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
+    def test_mean_3D(self, size, dtype):
+        nda = np.random.randint(0, size, (2, 2, size // 4)).astype(dtype)
+        pda = ak.array(nda)
+        ak_assert_almost_equivalent(np.mean(nda), pda.mean())
+        ak.assert_almost_equivalent(np.mean(nda), ak.mean(pda))
+        for axis in range(-3, 3):
+            ak_assert_almost_equivalent(np.mean(nda, axis=axis), pda.mean(axis=axis))
+            ak.assert_almost_equivalent(np.mean(nda, axis=axis), ak.mean(pda, axis=axis))
+        for axis in [(0, 1), (0, 2), (1, 2), (-3, -2), (-3, -1), (-2, -1)]:
+            ak_assert_almost_equivalent(np.mean(nda, axis=axis), pda.mean(axis=axis))
+            ak.assert_almost_equivalent(np.mean(nda, axis=axis), ak.mean(pda, axis=axis))
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
+    def test_var_1D(self, size, dtype):
+        nda = np.random.randint(0, size, size).astype(dtype)
+        pda = ak.array(nda)
+        ak_assert_almost_equivalent(np.var(nda), pda.var())
+        ak.assert_almost_equivalent(np.var(nda), ak.var(pda))
+        ak_assert_almost_equivalent(np.var(nda, ddof=1), pda.var(ddof=1))
+        ak.assert_almost_equivalent(np.var(nda, ddof=1), ak.var(pda, ddof=1))
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
+    def test_var_2D(self, size, dtype):
+        nda = np.random.randint(0, size, (2, size // 2)).astype(dtype)
+        pda = ak.array(nda)
+        ak.assert_almost_equivalent(np.var(nda), pda.var())
+        ak.assert_almost_equivalent(np.var(nda), ak.var(pda))
+        ak.assert_almost_equivalent(np.var(nda, ddof=1), pda.var(ddof=1))
+        ak.assert_almost_equivalent(np.var(nda, ddof=1), ak.var(pda, ddof=1))
+        for axis in range(2):
+            ak_assert_almost_equivalent(np.var(nda, axis=axis, ddof=1), pda.var(axis=axis, ddof=1))
+            ak.assert_almost_equivalent(np.var(nda, axis=axis, ddof=1), ak.var(pda, axis=axis, ddof=1))
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
+    def test_var_3D(self, size, dtype):
+        nda = np.random.randint(0, size, (2, 2, size // 4)).astype(dtype)
+        pda = ak.array(nda)
+        ak_assert_almost_equivalent(np.var(nda), pda.var())
+        ak.assert_almost_equivalent(np.var(nda), ak.var(pda))
+        ak_assert_almost_equivalent(np.var(nda, ddof=1), pda.var(ddof=1))
+        ak.assert_almost_equivalent(np.var(nda, ddof=1), ak.var(pda, ddof=1))
+        for axis in range(2):
+            ak_assert_almost_equivalent(np.var(nda, axis=axis, ddof=1), pda.var(axis=axis, ddof=1))
+            ak.assert_almost_equivalent(np.var(nda, axis=axis, ddof=1), ak.var(pda, axis=axis, ddof=1))
+        for axis in [(0, 1), (0, 2), (1, 2), (-3, -2), (-3, -1), (-2, -1)]:
+            ak_assert_almost_equivalent(np.var(nda, ddof=1, axis=axis), pda.var(ddof=1, axis=axis))
+            ak.assert_almost_equivalent(np.var(nda, ddof=1, axis=axis), ak.var(pda, ddof=1, axis=axis))
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
+    def test_std_1D(self, size, dtype):
+        nda = np.random.randint(0, size, size).astype(dtype)
+        pda = ak.array(nda)
+        ak_assert_almost_equivalent(np.std(nda), pda.std())
+        ak.assert_almost_equivalent(np.std(nda), ak.std(pda))
+        ak_assert_almost_equivalent(np.std(nda, ddof=1), pda.std(ddof=1))
+        ak.assert_almost_equivalent(np.std(nda, ddof=1), ak.std(pda, ddof=1))
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
+    def test_std_2D(self, size, dtype):
+        nda = np.random.randint(0, size, (2, size // 2)).astype(dtype)
+        pda = ak.array(nda)
+        ak_assert_almost_equivalent(np.std(nda), pda.std())
+        ak.assert_almost_equivalent(np.std(nda), ak.std(pda))
+        ak_assert_almost_equivalent(np.std(nda, ddof=1), pda.std(ddof=1))
+        ak.assert_almost_equivalent(np.std(nda, ddof=1), ak.std(pda, ddof=1))
+        for axis in range(2):
+            ak_assert_almost_equivalent(np.std(nda, axis=axis, ddof=1), pda.std(axis=axis, ddof=1))
+            ak.assert_almost_equivalent(np.std(nda, axis=axis, ddof=1), ak.std(pda, axis=axis, ddof=1))
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
+    def test_std_3D(self, size, dtype):
+        nda = np.random.randint(0, size, (2, 2, size // 4)).astype(dtype)
+        pda = ak.array(nda)
+        ak_assert_almost_equivalent(np.std(nda), pda.std())
+        ak.assert_almost_equivalent(np.std(nda), ak.std(pda))
+        ak_assert_almost_equivalent(np.std(nda, ddof=1), pda.std(ddof=1))
+        ak.assert_almost_equivalent(np.std(nda, ddof=1), ak.std(pda, ddof=1))
+        for axis in range(2):
+            ak_assert_almost_equivalent(np.std(nda, axis=axis, ddof=1), pda.std(axis=axis, ddof=1))
+            ak.assert_almost_equivalent(np.std(nda, axis=axis, ddof=1), ak.std(pda, axis=axis, ddof=1))
+        for axis in [(0, 1), (0, 2), (1, 2), (-3, -2), (-3, -1), (-2, -1)]:
+            ak_assert_almost_equivalent(np.std(nda, ddof=1, axis=axis), pda.std(ddof=1, axis=axis))
+            ak.assert_almost_equivalent(np.std(nda, ddof=1, axis=axis), ak.std(pda, ddof=1, axis=axis))

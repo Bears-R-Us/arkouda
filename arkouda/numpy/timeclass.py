@@ -1,5 +1,6 @@
 import datetime
 import json
+from typing import Optional, Union
 
 import numpy as np
 from pandas import Series as pdSeries
@@ -885,11 +886,16 @@ class Timedelta(_AbstractBaseTime):
         """
         return to_timedelta(self.to_ndarray())
 
-    def std(self, ddof: int_scalars = 0):
+    def std(
+        self,
+        ddof: int_scalars = 0,
+        axis: Optional[Union[None, int, tuple]] = None,
+        keepdims: Optional[bool] = False,
+    ):
         """
-        Returns the standard deviation as a pd.Timedelta object
+        Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std
         """
-        return self._scalar_callback(self.values.std(ddof=ddof))
+        return self._scalar_callback(self.values.std(ddof, axis, keepdims))
 
     def sum(self):
         # Sum as a pd.Timedelta
