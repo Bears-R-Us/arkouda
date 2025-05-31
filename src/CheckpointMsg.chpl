@@ -267,6 +267,12 @@ module CheckpointMsg {
           continue;
         }
 
+        if ! sd.seenNotableActivity.read() {
+          // There has been no action on the server since it started.
+          delay = minRequestedDelay;
+          continue;
+        }
+
         const ckptReason = needToCheckpoint(idleTime, idleStart, idleStartForLastMemCheck);
         if ! ckptReason.isEmpty() {
           // Save a checkpoint.

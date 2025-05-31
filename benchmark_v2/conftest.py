@@ -24,7 +24,7 @@ def pytest_addoption(parser):
         "--host",
         action="store",
         default=default_host,
-        help="arkouda server host",
+        help="arkouda server host for CLIENT running mode",
     )
 
     default_port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
@@ -41,8 +41,8 @@ def pytest_addoption(parser):
         "--nl",
         action="store",
         default=default_nl,
-        help="Number of Locales to run Arkouda with."
-        "Defaults ARKOUDA_NUMLOCALES, if set, otherwise 2. "
+        help="Number of Locales to run Arkouda with. "
+        "Defaults to ARKOUDA_NUMLOCALES, if set, otherwise 2. "
         "If Arkouda is not configured for multi_locale, 1 locale is used.",
     )
 
@@ -258,7 +258,8 @@ def _global_server() -> Iterator[None]:
 
     if pytest.running_mode == TestRunningMode.GLOBAL_SERVER:
         nl = pytest.nl
-        host, port, proc = start_arkouda_server(host=pytest.host, numlocales=nl, port=pytest.port)
+        host, port, proc = start_arkouda_server(numlocales=nl, port=pytest.port)
+        pytest.host = host
         print(f"Started arkouda_server in GLOBAL_SERVER mode on {host}:{port} ({nl} locales)")
 
         try:
@@ -288,7 +289,8 @@ def _module_server() -> Iterator[None]:
     """
     if pytest.running_mode == TestRunningMode.CLASS_SERVER:
         nl = pytest.nl
-        host, port, proc = start_arkouda_server(host=pytest.host, numlocales=nl, port=pytest.port)
+        host, port, proc = start_arkouda_server(numlocales=nl, port=pytest.port)
+        pytest.host = host
         print(f"Started arkouda_server in CLASS_SERVER mode on {host}:{port} ({nl} locales)")
 
         try:

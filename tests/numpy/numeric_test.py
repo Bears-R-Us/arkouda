@@ -332,7 +332,7 @@ class TestNumeric:
 
     #   log and exp tests were identical, and so have been combined.
 
-    @pytest.mark.skipif(pytest.host == "horizon", reason="Fails on horizon")
+    @pytest.mark.skipif(pytest.client_host == "horizon", reason="Fails on horizon")
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("num_type1", NO_BOOL)
     @pytest.mark.parametrize("num_type2", NO_BOOL)
