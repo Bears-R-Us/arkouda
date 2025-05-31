@@ -29,7 +29,7 @@ def _ensure_plugins_installed():
 
 
 @pytest.fixture(scope="session", autouse=True)
-def startup_teardown():
+def _global_server() -> Iterator[None]:
     _ensure_plugins_installed()
     yield
 
@@ -53,9 +53,12 @@ def _class_error_msg(req, args):
     return _class_args(req) + "is not a list: " + str(args)
 
 
-# returns ServerInfo(host, port, process)
-def _my_start_server(server_args):
-    return start_arkouda_server(numlocales=pytest.nl, port=pytest.port, server_args=server_args)
+def _my_start_server(server_args, note):
+    host, port, proc = start_arkouda_server(
+        numlocales=pytest.nl, port=pytest.port, server_args=server_args
+    )
+    pytest.server = host
+    print(f"Started arkouda_server {note} -nl {pytest.nl} on {host}:{port}")
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -64,7 +67,7 @@ def _module_server(request) -> Iterator[None]:
     if module_server_args is not None:
         if type(module_server_args) is not list:
             raise TypeError(_module_error_msg(request, module_server_args))
-        _my_start_server(module_server_args)
+        _my_start_server(module_server_args, "with module_server_args")
         pytest.module_server_launched = True
 
         yield
@@ -87,7 +90,7 @@ def _class_server(request) -> Iterator[None]:
             raise RuntimeError("both " + _module_args(r) + "and " + _class_args(r) + "are given")
         if type(class_server_args) is not list:
             raise TypeError(_class_error_msg(r, class_server_args))
-        _my_start_server(class_server_args)
+        _my_start_server(class_server_args, "with class_server_args")
 
         yield
 

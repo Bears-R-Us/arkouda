@@ -14,15 +14,21 @@ def directory_exists_delayed(path, num_delays, delay=0.1):
     """
     Repeats directory_exists() query num_delays times,
     each after a delay of `delay` seconds.
+
     This allows us to adjust for the server that can delay
-    the detection of a condition by --checkpointCheckInterval, if set,
-    otherwise by min(--checkpointIdleTime, --checkpointMemPctDelay).
+    the detection of a condition by up to `checkpointCheckInterval`,
+    which defaults to min(`checkpointIdleTime`, `checkpointMemPctDelay`).
+
+    The final sleep() is needed to wait for server checkpointing to complete,
+    once the directory is created. Otherwise delete_directory() executed
+    by the tests may interfer with checkpointing.
     """
     for _ in range(num_delays):
         if directory_exists(path):
+            sleep(0.3)  # conservative estimate
             return True
         sleep(delay)
-    return directory_exists(path)
+    return False
 
 
 class TestIdleAndInterval:
