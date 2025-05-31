@@ -199,6 +199,7 @@ from arkouda.numpy.numeric import (
     trunc,
     value_counts,
     vecdot,
+    vecdot2,
     where,
 )
 from arkouda.numpy.utils import shape
