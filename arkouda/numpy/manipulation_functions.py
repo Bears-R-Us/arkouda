@@ -1,6 +1,6 @@
 # from __future__ import annotations
 
-from typing import Optional, Sequence, Tuple, Union, cast
+from typing import Optional, Sequence, Tuple, Union, cast, overload
 
 from typeguard import typechecked
 
@@ -12,6 +12,21 @@ from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.numpy.strings import Strings
 
 __all__ = ["flip", "repeat", "squeeze", "tile"]
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def flip(x: pdarray, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> pdarray: ...
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def flip(x: Strings, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Strings: ...
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def flip(x: Categorical, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Categorical: ...
 
 
 def flip(
@@ -232,7 +247,6 @@ def squeeze(
     Examples
     --------
     >>> import arkouda as ak
-    >>> ak.connect()
     >>> x = ak.arange(10).reshape((1, 10, 1))
     >>> x
     array([array([array([0]) array([1]) array([2]) array([3])....

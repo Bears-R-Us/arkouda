@@ -4,7 +4,9 @@ import arkouda as ak
 from server_util.test.server_test_util import TestRunningMode, start_arkouda_server
 
 
-@pytest.mark.skipif(pytest.host == "horizon", reason="nightly test failures due to machine busyness")
+@pytest.mark.skipif(
+    pytest.client_host == "horizon", reason="nightly test failures due to machine busyness"
+)
 class TestClient:
     # def test_client_docstrings(self):
     #     import doctest
@@ -52,14 +54,14 @@ class TestClient:
 
     @pytest.mark.skipif(
         pytest.test_running_mode == TestRunningMode.CLIENT,
-        reason="start_arkouda_server won't restart if running mode is client",
+        reason="should not stop/start the server in the CLIENT mode",
     )
     def test_shutdown(self):
         """
         Tests the ak.shutdown() method
         """
         ak.shutdown()
-        pytest.server, _, _ = start_arkouda_server(numlocales=pytest.nl)
+        pytest.server, _, _ = start_arkouda_server(numlocales=pytest.nl, port=pytest.port)
         # reconnect to server so subsequent tests will pass
         ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.timeout)
 

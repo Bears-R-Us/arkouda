@@ -37,6 +37,10 @@ jobs:
     - name: Arkouda make doc
       run: |
         make doc
+    - name: Install rsync (needed by deploy action)
+      run: |
+        apt-get update
+        apt-get install -y rsync
     - name: publish-docs
       uses: JamesIves/github-pages-deploy-action@v4
       with:

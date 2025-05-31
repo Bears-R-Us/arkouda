@@ -666,6 +666,7 @@ module ServerDaemon {
                             if commandMap.contains(cmd) {
                                 activityMutex.writeEF("server");
                                 defer { activityMutex.readFE(); }
+                                serverActivityMark();
 
                                 repMsg = executeCommand(cmd, msgArgs, st);
                             } else {
@@ -741,6 +742,9 @@ module ServerDaemon {
         // 0 if it is currently not idle.
         var idlePeriodStart: atomic real;
 
+        // Has the server received non-trivial commands?
+        var seenNotableActivity: atomic bool;
+
         /* Starts a task for asynchronous checkpointing. */
         proc startAsyncCheckpointTask() {
           numAsyncTasks.add(1);
@@ -755,6 +759,10 @@ module ServerDaemon {
 
         proc serverIdleStop() {
           idlePeriodStart.write(0);
+        }
+
+        proc serverActivityMark() {
+          seenNotableActivity.write(true);
         }
     }
 

@@ -116,6 +116,9 @@ jobs:
       run: |
         python3 -m ensurepip --default-pip
         python3 -m pip install -e .[dev]
+    - name: check mypy version
+      run: |
+        mypy --version
     - name: Arkouda mypy
       run: |
         python3 -m mypy arkouda

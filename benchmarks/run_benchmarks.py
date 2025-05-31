@@ -80,6 +80,15 @@ def get_chpl_util_dir():
     return chpl_util_dir
 
 
+def _my_start_server(args):
+    start_arkouda_server(
+        numlocales=args.num_locales,
+        port=args.server_port,
+        server_args=args.server_args,
+        within_slurm_alloc=bool(args.within_slurm_alloc),
+    )
+
+
 def add_to_dat(benchmark, output, dat_dir, graph_infra):
     """
     Run computePerfStats to take output from a benchmark and create/append to a
@@ -206,23 +215,20 @@ def main():
         os.makedirs(config_dat_dir, exist_ok=True)
 
     if not run_isolated:
-        start_arkouda_server(args.num_locales, port=args.server_port, server_args=args.server_args)
+        _my_start_server(args)
 
     args.benchmarks = args.benchmarks or BENCHMARKS
     for benchmark in args.benchmarks:
         if run_isolated:
-            start_arkouda_server(
-                args.num_locales,
-                port=args.server_port,
-                server_args=args.server_args,
-                within_slurm_alloc=bool(args.within_slrum_alloc),
-            )
+            _my_start_server(args)
+
         for trial in range(args.numtrials):
             benchmark_py = os.path.join(benchmark_dir, "{}.py".format(benchmark))
             out = run_client(benchmark_py, client_args)
             if args.save_data or args.gen_graphs:
                 add_to_dat(benchmark, out, config_dat_dir, args.graph_infra)
             print(out)
+
         if run_isolated:
             stop_arkouda_server()
 
