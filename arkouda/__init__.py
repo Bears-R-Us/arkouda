@@ -334,6 +334,7 @@ from arkouda.numpy import (
     void,
     vstack,
     where,
+    where2,
     zeros,
     zeros_like,
 )
