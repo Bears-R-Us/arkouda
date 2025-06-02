@@ -3168,7 +3168,7 @@ def quantile(
         Raised if the result would have a rank not in the compiled ranks.
 
     """
-
+    from arkouda.client import generic_msg
     keepdims = False if keepdims is None else keepdims
 
     from .manipulation_functions import squeeze

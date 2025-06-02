@@ -622,6 +622,7 @@ class pdarray:
 
     @property
     def max_bits(self):
+        from arkouda.client import generic_msg
         if self.dtype == bigint:
             if not hasattr(self, "_max_bits"):
                 # if _max_bits hasn't been set, fetch value from server
@@ -632,6 +633,7 @@ class pdarray:
 
     @max_bits.setter
     def max_bits(self, max_bits):
+        from arkouda.client import generic_msg
         if self.dtype == bigint:
             cmd = f"set_max_bits<{self.dtype},{self.ndim}>"
             generic_msg(cmd=cmd, args={"array": self, "max_bits": max_bits})

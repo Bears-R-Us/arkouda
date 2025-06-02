@@ -688,6 +688,7 @@ def full(
     array([True True True True True])
     """
     from arkouda.numpy.dtypes import dtype as ak_dtype
+    # from arkouda.client import generic_msg
 
     if isinstance(fill_value, str):
         return _full_string(size, fill_value)
@@ -1028,7 +1029,7 @@ def arange(
     >>> ak.arange(-5, -10, -1)
     array([-5 -6 -7 -8 -9])
     """
-
+    from arkouda.client import generic_msg
     from arkouda.numpy import cast as akcast
 
     start: int_scalars
