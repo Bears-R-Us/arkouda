@@ -12,6 +12,8 @@ warnings.simplefilter("always", UserWarning)
 class TestWhere:
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_where(self, size):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        np.random.seed(seed)
         npA = {
             "uint64": np.random.randint(0, 10, size),
             "int64": np.random.randint(0, 10, size),
@@ -44,6 +46,22 @@ class TestWhere:
 
         with pytest.raises(TypeError):
             ak.where(ak.linspace(1, 10, 10), ak.linspace(1, 10, 10), [0])
+
+        condition = ak.array([[True, False], [True, False]])
+        a = ak.arange(9).reshape(3, 3)
+        b = -5
+
+        with pytest.raises(ValueError):
+            ak.where(condition, a, b)
+
+        a = ak.arange(4).reshape(2, 2)
+        b = "Not a valid bit of data"
+
+        with pytest.raises(TypeError):
+            ak.where(condition, a, b)
+
+        with pytest.raises(RuntimeError):
+            ak.where(a, a, a)
 
     def test_less_than_where_clause(self):
         n1 = np.arange(1, 10)
@@ -85,6 +103,11 @@ class TestWhere:
         np_result = np.where(condN, 1, n1)
 
         result = ak.where(condA, 1, a1)
+        assert np_result.tolist() == result.to_list()
+
+        np_result = np.where(condN, 1, 0)
+
+        result = ak.where(condA, 1, 0)
         assert np_result.tolist() == result.to_list()
 
     def test_not_equal_where_clause(self):
