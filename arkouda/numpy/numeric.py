@@ -2713,7 +2713,7 @@ def putmask(
     return
 
 
-def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = ak_int64) -> pdarray:
+def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = ak_float64) -> pdarray:
     """
     Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
     The matrix need not be square.
