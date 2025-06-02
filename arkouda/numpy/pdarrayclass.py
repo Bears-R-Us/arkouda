@@ -13,12 +13,7 @@ from typeguard import typechecked
 from arkouda.client import generic_msg, get_array_ranks
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
-from arkouda.numpy.dtypes import (
-    ARKOUDA_SUPPORTED_INTS,
-    NUMBER_FORMAT_STRINGS,
-    DTypes,
-    bigint,
-)
+from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars, dtype
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -34,6 +29,36 @@ from arkouda.numpy.dtypes import (
 )
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
+
+
+def _axis_parser(axis):
+    if axis is None:
+        return None
+    else:
+        axis_ = [axis] if np.isscalar(axis) else list(axis) if isinstance(axis, tuple) else axis
+        return axis_
+
+
+def _axis_validation(axis, rank):
+    if axis is None:
+        return True, None
+    elif isinstance(axis, int):
+        axis = axis if axis > 0 else rank + axis
+        if 0 <= axis and axis < rank:
+            return True, axis
+        else:
+            return False, axis
+    elif isinstance(axis, list):  # it's a list
+        valid = True
+        axis_ = axis.copy()
+        for i in range(len(axis_)):
+            axis_[i] = axis_[i] if axis_[i] >= 0 else rank + axis_[i]
+            if axis_[i] < 0 or axis_[i] >= rank:
+                valid = False
+        return valid, axis_
+    else:
+        return False, axis
+
 
 module = modules[__name__]
 
@@ -74,6 +99,7 @@ if TYPE_CHECKING:
     prod = numeric_reduce
     max = numeric_reduce
     min = numeric_reduce
+    mean = numeric_reduce
 
     # ----- boolean_reduce overloads -----
     # docstr-coverage:excused `overload-only, docs live on impl`
@@ -136,6 +162,17 @@ if TYPE_CHECKING:
     argmax = index_reduce
     argmin = index_reduce
 
+    def stats_reduce(
+        self,
+        ddof: int_scalars = 0,
+        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        keepdims: Optional[bool] = False,
+    ) -> Union[np.float64, pdarray]:
+        pass
+
+    var = stats_reduce
+    std = stats_reduce
+
 
 __all__ = [
     "pdarray",
@@ -186,9 +223,12 @@ SUPPORTED_REDUCTION_OPS = [
     "min",
     "sum",
     "prod",
+    "mean",
 ]
 
 SUPPORTED_INDEX_REDUCTION_OPS = ["argmin", "argmax"]
+
+SUPPORTED_STATS_REDUCTION_OPS = ["var", "std"]
 
 
 @typechecked
@@ -1893,23 +1933,203 @@ class pdarray:
         #   Function is generated at runtime with _make_index_reduction_func.
         return argmax(self, axis=axis, keepdims=keepdims)
 
-    def mean(self) -> np.float64:
+    def mean(
+        self, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False
+    ) -> Union[numeric_scalars, pdarray]:
         """
-        Compute the mean.  See ``arkouda.mean`` for details.
-        """
-        return mean(self)
+        Return the mean of the array.
 
-    def var(self, ddof: int_scalars = 0) -> np.float64:
-        """
-        Compute the variance. See ``arkouda.var`` for details.
-        """
-        return var(self, ddof=ddof)
+        Parameters
+        ----------
+        pda : pdarray
+            Values for which to calculate the mean
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
 
-    def std(self, ddof: int_scalars = 0) -> np.float64:
+        Returns
+        -------
+        Union[np.float64, pdarray]
+            The mean calculated from the pda sum and size, along the axis/axes if
+            those are given.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> a = ak.arange(10)
+        >>> ak.mean(a)
+        np.float64(4.5)
+        >>> a.mean()
+        np.float64(4.5)
+        >>> a = ak.arange(10).reshape(2,5)
+        >>> a.mean(axis=0)
+        array([2.5 3.5 4.5 5.5 6.5])
+        >>> ak.mean(a,axis=0)
+        array([2.5 3.5 4.5 5.5 6.5])
+        >>> a.mean(axis=1)
+        array([2.00000000000000000 7.00000000000000000])
+        >>> ak.mean(a,axis=1)
+        array([2.00000000000000000 7.00000000000000000])
+
+        Raises
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
         """
-        Compute the standard deviation. See ``arkouda.std`` for details.
+        #   Function is generated at runtime with _make_reduction_func.
+        return mean(self, axis=axis, keepdims=keepdims)
+
+    def var(
+        self,
+        ddof: int_scalars = 0,
+        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        keepdims: Optional[bool] = False,
+    ) -> Union[np.float64, pdarray]:
         """
-        return std(self, ddof=ddof)
+        Return the variance of values in the array.
+
+        Parameters
+        ----------
+        pda : pdarray
+            Values for which to calculate the variance
+        ddof : int_scalars
+            "Delta Degrees of Freedom" used in calculating var
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        Union[np.float64, pdarray]
+            The scalar variance of the array, or the variance along the axis/axes
+            if supplied
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> a = ak.arange(10)
+        >>> ak.var(a)
+        np.float64(8.25)
+        >>> a.var()
+        np.float64(8.25)
+        >>> a = ak.arange(10).reshape(2,5)
+        >>> a.var(axis=0)
+        array([6.25 6.25 6.25 6.25 6.25])
+        >>> ak.var(a,axis=0)
+        array([6.25 6.25 6.25 6.25 6.25])
+        >>> a.var(axis=1)
+        array([2.00000000000000000 2.00000000000000000])
+        >>> ak.var(a,axis=1)
+        array([2.00000000000000000 2.00000000000000000])
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        ValueError
+            Raised if the ddof >= pdarray size
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        See Also
+        --------
+        mean, std
+
+        Notes
+        -----
+        The variance is the average of the squared deviations from the mean,
+        i.e.,  ``var = mean((x - x.mean())**2)``.
+
+        The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
+        If, however, `ddof` is specified, the divisor ``N - ddof`` is used
+        instead.  In standard statistical practice, ``ddof=1`` provides an
+        unbiased estimator of the variance of a hypothetical infinite population.
+        ``ddof=0`` provides a maximum likelihood estimate of the variance for
+        normally distributed variables.
+        """
+        #   Function is generated at runtime with _make_stats_reduction_func
+        return var(self, ddof=ddof, axis=axis, keepdims=keepdims)
+
+    def std(
+        self,
+        ddof: int_scalars = 0,
+        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        keepdims: Optional[bool] = False,
+    ) -> Union[np.float64, pdarray]:
+        """
+        Return the standard deviation of values in the array. The standard
+        deviation is implemented as the square root of the variance.
+
+        Parameters
+        ----------
+        pda : pdarray
+            values for which to calculate the standard deviation
+        ddof : int_scalars
+            "Delta Degrees of Freedom" used in calculating std
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        Union[np.float64, pdarray]
+            The scalar standard deviation of the array, or the standard deviation
+             along the axis/axes if supplied
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> a = ak.arange(10)
+        >>> ak.std(a)
+        np.float64(2.8722813232690143)
+        >>> a.std()
+        np.float64(2.8722813232690143)
+        >>> a = ak.arange(10).reshape(2,5)
+        >>> a.std(axis=0)
+        array([2.5 2.5 2.5 2.5 2.5])
+        >>> ak.std(a,axis=0)
+        array([2.5 2.5 2.5 2.5 2.5])
+        >>> a.std(axis=1)
+        array([1.4142135623730951 1.4142135623730951])
+        >>> ak.std(a,axis=1)
+        array([1.4142135623730951 1.4142135623730951])
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance or ddof is not an integer
+        ValueError
+            Raised if ddof is an integer < 0
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        See Also
+        --------
+        mean, var
+
+        Notes
+        -----
+        The standard deviation is the square root of the average of the squared
+        deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.
+
+        The average squared deviation is normally calculated as
+        ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,
+        the divisor ``N - ddof`` is used instead. In standard statistical
+        practice, ``ddof=1`` provides an unbiased estimator of the variance
+        of the infinite population. ``ddof=0`` provides a maximum likelihood
+        estimate of the variance for normally distributed variables. The
+        standard deviation computed in this function is the square root of
+        the estimated variance, so even with ``ddof=1``, it will not be an
+        unbiased estimate of the standard deviation per se.
+        """
+        #   Function is generated at runtime with _make_stats_reduction_func
+        return std(self, ddof=ddof, axis=axis, keepdims=keepdims)
 
     def cov(self, y: pdarray) -> np.float64:
         """
@@ -2977,6 +3197,54 @@ def _make_reduction_func(
     return op_func
 
 
+def _make_stats_reduction_func(
+    op,
+    function_descriptor="Return var or std reduction of a pdarray by an operation along an axis.",
+    return_descriptor="",
+    return_dtype="numpy_scalars",
+):
+    if op not in SUPPORTED_STATS_REDUCTION_OPS:
+        raise ValueError(f"value {op} not supported by _make_reduction_func.")
+
+    @typechecked
+    def op_func(
+        pda: pdarray,
+        ddof: int_scalars = 0,
+        axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None,
+        keepdims: bool = False,
+    ) -> Union[numpy_scalars, pdarray]:
+        return _common_stats_reduction(op, pda, ddof, axis, keepdims=keepdims)
+
+    op_func.__doc__ = f"""
+    {function_descriptor}
+
+    Parameters
+    ----------
+    pda : pdarray
+        The pdarray instance to be evaluated.
+    ddof : the delta degrees of freedom argument for var or std
+    axis : int or Tuple[int, ...], optional, default = None
+        The axis or axes along which to compute the function.
+        If None, the computation is done across the entire array.
+    keepdims : bool, optional, default = False
+        Whether to keep the singleton dimension(s) along `axis` in the result.
+
+    Returns
+    -------
+    pdarray or {return_dtype}
+        {return_descriptor}
+
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    RuntimeError
+        Raised if there's a server-side error thrown
+     """
+
+    return op_func
+
+
 def _make_index_reduction_func(
     op,
     function_descriptor="Return index reduction of a pdarray by an operation along an axis.",
@@ -3028,6 +3296,8 @@ def _make_index_reduction_func(
 # check whether a reduction of the given axes on an 'ndim' dimensional array
 # would result in a single scalar value
 def _reduces_to_single_value(axis, ndim) -> bool:
+    if axis is None:
+        return True
     if len(axis) == 0 or ndim == 1:
         # if no axes are specified or the array is 1D, the result is a scalar
         return True
@@ -3082,17 +3352,7 @@ def _common_reduction(
     if kind not in SUPPORTED_REDUCTION_OPS:
         raise ValueError(f"Unsupported reduction type: {kind}")
 
-    axis_ = (
-        []
-        if axis is None
-        else (
-            [
-                axis,
-            ]
-            if isinstance(axis, ARKOUDA_SUPPORTED_INTS)
-            else list(axis)
-        )
-    )
+    axis_ = _axis_parser(axis)
 
     if _reduces_to_single_value(axis_, pda.ndim):
         return parse_single_value(
@@ -3109,6 +3369,75 @@ def _common_reduction(
             generic_msg(
                 cmd=f"{kind}<{pda.dtype.name},{pda.ndim}>",
                 args={"x": pda, "axis": axis_, "skipNan": False},
+            )
+        )
+        if keepdims or axis is None or pda.ndim == 1:
+            return result
+        else:
+            from arkouda.numpy import squeeze
+
+            return squeeze(result, axis)
+
+
+# helper function for var, std
+@typechecked
+def _common_stats_reduction(
+    kind: str,
+    pda: pdarray,
+    ddof: int_scalars = 0,
+    axis: Optional[Union[int_scalars, Tuple[int_scalars, ...], None]] = None,
+    keepdims: bool = False,
+) -> Union[numpy_scalars, pdarray]:
+    """
+    Return reduction of a pdarray by an operation along an axis.
+
+    Parameters
+    ----------
+    kind : str
+        The name of the reduction operation.  Must be a member of SUPPORTED_REDUCTION_OPS.
+    pda : pdarray
+        The pdarray instance to be evaluated.
+    ddof : the delta degrees of freedom for the computation
+    axis : int or Tuple[int, ...], optional, default = None
+        The axis or axes along which to compute the reduction. If None, the sum of the entire array is
+        computed (returning a scalar).
+    keepdims : bool, optional, default = False
+        Whether to keep the singleton dimension(s) along `axis` in the result.
+
+    Returns
+    -------
+    numpy_scalars, pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance.
+    RuntimeError
+        Raised if there's a server-side error thrown.
+    ValueError
+        Raised op is not a supported reduction operation.
+    """
+
+    if kind not in SUPPORTED_STATS_REDUCTION_OPS:
+        raise ValueError(f"Unsupported reduction type: {kind}")
+
+    axis_ = _axis_parser(axis)
+
+    if _reduces_to_single_value(axis_, pda.ndim):
+        return parse_single_value(
+            cast(
+                str,
+                generic_msg(
+                    cmd=f"{kind}All<{pda.dtype.name},{pda.ndim}>",
+                    args={"x": pda, "ddof": ddof, "skipNan": False},
+                ),
+            )
+        )
+    else:
+        result = create_pdarray(
+            generic_msg(
+                cmd=f"{kind}Reduce<{pda.dtype.name},{pda.ndim}>",
+                args={"x": pda, "ddof": ddof, "axis": axis_, "skipNan": False},
             )
         )
         if keepdims or axis is None or pda.ndim == 1:
@@ -3243,6 +3572,42 @@ setattr(
         "Return value is always a np.float64 or np.int64",
         return_descriptor="The product calculated from the pda.",
         return_dtype="numeric_scalars",
+    ),
+)
+
+setattr(
+    module,
+    "mean",
+    _make_reduction_func(
+        "mean",
+        function_descriptor="Return the mean of all elements in the array. "
+        "Return value is always a np.float64 or pdarray",
+        return_descriptor="The product calculated from the pda.",
+        return_dtype="numpy_scalars, pdarray",
+    ),
+)
+
+setattr(
+    module,
+    "var",
+    _make_stats_reduction_func(
+        "var",
+        function_descriptor="Return the variance of all elements in the array. "
+        "Return value is always a np.float64 or pdarray",
+        return_descriptor="The product calculated from the pda.",
+        return_dtype="numpy_scalars, pdarray",
+    ),
+)
+
+setattr(
+    module,
+    "std",
+    _make_stats_reduction_func(
+        "std",
+        function_descriptor="Return the standard deviation of all elements in the array. "
+        "Return value is always a np.float64 or pdarray",
+        return_descriptor="The product calculated from the pda.",
+        return_dtype="numpy_scalars, pdarray",
     ),
 )
 
@@ -3484,171 +3849,6 @@ def dot(
     #   The following unreachable line prevents mypy from flagging a "missing return" error
 
     return None  # type: ignore
-
-
-@typechecked
-def mean(pda: pdarray) -> np.float64:
-    """
-    Return the mean of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-        Values for which to calculate the mean
-
-    Returns
-    -------
-    np.float64
-        The mean calculated from the pda sum and size
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.arange(10)
-    >>> ak.mean(a)
-    np.float64(4.5)
-    >>> a.mean()
-    np.float64(4.5)
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray instance
-    RuntimeError
-        Raised if there's a server-side error thrown
-    """
-    return parse_single_value(
-        generic_msg(
-            cmd=f"mean<{pda.dtype},{pda.ndim}>",
-            args={"x": pda, "skipNan": False},
-        )
-    )
-
-
-@typechecked
-def var(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
-    """
-    Return the variance of values in the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-        Values for which to calculate the variance
-    ddof : int_scalars
-        "Delta Degrees of Freedom" used in calculating var
-
-    Returns
-    -------
-    np.float64
-        The scalar variance of the array
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.arange(10)
-    >>> ak.var(a)
-    np.float64(8.25)
-    >>> a.var()
-    np.float64(8.25)
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray instance
-    ValueError
-        Raised if the ddof >= pdarray size
-    RuntimeError
-        Raised if there's a server-side error thrown
-
-    See Also
-    --------
-    mean, std
-
-    Notes
-    -----
-    The variance is the average of the squared deviations from the mean,
-    i.e.,  ``var = mean((x - x.mean())**2)``.
-
-    The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
-    If, however, `ddof` is specified, the divisor ``N - ddof`` is used
-    instead.  In standard statistical practice, ``ddof=1`` provides an
-    unbiased estimator of the variance of a hypothetical infinite population.
-    ``ddof=0`` provides a maximum likelihood estimate of the variance for
-    normally distributed variables.
-    """
-    if ddof >= pda.size:
-        raise ValueError("var: ddof must be less than number of values")
-    return parse_single_value(
-        generic_msg(
-            cmd=f"var<{pda.dtype},{pda.ndim}>",
-            args={"x": pda, "ddof": ddof, "skipNan": False},
-        )
-    )
-
-
-@typechecked
-def std(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
-    """
-    Return the standard deviation of values in the array. The standard
-    deviation is implemented as the square root of the variance.
-
-    Parameters
-    ----------
-    pda : pdarray
-        values for which to calculate the standard deviation
-    ddof : int_scalars
-        "Delta Degrees of Freedom" used in calculating std
-
-    Returns
-    -------
-    np.float64
-        The scalar standard deviation of the array
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.arange(10)
-    >>> ak.std(a)
-    np.float64(2.8722813232690143)
-    >>> a.std()
-    np.float64(2.8722813232690143)
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray instance or ddof is not an integer
-    ValueError
-        Raised if ddof is an integer < 0
-    RuntimeError
-        Raised if there's a server-side error thrown
-
-    See Also
-    --------
-    mean, var
-
-    Notes
-    -----
-    The standard deviation is the square root of the average of the squared
-    deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.
-
-    The average squared deviation is normally calculated as
-    ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,
-    the divisor ``N - ddof`` is used instead. In standard statistical
-    practice, ``ddof=1`` provides an unbiased estimator of the variance
-    of the infinite population. ``ddof=0`` provides a maximum likelihood
-    estimate of the variance for normally distributed variables. The
-    standard deviation computed in this function is the square root of
-    the estimated variance, so even with ``ddof=1``, it will not be an
-    unbiased estimate of the standard deviation per se.
-    """
-    if ddof < 0:
-        raise ValueError("ddof must be an integer 0 or greater")
-    return parse_single_value(
-        generic_msg(
-            cmd=f"std<{pda.dtype},{pda.ndim}>",
-            args={"x": pda, "ddof": ddof, "skipNan": False},
-        )
-    )
 
 
 @typechecked
