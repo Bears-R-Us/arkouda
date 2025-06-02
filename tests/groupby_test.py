@@ -60,13 +60,15 @@ class TestGroupBy:
     seed = pytest.seed if pytest.seed is not None else 8675309
     np.random.seed(seed)
 
-    # def test_groupbyclass_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(
-    #         groupbyclass, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
-    #     )
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    def test_groupbyclass_docstrings(self):
+        import doctest
+
+        from arkouda import groupbyclass
+
+        result = doctest.testmod(
+            groupbyclass, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @classmethod
     def setup_class(cls):
