@@ -59,12 +59,13 @@ class TestSparse:
 
             Returns
             -------
-            result_rows : list
-                Row indices of non-zero elements in the result matrix.
-            result_cols : list
-                Column indices of non-zero elements in the result matrix.
-            result_vals : list
-                Values of non-zero elements in the result matrix.
+            Tuple[list, list, list]
+                result_rows : list
+                    Row indices of non-zero elements in the result matrix.
+                result_cols : list
+                    Column indices of non-zero elements in the result matrix.
+                result_vals : list
+                    Values of non-zero elements in the result matrix.
             """
             from collections import defaultdict
 
