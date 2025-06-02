@@ -723,7 +723,7 @@ Module Contents
        35.234416869913829 41.192939934258227])
 
 
-.. py:function:: eye(rows: arkouda.numpy.dtypes.int_scalars, cols: arkouda.numpy.dtypes.int_scalars, diag: arkouda.numpy.dtypes.int_scalars = 0, dt: type = ak_int64) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: eye(rows: arkouda.numpy.dtypes.int_scalars, cols: arkouda.numpy.dtypes.int_scalars, diag: arkouda.numpy.dtypes.int_scalars = 0, dt: type = ak_float64) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
    The matrix need not be square.

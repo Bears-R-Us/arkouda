@@ -13524,7 +13524,7 @@ Package Contents
      the same file type, but formatted to be read by Pandas.
 
 
-.. py:function:: eye(rows: arkouda.numpy.dtypes.int_scalars, cols: arkouda.numpy.dtypes.int_scalars, diag: arkouda.numpy.dtypes.int_scalars = 0, dt: type = ak_int64) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: eye(rows: arkouda.numpy.dtypes.int_scalars, cols: arkouda.numpy.dtypes.int_scalars, diag: arkouda.numpy.dtypes.int_scalars = 0, dt: type = ak_float64) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
    The matrix need not be square.
