@@ -27,6 +27,7 @@ def argsort(x: Array, /, *, axis: int = -1, descending: bool = False, stable: bo
     stable : bool, optional
         Whether to use a stable sorting algorithm. Note: arkouda's sorting algorithm is always stable so
         this argument is ignored.
+
     """
     if axis == -1:
         axis = x.ndim - 1
