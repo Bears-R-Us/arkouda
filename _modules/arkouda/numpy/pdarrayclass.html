@@ -392,12 +392,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">get_array_ranks</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.infoclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">information</span><span class="p">,</span> <span class="n">pretty_print_information</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">getArkoudaLogger</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ARKOUDA_SUPPORTED_INTS</span><span class="p">,</span>
-    <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">,</span>
-    <span class="n">DTypes</span><span class="p">,</span>
-    <span class="n">bigint</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">,</span> <span class="n">DTypes</span><span class="p">,</span> <span class="n">bigint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_</span> <span class="k">as</span> <span class="n">akbool</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_scalars</span><span class="p">,</span> <span class="n">dtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
@@ -413,6 +408,36 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">str_</span> <span class="k">as</span> <span class="n">akstr_</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_axis_parser</span><span class="p">(</span><span class="n">axis</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">axis_</span> <span class="o">=</span> <span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">axis</span>
+        <span class="k">return</span> <span class="n">axis_</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_axis_validation</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">rank</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span> <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">rank</span> <span class="o">+</span> <span class="n">axis</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">axis</span> <span class="ow">and</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="n">rank</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">axis</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">axis</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>  <span class="c1"># it&#39;s a list</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">axis_</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axis_</span><span class="p">)):</span>
+            <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">rank</span> <span class="o">+</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">rank</span><span class="p">:</span>
+                <span class="n">valid</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">valid</span><span class="p">,</span> <span class="n">axis_</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">axis</span>
+
 
 <span class="n">module</span> <span class="o">=</span> <span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">]</span>
 
@@ -453,6 +478,7 @@
     <span class="n">prod</span> <span class="o">=</span> <span class="n">numeric_reduce</span>
     <span class="nb">max</span> <span class="o">=</span> <span class="n">numeric_reduce</span>
     <span class="nb">min</span> <span class="o">=</span> <span class="n">numeric_reduce</span>
+    <span class="n">mean</span> <span class="o">=</span> <span class="n">numeric_reduce</span>
 
     <span class="c1"># ----- boolean_reduce overloads -----</span>
     <span class="c1"># docstr-coverage:excused `overload-only, docs live on impl`</span>
@@ -515,6 +541,17 @@
     <span class="n">argmax</span> <span class="o">=</span> <span class="n">index_reduce</span>
     <span class="n">argmin</span> <span class="o">=</span> <span class="n">index_reduce</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">stats_reduce</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+        <span class="k">pass</span>
+
+    <span class="n">var</span> <span class="o">=</span> <span class="n">stats_reduce</span>
+    <span class="n">std</span> <span class="o">=</span> <span class="n">stats_reduce</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;pdarray&quot;</span><span class="p">,</span>
@@ -565,9 +602,12 @@
     <span class="s2">&quot;min&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="n">SUPPORTED_INDEX_REDUCTION_OPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argmin&quot;</span><span class="p">,</span> <span class="s2">&quot;argmax&quot;</span><span class="p">]</span>
+
+<span class="n">SUPPORTED_STATS_REDUCTION_OPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;var&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">]</span>
 
 
 <span class="nd">@typechecked</span>
@@ -2327,29 +2367,209 @@
 
 <div class="viewcode-block" id="pdarray.mean">
 <a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.mean">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute the mean.  See ``arkouda.mean`` for details.</span>
+<span class="sd">        Return the mean of the array.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pda : pdarray</span>
+<span class="sd">            Values for which to calculate the mean</span>
+<span class="sd">        axis : int, Tuple[int, ...], optional, default = None</span>
+<span class="sd">            The axis or axes along which to do the operation</span>
+<span class="sd">            If None, the computation is done across the entire array.</span>
+<span class="sd">        keepdims : bool, optional, default = False</span>
+<span class="sd">            Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[np.float64, pdarray]</span>
+<span class="sd">            The mean calculated from the pda sum and size, along the axis/axes if</span>
+<span class="sd">            those are given.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.arange(10)</span>
+<span class="sd">        &gt;&gt;&gt; ak.mean(a)</span>
+<span class="sd">        np.float64(4.5)</span>
+<span class="sd">        &gt;&gt;&gt; a.mean()</span>
+<span class="sd">        np.float64(4.5)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.arange(10).reshape(2,5)</span>
+<span class="sd">        &gt;&gt;&gt; a.mean(axis=0)</span>
+<span class="sd">        array([2.5 3.5 4.5 5.5 6.5])</span>
+<span class="sd">        &gt;&gt;&gt; ak.mean(a,axis=0)</span>
+<span class="sd">        array([2.5 3.5 4.5 5.5 6.5])</span>
+<span class="sd">        &gt;&gt;&gt; a.mean(axis=1)</span>
+<span class="sd">        array([2.00000000000000000 7.00000000000000000])</span>
+<span class="sd">        &gt;&gt;&gt; ak.mean(a,axis=1)</span>
+<span class="sd">        array([2.00000000000000000 7.00000000000000000])</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">            Raised if pda is not a pdarray instance</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="c1">#   Function is generated at runtime with _make_reduction_func.</span>
+        <span class="k">return</span> <span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pdarray.var">
 <a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.var">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute the variance. See ``arkouda.var`` for details.</span>
+<span class="sd">        Return the variance of values in the array.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pda : pdarray</span>
+<span class="sd">            Values for which to calculate the variance</span>
+<span class="sd">        ddof : int_scalars</span>
+<span class="sd">            &quot;Delta Degrees of Freedom&quot; used in calculating var</span>
+<span class="sd">        axis : int, Tuple[int, ...], optional, default = None</span>
+<span class="sd">            The axis or axes along which to do the operation</span>
+<span class="sd">            If None, the computation is done across the entire array.</span>
+<span class="sd">        keepdims : bool, optional, default = False</span>
+<span class="sd">            Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[np.float64, pdarray]</span>
+<span class="sd">            The scalar variance of the array, or the variance along the axis/axes</span>
+<span class="sd">            if supplied</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.arange(10)</span>
+<span class="sd">        &gt;&gt;&gt; ak.var(a)</span>
+<span class="sd">        np.float64(8.25)</span>
+<span class="sd">        &gt;&gt;&gt; a.var()</span>
+<span class="sd">        np.float64(8.25)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.arange(10).reshape(2,5)</span>
+<span class="sd">        &gt;&gt;&gt; a.var(axis=0)</span>
+<span class="sd">        array([6.25 6.25 6.25 6.25 6.25])</span>
+<span class="sd">        &gt;&gt;&gt; ak.var(a,axis=0)</span>
+<span class="sd">        array([6.25 6.25 6.25 6.25 6.25])</span>
+<span class="sd">        &gt;&gt;&gt; a.var(axis=1)</span>
+<span class="sd">        array([2.00000000000000000 2.00000000000000000])</span>
+<span class="sd">        &gt;&gt;&gt; ak.var(a,axis=1)</span>
+<span class="sd">        array([2.00000000000000000 2.00000000000000000])</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if pda is not a pdarray instance</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            Raised if the ddof &gt;= pdarray size</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        mean, std</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The variance is the average of the squared deviations from the mean,</span>
+<span class="sd">        i.e.,  ``var = mean((x - x.mean())**2)``.</span>
+
+<span class="sd">        The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.</span>
+<span class="sd">        If, however, `ddof` is specified, the divisor ``N - ddof`` is used</span>
+<span class="sd">        instead.  In standard statistical practice, ``ddof=1`` provides an</span>
+<span class="sd">        unbiased estimator of the variance of a hypothetical infinite population.</span>
+<span class="sd">        ``ddof=0`` provides a maximum likelihood estimate of the variance for</span>
+<span class="sd">        normally distributed variables.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">)</span></div>
+        <span class="c1">#   Function is generated at runtime with _make_stats_reduction_func</span>
+        <span class="k">return</span> <span class="n">var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pdarray.std">
 <a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.std">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute the standard deviation. See ``arkouda.std`` for details.</span>
+<span class="sd">        Return the standard deviation of values in the array. The standard</span>
+<span class="sd">        deviation is implemented as the square root of the variance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pda : pdarray</span>
+<span class="sd">            values for which to calculate the standard deviation</span>
+<span class="sd">        ddof : int_scalars</span>
+<span class="sd">            &quot;Delta Degrees of Freedom&quot; used in calculating std</span>
+<span class="sd">        axis : int, Tuple[int, ...], optional, default = None</span>
+<span class="sd">            The axis or axes along which to do the operation</span>
+<span class="sd">            If None, the computation is done across the entire array.</span>
+<span class="sd">        keepdims : bool, optional, default = False</span>
+<span class="sd">            Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[np.float64, pdarray]</span>
+<span class="sd">            The scalar standard deviation of the array, or the standard deviation</span>
+<span class="sd">             along the axis/axes if supplied</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.arange(10)</span>
+<span class="sd">        &gt;&gt;&gt; ak.std(a)</span>
+<span class="sd">        np.float64(2.8722813232690143)</span>
+<span class="sd">        &gt;&gt;&gt; a.std()</span>
+<span class="sd">        np.float64(2.8722813232690143)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.arange(10).reshape(2,5)</span>
+<span class="sd">        &gt;&gt;&gt; a.std(axis=0)</span>
+<span class="sd">        array([2.5 2.5 2.5 2.5 2.5])</span>
+<span class="sd">        &gt;&gt;&gt; ak.std(a,axis=0)</span>
+<span class="sd">        array([2.5 2.5 2.5 2.5 2.5])</span>
+<span class="sd">        &gt;&gt;&gt; a.std(axis=1)</span>
+<span class="sd">        array([1.4142135623730951 1.4142135623730951])</span>
+<span class="sd">        &gt;&gt;&gt; ak.std(a,axis=1)</span>
+<span class="sd">        array([1.4142135623730951 1.4142135623730951])</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if pda is not a pdarray instance or ddof is not an integer</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            Raised if ddof is an integer &lt; 0</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            Raised if there&#39;s a server-side error thrown</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        mean, var</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The standard deviation is the square root of the average of the squared</span>
+<span class="sd">        deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.</span>
+
+<span class="sd">        The average squared deviation is normally calculated as</span>
+<span class="sd">        ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,</span>
+<span class="sd">        the divisor ``N - ddof`` is used instead. In standard statistical</span>
+<span class="sd">        practice, ``ddof=1`` provides an unbiased estimator of the variance</span>
+<span class="sd">        of the infinite population. ``ddof=0`` provides a maximum likelihood</span>
+<span class="sd">        estimate of the variance for normally distributed variables. The</span>
+<span class="sd">        standard deviation computed in this function is the square root of</span>
+<span class="sd">        the estimated variance, so even with ``ddof=1``, it will not be an</span>
+<span class="sd">        unbiased estimate of the standard deviation per se.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">)</span></div>
+        <span class="c1">#   Function is generated at runtime with _make_stats_reduction_func</span>
+        <span class="k">return</span> <span class="n">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pdarray.cov">
@@ -3503,6 +3723,54 @@
     <span class="k">return</span> <span class="n">op_func</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_stats_reduction_func</span><span class="p">(</span>
+    <span class="n">op</span><span class="p">,</span>
+    <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return var or std reduction of a pdarray by an operation along an axis.&quot;</span><span class="p">,</span>
+    <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;numpy_scalars&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SUPPORTED_STATS_REDUCTION_OPS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;value </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> not supported by _make_reduction_func.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@typechecked</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">op_func</span><span class="p">(</span>
+        <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+        <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">_common_stats_reduction</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">pda</span><span class="p">,</span> <span class="n">ddof</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
+
+    <span class="n">op_func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">function_descriptor</span><span class="si">}</span>
+
+<span class="s2">    Parameters</span>
+<span class="s2">    ----------</span>
+<span class="s2">    pda : pdarray</span>
+<span class="s2">        The pdarray instance to be evaluated.</span>
+<span class="s2">    ddof : the delta degrees of freedom argument for var or std</span>
+<span class="s2">    axis : int or Tuple[int, ...], optional, default = None</span>
+<span class="s2">        The axis or axes along which to compute the function.</span>
+<span class="s2">        If None, the computation is done across the entire array.</span>
+<span class="s2">    keepdims : bool, optional, default = False</span>
+<span class="s2">        Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="s2">    Returns</span>
+<span class="s2">    -------</span>
+<span class="s2">    pdarray or </span><span class="si">{</span><span class="n">return_dtype</span><span class="si">}</span>
+<span class="s2">        </span><span class="si">{</span><span class="n">return_descriptor</span><span class="si">}</span>
+
+<span class="s2">    Raises</span>
+<span class="s2">    ------</span>
+<span class="s2">    TypeError</span>
+<span class="s2">        Raised if pda is not a pdarray instance</span>
+<span class="s2">    RuntimeError</span>
+<span class="s2">        Raised if there&#39;s a server-side error thrown</span>
+<span class="s2">     &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">op_func</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_make_index_reduction_func</span><span class="p">(</span>
     <span class="n">op</span><span class="p">,</span>
     <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return index reduction of a pdarray by an operation along an axis.&quot;</span><span class="p">,</span>
@@ -3554,6 +3822,8 @@
 <span class="c1"># check whether a reduction of the given axes on an &#39;ndim&#39; dimensional array</span>
 <span class="c1"># would result in a single scalar value</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_reduces_to_single_value</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># if no axes are specified or the array is 1D, the result is a scalar</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -3608,17 +3878,7 @@
     <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SUPPORTED_REDUCTION_OPS</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported reduction type: </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">axis_</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="k">else</span> <span class="p">(</span>
-            <span class="p">[</span>
-                <span class="n">axis</span><span class="p">,</span>
-            <span class="p">]</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_INTS</span><span class="p">)</span>
-            <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
+    <span class="n">axis_</span> <span class="o">=</span> <span class="n">_axis_parser</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">_reduces_to_single_value</span><span class="p">(</span><span class="n">axis_</span><span class="p">,</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
@@ -3635,6 +3895,75 @@
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_</span><span class="p">,</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">keepdims</span> <span class="ow">or</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">squeeze</span>
+
+            <span class="k">return</span> <span class="n">squeeze</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+
+
+<span class="c1"># helper function for var, std</span>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_common_stats_reduction</span><span class="p">(</span>
+    <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return reduction of a pdarray by an operation along an axis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    kind : str</span>
+<span class="sd">        The name of the reduction operation.  Must be a member of SUPPORTED_REDUCTION_OPS.</span>
+<span class="sd">    pda : pdarray</span>
+<span class="sd">        The pdarray instance to be evaluated.</span>
+<span class="sd">    ddof : the delta degrees of freedom for the computation</span>
+<span class="sd">    axis : int or Tuple[int, ...], optional, default = None</span>
+<span class="sd">        The axis or axes along which to compute the reduction. If None, the sum of the entire array is</span>
+<span class="sd">        computed (returning a scalar).</span>
+<span class="sd">    keepdims : bool, optional, default = False</span>
+<span class="sd">        Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy_scalars, pdarray</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if pda is not a pdarray instance.</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        Raised if there&#39;s a server-side error thrown.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised op is not a supported reduction operation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SUPPORTED_STATS_REDUCTION_OPS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported reduction type: </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">axis_</span> <span class="o">=</span> <span class="n">_axis_parser</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">_reduces_to_single_value</span><span class="p">(</span><span class="n">axis_</span><span class="p">,</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
+            <span class="n">cast</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">,</span>
+                <span class="n">generic_msg</span><span class="p">(</span>
+                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">All&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="n">ddof</span><span class="p">,</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span>
+            <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">Reduce&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="n">ddof</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_</span><span class="p">,</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">keepdims</span> <span class="ow">or</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -3769,6 +4098,42 @@
         <span class="s2">&quot;Return value is always a np.float64 or np.int64&quot;</span><span class="p">,</span>
         <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;The product calculated from the pda.&quot;</span><span class="p">,</span>
         <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;numeric_scalars&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="nb">setattr</span><span class="p">(</span>
+    <span class="n">module</span><span class="p">,</span>
+    <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+    <span class="n">_make_reduction_func</span><span class="p">(</span>
+        <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+        <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return the mean of all elements in the array. &quot;</span>
+        <span class="s2">&quot;Return value is always a np.float64 or pdarray&quot;</span><span class="p">,</span>
+        <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;The product calculated from the pda.&quot;</span><span class="p">,</span>
+        <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;numpy_scalars, pdarray&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="nb">setattr</span><span class="p">(</span>
+    <span class="n">module</span><span class="p">,</span>
+    <span class="s2">&quot;var&quot;</span><span class="p">,</span>
+    <span class="n">_make_stats_reduction_func</span><span class="p">(</span>
+        <span class="s2">&quot;var&quot;</span><span class="p">,</span>
+        <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return the variance of all elements in the array. &quot;</span>
+        <span class="s2">&quot;Return value is always a np.float64 or pdarray&quot;</span><span class="p">,</span>
+        <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;The product calculated from the pda.&quot;</span><span class="p">,</span>
+        <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;numpy_scalars, pdarray&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="nb">setattr</span><span class="p">(</span>
+    <span class="n">module</span><span class="p">,</span>
+    <span class="s2">&quot;std&quot;</span><span class="p">,</span>
+    <span class="n">_make_stats_reduction_func</span><span class="p">(</span>
+        <span class="s2">&quot;std&quot;</span><span class="p">,</span>
+        <span class="n">function_descriptor</span><span class="o">=</span><span class="s2">&quot;Return the standard deviation of all elements in the array. &quot;</span>
+        <span class="s2">&quot;Return value is always a np.float64 or pdarray&quot;</span><span class="p">,</span>
+        <span class="n">return_descriptor</span><span class="o">=</span><span class="s2">&quot;The product calculated from the pda.&quot;</span><span class="p">,</span>
+        <span class="n">return_dtype</span><span class="o">=</span><span class="s2">&quot;numpy_scalars, pdarray&quot;</span><span class="p">,</span>
     <span class="p">),</span>
 <span class="p">)</span>
 
@@ -4012,180 +4377,6 @@
     <span class="c1">#   The following unreachable line prevents mypy from flagging a &quot;missing return&quot; error</span>
 
     <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># type: ignore</span></div>
-
-
-
-<div class="viewcode-block" id="mean">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.mean">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the mean of the array.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">        Values for which to calculate the mean</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    np.float64</span>
-<span class="sd">        The mean calculated from the pda sum and size</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; a = ak.arange(10)</span>
-<span class="sd">    &gt;&gt;&gt; ak.mean(a)</span>
-<span class="sd">    np.float64(4.5)</span>
-<span class="sd">    &gt;&gt;&gt; a.mean()</span>
-<span class="sd">    np.float64(4.5)</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if pda is not a pdarray instance</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
-        <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;mean&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
-        <span class="p">)</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="var">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.var">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the variance of values in the array.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">        Values for which to calculate the variance</span>
-<span class="sd">    ddof : int_scalars</span>
-<span class="sd">        &quot;Delta Degrees of Freedom&quot; used in calculating var</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    np.float64</span>
-<span class="sd">        The scalar variance of the array</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; a = ak.arange(10)</span>
-<span class="sd">    &gt;&gt;&gt; ak.var(a)</span>
-<span class="sd">    np.float64(8.25)</span>
-<span class="sd">    &gt;&gt;&gt; a.var()</span>
-<span class="sd">    np.float64(8.25)</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if pda is not a pdarray instance</span>
-<span class="sd">    ValueError</span>
-<span class="sd">        Raised if the ddof &gt;= pdarray size</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    mean, std</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    The variance is the average of the squared deviations from the mean,</span>
-<span class="sd">    i.e.,  ``var = mean((x - x.mean())**2)``.</span>
-
-<span class="sd">    The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.</span>
-<span class="sd">    If, however, `ddof` is specified, the divisor ``N - ddof`` is used</span>
-<span class="sd">    instead.  In standard statistical practice, ``ddof=1`` provides an</span>
-<span class="sd">    unbiased estimator of the variance of a hypothetical infinite population.</span>
-<span class="sd">    ``ddof=0`` provides a maximum likelihood estimate of the variance for</span>
-<span class="sd">    normally distributed variables.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">ddof</span> <span class="o">&gt;=</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;var: ddof must be less than number of values&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
-        <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;var&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="n">ddof</span><span class="p">,</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
-        <span class="p">)</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="std">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.std">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the standard deviation of values in the array. The standard</span>
-<span class="sd">    deviation is implemented as the square root of the variance.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">        values for which to calculate the standard deviation</span>
-<span class="sd">    ddof : int_scalars</span>
-<span class="sd">        &quot;Delta Degrees of Freedom&quot; used in calculating std</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    np.float64</span>
-<span class="sd">        The scalar standard deviation of the array</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; a = ak.arange(10)</span>
-<span class="sd">    &gt;&gt;&gt; ak.std(a)</span>
-<span class="sd">    np.float64(2.8722813232690143)</span>
-<span class="sd">    &gt;&gt;&gt; a.std()</span>
-<span class="sd">    np.float64(2.8722813232690143)</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if pda is not a pdarray instance or ddof is not an integer</span>
-<span class="sd">    ValueError</span>
-<span class="sd">        Raised if ddof is an integer &lt; 0</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        Raised if there&#39;s a server-side error thrown</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    mean, var</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    The standard deviation is the square root of the average of the squared</span>
-<span class="sd">    deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.</span>
-
-<span class="sd">    The average squared deviation is normally calculated as</span>
-<span class="sd">    ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,</span>
-<span class="sd">    the divisor ``N - ddof`` is used instead. In standard statistical</span>
-<span class="sd">    practice, ``ddof=1`` provides an unbiased estimator of the variance</span>
-<span class="sd">    of the infinite population. ``ddof=0`` provides a maximum likelihood</span>
-<span class="sd">    estimate of the variance for normally distributed variables. The</span>
-<span class="sd">    standard deviation computed in this function is the square root of</span>
-<span class="sd">    the estimated variance, so even with ``ddof=1``, it will not be an</span>
-<span class="sd">    unbiased estimate of the standard deviation per se.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">ddof</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ddof must be an integer 0 or greater&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
-        <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;std&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="n">ddof</span><span class="p">,</span> <span class="s2">&quot;skipNan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
-        <span class="p">)</span>
-    <span class="p">)</span></div>
 
 
 

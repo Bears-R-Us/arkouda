@@ -776,35 +776,184 @@ pdarray if axis is supplied, in which case the operation is done along that axis
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.mean">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarrayclass.html#pdarray.mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarray.mean" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the mean.  See <code class="docutils literal notranslate"><span class="pre">arkouda.mean</span></code> for details.</p>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarrayclass.html#pdarray.mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarray.mean" title="Link to this definition">¶</a></dt>
+<dd><p>Return the mean of the array.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Values for which to calculate the mean</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to do the operation
+If None, the computation is done across the entire array.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The mean calculated from the pda sum and size, along the axis/axes if
+those are given.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64"><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code></a></span></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[np.float64, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">np.float64(4.5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="go">np.float64(4.5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([2.5 3.5 4.5 5.5 6.5])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([2.5 3.5 4.5 5.5 6.5])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([2.00000000000000000 7.00000000000000000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([2.00000000000000000 7.00000000000000000])</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Raises</dt><dd><p>Raised if pda is not a pdarray instance</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>Raised if there’s a server-side error thrown</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.var">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarrayclass.html#pdarray.var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarray.var" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the variance. See <code class="docutils literal notranslate"><span class="pre">arkouda.var</span></code> for details.</p>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarrayclass.html#pdarray.var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarray.var" title="Link to this definition">¶</a></dt>
+<dd><p>Return the variance of values in the array.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Values for which to calculate the variance</p></li>
+<li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating var</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to do the operation
+If None, the computation is done across the entire array.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The scalar variance of the array, or the variance along the axis/axes
+if supplied</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64"><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code></a></span></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[np.float64, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">np.float64(8.25)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">var</span><span class="p">()</span>
+<span class="go">np.float64(8.25)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([6.25 6.25 6.25 6.25 6.25])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([6.25 6.25 6.25 6.25 6.25])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([2.00000000000000000 2.00000000000000000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([2.00000000000000000 2.00000000000000000])</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
+<li><p><strong>ValueError</strong> – Raised if the ddof &gt;= pdarray size</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="arithmetic.html#arkouda.mean" title="arkouda.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code></a>, <a class="reference internal" href="arithmetic.html#arkouda.std" title="arkouda.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">std</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The variance is the average of the squared deviations from the mean,
+i.e.,  <code class="docutils literal notranslate"><span class="pre">var</span> <span class="pre">=</span> <span class="pre">mean((x</span> <span class="pre">-</span> <span class="pre">x.mean())**2)</span></code>.</p>
+<p>The mean is normally calculated as <code class="docutils literal notranslate"><span class="pre">x.sum()</span> <span class="pre">/</span> <span class="pre">N</span></code>, where <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">len(x)</span></code>.
+If, however, <cite>ddof</cite> is specified, the divisor <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">-</span> <span class="pre">ddof</span></code> is used
+instead.  In standard statistical practice, <code class="docutils literal notranslate"><span class="pre">ddof=1</span></code> provides an
+unbiased estimator of the variance of a hypothetical infinite population.
+<code class="docutils literal notranslate"><span class="pre">ddof=0</span></code> provides a maximum likelihood estimate of the variance for
+normally distributed variables.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.std">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarrayclass.html#pdarray.std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarray.std" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the standard deviation. See <code class="docutils literal notranslate"><span class="pre">arkouda.std</span></code> for details.</p>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarrayclass.html#pdarray.std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarray.std" title="Link to this definition">¶</a></dt>
+<dd><p>Return the standard deviation of values in the array. The standard
+deviation is implemented as the square root of the variance.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.float64" title="arkouda.numpy.float64"><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code></a></span></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – values for which to calculate the standard deviation</p></li>
+<li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to do the operation
+If None, the computation is done across the entire array.</p></li>
+<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The scalar standard deviation of the array, or the standard deviation</dt><dd><p>along the axis/axes if supplied</p>
 </dd>
 </dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[np.float64, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">np.float64(2.8722813232690143)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<span class="go">np.float64(2.8722813232690143)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([2.5 2.5 2.5 2.5 2.5])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([2.5 2.5 2.5 2.5 2.5])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([1.4142135623730951 1.4142135623730951])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([1.4142135623730951 1.4142135623730951])</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance or ddof is not an integer</p></li>
+<li><p><strong>ValueError</strong> – Raised if ddof is an integer &lt; 0</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="arithmetic.html#arkouda.mean" title="arkouda.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code></a>, <a class="reference internal" href="arithmetic.html#arkouda.var" title="arkouda.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The standard deviation is the square root of the average of the squared
+deviations from the mean, i.e., <code class="docutils literal notranslate"><span class="pre">std</span> <span class="pre">=</span> <span class="pre">sqrt(mean((x</span> <span class="pre">-</span> <span class="pre">x.mean())**2))</span></code>.</p>
+<p>The average squared deviation is normally calculated as
+<code class="docutils literal notranslate"><span class="pre">x.sum()</span> <span class="pre">/</span> <span class="pre">N</span></code>, where <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">len(x)</span></code>.  If, however, <cite>ddof</cite> is specified,
+the divisor <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">-</span> <span class="pre">ddof</span></code> is used instead. In standard statistical
+practice, <code class="docutils literal notranslate"><span class="pre">ddof=1</span></code> provides an unbiased estimator of the variance
+of the infinite population. <code class="docutils literal notranslate"><span class="pre">ddof=0</span></code> provides a maximum likelihood
+estimate of the variance for normally distributed variables. The
+standard deviation computed in this function is the square root of
+the estimated variance, so even with <code class="docutils literal notranslate"><span class="pre">ddof=1</span></code>, it will not be an
+unbiased estimate of the standard deviation per se.</p>
 </dd></dl>
 
 <dl class="py method">

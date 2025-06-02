@@ -38,7 +38,6 @@ Functions
    arkouda.numpy.pdarrayclass.dot
    arkouda.numpy.pdarrayclass.fmod
    arkouda.numpy.pdarrayclass.maxk
-   arkouda.numpy.pdarrayclass.mean
    arkouda.numpy.pdarrayclass.mink
    arkouda.numpy.pdarrayclass.mod
    arkouda.numpy.pdarrayclass.parity
@@ -47,8 +46,6 @@ Functions
    arkouda.numpy.pdarrayclass.rotl
    arkouda.numpy.pdarrayclass.rotr
    arkouda.numpy.pdarrayclass.sqrt
-   arkouda.numpy.pdarrayclass.std
-   arkouda.numpy.pdarrayclass.var
 
 
 Module Contents
@@ -489,29 +486,6 @@ Module Contents
    array([7 9 10])
    >>> ak.maxk(A, 4)
    array([5 7 9 10])
-
-
-.. py:function:: mean(pda: pdarray) -> numpy.float64
-
-   Return the mean of the array.
-
-   :param pda: Values for which to calculate the mean
-   :type pda: pdarray
-
-   :returns: The mean calculated from the pda sum and size
-   :rtype: np.float64
-
-   .. rubric:: Examples
-
-   >>> import arkouda as ak
-   >>> a = ak.arange(10)
-   >>> ak.mean(a)
-   np.float64(4.5)
-   >>> a.mean()
-   np.float64(4.5)
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
 
 
 .. py:function:: mink(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
@@ -1060,9 +1034,44 @@ Module Contents
 
 
 
-   .. py:method:: mean() -> numpy.float64
+   .. py:method:: mean(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
 
-      Compute the mean.  See ``arkouda.mean`` for details.
+      Return the mean of the array.
+
+      :param pda: Values for which to calculate the mean
+      :type pda: pdarray
+      :param axis: The axis or axes along which to do the operation
+                   If None, the computation is done across the entire array.
+      :type axis: int, Tuple[int, ...], optional, default = None
+      :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
+      :type keepdims: bool, optional, default = False
+
+      :returns: The mean calculated from the pda sum and size, along the axis/axes if
+                those are given.
+      :rtype: Union[np.float64, pdarray]
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> a = ak.arange(10)
+      >>> ak.mean(a)
+      np.float64(4.5)
+      >>> a.mean()
+      np.float64(4.5)
+      >>> a = ak.arange(10).reshape(2,5)
+      >>> a.mean(axis=0)
+      array([2.5 3.5 4.5 5.5 6.5])
+      >>> ak.mean(a,axis=0)
+      array([2.5 3.5 4.5 5.5 6.5])
+      >>> a.mean(axis=1)
+      array([2.00000000000000000 7.00000000000000000])
+      >>> ak.mean(a,axis=1)
+      array([2.00000000000000000 7.00000000000000000])
+
+      Raises
+          Raised if pda is not a pdarray instance
+      RuntimeError
+          Raised if there's a server-side error thrown
 
 
 
@@ -1320,9 +1329,65 @@ Module Contents
 
 
 
-   .. py:method:: std(ddof: arkouda.numpy.dtypes.int_scalars = 0) -> numpy.float64
+   .. py:method:: std(ddof: arkouda.numpy.dtypes.int_scalars = 0, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: Optional[bool] = False) -> Union[numpy.float64, pdarray]
 
-      Compute the standard deviation. See ``arkouda.std`` for details.
+      Return the standard deviation of values in the array. The standard
+      deviation is implemented as the square root of the variance.
+
+      :param pda: values for which to calculate the standard deviation
+      :type pda: pdarray
+      :param ddof: "Delta Degrees of Freedom" used in calculating std
+      :type ddof: int_scalars
+      :param axis: The axis or axes along which to do the operation
+                   If None, the computation is done across the entire array.
+      :type axis: int, Tuple[int, ...], optional, default = None
+      :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
+      :type keepdims: bool, optional, default = False
+
+      :returns:
+
+                The scalar standard deviation of the array, or the standard deviation
+                 along the axis/axes if supplied
+      :rtype: Union[np.float64, pdarray]
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> a = ak.arange(10)
+      >>> ak.std(a)
+      np.float64(2.8722813232690143)
+      >>> a.std()
+      np.float64(2.8722813232690143)
+      >>> a = ak.arange(10).reshape(2,5)
+      >>> a.std(axis=0)
+      array([2.5 2.5 2.5 2.5 2.5])
+      >>> ak.std(a,axis=0)
+      array([2.5 2.5 2.5 2.5 2.5])
+      >>> a.std(axis=1)
+      array([1.4142135623730951 1.4142135623730951])
+      >>> ak.std(a,axis=1)
+      array([1.4142135623730951 1.4142135623730951])
+
+      :raises TypeError: Raised if pda is not a pdarray instance or ddof is not an integer
+      :raises ValueError: Raised if ddof is an integer < 0
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+      .. seealso:: :py:obj:`mean`, :py:obj:`var`
+
+      .. rubric:: Notes
+
+      The standard deviation is the square root of the average of the squared
+      deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.
+
+      The average squared deviation is normally calculated as
+      ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,
+      the divisor ``N - ddof`` is used instead. In standard statistical
+      practice, ``ddof=1`` provides an unbiased estimator of the variance
+      of the infinite population. ``ddof=0`` provides a maximum likelihood
+      estimate of the variance for normally distributed variables. The
+      standard deviation computed in this function is the square root of
+      the estimated variance, so even with ``ddof=1``, it will not be an
+      unbiased estimate of the standard deviation per se.
 
 
 
@@ -1720,9 +1785,59 @@ Module Contents
 
 
 
-   .. py:method:: var(ddof: arkouda.numpy.dtypes.int_scalars = 0) -> numpy.float64
+   .. py:method:: var(ddof: arkouda.numpy.dtypes.int_scalars = 0, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: Optional[bool] = False) -> Union[numpy.float64, pdarray]
 
-      Compute the variance. See ``arkouda.var`` for details.
+      Return the variance of values in the array.
+
+      :param pda: Values for which to calculate the variance
+      :type pda: pdarray
+      :param ddof: "Delta Degrees of Freedom" used in calculating var
+      :type ddof: int_scalars
+      :param axis: The axis or axes along which to do the operation
+                   If None, the computation is done across the entire array.
+      :type axis: int, Tuple[int, ...], optional, default = None
+      :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
+      :type keepdims: bool, optional, default = False
+
+      :returns: The scalar variance of the array, or the variance along the axis/axes
+                if supplied
+      :rtype: Union[np.float64, pdarray]
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> a = ak.arange(10)
+      >>> ak.var(a)
+      np.float64(8.25)
+      >>> a.var()
+      np.float64(8.25)
+      >>> a = ak.arange(10).reshape(2,5)
+      >>> a.var(axis=0)
+      array([6.25 6.25 6.25 6.25 6.25])
+      >>> ak.var(a,axis=0)
+      array([6.25 6.25 6.25 6.25 6.25])
+      >>> a.var(axis=1)
+      array([2.00000000000000000 2.00000000000000000])
+      >>> ak.var(a,axis=1)
+      array([2.00000000000000000 2.00000000000000000])
+
+      :raises TypeError: Raised if pda is not a pdarray instance
+      :raises ValueError: Raised if the ddof >= pdarray size
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+      .. seealso:: :py:obj:`mean`, :py:obj:`std`
+
+      .. rubric:: Notes
+
+      The variance is the average of the squared deviations from the mean,
+      i.e.,  ``var = mean((x - x.mean())**2)``.
+
+      The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
+      If, however, `ddof` is specified, the divisor ``N - ddof`` is used
+      instead.  In standard statistical practice, ``ddof=1`` provides an
+      unbiased estimator of the variance of a hypothetical infinite population.
+      ``ddof=0`` provides a maximum likelihood estimate of the variance for
+      normally distributed variables.
 
 
 
@@ -1858,89 +1973,5 @@ Module Contents
    .. rubric:: Notes
 
    Square roots of negative numbers are returned as nan.
-
-
-.. py:function:: std(pda: pdarray, ddof: arkouda.numpy.dtypes.int_scalars = 0) -> numpy.float64
-
-   Return the standard deviation of values in the array. The standard
-   deviation is implemented as the square root of the variance.
-
-   :param pda: values for which to calculate the standard deviation
-   :type pda: pdarray
-   :param ddof: "Delta Degrees of Freedom" used in calculating std
-   :type ddof: int_scalars
-
-   :returns: The scalar standard deviation of the array
-   :rtype: np.float64
-
-   .. rubric:: Examples
-
-   >>> import arkouda as ak
-   >>> a = ak.arange(10)
-   >>> ak.std(a)
-   np.float64(2.8722813232690143)
-   >>> a.std()
-   np.float64(2.8722813232690143)
-
-   :raises TypeError: Raised if pda is not a pdarray instance or ddof is not an integer
-   :raises ValueError: Raised if ddof is an integer < 0
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-   .. seealso:: :py:obj:`mean`, :py:obj:`var`
-
-   .. rubric:: Notes
-
-   The standard deviation is the square root of the average of the squared
-   deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.
-
-   The average squared deviation is normally calculated as
-   ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,
-   the divisor ``N - ddof`` is used instead. In standard statistical
-   practice, ``ddof=1`` provides an unbiased estimator of the variance
-   of the infinite population. ``ddof=0`` provides a maximum likelihood
-   estimate of the variance for normally distributed variables. The
-   standard deviation computed in this function is the square root of
-   the estimated variance, so even with ``ddof=1``, it will not be an
-   unbiased estimate of the standard deviation per se.
-
-
-.. py:function:: var(pda: pdarray, ddof: arkouda.numpy.dtypes.int_scalars = 0) -> numpy.float64
-
-   Return the variance of values in the array.
-
-   :param pda: Values for which to calculate the variance
-   :type pda: pdarray
-   :param ddof: "Delta Degrees of Freedom" used in calculating var
-   :type ddof: int_scalars
-
-   :returns: The scalar variance of the array
-   :rtype: np.float64
-
-   .. rubric:: Examples
-
-   >>> import arkouda as ak
-   >>> a = ak.arange(10)
-   >>> ak.var(a)
-   np.float64(8.25)
-   >>> a.var()
-   np.float64(8.25)
-
-   :raises TypeError: Raised if pda is not a pdarray instance
-   :raises ValueError: Raised if the ddof >= pdarray size
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-   .. seealso:: :py:obj:`mean`, :py:obj:`std`
-
-   .. rubric:: Notes
-
-   The variance is the average of the squared deviations from the mean,
-   i.e.,  ``var = mean((x - x.mean())**2)``.
-
-   The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
-   If, however, `ddof` is specified, the divisor ``N - ddof`` is used
-   instead.  In standard statistical practice, ``ddof=1`` provides an
-   unbiased estimator of the variance of a hypothetical infinite population.
-   ``ddof=0`` provides a maximum likelihood estimate of the variance for
-   normally distributed variables.
 
 

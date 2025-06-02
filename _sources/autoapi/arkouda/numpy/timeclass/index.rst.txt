@@ -352,9 +352,9 @@ Module Contents
 
 
 
-   .. py:method:: std(ddof: arkouda.numpy.dtypes.int_scalars = 0)
+   .. py:method:: std(ddof: arkouda.numpy.dtypes.int_scalars = 0, axis: Optional[Union[None, int, tuple]] = None, keepdims: Optional[bool] = False)
 
-      Returns the standard deviation as a pd.Timedelta object
+      Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std
 
 
 
