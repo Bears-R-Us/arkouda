@@ -385,6 +385,18 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.numpy.dtypes">
 <span id="arkouda-numpy-dtypes"></span><h1>arkouda.numpy.dtypes<a class="headerlink" href="#module-arkouda.numpy.dtypes" title="Link to this heading">¶</a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.TYPE_CHECKING" title="arkouda.numpy.dtypes.TYPE_CHECKING"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TYPE_CHECKING</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -462,151 +474,154 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.IntDType" title="arkouda.numpy.dtypes.IntDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IntDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.LongDType" title="arkouda.numpy.dtypes.LongDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LongDType</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><code class="xref py py-obj docutils literal notranslate"><span class="pre">List</span></code></a></p></td>
+<td><p>A generic version of list.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.LongDType" title="arkouda.numpy.dtypes.LongDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LongDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.LongDoubleDType" title="arkouda.numpy.dtypes.LongDoubleDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LongDoubleDType</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.LongDoubleDType" title="arkouda.numpy.dtypes.LongDoubleDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LongDoubleDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.LongLongDType" title="arkouda.numpy.dtypes.LongLongDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LongLongDType</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.LongLongDType" title="arkouda.numpy.dtypes.LongLongDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LongLongDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.NUMBER_FORMAT_STRINGS" title="arkouda.numpy.dtypes.NUMBER_FORMAT_STRINGS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NUMBER_FORMAT_STRINGS</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.NUMBER_FORMAT_STRINGS" title="arkouda.numpy.dtypes.NUMBER_FORMAT_STRINGS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NUMBER_FORMAT_STRINGS</span></code></a></p></td>
 <td><p>dict() -&gt; new empty dictionary</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.NumericDTypes" title="arkouda.numpy.dtypes.NumericDTypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NumericDTypes</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.NumericDTypes" title="arkouda.numpy.dtypes.NumericDTypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NumericDTypes</span></code></a></p></td>
 <td><p>Build an immutable unordered collection of unique elements.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.ObjectDType" title="arkouda.numpy.dtypes.ObjectDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ObjectDType</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.ObjectDType" title="arkouda.numpy.dtypes.ObjectDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ObjectDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.ScalarDTypes" title="arkouda.numpy.dtypes.ScalarDTypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScalarDTypes</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.ScalarDTypes" title="arkouda.numpy.dtypes.ScalarDTypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScalarDTypes</span></code></a></p></td>
 <td><p>Build an immutable unordered collection of unique elements.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.SeriesDTypes" title="arkouda.numpy.dtypes.SeriesDTypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SeriesDTypes</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.SeriesDTypes" title="arkouda.numpy.dtypes.SeriesDTypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SeriesDTypes</span></code></a></p></td>
 <td><p>dict() -&gt; new empty dictionary</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.ShortDType" title="arkouda.numpy.dtypes.ShortDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShortDType</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.ShortDType" title="arkouda.numpy.dtypes.ShortDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShortDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.StrDType" title="arkouda.numpy.dtypes.StrDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StrDType</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.StrDType" title="arkouda.numpy.dtypes.StrDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StrDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.TimeDelta64DType" title="arkouda.numpy.dtypes.TimeDelta64DType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeDelta64DType</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.TimeDelta64DType" title="arkouda.numpy.dtypes.TimeDelta64DType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeDelta64DType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UByteDType" title="arkouda.numpy.dtypes.UByteDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UByteDType</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UByteDType" title="arkouda.numpy.dtypes.UByteDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UByteDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UInt16DType" title="arkouda.numpy.dtypes.UInt16DType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UInt16DType</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UInt16DType" title="arkouda.numpy.dtypes.UInt16DType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UInt16DType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UInt32DType" title="arkouda.numpy.dtypes.UInt32DType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UInt32DType</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UInt32DType" title="arkouda.numpy.dtypes.UInt32DType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UInt32DType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UInt64DType" title="arkouda.numpy.dtypes.UInt64DType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UInt64DType</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UInt64DType" title="arkouda.numpy.dtypes.UInt64DType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UInt64DType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UInt8DType" title="arkouda.numpy.dtypes.UInt8DType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UInt8DType</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UInt8DType" title="arkouda.numpy.dtypes.UInt8DType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UInt8DType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UIntDType" title="arkouda.numpy.dtypes.UIntDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UIntDType</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UIntDType" title="arkouda.numpy.dtypes.UIntDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UIntDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.ULongDType" title="arkouda.numpy.dtypes.ULongDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ULongDType</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.ULongDType" title="arkouda.numpy.dtypes.ULongDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ULongDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.ULongLongDType" title="arkouda.numpy.dtypes.ULongLongDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ULongLongDType</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.ULongLongDType" title="arkouda.numpy.dtypes.ULongLongDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ULongLongDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UShortDType" title="arkouda.numpy.dtypes.UShortDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UShortDType</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UShortDType" title="arkouda.numpy.dtypes.UShortDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UShortDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a></p></td>
 <td><p>Union type; Union[X, Y] means either X or Y.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.VoidDType" title="arkouda.numpy.dtypes.VoidDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VoidDType</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.VoidDType" title="arkouda.numpy.dtypes.VoidDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VoidDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.all_scalars" title="arkouda.numpy.dtypes.all_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_scalars</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.all_scalars" title="arkouda.numpy.dtypes.all_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.annotations" title="arkouda.numpy.dtypes.annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">annotations</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.annotations" title="arkouda.numpy.dtypes.annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">annotations</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bigint</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bigint</span></code></a></p></td>
 <td><p>Datatype for representing integers of variable size.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bitType" title="arkouda.numpy.dtypes.bitType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bitType</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bitType" title="arkouda.numpy.dtypes.bitType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bitType</span></code></a></p></td>
 <td><p>Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bool_" title="arkouda.numpy.dtypes.bool_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bool_" title="arkouda.numpy.dtypes.bool_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool_</span></code></a></p></td>
 <td><p>Boolean type (True or False), stored as a byte.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool_scalars</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.complex128" title="arkouda.numpy.dtypes.complex128"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complex128</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.complex128" title="arkouda.numpy.dtypes.complex128"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complex128</span></code></a></p></td>
 <td><p>Complex number type composed of two double-precision floating-point</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.complex64" title="arkouda.numpy.dtypes.complex64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complex64</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.complex64" title="arkouda.numpy.dtypes.complex64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complex64</span></code></a></p></td>
 <td><p>Complex number type composed of two single-precision floating-point</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float16" title="arkouda.numpy.dtypes.float16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float16</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float16" title="arkouda.numpy.dtypes.float16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float16</span></code></a></p></td>
 <td><p>Half-precision floating-point number type.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float32" title="arkouda.numpy.dtypes.float32"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float32</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float32" title="arkouda.numpy.dtypes.float32"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float32</span></code></a></p></td>
 <td><p>Single-precision floating-point number type, compatible with C <code class="docutils literal notranslate"><span class="pre">float</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float64" title="arkouda.numpy.dtypes.float64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float64</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float64" title="arkouda.numpy.dtypes.float64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float64</span></code></a></p></td>
 <td><p>Double-precision floating-point number type, compatible with Python</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float_scalars" title="arkouda.numpy.dtypes.float_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float_scalars</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float_scalars" title="arkouda.numpy.dtypes.float_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int16" title="arkouda.numpy.dtypes.int16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int16</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int16" title="arkouda.numpy.dtypes.int16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int16</span></code></a></p></td>
 <td><p>Signed integer type, compatible with C <code class="docutils literal notranslate"><span class="pre">short</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int32" title="arkouda.numpy.dtypes.int32"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int32</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int32" title="arkouda.numpy.dtypes.int32"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int32</span></code></a></p></td>
 <td><p>Signed integer type, compatible with C <code class="docutils literal notranslate"><span class="pre">int</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int64</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int64</span></code></a></p></td>
 <td><p>Default signed integer type, 64bit on 64bit systems and 32bit on 32bit</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int8" title="arkouda.numpy.dtypes.int8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int8</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int8" title="arkouda.numpy.dtypes.int8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int8</span></code></a></p></td>
 <td><p>Signed integer type, compatible with C <code class="docutils literal notranslate"><span class="pre">char</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.intTypes" title="arkouda.numpy.dtypes.intTypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intTypes</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.intTypes" title="arkouda.numpy.dtypes.intTypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intTypes</span></code></a></p></td>
 <td><p>Build an immutable unordered collection of unique elements.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int_scalars</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.numeric_and_bool_scalars" title="arkouda.numpy.dtypes.numeric_and_bool_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numeric_and_bool_scalars</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.numeric_and_bool_scalars" title="arkouda.numpy.dtypes.numeric_and_bool_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numeric_and_bool_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numeric_scalars</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numeric_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy_scalars</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.str_" title="arkouda.numpy.dtypes.str_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.str_" title="arkouda.numpy.dtypes.str_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str_</span></code></a></p></td>
 <td><p>A unicode string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str_scalars</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint16" title="arkouda.numpy.dtypes.uint16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint16</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint16" title="arkouda.numpy.dtypes.uint16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint16</span></code></a></p></td>
 <td><p>Unsigned integer type, compatible with C <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">short</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint32" title="arkouda.numpy.dtypes.uint32"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint32</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint32" title="arkouda.numpy.dtypes.uint32"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint32</span></code></a></p></td>
 <td><p>Unsigned integer type, compatible with C <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">int</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint64" title="arkouda.numpy.dtypes.uint64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint64</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint64" title="arkouda.numpy.dtypes.uint64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint64</span></code></a></p></td>
 <td><p>Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint8" title="arkouda.numpy.dtypes.uint8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint8</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint8" title="arkouda.numpy.dtypes.uint8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint8</span></code></a></p></td>
 <td><p>Unsigned integer type, compatible with C <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char</span></code>.</p></td>
 </tr>
 </tbody>
@@ -650,6 +665,9 @@
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.resolve_scalar_dtype" title="arkouda.numpy.dtypes.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
 <td><p>Try to infer what dtype arkouda_server should treat val as.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.result_type" title="arkouda.numpy.dtypes.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result_type</span></code></a>(→ Union[np.dtype, type])</p></td>
+<td><p>Determine the promoted result dtype of inputs, including support for Arkouda's bigint.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1178,6 +1196,92 @@ information.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">List</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.List" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_NotIterable</span></code></p>
+<p>A generic version of list.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.append" title="Link to this definition">¶</a></dt>
+<dd><p>Append object to the end of the list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Remove all items from list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.copy" title="Link to this definition">¶</a></dt>
+<dd><p>Return a shallow copy of the list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.copy_with">
+<span class="sig-name descname"><span class="pre">copy_with</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.copy_with" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.count" title="Link to this definition">¶</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.extend">
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.extend" title="Link to this definition">¶</a></dt>
+<dd><p>Extend list by appending elements from the iterable.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9223372036854775807</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.index" title="Link to this definition">¶</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.insert" title="Link to this definition">¶</a></dt>
+<dd><p>Insert object before index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.pop">
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.pop" title="Link to this definition">¶</a></dt>
+<dd><p>Remove and return item at index (default last).</p>
+<p>Raises IndexError if list is empty or index is out of range.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.remove" title="Link to this definition">¶</a></dt>
+<dd><p>Remove first occurrence of value.</p>
+<p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.reverse">
+<span class="sig-name descname"><span class="pre">reverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.reverse" title="Link to this definition">¶</a></dt>
+<dd><p>Reverse <em>IN PLACE</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.sort">
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse=False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.sort" title="Link to this definition">¶</a></dt>
+<dd><p>Sort the list in ascending order and return None.</p>
+<p>The sort is in-place (i.e. the list itself is modified) and stable (i.e. the
+order of two equal elements is maintained).</p>
+<p>If a key function is given, apply it once to each list item and sort them,
+ascending or descending, according to their function values.</p>
+<p>The reverse flag can be set to sort in descending order.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.LongDType">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">LongDType</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.LongDType" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.dtypes._IntegerAbstractDType</span></code></p>
@@ -1532,6 +1636,11 @@ information.</p>
 dtype instances and <span class="xref std std-ref">arrays.dtypes</span> for additional
 information.</p>
 </dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.TYPE_CHECKING">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">TYPE_CHECKING</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#arkouda.numpy.dtypes.TYPE_CHECKING" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.TimeDelta64DType">
@@ -2689,6 +2798,32 @@ is treated specially.</p>
 </div>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.result_type">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">result_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#result_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.result_type" title="Link to this definition">¶</a></dt>
+<dd><p>Determine the promoted result dtype of inputs, including support for Arkouda’s bigint.</p>
+<p>Determine the result dtype that would be returned by a NumPy-like operation
+on the provided input arguments, accounting for Arkouda’s extended types
+such as ak.bigint.</p>
+<p>This function mimics numpy.result_type, with support for Arkouda types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*args</strong> (<a class="reference internal" href="#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>np.dtype</em><em>, </em><em>type</em><em>]</em>) – One or more input objects. These can be NumPy arrays, dtypes, Python
+scalar types, or Arkouda pdarrays.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dtype (or equivalent Arkouda type) that results from applying
+type promotion rules to the inputs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[np.dtype, type]</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function is meant to be a drop-in replacement for numpy.result_type
+but includes logic to support Arkouda’s bigint types.</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.str_">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">str_</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.str_" title="Link to this definition">¶</a></dt>
@@ -3492,6 +3627,7 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.numpy.dtypes</a><ul>
+<li><a class="reference internal" href="#attributes">Attributes</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
@@ -3581,6 +3717,21 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.Int64DType"><code class="docutils literal notranslate"><span class="pre">Int64DType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.Int8DType"><code class="docutils literal notranslate"><span class="pre">Int8DType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.IntDType"><code class="docutils literal notranslate"><span class="pre">IntDType</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.List"><code class="docutils literal notranslate"><span class="pre">List</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.append"><code class="docutils literal notranslate"><span class="pre">List.append()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.clear"><code class="docutils literal notranslate"><span class="pre">List.clear()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.copy"><code class="docutils literal notranslate"><span class="pre">List.copy()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.copy_with"><code class="docutils literal notranslate"><span class="pre">List.copy_with()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.count"><code class="docutils literal notranslate"><span class="pre">List.count()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.extend"><code class="docutils literal notranslate"><span class="pre">List.extend()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.index"><code class="docutils literal notranslate"><span class="pre">List.index()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.insert"><code class="docutils literal notranslate"><span class="pre">List.insert()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.pop"><code class="docutils literal notranslate"><span class="pre">List.pop()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.remove"><code class="docutils literal notranslate"><span class="pre">List.remove()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.reverse"><code class="docutils literal notranslate"><span class="pre">List.reverse()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.sort"><code class="docutils literal notranslate"><span class="pre">List.sort()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.LongDType"><code class="docutils literal notranslate"><span class="pre">LongDType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.LongDoubleDType"><code class="docutils literal notranslate"><span class="pre">LongDoubleDType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.LongLongDType"><code class="docutils literal notranslate"><span class="pre">LongLongDType</span></code></a></li>
@@ -3637,6 +3788,7 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 </li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.ShortDType"><code class="docutils literal notranslate"><span class="pre">ShortDType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.StrDType"><code class="docutils literal notranslate"><span class="pre">StrDType</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.TYPE_CHECKING"><code class="docutils literal notranslate"><span class="pre">TYPE_CHECKING</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.TimeDelta64DType"><code class="docutils literal notranslate"><span class="pre">TimeDelta64DType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.UByteDType"><code class="docutils literal notranslate"><span class="pre">UByteDType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.UInt16DType"><code class="docutils literal notranslate"><span class="pre">UInt16DType</span></code></a></li>
@@ -3755,6 +3907,7 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.resolve_scalar_dtype"><code class="docutils literal notranslate"><span class="pre">resolve_scalar_dtype()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.result_type"><code class="docutils literal notranslate"><span class="pre">result_type()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.str_"><code class="docutils literal notranslate"><span class="pre">str_</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.str_.T"><code class="docutils literal notranslate"><span class="pre">str_.T()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.str_.all"><code class="docutils literal notranslate"><span class="pre">str_.all()</span></code></a></li>

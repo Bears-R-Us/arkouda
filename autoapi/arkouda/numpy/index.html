@@ -1099,112 +1099,115 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.resolve_scalar_dtype" title="arkouda.numpy.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
 <td><p>Try to infer what dtype arkouda_server should treat val as.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.rotl" title="arkouda.numpy.rotl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotl</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.result_type" title="arkouda.numpy.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result_type</span></code></a>(→ Union[np.dtype, type])</p></td>
+<td><p>Determine the promoted result dtype of inputs, including support for Arkouda's bigint.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.rotl" title="arkouda.numpy.rotl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotl</span></code></a>(→ pdarray)</p></td>
 <td><p>Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.rotr" title="arkouda.numpy.rotr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotr</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.rotr" title="arkouda.numpy.rotr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotr</span></code></a>(→ pdarray)</p></td>
 <td><p>Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.round" title="arkouda.numpy.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">round</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.round" title="arkouda.numpy.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">round</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise rounding of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.scalar_array" title="arkouda.numpy.scalar_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar_array</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.scalar_array" title="arkouda.numpy.scalar_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar_array</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray from a single scalar value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.searchsorted" title="arkouda.numpy.searchsorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">searchsorted</span></code></a>(→ Union[int, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.searchsorted" title="arkouda.numpy.searchsorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">searchsorted</span></code></a>(→ Union[int, ...)</p></td>
 <td><p>Find indices where elements should be inserted to maintain order.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.setdiff1d" title="arkouda.numpy.setdiff1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdiff1d</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.setdiff1d" title="arkouda.numpy.setdiff1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdiff1d</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Find the set difference of two arrays.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.setxor1d" title="arkouda.numpy.setxor1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setxor1d</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.setxor1d" title="arkouda.numpy.setxor1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setxor1d</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Find the set exclusive-or (symmetric difference) of two arrays.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.shape" title="arkouda.numpy.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a>(→ Tuple)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.shape" title="arkouda.numpy.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a>(→ Tuple)</p></td>
 <td><p>Return the shape of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.sign" title="arkouda.numpy.sign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sign</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.sign" title="arkouda.numpy.sign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sign</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise sign of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.sin" title="arkouda.numpy.sin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sin</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.sin" title="arkouda.numpy.sin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sin</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise sine of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.sinh" title="arkouda.numpy.sinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sinh</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.sinh" title="arkouda.numpy.sinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sinh</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise hyperbolic sine of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.sort" title="arkouda.numpy.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.sort" title="arkouda.numpy.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return a sorted copy of the array. Only sorts numeric arrays;</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.sqrt" title="arkouda.numpy.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqrt</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.sqrt" title="arkouda.numpy.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqrt</span></code></a>(→ pdarray)</p></td>
 <td><p>Takes the square root of array. If where is given, the operation will only take place in</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.square" title="arkouda.numpy.square"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.square" title="arkouda.numpy.square"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise square of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.squeeze" title="arkouda.numpy.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">squeeze</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.squeeze" title="arkouda.numpy.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">squeeze</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Remove degenerate (size one) dimensions from an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.standard_normal" title="arkouda.numpy.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.standard_normal" title="arkouda.numpy.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Draw real numbers from the standard normal distribution.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.take" title="arkouda.numpy.take"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.take" title="arkouda.numpy.take"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Take elements from an array along an axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.tan" title="arkouda.numpy.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tan</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.tan" title="arkouda.numpy.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tan</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise tangent of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.tanh" title="arkouda.numpy.tanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tanh</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.tanh" title="arkouda.numpy.tanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tanh</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise hyperbolic tangent of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.tile" title="arkouda.numpy.tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.tile" title="arkouda.numpy.tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Construct an array by repeating A the number of times given by reps.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.timedelta_range" title="arkouda.numpy.timedelta_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timedelta_range</span></code></a>([start, end, periods, freq, name, closed])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.timedelta_range" title="arkouda.numpy.timedelta_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timedelta_range</span></code></a>([start, end, periods, freq, name, closed])</p></td>
 <td><p>Return a fixed frequency TimedeltaIndex, with day as the default</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.transpose" title="arkouda.numpy.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.transpose" title="arkouda.numpy.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Compute the transpose of a matrix.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.tril" title="arkouda.numpy.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tril</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.tril" title="arkouda.numpy.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tril</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return a copy of the pda with the upper triangle zeroed out</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.triu" title="arkouda.numpy.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triu</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.triu" title="arkouda.numpy.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triu</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return a copy of the pda with the lower triangle zeroed out</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.trunc" title="arkouda.numpy.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.trunc" title="arkouda.numpy.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise truncation of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.typename" title="arkouda.numpy.typename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typename</span></code></a>(char)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.typename" title="arkouda.numpy.typename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typename</span></code></a>(char)</p></td>
 <td><p>Return a description for the given data type code.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.uniform" title="arkouda.numpy.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.uniform" title="arkouda.numpy.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
 <td><p>Generate a pdarray with uniformly distributed random float values</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.union1d" title="arkouda.numpy.union1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union1d</span></code></a>(→ arkouda.groupbyclass.groupable)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.union1d" title="arkouda.numpy.union1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union1d</span></code></a>(→ arkouda.groupbyclass.groupable)</p></td>
 <td><p>Find the union of two arrays/List of Arrays.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.unregister" title="arkouda.numpy.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(→ str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.unregister" title="arkouda.numpy.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(→ str)</p></td>
 <td><p>Unregister an Arkouda object by its name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.unregister_all" title="arkouda.numpy.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(names)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.unregister_all" title="arkouda.numpy.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(names)</p></td>
 <td><p>Unregister all Arkouda objects associated with the provided names.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.value_counts" title="arkouda.numpy.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ tuple[arkouda.groupbyclass.groupable, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.value_counts" title="arkouda.numpy.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ tuple[arkouda.groupbyclass.groupable, ...)</p></td>
 <td><p>Count the occurrences of the unique values of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.vecdot" title="arkouda.numpy.vecdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vecdot</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.vecdot" title="arkouda.numpy.vecdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vecdot</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Compute the generalized dot product of two vectors along the given axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.vstack" title="arkouda.numpy.vstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vstack</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.vstack" title="arkouda.numpy.vstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vstack</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Stack arrays in sequence vertically (row wise).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.where" title="arkouda.numpy.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.where" title="arkouda.numpy.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Return an array with elements chosen from A and B based upon a</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.zeros" title="arkouda.numpy.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.zeros" title="arkouda.numpy.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray filled with zeros.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.zeros_like" title="arkouda.numpy.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.zeros_like" title="arkouda.numpy.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a zero-filled pdarray of the same size and dtype as an existing</p></td>
 </tr>
 </tbody>
@@ -2496,7 +2499,7 @@ has length n.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>|bool</p>
+<dd class="field-odd"><p><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a> of <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>|bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2555,7 +2558,7 @@ an n-suffix, False otherwise.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>|bool</p>
+<dd class="field-odd"><p><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a> of <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>|bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2587,7 +2590,7 @@ an n-suffix, False otherwise.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>|bool</p>
+<dd class="field-odd"><p><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a> of <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>|bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3430,7 +3433,7 @@ raw bytes of all strings, delimited by nulls.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.Strings.cached_regex_patterns">
-<span class="sig-name descname"><span class="pre">cached_regex_patterns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/strings.html#Strings.cached_regex_patterns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.Strings.cached_regex_patterns" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">cached_regex_patterns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/strings.html#Strings.cached_regex_patterns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.Strings.cached_regex_patterns" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the regex patterns for which Match objects have been cached</p>
 </dd></dl>
 
@@ -3467,12 +3470,12 @@ and the remaining letters lowercase.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.Strings.concatenate_uniquely">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">concatenate_uniquely</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><span class="pre">Strings</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/strings.html#Strings.concatenate_uniquely"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.Strings.concatenate_uniquely" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">concatenate_uniquely</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><span class="pre">Strings</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/strings.html#Strings.concatenate_uniquely"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.Strings.concatenate_uniquely" title="Link to this definition">¶</a></dt>
 <dd><p>Concatenates a list of Strings into a single Strings object
 containing only unique strings. Order may not be preserved.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>strings</strong> (<em>List</em><em>[</em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>]</em>) – List of segmented string objects to concatenate.</p>
+<dd class="field-odd"><p><strong>strings</strong> (<a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>[</em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>]</em>) – List of segmented string objects to concatenate.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A new Strings object containing the unique values.</p>
@@ -5200,7 +5203,7 @@ determine the file format.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.Strings.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/strings.html#Strings.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.Strings.to_list" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/strings.html#Strings.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.Strings.to_list" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the SegString to a list, transferring data from the
 arkouda server to Python. If the SegString exceeds a built-in size limit,
 a RuntimeError is raised.</p>
@@ -5209,7 +5212,7 @@ a RuntimeError is raised.</p>
 <dd class="field-odd"><p>A list with the same strings as this SegString</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[str]</p>
+<dd class="field-even"><p><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[str]</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -6476,7 +6479,7 @@ etc.</p>
 to the corresponding Arkouda object retrieved using <cite>attach</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>names</strong> (<em>List</em><em> of </em><em>str</em>) – A list of names corresponding to registered Arkouda objects.</p>
+<dd class="field-odd"><p><strong>names</strong> (<a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em> of </em><em>str</em>) – A list of names corresponding to registered Arkouda objects.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A dictionary mapping each name to the attached Arkouda object.</p>
@@ -9753,12 +9756,12 @@ value, and <code class="docutils literal notranslate"><span class="pre">False</s
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.hash">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/numeric.html#hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.hash" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/numeric.html#hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.hash" title="Link to this definition">¶</a></dt>
 <dd><p>Return an element-wise hash of the array or list of arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>     or </em><em>List</em><em> of </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>     or </em><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em> of </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a><em>, or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>)</p></li>
 <li><p><strong>full</strong> (<em>bool</em><em>, </em><em>default=True</em>) – This is only used when a single pdarray is passed into hash
 By default, a 128-bit hash is computed and returned as
 two int64 arrays. If full=False, then a 64-bit hash
@@ -12000,7 +12003,7 @@ See <code class="docutils literal notranslate"><span class="pre">arkouda.argmink
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarray.bigint_to_uint_arrays">
-<span class="sig-name descname"><span class="pre">bigint_to_uint_arrays</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.bigint_to_uint_arrays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarray.bigint_to_uint_arrays" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">bigint_to_uint_arrays</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.bigint_to_uint_arrays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarray.bigint_to_uint_arrays" title="Link to this definition">¶</a></dt>
 <dd><p>Create a list of uint pdarrays from a bigint pdarray.
 The first item in return will be the highest 64 bits of the
 bigint pdarray and the last item will be the lowest 64 bits.</p>
@@ -12011,7 +12014,7 @@ The first item in return will be the highest 64 bits of the
 bigint pdarray and the last item will be the lowest 64 bits.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[pdarrays]</p>
+<dd class="field-even"><p><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[pdarrays]</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
@@ -12897,7 +12900,7 @@ Saves the array in to single hdf5 file on the root node.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarray.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarray.to_list" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarray.to_list" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the array to a list, transferring array data from the
 Arkouda server to client-side Python. Note: if the pdarray size exceeds
 client.maxTransferBytes, a RuntimeError is raised.</p>
@@ -12906,7 +12909,7 @@ client.maxTransferBytes, a RuntimeError is raised.</p>
 <dd class="field-odd"><p>A list with the same data as the pdarray</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[<a class="reference internal" href="#arkouda.numpy.numeric_scalars" title="arkouda.numpy.numeric_scalars">numeric_scalars</a>]</p>
+<dd class="field-even"><p><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[<a class="reference internal" href="#arkouda.numpy.numeric_scalars" title="arkouda.numpy.numeric_scalars">numeric_scalars</a>]</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown, if the pdarray size
@@ -13365,17 +13368,17 @@ original value. Default set to True.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.promote_to_common_dtype">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">promote_to_common_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraycreation.html#promote_to_common_dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.promote_to_common_dtype" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">promote_to_common_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/pdarraycreation.html#promote_to_common_dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.promote_to_common_dtype" title="Link to this definition">¶</a></dt>
 <dd><p>Promote a list of pdarrays to a common dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>arrays</strong> (<em>List</em><em>[</em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>]</em>) – List of pdarrays to promote</p>
+<dd class="field-odd"><p><strong>arrays</strong> (<a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>[</em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>]</em>) – List of pdarrays to promote</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The common dtype of the pdarrays and the list of pdarrays promoted to that dtype</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dtype, List[<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>dtype, <a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if any pdarray is a non-numeric type</p>
@@ -13770,6 +13773,32 @@ By default, use the flattened input array, and return a flat output array.</p></
 <span class="go">&#39;float64&#39;</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.result_type">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">result_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><span class="pre">pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/dtypes.html#result_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.result_type" title="Link to this definition">¶</a></dt>
+<dd><p>Determine the promoted result dtype of inputs, including support for Arkouda’s bigint.</p>
+<p>Determine the result dtype that would be returned by a NumPy-like operation
+on the provided input arguments, accounting for Arkouda’s extended types
+such as ak.bigint.</p>
+<p>This function mimics numpy.result_type, with support for Arkouda types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*args</strong> (<a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>np.dtype</em><em>, </em><em>type</em><em>]</em>) – One or more input objects. These can be NumPy arrays, dtypes, Python
+scalar types, or Arkouda pdarrays.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dtype (or equivalent Arkouda type) that results from applying
+type promotion rules to the inputs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[np.dtype, type]</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function is meant to be a drop-in replacement for numpy.result_type
+but includes logic to support Arkouda’s bigint types.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -15995,13 +16024,13 @@ Unregistered PDARRAY my_array</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.unregister_all">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">unregister_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/util.html#unregister_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.unregister_all" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">unregister_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/util.html#unregister_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.unregister_all" title="Link to this definition">¶</a></dt>
 <dd><p>Unregister all Arkouda objects associated with the provided names.</p>
 <p>This function iterates through the list of <cite>names</cite>, unregistering each
 corresponding object from the Arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>names</strong> (<em>List</em><em> of </em><em>str</em>) – A list of registered names corresponding to Arkouda objects
+<dd class="field-odd"><p><strong>names</strong> (<a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em> of </em><em>str</em>) – A list of registered names corresponding to Arkouda objects
 that should be unregistered.</p>
 </dd>
 </dl>
@@ -17224,6 +17253,7 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.numpy.register_all"><code class="docutils literal notranslate"><span class="pre">register_all()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.repeat"><code class="docutils literal notranslate"><span class="pre">repeat()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.resolve_scalar_dtype"><code class="docutils literal notranslate"><span class="pre">resolve_scalar_dtype()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.result_type"><code class="docutils literal notranslate"><span class="pre">result_type()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.rotl"><code class="docutils literal notranslate"><span class="pre">rotl()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.rotr"><code class="docutils literal notranslate"><span class="pre">rotr()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.round"><code class="docutils literal notranslate"><span class="pre">round()</span></code></a></li>

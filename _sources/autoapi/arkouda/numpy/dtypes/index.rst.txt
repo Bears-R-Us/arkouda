@@ -4,6 +4,14 @@ arkouda.numpy.dtypes
 .. py:module:: arkouda.numpy.dtypes
 
 
+Attributes
+----------
+
+.. autoapisummary::
+
+   arkouda.numpy.dtypes.TYPE_CHECKING
+
+
 Classes
 -------
 
@@ -33,6 +41,7 @@ Classes
    arkouda.numpy.dtypes.Int64DType
    arkouda.numpy.dtypes.Int8DType
    arkouda.numpy.dtypes.IntDType
+   arkouda.numpy.dtypes.List
    arkouda.numpy.dtypes.LongDType
    arkouda.numpy.dtypes.LongDoubleDType
    arkouda.numpy.dtypes.LongLongDType
@@ -100,6 +109,7 @@ Functions
    arkouda.numpy.dtypes.isSupportedInt
    arkouda.numpy.dtypes.isSupportedNumber
    arkouda.numpy.dtypes.resolve_scalar_dtype
+   arkouda.numpy.dtypes.result_type
 
 
 Module Contents
@@ -620,6 +630,97 @@ Module Contents
    information.
 
 
+.. py:class:: List
+
+   Bases: :py:obj:`_NotIterable`
+
+
+   A generic version of list.
+
+
+   .. py:method:: append(object, /)
+
+      Append object to the end of the list.
+
+
+
+   .. py:method:: clear(/)
+
+      Remove all items from list.
+
+
+
+   .. py:method:: copy(/)
+
+      Return a shallow copy of the list.
+
+
+
+   .. py:method:: copy_with(params)
+
+
+   .. py:method:: count(value, /)
+
+      Return number of occurrences of value.
+
+
+
+   .. py:method:: extend(iterable, /)
+
+      Extend list by appending elements from the iterable.
+
+
+
+   .. py:method:: index(value, start=0, stop=9223372036854775807, /)
+
+      Return first index of value.
+
+      Raises ValueError if the value is not present.
+
+
+
+   .. py:method:: insert(index, object, /)
+
+      Insert object before index.
+
+
+
+   .. py:method:: pop(index=-1, /)
+
+      Remove and return item at index (default last).
+
+      Raises IndexError if list is empty or index is out of range.
+
+
+
+   .. py:method:: remove(value, /)
+
+      Remove first occurrence of value.
+
+      Raises ValueError if the value is not present.
+
+
+
+   .. py:method:: reverse(/)
+
+      Reverse *IN PLACE*.
+
+
+
+   .. py:method:: sort(/, *, key=None, reverse=False)
+
+      Sort the list in ascending order and return None.
+
+      The sort is in-place (i.e. the list itself is modified) and stable (i.e. the
+      order of two equal elements is maintained).
+
+      If a key function is given, apply it once to each list item and sort them,
+      ascending or descending, according to their function values.
+
+      The reverse flag can be set to sort in descending order.
+
+
+
 .. py:class:: LongDType
 
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
@@ -977,6 +1078,9 @@ Module Contents
    dtype instances and :ref:`arrays.dtypes` for additional
    information.
 
+
+.. py:data:: TYPE_CHECKING
+   :type:  int
 
 .. py:class:: TimeDelta64DType
 
@@ -2008,6 +2112,30 @@ Module Contents
    'int64'
    >>> ak.resolve_scalar_dtype(2.0)
    'float64'
+
+
+.. py:function:: result_type(*args: Union[pdarray, np.dtype, type]) -> Union[np.dtype, type]
+
+   Determine the promoted result dtype of inputs, including support for Arkouda's bigint.
+
+   Determine the result dtype that would be returned by a NumPy-like operation
+   on the provided input arguments, accounting for Arkouda's extended types
+   such as ak.bigint.
+
+   This function mimics numpy.result_type, with support for Arkouda types.
+
+   :param \*args: One or more input objects. These can be NumPy arrays, dtypes, Python
+                  scalar types, or Arkouda pdarrays.
+   :type \*args: Union[pdarray, np.dtype, type]
+
+   :returns: The dtype (or equivalent Arkouda type) that results from applying
+             type promotion rules to the inputs.
+   :rtype: Union[np.dtype, type]
+
+   .. rubric:: Notes
+
+   This function is meant to be a drop-in replacement for numpy.result_type
+   but includes logic to support Arkouda's bigint types.
 
 
 .. py:class:: str_

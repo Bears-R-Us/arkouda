@@ -406,6 +406,7 @@ Functions
    arkouda.repeat
    arkouda.resolve_scalar_dtype
    arkouda.restore
+   arkouda.result_type
    arkouda.right_align
    arkouda.rotl
    arkouda.rotr
@@ -19173,6 +19174,30 @@ Package Contents
 
    Unlike other save/load methods using snapshot restore will save DataFrames alongside other
    objects in HDF5. Thus, they are returned within the dictionary as a dataframe.
+
+
+.. py:function:: result_type(*args: Union[pdarray, np.dtype, type]) -> Union[np.dtype, type]
+
+   Determine the promoted result dtype of inputs, including support for Arkouda's bigint.
+
+   Determine the result dtype that would be returned by a NumPy-like operation
+   on the provided input arguments, accounting for Arkouda's extended types
+   such as ak.bigint.
+
+   This function mimics numpy.result_type, with support for Arkouda types.
+
+   :param \*args: One or more input objects. These can be NumPy arrays, dtypes, Python
+                  scalar types, or Arkouda pdarrays.
+   :type \*args: Union[pdarray, np.dtype, type]
+
+   :returns: The dtype (or equivalent Arkouda type) that results from applying
+             type promotion rules to the inputs.
+   :rtype: Union[np.dtype, type]
+
+   .. rubric:: Notes
+
+   This function is meant to be a drop-in replacement for numpy.result_type
+   but includes logic to support Arkouda's bigint types.
 
 
 .. py:function:: right_align(left, right)

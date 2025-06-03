@@ -279,6 +279,7 @@ Functions
    arkouda.numpy.register_all
    arkouda.numpy.repeat
    arkouda.numpy.resolve_scalar_dtype
+   arkouda.numpy.result_type
    arkouda.numpy.rotl
    arkouda.numpy.rotr
    arkouda.numpy.round
@@ -10694,6 +10695,30 @@ Package Contents
    'int64'
    >>> ak.resolve_scalar_dtype(2.0)
    'float64'
+
+
+.. py:function:: result_type(*args: Union[pdarray, np.dtype, type]) -> Union[np.dtype, type]
+
+   Determine the promoted result dtype of inputs, including support for Arkouda's bigint.
+
+   Determine the result dtype that would be returned by a NumPy-like operation
+   on the provided input arguments, accounting for Arkouda's extended types
+   such as ak.bigint.
+
+   This function mimics numpy.result_type, with support for Arkouda types.
+
+   :param \*args: One or more input objects. These can be NumPy arrays, dtypes, Python
+                  scalar types, or Arkouda pdarrays.
+   :type \*args: Union[pdarray, np.dtype, type]
+
+   :returns: The dtype (or equivalent Arkouda type) that results from applying
+             type promotion rules to the inputs.
+   :rtype: Union[np.dtype, type]
+
+   .. rubric:: Notes
+
+   This function is meant to be a drop-in replacement for numpy.result_type
+   but includes logic to support Arkouda's bigint types.
 
 
 .. py:function:: rotl(x, rot) -> pdarray
