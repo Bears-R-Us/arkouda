@@ -193,8 +193,8 @@ def empty_like(x: Array, /, *, dtype: Optional[Dtype] = None, device: Optional[D
 
 
 def eye(
-    n_rows: int,
-    n_cols: Optional[int] = None,
+    N: int,
+    M: Optional[int] = None,
     /,
     *,
     k: int = 0,
@@ -206,11 +206,10 @@ def eye(
 
     Parameters
     ----------
-
-    n_rows: int
+    N: int
         Number of rows in the output.
-    n_cols: Optional[int]
-        Number of columns in the output. If None, defaults to `n_rows`.
+    M: Optional[int]
+        Number of columns in the output. If None, defaults to N.
     k: int
         Index of the diagonal: 0 (the default) refers to the main diagonal, a
         positive value refers to an upper diagonal, and a negative value to a
@@ -223,13 +222,12 @@ def eye(
     if device not in ["cpu", None]:
         raise ValueError(f"Unsupported device {device!r}")
 
-    cols = n_rows
-    if n_cols is not None:
-        cols = n_cols
+    if M is None:
+        M = N
 
     from arkouda import dtype as akdtype
 
-    return Array._new(ak.eye(rows=n_rows, cols=cols, diag=k, dt=akdtype(dtype)))
+    return Array._new(ak.eye(N=N, M=M, k=k, dt=akdtype(dtype)))
 
 
 def from_dlpack(x: object, /) -> Array:
