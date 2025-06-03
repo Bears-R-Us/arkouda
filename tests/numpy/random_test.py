@@ -325,7 +325,7 @@ class TestRandom:
         # all elements are pulled to first locale i.e. total_size < (minimum elemsPerStream = 256)
         saved_seeded_file_patterns = ["second_order*", "third_order*", "fourth_order*"]
 
-        # directory of this file
+        # directory of this 1file
         file_dir = os.path.dirname(os.path.realpath(__file__))
         for i, f_name in zip(range(2, 5), saved_seeded_file_patterns):
             generated = ak.random.default_rng(seed=seed).poisson(size=10**i)

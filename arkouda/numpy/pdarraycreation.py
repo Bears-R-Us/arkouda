@@ -688,7 +688,7 @@ def full(
     array([True True True True True])
     """
     from arkouda.numpy.dtypes import dtype as ak_dtype
-    # from arkouda.client import generic_msg
+    from arkouda.client import generic_msg
 
     if isinstance(fill_value, str):
         return _full_string(size, fill_value)
