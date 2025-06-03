@@ -3956,8 +3956,6 @@ def dot(
 
 
 @typechecked
-<<<<<<< HEAD
-=======
 def mean(pda: pdarray) -> np.float64:
     """
     Return the mean of the array.
@@ -4126,7 +4124,6 @@ def std(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
 
 
 @typechecked
->>>>>>> 06699fbd9 (first round of add import to py files for generic_msg)
 def cov(x: pdarray, y: pdarray) -> np.float64:
     """
     Return the covariance of x and y
