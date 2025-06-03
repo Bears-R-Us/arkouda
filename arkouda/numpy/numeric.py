@@ -2713,22 +2713,21 @@ def putmask(
     return
 
 
-def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = ak_float64) -> pdarray:
+def eye(N: int_scalars, M: int_scalars, k: int_scalars = 0, dt: type = ak_float64) -> pdarray:
     """
     Return a pdarray with zeros everywhere except along a diagonal, which is all ones.
     The matrix need not be square.
 
     Parameters
     ----------
-    rows : int_scalars
-    cols : int_scalars
-    diag : int_scalars, default=0
-        | if diag = 0, zeros start at element [0,0] and proceed along diagonal
-        | if diag > 0, zeros start at element [0,diag] and proceed along diagonal
-        | if diag < 0, zeros start at element [diag,0] and proceed along diagonal
-        | etc. Default set to 0.
-    dt : type, default=ak_int64
-        The data type of the elements in the matrix being returned. Default set to ak_int64
+    N : int_scalars
+    M : int_scalars
+    k : int_scalars, default=0
+        | if k = 0, zeros start at element [0,0] and proceed along diagonal
+        | if k > 0, zeros start at element [0,k] and proceed along diagonal
+        | if k < 0, zeros start at element [k,0] and proceed along diagonal
+    dt : type, default=ak_float64
+        The data type of the elements in the matrix being returned. Default set to ak_float64
 
     Returns
     -------
@@ -2738,28 +2737,28 @@ def eye(rows: int_scalars, cols: int_scalars, diag: int_scalars = 0, dt: type = 
     Examples
     --------
     >>> import arkouda as ak
-    >>> ak.eye(rows=4,cols=4,diag=0,dt=ak.int64)
+    >>> ak.eye(N=4,M=4,k=0,dt=ak.int64)
     array([array([1 0 0 0]) array([0 1 0 0]) array([0 0 1 0]) array([0 0 0 1])])
-    >>> ak.eye(rows=3,cols=3,diag=1,dt=ak.float64)
+    >>> ak.eye(N=3,M=3,k=1,dt=ak.float64)
     array([array([0.00000000000000000 1.00000000000000000 0.00000000000000000])
     array([0.00000000000000000 0.00000000000000000 1.00000000000000000])
     array([0.00000000000000000 0.00000000000000000 0.00000000000000000])])
-    >>> ak.eye(rows=4,cols=4,diag=-1,dt=ak.bool_)
+    >>> ak.eye(N=4,M=4,k=-1,dt=ak.bool_)
     array([array([False False False False]) array([True False False False])
     array([False True False False]) array([False False True False])])
 
     Notes
     -----
-    if rows = cols and diag = 0, the result is an identity matrix
+    if N = M and k = 0, the result is an identity matrix
     Server returns an error if rank of pda < 2
 
     """
 
     cmd = f"eye<{akdtype(dt).name}>"
     args = {
-        "rows": rows,
-        "cols": cols,
-        "diag": diag,
+        "N": N,
+        "M": M,
+        "k": k,
     }
     return create_pdarray(
         generic_msg(

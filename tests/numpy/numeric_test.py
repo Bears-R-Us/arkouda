@@ -1086,11 +1086,11 @@ class TestNumeric:
 
         # test on one square and two non-square matrices
 
-        for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
-            sweep = range(-(cols - 1), rows)  # sweeps the diagonal from LL to UR
-            for diag in sweep:
-                nda = np.eye(rows, cols, diag, dtype=data_type)
-                pda = ak.eye(rows, cols, diag, dt=data_type).to_ndarray()
+        for N, M in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
+            sweep = range(-(M - 1), N)  # sweeps the diagonal from LL to UR
+            for k in sweep:
+                nda = np.eye(N, M, k, dtype=data_type)
+                pda = ak.eye(N, M, k, dt=data_type).to_ndarray()
                 assert check(nda, pda, data_type)
 
     # matmul works on ints, floats, or bool
