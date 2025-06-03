@@ -187,16 +187,12 @@ def coargsort(
     """
     from arkouda.pandas.categorical import Categorical
     from arkouda.numpy import cast as akcast
-<<<<<<< HEAD
 
-    check_type("coargsort", arrays, Sequence[Union[pdarray, Strings, Categorical]])
-
-=======
     from arkouda.client import generic_msg
     check_type(
         argname="coargsort", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]]
     )
->>>>>>> 06699fbd9 (first round of add import to py files for generic_msg)
+
     size: int_scalars = -1
     anames, atypes, expanded_arrays = [], [], []
     max_dim = 1
