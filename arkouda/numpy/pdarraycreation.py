@@ -688,7 +688,7 @@ def full(
     array([True True True True True])
     """
     from arkouda.numpy.dtypes import dtype as ak_dtype
-    from arkouda.client import generic_msg
+    from arkouda.client import generic_msg, get_array_ranks
 
     if isinstance(fill_value, str):
         return _full_string(size, fill_value)
@@ -707,6 +707,7 @@ def full(
     )
 
     shape, ndim, full_size = _infer_shape_from_size(size)
+
 
     if ndim not in get_array_ranks():
         raise ValueError(f"array rank {ndim} not in compiled ranks {get_array_ranks()}")
