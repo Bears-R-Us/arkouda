@@ -1118,35 +1118,6 @@ class TestNumeric:
             npProduct = np.matmul(ndaLeft, ndaRight)
             assert check(npProduct, akProduct.to_ndarray(), akProduct.dtype)
 
-    # vecdot works on ints, floats, or bool, with the limitation that both inputs can't
-    # be bool
-
-    @pytest.mark.skip_if_rank_not_compiled(2)
-    @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
-    @pytest.mark.parametrize("data_type2", INT_FLOAT)
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_vecdot(self, data_type1, data_type2, prob_size):
-        depth = np.random.randint(2, 10)
-        width = prob_size // depth
-
-        # ints and bools are checked for equality; floats are checked for closeness
-
-        check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
-        )
-
-        pda_a = ak.randint(0, 10, (depth, width), dtype=data_type1)
-        nda_a = pda_a.to_ndarray()
-        pda_b = ak.randint(0, 10, (depth, width), dtype=data_type2)
-        nda_b = pda_b.to_ndarray()
-        akProduct = ak.vecdot(pda_a, pda_b)
-
-        # there is no vecdot in numpy (and vdot doesn't do the same thing).
-        # np.add.reduce does.
-
-        npProduct = np.add.reduce(nda_a * nda_b)
-        assert check(npProduct, akProduct.to_ndarray(), akProduct.dtype)
-
     # Notes about array_equal:
     #   Strings compared to non-strings are always not equal.
     #   nan handling is (of course) unique to floating point
@@ -1561,3 +1532,114 @@ class TestNumeric:
         anp_taken = np.take(anp, indices_np, axis=axis)
 
         assert np.array_equal(a_taken.to_ndarray(), anp_taken)
+
+    @pytest.mark.parametrize("dtype", NO_BOOL)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_vecdot_1d(self, dtype, size):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        a = ak.randint(0, 100, size, dtype=dtype, seed=seed)
+        b = ak.randint(0, 100, size, dtype=dtype)
+        np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray())
+        ak_vecdot_f = ak.vecdot(a, b)
+        ak_vecdot_r = ak.vecdot(a, b)
+        assert isclose(np_vecdot, ak_vecdot_f)  # for 1D case, results are scalar
+        assert isclose(ak_vecdot_f, ak_vecdot_r)
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("dtype", NO_BOOL)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("same_shape", YES_NO)
+    def test_vecdot_2d(self, dtype, size, same_shape):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        if same_shape:
+            a_shape = (2, size // 2)
+            b_shape = (2, size // 2)
+        else:
+            a_shape = (1, size // 2)
+            b_shape = (2, size // 2)
+        a = ak.randint(0, 100, a_shape, dtype=dtype, seed=seed)
+        b = ak.randint(0, 100, b_shape, dtype=dtype)
+        if same_shape:
+            for axis in [0, 1]:
+                np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray(), axis=axis)
+                ak_vecdot_f = ak.vecdot(a, b, axis=axis)
+                ak_vecdot_r = ak.vecdot(b, a, axis=axis)
+                ak_assert_almost_equivalent(np_vecdot, ak_vecdot_f)
+                ak_assert_almost_equivalent(ak_vecdot_f, ak_vecdot_r)
+        else:
+            np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray())
+            ak_vecdot_f = ak.vecdot(a, b)
+            ak_vecdot_r = ak.vecdot(b, a)
+            ak_assert_almost_equivalent(np_vecdot, ak_vecdot_f)
+            ak_assert_almost_equivalent(ak_vecdot_f, ak_vecdot_r)
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("dtype", NO_BOOL)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("same_shape", YES_NO)
+    def test_vecdot_3d(self, dtype, size, same_shape):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        if same_shape:
+            a_shape = (2, 2, size // 4)
+            b_shape = (2, 2, size // 4)
+        else:
+            a_shape = (1, size // 4)
+            b_shape = (2, 2, size // 4)
+        a = ak.randint(0, 100, a_shape, dtype=dtype, seed=seed)
+        b = ak.randint(0, 100, b_shape, dtype=dtype)
+        if same_shape:
+            for axis in [0, 1, 2]:
+                np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray(), axis=axis)
+                ak_vecdot_f = ak.vecdot(a, b, axis=axis)
+                ak_vecdot_r = ak.vecdot(b, a, axis=axis)
+                ak_assert_almost_equivalent(np_vecdot, ak_vecdot_f)
+                ak_assert_almost_equivalent(ak_vecdot_f, ak_vecdot_r)
+        else:
+            np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray())
+            ak_vecdot_f = ak.vecdot(a, b)
+            ak_vecdot_r = ak.vecdot(b, a)
+            ak_assert_almost_equivalent(np_vecdot, ak_vecdot_f)
+            ak_assert_almost_equivalent(ak_vecdot_f, ak_vecdot_r)
+
+    #   The broadcast test creates compatible shapes that have to be broadcast
+    #   to perform the computation
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("dtype", NO_BOOL)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_vecdot_with_broadcast(self, dtype, size):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        ashape = [1, 1]
+        bshape = [1, 1]
+        for i in range(2):
+            cointoss = random.choice([True, False])
+            alteration = np.random.randint(2, 4)
+            if cointoss:
+                ashape[i] = alteration
+            else:
+                bshape[i] = alteration
+        lastdim = max(2, size // (prod(ashape) * prod(bshape)))
+        ashape.append(lastdim)
+        bshape.append(lastdim)
+        a = ak.randint(0, 100, tuple(ashape), dtype=dtype, seed=seed)
+        b = ak.randint(0, 100, tuple(bshape), dtype=dtype)
+        np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray())
+        ak_vecdot_f = ak.vecdot(a, b)
+        ak_vecdot_r = ak.vecdot(b, a)
+        ak_assert_almost_equivalent(np_vecdot, ak_vecdot_f)
+        ak_assert_almost_equivalent(ak_vecdot_f, ak_vecdot_r)
+
+    #   The error test sends incompatible shapes to vecdot, which passes them to
+    #   ak.broadcast_dims, which is where the error is raised.
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("dtype", NO_BOOL)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_vecdot_error(self, dtype, size):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        a_shape = (1, size // 2)
+        b_shape = (2, size // 4)
+        with pytest.raises(ValueError):
+            a = ak.randint(0, 100, a_shape, dtype=dtype, seed=seed)
+            b = ak.randint(0, 100, b_shape, dtype=dtype)
+            ak.vecdot(a, b)  # causes the ValueError
