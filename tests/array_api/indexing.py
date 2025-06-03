@@ -15,6 +15,16 @@ def randArr(shape):
 
 
 class TestIndexing:
+    def test_indexing_functions_docstrings(self):
+        import doctest
+
+        from arkouda.array_api import indexing_functions
+
+        result = doctest.testmod(
+            indexing_functions, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_rank_changing_assignment(self):
         a = randArr((5, 6, 7))
