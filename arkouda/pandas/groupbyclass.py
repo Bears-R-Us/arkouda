@@ -1,3 +1,46 @@
+"""
+GroupBy functionality for Arkouda.
+
+This module implements group-by operations for Arkouda arrays, enabling efficient
+grouping, aggregation, and broadcasting of data using distributed `pdarray` structures.
+
+It provides the `GroupBy` class and supporting utilities for working with groupable
+data, following a pandas-like interface while scaling to large datasets via Arkouda's
+parallel backend.
+
+Components
+----------
+GroupBy : class
+    Main class for performing group-by operations such as sum, mean, min, max, etc.
+
+unique : function
+    Returns the unique values in an array and the permutation that groups them.
+
+broadcast : function
+    Broadcasts a per-group aggregate back to the original shape of the input array.
+
+GROUPBY_REDUCTION_TYPES : set
+    Set of supported reduction types for `GroupBy.aggregate` (e.g., "sum", "count", "mean").
+
+groupable : type alias
+    A type alias representing valid input(s) to the `GroupBy` constructor.
+    Acceptable types include:
+        - a single `pdarray`, `Strings`, or `Categorical` object
+        - a sequence (e.g., list or tuple) of any combination of those types
+
+Examples
+--------
+>>> import arkouda as ak
+>>> from arkouda.groupbyclass import GroupBy
+
+>>> keys = ak.array([0, 1, 0, 1, 0])
+>>> values = ak.array([10, 20, 30, 40, 50])
+>>> gb = GroupBy(keys)
+>>> gb.aggregate(values, 'sum')
+(array([0 1]), array([90 60]))
+
+"""
+
 from __future__ import annotations
 
 import enum
