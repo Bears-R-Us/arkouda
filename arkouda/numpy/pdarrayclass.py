@@ -26,6 +26,7 @@ from arkouda.numpy.dtypes import (
     numeric_scalars,
     numpy_scalars,
     resolve_scalar_dtype,
+    result_type,
 )
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
@@ -689,6 +690,16 @@ class pdarray:
             raise ValueError(f"bad operator {op}")
         # pdarray binop pdarray
         if isinstance(other, pdarray):
+            # Not sure why the import is necessary, but it appears to be necessary.
+            from arkouda.numpy.dtypes import float64 as akfloat64
+
+            res_type = result_type(self, other)
+            bit_ops = {"&", "^", "|", ">>", "<<", ">>>", ">>>"}
+            if res_type == akfloat64 and op in bit_ops:
+                raise TypeError(
+                    f"Input types {self.dtype}, {other.dtype} result in array of type "
+                    f"{res_type}, which is not compatible with bitwise operation {op}"
+                )
             try:
                 x1, x2, tmp_x1, tmp_x2 = broadcast_if_needed(self, other)
             except ValueError:
