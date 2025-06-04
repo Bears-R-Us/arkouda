@@ -193,31 +193,31 @@ module EfuncMsg
     }
 
     @arkouda.registerCommand(name="floor")
-    proc ak_floor (pda : [?d] ?t) : [d] real throws
+    proc ak_floor (x : [?d] ?t) : [d] real throws
         where (t==real)
     {
-        return floor(pda);
+        return floor(x);
     }
 
     @arkouda.registerCommand(name="ceil")
-    proc ak_ceil (pda : [?d] ?t) : [d] real throws
+    proc ak_ceil (x : [?d] ?t) : [d] real throws
         where (t==real)
     {
-        return ceil(pda);
+        return ceil(x);
     }
 
     @arkouda.registerCommand(name="round")
-    proc ak_round (pda : [?d] ?t) : [d] real throws
+    proc ak_round (x : [?d] ?t) : [d] real throws
         where (t==real)
     {
-        return round(pda);
+        return round(x);
     }
 
     @arkouda.registerCommand(name="trunc")
-    proc ak_trunc (pda : [?d] ?t) : [d] real throws
+    proc ak_trunc (x : [?d] ?t) : [d] real throws
         where (t==real)
     {
-        return trunc(pda);
+        return trunc(x);
     }
 
     @arkouda.registerCommand()
