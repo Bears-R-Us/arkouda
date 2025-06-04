@@ -1,3 +1,70 @@
+"""
+Logging utilities for Arkouda client operations.
+
+The `arkouda.logger` module provides an extensible, configurable logging system tailored
+to Arkouda's Python client. It supports structured logging using the standard `logging`
+module with added conveniences, such as type-safe log level enums, named handlers,
+and global verbosity toggles.
+
+Main Features
+-------------
+- `ArkoudaLogger`: A subclass of `logging.Logger` with Arkouda-specific defaults and
+  dynamic handler configuration.
+- `LogLevel`: Enum of supported logging levels (`DEBUG`, `INFO`, `WARN`, etc.)
+- Global registry of loggers for coordinated verbosity control
+- Utility methods for enabling/disabling verbose output globally
+- Client-side custom log injection into the Arkouda server logs via `write_log`
+
+Exports
+-------
+__all__ = [
+    "LogLevel",
+    "enableVerbose",
+    "disableVerbose",
+    "write_log",
+]
+
+Classes
+-------
+LogLevel : Enum
+    Enum for defining log levels in a type-safe way (`DEBUG`, `INFO`, `WARN`, etc.).
+
+ArkoudaLogger : Logger
+    A wrapper around Python's standard `Logger` that adds Arkouda-specific conventions,
+    log formatting, and runtime handler reconfiguration.
+
+Functions
+---------
+getArkoudaLogger(name, handlers=None, logFormat=None, logLevel=None)
+    Instantiate a logger with customizable format and log level.
+
+getArkoudaClientLogger(name)
+    Instantiate a logger for client-facing output (no formatting, INFO level default).
+
+enableVerbose()
+    Globally set all ArkoudaLoggers to DEBUG level.
+
+disableVerbose(logLevel=LogLevel.INFO)
+    Globally disable DEBUG output by setting all loggers to the specified level.
+
+write_log(log_msg, tag="ClientGeneratedLog", log_lvl=LogLevel.INFO)
+    Submit a custom log message to the Arkouda server’s logging system.
+
+Usage Example
+-------------
+>>> from arkouda.logger import getArkoudaLogger, LogLevel
+>>> logger = getArkoudaLogger("myLogger")
+>>> logger.info("This is an info message.")
+>>> logger.enableVerbose()
+>>> logger.debug("Now showing debug messages.")
+
+See Also
+--------
+- logging (Python Standard Library)
+- arkouda.client.generic_msg
+
+"""
+
 import os
 from enum import Enum
 from logging import (
