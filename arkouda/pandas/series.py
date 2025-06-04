@@ -13,9 +13,6 @@ from typeguard import typechecked
 import arkouda.pandas.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
-from arkouda.pandas.categorical import Categorical
-from arkouda.pandas.groupbyclass import GroupBy, groupable_element_type
-from arkouda.pandas.index import Index, MultiIndex
 from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
 from arkouda.numpy.pdarrayclass import (
     RegistrationError,
@@ -28,11 +25,14 @@ from arkouda.numpy.pdarraycreation import arange, array, full, zeros
 from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import get_callback, is_float
+from arkouda.pandas.categorical import Categorical
+from arkouda.pandas.groupbyclass import GroupBy, groupable_element_type
+from arkouda.pandas.index import Index, MultiIndex
 
 if TYPE_CHECKING:
-    from arkouda.numpy.segarray import SegArray
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import isnan, value_counts
+    from arkouda.numpy.segarray import SegArray
 else:
     SegArray = TypeVar("SegArray")
     akcast = TypeVar("akcast")
@@ -905,6 +905,7 @@ class Series:
 
         """
         from arkouda.numpy import value_counts
+
         dtype = get_callback(self.values)
         idx, vals = value_counts(self.values)
         s = Series(index=idx, data=vals)
@@ -1367,6 +1368,7 @@ class Series:
 
         """
         from arkouda.numpy import isnan
+
         if not is_float(self.values):
             return Series(full(self.values.size, False, dtype=bool), index=self.index)
 

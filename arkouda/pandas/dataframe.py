@@ -24,16 +24,9 @@ from numpy import ndarray
 from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
 from typeguard import typechecked
 
-from arkouda.pandas.categorical import Categorical
 from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.index import Index, MultiIndex
-
-from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES
-from arkouda.pandas.groupbyclass import GroupBy as akGroupBy
-from arkouda.pandas.groupbyclass import unique
-from arkouda.pandas.index import Index, MultiIndex
-
 from arkouda.numpy.dtypes import _is_dtype_in_union, bigint
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -47,15 +40,20 @@ from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.sorting import sort as aksort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
+from arkouda.pandas.categorical import Categorical
+from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES
+from arkouda.pandas.groupbyclass import GroupBy as akGroupBy
+from arkouda.pandas.groupbyclass import unique
+from arkouda.pandas.index import Index, MultiIndex
 from arkouda.pandas.join import inner_join
 from arkouda.pandas.row import Row
 
 if TYPE_CHECKING:
-    from arkouda.numpy.segarray import SegArray
-    from arkouda.pandas.series import Series
     from arkouda.client import generic_msg, maxTransferBytes
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import cumsum, where
+    from arkouda.numpy.segarray import SegArray
+    from arkouda.pandas.series import Series
 else:
     Series = TypeVar("Series")
     SegArray = TypeVar("SegArray")
@@ -1264,8 +1262,9 @@ class DataFrame(UserDict):
         return newdf.to_pandas(retain_index=True)
 
     def _get_head_tail_server(self):
-        from arkouda.numpy.segarray import SegArray
         from arkouda.client import generic_msg
+        from arkouda.numpy.segarray import SegArray
+
         if self._empty:
             return pd.DataFrame()
         self.update_nrows()
@@ -1390,6 +1389,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.client import generic_msg
+
         self.update_nrows()
         idx = self._index
         msg_list = []
@@ -3171,10 +3171,11 @@ class DataFrame(UserDict):
             Raised if a server-side error is thrown saving the pdarray
 
         """
+        from arkouda.client import generic_msg
+        from arkouda.numpy.segarray import SegArray
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
-        from arkouda.numpy.segarray import SegArray
-        from arkouda.client import generic_msg
+
         column_data = [
             (
                 obj.name
@@ -5193,9 +5194,10 @@ class DataFrame(UserDict):
         False
 
         """
-        from arkouda.pandas.categorical import Categorical as Categorical_
-        from arkouda.numpy.segarray import SegArray
         from arkouda.client import generic_msg
+        from arkouda.numpy.segarray import SegArray
+        from arkouda.pandas.categorical import Categorical as Categorical_
+
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         column_data = [
@@ -5392,8 +5394,8 @@ class DataFrame(UserDict):
         DataFrame
 
         """
-        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.numpy.segarray import SegArray
+        from arkouda.pandas.categorical import Categorical as Categorical_
 
         data = json.loads(rep_msg)
         idx = None

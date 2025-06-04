@@ -1,12 +1,11 @@
 import re
 from itertools import chain
 
-from arkouda.pandas import matcher
 import numpy as np
 import pytest
 
 import arkouda as ak
-from arkouda.pandas import match
+from arkouda.pandas import match, matcher
 
 
 class TestRegex:

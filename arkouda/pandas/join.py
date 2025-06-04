@@ -1,11 +1,18 @@
-from typing import TYPE_CHECKING, TypeVar, Callable, Optional, Sequence, Tuple, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import numpy as np
 from typeguard import typechecked
 
 from arkouda.alignment import right_align
-from arkouda.pandas.categorical import Categorical
-from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import resolve_scalar_dtype
@@ -13,6 +20,8 @@ from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.strings import Strings
+from arkouda.pandas.categorical import Categorical
+from arkouda.pandas.groupbyclass import GroupBy, broadcast
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
@@ -75,6 +84,7 @@ def join_on_eq_with_dt(
 
     """
     from arkouda.client import generic_msg
+
     if not (a1.dtype == akint64):
         raise ValueError("a1 must be int64 dtype")
 
@@ -152,6 +162,7 @@ def gen_ranges(starts, ends, stride=1, return_lengths=False):
 
     """
     from arkouda.numpy import cumsum
+
     if starts.size != ends.size:
         raise ValueError("starts and ends must be same length")
     if starts.size == 0:
@@ -244,6 +255,7 @@ def inner_join(
 
     """
     from inspect import signature
+
     from arkouda.numpy import cumsum
 
     is_sequence = isinstance(left, Sequence) and isinstance(right, Sequence)

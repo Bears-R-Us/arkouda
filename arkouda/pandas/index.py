@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 import json
-from typing import TYPE_CHECKING, TypeVar, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Tuple, TypeVar, Union
 
 import numpy as np
 import pandas as pd
@@ -10,8 +10,6 @@ from numpy import array as ndarray
 from numpy import dtype as npdtype
 from typeguard import typechecked
 
-from arkouda.pandas.categorical import Categorical
-from arkouda.pandas.groupbyclass import GroupBy, unique
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -22,6 +20,8 @@ from arkouda.numpy.pdarraysetops import argsort, in1d
 from arkouda.numpy.sorting import coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import convert_if_categorical, generic_concat, get_callback
+from arkouda.pandas.categorical import Categorical
+from arkouda.pandas.groupbyclass import GroupBy, unique
 
 __all__ = [
     "Index",
@@ -30,10 +30,11 @@ __all__ = [
 
 
 if TYPE_CHECKING:
-    from arkouda.pandas.series import Series
     from arkouda.numpy import cast as akcast
+    from arkouda.pandas.series import Series
 else:
     akcast = TypeVar("akcast")
+
 
 class Index:
     objType = "Index"
@@ -782,8 +783,8 @@ class Index:
         """
         from typing import cast as typecast
 
-        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         if isinstance(self.values, list):
@@ -868,8 +869,8 @@ class Index:
           file with the new data
 
         """
-        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
@@ -1384,6 +1385,7 @@ class MultiIndex(Index):
 
     def lookup(self, key):
         from arkouda.numpy import cast as akcast
+
         if not isinstance(key, list) and not isinstance(key, tuple):
             raise TypeError("MultiIndex lookup failure")
         # if individual vals convert to pdarrays
@@ -1446,8 +1448,8 @@ class MultiIndex(Index):
         """
         from typing import cast as typecast
 
-        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         index_data = [
@@ -1524,8 +1526,8 @@ class MultiIndex(Index):
           file with the new data
 
         """
-        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.client import generic_msg
+        from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,

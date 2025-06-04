@@ -64,7 +64,7 @@ Examples
 
 import json
 from json import JSONEncoder
-from typing import TYPE_CHECKING, TypeVar, List, Union, cast
+from typing import TYPE_CHECKING, List, TypeVar, Union, cast
 
 from typeguard import typechecked
 
@@ -135,6 +135,7 @@ def information(names: Union[List[str], str] = RegisteredSymbols) -> str:
 
     """
     from arkouda.client import generic_msg
+
     if isinstance(names, str):
         if names in [AllSymbols, RegisteredSymbols]:
             return cast(str, generic_msg(cmd="info", args={"names": names}))
@@ -165,6 +166,7 @@ def list_registry(detailed: bool = False):
 
     """
     from arkouda.client import generic_msg
+
     data = json.loads(cast(str, generic_msg(cmd="list_registry")))
     objs = json.loads(data["Objects"]) if data["Objects"] != "" else []
     obj_types = json.loads(data["Object_Types"]) if data["Object_Types"] != "" else []

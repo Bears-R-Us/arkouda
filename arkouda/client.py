@@ -2,7 +2,17 @@ import json
 import os
 import warnings
 from enum import Enum
-from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Tuple, TypeVar, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from arkouda import __version__, io_util, security
 from arkouda.logger import ArkoudaLogger, LogLevel, getArkoudaLogger
@@ -14,6 +24,7 @@ from arkouda.message import (
     RequestMessage,
 )
 from arkouda.pandas import io_util
+
 if TYPE_CHECKING:
     from arkouda.client import generic_msg, get_array_ranks
 else:
@@ -982,7 +993,7 @@ def generic_msg(
     corresponds to an Arkouda array output as a numpy array.
 
     """
-    
+
     if not connected:
         raise RuntimeError("client is not connected to a server")
 
@@ -1068,6 +1079,7 @@ def get_array_ranks() -> list[int]:
 
     """
     from arkouda.client import generic_msg
+
     if registrationConfig is None:
         raise RuntimeError(
             "There was a problem loading registrationConfig."

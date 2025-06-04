@@ -6,7 +6,6 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client_dtypes import BitVector
-from arkouda.pandas.groupbyclass import GroupBy, groupable, groupable_element_type, unique
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import bool_ as akbool
@@ -17,10 +16,16 @@ from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import array, ones, zeros, zeros_like
 from arkouda.numpy.sorting import argsort
 from arkouda.numpy.strings import Strings
+from arkouda.pandas.groupbyclass import (
+    GroupBy,
+    groupable,
+    groupable_element_type,
+    unique,
+)
 
 if TYPE_CHECKING:
-    from arkouda.pandas.categorical import Categorical
     from arkouda.client import generic_msg
+    from arkouda.pandas.categorical import Categorical
 else:
     Categorical = TypeVar("Categorical")
     generic_msg = TypeVar("generic_msg")
@@ -92,8 +97,9 @@ def _in1d_single(
     >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
     array([False True])
     """
-    from arkouda.pandas.categorical import Categorical as Categorical_
     from arkouda.client import generic_msg
+    from arkouda.pandas.categorical import Categorical as Categorical_
+
     if isinstance(pda1, pdarray) or isinstance(pda1, Strings) or isinstance(pda1, Categorical_):
         # While isinstance(thing, type) can be called on a tuple of types,
         # this causes an issue with mypy for unknown reasons.
@@ -392,10 +398,10 @@ def concatenate(
     array(['one', 'two', 'three', 'four', 'five'])
 
     """
-    from arkouda.pandas.categorical import Categorical as Categorical_
+    from arkouda.client import generic_msg
     from arkouda.numpy.dtypes import int_scalars
     from arkouda.numpy.util import get_callback
-    from arkouda.client import generic_msg
+    from arkouda.pandas.categorical import Categorical as Categorical_
     size: int_scalars = 0
     objtype = None
     dtype = None
@@ -574,8 +580,9 @@ def union1d(
     [array([1 2 2 3 4 4 5 5]), array([1 2 5 3 2 4 4 5]), array([1 2 4 3 5 4 2 5])]
 
     """
-    from arkouda.pandas.categorical import Categorical as Categorical_
     from arkouda.client import generic_msg
+    from arkouda.pandas.categorical import Categorical as Categorical_
+
     if (
         isinstance(A, (pdarray, Strings, Categorical_))
         and isinstance(B, (pdarray, Strings, Categorical_))
@@ -658,8 +665,8 @@ def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Unio
     [array([1 3]), array([1 3]), array([1 3])]
 
     """
-    from arkouda.pandas.categorical import Categorical as Categorical_
     from arkouda.client import generic_msg
+    from arkouda.pandas.categorical import Categorical as Categorical_
 
     ua: groupable
     ub: groupable
@@ -775,8 +782,8 @@ def setdiff1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[
     >>> ak.setdiff1d(multia, multib)
     [array([2 4 5]), array([2 4 5]), array([2 4 5])]
     """
-    from arkouda.pandas.categorical import Categorical as Categorical_
     from arkouda.client import generic_msg
+    from arkouda.pandas.categorical import Categorical as Categorical_
 
     ua: groupable
     ub: groupable
@@ -883,8 +890,8 @@ def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[p
     >>> ak.setxor1d(multia, multib)
     [array([2 2 4 4 5 5]), array([2 5 2 4 4 5]), array([2 4 5 4 2 5])]
     """
-    from arkouda.pandas.categorical import Categorical as Categorical_
     from arkouda.client import generic_msg
+    from arkouda.pandas.categorical import Categorical as Categorical_
 
     ua: groupable
     ub: groupable

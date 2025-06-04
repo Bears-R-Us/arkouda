@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, TypeVar, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Optional, Tuple, TypeVar, Union, cast
 
 from typeguard import typechecked
 
@@ -84,6 +84,7 @@ def randint(
     array([False, True, True, True, True, False, True, True, True, True])
     """
     from arkouda.client import generic_msg
+
     shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
     if isinstance(size, tuple):
         shape = cast(Tuple, size)
@@ -167,6 +168,7 @@ def standard_normal(
     array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
     """
     from arkouda.client import generic_msg
+
     shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
     if isinstance(size, tuple):
         shape = cast(Tuple, size)

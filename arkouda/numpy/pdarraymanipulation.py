@@ -62,6 +62,7 @@ def hstack(
     array([array([1 4]) array([2 5]) array([3 6])])
     """
     from arkouda.client import generic_msg
+
     if casting != "same_kind":
         # TODO: align with https://numpy.org/doc/stable/glossary.html#term-casting
         raise NotImplementedError(f"casting={casting} is not yet supported")
@@ -186,6 +187,7 @@ def vstack(
 
     """
     from arkouda.client import generic_msg
+
     if casting != "same_kind":
         # TODO: align with https://numpy.org/doc/stable/glossary.html#term-casting
         raise NotImplementedError(f"casting={casting} is not yet supported")
@@ -286,6 +288,7 @@ def delete(
     array([1 3 5 7 8 9 10 11 12])
     """
     from arkouda.client import generic_msg
+
     shape = arr.shape
 
     if axis is None and arr.ndim != 1:

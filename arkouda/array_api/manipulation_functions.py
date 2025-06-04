@@ -51,6 +51,7 @@ def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
     See: https://data-apis.org/array-api/latest/API_specification/broadcasting.html for details.
     """
     from arkouda.client import generic_msg
+
     try:
         return Array._new(
             create_pdarray(
@@ -84,6 +85,7 @@ def concat(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[i
 
     """
     from arkouda.client import generic_msg
+
     ndim = arrays[0].ndim
     for a in arrays:
         if a.ndim != ndim:
@@ -125,6 +127,7 @@ def expand_dims(x: Array, /, *, axis: int) -> Array:
         `[-x.ndim-1, x.ndim]`.
     """
     from arkouda.client import generic_msg
+
     try:
         return Array._new(
             create_pdarray(
@@ -156,6 +159,7 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
         The axis or axes along which to flip the array. If None, flip the array along all axes.
     """
     from arkouda.client import generic_msg
+
     axisList = []
     if axis is not None:
         axisList = list(axis) if isinstance(axis, tuple) else [axis]
@@ -230,6 +234,7 @@ def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
         The new order of the dimensions. Must be a permutation of the integers from 0 to `x.ndim-1`.
     """
     from arkouda.client import generic_msg
+
     try:
         return Array._new(
             create_pdarray(
@@ -266,6 +271,7 @@ def repeat(x: Array, repeats: Union[int, Array], /, *, axis: Optional[int] = Non
         The axis along which to repeat elements. If None, the array is flattened before repeating.
     """
     from arkouda.client import generic_msg
+
     if isinstance(repeats, int):
         reps = Array._new(scalar_array(repeats))
     else:
@@ -305,6 +311,7 @@ def reshape(x: Array, /, shape: Tuple[int, ...], *, copy: Optional[bool] = None)
         WARNING: currently always creates a copy, ignoring the value of this parameter.
     """
     from arkouda.client import generic_msg
+
     # TODO: figure out copying semantics (currently always creates a copy)
     try:
         return Array._new(
@@ -350,6 +357,7 @@ def roll(
         rolling.
     """
     from arkouda.client import generic_msg
+
     axisList = []
     if axis is not None:
         axisList = list(axis) if isinstance(axis, tuple) else [axis]
@@ -411,6 +419,7 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
         of dimensions in the input arrays. The default is 0.
     """
     from arkouda.client import generic_msg
+
     ndim = arrays[0].ndim
     for a in arrays:
         if a.ndim != ndim:
@@ -451,6 +460,7 @@ def tile(x: Array, repetitions: Tuple[int, ...], /) -> Array:
         repetitions tuple to make it's length match the number of array dimensions.
     """
     from arkouda.client import generic_msg
+
     if len(repetitions) > x.ndim:
         xr = reshape(x, (1,) * (len(repetitions) - x.ndim) + x.shape)
         reps = repetitions
@@ -489,6 +499,7 @@ def unstack(x: Array, /, *, axis: int = 0) -> Tuple[Array, ...]:
         The axis along which to unstack the array. The default is 0.
     """
     from arkouda.client import generic_msg
+
     return tuple(
         Array._new(
             create_pdarrays(

@@ -4,12 +4,12 @@ import enum
 import json
 from typing import (
     TYPE_CHECKING,
-    TypeVar,
     Dict,
     List,
     Optional,
     Sequence,
     Tuple,
+    TypeVar,
     Union,
     cast,
     no_type_check,
@@ -38,8 +38,8 @@ from arkouda.numpy.sorting import argsort, sort
 from arkouda.numpy.strings import Strings
 
 if TYPE_CHECKING:
-    from arkouda.pandas.categorical import Categorical
     from arkouda.client import generic_msg
+    from arkouda.pandas.categorical import Categorical
 else:
     generic_msg = TypeVar("generic_msg")
 
@@ -126,8 +126,9 @@ def unique(
     array([1 2 3])
 
     """
-    from arkouda.pandas.categorical import Categorical as Categorical_
     from arkouda.client import generic_msg
+    from arkouda.pandas.categorical import Categorical as Categorical_
+
     if not return_groups and hasattr(pda, "unique"):
         return cast(Categorical_, pda).unique()
 
@@ -438,9 +439,10 @@ class GroupBy:
         GroupBy is not currently supported by Parquet
 
         """
+        from arkouda.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
-        from arkouda.client import generic_msg
+
         keys = self.keys if isinstance(self.keys, Sequence) else [self.keys]
 
         objTypes = [k.objType for k in keys]  # pdarray, Strings, and Categorical all have objType prop
@@ -488,13 +490,14 @@ class GroupBy:
         dataset: str = "groupby",
         repack: bool = True,
     ):
+        from arkouda.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,
             _repack_hdf,
         )
-        from arkouda.client import generic_msg
+
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
 
@@ -580,6 +583,7 @@ class GroupBy:
 
         """
         from arkouda.client import generic_msg
+
         repMsg = generic_msg(
             cmd="sizeReduction",
             args={"segments": cast(pdarray, self.segments), "size": self.length},
@@ -683,6 +687,7 @@ class GroupBy:
 
         """
         from arkouda.client import generic_msg
+
         operator = operator.lower()
         if operator not in self.Reductions:
             raise ValueError(f"Unsupported reduction: {operator}\nMust be one of {self.Reductions}")
@@ -1627,6 +1632,7 @@ class GroupBy:
 
         """
         from arkouda.client import generic_msg
+
         repMsg = generic_msg(
             cmd="segmentedReduction",
             args={
@@ -1708,6 +1714,7 @@ class GroupBy:
 
         """
         from arkouda.client import generic_msg
+
         repMsg = generic_msg(
             cmd="segmentedReduction",
             args={
@@ -2081,6 +2088,7 @@ class GroupBy:
 
         """
         from arkouda.client import generic_msg
+
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
         is_str = isinstance(values, Strings)
@@ -2196,8 +2204,8 @@ class GroupBy:
         they are unregistered.
 
         """
-        from arkouda.client import generic_msg
         from arkouda import Categorical
+        from arkouda.client import generic_msg
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -2388,6 +2396,7 @@ def broadcast(
 
     """
     from arkouda.client import generic_msg
+
     if segments.size != values.size:
         raise ValueError("segments and values arrays must be same size")
     if segments.size == 0:

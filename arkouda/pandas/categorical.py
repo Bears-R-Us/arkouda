@@ -50,7 +50,18 @@ from __future__ import annotations
 import itertools
 import json
 from collections import defaultdict
-from typing import TYPE_CHECKING, DefaultDict, Dict, List, Mapping, Optional, Sequence, Tuple, TypeVar, Union
+from typing import (
+    TYPE_CHECKING,
+    DefaultDict,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+)
 from typing import cast as type_cast
 
 import numpy as np
@@ -58,7 +69,6 @@ from pandas import Categorical as pd_Categorical
 from pandas import Index as pd_Index
 from typeguard import typechecked
 
-from arkouda.pandas.groupbyclass import GroupBy, unique
 from arkouda.infoclass import information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import bool_ as akbool
@@ -74,6 +84,7 @@ from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort
 from arkouda.numpy.sorting import sort as pda_sort
 from arkouda.numpy.strings import Strings
+from arkouda.pandas.groupbyclass import GroupBy, unique
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
@@ -412,6 +423,7 @@ class Categorical:
         """
         from arkouda.numpy import cast as akcast
         from arkouda.numpy import where
+
         if NAvalue is None:
             NAvalue = self.NAvalue
         findNA = new_categories == NAvalue
@@ -909,6 +921,7 @@ class Categorical:
 
         """
         from arkouda.client import generic_msg
+
         rep_msg = generic_msg(
             cmd="categoricalHash",
             args={"objType": self.objType, "categories": self.categories, "codes": self.codes},
@@ -1063,8 +1076,9 @@ class Categorical:
         load
 
         """
-        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
         from arkouda.client import generic_msg
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
+
         args = {
             "codes": self.codes,
             "categories": self.categories,
@@ -1276,6 +1290,7 @@ class Categorical:
 
         """
         from arkouda.client import generic_msg
+
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         generic_msg(
@@ -1508,6 +1523,7 @@ class Categorical:
 
         """
         from arkouda.client import generic_msg
+
         # hostname is the hostname to send to
         args = {
             "codes": self.codes,

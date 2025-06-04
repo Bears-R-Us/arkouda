@@ -1,16 +1,16 @@
 from functools import partial
 from ipaddress import ip_address as _ip_address
-from typing import TYPE_CHECKING, TypeVar, Optional, Union
+from typing import TYPE_CHECKING, Optional, TypeVar, Union
 
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.numpy.dtypes import bitType, intTypes, isSupportedInt
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.numpy.strings import Strings
+from arkouda.pandas.groupbyclass import GroupBy, broadcast
 
 if TYPE_CHECKING:
     from arkouda.numpy import cast as akcast
@@ -83,6 +83,7 @@ class BitVector(pdarray):
 
     def __init__(self, values, width=64, reverse=False):
         from arkouda.numpy import cast as akcast
+
         self.registered_name = None
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
             self.name = None  # This is needed to silence warnings of missing name during failed creation
@@ -515,6 +516,7 @@ class IPv4(pdarray):
 
     def __init__(self, values):
         from arkouda.numpy import cast as akcast
+
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
             self.name = None  # This is needed to silence warnings of missing name during failed creation
             raise TypeError("Argument must be int64 pdarray")

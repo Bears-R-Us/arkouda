@@ -1,12 +1,12 @@
 import tempfile
 from logging import DEBUG, INFO, WARN, FileHandler, StreamHandler
 
-from arkouda.pandas import io_util
 import pytest
 
 import arkouda as ak
 from arkouda import logger
 from arkouda.logger import LogLevel, getArkoudaClientLogger, getArkoudaLogger
+from arkouda.pandas import io_util
 
 
 class TestLogger:

@@ -89,6 +89,7 @@ class Generator:
             A pdarray containing the sampled values or a single random value if size not provided.
         """
         from arkouda.client import generic_msg
+
         if size is None:
             ret_scalar = True
             size = 1
@@ -200,8 +201,9 @@ class Generator:
         pdarray
             Drawn samples from the standard exponential distribution.
         """
-        from arkouda.numpy.util import _infer_shape_from_size
         from arkouda.client import generic_msg
+        from arkouda.numpy.util import _infer_shape_from_size
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_exponential(method=method)
@@ -266,8 +268,9 @@ class Generator:
         >>> rng.integers(5, size=10)
         array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random
         """
-        from arkouda.numpy.util import _infer_shape_from_size
         from arkouda.client import generic_msg
+        from arkouda.numpy.util import _infer_shape_from_size
+
         # normalize dtype so things like "int" will work
         dtype = to_numpy_dtype(dtype)
 
@@ -349,6 +352,7 @@ class Generator:
         array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])
         """
         from arkouda.client import generic_msg
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.logistic(loc=loc, scale=scale, size=size)
@@ -563,8 +567,9 @@ class Generator:
         >>> rng.standard_gamma(1, size=3)
         array([0.4879818539586227 0.6534654349920751 0.40990997253631162]) # random
         """  # noqa: W605
-        from arkouda.numpy.util import _infer_shape_from_size
         from arkouda.client import generic_msg
+        from arkouda.numpy.util import _infer_shape_from_size
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_gamma(shape=shape)
@@ -629,8 +634,9 @@ class Generator:
         >>> rng.standard_normal(3)
         array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random
         """
-        from arkouda.numpy.util import _infer_shape_from_size
         from arkouda.client import generic_msg
+        from arkouda.numpy.util import _infer_shape_from_size
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.standard_normal()
@@ -664,6 +670,7 @@ class Generator:
 
         """
         from arkouda.client import generic_msg
+
         if not isinstance(x, pdarray):
             raise TypeError("shuffle only accepts a pdarray.")
         dtype = to_numpy_dtype(x.dtype)
@@ -708,6 +715,7 @@ class Generator:
             Raised if x is not of type int or pdarray.
         """
         from arkouda.client import generic_msg
+
         if _val_isinstance_of_union(x, int_scalars):
             is_domain_perm = True
             dtype = to_numpy_dtype(akint64)
@@ -788,6 +796,7 @@ class Generator:
         array([5 3 2 2 3])  # random
         """
         from arkouda.client import generic_msg
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.poisson(lam, size)
@@ -848,8 +857,9 @@ class Generator:
         >>> rng.uniform(-1, 1, 3)
         array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random
         """
-        from arkouda.numpy.util import _infer_shape_from_size
         from arkouda.client import generic_msg
+        from arkouda.numpy.util import _infer_shape_from_size
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.uniform(low=low, high=high)
@@ -893,6 +903,7 @@ def default_rng(seed=None):
         The initialized generator object.
     """
     from arkouda.client import generic_msg
+
     if isinstance(seed, Generator):
         # Pass through the generator
         return seed

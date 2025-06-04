@@ -211,8 +211,9 @@ class Match:
         (array(['_', '____', '__']), array([0 1 3]))
 
         """
-        from arkouda.numpy.strings import Strings
         from arkouda.client import generic_msg
+        from arkouda.numpy.strings import Strings
+
         repMsg = cast(
             str,
             generic_msg(
