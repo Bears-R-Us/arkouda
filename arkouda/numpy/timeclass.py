@@ -110,7 +110,9 @@ class _AbstractBaseTime(pdarray):
             self.unit = unit
             self._factor = _get_factor(self.unit)
             # This makes a copy of the input array, to leave input unchanged
-            self.values = cast(self._factor * pda, int64)  # Mimics a datetime64[ns] array
+            from arkouda.numpy import cast as akcast
+
+            self.values = akcast(self._factor * pda, int64)  # Mimics a datetime64[ns] array
         elif hasattr(pda, "dtype"):
             # Handles all pandas and numpy datetime/timedelta arrays
             if pda.dtype.kind not in ("M", "m"):
