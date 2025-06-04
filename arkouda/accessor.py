@@ -1,6 +1,6 @@
-from arkouda.pandas.categorical import Categorical
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime
+from arkouda.pandas.categorical import Categorical
 
 __all__ = [
     "CachedAccessor",

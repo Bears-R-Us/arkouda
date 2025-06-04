@@ -7,9 +7,7 @@ from typing import TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar, Union
 
 from typeguard import typechecked
 
-from arkouda.pandas.categorical import Categorical
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
-from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.infoclass import list_registry
 from arkouda.numpy.dtypes import (
     _is_dtype_in_union,
@@ -24,6 +22,8 @@ from arkouda.numpy.pdarraysetops import unique
 from arkouda.numpy.sorting import coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
+from arkouda.pandas.categorical import Categorical
+from arkouda.pandas.groupbyclass import GroupBy
 
 __all__ = [
     "attach",
@@ -50,10 +50,10 @@ __all__ = [
 
 
 if TYPE_CHECKING:
-    from arkouda.pandas.index import Index
-    from arkouda.numpy.segarray import SegArray
-    from arkouda.pandas.series import Series
     from arkouda.client import generic_msg, get_config, get_mem_used
+    from arkouda.numpy.segarray import SegArray
+    from arkouda.pandas.index import Index
+    from arkouda.pandas.series import Series
 
 else:
     Index = TypeVar("Index")
@@ -267,12 +267,13 @@ def attach(name: str):
     [1 2 3]
     >>> registered_obj.unregister()
     """
-    from arkouda.pandas.dataframe import DataFrame
-    from arkouda.pandas.index import Index, MultiIndex
+    from arkouda.client import generic_msg
     from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.numpy.segarray import SegArray
+    from arkouda.pandas.dataframe import DataFrame
+    from arkouda.pandas.index import Index, MultiIndex
     from arkouda.pandas.series import Series
-    from arkouda.client import generic_msg
+
     rep_msg = json.loads(cast(str, generic_msg(cmd="attach", args={"name": name})))
     rtn_obj = None
     if rep_msg["objType"].lower() == pdarray.objType.lower():
@@ -345,6 +346,7 @@ def unregister(name: str) -> str:
     Unregistered PDARRAY my_array
     """
     from arkouda.client import generic_msg
+
     rep_msg = cast(str, generic_msg(cmd="unregister", args={"name": name}))
 
     return rep_msg
@@ -543,6 +545,7 @@ def sparse_sum_help(
     (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
     """
     from arkouda.client import generic_msg
+
     repMsg = generic_msg(
         cmd="sparseSumHelp",
         args={

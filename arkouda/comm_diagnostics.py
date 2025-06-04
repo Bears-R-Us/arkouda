@@ -1,8 +1,8 @@
 from typing import cast as typecast
 
 from arkouda.client import generic_msg
-from arkouda.pandas.dataframe import DataFrame
 from arkouda.numpy.pdarrayclass import create_pdarray
+from arkouda.pandas.dataframe import DataFrame
 
 __all__ = [
     "start_comm_diagnostics",
@@ -46,6 +46,7 @@ def start_comm_diagnostics():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="startCommDiagnostics",
         args={},
@@ -64,6 +65,7 @@ def stop_comm_diagnostics():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="stopCommDiagnostics",
         args={},
@@ -82,6 +84,7 @@ def reset_comm_diagnostics():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="resetCommDiagnostics",
         args={},
@@ -113,6 +116,7 @@ def print_comm_diagnostics_table(print_empty_columns=False):
     """
     from arkouda import sum as ak_sum
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="printCommDiagnosticsTable",
         args={"printEmptyCols": print_empty_columns},
@@ -142,6 +146,7 @@ def start_verbose_comm():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="startVerboseComm",
         args={},
@@ -160,6 +165,7 @@ def stop_verbose_comm():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="stopVerboseComm",
         args={},
@@ -179,6 +185,7 @@ def get_comm_diagnostics_put():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsPut",
         args={},
@@ -198,6 +205,7 @@ def get_comm_diagnostics_get():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsGet",
         args={},
@@ -217,6 +225,7 @@ def get_comm_diagnostics_put_nb():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsPutNb",
         args={},
@@ -236,6 +245,7 @@ def get_comm_diagnostics_get_nb():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsGetNb",
         args={},
@@ -255,6 +265,7 @@ def get_comm_diagnostics_test_nb():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsTestNb",
         args={},
@@ -274,6 +285,7 @@ def get_comm_diagnostics_wait_nb():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsWaitNb",
         args={},
@@ -293,6 +305,7 @@ def get_comm_diagnostics_try_nb():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsTryNb",
         args={},
@@ -312,6 +325,7 @@ def get_comm_diagnostics_amo():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsAmo",
         args={},
@@ -331,6 +345,7 @@ def get_comm_diagnostics_execute_on():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsExecuteOn",
         args={},
@@ -350,6 +365,7 @@ def get_comm_diagnostics_execute_on_fast():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsExecuteOnFast",
         args={},
@@ -369,6 +385,7 @@ def get_comm_diagnostics_execute_on_nb():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsExecuteOnNb",
         args={},
@@ -390,6 +407,7 @@ def get_comm_diagnostics_cache_get_hits():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheGetHits",
         args={},
@@ -409,6 +427,7 @@ def get_comm_diagnostics_cache_get_misses():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheGetMisses",
         args={},
@@ -428,6 +447,7 @@ def get_comm_diagnostics_cache_put_hits():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCachePutHits",
         args={},
@@ -447,6 +467,7 @@ def get_comm_diagnostics_cache_put_misses():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCachePutMisses",
         args={},
@@ -468,6 +489,7 @@ def get_comm_diagnostics_cache_num_prefetches():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheNumPrefetches",
         args={},
@@ -487,6 +509,7 @@ def get_comm_diagnostics_cache_num_page_readaheads():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheNumPageReadaheads",
         args={},
@@ -509,6 +532,7 @@ def get_comm_diagnostics_cache_prefetch_unused():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCachePrefetchUnused",
         args={},
@@ -531,6 +555,7 @@ def get_comm_diagnostics_cache_prefetch_waited():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCachePrefetchWaited",
         args={},
@@ -553,6 +578,7 @@ def get_comm_diagnostics_cache_readahead_unused():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheReadaheadUnused",
         args={},
@@ -576,6 +602,7 @@ def get_comm_diagnostics_cache_readahead_waited():
 
     """
     from arkouda.client import generic_msg
+
     rep_msg = generic_msg(
         cmd="getCommDiagnosticsCacheReadaheadWaited",
         args={},

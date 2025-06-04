@@ -98,6 +98,7 @@ def mean(
         Whether to keep the singleton dimension(s) along `axis` in the result.
     """
     from arkouda.client import generic_msg
+
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in mean")
 
@@ -217,6 +218,7 @@ def std(
         Whether to keep the singleton dimension(s) along `axis` in the result.
     """
     from arkouda.client import generic_msg
+
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in std")
     if correction < 0:
@@ -311,6 +313,7 @@ def var(
         Whether to keep the singleton dimension(s) along `axis` in the result.
     """
     from arkouda.client import generic_msg
+
     # Note: the keyword argument correction is different here
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in var")
@@ -379,6 +382,7 @@ def cumulative_sum(
         Whether to include the initial value as the first element of the output.
     """
     from arkouda.client import generic_msg
+
     if dtype is None:
         x_ = x
     else:

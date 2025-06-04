@@ -81,6 +81,7 @@ def apply(
 
     """
     from arkouda.client import generic_msg
+
     if getattr(apply, "is_apply_supported", None) is None:
         res = generic_msg("isPythonModuleSupported")
         is_supported = parse_single_value(cast(str, res))

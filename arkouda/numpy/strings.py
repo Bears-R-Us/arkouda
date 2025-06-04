@@ -3,7 +3,18 @@ from __future__ import annotations
 import codecs
 import itertools
 import re
-from typing import Any, TYPE_CHECKING, TypeVar, Dict, List, Literal, Optional, Tuple, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import numpy as np
 from numpy import dtype as npdtype
@@ -12,8 +23,6 @@ from typeguard import typechecked
 import arkouda.numpy.dtypes
 from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import ArkoudaLogger, getArkoudaLogger
-from arkouda.pandas.match import Match, MatchType
-
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     bool_scalars,
@@ -24,6 +33,7 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.pdarrayclass import RegistrationError
 from arkouda.numpy.pdarrayclass import all as akall
 from arkouda.numpy.pdarrayclass import create_pdarray, parse_single_value, pdarray
+from arkouda.pandas.match import Match, MatchType
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
@@ -168,6 +178,7 @@ class Strings:
 
         """
         from arkouda.client import generic_msg
+
         if not isinstance(offset_attrib, pdarray):
             try:
                 offset_attrib = create_pdarray(offset_attrib)
@@ -286,6 +297,7 @@ class Strings:
             binary operation
         """
         from arkouda.client import generic_msg
+
         if op not in self.BinOps:
             raise ValueError(f"Strings: unsupported operator: {op}")
         if isinstance(other, Strings):
@@ -324,6 +336,7 @@ class Strings:
 
     def __getitem__(self, key):
         from arkouda.client import generic_msg
+
         if np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
             orig_key = key
             if key < 0:
@@ -441,6 +454,7 @@ class Strings:
             Raised if there is a server-side error thrown
         """
         from arkouda.client import generic_msg
+
         return create_pdarray(
             generic_msg(cmd="segmentLengths", args={"objType": self.objType, "obj": self.entry})
         )
@@ -462,6 +476,7 @@ class Strings:
         array([111 110 101 0 116 119 111 0 116 104 114 101 101 0])
         """
         from arkouda.client import generic_msg
+
         if self._bytes is None or self._bytes.name not in list_symbol_table():
             self._bytes = create_pdarray(
                 generic_msg(
@@ -489,6 +504,7 @@ class Strings:
         array([0 4 8])
         """
         from arkouda.client import generic_msg
+
         if self._offsets is None or self._offsets.name not in list_symbol_table():
             self._offsets = create_pdarray(
                 generic_msg(
@@ -523,6 +539,7 @@ class Strings:
             Raised if there is a server-side error thrown
         """
         from arkouda.client import generic_msg
+
         if (toEncoding.upper() == "IDNA" and fromEncoding.upper() != "UTF-8") or (
             toEncoding.upper() != "UTF-8" and fromEncoding.upper() == "IDNA"
         ):
@@ -613,6 +630,7 @@ class Strings:
         array(['strings 0', 'strings 1', 'strings 2', 'strings 3', 'strings 4'])
         """
         from arkouda.client import generic_msg
+
         rep_msg = generic_msg(
             cmd="caseChange", args={"subcmd": "toLower", "objType": self.objType, "obj": self.entry}
         )
@@ -649,6 +667,7 @@ class Strings:
         array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
         """
         from arkouda.client import generic_msg
+
         rep_msg = generic_msg(
             cmd="caseChange", args={"subcmd": "toUpper", "objType": self.objType, "obj": self.entry}
         )
@@ -684,6 +703,7 @@ class Strings:
         array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
         """
         from arkouda.client import generic_msg
+
         rep_msg = generic_msg(
             cmd="caseChange", args={"subcmd": "toTitle", "objType": self.objType, "obj": self.entry}
         )
@@ -729,6 +749,7 @@ class Strings:
         array([False True False False False])
         """
         from arkouda.client import generic_msg
+
         return create_pdarray(
             generic_msg(
                 cmd="checkChars",
@@ -770,6 +791,7 @@ class Strings:
 'Strings Are Here 3', 'Strings Are Here 4'])
         """
         from arkouda.client import generic_msg
+
         rep_msg = generic_msg(
             cmd="caseChange", args={"subcmd": "capitalize", "objType": self.objType, "obj": self.entry}
         )
@@ -807,6 +829,7 @@ class Strings:
         array([True True True False False False])
         """
         from arkouda.client import generic_msg
+
         return create_pdarray(
             generic_msg(
                 cmd="checkChars", args={"subcmd": "isLower", "objType": self.objType, "obj": self.entry}
@@ -845,6 +868,7 @@ class Strings:
         array([False False False True True True])
         """
         from arkouda.client import generic_msg
+
         return create_pdarray(
             generic_msg(
                 cmd="checkChars", args={"subcmd": "isUpper", "objType": self.objType, "obj": self.entry}
@@ -884,6 +908,7 @@ class Strings:
         array([False False False True True True])
         """
         from arkouda.client import generic_msg
+
         return create_pdarray(
             generic_msg(
                 cmd="checkChars", args={"subcmd": "isTitle", "objType": self.objType, "obj": self.entry}
@@ -924,6 +949,7 @@ class Strings:
         array([False False False True True True])
         """
         from arkouda.client import generic_msg
+
         return create_pdarray(
             generic_msg(
                 cmd="checkChars", args={"subcmd": "isalnum", "objType": self.objType, "obj": self.entry}
@@ -966,6 +992,7 @@ class Strings:
         array([False False False True True True])
         """
         from arkouda.client import generic_msg
+
         return create_pdarray(
             generic_msg(
                 cmd="checkChars", args={"subcmd": "isalpha", "objType": self.objType, "obj": self.entry}
@@ -1014,6 +1041,7 @@ class Strings:
         array([False True True True False])
         """
         from arkouda.client import generic_msg
+
         return create_pdarray(
             generic_msg(
                 cmd="checkChars", args={"subcmd": "isdigit", "objType": self.objType, "obj": self.entry}
@@ -1057,6 +1085,7 @@ class Strings:
         array([False False False True True True])
         """
         from arkouda.client import generic_msg
+
         return create_pdarray(
             generic_msg(
                 cmd="checkChars", args={"subcmd": "isempty", "objType": self.objType, "obj": self.entry}
@@ -1098,6 +1127,7 @@ class Strings:
         array([False False False True True True True True True True])
         """
         from arkouda.client import generic_msg
+
         return create_pdarray(
             generic_msg(
                 cmd="checkChars", args={"subcmd": "isspace", "objType": self.objType, "obj": self.entry}
@@ -1142,6 +1172,7 @@ class Strings:
         array(['Strings', 'StringS', 'StringS'])
         """
         from arkouda.client import generic_msg
+
         if isinstance(chars, bytes):
             chars = chars.decode()
         rep_msg = generic_msg(
@@ -1546,6 +1577,7 @@ class Strings:
         array([True True True True True])
         """
         from arkouda.client import generic_msg
+
         if isinstance(substr, bytes):
             substr = substr.decode()
         if not regex:
@@ -1718,6 +1750,7 @@ class Strings:
         array([0 2 5])
         """
         from arkouda.client import generic_msg
+
         if regex:
             try:
                 re.compile(delimiter)
@@ -1821,6 +1854,7 @@ class Strings:
         (array(['a.b', 'c.d', 'e.f']), array(['', '', 'g']))
         """
         from arkouda.client import generic_msg
+
         if isinstance(delimiter, bytes):
             delimiter = delimiter.decode()
         if regex:
@@ -1978,6 +2012,7 @@ class Strings:
         array(['a.b', 'c.d', 'e.f'])
         """
         from arkouda.client import generic_msg
+
         if isinstance(delimiter, bytes):
             delimiter = delimiter.decode()
         rep_msg = generic_msg(
@@ -2070,6 +2105,7 @@ class Strings:
                 an n-character prefix, False otherwise.
         """
         from arkouda.client import generic_msg
+
         repMsg = cast(
             str,
             generic_msg(
@@ -2121,6 +2157,7 @@ class Strings:
                 an n-character suffix, False otherwise.
         """
         from arkouda.client import generic_msg
+
         repMsg = cast(
             str,
             generic_msg(
@@ -2161,6 +2198,7 @@ class Strings:
         values is negligible.
         """
         from arkouda.client import generic_msg
+
         # TODO fix this to return a single pdarray of hashes
         repMsg = generic_msg(cmd="segmentedHash", args={"objType": self.objType, "obj": self.entry})
         h1, h2 = cast(str, repMsg).split("+")
@@ -2197,6 +2235,7 @@ class Strings:
             creating the pdarray encapsulating the return message
         """
         from arkouda.client import generic_msg
+
         return create_pdarray(
             generic_msg(cmd="segmentedGroup", args={"objType": self.objType, "obj": self.entry})
         )
@@ -2446,8 +2485,9 @@ class Strings:
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
         """
-        from arkouda.pandas.io import _mode_str_to_int
         from arkouda.client import generic_msg
+        from arkouda.pandas.io import _mode_str_to_int
+
         return cast(
             str,
             generic_msg(
@@ -2525,8 +2565,9 @@ class Strings:
         ---------
         to_hdf
         """
-        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
         from arkouda.client import generic_msg
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
+
         return cast(
             str,
             generic_msg(
@@ -2672,6 +2713,7 @@ class Strings:
         - All CSV files must delimit rows using newline (``\\n``) at this time.
         """
         from arkouda.client import generic_msg
+
         return cast(
             str,
             generic_msg(
@@ -2761,6 +2803,7 @@ class Strings:
         until they are unregistered.
         """
         from arkouda.client import generic_msg
+
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         generic_msg(
@@ -2861,6 +2904,7 @@ class Strings:
             a supported dtype
         """
         from arkouda.client import generic_msg
+
         # hostname is the hostname to send to
         return generic_msg(
             cmd="sendArray",
@@ -2884,6 +2928,7 @@ class Strings:
             A new Strings object containing the unique values.
         """
         from arkouda.client import generic_msg
+
         if not strings:
             raise ValueError("Must provide at least one Strings object")
 

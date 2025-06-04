@@ -1,11 +1,9 @@
 import functools
-from typing import TYPE_CHECKING, TypeVar, Sequence
+from typing import TYPE_CHECKING, Sequence, TypeVar
 from warnings import warn
 
 import numpy as np
 
-from arkouda.pandas.categorical import Categorical
-from arkouda.pandas.groupbyclass import GroupBy, broadcast, unique
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
@@ -15,6 +13,8 @@ from arkouda.numpy.pdarraycreation import arange, full, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.strings import Strings
+from arkouda.pandas.categorical import Categorical
+from arkouda.pandas.groupbyclass import GroupBy, broadcast, unique
 
 __all__ = [
     "NonUniqueError",

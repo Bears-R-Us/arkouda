@@ -204,6 +204,7 @@ class Array:
         second dimension.
         """
         import json
+
         def extract_chunk(msg_str: str):
             return "".join(msg_str.split()[1:])
 

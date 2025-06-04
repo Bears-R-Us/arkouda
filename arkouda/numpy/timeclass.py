@@ -1,7 +1,6 @@
 import datetime
 import json
-from typing import TYPE_CHECKING, cast, Optional, TypeVar, Union
-
+from typing import TYPE_CHECKING, Optional, TypeVar, Union, cast
 
 import numpy as np
 from pandas import Series as pdSeries
@@ -228,9 +227,9 @@ class _AbstractBaseTime(pdarray):
         """
         Override of the pdarray to_hdf to store the special dtype
         """
-        from arkouda.client import generic_msg
         from typing import cast as typecast
 
+        from arkouda.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return typecast(
@@ -478,6 +477,7 @@ class Datetime(_AbstractBaseTime):
     -----
     The ``.values`` attribute is always in nanoseconds with int64 dtype.
     """
+
     if TYPE_CHECKING:
         from arkouda.client import generic_msg
     else:
@@ -786,11 +786,12 @@ class Timedelta(_AbstractBaseTime):
     -----
     The ``.values`` attribute is always in nanoseconds with int64 dtype.
     """
+
     if TYPE_CHECKING:
         from arkouda.client import generic_msg
     else:
         generic_msg = TypeVar("generic_msg")
-        
+
     supported_with_datetime = frozenset(("+"))
     supported_with_r_datetime = frozenset(("+", "-", "/", "//", "%"))
     supported_with_timedelta = frozenset(("==", "!=", "<", "<=", ">", ">=", "+", "-", "/", "//", "%"))
