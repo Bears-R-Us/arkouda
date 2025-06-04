@@ -1,6 +1,5 @@
 from typing import cast as typecast
 
-from arkouda.client import generic_msg
 from arkouda.numpy.pdarrayclass import create_pdarray
 from arkouda.pandas.dataframe import DataFrame
 

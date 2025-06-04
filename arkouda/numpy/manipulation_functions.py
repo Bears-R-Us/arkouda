@@ -4,7 +4,6 @@ from typing import Optional, Sequence, Tuple, Union, cast, overload
 
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
 from arkouda.numpy.dtypes import bool_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import array as ak_array

@@ -14,6 +14,11 @@ from arkouda.numpy.dtypes import int64, int_scalars, intTypes, isSupportedInt
 from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import from_series
 
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+else:
+    generic_msg = TypeVar("generic_msg")
+
 __all__ = [
     "Datetime",
     "Timedelta",
@@ -477,11 +482,6 @@ class Datetime(_AbstractBaseTime):
     -----
     The ``.values`` attribute is always in nanoseconds with int64 dtype.
     """
-
-    if TYPE_CHECKING:
-        from arkouda.client import generic_msg
-    else:
-        generic_msg = TypeVar("generic_msg")
     supported_with_datetime = frozenset(("==", "!=", "<", "<=", ">", ">=", "-"))
     supported_with_r_datetime = frozenset(("==", "!=", "<", "<=", ">", ">=", "-"))
     supported_with_timedelta = frozenset(("+", "-", "/", "//", "%"))
@@ -911,7 +911,7 @@ class Timedelta(_AbstractBaseTime):
 
     def abs(self):
         """Absolute value of time interval."""
-        return self.__class__(cast(akabs(self.values), "int64"))
+        return self.__class__(cast(abs(self.values), "int64"))
 
     def register(self, user_defined_name):
         """

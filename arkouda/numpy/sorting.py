@@ -8,7 +8,6 @@ from typeguard import check_type, typechecked
 
 from arkouda.numpy.dtypes import (
     bigint,
-    bool_,
     dtype,
     float64,
     int64,
@@ -193,7 +192,6 @@ def coargsort(
     check_type(
         argname="coargsort", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]]
     )
-
     size: int_scalars = -1
     anames, atypes, expanded_arrays = [], [], []
     max_dim = 1

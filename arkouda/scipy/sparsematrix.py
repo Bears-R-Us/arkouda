@@ -5,7 +5,6 @@ from typing import Union, cast
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import NumericDTypes
 from arkouda.numpy.dtypes import dtype as akdtype

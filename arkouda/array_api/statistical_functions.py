@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Optional, Tuple, Union
 
 import numpy as np
 
-from arkouda.client import generic_msg
 from arkouda.numpy import cast as akcast
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.pdarrayclass import create_pdarray
