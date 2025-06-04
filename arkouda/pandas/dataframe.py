@@ -3987,6 +3987,8 @@ class DataFrame(UserDict):
         +----+--------+--------+
 
         """
+        from arkouda.numpy import where
+
         if isinstance(keys, str):
             keys = [keys]
         gb = self.GroupBy(keys, use_series=False)
@@ -4250,6 +4252,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.pandas.series import Series
+        from arkouda.numpy import cumsum
 
         if isinstance(values, pdarray):
             # flatten the DataFrame so single in1d can be used.
@@ -4381,6 +4384,7 @@ class DataFrame(UserDict):
         from arkouda import full, isnan
         from arkouda.numpy.util import is_numeric
         from arkouda.pandas.series import Series
+        from arkouda.numpy import cast as akcast
 
         if (isinstance(axis, int) and axis == 0) or (isinstance(axis, str) and axis == "index"):
             index_values_list = []
@@ -5886,6 +5890,8 @@ def _right_join_merge(
         If any column in `left_on`, `right_on` or `col_intersect` is not found in `left` or `right`.
 
     """
+    from arkouda.numpy import cast as akcast
+
     left_on_ = [left_on] if isinstance(left_on, str) else left_on
     right_on_ = [right_on] if isinstance(right_on, str) else right_on
     if actually_left_join:
