@@ -904,6 +904,7 @@ class Series:
             their counts in the original Series.
 
         """
+        from arkouda.numpy import value_counts
         dtype = get_callback(self.values)
         idx, vals = value_counts(self.values)
         s = Series(index=idx, data=vals)
@@ -1365,6 +1366,7 @@ class Series:
         +----+---------+
 
         """
+        from arkouda.numpy import isnan
         if not is_float(self.values):
             return Series(full(self.values.size, False, dtype=bool), index=self.index)
 
@@ -1624,7 +1626,7 @@ class Series:
         +----+---------+
 
         """
-        from arkouda.numpy import where
+        from arkouda.numpy import isnan, where
 
         if isinstance(value, Series):
             value = value.values

@@ -12,7 +12,8 @@ from typeguard import typechecked
 import arkouda.numpy.dtypes
 from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import ArkoudaLogger, getArkoudaLogger
-from arkouda.match import Match #, MatchType XXXXXXXX
+from arkouda.pandas.match import Match, MatchType
+
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     bool_scalars,
@@ -30,6 +31,7 @@ else:
     generic_msg = TypeVar("generic_msg")
 
 __all__ = ["Strings"]
+
 
 # Command strings for message passing to arkouda server, specific to Strings
 CMD_ASSEMBLE = "segStr-assemble"

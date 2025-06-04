@@ -151,6 +151,7 @@ def gen_ranges(starts, ends, stride=1, return_lengths=False):
             The lengths of each segment. Only returned if return_lengths=True.
 
     """
+    from arkouda.numpy import cumsum
     if starts.size != ends.size:
         raise ValueError("starts and ends must be same length")
     if starts.size == 0:
@@ -243,6 +244,7 @@ def inner_join(
 
     """
     from inspect import signature
+    from arkouda.numpy import cumsum
 
     is_sequence = isinstance(left, Sequence) and isinstance(right, Sequence)
 

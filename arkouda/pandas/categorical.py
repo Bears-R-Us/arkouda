@@ -142,6 +142,8 @@ class Categorical:
 
     def __init__(self, values, **kwargs) -> None:
         from arkouda.client import generic_msg
+        from arkouda.numpy import cast as akcast
+
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
         if "codes" in kwargs and "categories" in kwargs:
             # This initialization is called by Categorical.from_codes()
@@ -408,6 +410,8 @@ class Categorical:
             be assigned the NA value.
 
         """
+        from arkouda.numpy import cast as akcast
+        from arkouda.numpy import where
         if NAvalue is None:
             NAvalue = self.NAvalue
         findNA = new_categories == NAvalue

@@ -12,6 +12,11 @@ from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.numpy.strings import Strings
 
+if TYPE_CHECKING:
+    from arkouda.numpy import cast as akcast
+else:
+    akcast = TypeVar("akcast")
+
 __all__ = [
     "BitVector",
     "BitVectorizer",
@@ -77,6 +82,7 @@ class BitVector(pdarray):
     special_objType = "BitVector"
 
     def __init__(self, values, width=64, reverse=False):
+        from arkouda.numpy import cast as akcast
         self.registered_name = None
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
             self.name = None  # This is needed to silence warnings of missing name during failed creation
@@ -508,6 +514,7 @@ class IPv4(pdarray):
     special_objType = "IPv4"
 
     def __init__(self, values):
+        from arkouda.numpy import cast as akcast
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
             self.name = None  # This is needed to silence warnings of missing name during failed creation
             raise TypeError("Argument must be int64 pdarray")

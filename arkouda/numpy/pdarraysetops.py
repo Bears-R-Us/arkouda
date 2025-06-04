@@ -659,6 +659,7 @@ def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Unio
 
     """
     from arkouda.pandas.categorical import Categorical as Categorical_
+    from arkouda.client import generic_msg
 
     ua: groupable
     ub: groupable
@@ -775,6 +776,7 @@ def setdiff1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[
     [array([2 4 5]), array([2 4 5]), array([2 4 5])]
     """
     from arkouda.pandas.categorical import Categorical as Categorical_
+    from arkouda.client import generic_msg
 
     ua: groupable
     ub: groupable
@@ -882,6 +884,7 @@ def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[p
     [array([2 2 4 4 5 5]), array([2 5 2 4 4 5]), array([2 4 5 4 2 5])]
     """
     from arkouda.pandas.categorical import Categorical as Categorical_
+    from arkouda.client import generic_msg
 
     ua: groupable
     ub: groupable

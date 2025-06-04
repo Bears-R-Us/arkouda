@@ -233,6 +233,7 @@ class SegArray:
         SegArray
             The input arrays joined into one SegArray
         """
+        from arkouda.numpy import cumsum
         if not ordered:
             raise ValueError("Unordered concatenation not yet supported on SegArray; use ordered=True.")
         if len(x) == 0:
@@ -598,6 +599,7 @@ class SegArray:
         SegArray
             Copy of original SegArray with values from x appended to each sub-array
         """
+        from arkouda.numpy import cumsum
         if self.dtype == str_:
             raise TypeError("String elements are immutable and cannot accept a single value")
         if hasattr(x, "size"):
@@ -642,6 +644,7 @@ class SegArray:
                 If return_multiplicity=True, this array contains the number of times
                 each value in the returned SegArray was repeated in the original SegArray.
         """
+        from arkouda.numpy import cumsum
         isrepeat = zeros(self.values.size, dtype=akbool)
         isrepeat[1:] = self.values[:-1] == self.values[1:]
         isrepeat[self.segments[self.non_empty]] = False
@@ -1284,6 +1287,7 @@ class SegArray:
         SegArray
         """
         from arkouda.numpy.pdarraysetops import in1d
+        from arkouda.numpy import cumsum
 
         # convert to pdarray if more than 1 element
         if isinstance(filter, Sequence):

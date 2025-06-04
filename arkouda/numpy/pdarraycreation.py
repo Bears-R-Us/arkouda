@@ -548,7 +548,7 @@ def zeros(
     array([False False False False False])
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.client import generic_msg, get_array_ranks
     dtype = akdtype(dtype)  # normalize dtype
     dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
     # check dtype for error

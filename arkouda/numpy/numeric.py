@@ -3386,7 +3386,7 @@ def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[in
     array([4 3 6])
 
     """
-
+    from arkouda.client import generic_msg
     if axis is None and a.ndim != 1:
         a = a.flatten()
 

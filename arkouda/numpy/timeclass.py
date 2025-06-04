@@ -1,8 +1,7 @@
 import datetime
 import json
-from typing import Optional, Union
+from typing import TYPE_CHECKING, cast, Optional, TypeVar, Union
 
-from typing import TYPE_CHECKING, TypeVar
 
 import numpy as np
 from pandas import Series as pdSeries
