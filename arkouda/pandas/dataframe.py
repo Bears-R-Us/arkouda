@@ -1,3 +1,46 @@
+"""
+Pandas-like DataFrame module for Arkouda.
+
+This module provides distributed data frame functionality inspired by pandas,
+enabling scalable manipulation of structured data using Arkouda's parallel computing
+backend.
+
+Public Classes
+--------------
+DataFrame : Core tabular data structure with labeled columns.
+DataFrameGroupBy : Enables group-by operations on DataFrames.
+DiffAggregate : Utility class for differential aggregation during group-by.
+
+Public Functions
+----------------
+intersect(left, right) : Compute the intersection of two arrays.
+invert_permutation(p) : Return the inverse of a permutation array.
+intx(a) : Find all the rows that are in the interesection of two dataframes.
+merge(left, right, ...) : Merge two DataFrames using SQL-style join operations.
+
+Notes
+-----
+This module implements a subset of pandas-like features and is designed
+for use on large-scale, distributed datasets.
+
+Examples
+--------
+>>> import arkouda as ak
+>>> from arkouda.pandas.dataframe import DataFrame
+
+>>> df = DataFrame()
+>>> df['x'] = ak.arange(5)
+>>> df['y'] = df['x'] + 1
+>>> df
+   x  y
+0  0  1
+1  1  2
+2  2  3
+3  3  4
+4  4  5 (5 rows x 2 columns)
+
+"""
+
 from __future__ import annotations
 
 import json
