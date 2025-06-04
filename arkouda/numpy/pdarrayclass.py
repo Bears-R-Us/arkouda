@@ -105,7 +105,6 @@ if TYPE_CHECKING:
     prod = numeric_reduce
     max = numeric_reduce
     min = numeric_reduce
-    mean = numeric_reduce
 
     # ----- boolean_reduce overloads -----
     # docstr-coverage:excused `overload-only, docs live on impl`
@@ -175,9 +174,6 @@ if TYPE_CHECKING:
         keepdims: Optional[bool] = False,
     ) -> Union[np.float64, pdarray]:
         pass
-
-    var = stats_reduce
-    std = stats_reduce
 
     from arkouda.client import generic_msg, get_array_ranks
 else:
