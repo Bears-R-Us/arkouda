@@ -635,23 +635,15 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; x = ak.arange(10).reshape((1, 10, 1))</span>
-<span class="sd">    &gt;&gt;&gt; x</span>
-<span class="sd">    array([array([array([0]) array([1]) array([2]) array([3])....</span>
-<span class="sd">     array([4]) array([5]) array([6]) array([7]) array([8]) array([9])])])</span>
 <span class="sd">    &gt;&gt;&gt; x.shape</span>
 <span class="sd">    (1, 10, 1)</span>
-<span class="sd">    &gt;&gt;&gt; ak.squeeze(x,axis=None)</span>
-<span class="sd">    array([0 1 2 3 4 5 6 7 8 9])</span>
-<span class="sd">    &gt;&gt;&gt; ak.squeeze(x,axis=None).shape</span>
+<span class="sd">    &gt;&gt;&gt; ak.squeeze(x, axis=None).shape</span>
 <span class="sd">    (10,)</span>
-<span class="sd">    &gt;&gt;&gt; ak.squeeze(x,axis=2)</span>
-<span class="sd">    array([array([0 1 2 3 4 5 6 7 8 9])])</span>
-<span class="sd">    &gt;&gt;&gt; ak.squeeze(x,axis=2).shape</span>
+<span class="sd">    &gt;&gt;&gt; ak.squeeze(x, axis=2).shape</span>
 <span class="sd">    (1, 10)</span>
-<span class="sd">    &gt;&gt;&gt; ak.squeeze(x,axis=(0,2))</span>
-<span class="sd">    array([0 1 2 3 4 5 6 7 8 9])</span>
-<span class="sd">    &gt;&gt;&gt; ak.squeeze(x,axis=(0,2)).shape</span>
+<span class="sd">    &gt;&gt;&gt; ak.squeeze(x, axis=(0, 2)).shape</span>
 <span class="sd">    (10,)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">_val_isinstance_of_union</span>
 
