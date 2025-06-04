@@ -62,6 +62,9 @@ module CheckpointMsg {
   /* The name for the automatic checkpoint, like the `name` argument of save_checkpoint(). */
   config const checkpointName = "auto_checkpoint";
 
+  /* The mode for automatic checkpointing, see ak.save_checkpoint(). */
+  config const checkpointMode = "preserve_previous";
+
   // Time stamp of a successful checkpointing operation.
   // Note: this is shared across all daemons.
   private var lastCkptCompletion: atomic real = 0;
@@ -69,6 +72,13 @@ module CheckpointMsg {
   private proc updateLastCkptCompletion() {
     lastCkptCompletion.write(Time.timeSinceEpoch().totalSeconds());
   }
+
+
+  private proc removeIt(path) throws do
+    if isDir(path) then rmTree(path); else remove(path);
+
+  private proc renameIt(from, to) throws do
+    if isDir(from) then moveDir(from, to); else rename(from, to);
 
 
   private proc saveCheckpointImpl(basePath, cpName, mode, st) throws {
@@ -85,11 +95,14 @@ module CheckpointMsg {
         );
       }
 
-      if isDir(cpPath) {
-        rmTree(cpPath);
+      if mode=="preserve_previous" {
+        const prevPath = Path.joinPath(basePath, cpName + ".prev");
+        if exists(prevPath)
+          then removeIt(prevPath);
+        renameIt(cpPath, prevPath);
       }
       else {
-        remove(cpPath);
+        removeIt(cpPath);
       }
     }
 
@@ -281,7 +294,7 @@ module CheckpointMsg {
           cpLogger.info(M(), R(), L(), "starting autoCheckpoint: " + ckptReason +
                         "; saving into " + basePath + "/" + cpName);
 
-          saveCheckpointImpl(basePath, cpName, "overwrite", sd.st);
+          saveCheckpointImpl(basePath, cpName, checkpointMode, sd.st);
 
           idleStartForLastCheckpoint = idleStart;
           cpLogger.info(M(), R(), L(), "finished autoCheckpoint into " +

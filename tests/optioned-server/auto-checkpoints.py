@@ -8,6 +8,7 @@ from arkouda.io_util import delete_directory, directory_exists
 autockptPath = ".akdata"
 autockptName = "auto_checkpoint"
 autockptDir = f"{autockptPath}/{autockptName}"
+autockptPrev = f"{autockptPath}/{autockptName}.prev"
 
 
 def directory_exists_delayed(path, num_delays, delay=0.1):
@@ -52,22 +53,38 @@ class TestIdleAndInterval:
           1.0 [more than checkpointIdleTime since latest activity,
                more than checkpointInterval since latest checkpoint]
           verify a new auto-checkpoint exists
+          another server activity
+          3.0 [more than checkpointInterval]
+          verify existence of an auto-checkpoint and a previous auto-checkpoint
         """
 
         delete_directory(autockptDir)  # start with a clean slate
+        delete_directory(autockptPrev)
         a = ak.ones(pytest.prob_size[0])
+        # expect auto-checkpointing after ~1 second [checkpointIdleTime]
         sleep(0.5)
         assert not directory_exists(autockptDir)
         sleep(1)
         assert directory_exists_delayed(autockptDir, 10)
         delete_directory(autockptDir)
         b = ak.ones(pytest.prob_size[0])
+        # expect auto-checkpointing after ~3 seconds [checkpointInterval]
         sleep(2)
         assert not directory_exists(autockptDir)
         sleep(1)
         assert directory_exists_delayed(autockptDir, 10)
+        c = ak.ones(pytest.prob_size[0])
+        # expect another auto-checkpointing after ~3 seconds [checkpointInterval]
+        # that will move autockptDir to autockptPrev and create a new autockptDir
+        sleep(1)
+        assert directory_exists(autockptDir)
+        assert not directory_exists(autockptPrev)
+        sleep(1)
+        assert directory_exists_delayed(autockptPrev, 10)
+        assert directory_exists(autockptDir)
         delete_directory(autockptDir)
-        del a, b  # avoid flake8 errors about unused a,b
+        delete_directory(autockptPrev)
+        del a, b, c  # avoid flake8 errors about unused a,b,c
 
 
 class TestMemPct:

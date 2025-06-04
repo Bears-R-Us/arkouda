@@ -1999,8 +1999,11 @@ def save_checkpoint(name="", path=".akdata", mode: str = "overwrite"):
         The directory to save the checkpoint. If the directory doesn't exist, it
         will be created. If it exists, a new directory for the checkpoint
         instance will be created inside this directory.
-    mode : {'overwrite' | 'error'}
+    mode : {'overwrite' | 'preserve_previous' | 'error'}
         By default, overwrite the checkpoint files if they exist.
+        If 'preserve_previous', an existing checkpoint with 'name' will be
+        renamed to 'name.prev', overwriting 'name.prev' if it existed,
+        before creating a new checkpoint with 'name'.
         If 'error', an error will be raised if a checkpoint with the same name
         exists.
 
