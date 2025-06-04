@@ -1,3 +1,60 @@
+"""
+Index and MultiIndex classes for Arkouda Series and DataFrames.
+
+This module defines the foundational indexing structures used in Arkouda's
+pandas-like API, supporting labeled indexing, alignment, and grouping operations.
+Indexes provide the mechanism to assign meaningful labels to rows and columns.
+
+Classes
+-------
+Index : class
+    One-dimensional immutable sequence used to label and align axis data.
+    Accepts various types of inputs including `pdarray`, `Strings`, `Categorical`,
+    Python lists, or pandas Index/Categorical objects. Supports optional name and
+    lightweight list-based indexing for small inputs.
+
+MultiIndex : class
+    A multi-level index for complex datasets, composed of multiple Index-like arrays
+    ("levels"). Each level may contain categorical, string, or numeric values.
+    Supports construction from a list of arrays or a `pandas.MultiIndex`.
+
+Features
+--------
+- Flexible input types for index construction
+- Support for named and multi-level indexing
+- Efficient size and shape inference
+- Alignment and equality comparison logic
+- Integration with Arkouda Series and DataFrames
+
+Notes
+-----
+- `MultiIndex` currently does **not** support construction from tuples; it must be
+  created from lists of values or pandas MultiIndex objects.
+- Only one-dimensional (1D) indexing is supported at this time.
+- All level arrays in a `MultiIndex` must have the same length.
+
+Examples
+--------
+>>> import arkouda as ak
+>>> from arkouda.index import Index, MultiIndex
+
+>>> idx = Index([10, 20, 30], name="id")
+>>> idx
+Index(array([10 20 30]), dtype='int64')
+
+>>> midx = MultiIndex([ak.array([1, 2]), ak.array(["a", "b"])], names=["num", "char"])
+>>> midx.nlevels
+2
+>>> midx.get_level_values("char")
+Index(array(['a', 'b']), dtype='<U0')
+
+See Also
+--------
+- arkouda.pandas.series.Series
+- arkouda.categorical.Categorical
+
+"""
+
 from __future__ import annotations
 
 import builtins
