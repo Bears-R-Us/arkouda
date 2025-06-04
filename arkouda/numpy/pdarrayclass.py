@@ -558,12 +558,12 @@ class pdarray:
         return self.size
 
     def __str__(self):
-        from arkouda.client import pdarrayIterThresh
+        from arkouda.client import generic_msg, pdarrayIterThresh
 
         return generic_msg(cmd="str", args={"array": self, "printThresh": pdarrayIterThresh})
 
     def __repr__(self):
-        from arkouda.client import pdarrayIterThresh
+        from arkouda.client import generic_msg, pdarrayIterThresh
 
         return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
 
@@ -4129,6 +4129,7 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     The correlation is calculated by
     cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
     """
+    from arkouda.client import generic_msg
     return parse_single_value(
         generic_msg(cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
     )
@@ -5207,6 +5208,7 @@ def diff(a: pdarray, n: int = 1, axis: int = -1, prepend=None, append=None) -> p
     array([array([-1 2 0 -2])])
 
     """
+    from arkouda.client import generic_msg
     if a.dtype == bigint:
         raise RuntimeError(f"Error executing command: diff does not support dtype {a.dtype}")
     from arkouda.numpy.pdarraysetops import concatenate

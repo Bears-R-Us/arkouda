@@ -1383,6 +1383,7 @@ class MultiIndex(Index):
         return MultiIndex(idx)
 
     def lookup(self, key):
+        from arkouda.numpy import cast as akcast
         if not isinstance(key, list) and not isinstance(key, tuple):
             raise TypeError("MultiIndex lookup failure")
         # if individual vals convert to pdarrays
