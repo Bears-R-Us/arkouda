@@ -43,9 +43,9 @@ from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.pandas.join import inner_join
 from arkouda.pandas.row import Row
+from arkouda.client import maxTransferBytes
 
 if TYPE_CHECKING:
-    from arkouda.client import generic_msg, maxTransferBytes
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import cumsum, where
     from arkouda.numpy.segarray import SegArray
@@ -53,8 +53,6 @@ if TYPE_CHECKING:
 else:
     Series = TypeVar("Series")
     SegArray = TypeVar("SegArray")
-    generic_msg = TypeVar("generic_msg")
-    maxTransferBytes = TypeVar("maxTransferBytes")
     akcast = TypeVar("akcast")
     cumsum = TypeVar("cumsum")
     where = TypeVar("where")
@@ -2946,8 +2944,6 @@ class DataFrame(UserDict):
 
         """
         from arkouda.numpy.segarray import SegArray
-
-        self.update_nrows()
 
         # Estimate how much memory would be required for this DataFrame
         nbytes = 0
