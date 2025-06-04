@@ -3,7 +3,6 @@ from typing import Literal, Optional, Sequence, Union, cast
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray

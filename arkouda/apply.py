@@ -59,7 +59,7 @@ import cloudpickle
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg, get_config
+from arkouda.client import get_config
 from arkouda.numpy.dtypes import dtype
 from arkouda.numpy.pdarrayclass import parse_single_value, pdarray
 from arkouda.numpy.pdarraycreation import create_pdarray

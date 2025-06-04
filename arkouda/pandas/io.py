@@ -1405,8 +1405,6 @@ def to_hdf(
     >>> ak.to_hdf([a, b], 'path/name_prefix', names=['a', 'b'])
 
     """
-    from arkouda.client import generic_msg
-
     if mode.lower() not in ["append", "truncate"]:
         raise ValueError("Allowed modes are 'truncate' and 'append'")
 

@@ -25,7 +25,6 @@ from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
 from typeguard import typechecked
 
 from arkouda.client_dtypes import BitVector, Fields, IPv4
-from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.index import Index, MultiIndex
 from arkouda.numpy.dtypes import _is_dtype_in_union, bigint
 from arkouda.numpy.dtypes import bool_ as akbool
@@ -41,10 +40,7 @@ from arkouda.numpy.sorting import sort as aksort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
 from arkouda.pandas.categorical import Categorical
-from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES
-from arkouda.pandas.groupbyclass import GroupBy as akGroupBy
-from arkouda.pandas.groupbyclass import unique
-from arkouda.pandas.index import Index, MultiIndex
+from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.pandas.join import inner_join
 from arkouda.pandas.row import Row
 

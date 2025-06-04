@@ -14,8 +14,10 @@ from arkouda.pandas.groupbyclass import GroupBy, broadcast
 
 if TYPE_CHECKING:
     from arkouda.numpy import cast as akcast
+    from arkouda.numpy import where as akwhere
 else:
     akcast = TypeVar("akcast")
+    akwhere = TypeVar("akwhere")
 
 __all__ = [
     "BitVector",
@@ -369,7 +371,7 @@ class Fields(BitVector):
             for name, shift in zip(self.names, self.shifts):
                 # Check if name exists in each string
                 bit = s.contains(name)
-                values = values | akcast(where(bit, 1 << shift, 0), bitType)
+                values = values | akcast(akwhere(bit, 1 << shift, 0), bitType)
         else:
             # When separator is non-empty, split on it
             sf, segs = s.flatten(self.separator, return_segments=True)
@@ -379,7 +381,7 @@ class Fields(BitVector):
             for name, shift in zip(self.names, self.shifts):
                 # Check if name matches one of the split fields from originating string
                 bit = g.any(sf == name)[1]
-                values = values | akcast(where(bit, 1 << shift, 0), bitType)
+                values = values | akcast(akwhere(bit, 1 << shift, 0), bitType)
         return values
 
     def _parse_scalar(self, s):

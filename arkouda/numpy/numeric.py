@@ -7,7 +7,6 @@ from typing import no_type_check
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg, get_array_ranks
 from arkouda.groupbyclass import GroupBy, groupable
 from arkouda.numpy.dtypes import ARKOUDA_SUPPORTED_INTS, _datatype_check, bigint
 from arkouda.numpy.dtypes import bool_ as ak_bool

@@ -43,7 +43,7 @@ array([100 200 200])
 """
 
 import functools
-from typing import TYPE_CHECKING, Sequence, TypeVar
+from typing import Sequence
 from warnings import warn
 
 import numpy as np

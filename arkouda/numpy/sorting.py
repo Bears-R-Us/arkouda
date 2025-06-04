@@ -7,7 +7,6 @@ from typeguard import check_type, typechecked
 
 from arkouda.numpy.dtypes import (
     bigint,
-    bool_,
     dtype,
     float64,
     int64,

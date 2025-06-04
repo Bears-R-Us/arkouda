@@ -152,7 +152,6 @@ class Categorical:
     dtype = akdtype(str_)  # this is being set for now because Categoricals only supported on Strings
 
     def __init__(self, values, **kwargs) -> None:
-        from arkouda.client import generic_msg
         from arkouda.numpy import cast as akcast
 
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore

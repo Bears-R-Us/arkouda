@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Literal, Optional, Tuple, cast
 
 import arkouda as ak
-from arkouda.client import generic_msg
 from arkouda.numpy import cast as akcast
 from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
 

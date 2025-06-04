@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Optional, Tuple, Union
 
 import arkouda as ak
-from arkouda.client import generic_msg
 from arkouda.numpy.pdarrayclass import create_pdarray
 from arkouda.numpy.pdarraycreation import scalar_array
 
@@ -155,8 +154,6 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
     array([[-1,  2,  0, -2]])
 
     """
-    from arkouda.client import generic_msg
-
     if a.dtype == ak.bigint:
         raise RuntimeError(f"Error executing command: diff does not support dtype {a.dtype}")
 
