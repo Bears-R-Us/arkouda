@@ -338,7 +338,7 @@ module EfuncMsg
     // sgn is a special case.  It is the only thing that returns int(8).
 
     @arkouda.registerCommand(name="sgn")
-    proc ak_sgn (pda : [?d] ?t) : [d] int(8) throws
+    proc ak_sgn (pda : [?d] ?t) : [d] t throws
         where (t==int || t==real)
     {
         return (sgn(pda));

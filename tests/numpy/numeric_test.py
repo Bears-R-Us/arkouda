@@ -426,6 +426,13 @@ class TestNumeric:
         with pytest.raises(TypeError):
             ak.square(np.array([range(-10, 10)]).astype(ak.bool_))
 
+    @pytest.mark.parametrize("num_type", INT_FLOAT)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_sign(self, prob_size, num_type):
+        nda = np.arange(prob_size).astype(num_type) - prob_size // 2
+        pda = ak.array(nda)
+        assert_arkouda_array_equivalent(np.sign(nda), ak.sign(pda))
+
     #   cumsum and cumprod tests were identical, and so have been combined.
 
     @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
