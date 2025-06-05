@@ -97,11 +97,12 @@ class _AbstractBaseTime(pdarray):
     special_objType = "Time"
 
     def __init__(self, pda, unit: str = _BASE_UNIT):
+        from arkouda.numpy import cast as akcast
         if isinstance(pda, Datetime) or isinstance(pda, Timedelta):
             self.unit: str = pda.unit
             self._factor: int = pda._factor
             # Make a copy to avoid unknown symbol errors
-            self.values: pdarray = cast(pda.values, int64)
+            self.values: pdarray = akcast(pda.values, int64)
         # Convert the input to int64 pdarray of nanoseconds
         elif isinstance(pda, pdarray):
             if pda.dtype not in intTypes:
@@ -110,8 +111,6 @@ class _AbstractBaseTime(pdarray):
             self.unit = unit
             self._factor = _get_factor(self.unit)
             # This makes a copy of the input array, to leave input unchanged
-            from arkouda.numpy import cast as akcast
-
             self.values = akcast(self._factor * pda, int64)  # Mimics a datetime64[ns] array
         elif hasattr(pda, "dtype"):
             # Handles all pandas and numpy datetime/timedelta arrays
@@ -495,6 +494,7 @@ class Datetime(_AbstractBaseTime):
     special_objType = "Datetime"
 
     def _ensure_components(self):
+        from arkouda.client import generic_msg
         if self._is_populated:
             return
         # lazy initialize all attributes in one server call
@@ -805,6 +805,7 @@ class Timedelta(_AbstractBaseTime):
     special_objType = "Timedelta"
 
     def _ensure_components(self):
+        from arkouda.client import generic_msg
         if self._is_populated:
             return
         # lazy initialize all attributes in one server call
@@ -913,7 +914,8 @@ class Timedelta(_AbstractBaseTime):
 
     def abs(self):
         """Absolute value of time interval."""
-        return self.__class__(cast(abs(self.values), "int64"))
+        from arkouda.numpy import cast as akcast
+        return self.__class__(akcast(abs(self.values), "int64"))
 
     def register(self, user_defined_name):
         """
