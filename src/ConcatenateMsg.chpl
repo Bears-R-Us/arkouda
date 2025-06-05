@@ -22,6 +22,8 @@ module ConcatenateMsg
     use Set;
     use List;
 
+    use Repartition;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const cmLogger = new Logger(logLevel, logChannel);
@@ -520,105 +522,43 @@ module ConcatenateMsg
             }
         }
 
-        // These variables will help us create the buffers.
-        var numStringsReceived = makeDistArray(numLocales, [0..#numLocales] int);
-        var numBytesReceived = makeDistArray(numLocales, [0..#numLocales] int);
-        var numStringsSending = makeDistArray(numLocales, [0..#numLocales] int);
-        var numBytesSending = makeDistArray(numLocales, [0..#numLocales] int);
-
-        var maxStringsPerPeer: int = 0;
-        var maxBytesPerPeer: int = 0;
-
         var destLocaleByStrIdx: [PrivateSpace] list(int);
         var strOffsetInLocale: [PrivateSpace] list(int);
-        var strIdxInLocale: [PrivateSpace] list(int);
+        var strBytesInLocale: [PrivateSpace] list(uint(8));
 
-        // Hash all the strings and figure out how many strings are going to each locale, and how many bytes that takes
-        coforall loc in Locales with (max reduce maxStringsPerPeer, max reduce maxBytesPerPeer) do on loc {
+        // Hash all the strings and figure out which strings are going to which locale
+        coforall loc in Locales do on loc {
             const strArray = localeSets[here.id].toArray();
             var destLoc: [0..#strArray.size] int;
-            var strSize: [0..#strArray.size] int;
             var strOffsets: [0..#strArray.size] int;
-            var strIndices: [0..#strArray.size] int;
+            var strSize: [0..#strArray.size] int;
 
-            var sendingStrings: [0..#numLocales] int;
-            var sendingBytes: [0..#numLocales] int;
-            forall strIdx in strArray.domain with (+ reduce sendingStrings, + reduce sendingBytes) {
+            forall strIdx in strArray.domain {
                 const str = strArray[strIdx];
                 const targetID: int = (str.hash() % numLocales): int;
                 const strBytes = str.bytes();
                 destLoc[strIdx] = targetID;
                 strSize[strIdx] = strBytes.size + 1;
-                sendingStrings[targetID] += 1;
-                sendingBytes[targetID] += strBytes.size + 1;
             }
+
+            var numStrBytes = + reduce strSize;
+            strOffsets = (+ scan strSize) - strSize;
+
+            var strBytes: [0..#numStrBytes] uint(8);
+
+            forall strIdx in strArray.domain {
+                const str = strArray[strIdx];
+                const currStrBytes = str.bytes();
+                strBytes[strOffsets[strIdx]..#(strSize[strIdx] - 1)] = currStrBytes;
+            }
+
             destLocaleByStrIdx[here.id] = new list(destLoc);
-            forall i in 0..#numLocales {
-                numStringsReceived[i][here.id] = sendingStrings[i];
-                numBytesReceived[i][here.id] = sendingBytes[i];
-                numStringsSending[here.id][i] = sendingStrings[i];
-                numBytesSending[here.id][i] = sendingBytes[i];
-            }
-
-            for i in 0..#numLocales {
-                var currStrSize = forall j in strSize.domain do (if destLoc[j] == i then strSize[j] else 0);
-                var offsets = (+ scan currStrSize) - currStrSize;
-                var currLocIndices = forall j in strSize.domain do (if destLoc[j] == i then 1 else 0);
-                var indices = (+ scan currLocIndices) - currLocIndices;
-                forall j in strIndices.domain {
-                    if destLoc[j] == i {
-                        strOffsets[j] = offsets[j];
-                        strIndices[j] = indices[j];
-                    }
-                }
-            }
             strOffsetInLocale[here.id] = new list(strOffsets);
-            strIdxInLocale[here.id] = new list(strIndices);
-
-            maxStringsPerPeer = max reduce sendingStrings;
-            maxBytesPerPeer = max reduce sendingBytes;
+            strBytesInLocale[here.id] = new list(strBytes);
+            
         }
 
-        // This may be a little wasteful with the buffers but I couldn't think of a better option.
-        var sendOffsets = makeDistArray(numLocales, [0..#numLocales] [0..#(maxStringsPerPeer+1)] int);
-        var recvOffsets = makeDistArray(numLocales, [0..#numLocales] [0..#(maxStringsPerPeer+1)] int);
-        var sendBytes = makeDistArray(numLocales, [0..#numLocales] [0..#(maxBytesPerPeer)] uint(8));
-        var recvBytes = makeDistArray(numLocales, [0..#numLocales] [0..#(maxBytesPerPeer)] uint(8));
-
-        // In particular, I'm hoping that by setting up these buffers as uint(8) type
-        // that the domain mapping will ship off a bunch of data at the same time and cut down on puts and gets.
-
-        // Now we prep the data in the send variables and then place it on the destination locale in the recv buffer.
-
-        coforall loc in Locales do on loc {
-            var mySendOffsets = sendOffsets[here.id];
-            var mySendBytes = sendBytes[here.id];
-
-            const strArray = localeSets[here.id].toArray();
-
-            const strOffsets = strOffsetInLocale[here.id].toArray();
-            const destLoc = destLocaleByStrIdx[here.id].toArray();
-            const idxInLocale = strIdxInLocale[here.id].toArray();
-
-            forall i in strArray.domain {
-                const str = strArray[i];
-                const targetID = destLoc[i];
-                const offset = strOffsets[i];
-                const locInd = idxInLocale[i];
-
-                const strBytes = str.bytes();
-                const strSize = strBytes.size;
-                mySendOffsets[targetID][locInd] = offset;
-                mySendBytes[targetID][offset..#strSize] = strBytes[0..#strSize];
-                mySendBytes[targetID][offset + strSize] = 0;
-            }
-
-            forall i in 0..#numLocales {
-                mySendOffsets[i][numStringsSending[here.id][i]] = numBytesSending[here.id][i];
-                recvOffsets[i][here.id][0..#(numStringsSending[here.id][i]+1)] = mySendOffsets[i][0..#(numStringsSending[here.id][i]+1)];
-                recvBytes[i][here.id][0..#numBytesSending[here.id][i]] = mySendBytes[i][0..#numBytesSending[here.id][i]];
-            }
-        }
+        var (strOffsetInLocaleOut, strBytesInLocaleOut) = repartitionByLocaleString(destLocaleByStrIdx, strOffsetInLocale, strBytesInLocale);
 
         // I need variables to store how many strings each locale has
         // how many bytes each locale has
@@ -636,16 +576,17 @@ module ConcatenateMsg
         var numStringsPerLocale: [0..#numLocales] int;
         var numBytesPerLocale: [0..#numLocales] int;
 
-        coforall loc in Locales with(ref numStringsPerLocale, ref numBytesPerLocale) do on loc {
-            var strSet = new set(string);
+        coforall loc in Locales with (ref numStringsPerLocale, ref numBytesPerLocale) do on loc {
 
-            for i in 0..#numLocales {
-                forall j in 1..#numStringsReceived[here.id][i] with (+ reduce strSet) {
-                    const start = recvOffsets[here.id][i][j - 1];
-                    const end = recvOffsets[here.id][i][j];
-                    var str = interpretAsString(recvBytes[here.id][i], start..<end);
-                    strSet.add(str);
-                }
+            var strSet = new set(string);
+            ref myOffsets = strOffsetInLocaleOut[here.id];
+            var myBytes = strBytesInLocaleOut[here.id].toArray();
+
+            forall i in 0..#myOffsets.size with (+ reduce strSet) {
+              const start = myOffsets[i];
+              const end = if i == myOffsets.size - 1 then myBytes.size else myOffsets[i + 1];
+              var str = interpretAsString(myBytes, start..<end);
+              strSet.add(str);
             }
 
             const strArray = strSet.toArray();
@@ -682,20 +623,23 @@ module ConcatenateMsg
 
             const strArray = localeSets[here.id].toArray();
             var myBytes: [0..#numBytesPerLocale[here.id]] uint(8);
-            var byteIdx = 0;
             var strOffsets: [0..#strArray.size] int;
+            var strSizes: [0..#strArray.size] int;
 
-            // This could probably be turned into a forall, using some sort of + scan on a strBytesSizes array of some kind.
+            forall (i, str) in zip(0..#strArray.size, strArray) {
 
-            for (i, str) in zip(0..#strArray.size, strArray) {
+                strSizes[i] = str.size + 1;
 
-                strOffsets[i] = byteIdx;
+            }
+
+            strOffsets = (+ scan strSizes) - strSizes;
+
+            forall (i, str) in zip(0..#strArray.size, strArray) {
 
                 const strBytes = str.bytes();
-                const size = strBytes.size;
+                const size = strSizes[i];
 
-                myBytes[byteIdx..#size] = strBytes[0..#size];
-                byteIdx += size + 1;
+                myBytes[strOffsets[i]..#size] = strBytes[0..#size];
 
             }
 
