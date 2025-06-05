@@ -84,6 +84,7 @@ Module Contents
    - the counts of each unique value
 
 
+
 .. py:function:: unique_counts(x: arkouda.array_api.array_object.Array, /) -> UniqueCountsResult
 
    Return a tuple of arrays containing:
