@@ -58,6 +58,7 @@ def max(
         entire array is computed (returning a scalar-array).
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
+
     """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in max")
