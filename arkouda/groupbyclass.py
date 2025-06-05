@@ -121,7 +121,7 @@ def unique(
     >>> import arkouda as ak
     >>> A = ak.array([3, 2, 1, 1, 2, 3])
     >>> ak.unique(A)
-    array([1, 2, 3])
+    array([1 2 3])
 
     """
     from arkouda.categorical import Categorical as Categorical_
@@ -570,15 +570,15 @@ class GroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = ak.randint(1,5,10)
+        >>> a = ak.randint(1, 5, 10, seed=1)
         >>> a
-        array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g = ak.GroupBy(a)
         >>> keys,counts = g.size()
         >>> keys
-        array([1, 2, 3, 4])
+        array([1 2 3 4])
         >>> counts
-        array([1, 2, 4, 3])
+        array([2 3 1 4])
 
         """
         repMsg = generic_msg(
@@ -672,18 +672,15 @@ class GroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> keys = ak.arange(0, 10)
-        >>> vals = ak.linspace(-1, 1, 10)
+        >>> keys = ak.arange(0, 5)
+        >>> vals = ak.linspace(-1, 1, 5)
         >>> g = ak.GroupBy(keys)
         >>> g.aggregate(vals, 'sum')
-        (array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), array([-1, -0.77777777777777768,
-        -0.55555555555555536, -0.33333333333333348, -0.11111111111111116,
-        0.11111111111111116, 0.33333333333333348, 0.55555555555555536, 0.77777777777777768,
-        1]))
+        (array([0 1 2 3 4]),
+         array([-1.00000000000000000 -0.5 0.00000000000000000 0.5 1.00000000000000000]))
         >>> g.aggregate(vals, 'min')
-        (array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), array([-1, -0.77777777777777779,
-        -0.55555555555555558, -0.33333333333333337, -0.11111111111111116, 0.11111111111111116,
-        0.33333333333333326, 0.55555555555555536, 0.77777777777777768, 1]))
+        (array([0 1 2 3 4]),
+         array([-1.00000000000000000 -0.5 0.00000000000000000 0.5 1.00000000000000000]))
 
         """
         operator = operator.lower()
@@ -765,17 +762,17 @@ class GroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = ak.randint(1,5,10)
+        >>> a = ak.randint(1, 5, 10, seed=1)
         >>> a
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g = ak.GroupBy(a)
         >>> g.keys
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
-        >>> b = ak.randint(1,5,10)
+        array([2 4 4 2 1 4 1 2 4 3])
+        >>> b = ak.randint(1, 5, 10, seed=1)
         >>> b
-        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g.sum(b)
-        (array([2, 3, 4]), array([8, 14, 6]))
+        (array([1 2 3 4]), array([2 6 3 16]))
 
         """
         k, v = self.aggregate(values, "sum", skipna)
@@ -819,17 +816,18 @@ class GroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = ak.randint(1,5,10)
+        >>> a = ak.randint(1, 5, 10, seed=1)
         >>> a
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g = ak.GroupBy(a)
         >>> g.keys
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
-        >>> b = ak.randint(1,5,10)
+        array([2 4 4 2 1 4 1 2 4 3])
+        >>> b = ak.randint(1, 5, 10, seed=1)
         >>> b
-        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g.prod(b)
-        (array([2, 3, 4]), array([12, 108.00000000000003, 8.9999999999999982]))
+        (array([1 2 3 4]),
+        array([1.00000000000000000 7.9999999999999982 3.0000000000000004 255.99999999999994]))
 
         """
         k, v = self.aggregate(values, "prod", skipna)
@@ -885,17 +883,17 @@ class GroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = ak.randint(1,5,10)
+        >>> a = ak.randint(1, 5, 10, seed=1)
         >>> a
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g = ak.GroupBy(a)
         >>> g.keys
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
-        >>> b = ak.randint(1,5,10)
+        array([2 4 4 2 1 4 1 2 4 3])
+        >>> b = ak.randint(1, 5, 10, seed=1)
         >>> b
-        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g.var(b)
-        (array([2 3 4]), array([2.333333333333333 1.2 0]))
+        (array([1 2 3 4]), array([0.00000000000000000 0.00000000000000000 nan 0.00000000000000000]))
 
         """
         k, v = self.aggregate(values, "var", skipna, ddof)
@@ -954,17 +952,17 @@ class GroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = ak.randint(1,5,10)
+        >>> a = ak.randint(1, 5, 10, seed=1)
         >>> a
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g = ak.GroupBy(a)
         >>> g.keys
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
-        >>> b = ak.randint(1,5,10)
+        array([2 4 4 2 1 4 1 2 4 3])
+        >>> b = ak.randint(1, 5, 10, seed=1)
         >>> b
-        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g.std(b)
-        (array([2 3 4]), array([1.5275252316519465 1.0954451150103321 0]))
+        (array([1 2 3 4]), array([0.00000000000000000 0.00000000000000000 nan 0.00000000000000000]))
 
         """
         k, v = self.aggregate(values, "std", skipna, ddof)
@@ -1006,17 +1004,18 @@ class GroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = ak.randint(1,5,10)
+        >>> a = ak.randint(1, 5, 10, seed=1)
         >>> a
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g = ak.GroupBy(a)
         >>> g.keys
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
-        >>> b = ak.randint(1,5,10)
+        array([2 4 4 2 1 4 1 2 4 3])
+        >>> b = ak.randint(1, 5, 10, seed=1)
         >>> b
-        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g.mean(b)
-        (array([2, 3, 4]), array([2.6666666666666665, 2.7999999999999998, 3]))
+        (array([1 2 3 4]),
+        array([1.00000000000000000 2.00000000000000000 3.00000000000000000 4.00000000000000000]))
 
         """
         k, v = self.aggregate(values, "mean", skipna)
@@ -1058,17 +1057,18 @@ class GroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = ak.randint(1,5,9)
+        >>> a = ak.randint(1, 5, 9, seed=1)
         >>> a
-        array([4 1 4 3 2 2 2 3 3])
+        array([2 4 4 2 1 4 1 2 4])
         >>> g = ak.GroupBy(a)
         >>> g.keys
-        array([4 1 4 3 2 2 2 3 3])
-        >>> b = ak.linspace(-5,5,9)
+        array([2 4 4 2 1 4 1 2 4])
+        >>> b = ak.linspace(-5, 5, 9)
         >>> b
-        array([-5 -3.75 -2.5 -1.25 0 1.25 2.5 3.75 5])
+        array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000
+            1.25 2.5 3.75 5.00000000000000000])
         >>> g.median(b)
-        (array([1 2 3 4]), array([-3.75 1.25 3.75 -3.75]))
+        (array([1 2 4]), array([1.25 -1.25 -0.625]))
 
         """
         k, v = self.aggregate(values, "median", skipna)
@@ -1109,17 +1109,17 @@ class GroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = ak.randint(1,5,10)
+        >>> a = ak.randint(1, 5, 10, seed=1)
         >>> a
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g = ak.GroupBy(a)
         >>> g.keys
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
-        >>> b = ak.randint(1,5,10)
+        array([2 4 4 2 1 4 1 2 4 3])
+        >>> b = ak.randint(1, 5, 10, seed=1)
         >>> b
-        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g.min(b)
-        (array([2, 3, 4]), array([1, 1, 3]))
+        (array([1 2 3 4]), array([1 2 3 4]))
 
         """
         if values.dtype == bool:
@@ -1162,17 +1162,17 @@ class GroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = ak.randint(1,5,10)
+        >>> a = ak.randint(1, 5, 10, seed=1)
         >>> a
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g = ak.GroupBy(a)
         >>> g.keys
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
-        >>> b = ak.randint(1,5,10)
+        array([2 4 4 2 1 4 1 2 4 3])
+        >>> b = ak.randint(1, 5, 10, seed=1)
         >>> b
-        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g.max(b)
-        (array([2, 3, 4]), array([4, 4, 3]))
+        (array([1 2 3 4]), array([1 2 3 4]))
 
         """
         if values.dtype == bool:
@@ -1218,17 +1218,17 @@ class GroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = ak.randint(1,5,10)
+        >>> a = ak.randint(1, 5, 10, seed=1)
         >>> a
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g = ak.GroupBy(a)
         >>> g.keys
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
-        >>> b = ak.randint(1,5,10)
+        array([2 4 4 2 1 4 1 2 4 3])
+        >>> b = ak.randint(1, 5, 10, seed=1)
         >>> b
-        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g.argmin(b)
-        (array([2, 3, 4]), array([5, 4, 2]))
+        (array([1 2 3 4]), array([4 0 9 1]))
 
         """
         k, v = self.aggregate(values, "argmin")
@@ -1270,17 +1270,17 @@ class GroupBy:
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = ak.randint(1,5,10)
+        >>> a = ak.randint(1, 5, 10, seed=1)
         >>> a
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g = ak.GroupBy(a)
         >>> g.keys
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
-        >>> b = ak.randint(1,5,10)
+        array([2 4 4 2 1 4 1 2 4 3])
+        >>> b = ak.randint(1, 5, 10, seed=1)
         >>> b
-        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g.argmax(b)
-        (array([2, 3, 4]), array([9, 3, 2]))
+        (array([1 2 3 4]), array([4 0 9 1]))
 
         """
         k, v = self.aggregate(values, "argmax")
@@ -1340,19 +1340,20 @@ class GroupBy:
         >>> import arkouda as ak
         >>> data = ak.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])
         >>> data
-        array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])
+        array([3 4 3 1 1 4 3 4 1 4])
         >>> labels = ak.array([1, 1, 1, 2, 2, 2, 3, 3, 3, 4])
         >>> labels
-        ak.array([1, 1, 1, 2, 2, 2, 3, 3, 3, 4])
+        array([1 1 1 2 2 2 3 3 3 4])
         >>> g = ak.GroupBy(labels)
         >>> g.keys
-        ak.array([1, 1, 1, 2, 2, 2, 3, 3, 3, 4])
+        array([1 1 1 2 2 2 3 3 3 4])
         >>> g.nunique(data)
-        array([1,2,3,4]), array([2, 2, 3, 1])
-        #    Group (1,1,1) has values [3,4,3] -> there are 2 unique values 3&4
-        #    Group (2,2,2) has values [1,1,4] -> 2 unique values 1&4
-        #    Group (3,3,3) has values [3,4,1] -> 3 unique values
-        #    Group (4) has values [4] -> 1 unique value
+        (array([1 2 3 4]), array([2 2 3 1]))
+
+        Group (1,1,1) has values [3,4,3] -> there are 2 unique values 3&4
+        Group (2,2,2) has values [1,1,4] -> 2 unique values 1&4
+        Group (3,3,3) has values [3,4,1] -> 3 unique values
+        Group (4) has values [4] -> 1 unique value
 
         """
         # TO DO: defer to self.aggregate once logic is ported over to Chapel
@@ -2055,23 +2056,25 @@ class GroupBy:
         >>> a = ak.array([0, 1, 0, 1, 0])
         >>> values = ak.array([3, 5])
         >>> g = ak.GroupBy(a)
-        # By default, result is in original order
+
+        By default, result is in original order
         >>> g.broadcast(values)
-        array([3, 5, 3, 5, 3])
-        # With permute=False, result is in grouped order
+        array([3 5 3 5 3])
+
+        With permute=False, result is in grouped order
         >>> g.broadcast(values, permute=False)
-        array([3, 3, 3, 5, 5]
-        >>> a = ak.randint(1,5,10)
+        array([3 3 3 5 5])
+        >>> a = ak.randint(1, 5, 10, seed=1)
         >>> a
-        array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
+        array([2 4 4 2 1 4 1 2 4 3])
         >>> g = ak.GroupBy(a)
         >>> keys,counts = g.size()
         >>> g.broadcast(counts > 2)
-        array([True False True True True False True True False False])
+        array([True True True True False True False True True False])
         >>> g.broadcast(counts == 3)
-        array([True False True True True False True True False False])
+        array([True False False True False False False True False False])
         >>> g.broadcast(counts < 4)
-        array([True True True True True True True True True True])
+        array([True False False True True False True True False True])
 
         """
         if values.size != self.segments.size:
@@ -2367,11 +2370,13 @@ def broadcast(
     # Define a sparse matrix with 3 rows and 7 nonzeros
     >>> row_starts = ak.array([0, 2, 5])
     >>> nnz = 7
-    # Broadcast the row number to each nonzero element
+
+    Broadcast the row number to each nonzero element
     >>> row_number = ak.arange(3)
     >>> ak.broadcast(row_starts, row_number, nnz)
     array([0 0 1 1 1 2 2])
-    # If the original nonzeros were in reverse order...
+
+    If the original nonzeros were in reverse order...
     >>> permutation = ak.arange(6, -1, -1)
     >>> ak.broadcast(row_starts, row_number, permutation=permutation)
     array([2 2 1 1 1 0 0])
