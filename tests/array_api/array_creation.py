@@ -14,6 +14,16 @@ DIMS = [1, 1, 2, 1, 1, 2, 2]
 
 
 class TestArrayCreation:
+    def test_creation_functions_docstrings(self):
+        import doctest
+
+        from arkouda.array_api import creation_functions
+
+        result = doctest.testmod(
+            creation_functions, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("shape", SHAPES)
     @pytest.mark.parametrize("dtype", ak.ScalarDTypes)
