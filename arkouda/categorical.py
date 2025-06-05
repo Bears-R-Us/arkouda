@@ -1326,10 +1326,6 @@ class Categorical:
         """
         Return a list of all component names.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         List[str]
@@ -1346,10 +1342,6 @@ class Categorical:
         """
         Return a JSON formatted string containing information about all components of self.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         str
@@ -1359,18 +1351,7 @@ class Categorical:
         return information(self._list_component_names())
 
     def pretty_print_info(self) -> None:
-        """
-        Print information about all components of self in a human-readable format.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        """
+        """Print information about all components of self in a human-readable format."""
         [p.pretty_print_info() for p in Categorical._get_components_dict(self).values()]
 
     @staticmethod
