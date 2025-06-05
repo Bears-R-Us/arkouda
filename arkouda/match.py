@@ -75,7 +75,7 @@ class Match:
 
     def start(self) -> pdarray:
         """
-        Return the starts of matches
+        Return the starts of matches.
 
         Returns
         -------

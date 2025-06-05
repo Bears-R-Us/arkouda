@@ -463,7 +463,7 @@ class ReplyMessage:
     @staticmethod
     def fromdict(values: Dict) -> ReplyMessage:
         """
-        Generate a ReplyMessage from a dictionary
+        Generate a ReplyMessage from a dictionary.
 
         Generate a ReplyMessage from a dict encapsulating the data
         and metadata from a reply from the Arkouda server.

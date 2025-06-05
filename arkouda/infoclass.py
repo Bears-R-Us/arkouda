@@ -46,7 +46,7 @@ class InfoEntry:
 @typechecked
 def information(names: Union[List[str], str] = RegisteredSymbols) -> str:
     """
-    Return a JSON formatted string containing information about the objects in names
+    Return a JSON formatted string containing information about the objects in names.
 
     Parameters
     ----------
@@ -77,7 +77,7 @@ def information(names: Union[List[str], str] = RegisteredSymbols) -> str:
 
 def list_registry(detailed: bool = False):
     """
-    Return a list containing the names of all registered objects
+    Return a list containing the names of all registered objects.
 
     Parameters
     ----------
@@ -107,7 +107,7 @@ def list_registry(detailed: bool = False):
 
 def list_symbol_table() -> List[str]:
     """
-    Return a list containing the names of all objects in the symbol table
+    Return a list containing the names of all objects in the symbol table.
 
     Parameters
     ----------
@@ -129,7 +129,7 @@ def list_symbol_table() -> List[str]:
 
 def _parse_json(names: Union[List[str], str]) -> List[InfoEntry]:
     """
-    Convert the JSON output of information into a List of InfoEntry objects
+    Convert the JSON output of information into a List of InfoEntry objects.
 
     Parameters
     ----------
@@ -152,7 +152,7 @@ def _parse_json(names: Union[List[str], str]) -> List[InfoEntry]:
 
 def pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -> None:
     """
-    Print verbose information for each object in names in a human readable format
+    Print verbose information for each object in names in a human readable format.
 
     Parameters
     ----------

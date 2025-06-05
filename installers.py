@@ -11,7 +11,7 @@ class ArkoudaBuildError(Exception):
 
 
 def chpl_installed():
-    """Check to see if chapel is installed and sourced"""
+    """Check to see if chapel is installed and sourced."""
     try:
         if os.environ["CHPL_HOME"]:
             print("Existing Chapel install detected")
@@ -42,7 +42,7 @@ def make_arkouda_server():
 
 
 def install_in_py_prefix():
-    """Move the chpl compiled arkouda_server executable to the current python prefix"""
+    """Move the chpl compiled arkouda_server executable to the current python prefix."""
     prefix_target = os.path.join(os.path.abspath(sys.prefix), "bin", "arkouda_server")
     if os.path.isfile("arkouda_server"):
         # Overwrite existing executable, if any
