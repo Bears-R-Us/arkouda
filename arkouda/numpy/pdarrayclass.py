@@ -1639,10 +1639,6 @@ class pdarray:
         """
         Return True iff the object is contained in the registry
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         bool
@@ -1668,10 +1664,6 @@ class pdarray:
         """
         Return a list of all component names
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         List[str]
@@ -1681,11 +1673,7 @@ class pdarray:
 
     def info(self) -> str:
         """
-        Return a JSON formatted string containing information about all components of self
-
-        Parameters
-        ----------
-        None
+        Return a JSON formatted string containing information about all components of self.
 
         Returns
         -------
@@ -1695,7 +1683,7 @@ class pdarray:
         return information(self._list_component_names())
 
     def pretty_print_info(self) -> None:
-        """Print information about all components of self in a human readable format."""
+        """Print information about all components of self in a human-readable format."""
         pretty_print_information(self._list_component_names())
 
     def is_sorted(
@@ -2022,8 +2010,6 @@ class pdarray:
 
         Parameters
         ----------
-        pda : pdarray
-            Values for which to calculate the mean
         axis : int, Tuple[int, ...], optional, default = None
             The axis or axes along which to do the operation
             If None, the computation is done across the entire array.
@@ -2073,8 +2059,6 @@ class pdarray:
 
         Parameters
         ----------
-        pda : pdarray
-            Values for which to calculate the variance
         ddof : int_scalars
             "Delta Degrees of Freedom" used in calculating var
         axis : int, Tuple[int, ...], optional, default = None
@@ -2147,8 +2131,6 @@ class pdarray:
 
         Parameters
         ----------
-        pda : pdarray
-            values for which to calculate the standard deviation
         ddof : int_scalars
             "Delta Degrees of Freedom" used in calculating std
         axis : int, Tuple[int, ...], optional, default = None

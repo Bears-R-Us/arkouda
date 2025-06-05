@@ -2656,10 +2656,6 @@ class Strings:
         """
         Return a list of all component names
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         List[str]
@@ -2754,6 +2750,7 @@ class Strings:
         -----
         Registered names/Strings objects in the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.numpy.util import unregister
 
@@ -2765,10 +2762,6 @@ class Strings:
     def is_registered(self) -> np.bool_:
         """
         Return True iff the object is contained in the registry
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------

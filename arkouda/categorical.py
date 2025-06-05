@@ -1326,10 +1326,6 @@ class Categorical:
         """
         Return a list of all component names.
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         List[str]
@@ -1345,10 +1341,6 @@ class Categorical:
     def info(self) -> str:
         """
         Return a JSON formatted string containing information about all components of self.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------

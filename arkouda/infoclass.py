@@ -115,9 +115,9 @@ def information(names: Union[List[str], str] = RegisteredSymbols) -> str:
     Parameters
     ----------
     names : Union[List[str], str]
-       names is either the name of an object or list of names of objects to retrieve info
-       if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
-       if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
+        names is either the name of an object or list of names of objects to retrieve info
+        if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
+        if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
 
     Returns
     -------
@@ -173,10 +173,6 @@ def list_symbol_table() -> List[str]:
     """
     Return a list containing the names of all objects in the symbol table.
 
-    Parameters
-    ----------
-    None
-
     Returns
     -------
     list
@@ -198,7 +194,7 @@ def _parse_json(names: Union[List[str], str]) -> List[InfoEntry]:
     Parameters
     ----------
     names : Union[List[str], str]
-    Names to pass to information
+        Names to pass to information
 
     Returns
     -------
@@ -221,9 +217,9 @@ def pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -
     Parameters
     ----------
     names : Union[List[str], str]
-       names is either the name of an object or list of names of objects to retrieve info
-       if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
-       if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
+        names is either the name of an object or list of names of objects to retrieve info
+        if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
+        if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
 
     Raises
     ------

@@ -513,7 +513,8 @@ def isSupportedInt(num):
 
     Parameters
     ----------
-    scalar: object
+    num: object
+        A scalar.
 
     Returns
     -------
@@ -538,7 +539,8 @@ def isSupportedFloat(num):
 
     Parameters
     ----------
-    scalar: object
+    num: object
+        A scalar.
 
     Returns
     -------
@@ -563,7 +565,8 @@ def isSupportedNumber(num):
 
     Parameters
     ----------
-    scalar: object
+    num: object
+        A scalar.
 
     Returns
     -------
@@ -588,7 +591,8 @@ def isSupportedBool(num):
 
     Parameters
     ----------
-    scalar: object
+    num: object
+        A scalar.
 
     Returns
     -------
