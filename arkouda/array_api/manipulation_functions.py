@@ -81,6 +81,7 @@ def concat(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[i
     axis : int, optional
         The axis along which to concatenate the arrays. The default is 0. If None, the arrays are
         flattened before concatenation.
+
     """
 
     ndim = arrays[0].ndim

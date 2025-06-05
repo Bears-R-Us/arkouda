@@ -335,7 +335,7 @@ class Array:
         >>> a = np.array([1.0], dtype=np.float32)
         >>> b = np.array(1.0, dtype=np.float64)
         >>> np.add(a, b) # The spec says this should be float64
-        array([2.], dtype=float32)
+        array([2.])
 
         To fix this, we add a dimension to the 0-dimension array before passing it
         through. This works because a dimension would be added anyway from
