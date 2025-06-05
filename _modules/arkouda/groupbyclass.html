@@ -502,7 +502,7 @@
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; A = ak.array([3, 2, 1, 1, 2, 3])</span>
 <span class="sd">    &gt;&gt;&gt; ak.unique(A)</span>
-<span class="sd">    array([1, 2, 3])</span>
+<span class="sd">    array([1 2 3])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
@@ -965,15 +965,15 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; a = ak.randint(1,5,10)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
 <span class="sd">        &gt;&gt;&gt; keys,counts = g.size()</span>
 <span class="sd">        &gt;&gt;&gt; keys</span>
-<span class="sd">        array([1, 2, 3, 4])</span>
+<span class="sd">        array([1 2 3 4])</span>
 <span class="sd">        &gt;&gt;&gt; counts</span>
-<span class="sd">        array([1, 2, 4, 3])</span>
+<span class="sd">        array([2 3 1 4])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
@@ -1073,18 +1073,15 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; keys = ak.arange(0, 10)</span>
-<span class="sd">        &gt;&gt;&gt; vals = ak.linspace(-1, 1, 10)</span>
+<span class="sd">        &gt;&gt;&gt; keys = ak.arange(0, 5)</span>
+<span class="sd">        &gt;&gt;&gt; vals = ak.linspace(-1, 1, 5)</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(keys)</span>
 <span class="sd">        &gt;&gt;&gt; g.aggregate(vals, &#39;sum&#39;)</span>
-<span class="sd">        (array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), array([-1, -0.77777777777777768,</span>
-<span class="sd">        -0.55555555555555536, -0.33333333333333348, -0.11111111111111116,</span>
-<span class="sd">        0.11111111111111116, 0.33333333333333348, 0.55555555555555536, 0.77777777777777768,</span>
-<span class="sd">        1]))</span>
+<span class="sd">        (array([0 1 2 3 4]),</span>
+<span class="sd">         array([-1.00000000000000000 -0.5 0.00000000000000000 0.5 1.00000000000000000]))</span>
 <span class="sd">        &gt;&gt;&gt; g.aggregate(vals, &#39;min&#39;)</span>
-<span class="sd">        (array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), array([-1, -0.77777777777777779,</span>
-<span class="sd">        -0.55555555555555558, -0.33333333333333337, -0.11111111111111116, 0.11111111111111116,</span>
-<span class="sd">        0.33333333333333326, 0.55555555555555536, 0.77777777777777768, 1]))</span>
+<span class="sd">        (array([0 1 2 3 4]),</span>
+<span class="sd">         array([-1.00000000000000000 -0.5 0.00000000000000000 0.5 1.00000000000000000]))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">operator</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
@@ -1169,17 +1166,17 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; a = ak.randint(1,5,10)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
 <span class="sd">        &gt;&gt;&gt; g.keys</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
-<span class="sd">        &gt;&gt;&gt; b = ak.randint(1,5,10)</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
+<span class="sd">        &gt;&gt;&gt; b = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; b</span>
-<span class="sd">        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g.sum(b)</span>
-<span class="sd">        (array([2, 3, 4]), array([8, 14, 6]))</span>
+<span class="sd">        (array([1 2 3 4]), array([2 6 3 16]))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="n">skipna</span><span class="p">)</span>
@@ -1226,17 +1223,18 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; a = ak.randint(1,5,10)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
 <span class="sd">        &gt;&gt;&gt; g.keys</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
-<span class="sd">        &gt;&gt;&gt; b = ak.randint(1,5,10)</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
+<span class="sd">        &gt;&gt;&gt; b = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; b</span>
-<span class="sd">        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g.prod(b)</span>
-<span class="sd">        (array([2, 3, 4]), array([12, 108.00000000000003, 8.9999999999999982]))</span>
+<span class="sd">        (array([1 2 3 4]),</span>
+<span class="sd">        array([1.00000000000000000 7.9999999999999982 3.0000000000000004 255.99999999999994]))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s2">&quot;prod&quot;</span><span class="p">,</span> <span class="n">skipna</span><span class="p">)</span>
@@ -1295,17 +1293,17 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; a = ak.randint(1,5,10)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
 <span class="sd">        &gt;&gt;&gt; g.keys</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
-<span class="sd">        &gt;&gt;&gt; b = ak.randint(1,5,10)</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
+<span class="sd">        &gt;&gt;&gt; b = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; b</span>
-<span class="sd">        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g.var(b)</span>
-<span class="sd">        (array([2 3 4]), array([2.333333333333333 1.2 0]))</span>
+<span class="sd">        (array([1 2 3 4]), array([0.00000000000000000 0.00000000000000000 nan 0.00000000000000000]))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s2">&quot;var&quot;</span><span class="p">,</span> <span class="n">skipna</span><span class="p">,</span> <span class="n">ddof</span><span class="p">)</span>
@@ -1367,17 +1365,17 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; a = ak.randint(1,5,10)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
 <span class="sd">        &gt;&gt;&gt; g.keys</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
-<span class="sd">        &gt;&gt;&gt; b = ak.randint(1,5,10)</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
+<span class="sd">        &gt;&gt;&gt; b = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; b</span>
-<span class="sd">        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g.std(b)</span>
-<span class="sd">        (array([2 3 4]), array([1.5275252316519465 1.0954451150103321 0]))</span>
+<span class="sd">        (array([1 2 3 4]), array([0.00000000000000000 0.00000000000000000 nan 0.00000000000000000]))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="n">skipna</span><span class="p">,</span> <span class="n">ddof</span><span class="p">)</span>
@@ -1422,17 +1420,18 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; a = ak.randint(1,5,10)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
 <span class="sd">        &gt;&gt;&gt; g.keys</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
-<span class="sd">        &gt;&gt;&gt; b = ak.randint(1,5,10)</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
+<span class="sd">        &gt;&gt;&gt; b = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; b</span>
-<span class="sd">        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g.mean(b)</span>
-<span class="sd">        (array([2, 3, 4]), array([2.6666666666666665, 2.7999999999999998, 3]))</span>
+<span class="sd">        (array([1 2 3 4]),</span>
+<span class="sd">        array([1.00000000000000000 2.00000000000000000 3.00000000000000000 4.00000000000000000]))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">skipna</span><span class="p">)</span>
@@ -1477,17 +1476,18 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; a = ak.randint(1,5,9)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.randint(1, 5, 9, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([4 1 4 3 2 2 2 3 3])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
 <span class="sd">        &gt;&gt;&gt; g.keys</span>
-<span class="sd">        array([4 1 4 3 2 2 2 3 3])</span>
-<span class="sd">        &gt;&gt;&gt; b = ak.linspace(-5,5,9)</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4])</span>
+<span class="sd">        &gt;&gt;&gt; b = ak.linspace(-5, 5, 9)</span>
 <span class="sd">        &gt;&gt;&gt; b</span>
-<span class="sd">        array([-5 -3.75 -2.5 -1.25 0 1.25 2.5 3.75 5])</span>
+<span class="sd">        array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000</span>
+<span class="sd">            1.25 2.5 3.75 5.00000000000000000])</span>
 <span class="sd">        &gt;&gt;&gt; g.median(b)</span>
-<span class="sd">        (array([1 2 3 4]), array([-3.75 1.25 3.75 -3.75]))</span>
+<span class="sd">        (array([1 2 4]), array([1.25 -1.25 -0.625]))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s2">&quot;median&quot;</span><span class="p">,</span> <span class="n">skipna</span><span class="p">)</span>
@@ -1531,17 +1531,17 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; a = ak.randint(1,5,10)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
 <span class="sd">        &gt;&gt;&gt; g.keys</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
-<span class="sd">        &gt;&gt;&gt; b = ak.randint(1,5,10)</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
+<span class="sd">        &gt;&gt;&gt; b = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; b</span>
-<span class="sd">        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g.min(b)</span>
-<span class="sd">        (array([2, 3, 4]), array([1, 1, 3]))</span>
+<span class="sd">        (array([1 2 3 4]), array([1 2 3 4]))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
@@ -1587,17 +1587,17 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; a = ak.randint(1,5,10)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
 <span class="sd">        &gt;&gt;&gt; g.keys</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
-<span class="sd">        &gt;&gt;&gt; b = ak.randint(1,5,10)</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
+<span class="sd">        &gt;&gt;&gt; b = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; b</span>
-<span class="sd">        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g.max(b)</span>
-<span class="sd">        (array([2, 3, 4]), array([4, 4, 3]))</span>
+<span class="sd">        (array([1 2 3 4]), array([1 2 3 4]))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
@@ -1646,17 +1646,17 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; a = ak.randint(1,5,10)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
 <span class="sd">        &gt;&gt;&gt; g.keys</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
-<span class="sd">        &gt;&gt;&gt; b = ak.randint(1,5,10)</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
+<span class="sd">        &gt;&gt;&gt; b = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; b</span>
-<span class="sd">        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g.argmin(b)</span>
-<span class="sd">        (array([2, 3, 4]), array([5, 4, 2]))</span>
+<span class="sd">        (array([1 2 3 4]), array([4 0 9 1]))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s2">&quot;argmin&quot;</span><span class="p">)</span>
@@ -1701,17 +1701,17 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; a = ak.randint(1,5,10)</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
 <span class="sd">        &gt;&gt;&gt; g.keys</span>
-<span class="sd">        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])</span>
-<span class="sd">        &gt;&gt;&gt; b = ak.randint(1,5,10)</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
+<span class="sd">        &gt;&gt;&gt; b = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; b</span>
-<span class="sd">        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g.argmax(b)</span>
-<span class="sd">        (array([2, 3, 4]), array([9, 3, 2]))</span>
+<span class="sd">        (array([1 2 3 4]), array([4 0 9 1]))</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s2">&quot;argmax&quot;</span><span class="p">)</span>
@@ -1774,19 +1774,20 @@
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; data = ak.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])</span>
 <span class="sd">        &gt;&gt;&gt; data</span>
-<span class="sd">        array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])</span>
+<span class="sd">        array([3 4 3 1 1 4 3 4 1 4])</span>
 <span class="sd">        &gt;&gt;&gt; labels = ak.array([1, 1, 1, 2, 2, 2, 3, 3, 3, 4])</span>
 <span class="sd">        &gt;&gt;&gt; labels</span>
-<span class="sd">        ak.array([1, 1, 1, 2, 2, 2, 3, 3, 3, 4])</span>
+<span class="sd">        array([1 1 1 2 2 2 3 3 3 4])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(labels)</span>
 <span class="sd">        &gt;&gt;&gt; g.keys</span>
-<span class="sd">        ak.array([1, 1, 1, 2, 2, 2, 3, 3, 3, 4])</span>
+<span class="sd">        array([1 1 1 2 2 2 3 3 3 4])</span>
 <span class="sd">        &gt;&gt;&gt; g.nunique(data)</span>
-<span class="sd">        array([1,2,3,4]), array([2, 2, 3, 1])</span>
-<span class="sd">        #    Group (1,1,1) has values [3,4,3] -&gt; there are 2 unique values 3&amp;4</span>
-<span class="sd">        #    Group (2,2,2) has values [1,1,4] -&gt; 2 unique values 1&amp;4</span>
-<span class="sd">        #    Group (3,3,3) has values [3,4,1] -&gt; 3 unique values</span>
-<span class="sd">        #    Group (4) has values [4] -&gt; 1 unique value</span>
+<span class="sd">        (array([1 2 3 4]), array([2 2 3 1]))</span>
+
+<span class="sd">        Group (1,1,1) has values [3,4,3] -&gt; there are 2 unique values 3&amp;4</span>
+<span class="sd">        Group (2,2,2) has values [1,1,4] -&gt; 2 unique values 1&amp;4</span>
+<span class="sd">        Group (3,3,3) has values [3,4,1] -&gt; 3 unique values</span>
+<span class="sd">        Group (4) has values [4] -&gt; 1 unique value</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TO DO: defer to self.aggregate once logic is ported over to Chapel</span>
@@ -2525,23 +2526,25 @@
 <span class="sd">        &gt;&gt;&gt; a = ak.array([0, 1, 0, 1, 0])</span>
 <span class="sd">        &gt;&gt;&gt; values = ak.array([3, 5])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
-<span class="sd">        # By default, result is in original order</span>
+
+<span class="sd">        By default, result is in original order</span>
 <span class="sd">        &gt;&gt;&gt; g.broadcast(values)</span>
-<span class="sd">        array([3, 5, 3, 5, 3])</span>
-<span class="sd">        # With permute=False, result is in grouped order</span>
+<span class="sd">        array([3 5 3 5 3])</span>
+
+<span class="sd">        With permute=False, result is in grouped order</span>
 <span class="sd">        &gt;&gt;&gt; g.broadcast(values, permute=False)</span>
-<span class="sd">        array([3, 3, 3, 5, 5]</span>
-<span class="sd">        &gt;&gt;&gt; a = ak.randint(1,5,10)</span>
+<span class="sd">        array([3 3 3 5 5])</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])</span>
+<span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
 <span class="sd">        &gt;&gt;&gt; keys,counts = g.size()</span>
 <span class="sd">        &gt;&gt;&gt; g.broadcast(counts &gt; 2)</span>
-<span class="sd">        array([True False True True True False True True False False])</span>
+<span class="sd">        array([True True True True False True False True True False])</span>
 <span class="sd">        &gt;&gt;&gt; g.broadcast(counts == 3)</span>
-<span class="sd">        array([True False True True True False True True False False])</span>
+<span class="sd">        array([True False False True False False False True False False])</span>
 <span class="sd">        &gt;&gt;&gt; g.broadcast(counts &lt; 4)</span>
-<span class="sd">        array([True True True True True True True True True True])</span>
+<span class="sd">        array([True False False True True False True True False True])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
@@ -2853,11 +2856,13 @@
 <span class="sd">    # Define a sparse matrix with 3 rows and 7 nonzeros</span>
 <span class="sd">    &gt;&gt;&gt; row_starts = ak.array([0, 2, 5])</span>
 <span class="sd">    &gt;&gt;&gt; nnz = 7</span>
-<span class="sd">    # Broadcast the row number to each nonzero element</span>
+
+<span class="sd">    Broadcast the row number to each nonzero element</span>
 <span class="sd">    &gt;&gt;&gt; row_number = ak.arange(3)</span>
 <span class="sd">    &gt;&gt;&gt; ak.broadcast(row_starts, row_number, nnz)</span>
 <span class="sd">    array([0 0 1 1 1 2 2])</span>
-<span class="sd">    # If the original nonzeros were in reverse order...</span>
+
+<span class="sd">    If the original nonzeros were in reverse order...</span>
 <span class="sd">    &gt;&gt;&gt; permutation = ak.arange(6, -1, -1)</span>
 <span class="sd">    &gt;&gt;&gt; ak.broadcast(row_starts, row_number, permutation=permutation)</span>
 <span class="sd">    array([2 2 1 1 1 0 0])</span>
