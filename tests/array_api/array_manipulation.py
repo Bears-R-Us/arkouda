@@ -15,6 +15,17 @@ def randArr(shape):
 
 
 class TestManipulation:
+    @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
+    def test_manipulation_functions_docstrings(self):
+        import doctest
+
+        from arkouda.array_api import manipulation_functions
+
+        result = doctest.testmod(
+            manipulation_functions, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_broadcast(self):
         a = xp.ones((1, 6, 1))

@@ -42,6 +42,7 @@ def unique_all(x: Array, /) -> UniqueAllResult:
     - the indices of the first occurrence of each unique value
     - the inverse indices that reconstruct `x` from the unique values
     - the counts of each unique value
+
     """
     arrays = create_pdarrays(
         cast(

@@ -13,15 +13,17 @@ DTYPES = ["uint64", "uint8", "int64", "float64", "bigint", "bool"]
 
 
 class TestNumpyManipulationFunctions:
-    # @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
-    # def test_manipulation_functions_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(
-    #         manipulation_functions,
-    #         optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE,
-    #     )
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
+    def test_manipulation_functions_docstrings(self):
+        import doctest
+
+        from arkouda import manipulation_functions
+
+        result = doctest.testmod(
+            manipulation_functions,
+            optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE,
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
