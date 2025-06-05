@@ -1445,7 +1445,7 @@ def update_hdf(
     repack: bool = True,
 ):
     """
-    Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary
+    Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary.
 
     Parameters
     ----------
@@ -2238,7 +2238,7 @@ def snapshot(filename):
 
 def restore(filename):
     """
-    Return data saved using `ak.snapshot`
+    Return data saved using `ak.snapshot`.
 
     Parameters
     ----------

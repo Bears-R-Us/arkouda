@@ -15,6 +15,85 @@ module BinOp
   private config const logChannel = ServerConfig.logChannel;
   const omLogger = new Logger(logLevel, logChannel);
 
+  proc splitType(type dtype) param : int {
+      // 0 -> bool, 1 -> uint, 2 -> int, 3 -> real
+
+      if dtype == bool then return 0;
+      else if dtype == uint(8) then return 1;
+      else if dtype == uint(16) then return 1;
+      else if dtype == uint(32) then return 1;
+      else if dtype == uint(64) then return 1;
+      else if dtype == int(8) then return 2;
+      else if dtype == int(16) then return 2;
+      else if dtype == int(32) then return 2;
+      else if dtype == int(64) then return 2;
+      else if dtype == real(32) then return 3;
+      else if dtype == real(64) then return 3;
+      else return 0;
+
+    }
+
+    proc mySafeCast(type dtype1, type dtype2) type {
+      param typeKind1 = splitType(dtype1);
+      param bitSize1 = if dtype1 == bool then 8 else numBits(dtype1);
+      param typeKind2 = splitType(dtype2);
+      param bitSize2 = if dtype2 == bool then 8 else numBits(dtype2);
+
+      if typeKind1 == 2 && typeKind2 == 1 && bitSize1 <= bitSize2 {
+        select bitSize2 {
+          when 64 { return real(64); }
+          when 32 { return int(64); }
+          when 16 { return int(32); }
+          when 8 { return int(16); }
+        }
+      }
+
+      if typeKind2 == 2 && typeKind1 == 1 && bitSize2 <= bitSize1 {
+        select bitSize1 {
+          when 64 { return real(64); }
+          when 32 { return int(64); }
+          when 16 { return int(32); }
+          when 8 { return int(16); }
+        }
+      }
+
+      if dtype1 == real(32) && (dtype2 == int(32) || dtype2 == uint(32)) {
+        return real(64);
+      }
+
+      if dtype2 == real(32) && (dtype1 == int(32) || dtype1 == uint(32)) {
+        return real(64);
+      }
+
+      if typeKind1 == 3 || typeKind2 == 3 {
+        select max(bitSize1, bitSize2) {
+          when 64 { return real(64); }
+          when 32 { return real(32); }
+        }
+      }
+
+      if typeKind1 == 2 || typeKind2 == 2 {
+        select max(bitSize1, bitSize2) {
+          when 64 { return int(64); }
+          when 32 { return int(32); }
+          when 16 { return int(16); }
+          when 8 { return int(8); }
+        }
+      }
+
+      if typeKind1 == 1 || typeKind2 == 1 {
+        select max(bitSize1, bitSize2) {
+          when 64 { return uint(64); }
+          when 32 { return uint(32); }
+          when 16 { return uint(16); }
+          when 8 { return uint(8); }
+        }
+      }
+
+      return bool;
+
+    }
+
   /*
     Helper function to ensure that floor division cases are handled in accordance with numpy
   */
@@ -71,367 +150,151 @@ module BinOp
   :returns: (MsgTuple) 
   :throws: `UndefinedSymbolError(name)`
   */
-  proc doBinOpvv(l, r, type etype, op: string, pn, st): MsgTuple throws {
+  proc doBinOpvv(l, r, type lType, type rType, type etype, op: string, pn, st): MsgTuple throws {
     var e = makeDistArray((...l.tupShape), etype);
 
     const nie = notImplementedError(pn,l.dtype,op,r.dtype);
 
+    use Set;
+    var boolOps: set(string);
+        boolOps.add("<");
+        boolOps.add("<=");
+        boolOps.add(">");
+        boolOps.add(">=");
+        boolOps.add("==");
+        boolOps.add("!=");
+
+    type castType = mySafeCast(lType, rType);
+
+    // The compiler complains that maybe etype is bool if it gets down below this
+    // without returning, so we have to kind of chunk this next piece off.
+
+    // For similar reasons, everything else is kinda split off into its own thing.
+    // The compiler has no common sense about things (and that's not really its fault)
+
     if etype == bool {
-      // Since we know that the result type is a boolean, we know
-      // that it either (1) is an operation between bools or (2) uses
-      // a boolean operator (<, <=, etc.)
-      if l.etype == bool && r.etype == bool {
+
+      if boolOps.contains(op) {
+
         select op {
-          when "|" {
-            e = l.a | r.a;
-          }
-          when "&" {
-            e = l.a & r.a;
-          }
-          when "^" {
-            e = l.a ^ r.a;
-          }
-          when "==" {
-            e = l.a == r.a;
-          }
-          when "!=" {
-            e = l.a != r.a;
-          }
-          when "<" {
-            e = l.a:int < r.a:int;
-          }
-          when ">" {
-            e = l.a:int > r.a:int;
-          }
-          when "<=" {
-            e = l.a:int <= r.a:int;
-          }
-          when ">=" {
-            e = l.a:int >= r.a:int;
-          }
-          when "+" {
-            e = l.a | r.a;
-          }
+
+          when "<" { e = (l.a: castType) < (r.a: castType); }
+          when "<=" { e = (l.a: castType) <= (r.a: castType); }
+          when ">" { e = (l.a: castType) > (r.a: castType); }
+          when ">=" { e = (l.a: castType) >= (r.a: castType); }
+          when "==" { e = (l.a: castType) == (r.a: castType); }
+          when "!=" { e = (l.a: castType) != (r.a: castType); }
+          otherwise do return MsgTuple.error(nie); // Shouldn't happen
+
+        }
+        return st.insert(new shared SymEntry(e));
+      }
+
+      if lType == bool && rType == bool {
+        select op {
+          when "|" { e = l.a | r.a; }
+          when "&" { e = l.a & r.a; }
+          when "*" { e = l.a & r.a; }
+          when "^" { e = l.a ^ r.a; }
+          when "+" { e = l.a | r.a; }
           otherwise do return MsgTuple.error(nie);
         }
+        return st.insert(new shared SymEntry(e));
       }
-      // All types support the same binary operations when the resultant
-      // type is bool and `l` and `r` are not both boolean, so this does
-      // not need to be specialized for each case.
-      else {
-        if ((l.etype == real && r.etype == bool) || (l.etype == bool && r.etype == real)) {
-          select op {
-            when "<" {
-              e = l.a:real < r.a:real;
-            }
-            when ">" {
-              e = l.a:real > r.a:real;
-            }
-            when "<=" {
-              e = l.a:real <= r.a:real;
-            }
-            when ">=" {
-              e = l.a:real >= r.a:real;
-            }
-            when "==" {
-              e = l.a:real == r.a:real;
-            }
-            when "!=" {
-              e = l.a:real != r.a:real;
-            }
-            otherwise do return MsgTuple.error(nie);
-          }
-        }
-        else {
-          select op {
-            when "<" {
-              e = l.a < r.a;
-            }
-            when ">" {
-              e = l.a > r.a;
-            }
-            when "<=" {
-              e = l.a <= r.a;
-            }
-            when ">=" {
-              e = l.a >= r.a;
-            }
-            when "==" {
-              e = l.a == r.a;
-            }
-            when "!=" {
-              e = l.a != r.a;
-            }
-            otherwise do return MsgTuple.error(nie);
-          }
-        }
-      }
-      return st.insert(new shared SymEntry(e));
+
+      return MsgTuple.error(nie);
+
     }
-    // Since we know that both `l` and `r` are of type `int` and that
-    // the resultant type is not bool (checked in first `if`), we know
-    // what operations are supported based on the resultant type
-    else if (l.etype == int && r.etype == int) ||
-            (l.etype == uint && r.etype == uint)  {
-      if etype == int || etype == uint {
-        select op {
-          when "+" {
-            e = l.a + r.a;
-          }
-          when "-" {
-            e = l.a - r.a;
-          }
-          when "*" {
-            e = l.a * r.a;
-          }
-          when "//" { // floordiv
-            ref ea = e;
-            ref la = l.a;
-            ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li/ri else 0;
-          }
-          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
-            ref ea = e;
-            ref la = l.a;
-            ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li%ri else 0;
-          }
-          when "<<" {
-            ref ea = e;
-            ref la = l.a;
-            ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li << ri;
-          }                    
-          when ">>" {
-            ref ea = e;
-            ref la = l.a;
-            ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li >> ri;
-          }
-          when "<<<" {
-            e = rotl(l.a, r.a);
-          }
-          when ">>>" {
-            e = rotr(l.a, r.a);
-          }
-          when "&" {
-            e = l.a & r.a;
-          }                    
-          when "|" {
-            e = l.a | r.a;
-          }                    
-          when "^" {
-            e = l.a ^ r.a;
-          }
-          when "**" {
-            if || reduce (r.a<0)
-              then return MsgTuple.error("Attempt to exponentiate base of type Int64 to negative exponent");
-            e= l.a**r.a;
-          }
-          otherwise do return MsgTuple.error(nie);
-        }
-      } else if etype == real {
-        select op {
-          // True division is the only integer type that would result in a
-          // resultant type of `real`
-          when "/" {
-            e = l.a:real / r.a:real;
-          }
-          otherwise do return MsgTuple.error(nie);
-        }   
-      }
-      return st.insert(new shared SymEntry(e));
-    }
-    else if (etype == int && r.etype == uint) ||
-            (etype == uint && r.etype == int) {
+
+    else if lType == bool && rType == bool && etype == uint(8) { // Both bools is kinda weird
       select op {
-        when ">>" {
+        when "%" { e = (0: uint(8)); } // numpy has these as int(8), but Arkouda doesn't really support that type.
+        when "//" { e = (l.a & r.a): uint(8); }
+        when "**" { e = (!l.a & r.a): uint(8); }
+        when "<<" { e = (l.a: uint(8)) << (r.a: uint(8)); }
+        when ">>" { e = (l.a: uint(8)) >> (r.a: uint(8)); }
+        otherwise do return MsgTuple.error(nie);
+        // >>> and <<< could probably be implemented as int(8) or uint(8) things
+      }
+      return st.insert(new shared SymEntry(e));
+    }
+
+    else if etype == real(32) || etype == real(64) {
+
+      select op {
+        when "*" { e = (l.a: etype * r.a: etype): etype; }
+        when "+" { e = (l.a: etype + r.a: etype): etype; }
+        when "-" { e = (l.a: etype - r.a: etype): etype; }
+        when "/" { e = ((l.a: etype) / (r.a: etype)): etype; }
+        when "%" {
           ref ea = e;
           ref la = l.a;
           ref ra = r.a;
-          [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li >> ri;
+          [(ei,li,ri) in zip(ea,la,ra)] ei = modHelper(li: etype, ri: etype): etype;
+        }
+        when "//" {
+          ref ea = e;
+          ref la = l.a;
+          ref ra = r.a;
+          [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li: etype, ri: etype): etype;
+        }
+        when "**" {
+          e = ((l.a: etype) ** (r.a: etype)): etype;
+        }
+        otherwise do return MsgTuple.error(nie);
+      }
+      return st.insert(new shared SymEntry(e));
+
+    }
+
+    else {
+
+      select op {
+        when "|" { e = (l.a | r.a): etype; }
+        when "&" { e = (l.a & r.a): etype; }
+        when "*" { e = (l.a * r.a): etype; }
+        when "^" { e = (l.a ^ r.a): etype; }
+        when "+" { e = (l.a + r.a): etype; }
+        when "-" { e = (l.a - r.a): etype; }
+        when "/" { e = (l.a: etype) / (r.a: etype); }
+        when "%" {
+          ref ea = e;
+          ref la = l.a;
+          ref ra = r.a;
+          [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li%ri else 0;
+        }
+        when "//" {
+          ref ea = e;
+          ref la = l.a;
+          ref ra = r.a;
+          [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then (li/ri): etype else 0: etype;
+        }
+        when "**" {
+          if || reduce (r.a<0)
+            then return MsgTuple.error("Attempt to exponentiate base of type Int or UInt to negative exponent");
+          e = (l.a: etype) ** (r.a: etype);
         }
         when "<<" {
           ref ea = e;
           ref la = l.a;
           ref ra = r.a;
-          [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li << ri;
+          [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < numBits(etype)) then ei = ((li: etype) << (ri: etype)): etype;
         }
-        when ">>>" {
-          e = rotr(l.a, r.a);
+        when ">>" {
+          ref ea = e;
+          ref la = l.a;
+          ref ra = r.a;
+          [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < numBits(etype)) then ei = ((li: etype) >> (ri: etype)): etype;
         }
-        when "<<<" {
-          e = rotl(l.a, r.a);
-        }
+        when "<<<" { e = rotl(l.a: etype, r.a: etype); }
+        when ">>>" { e = rotr(l.a: etype, r.a: etype); }
         otherwise do return MsgTuple.error(nie);
       }
       return st.insert(new shared SymEntry(e));
-    } else if (l.etype == uint && r.etype == int) ||
-              (l.etype == int && r.etype == uint) {
+    }
 
-      select op {
-        when "+" {
-          e = l.a:real + r.a:real;
-        }
-        when "-" {
-          e = l.a:real - r.a:real;
-        }
-        when "*" {
-          e = l.a:real * r.a:real;
-        }  
-        when "/" { // truediv
-            e = l.a:real / r.a:real;
-        }
-        when "//" { // floordiv
-          ref ea = e;
-          var la = l.a:real;
-          var ra = r.a:real;
-          [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li, ri);
-        }
-        otherwise {
-          return MsgTuple.error(nie);
-        }
-      }
-      return st.insert(new shared SymEntry(e));
-    }
-    // If either RHS or LHS type is real, the same operations are supported and the
-    // result will always be a `real`, so all 3 of these cases can be shared.
-    else if ((l.etype == real && r.etype == real) || (l.etype == int && r.etype == real)
-             || (l.etype == real && r.etype == int)) {
-      select op {
-          when "+" {
-            e = l.a + r.a;
-          }
-          when "-" {
-            e = l.a - r.a;
-          }
-          when "*" {
-            e = l.a * r.a;
-          }
-          when "/" { // truediv
-            e = l.a / r.a;
-          } 
-          when "//" { // floordiv
-            ref ea = e;
-            ref la = l.a;
-            ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li, ri);
-          }
-          when "**" { 
-            e= l.a**r.a;
-          }
-          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
-            ref ea = e;
-            ref la = l.a;
-            ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] ei = modHelper(li, ri);
-          }
-          otherwise do return MsgTuple.error(nie);
-        }
-      return st.insert(new shared SymEntry(e));
-    } else if ((l.etype == uint && r.etype == real) || (l.etype == real && r.etype == uint)) {
-      select op {
-          when "+" {
-            e = l.a:real + r.a:real;
-          }
-          when "-" {
-            e = l.a:real - r.a:real;
-          }
-          when "*" {
-            e = l.a:real * r.a:real;
-          }
-          when "/" { // truediv
-            e = l.a:real / r.a:real;
-          } 
-          when "//" { // floordiv
-            ref ea = e;
-            ref la = l.a;
-            ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li, ri);
-          }
-          when "**" { 
-            e= l.a:real**r.a:real;
-          }
-          when "%" { // modulo " <- quote is workaround for syntax highlighter bug
-            ref ea = e;
-            ref la = l.a;
-            ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] ei = modHelper(li, ri);
-          }
-          otherwise do return MsgTuple.error(nie);
-        }
-      return st.insert(new shared SymEntry(e));
-    } else if ((l.etype == int && r.etype == bool) || (l.etype == bool && r.etype == int)) {
-      select op {
-          when "+" {
-            // Since we don't know which of `l` or `r` is the int and which is the `bool`,
-            // we can just cast both to int, which will be a noop for the vector that is
-            // already `int`
-            e = l.a:int + r.a:int;
-          }
-          when "-" {
-            e = l.a:int - r.a:int;
-          }
-          when "*" {
-            e = l.a:int * r.a:int;
-          }
-          when ">>" {
-            ref ea = e;
-            ref la = l.a;
-            ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li:int >> ri:int;
-          }
-          when "<<" {
-            ref ea = e;
-            ref la = l.a;
-            ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < 64) then ei = li:int << ri:int;
-          }
-          otherwise do return MsgTuple.error(nie);
-        }
-      return st.insert(new shared SymEntry(e));
-    } else if ((l.etype == uint && r.etype == bool) || (l.etype == bool && r.etype == uint)) {
-      select op {
-          when "+" {
-            e = l.a:uint + r.a:uint;
-          }
-          when "-" {
-            e = l.a:uint - r.a:uint;
-          }
-          when "*" {
-            e = l.a:uint * r.a:uint;
-          }
-          otherwise do return MsgTuple.error(nie);
-        }
-      return st.insert(new shared SymEntry(e));
-    } else if ((l.etype == real && r.etype == bool) || (l.etype == bool && r.etype == real)) {
-      select op {
-          when "+" {
-            e = l.a:real + r.a:real;
-          }
-          when "-" {
-            e = l.a:real - r.a:real;
-          }
-          when "*" {
-            e = l.a:real * r.a:real;
-          }
-          otherwise do return MsgTuple.error(nie);
-        }
-      return st.insert(new shared SymEntry(e));
-    } else if (l.etype == bool && r.etype == bool)  {
-      select op {
-          when "<<" {
-            e = l.a:int << r.a:int;
-          }
-          when ">>" {
-            e = l.a:int >> r.a:int;
-          }
-          otherwise do return MsgTuple.error(nie);
-        }
-      return st.insert(new shared SymEntry(e));
-    } else {
-      return MsgTuple.error(nie);
-    }
+    return MsgTuple.error(nie);
+
   }
 
   proc doBinOpvs(l, val, type etype, op: string, pn, st): MsgTuple throws {

@@ -10,7 +10,17 @@ SCALAR_TYPES = list(ak.ScalarDTypes)
 SCALAR_TYPES.remove("bool_")
 
 
-class TestArrayCreation:
+class TestSortingFunctions:
+    def test_sorting_docstrings(self):
+        import doctest
+
+        from arkouda.array_api import sorting_functions
+
+        result = doctest.testmod(
+            sorting_functions, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.skip_if_rank_not_compiled([2])
     def test_argsort(self):
         for shape in SHAPES:

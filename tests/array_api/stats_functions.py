@@ -10,6 +10,16 @@ SEED = 314159
 
 
 class TestStatsFunction:
+    def test_statistical_functions_docstrings(self):
+        import doctest
+
+        from arkouda.array_api import statistical_functions
+
+        result = doctest.testmod(
+            statistical_functions, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_max(self):
         a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))
