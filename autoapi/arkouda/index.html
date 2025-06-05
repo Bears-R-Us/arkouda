@@ -1198,7 +1198,7 @@ to Python users.</p>
 <td><p>Return indices of query items in a search list of items. Items not found will be excluded.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.information" title="arkouda.information"><code class="xref py py-obj docutils literal notranslate"><span class="pre">information</span></code></a>(→ str)</p></td>
-<td><p>Return a JSON formatted string containing information about the objects in names</p></td>
+<td><p>Return a JSON formatted string containing information about the objects in names.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.intersect" title="arkouda.intersect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersect</span></code></a>(a, b[, positions, unique])</p></td>
 <td><p>Find the intersection of two arkouda arrays.</p></td>
@@ -1270,10 +1270,10 @@ to Python users.</p>
 <td><p>Create a pdarray of linearly-spaced floats in a closed interval.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.list_registry" title="arkouda.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a>([detailed])</p></td>
-<td><p>Return a list containing the names of all registered objects</p></td>
+<td><p>Return a list containing the names of all registered objects.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.list_symbol_table" title="arkouda.list_symbol_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_symbol_table</span></code></a>(→ List[str])</p></td>
-<td><p>Return a list containing the names of all objects in the symbol table</p></td>
+<td><p>Return a list containing the names of all objects in the symbol table.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.load" title="arkouda.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(→ Union[Mapping[str, ...)</p></td>
 <td><p>Load a pdarray previously saved with <code class="docutils literal notranslate"><span class="pre">pdarray.save()</span></code>.</p></td>
@@ -1351,7 +1351,7 @@ to Python users.</p>
 <td><p>Computes the power divergence statistic and p-value.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pretty_print_information" title="arkouda.pretty_print_information"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pretty_print_information</span></code></a>(→ None)</p></td>
-<td><p>Print verbose information for each object in names in a human readable format</p></td>
+<td><p>Print verbose information for each object in names in a human readable format.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.promote_to_common_dtype" title="arkouda.promote_to_common_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">promote_to_common_dtype</span></code></a>(→ Tuple[Any, ...)</p></td>
 <td><p>Promote a list of pdarrays to a common dtype.</p></td>
@@ -1408,7 +1408,7 @@ to Python users.</p>
 <td><p>Try to infer what dtype arkouda_server should treat val as.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.restore" title="arkouda.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(filename)</p></td>
-<td><p>Return data saved using <cite>ak.snapshot</cite></p></td>
+<td><p>Return data saved using <cite>ak.snapshot</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.result_type" title="arkouda.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result_type</span></code></a>(→ Union[np.dtype, type])</p></td>
 <td><p>Determine the promoted result dtype of inputs, including support for Arkouda's bigint.</p></td>
@@ -1537,7 +1537,7 @@ to Python users.</p>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.update_hdf" title="arkouda.update_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_hdf</span></code></a>(columns, prefix_path[, names, repack])</p></td>
-<td><p>Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary</p></td>
+<td><p>Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../../usage/histogram.html#arkouda.value_counts" title="arkouda.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ tuple[arkouda.groupbyclass.groupable, ...)</p></td>
 <td><p>Count the occurrences of the unique values of an array.</p></td>
@@ -20729,7 +20729,7 @@ floating-point numbers.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.information">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">information</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">RegisteredSymbols</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/arkouda/infoclass.html#information"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.information" title="Link to this definition">¶</a></dt>
-<dd><p>Return a JSON formatted string containing information about the objects in names</p>
+<dd><p>Return a JSON formatted string containing information about the objects in names.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>names</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>[</em><em>str</em><em>]</em><em>, </em><em>str</em><em>]</em>) – names is either the name of an object or list of names of objects to retrieve info
@@ -21935,7 +21935,7 @@ in descending order.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.list_registry">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">list_registry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detailed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/infoclass.html#list_registry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.list_registry" title="Link to this definition">¶</a></dt>
-<dd><p>Return a list containing the names of all registered objects</p>
+<dd><p>Return a list containing the names of all registered objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>detailed</strong> (<em>bool</em>) – Default = False
@@ -21956,7 +21956,7 @@ Return details of registry objects. Currently includes object type for any objec
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.list_symbol_table">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">list_symbol_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/infoclass.html#list_symbol_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.list_symbol_table" title="Link to this definition">¶</a></dt>
-<dd><p>Return a list containing the names of all objects in the symbol table</p>
+<dd><p>Return a list containing the names of all objects in the symbol table.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>None</strong></p>
@@ -24882,7 +24882,7 @@ in order to scale using arkouda pdarrays.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pretty_print_information">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">pretty_print_information</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">RegisteredSymbols</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/arkouda/infoclass.html#pretty_print_information"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pretty_print_information" title="Link to this definition">¶</a></dt>
-<dd><p>Print verbose information for each object in names in a human readable format</p>
+<dd><p>Print verbose information for each object in names in a human readable format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>names</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>[</em><em>str</em><em>]</em><em>, </em><em>str</em><em>]</em>) – names is either the name of an object or list of names of objects to retrieve info
@@ -25722,7 +25722,7 @@ By default, use the flattened input array, and return a flat output array.</p></
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.restore">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/io.html#restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.restore" title="Link to this definition">¶</a></dt>
-<dd><p>Return data saved using <cite>ak.snapshot</cite></p>
+<dd><p>Return data saved using <cite>ak.snapshot</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -28420,7 +28420,7 @@ in Arkouda, and can be accessed by their names.
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.update_hdf">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/io.html#update_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.update_hdf" title="Link to this definition">¶</a></dt>
-<dd><p>Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary</p>
+<dd><p>Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

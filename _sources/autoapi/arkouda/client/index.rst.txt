@@ -145,7 +145,7 @@ Module Contents
 
 .. py:function:: get_mem_status() -> List[Mapping[str, Union[str, int, float]]]
 
-   Retrieve the memory status for each locale
+   Retrieve the memory status for each locale.
 
    :returns: total_mem: total physical memory on locale host
              avail_mem: current available memory on locale host

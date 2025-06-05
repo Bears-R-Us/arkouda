@@ -436,22 +436,22 @@
 <td><p>Return non-blocking remote executions.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_get" title="arkouda.comm_diagnostics.get_comm_diagnostics_get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_get</span></code></a>()</p></td>
-<td><p>Return blocking gets, in which initiator waits for completion</p></td>
+<td><p>Return blocking gets, in which initiator waits for completion.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_get_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_get_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_get_nb</span></code></a>()</p></td>
-<td><p>Return non-blocking gets</p></td>
+<td><p>Return non-blocking gets.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_put" title="arkouda.comm_diagnostics.get_comm_diagnostics_put"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_put</span></code></a>()</p></td>
-<td><p>Return blocking puts, in which initiator waits for completion</p></td>
+<td><p>Return blocking puts, in which initiator waits for completion.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_put_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_put_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_put_nb</span></code></a>()</p></td>
-<td><p>Return non-blocking puts</p></td>
+<td><p>Return non-blocking puts.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_try_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_try_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_try_nb</span></code></a>()</p></td>
-<td><p>Return test statistics for non-blocking get/put completions</p></td>
+<td><p>Return test statistics for non-blocking get/put completions.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_wait_nb" title="arkouda.comm_diagnostics.get_comm_diagnostics_wait_nb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_wait_nb</span></code></a>()</p></td>
-<td><p>Return blocking waits for non-blocking get/put completions</p></td>
+<td><p>Return blocking waits for non-blocking get/put completions.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.print_comm_diagnostics_table" title="arkouda.comm_diagnostics.print_comm_diagnostics_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_comm_diagnostics_table</span></code></a>([print_empty_columns])</p></td>
 <td><p>Print the current communication counts in a markdown table.</p></td>
@@ -553,7 +553,7 @@ populated with the statistic value from each locale.</p>
 <dt class="sig sig-object py" id="arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_prefetches">
 <span class="sig-prename descclassname"><span class="pre">arkouda.comm_diagnostics.</span></span><span class="sig-name descname"><span class="pre">get_comm_diagnostics_cache_num_prefetches</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/comm_diagnostics.html#get_comm_diagnostics_cache_num_prefetches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.comm_diagnostics.get_comm_diagnostics_cache_num_prefetches" title="Link to this definition">¶</a></dt>
 <dd><p>Return number of prefetches issued to the remote cache at the granularity of cache pages.</p>
-<p>This counter is specifically triggered via calls to chpl_comm_remote_prefetch</p>
+<p>This counter is specifically triggered via calls to chpl_comm_remote_prefetch.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A pdarray, where the size is the number of locales,
@@ -712,7 +712,7 @@ populated with the statistic value from each locale.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.comm_diagnostics.get_comm_diagnostics_get">
 <span class="sig-prename descclassname"><span class="pre">arkouda.comm_diagnostics.</span></span><span class="sig-name descname"><span class="pre">get_comm_diagnostics_get</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/comm_diagnostics.html#get_comm_diagnostics_get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.comm_diagnostics.get_comm_diagnostics_get" title="Link to this definition">¶</a></dt>
-<dd><p>Return blocking gets, in which initiator waits for completion</p>
+<dd><p>Return blocking gets, in which initiator waits for completion.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A pdarray, where the size is the number of locales,
@@ -727,7 +727,7 @@ populated with the statistic value from each locale.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.comm_diagnostics.get_comm_diagnostics_get_nb">
 <span class="sig-prename descclassname"><span class="pre">arkouda.comm_diagnostics.</span></span><span class="sig-name descname"><span class="pre">get_comm_diagnostics_get_nb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/comm_diagnostics.html#get_comm_diagnostics_get_nb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.comm_diagnostics.get_comm_diagnostics_get_nb" title="Link to this definition">¶</a></dt>
-<dd><p>Return non-blocking gets</p>
+<dd><p>Return non-blocking gets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A pdarray, where the size is the number of locales,
@@ -742,7 +742,7 @@ populated with the statistic value from each locale.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.comm_diagnostics.get_comm_diagnostics_put">
 <span class="sig-prename descclassname"><span class="pre">arkouda.comm_diagnostics.</span></span><span class="sig-name descname"><span class="pre">get_comm_diagnostics_put</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/comm_diagnostics.html#get_comm_diagnostics_put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.comm_diagnostics.get_comm_diagnostics_put" title="Link to this definition">¶</a></dt>
-<dd><p>Return blocking puts, in which initiator waits for completion</p>
+<dd><p>Return blocking puts, in which initiator waits for completion.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A pdarray, where the size is the number of locales,
@@ -757,7 +757,7 @@ populated with the statistic value from each locale.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.comm_diagnostics.get_comm_diagnostics_put_nb">
 <span class="sig-prename descclassname"><span class="pre">arkouda.comm_diagnostics.</span></span><span class="sig-name descname"><span class="pre">get_comm_diagnostics_put_nb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/comm_diagnostics.html#get_comm_diagnostics_put_nb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.comm_diagnostics.get_comm_diagnostics_put_nb" title="Link to this definition">¶</a></dt>
-<dd><p>Return non-blocking puts</p>
+<dd><p>Return non-blocking puts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A pdarray, where the size is the number of locales,
@@ -772,7 +772,7 @@ populated with the statistic value from each locale.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.comm_diagnostics.get_comm_diagnostics_try_nb">
 <span class="sig-prename descclassname"><span class="pre">arkouda.comm_diagnostics.</span></span><span class="sig-name descname"><span class="pre">get_comm_diagnostics_try_nb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/comm_diagnostics.html#get_comm_diagnostics_try_nb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.comm_diagnostics.get_comm_diagnostics_try_nb" title="Link to this definition">¶</a></dt>
-<dd><p>Return test statistics for non-blocking get/put completions</p>
+<dd><p>Return test statistics for non-blocking get/put completions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A pdarray, where the size is the number of locales,
@@ -787,7 +787,7 @@ populated with the statistic value from each locale.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.comm_diagnostics.get_comm_diagnostics_wait_nb">
 <span class="sig-prename descclassname"><span class="pre">arkouda.comm_diagnostics.</span></span><span class="sig-name descname"><span class="pre">get_comm_diagnostics_wait_nb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/comm_diagnostics.html#get_comm_diagnostics_wait_nb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.comm_diagnostics.get_comm_diagnostics_wait_nb" title="Link to this definition">¶</a></dt>
-<dd><p>Return blocking waits for non-blocking get/put completions</p>
+<dd><p>Return blocking waits for non-blocking get/put completions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A pdarray, where the size is the number of locales,

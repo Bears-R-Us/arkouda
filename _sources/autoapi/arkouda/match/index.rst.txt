@@ -121,7 +121,7 @@ Module Contents
 
    .. py:method:: start() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Return the starts of matches
+      Return the starts of matches.
 
       :returns: The start positions of matches
       :rtype: pdarray

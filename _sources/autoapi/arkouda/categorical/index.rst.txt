@@ -407,7 +407,7 @@ Module Contents
 
    .. py:method:: register(user_defined_name: str) -> Categorical
 
-      Register this Categorical object and underlying components with the Arkouda server
+      Register this Categorical object and underlying components with the Arkouda server.
 
       :param user_defined_name: user defined name the Categorical is to be registered under,
                                 this will be the root name for underlying components

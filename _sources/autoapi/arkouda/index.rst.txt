@@ -15105,7 +15105,7 @@ Package Contents
 
 .. py:function:: information(names: Union[List[str], str] = RegisteredSymbols) -> str
 
-   Return a JSON formatted string containing information about the objects in names
+   Return a JSON formatted string containing information about the objects in names.
 
    :param names: names is either the name of an object or list of names of objects to retrieve info
                  if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
@@ -16032,7 +16032,7 @@ Package Contents
 
 .. py:function:: list_registry(detailed: bool = False)
 
-   Return a list containing the names of all registered objects
+   Return a list containing the names of all registered objects.
 
    :param detailed: Default = False
                     Return details of registry objects. Currently includes object type for any objects
@@ -16046,7 +16046,7 @@ Package Contents
 
 .. py:function:: list_symbol_table() -> List[str]
 
-   Return a list containing the names of all objects in the symbol table
+   Return a list containing the names of all objects in the symbol table.
 
    :param None:
 
@@ -18417,7 +18417,7 @@ Package Contents
 
 .. py:function:: pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -> None
 
-   Print verbose information for each object in names in a human readable format
+   Print verbose information for each object in names in a human readable format.
 
    :param names: names is either the name of an object or list of names of objects to retrieve info
                  if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
@@ -19162,7 +19162,7 @@ Package Contents
 
 .. py:function:: restore(filename)
 
-   Return data saved using `ak.snapshot`
+   Return data saved using `ak.snapshot`.
 
    :param filename:
    :type filename: str
@@ -21414,7 +21414,7 @@ Package Contents
 
 .. py:function:: update_hdf(columns: Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]]], prefix_path: str, names: Optional[List[str]] = None, repack: bool = True)
 
-   Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary
+   Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary.
 
    :param columns: Collection of arrays to save
    :type columns: dict or list of pdarrays

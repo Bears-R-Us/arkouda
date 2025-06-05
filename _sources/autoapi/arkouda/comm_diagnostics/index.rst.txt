@@ -90,7 +90,7 @@ Module Contents
 
    Return number of prefetches issued to the remote cache at the granularity of cache pages.
 
-   This counter is specifically triggered via calls to chpl_comm_remote_prefetch
+   This counter is specifically triggered via calls to chpl_comm_remote_prefetch.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -193,7 +193,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_get()
 
-   Return blocking gets, in which initiator waits for completion
+   Return blocking gets, in which initiator waits for completion.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -202,7 +202,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_get_nb()
 
-   Return non-blocking gets
+   Return non-blocking gets.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -211,7 +211,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_put()
 
-   Return blocking puts, in which initiator waits for completion
+   Return blocking puts, in which initiator waits for completion.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -220,7 +220,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_put_nb()
 
-   Return non-blocking puts
+   Return non-blocking puts.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -229,7 +229,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_try_nb()
 
-   Return test statistics for non-blocking get/put completions
+   Return test statistics for non-blocking get/put completions.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.
@@ -238,7 +238,7 @@ Module Contents
 
 .. py:function:: get_comm_diagnostics_wait_nb()
 
-   Return blocking waits for non-blocking get/put completions
+   Return blocking waits for non-blocking get/put completions.
 
    :returns: A pdarray, where the size is the number of locales,
              populated with the statistic value from each locale.

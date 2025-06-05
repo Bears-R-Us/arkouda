@@ -448,7 +448,7 @@
 <td><p>Receive a pdarray sent by <cite>dataframe.transfer()</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.restore" title="arkouda.io.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(filename)</p></td>
-<td><p>Return data saved using <cite>ak.snapshot</cite></p></td>
+<td><p>Return data saved using <cite>ak.snapshot</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.save_checkpoint" title="arkouda.io.save_checkpoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_checkpoint</span></code></a>([name, path, mode])</p></td>
 <td><p>Save the server's state.</p></td>
@@ -469,7 +469,7 @@
 <td><p>Write a pdarray to disk as a Zarr store.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.update_hdf" title="arkouda.io.update_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_hdf</span></code></a>(columns, prefix_path[, names, repack])</p></td>
-<td><p>Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary</p></td>
+<td><p>Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1298,7 +1298,7 @@ a supported dtype</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.io.restore">
 <span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/io.html#restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.io.restore" title="Link to this definition">¶</a></dt>
-<dd><p>Return data saved using <cite>ak.snapshot</cite></p>
+<dd><p>Return data saved using <cite>ak.snapshot</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1577,7 +1577,7 @@ the number of dimensions in the array or if the array is not a 32 or 64 bit nume
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.io.update_hdf">
 <span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/io.html#update_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.io.update_hdf" title="Link to this definition">¶</a></dt>
-<dd><p>Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary</p>
+<dd><p>Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

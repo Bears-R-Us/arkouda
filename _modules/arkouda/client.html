@@ -676,6 +676,8 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_access_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the access token.</span>
+
 <span class="sd">        Set the token for the Channel by doing the following:</span>
 
 <span class="sd">        1. retrieves the token configured for the connect_string from the</span>
@@ -1088,7 +1090,7 @@
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    If access-channel is not None, set global channel to access_channel. If not,</span>
-<span class="sd">    set the global channel object via the get_channel factory method</span>
+<span class="sd">    set the global channel object via the get_channel factory method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">access_channel</span><span class="p">:</span>
         <span class="n">channel</span> <span class="o">=</span> <span class="n">access_channel</span>
@@ -1122,6 +1124,8 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_parse_url</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse the url.</span>
+
 <span class="sd">    Parse the url in the following format if authentication enabled:</span>
 
 <span class="sd">    tcp://&lt;hostname/url&gt;:&lt;port&gt;?token=&lt;token&gt;</span>
@@ -1602,7 +1606,7 @@
 <a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.get_mem_status">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_mem_status</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Retrieve the memory status for each locale</span>
+<span class="sd">    Retrieve the memory status for each locale.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

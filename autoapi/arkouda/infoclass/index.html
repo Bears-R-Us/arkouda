@@ -406,16 +406,16 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.infoclass.information" title="arkouda.infoclass.information"><code class="xref py py-obj docutils literal notranslate"><span class="pre">information</span></code></a>(→ str)</p></td>
-<td><p>Return a JSON formatted string containing information about the objects in names</p></td>
+<td><p>Return a JSON formatted string containing information about the objects in names.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.infoclass.list_registry" title="arkouda.infoclass.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a>([detailed])</p></td>
-<td><p>Return a list containing the names of all registered objects</p></td>
+<td><p>Return a list containing the names of all registered objects.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.infoclass.list_symbol_table" title="arkouda.infoclass.list_symbol_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_symbol_table</span></code></a>(→ List[str])</p></td>
-<td><p>Return a list containing the names of all objects in the symbol table</p></td>
+<td><p>Return a list containing the names of all objects in the symbol table.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.infoclass.pretty_print_information" title="arkouda.infoclass.pretty_print_information"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pretty_print_information</span></code></a>(→ None)</p></td>
-<td><p>Print verbose information for each object in names in a human readable format</p></td>
+<td><p>Print verbose information for each object in names in a human readable format.</p></td>
 </tr>
 </tbody>
 </table>
@@ -436,7 +436,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.infoclass.information">
 <span class="sig-prename descclassname"><span class="pre">arkouda.infoclass.</span></span><span class="sig-name descname"><span class="pre">information</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">RegisteredSymbols</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../_modules/arkouda/infoclass.html#information"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.infoclass.information" title="Link to this definition">¶</a></dt>
-<dd><p>Return a JSON formatted string containing information about the objects in names</p>
+<dd><p>Return a JSON formatted string containing information about the objects in names.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>names</strong> (<a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>[</em><em>str</em><em>]</em><em>, </em><em>str</em><em>]</em>) – names is either the name of an object or list of names of objects to retrieve info
@@ -459,7 +459,7 @@ retrieving information about the objects in names</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.infoclass.list_registry">
 <span class="sig-prename descclassname"><span class="pre">arkouda.infoclass.</span></span><span class="sig-name descname"><span class="pre">list_registry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detailed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/infoclass.html#list_registry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.infoclass.list_registry" title="Link to this definition">¶</a></dt>
-<dd><p>Return a list containing the names of all registered objects</p>
+<dd><p>Return a list containing the names of all registered objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>detailed</strong> (<em>bool</em>) – Default = False
@@ -480,7 +480,7 @@ Return details of registry objects. Currently includes object type for any objec
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.infoclass.list_symbol_table">
 <span class="sig-prename descclassname"><span class="pre">arkouda.infoclass.</span></span><span class="sig-name descname"><span class="pre">list_symbol_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/infoclass.html#list_symbol_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.infoclass.list_symbol_table" title="Link to this definition">¶</a></dt>
-<dd><p>Return a list containing the names of all objects in the symbol table</p>
+<dd><p>Return a list containing the names of all objects in the symbol table.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>None</strong></p>
@@ -500,7 +500,7 @@ Return details of registry objects. Currently includes object type for any objec
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.infoclass.pretty_print_information">
 <span class="sig-prename descclassname"><span class="pre">arkouda.infoclass.</span></span><span class="sig-name descname"><span class="pre">pretty_print_information</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">RegisteredSymbols</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/infoclass.html#pretty_print_information"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.infoclass.pretty_print_information" title="Link to this definition">¶</a></dt>
-<dd><p>Print verbose information for each object in names in a human readable format</p>
+<dd><p>Print verbose information for each object in names in a human readable format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>names</strong> (<a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>[</em><em>str</em><em>]</em><em>, </em><em>str</em><em>]</em>) – names is either the name of an object or list of names of objects to retrieve info

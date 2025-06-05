@@ -741,7 +741,7 @@ Module Contents
 
 .. py:function:: restore(filename)
 
-   Return data saved using `ak.snapshot`
+   Return data saved using `ak.snapshot`.
 
    :param filename:
    :type filename: str
@@ -988,7 +988,7 @@ Module Contents
 
 .. py:function:: update_hdf(columns: Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]]], prefix_path: str, names: Optional[List[str]] = None, repack: bool = True)
 
-   Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary
+   Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary.
 
    :param columns: Collection of arrays to save
    :type columns: dict or list of pdarrays
