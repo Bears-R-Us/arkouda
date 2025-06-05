@@ -8,6 +8,17 @@ SEED = 314159
 
 
 class TestSearchingFunctions:
+    @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
+    def test_searching_functions_docstrings(self):
+        import doctest
+
+        from arkouda.array_api import searching_functions
+
+        result = doctest.testmod(
+            searching_functions, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_argmax(self):
         a = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=SEED))
