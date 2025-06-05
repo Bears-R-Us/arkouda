@@ -23,6 +23,16 @@ def rand_arr(shape):
 
 
 class TestSetFunction:
+    def test_set_functions_docstrings(self):
+        import doctest
+
+        from arkouda.array_api import set_functions
+
+        result = doctest.testmod(
+            set_functions, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     def test_set_functions(self):
         for shape in ret_shapes():
             r = rand_arr(shape)
