@@ -439,6 +439,7 @@
 <span class="sd">        entire array is computed (returning a scalar-array).</span>
 <span class="sd">    keepdims : bool, optional</span>
 <span class="sd">        Whether to keep the singleton dimension(s) along `axis` in the result.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only real numeric dtypes are allowed in max&quot;</span><span class="p">)</span>
