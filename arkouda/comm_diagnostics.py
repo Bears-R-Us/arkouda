@@ -164,7 +164,7 @@ def stop_verbose_comm():
 
 def get_comm_diagnostics_put():
     """
-    Return blocking puts, in which initiator waits for completion
+    Return blocking puts, in which initiator waits for completion.
 
     Returns
     -------
@@ -182,7 +182,7 @@ def get_comm_diagnostics_put():
 
 def get_comm_diagnostics_get():
     """
-    Return blocking gets, in which initiator waits for completion
+    Return blocking gets, in which initiator waits for completion.
 
     Returns
     -------
@@ -200,7 +200,7 @@ def get_comm_diagnostics_get():
 
 def get_comm_diagnostics_put_nb():
     """
-    Return non-blocking puts
+    Return non-blocking puts.
 
     Returns
     -------
@@ -218,7 +218,7 @@ def get_comm_diagnostics_put_nb():
 
 def get_comm_diagnostics_get_nb():
     """
-    Return non-blocking gets
+    Return non-blocking gets.
 
     Returns
     -------
@@ -236,7 +236,7 @@ def get_comm_diagnostics_get_nb():
 
 def get_comm_diagnostics_test_nb():
     """
-    Return test statistic for non-blocking get/put completions
+    Return test statistic for non-blocking get/put completions.
 
     Returns
     -------
@@ -254,7 +254,7 @@ def get_comm_diagnostics_test_nb():
 
 def get_comm_diagnostics_wait_nb():
     """
-    Return blocking waits for non-blocking get/put completions
+    Return blocking waits for non-blocking get/put completions.
 
     Returns
     -------
@@ -272,7 +272,7 @@ def get_comm_diagnostics_wait_nb():
 
 def get_comm_diagnostics_try_nb():
     """
-    Return test statistics for non-blocking get/put completions
+    Return test statistics for non-blocking get/put completions.
 
     Returns
     -------
@@ -438,7 +438,7 @@ def get_comm_diagnostics_cache_num_prefetches():
     """
     Return number of prefetches issued to the remote cache at the granularity of cache pages.
 
-    This counter is specifically triggered via calls to chpl_comm_remote_prefetch
+    This counter is specifically triggered via calls to chpl_comm_remote_prefetch.
 
     Returns
     -------
