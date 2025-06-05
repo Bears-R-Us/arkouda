@@ -297,6 +297,8 @@ class Channel:
 
     def _set_access_token(self, server: str, port: int, token: Optional[str]) -> None:
         """
+        Set the access token.
+
         Set the token for the Channel by doing the following:
 
         1. retrieves the token configured for the connect_string from the
@@ -707,7 +709,7 @@ def connect(
 
     """
     If access-channel is not None, set global channel to access_channel. If not,
-    set the global channel object via the get_channel factory method
+    set the global channel object via the get_channel factory method.
     """
     if access_channel:
         channel = access_channel
@@ -740,6 +742,8 @@ def connect(
 
 def _parse_url(url: str) -> Tuple[str, int, Optional[str]]:
     """
+    Parse the url.
+
     Parse the url in the following format if authentication enabled:
 
     tcp://<hostname/url>:<port>?token=<token>
@@ -1200,7 +1204,7 @@ def get_mem_avail(unit: str = "b", as_percent: bool = False) -> int:
 
 def get_mem_status() -> List[Mapping[str, Union[str, int, float]]]:
     """
-    Retrieve the memory status for each locale
+    Retrieve the memory status for each locale.
 
     Returns
     -------

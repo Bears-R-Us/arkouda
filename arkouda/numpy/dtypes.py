@@ -3,7 +3,7 @@ from __future__ import annotations
 import builtins
 import sys
 from enum import Enum
-from typing import Union, cast
+from typing import TYPE_CHECKING, List, Union, cast
 
 import numpy as np
 from numpy import (
@@ -58,6 +58,9 @@ from numpy.dtypes import (
     VoidDType,
 )
 
+if TYPE_CHECKING:
+    from arkouda.pdarrayclass import pdarray
+
 __all__ = [
     "_datatype_check",
     "ARKOUDA_SUPPORTED_DTYPES",
@@ -97,11 +100,10 @@ __all__ = [
     "isSupportedInt",
     "isSupportedNumber",
     "numeric_and_bool_scalars",
-    "numeric_and_bool_scalars",
     "numeric_scalars",
     "numpy_scalars",
     "resolve_scalar_dtype",
-    "resolve_scalar_dtype",
+    "result_type",
     "str_",
     "str_scalars",
     "uint16",
@@ -226,6 +228,71 @@ def can_cast(from_, to) -> builtins.bool:
         return np.can_cast(from_, to)
 
     return False
+
+
+def result_type(*args: Union[pdarray, np.dtype, type]) -> Union[np.dtype, type]:
+    """
+    Determine the promoted result dtype of inputs, including support for Arkouda's bigint.
+
+    Determine the result dtype that would be returned by a NumPy-like operation
+    on the provided input arguments, accounting for Arkouda's extended types
+    such as ak.bigint.
+
+    This function mimics numpy.result_type, with support for Arkouda types.
+
+    Parameters
+    ----------
+    *args: Union[pdarray, np.dtype, type]
+        One or more input objects. These can be NumPy arrays, dtypes, Python
+        scalar types, or Arkouda pdarrays.
+
+    Returns
+    -------
+    Union[np.dtype, type]
+        The dtype (or equivalent Arkouda type) that results from applying
+        type promotion rules to the inputs.
+
+    Notes
+    -----
+    This function is meant to be a drop-in replacement for numpy.result_type
+    but includes logic to support Arkouda's bigint types.
+    """
+    from numpy.typing import DTypeLike
+
+    has_bigint = False
+    has_float = False
+    np_dtypes: List[DTypeLike] = []
+
+    for arg in args:
+        if isinstance(arg, (np.dtype, type)):
+            dt = arg
+        elif hasattr(arg, "dtype"):
+            dt = arg.dtype
+        else:
+            dt = np.result_type(arg)
+
+        # Normalize Arkouda custom dtypes
+        if dt == bigint:
+            has_bigint = True
+        elif _is_dtype_in_union(dt, Union[float, float64]):
+            has_float = True
+            np_dtypes.append(np.dtype(np.float64))
+        elif _is_dtype_in_union(dt, Union[int, int64]):
+            np_dtypes.append(np.dtype(np.int64))
+        elif isinstance(dt, np.dtype):
+            if dt.kind == "f":
+                has_float = True
+            np_dtypes.append(dt)
+        else:
+            # Fallback for unrecognized types
+            np_dtypes.append(np.result_type(dt))
+
+    if has_bigint:
+        if has_float:
+            return float64
+        return bigint
+    else:
+        return np.result_type(*np_dtypes)
 
 
 def _is_dtype_in_union(dtype, union_type) -> builtins.bool:

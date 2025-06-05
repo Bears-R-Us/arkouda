@@ -235,3 +235,25 @@ class TestDTypes:
         assert "{:d}" == dtypes.NUMBER_FORMAT_STRINGS["uint8"]
         assert "{:d}" == dtypes.NUMBER_FORMAT_STRINGS["uint64"]
         assert "{:d}" == dtypes.NUMBER_FORMAT_STRINGS["bigint"]
+
+    @pytest.mark.parametrize("dtype1", [ak.bool_, ak.uint8, ak.uint64, ak.bigint, ak.int64, ak.float64])
+    @pytest.mark.parametrize("dtype2", [ak.bool_, ak.uint8, ak.uint64, ak.bigint, ak.int64, ak.float64])
+    def test_result_type(self, dtype1, dtype2):
+        if dtype1 == ak.bigint or dtype2 == ak.bigint:
+            if dtype1 == ak.float64 or dtype2 == ak.float64:
+                expected_result = ak.float64
+            else:
+                expected_result = ak.bigint
+        else:
+            expected_result = np.result_type(dtype1, dtype2)
+        # pdarray vs pdarray
+        a = ak.array([0, 1], dtype=dtype1)
+        b = ak.array([0, 1], dtype=dtype2)
+        assert ak.result_type(a, b) == expected_result
+
+        # dtype and dtype
+        assert ak.result_type(dtype1, dtype2) == expected_result
+
+        # mixed: pdarray vs dtype
+        assert ak.result_type(a, dtype2) == expected_result
+        assert ak.result_type(dtype1, b) == expected_result
