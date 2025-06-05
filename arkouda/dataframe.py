@@ -2076,7 +2076,7 @@ class DataFrame(UserDict):
         self, mapper: Union[Callable, Dict], inplace: bool = False
     ) -> Optional[DataFrame]:
         """
-        Rename columns within the dataframe
+        Rename columns within the dataframe.
 
         Parameters
         ----------
@@ -2130,7 +2130,7 @@ class DataFrame(UserDict):
     @typechecked
     def _rename_index(self, mapper: Union[Callable, Dict], inplace: bool = False) -> Optional[DataFrame]:
         """
-        Rename indexes within the dataframe
+        Rename indexes within the dataframe.
 
         Parameters
         ----------

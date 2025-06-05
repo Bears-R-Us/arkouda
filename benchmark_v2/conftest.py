@@ -63,13 +63,14 @@ def pytest_addoption(parser):
         help="client timeout",
     )
 
-    default_log_level = os.getenv("ARKOUDA_LOG_LEVEL", "DEBUG")
-    parser.addoption(
-        "--log_level",
-        action="store",
-        default=default_log_level,
-        help="log level",
-    )
+    # NOTE:  Commented out argument that is not yet implemented and therefore has no effect.
+    # default_log_level = os.getenv("ARKOUDA_LOG_LEVEL", "DEBUG")
+    # parser.addoption(
+    #     "--log_level",
+    #     action="store",
+    #     default=default_log_level,
+    #     help="log level",
+    # )
 
     parser.addoption(
         "--optional-parquet",
@@ -206,7 +207,8 @@ def pytest_configure(config):
     pytest.running_mode = TestRunningMode(config.getoption("running_mode"))
     pytest.verbose = config.getoption("verbose")
     pytest.timeout = config.getoption("timeout")
-    pytest.log_level = config.getoption("log_level")
+    # NOTE:  Commented out argument that is not yet implemented and therefore has no effect.
+    # pytest.log_level = config.getoption("log_level")
     pytest.prob_size = eval(config.getoption("size"))
     pytest.trials = eval(config.getoption("trials"))
     pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))

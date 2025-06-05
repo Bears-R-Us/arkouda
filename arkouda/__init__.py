@@ -271,6 +271,7 @@ from arkouda.numpy import (
     register_all,
     repeat,
     resolve_scalar_dtype,
+    result_type,
     rotl,
     rotr,
     round,

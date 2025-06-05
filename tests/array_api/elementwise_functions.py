@@ -11,6 +11,16 @@ DIMS = [0, 1, 2, 1, 1, 2, 2]
 
 
 class TestElemenwiseFunctions:
+    def test_elementwise_functions_docstrings(self):
+        import doctest
+
+        from arkouda.array_api import elementwise_functions
+
+        result = doctest.testmod(
+            elementwise_functions, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.skip_if_rank_not_compiled([2])
     def test_logical_not(self):
         a = xp.asarray(ak.array([True, False, True, False]))

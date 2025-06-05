@@ -1181,7 +1181,7 @@ class Categorical:
     @typechecked()
     def register(self, user_defined_name: str) -> Categorical:
         """
-        Register this Categorical object and underlying components with the Arkouda server
+        Register this Categorical object and underlying components with the Arkouda server.
 
         Parameters
         ----------
