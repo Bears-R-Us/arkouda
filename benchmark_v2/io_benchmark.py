@@ -73,7 +73,7 @@ def _generate_df(N, dtype, returnDict=False):
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Write_HDF5")
 @pytest.mark.parametrize("dtype", TYPES)
-def bench_ak_write_hdf(benchmark, dtype):
+def bench_write_hdf(benchmark, dtype):
     if pytest.io_write or (not pytest.io_read and not pytest.io_delete) and dtype in pytest.dtype:
         cfg = ak.get_config()
         N = pytest.prob_size * cfg["numLocales"]
@@ -100,7 +100,7 @@ def bench_ak_write_hdf(benchmark, dtype):
 @pytest.mark.benchmark(group="Arkouda_IO_Write_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
-def bench_ak_write_parquet(benchmark, dtype, comp):
+def bench_write_parquet(benchmark, dtype, comp):
     if (
         pytest.io_write
         or (not pytest.io_read and not pytest.io_delete)
@@ -132,7 +132,7 @@ def bench_ak_write_parquet(benchmark, dtype, comp):
 @pytest.mark.benchmark(group="Arkouda_IO_Write_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
-def bench_ak_write_parquet_multi(benchmark, dtype, comp):
+def bench_write_parquet_multi(benchmark, dtype, comp):
     if (
         pytest.io_write
         or (not pytest.io_read and not pytest.io_delete)
@@ -167,7 +167,7 @@ def bench_ak_write_parquet_multi(benchmark, dtype, comp):
 @pytest.mark.benchmark(group="Arkouda_IO_Write_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
-def bench_ak_write_parquet_append(benchmark, dtype, comp):
+def bench_write_parquet_append(benchmark, dtype, comp):
     if (
         pytest.io_write
         or (not pytest.io_read and not pytest.io_delete)
@@ -200,7 +200,7 @@ def bench_ak_write_parquet_append(benchmark, dtype, comp):
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Read_HDF5")
 @pytest.mark.parametrize("dtype", TYPES)
-def bench_ak_read_hdf(benchmark, dtype):
+def bench_read_hdf(benchmark, dtype):
     if pytest.io_read or (not pytest.io_write and not pytest.io_delete) and dtype in pytest.dtype:
         dataset = "strings_array" if dtype == "str" else "array"
         a = benchmark.pedantic(
@@ -224,7 +224,7 @@ def bench_ak_read_hdf(benchmark, dtype):
 @pytest.mark.benchmark(group="Arkouda_IO_Read_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
-def bench_ak_read_parquet(benchmark, dtype, comp):
+def bench_read_parquet(benchmark, dtype, comp):
     if (
         pytest.io_read
         or (not pytest.io_write and not pytest.io_delete)
@@ -252,7 +252,7 @@ def bench_ak_read_parquet(benchmark, dtype, comp):
 @pytest.mark.benchmark(group="Arkouda_IO_Read_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
-def bench_ak_read_parquet_multi_column(benchmark, dtype, comp):
+def bench_read_parquet_multi_column(benchmark, dtype, comp):
     """
     Read files written by parquet multicolumn and parquet append modes
     """
@@ -282,7 +282,7 @@ def bench_ak_read_parquet_multi_column(benchmark, dtype, comp):
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Delete")
-def bench_ak_delete(benchmark):
+def bench_delete(benchmark):
     if pytest.io_delete or (not pytest.io_write and not pytest.io_read):
         benchmark.pedantic(_remove_files, rounds=1)
 

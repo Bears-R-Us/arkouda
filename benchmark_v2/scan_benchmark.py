@@ -11,7 +11,7 @@ TYPES = ("int64", "float64")
 @pytest.mark.benchmark(group="AK_Scan")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)
-def bench_ak_scan(benchmark, op, dtype):
+def bench_scan(benchmark, op, dtype):
     if dtype in pytest.dtype:
         cfg = ak.get_config()
         N = pytest.prob_size * cfg["numLocales"]

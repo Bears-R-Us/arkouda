@@ -54,7 +54,7 @@ def bench_segarr_setops(benchmark, op, dtype):
 @pytest.mark.benchmark(group="AK_Setops")
 @pytest.mark.parametrize("op", OPS1D)
 @pytest.mark.parametrize("dtype", TYPES)
-def bench_ak_setops(benchmark, op, dtype):
+def bench_setops(benchmark, op, dtype):
     """
     Measures the performance of arkouda setops
     """
