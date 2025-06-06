@@ -1,3 +1,47 @@
+"""
+Custom setuptools hooks for building and installing the Arkouda server.
+
+This module defines build-time utilities and decorators to integrate the
+compilation of the Arkouda Chapel backend (`arkouda_server`) into the
+Python packaging workflow.
+
+Key Features
+------------
+- Checks for a valid Chapel installation via `CHPL_HOME`
+- Invokes `make` to build the Arkouda server binary, with a 1-hour timeout
+- Installs the compiled `arkouda_server` binary into the current Python environment’s `bin/` directory
+- Provides a `@installarkouda` decorator to augment setuptools commands like `build_py` or `install`
+
+Classes
+-------
+ArkoudaBuildError
+    Custom exception raised when Chapel is missing or the build fails.
+
+ArkoudaInstall
+    Custom setuptools command class used to override `setup.py install`.
+
+Functions
+---------
+chpl_installed()
+    Returns True if `CHPL_HOME` is set, indicating Chapel is installed.
+
+make_arkouda_server()
+    Runs `make` to build the Arkouda server, raising errors if it fails or times out.
+
+install_in_py_prefix()
+    Moves the built `arkouda_server` binary into the Python prefix’s `bin/` directory.
+
+installarkouda(setup_subcommand)
+    Decorator to inject Arkouda build logic into a setuptools command.
+
+Usage
+-----
+This module is typically used internally by `setup.py` to ensure that the
+backend server is built and installed when the Arkouda Python package is
+installed via pip or setuptools.
+
+"""
+
 import os
 import shutil
 import sys
