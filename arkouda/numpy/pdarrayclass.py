@@ -193,7 +193,6 @@ __all__ = [
     "max",
     "argmin",
     "argmax",
-    "mean",
     "var",
     "std",
     "mink",
@@ -538,6 +537,7 @@ class pdarray:
 
     def __del__(self):
         try:
+            from arkouda.client import generic_msg
             logger.debug(f"deleting pdarray with name {self.name}")
             generic_msg(cmd="delete", args={"name": self.name})
         except (RuntimeError, AttributeError):
@@ -1909,6 +1909,7 @@ class pdarray:
         """
         #   Function is generated at runtime with _make_index_reduction_func.
         return argmax(self, axis=axis, keepdims=keepdims)
+
     def std(
         self,
         ddof: int_scalars = 0,
