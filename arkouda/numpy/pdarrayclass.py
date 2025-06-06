@@ -1661,6 +1661,52 @@ class pdarray:
         """Print information about all components of self in a human-readable format."""
         pretty_print_information(self._list_component_names())
 
+    def sum(
+        self,
+        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        keepdims: bool = False,
+    ) -> Union[numeric_scalars, pdarray]:
+        """
+        Return sum of array elements along the given axis.
+
+        Parameters
+        ----------
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        numeric_scalars or pdarray
+            numeric_scalars if axis is omitted, in which case operation is done over entire array
+            pdarray if axis is supplied, in which case the operation is done along that axis
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.sum(ak.array([1,2,3,4,5]))
+        np.int64(15)
+        >>> ak.sum(ak.array([5.5,4.5,3.5,2.5,1.5]))
+        np.float64(17.5)
+        >>> ak.array([[1,2,3],[5,4,3]]).sum(axis=1)
+        array([6 12])
+
+        Notes
+        -----
+        Works as a method of a pdarray (e.g. a.sum()) or a standalone function (e.g. ak.sum(a))
+        """
+        #   Function is generated at runtime with _make_reduction_func.
+        return sum(self, axis=axis, keepdims=keepdims)
+
     def min(
         self,
         axis: Optional[Union[int, Tuple[int, ...]]] = None,
