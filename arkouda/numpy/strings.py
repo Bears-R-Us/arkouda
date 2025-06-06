@@ -2660,10 +2660,6 @@ class Strings:
         """
         Return a list of all component names
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         List[str]
@@ -2675,10 +2671,6 @@ class Strings:
         """
         Return a JSON formatted string containing information about all components of self
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         str
@@ -2687,18 +2679,7 @@ class Strings:
         return information(self._list_component_names())
 
     def pretty_print_info(self) -> None:
-        """
-        Print information about all components of self in a human readable format
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        """
+        """Print information about all components of self in a human readable format."""
         self.entry.pretty_print_info()
 
     @typechecked
@@ -2760,13 +2741,6 @@ class Strings:
         Unregister a Strings object in the arkouda server which was previously
         registered using register() and/or attached to using attach()
 
-        Parameters
-        ----------
-
-        Returns
-        -------
-        None
-
         Raises
         ------
         RuntimeError
@@ -2780,6 +2754,7 @@ class Strings:
         -----
         Registered names/Strings objects in the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.numpy.util import unregister
 
@@ -2791,10 +2766,6 @@ class Strings:
     def is_registered(self) -> np.bool_:
         """
         Return True iff the object is contained in the registry
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
