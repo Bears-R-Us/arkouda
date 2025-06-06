@@ -532,7 +532,6 @@ module ServerDaemon {
                  * remaining payload.
                  */
                 var (rawRequest, _) = reqMsgRaw.splitMsgToTuple(b"BINARY_PAYLOAD",2);
-                var user, token, cmd: string;
 
                 // parse requests, execute requests, format responses
                 /*
@@ -552,12 +551,12 @@ module ServerDaemon {
                 }
 
                 // deserialize the decoded, JSON-formatted cmdStr into a RequestMsg
-                var msg: RequestMsg  = extractRequest(request);
-                user   = msg.user;
-                token  = msg.token;
-                cmd    = msg.cmd;
-                var format = msg.format;
-                var args   = msg.args;
+                const msg: RequestMsg = extractRequest(request);
+                const user   = msg.user;
+                const token  = msg.token;
+                const cmd    = msg.cmd;
+                const format = msg.format;
+                const args   = msg.args;
                 var size: int;
                 try {
                         size = msg.size: int;
@@ -581,7 +580,7 @@ module ServerDaemon {
                 sdLogger.info(getModuleName(),
                                 getRoutineName(),
                                 getLineNumber(),
-                                "MessageArgs: %?".format(msgArgs));
+                                "Command: %s MessageArgs: %?".format(cmd, msgArgs));
 
                 /*
                 * If authentication is enabled with the --authenticate flag, authenticate
