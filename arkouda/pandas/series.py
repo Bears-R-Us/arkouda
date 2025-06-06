@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import operator
+from builtins import str as builtin_str
 from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, TypeVar, Union, cast
 
 import numpy as np
@@ -43,11 +44,11 @@ __all__ = [
 ]
 
 
-supported_scalars = Union[int, float, bool, str, np.int64, np.float64, np.bool_, np.str_]
+supported_scalars = Union[int, float, bool, builtin_str, np.int64, np.float64, np.bool_, np.str_]
 
 
 def is_supported_scalar(x) -> bool:
-    return isinstance(x, (int, float, bool, str, np.int64, np.float64, np.bool_, np.str_))
+    return isinstance(x, (int, float, bool, builtin_str, np.int64, np.float64, np.bool_, np.str_))
 
 
 def natural_binary_operators(cls) -> type:
@@ -563,7 +564,7 @@ class Series:
         return _iLocIndexer("iat", self)
 
     dt = CachedAccessor("dt", DatetimeAccessor)
-    str_acc = CachedAccessor("str", StringAccessor)
+    str = CachedAccessor("str", StringAccessor)
 
     @property
     def shape(self) -> Tuple[int]:
@@ -927,8 +928,8 @@ class Series:
     @typechecked
     def to_dataframe(
         self,
-        index_labels: Union[List[str], None] = None,
-        value_label: Union[str, None] = None,
+        index_labels: Union[List[builtin_str], None] = None,
+        value_label: Union[builtin_str, None] = None,
     ) -> arkouda.dataframe.DataFrame:
         """
         Convert the Series to an Arkouda DataFrame.
@@ -951,7 +952,7 @@ class Series:
         return Series.concat([self], axis=1, index_labels=index_labels, value_labels=list_value_label)
 
     @typechecked
-    def register(self, user_defined_name: str):
+    def register(self, user_defined_name: builtin_str):
         """
         Register this Series object and underlying components with the Arkouda server
 
@@ -1110,7 +1111,7 @@ class Series:
 
     @classmethod
     @typechecked
-    def from_return_msg(cls, repMsg: str) -> Series:
+    def from_return_msg(cls, repMsg: builtin_str) -> Series:
         """
         Return a Series instance pointing to components created by the arkouda server.
         The user should not call this function directly.
@@ -1161,8 +1162,8 @@ class Series:
     def concat(
         arrays: List,
         axis: int = 0,
-        index_labels: Union[List[str], None] = None,
-        value_labels: Union[List[str], None] = None,
+        index_labels: Union[List[builtin_str], None] = None,
+        value_labels: Union[List[builtin_str], None] = None,
         ordered: bool = False,
     ) -> Union[arkouda.dataframe.DataFrame, Series]:
         """
