@@ -199,7 +199,6 @@ from arkouda.numpy.numeric import (
     value_counts,
     vecdot,
     where,
-    where2,
 )
 from arkouda.numpy.utils import shape
 from arkouda.numpy.manipulation_functions import flip, repeat, squeeze, tile

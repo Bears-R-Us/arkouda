@@ -529,11 +529,15 @@ module EfuncMsg
         return c;
     }
 
+    // The latest change to where eliminates the needs for wherevs, wheresv, and wheress.
+    // So as a test, I'm commenting them all out.
+
     // The wherevs (vector, scalar), wheresv (scalar, vector) and wheress (scalar, scalar)
     // implementations all call corresponding helper functions.  This is done because the
     // arkouda interface requires the scalar types to be specified, but the helper functions,
     // since they're not registered as commands, can be more generic.
 
+ /*
     proc wherevsHelper (condition: [?d] bool, a : [d] ?ta, b : ?tb) : [d] whereReturnType(ta,tb) throws
     {
         var c = makeDistArray(d, whereReturnType(ta,tb));
@@ -742,6 +746,8 @@ module EfuncMsg
     {
         return wheressHelper (condition, a, b);
     }
+
+    */
 
     //  putmask has been rewritten for both the new interface and the multi-dimensional case.
     //  The specifics are based on the observation that np.putmask behaves as if multi-dim
