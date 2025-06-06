@@ -2432,8 +2432,11 @@
 <span class="sd">        The directory to save the checkpoint. If the directory doesn&#39;t exist, it</span>
 <span class="sd">        will be created. If it exists, a new directory for the checkpoint</span>
 <span class="sd">        instance will be created inside this directory.</span>
-<span class="sd">    mode : {&#39;overwrite&#39; | &#39;error&#39;}</span>
+<span class="sd">    mode : {&#39;overwrite&#39; | &#39;preserve_previous&#39; | &#39;error&#39;}</span>
 <span class="sd">        By default, overwrite the checkpoint files if they exist.</span>
+<span class="sd">        If &#39;preserve_previous&#39;, an existing checkpoint with &#39;name&#39; will be</span>
+<span class="sd">        renamed to &#39;name.prev&#39;, overwriting &#39;name.prev&#39; if it existed,</span>
+<span class="sd">        before creating a new checkpoint with &#39;name&#39;.</span>
 <span class="sd">        If &#39;error&#39;, an error will be raised if a checkpoint with the same name</span>
 <span class="sd">        exists.</span>
 
