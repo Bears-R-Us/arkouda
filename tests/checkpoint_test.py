@@ -4,6 +4,7 @@ import tempfile
 from datetime import datetime
 from os import path
 from shutil import rmtree
+from arkouda.pandas import io_util
 
 import pytest
 
@@ -19,12 +20,12 @@ def cp_test_base_tmp(request):
         timestamp = str(datetime.now()).replace(" ", "_")
         cp_test_base_tmp = "{}/.cp_test_{}".format(os.getcwd(), timestamp)
 
-    ak.pandas.io_util.get_directory(cp_test_base_tmp)
+    io_util.get_directory(cp_test_base_tmp)
 
     # Define a finalizer function for teardown
     def finalizer():
         # Clean up any resources if needed
-        ak.pandas.io_util.delete_directory(cp_test_base_tmp)
+        io_util.delete_directory(cp_test_base_tmp)
 
     # Register the finalizer to ensure cleanup
     request.addfinalizer(finalizer)
