@@ -154,6 +154,7 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
     array([[-1,  2,  0, -2]])
 
     """
+    from arkouda.numpy.pdarrayclass import diff
     if a.dtype == ak.bigint:
         raise RuntimeError(f"Error executing command: diff does not support dtype {a.dtype}")
 

@@ -915,7 +915,8 @@ class Timedelta(_AbstractBaseTime):
     def abs(self):
         """Absolute value of time interval."""
         from arkouda.numpy.numeric import cast as akcast
-        return self.__class__(akcast(abs(self.values), "int64"))
+        from arkouda.numpy import abs as akabs
+        return self.__class__(akcast(akabs(self.values), "int64"))
 
     def register(self, user_defined_name):
         """
