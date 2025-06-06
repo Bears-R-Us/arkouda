@@ -3228,12 +3228,17 @@ def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[in
 
     return result
 
+
 @typechecked
-def _array_if_needed (x: Union[numeric_scalars, pdarray]) -> pdarray :
-    if np.isscalar(x) :
-        return (array([x]).reshape(1))
-    else :
+def _array_if_needed(x: Union[numeric_scalars, pdarray]) -> pdarray:
+    if isinstance(x,pdarray) :
         return x
+    else :
+        return array([x]).reshape(1)  # type: ignore
+
+#  The function below includes a lot of ignores to deal with mypy, and since
+#  we're endeavoring to get away from that, I'm trying to rework things so
+#  they're not necessary.
 
 @typechecked
 def where(
@@ -3323,8 +3328,7 @@ def where(
         # fmt: off
         if (
             not isinstance(A, (str, Strings, Categorical))  # type: ignore
-           or not isinstance(B, (str, Strings, Categorical))  # type: ignore
-        ):
+           or not isinstance(B, (str, Strings, Categorical))):  # type: ignore
             # fmt:on
             raise TypeError(
                 "both A and B must be an int, np.int64, float, np.float64, pdarray OR"
@@ -3335,22 +3339,23 @@ def where(
     #   The code below broadcasts the 3 inputs to a common shape if possible, and then
     #   calls wherevv.
 
-    A_ = _array_if_needed(A)
-    B_ = _array_if_needed(B)
+    else :
+        A_ = _array_if_needed(A)
+        B_ = _array_if_needed(B)
 
-    newshape = np.broadcast_shapes(A_.shape,B_.shape,condition.shape)  # ak lacks this fn
+        newshape = np.broadcast_shapes(A_.shape, B_.shape, condition.shape)  # ak lacks this fn
 
-    A__ = broadcast_to_shape(A_,newshape)
-    B__ = broadcast_to_shape(B_,newshape)
-    cond__ = broadcast_to_shape(condition,newshape)
-    
-    repMsg = generic_msg(
-        cmd=f"wherevv<{cond__.ndim},{A__.dtype},{B__.dtype}>",
-        args={
-            "condition": cond__,
-            "a": A__,
-            "b": B__,
-        },
-    )
+        A__ = broadcast_to_shape(A_, newshape)
+        B__ = broadcast_to_shape(B_, newshape)
+        cond__ = broadcast_to_shape(condition, newshape)
 
-    return create_pdarray(type_cast(str, repMsg))
+        repMsg = generic_msg(
+            cmd=f"wherevv<{cond__.ndim},{A__.dtype},{B__.dtype}>",
+            args={
+                "condition": cond__,
+                "a": A__,
+                "b": B__,
+            },
+        )
+
+        return create_pdarray(type_cast(str, repMsg))
