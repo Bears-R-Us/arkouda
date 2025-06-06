@@ -3486,12 +3486,8 @@ def where2(
     B__ = broadcast_to_shape(B_,newshape)
     cond__ = broadcast_to_shape(condition,newshape)
     
-    print ("Here, the inputs are:\n",cond__,"\n",A__,"\n",B__)
-
-    cmdstring = f"wherevv<{cond__.ndim},{A__.dtype},{B__.dtype}>"
-
     repMsg = generic_msg(
-        cmd=cmdstring,
+        cmd=f"wherevv<{cond__.ndim},{A__.dtype},{B__.dtype}>",
         args={
             "condition": cond__,
             "a": A__,
