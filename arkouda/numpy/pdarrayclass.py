@@ -359,6 +359,7 @@ def _slice_index(array: pdarray, starts: List[int], stops: List[int], strides: L
     """
     Slice a pdarray with a set of start, stop and stride values
     """
+    from arkouda.client import generic_msg
     return create_pdarray(
         generic_msg(
             cmd=f"[slice]<{array.dtype},{array.ndim}>",
