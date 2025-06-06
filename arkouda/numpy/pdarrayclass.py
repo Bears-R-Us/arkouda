@@ -1661,6 +1661,50 @@ class pdarray:
         """Print information about all components of self in a human-readable format."""
         pretty_print_information(self._list_component_names())
 
+    def is_sorted(
+        self, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False
+    ) -> Union[bool_scalars, pdarray]:
+        """
+        Return True iff the array (or given axis of the array) is monotonically non-decreasing.
+
+        Parameters
+        ----------
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        boolean or pdarray
+            boolean if axis is omitted, else pdarray if axis is supplied
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.is_sorted(ak.array([1,2,3,4,5]))
+        np.True_
+        >>> ak.is_sorted(ak.array([5,4,3,2,1]))
+        np.False_
+        >>> ak.array([[1,2,3],[5,4,3]]).is_sorted(axis=1)
+        array([True False])
+
+        Notes
+        -----
+        Works as a method of a pdarray (e.g. a.is_sorted()) or a
+        standalone function (e.g. ak.is_sorted(a))
+        """
+        #   Function is generated at runtime with _make_reduction_func.
+        return is_sorted(self, axis=axis, keepdims=keepdims)  # noqa: F821
+
     def sum(
         self,
         axis: Optional[Union[int, Tuple[int, ...]]] = None,
