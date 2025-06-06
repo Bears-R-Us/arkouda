@@ -3231,14 +3231,16 @@ def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[in
 
 @typechecked
 def _array_if_needed(x: Union[numeric_scalars, pdarray]) -> pdarray:
-    if isinstance(x,pdarray) :
+    if isinstance(x, pdarray):
         return x
-    else :
+    else:
         return array([x]).reshape(1)  # type: ignore
+
 
 #  The function below includes a lot of ignores to deal with mypy, and since
 #  we're endeavoring to get away from that, I'm trying to rework things so
 #  they're not necessary.
+
 
 @typechecked
 def where(
@@ -3339,7 +3341,7 @@ def where(
     #   The code below broadcasts the 3 inputs to a common shape if possible, and then
     #   calls wherevv.
 
-    else :
+    else:
         A_ = _array_if_needed(A)
         B_ = _array_if_needed(B)
 
