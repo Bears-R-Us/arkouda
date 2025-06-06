@@ -3428,6 +3428,7 @@ def _common_stats_reduction(
         Raised op is not a supported reduction operation.
     """
 
+    from arkouda.client import generic_msg
     if kind not in SUPPORTED_STATS_REDUCTION_OPS:
         raise ValueError(f"Unsupported reduction type: {kind}")
 
@@ -3863,135 +3864,6 @@ def dot(
 
     return None  # type: ignore
 
-
-@typechecked
-def var(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
-    """
-    Return the variance of values in the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-        Values for which to calculate the variance
-    ddof : int_scalars
-        "Delta Degrees of Freedom" used in calculating var
-
-    Returns
-    -------
-    np.float64
-        The scalar variance of the array
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.arange(10)
-    >>> ak.var(a)
-    np.float64(8.25)
-    >>> a.var()
-    np.float64(8.25)
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray instance
-    ValueError
-        Raised if the ddof >= pdarray size
-    RuntimeError
-        Raised if there's a server-side error thrown
-
-    See Also
-    --------
-    mean, std
-
-    Notes
-    -----
-    The variance is the average of the squared deviations from the mean,
-    i.e.,  ``var = mean((x - x.mean())**2)``.
-
-    The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
-    If, however, `ddof` is specified, the divisor ``N - ddof`` is used
-    instead.  In standard statistical practice, ``ddof=1`` provides an
-    unbiased estimator of the variance of a hypothetical infinite population.
-    ``ddof=0`` provides a maximum likelihood estimate of the variance for
-    normally distributed variables.
-    """
-    from arkouda.client import generic_msg
-
-    if ddof >= pda.size:
-        raise ValueError("var: ddof must be less than number of values")
-    return parse_single_value(
-        generic_msg(
-            cmd=f"var<{pda.dtype},{pda.ndim}>",
-            args={"x": pda, "ddof": ddof, "skipNan": False},
-        )
-    )
-
-
-@typechecked
-def std(pda: pdarray, ddof: int_scalars = 0) -> np.float64:
-    """
-    Return the standard deviation of values in the array. The standard
-    deviation is implemented as the square root of the variance.
-
-    Parameters
-    ----------
-    pda : pdarray
-        values for which to calculate the standard deviation
-    ddof : int_scalars
-        "Delta Degrees of Freedom" used in calculating std
-
-    Returns
-    -------
-    np.float64
-        The scalar standard deviation of the array
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.arange(10)
-    >>> ak.std(a)
-    np.float64(2.8722813232690143)
-    >>> a.std()
-    np.float64(2.8722813232690143)
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray instance or ddof is not an integer
-    ValueError
-        Raised if ddof is an integer < 0
-    RuntimeError
-        Raised if there's a server-side error thrown
-
-    See Also
-    --------
-    mean, var
-
-    Notes
-    -----
-    The standard deviation is the square root of the average of the squared
-    deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.
-
-    The average squared deviation is normally calculated as
-    ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,
-    the divisor ``N - ddof`` is used instead. In standard statistical
-    practice, ``ddof=1`` provides an unbiased estimator of the variance
-    of the infinite population. ``ddof=0`` provides a maximum likelihood
-    estimate of the variance for normally distributed variables. The
-    standard deviation computed in this function is the square root of
-    the estimated variance, so even with ``ddof=1``, it will not be an
-    unbiased estimate of the standard deviation per se.
-    """
-    from arkouda.client import generic_msg
-
-    if ddof < 0:
-        raise ValueError("ddof must be an integer 0 or greater")
-    return parse_single_value(
-        generic_msg(
-            cmd=f"std<{pda.dtype},{pda.ndim}>",
-            args={"x": pda, "ddof": ddof, "skipNan": False},
-        )
-    )
 
 
 @typechecked
