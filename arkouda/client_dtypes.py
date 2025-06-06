@@ -535,6 +535,7 @@ class IPv4(pdarray):
         )
 
     def export_uint(self):
+        from arkouda.numpy import cast as akcast
         return akcast(self.values, akuint64)
 
     def format(self, x):
