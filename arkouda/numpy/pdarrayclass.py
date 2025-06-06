@@ -193,6 +193,7 @@ __all__ = [
     "max",
     "argmin",
     "argmax",
+    "mean",
     "var",
     "std",
     "mink",
@@ -1957,6 +1958,79 @@ class pdarray:
         """
         #   Function is generated at runtime with _make_reduction_func.
         return mean(self, axis=axis, keepdims=keepdims)
+
+    def var(
+        self,
+        ddof: int_scalars = 0,
+        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        keepdims: Optional[bool] = False,
+    ) -> Union[np.float64, pdarray]:
+        """
+        Return the variance of values in the array.
+
+        Parameters
+        ----------
+        pda : pdarray
+            Values for which to calculate the variance
+        ddof : int_scalars
+            "Delta Degrees of Freedom" used in calculating var
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        Union[np.float64, pdarray]
+            The scalar variance of the array, or the variance along the axis/axes
+            if supplied
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> a = ak.arange(10)
+        >>> ak.var(a)
+        np.float64(8.25)
+        >>> a.var()
+        np.float64(8.25)
+        >>> a = ak.arange(10).reshape(2,5)
+        >>> a.var(axis=0)
+        array([6.25 6.25 6.25 6.25 6.25])
+        >>> ak.var(a,axis=0)
+        array([6.25 6.25 6.25 6.25 6.25])
+        >>> a.var(axis=1)
+        array([2.00000000000000000 2.00000000000000000])
+        >>> ak.var(a,axis=1)
+        array([2.00000000000000000 2.00000000000000000])
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        ValueError
+            Raised if the ddof >= pdarray size
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        See Also
+        --------
+        mean, std
+
+        Notes
+        -----
+        The variance is the average of the squared deviations from the mean,
+        i.e.,  ``var = mean((x - x.mean())**2)``.
+
+        The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
+        If, however, `ddof` is specified, the divisor ``N - ddof`` is used
+        instead.  In standard statistical practice, ``ddof=1`` provides an
+        unbiased estimator of the variance of a hypothetical infinite population.
+        ``ddof=0`` provides a maximum likelihood estimate of the variance for
+        normally distributed variables.
+        """
+        #   Function is generated at runtime with _make_stats_reduction_func
+        return var(self, ddof=ddof, axis=axis, keepdims=keepdims)
 
     def std(
         self,
