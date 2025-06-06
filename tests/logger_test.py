@@ -4,8 +4,9 @@ from logging import DEBUG, INFO, WARN, FileHandler, StreamHandler
 import pytest
 
 import arkouda as ak
-from arkouda import io_util, logger
+from arkouda import logger
 from arkouda.logger import LogLevel, getArkoudaClientLogger, getArkoudaLogger
+from arkouda.pandas import io_util
 
 
 class TestLogger:

@@ -9,7 +9,7 @@ from pandas.testing import assert_frame_equal as pd_assert_frame_equal
 from pandas.testing import assert_series_equal
 
 import arkouda as ak
-from arkouda import io_util
+from arkouda.pandas import io_util
 from arkouda.scipy import chisquare as akchisquare
 from arkouda.testing import assert_frame_equal as ak_assert_frame_equal
 from arkouda.testing import assert_frame_equivalent
