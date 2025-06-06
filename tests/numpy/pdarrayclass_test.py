@@ -9,6 +9,7 @@ from arkouda.dtypes import bigint
 from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
 from arkouda.testing import assert_arkouda_array_equivalent
 from arkouda.testing import assert_equal as ak_assert_equal
+from arkouda.testing import assert_equivalent
 from arkouda.testing import assert_equivalent as ak_assert_equivalent
 
 SEED = 314159
@@ -17,6 +18,7 @@ SEED = 314159
 REDUCTION_OPS = list(set(ak.pdarrayclass.SUPPORTED_REDUCTION_OPS) - set(["isSorted", "isSortedLocally"]))
 INDEX_REDUCTION_OPS = ak.pdarrayclass.SUPPORTED_INDEX_REDUCTION_OPS
 
+SHAPES = [(1,), (25,), (5, 10), (10, 5)]
 DTYPES = ["int64", "float64", "bool", "uint64"]
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
 NUMERIC_TYPES_NO_BOOL = [ak.int64, ak.float64, ak.uint64]
@@ -462,3 +464,90 @@ class TestPdarrayClass:
         for axis in [(0, 1), (0, 2), (1, 2), (-3, -2), (-3, -1), (-2, -1)]:
             ak_assert_almost_equivalent(np.std(nda, ddof=1, axis=axis), pda.std(ddof=1, axis=axis))
             ak.assert_almost_equivalent(np.std(nda, ddof=1, axis=axis), ak.std(pda, ddof=1, axis=axis))
+
+    @pytest.mark.parametrize(
+        "data,expected",
+        [
+            ([42, 7, 19], [1, 2, 0]),
+            ([3, 3, 1], [2, 0, 1]),  # test for duplicates
+            ([], []),  # empty array
+        ],
+    )
+    def test_argsort_default(self, data, expected):
+        a = ak.array(data)
+        result = a.argsort()
+        assert result.to_list() == expected
+        assert a[result].to_list() == sorted(data)
+
+    def test_argsort_descending(self):
+        a = ak.array([42, 7, 19])
+        result = a.argsort(ascending=False)
+        assert result.to_list() == [0, 2, 1]
+        assert a[result].to_list() == sorted([42, 7, 19], reverse=True)
+
+    def test_argsort_bigint(self):
+        a = ak.array([2**70, 1, 2**69], dtype=ak.bigint)
+        result = a.argsort()
+        sorted_vals = a[result]
+        expected = sorted([2**70, 1, 2**69])
+        assert sorted_vals.to_list() == expected
+
+    def test_argsort_invalid_axis(self):
+        a = ak.array([1, 2, 3])
+        with pytest.raises(ValueError, match="axis=2 is invalid for array with ndim=1"):
+            a.argsort(axis=2)
+
+    def test_argsort_axis_minus1(self):
+        a = ak.array([5, 3, 4])
+        result = a.argsort(axis=-1)
+        assert a[result].to_list() == [3, 4, 5]
+
+    def test_argsort_empty_array(self):
+        a = ak.array([], dtype=ak.int64)
+        result = a.argsort()
+        assert result.size == 0
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    def test_argsort_multidim_ignored_axis(self):
+        a = ak.arange(6).reshape((2, 3))
+        result = a.argsort()  # axis default = 0
+        assert isinstance(result, ak.pdarray)
+
+    def test_argsort_algorithm_enum(self):
+        from arkouda.sorting import SortingAlgorithm
+
+        a = ak.array([4, 1, 3])
+        result = a.argsort(algorithm=SortingAlgorithm.RadixSortLSD)
+        assert a[result].to_list() == sorted([4, 1, 3])
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("ascending", [True, False])
+    @pytest.mark.parametrize("dtype", [ak.int64, ak.float64, ak.bool_, ak.uint64, ak.bigint])
+    def test_argsort_random(self, size, ascending, dtype):
+        a = ak.randint(0, 1_000_000, size, dtype=dtype if dtype != ak.bigint else ak.int64, seed=1)
+        if dtype == ak.bigint:
+            a = a + 2**70
+        perm = a.argsort(ascending=ascending)
+        sorted_vals = a[perm]
+
+        if ascending:
+            assert ak.all(sorted_vals[1:] >= sorted_vals[:-1])
+        else:
+            assert ak.all(sorted_vals[1:] <= sorted_vals[:-1])
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("shape", SHAPES)
+    @pytest.mark.parametrize("dtype", ak.ScalarDTypes)
+    @pytest.mark.parametrize("ascending", [True, False])
+    def test_argsort_numpy_alignment(self, shape, dtype, ascending):
+        for axis in range(len(shape)):
+            a = ak.randint(0, 100, shape, dtype=dtype, seed=SEED)
+            b = a.argsort(axis=axis, ascending=ascending)
+            np_b = a.to_ndarray().argsort(axis=axis, stable=True)
+            np_b = np.flip(np_b, axis=axis) if not ascending else np_b
+
+            assert b.size == a.size
+            assert b.ndim == a.ndim
+            assert b.shape == a.shape
+
+            assert_equivalent(b, np_b)

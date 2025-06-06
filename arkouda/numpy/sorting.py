@@ -3,7 +3,6 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING, Literal, Sequence, TypeVar, Union, cast
 
-import numpy as np
 from typeguard import check_type, typechecked
 
 from arkouda.client import generic_msg
@@ -79,23 +78,11 @@ def argsort(
     """
     from arkouda.categorical import Categorical
 
-    ndim = cast(Union[int, np.integer], getattr(pda, "ndim"))
-
-    if axis < -1 or axis > int(ndim):
-        raise ValueError(f"Axis must be between -1 and the PD Array's rank ({int(ndim)})")
-    if axis == -1:
-        axis = int(ndim) - 1
-
     check_type(argname="argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
 
-    if hasattr(pda, "argsort"):
+    if isinstance(pda, Categorical):
         return cast(Categorical, pda).argsort()
-    if pda.size == 0 and hasattr(pda, "dtype"):
-        return zeros(0, dtype=pda.dtype)
-    if isinstance(pda, pdarray) and pda.dtype == bigint:
-        return coargsort(pda.bigint_to_uint_arrays(), algorithm)
-
-    if isinstance(pda, Strings):
+    elif isinstance(pda, Strings):
         repMsg = generic_msg(
             cmd="argsortStrings",
             args={
@@ -103,18 +90,11 @@ def argsort(
                 "algoName": algorithm.name,
             },
         )
+        return create_pdarray(cast(str, repMsg))
+    elif isinstance(pda, pdarray):
+        return pda.argsort(algorithm=algorithm, axis=axis)
     else:
-        repMsg = generic_msg(
-            cmd=f"argsort<{pda.dtype.name},{pda.ndim}>",
-            args={
-                "name": pda.name,
-                "algoName": algorithm.name,
-                "objType": pda.objType,
-                "axis": axis,
-            },
-        )
-
-    return create_pdarray(cast(str, repMsg))
+        raise TypeError(f"ak.argsort only supports pdarray, Strings, and Categorical, not {type(pda)}")
 
 
 def coargsort(
