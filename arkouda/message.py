@@ -406,10 +406,6 @@ class RequestMessage:
             Value indicating the number of parameters in args
             -1 if args is not json
 
-        Returns
-        -------
-        None
-
         """
         object.__setattr__(self, "user", user)
         object.__setattr__(self, "token", token)

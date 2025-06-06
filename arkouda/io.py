@@ -1248,10 +1248,6 @@ def to_parquet(
             don't satisfy that requirement.
             if set, write the equivalent Strings in place of any Categorical columns.
 
-    Returns
-    -------
-    None
-
     Raises
     ------
     ValueError
@@ -1351,10 +1347,6 @@ def to_hdf(
             Default: distribute
             Single writes the dataset to a single file
             Distribute writes the dataset to a file per locale
-
-    Returns
-    -------
-    None
 
     Raises
     ------

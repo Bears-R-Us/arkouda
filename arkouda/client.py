@@ -183,14 +183,7 @@ if mode == ClientMode.UI:
 
 # reset settings to default values
 def set_defaults() -> None:
-    """
-    Set client variables including verbose, maxTransferBytes and pdarrayIterThresh to default values.
-
-    Returns
-    -------
-    None
-
-    """
+    """Set client variables including verbose, maxTransferBytes, pdarrayIterThresh to default values."""
     global verbose, maxTransferBytes, pdarrayIterThresh
     verbose = verboseDefVal
     pdarrayIterThresh = pdarrayIterThreshDefVal
@@ -288,10 +281,6 @@ class Channel:
             The complete url in the format of tcp://server:port?token=<token_value>
             where the token is optional
 
-        Returns
-        -------
-        None
-
         """
         self.url = connect_url if connect_url else f"tcp://{server}:{port}"
 
@@ -317,10 +306,6 @@ class Channel:
         token : str, optional
             The token supplied by the user, which is required if authentication
             is enabled, defaults to None
-
-        Returns
-        -------
-        None
 
         Raises
         ------
@@ -381,7 +366,7 @@ class Channel:
         request_id : str, default=None
             Specifies an identifier for each request submitted to Arkouda
 
-        Returns
+        Returns  # noqa: DAR202
         -------
         Union[str,memoryview]
             The response string or binary data sent back from the Arkouda server
@@ -434,7 +419,7 @@ class Channel:
         request_id : str, default=None
             Specifies an identifier for each request submitted to Arkouda
 
-        Returns
+        Returns  # noqa: DAR202
         -------
         Union[str,memoryview]
             The response string or binary data sent back from the Arkouda server
@@ -682,10 +667,6 @@ def connect(
     access_channel : Channel, optional
         The desired Channel implementation that differs from the default ZmqChannel
 
-    Returns
-    -------
-    None
-
     Raises
     ------
     ConnectionError
@@ -845,10 +826,6 @@ def disconnect() -> None:
     """
     Disconnects the client from the Arkouda server.
 
-    Returns
-    -------
-    None
-
     Raises
     ------
     ConnectionError
@@ -884,10 +861,6 @@ def shutdown() -> None:
     1. Delete all objects in the SymTable
     2. Shuts down the Arkouda server
     3. Disconnects the client from the stopped Arkouda Server
-
-    Returns
-    -------
-    None
 
     Raises
     ------

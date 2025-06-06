@@ -55,10 +55,6 @@ def write_line_to_file(path: str, line: str) -> None:
     line : str
         Line to be written to the file
 
-    Returns
-    -------
-    None
-
     Raises
     ------
     UnsupportedOption
@@ -129,10 +125,6 @@ def dict_to_delimited_file(path: str, values: Mapping[Any, Any], delimiter: str 
         Path to the file
     delimiter
         Delimiter separating key and value
-
-    Returns
-    -------
-    None
 
     Raises
     ------
