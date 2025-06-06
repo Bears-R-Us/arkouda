@@ -900,7 +900,7 @@ class GroupBy:
         >>> g.var(b)
         (array([1 2 3 4]), array([0.00000000000000000 0.00000000000000000 nan 0.00000000000000000]))
 
-        """ 
+        """
         k, v = self.aggregate(values, "var", skipna, ddof)
         return k, cast(pdarray, v)
 
