@@ -1819,6 +1819,82 @@ class pdarray:
         """
         #   Function is generated at runtime with _make_index_reduction_func.
         return argmax(self, axis=axis, keepdims=keepdims)
+    def std(
+        self,
+        ddof: int_scalars = 0,
+        axis: Optional[Union[int, Tuple[int, ...]]] = None,
+        keepdims: Optional[bool] = False,
+    ) -> Union[np.float64, pdarray]:
+        """
+        Return the standard deviation of values in the array. The standard
+        deviation is implemented as the square root of the variance.
+
+        Parameters
+        ----------
+        pda : pdarray
+            values for which to calculate the standard deviation
+        ddof : int_scalars
+            "Delta Degrees of Freedom" used in calculating std
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        Union[np.float64, pdarray]
+            The scalar standard deviation of the array, or the standard deviation
+             along the axis/axes if supplied
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> a = ak.arange(10)
+        >>> ak.std(a)
+        np.float64(2.8722813232690143)
+        >>> a.std()
+        np.float64(2.8722813232690143)
+        >>> a = ak.arange(10).reshape(2,5)
+        >>> a.std(axis=0)
+        array([2.5 2.5 2.5 2.5 2.5])
+        >>> ak.std(a,axis=0)
+        array([2.5 2.5 2.5 2.5 2.5])
+        >>> a.std(axis=1)
+        array([1.4142135623730951 1.4142135623730951])
+        >>> ak.std(a,axis=1)
+        array([1.4142135623730951 1.4142135623730951])
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance or ddof is not an integer
+        ValueError
+            Raised if ddof is an integer < 0
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        See Also
+        --------
+        mean, var
+
+        Notes
+        -----
+        The standard deviation is the square root of the average of the squared
+        deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.
+
+        The average squared deviation is normally calculated as
+        ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,
+        the divisor ``N - ddof`` is used instead. In standard statistical
+        practice, ``ddof=1`` provides an unbiased estimator of the variance
+        of the infinite population. ``ddof=0`` provides a maximum likelihood
+        estimate of the variance for normally distributed variables. The
+        standard deviation computed in this function is the square root of
+        the estimated variance, so even with ``ddof=1``, it will not be an
+        unbiased estimate of the standard deviation per se.
+        """
+        #   Function is generated at runtime with _make_stats_reduction_func
+        return std(self, ddof=ddof, axis=axis, keepdims=keepdims)
 
     def cov(self, y: pdarray) -> np.float64:
         """
