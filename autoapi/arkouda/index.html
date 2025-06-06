@@ -1036,7 +1036,7 @@ to Python users.</p>
 <td><p>Computes the chi square statistic and p-value.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.clear" title="arkouda.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>(→ None)</p></td>
-<td><p>Send a clear message to clear all unregistered data from the server symbol table</p></td>
+<td><p>Send a clear message to clear all unregistered data from the server symbol table.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.clip" title="arkouda.clip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clip</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Clip (limit) the values in an array to a given range [lo,hi]</p></td>
@@ -13366,14 +13366,11 @@ values is negligible.</p>
 <span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/strings.html#Strings.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Strings.info" title="Link to this definition">¶</a></dt>
 <dd><p>Return a JSON formatted string containing information about all components of self</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>JSON string containing information about all components of self</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>JSON string containing information about all components of self</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -13903,15 +13900,7 @@ fromRight is not bool</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.pretty_print_info">
 <span class="sig-name descname"><span class="pre">pretty_print_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/strings.html#Strings.pretty_print_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Strings.pretty_print_info" title="Link to this definition">¶</a></dt>
-<dd><p>Print information about all components of self in a human readable format</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong></p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
+<dd><p>Print information about all components of self in a human readable format.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -14662,11 +14651,8 @@ a supported dtype</p></li>
 <dd><p>Unregister a Strings object in the arkouda server which was previously
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if the server could not find the internal name/symbol to remove</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if the server could not find the internal name/symbol to remove</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -17647,13 +17633,10 @@ has the precision and capacity to hold the desired result.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.clear">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarrayclass.html#clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.clear" title="Link to this definition">¶</a></dt>
-<dd><p>Send a clear message to clear all unregistered data from the server symbol table</p>
+<dd><p>Send a clear message to clear all unregistered data from the server symbol table.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if there is a server-side error in executing clear request</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error in executing clear request</p>
 </dd>
 </dl>
 </dd></dl>
@@ -23859,15 +23842,7 @@ pdarray if axis is supplied, in which case the operation is done along that axis
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.pretty_print_info">
 <span class="sig-name descname"><span class="pre">pretty_print_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.pretty_print_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarray.pretty_print_info" title="Link to this definition">¶</a></dt>
-<dd><p>Print information about all components of self in a human readable format</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong></p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
+<dd><p>Print information about all components of self in a human readable format.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -24502,11 +24477,8 @@ a supported dtype</p></li>
 <dd><p>Unregister a pdarray in the arkouda server which was previously
 registered using register() and/or attahced to using attach()</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if the server could not find the internal name/symbol to remove</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if the server could not find the internal name/symbol to remove</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -24889,11 +24861,8 @@ in order to scale using arkouda pdarrays.</p>
 if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
 if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown in the process of
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown in the process of
 retrieving information about the objects in names</p>
 </dd>
 </dl>
@@ -27566,11 +27535,8 @@ Single writes the dataset to a single file
 Distribute writes the dataset to a file per locale</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if (1) the lengths of columns and values differ or (2) the mode
 is not ‘truncate’ or ‘append’</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p></li>
@@ -27627,11 +27593,8 @@ if set, write the equivalent Strings in place of any Categorical columns.</p>
 </p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if (1) the lengths of columns and values differ or (2) the mode
 is not ‘truncate’ or ‘append’</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p></li>

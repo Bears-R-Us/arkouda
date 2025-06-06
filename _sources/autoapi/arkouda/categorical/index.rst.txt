@@ -399,10 +399,6 @@ Module Contents
 
       Print information about all components of self in a human-readable format.
 
-      :param None:
-
-      :rtype: None
-
 
 
    .. py:method:: register(user_defined_name: str) -> Categorical

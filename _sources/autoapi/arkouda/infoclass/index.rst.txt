@@ -86,8 +86,6 @@ Module Contents
                  if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
    :type names: Union[List[str], str]
 
-   :rtype: None
-
    :raises RuntimeError: Raised if a server-side error is thrown in the process of
        retrieving information about the objects in names
 

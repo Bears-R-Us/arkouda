@@ -8941,8 +8941,6 @@ Package Contents
 
       Return a JSON formatted string containing information about all components of self
 
-      :param None:
-
       :returns: JSON string containing information about all components of self
       :rtype: str
 
@@ -9360,11 +9358,7 @@ Package Contents
 
    .. py:method:: pretty_print_info() -> None
 
-      Print information about all components of self in a human readable format
-
-      :param None:
-
-      :rtype: None
+      Print information about all components of self in a human readable format.
 
 
 
@@ -9980,9 +9974,6 @@ Package Contents
 
       Unregister a Strings object in the arkouda server which was previously
       registered using register() and/or attached to using attach()
-
-
-      :rtype: None
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
 
@@ -12626,9 +12617,7 @@ Package Contents
 
 .. py:function:: clear() -> None
 
-   Send a clear message to clear all unregistered data from the server symbol table
-
-   :rtype: None
+   Send a clear message to clear all unregistered data from the server symbol table.
 
    :raises RuntimeError: Raised if there is a server-side error in executing clear request
 
@@ -17520,11 +17509,7 @@ Package Contents
 
    .. py:method:: pretty_print_info() -> None
 
-      Print information about all components of self in a human readable format
-
-      :param None:
-
-      :rtype: None
+      Print information about all components of self in a human readable format.
 
 
 
@@ -18079,9 +18064,6 @@ Package Contents
       Unregister a pdarray in the arkouda server which was previously
       registered using register() and/or attahced to using attach()
 
-
-      :rtype: None
-
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
 
       .. seealso:: :py:obj:`register`, :py:obj:`unregister`, :py:obj:`is_registered`, :py:obj:`unregister_pdarray_by_name`, :py:obj:`list_registry`
@@ -18428,8 +18410,6 @@ Package Contents
                  if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
                  if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
    :type names: Union[List[str], str]
-
-   :rtype: None
 
    :raises RuntimeError: Raised if a server-side error is thrown in the process of
        retrieving information about the objects in names
@@ -20727,8 +20707,6 @@ Package Contents
                      Distribute writes the dataset to a file per locale
    :type file_type: str ("single" | "distribute")
 
-   :rtype: None
-
    :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
        is not 'truncate' or 'append'
    :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
@@ -20781,8 +20759,6 @@ Package Contents
                            don't satisfy that requirement.
                            if set, write the equivalent Strings in place of any Categorical columns.
    :type compression: str (Optional)
-
-   :rtype: None
 
    :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
        is not 'truncate' or 'append'

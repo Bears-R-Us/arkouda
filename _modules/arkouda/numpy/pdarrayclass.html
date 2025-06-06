@@ -2025,17 +2025,7 @@
 <div class="viewcode-block" id="pdarray.pretty_print_info">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.pretty_print_info">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">pretty_print_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Print information about all components of self in a human readable format</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        None</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print information about all components of self in a human readable format.&quot;&quot;&quot;</span>
         <span class="n">pretty_print_information</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_list_component_names</span><span class="p">())</span></div>
 
 
@@ -3349,7 +3339,7 @@
         <span class="c1"># determine the format (single/distribute) that the file was saved in</span>
         <span class="n">file_type</span> <span class="o">=</span> <span class="n">_get_hdf_filetype</span><span class="p">(</span><span class="n">prefix_path</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
 
-        <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;tohdf&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
@@ -3364,7 +3354,9 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">repack</span><span class="p">:</span>
-            <span class="n">_repack_hdf</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">)</span></div>
+            <span class="n">_repack_hdf</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">msg</span></div>
 
 
 <div class="viewcode-block" id="pdarray.to_csv">
@@ -3510,13 +3502,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister a pdarray in the arkouda server which was previously</span>
 <span class="sd">        registered using register() and/or attahced to using attach()</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
@@ -3673,11 +3658,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.clear">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Send a clear message to clear all unregistered data from the server symbol table</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    None</span>
+<span class="sd">    Send a clear message to clear all unregistered data from the server symbol table.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>

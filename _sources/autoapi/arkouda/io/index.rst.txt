@@ -880,8 +880,6 @@ Module Contents
                      Distribute writes the dataset to a file per locale
    :type file_type: str ("single" | "distribute")
 
-   :rtype: None
-
    :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
        is not 'truncate' or 'append'
    :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
@@ -934,8 +932,6 @@ Module Contents
                            don't satisfy that requirement.
                            if set, write the equivalent Strings in place of any Categorical columns.
    :type compression: str (Optional)
-
-   :rtype: None
 
    :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
        is not 'truncate' or 'append'

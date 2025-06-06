@@ -64,8 +64,6 @@ Module Contents
    :type path: str
    :param delimiter: Delimiter separating key and value
 
-   :rtype: None
-
    :raises OError: Raised if there's an error opening or writing to the
        specified file
    :raises ValueError: Raised if the delimiter is not supported
@@ -97,8 +95,6 @@ Module Contents
    :type path: str
    :param line: Line to be written to the file
    :type line: str
-
-   :rtype: None
 
    :raises UnsupportedOption: Raised if there's an error in creating or
        writing to the file

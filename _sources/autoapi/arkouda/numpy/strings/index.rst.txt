@@ -600,8 +600,6 @@ Module Contents
 
       Return a JSON formatted string containing information about all components of self
 
-      :param None:
-
       :returns: JSON string containing information about all components of self
       :rtype: str
 
@@ -1019,11 +1017,7 @@ Module Contents
 
    .. py:method:: pretty_print_info() -> None
 
-      Print information about all components of self in a human readable format
-
-      :param None:
-
-      :rtype: None
+      Print information about all components of self in a human readable format.
 
 
 
@@ -1639,9 +1633,6 @@ Module Contents
 
       Unregister a Strings object in the arkouda server which was previously
       registered using register() and/or attached to using attach()
-
-
-      :rtype: None
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
 

@@ -174,9 +174,7 @@ Module Contents
 
 .. py:function:: clear() -> None
 
-   Send a clear message to clear all unregistered data from the server symbol table
-
-   :rtype: None
+   Send a clear message to clear all unregistered data from the server symbol table.
 
    :raises RuntimeError: Raised if there is a server-side error in executing clear request
 
@@ -1152,11 +1150,7 @@ Module Contents
 
    .. py:method:: pretty_print_info() -> None
 
-      Print information about all components of self in a human readable format
-
-      :param None:
-
-      :rtype: None
+      Print information about all components of self in a human readable format.
 
 
 
@@ -1710,9 +1704,6 @@ Module Contents
 
       Unregister a pdarray in the arkouda server which was previously
       registered using register() and/or attahced to using attach()
-
-
-      :rtype: None
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
 

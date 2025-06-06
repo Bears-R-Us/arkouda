@@ -47,8 +47,6 @@ Module Contents
    :param access_channel: The desired Channel implementation that differs from the default ZmqChannel
    :type access_channel: Channel, optional
 
-   :rtype: None
-
    :raises ConnectionError: Raised if there's an error in connecting to the Arkouda server
    :raises ValueError: Raised if there's an error in parsing the connect_url parameter
    :raises RuntimeError: Raised if there is a server-side error
@@ -62,8 +60,6 @@ Module Contents
 .. py:function:: disconnect() -> None
 
    Disconnects the client from the Arkouda server.
-
-   :rtype: None
 
    :raises ConnectionError: Raised if there's an error disconnecting from the Arkouda server
 
@@ -219,8 +215,6 @@ Module Contents
    1. Delete all objects in the SymTable
    2. Shuts down the Arkouda server
    3. Disconnects the client from the stopped Arkouda Server
-
-   :rtype: None
 
    :raises RuntimeError: Raised if the client is not connected to the Arkouda server or
        there is an error in disconnecting from the server

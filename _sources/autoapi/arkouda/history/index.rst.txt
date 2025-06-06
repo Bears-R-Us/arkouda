@@ -37,9 +37,10 @@ Module Contents
       :type num_commands: int
       :param command_filter: String containing characters used to select a subset of command history.
       :type command_filter: str
-
-      :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
-      :rtype: List[str]
+      :param Returns  # noqa:
+      :type Returns  # noqa: DAR202
+      :param -------:
+      :param List[str]: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
 
 
 
