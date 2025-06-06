@@ -1931,6 +1931,54 @@ class pdarray:
         #   Function is generated at runtime with _make_index_reduction_func.
         return argmax(self, axis=axis, keepdims=keepdims)
 
+    def mean(
+        self, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False
+    ) -> Union[numeric_scalars, pdarray]:
+        """
+        Return the mean of the array.
+
+        Parameters
+        ----------
+        pda : pdarray
+            Values for which to calculate the mean
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        Union[np.float64, pdarray]
+            The mean calculated from the pda sum and size, along the axis/axes if
+            those are given.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> a = ak.arange(10)
+        >>> ak.mean(a)
+        np.float64(4.5)
+        >>> a.mean()
+        np.float64(4.5)
+        >>> a = ak.arange(10).reshape(2,5)
+        >>> a.mean(axis=0)
+        array([2.5 3.5 4.5 5.5 6.5])
+        >>> ak.mean(a,axis=0)
+        array([2.5 3.5 4.5 5.5 6.5])
+        >>> a.mean(axis=1)
+        array([2.00000000000000000 7.00000000000000000])
+        >>> ak.mean(a,axis=1)
+        array([2.00000000000000000 7.00000000000000000])
+
+        Raises
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
+        """
+        #   Function is generated at runtime with _make_reduction_func.
+        return mean(self, axis=axis, keepdims=keepdims)
+
     def std(
         self,
         ddof: int_scalars = 0,
