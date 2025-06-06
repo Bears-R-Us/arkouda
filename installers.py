@@ -1,7 +1,7 @@
 import os
 import shutil
 import sys
-from subprocess import PIPE, Popen, TimeoutExpired
+from subprocess import PIPE, CalledProcessError, Popen, TimeoutExpired, check_call
 
 from setuptools.command.build_py import build_py
 
@@ -13,11 +13,11 @@ class ArkoudaBuildError(Exception):
 def chpl_installed():
     """Check to see if chapel is installed and sourced."""
     try:
-        if os.environ["CHPL_HOME"]:
+        if check_call(["chpl", "--version"], stdout=PIPE, stderr=PIPE) == 0:
             print("Existing Chapel install detected")
             return True
         return False
-    except KeyError:
+    except (KeyError, CalledProcessError):
         return False
 
 

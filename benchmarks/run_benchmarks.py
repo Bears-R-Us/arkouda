@@ -69,7 +69,7 @@ if os.getenv("ARKOUDA_SERVER_PARQUET_SUPPORT"):
 
 def get_chpl_util_dir():
     """Get the Chapel directory that contains graph generation utilities."""
-    CHPL_HOME = os.getenv("CHPL_HOME")
+    CHPL_HOME = subprocess.check_output(["chpl", "--print-chpl-home"]).decode().strip()
     if not CHPL_HOME:
         logging.error("$CHPL_HOME not set")
         sys.exit(1)

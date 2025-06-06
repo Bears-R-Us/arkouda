@@ -380,12 +380,14 @@ CHECK_DEPS = check-chpl check-zmq check-hdf5 check-re2 check-arrow check-iconv c
 endif
 check-deps: $(CHECK_DEPS)
 
-SANITIZER = $(shell $(CHPL_HOME)/util/chplenv/chpl_sanitizers.py --exe 2>/dev/null)
+ARKOUDA_CHPL_HOME=$(shell $(CHPL) --print-chpl-home 2>/dev/null)
+
+SANITIZER = $(shell $(ARKOUDA_CHPL_HOME)/util/chplenv/chpl_sanitizers.py --exe 2>/dev/null)
 ifneq ($(SANITIZER),none)
 ARROW_SANITIZE=-fsanitize=$(SANITIZER)
 endif
 
-CHPL_CXX = $(shell $(CHPL_HOME)/util/config/compileline --compile-c++ 2>/dev/null)
+CHPL_CXX = $(shell $(ARKOUDA_CHPL_HOME)/util/config/compileline --compile-c++ 2>/dev/null)
 ifeq ($(CHPL_CXX),)
 CHPL_CXX=$(CXX)
 endif
@@ -574,7 +576,7 @@ arkouda-clean:
 
 .PHONY: tags
 tags:
-	-@(cd $(ARKOUDA_SOURCE_DIR) && $(CHPL_HOME)/util/chpltags -r . > /dev/null \
+	-@(cd $(ARKOUDA_SOURCE_DIR) && $(ARKOUDA_CHPL_HOME)/util/chpltags -r . > /dev/null \
 		&& echo "Updated $(ARKOUDA_SOURCE_DIR)/TAGS" \
 		|| echo "Tags utility not available.  Skipping tags generation.")
 
