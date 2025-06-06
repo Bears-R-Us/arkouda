@@ -14,7 +14,7 @@ MAXSTRLEN = 5
 @pytest.mark.benchmark(group="Arkouda_in1d")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("size", SIZES)
-def bench_ak_in1d(benchmark, dtype, size):
+def bench_in1d(benchmark, dtype, size):
     """
     Measures the performance of ak.in1d
 
