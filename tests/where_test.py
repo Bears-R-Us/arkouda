@@ -34,6 +34,8 @@ class TestWhere:
             akres = ak.where(akCond, akA[dtype1], akB[dtype2]).to_ndarray()
             npres = np.where(npCond, npA[dtype1], npB[dtype2])
             assert np.allclose(akres, npres, equal_nan=True)
+            akres = ak.where2(akCond, akA[dtype1], akB[dtype2]).to_ndarray()
+            assert np.allclose(akres, npres, equal_nan=True)
 
     def test_error_handling(self):
         with pytest.raises(TypeError):
@@ -57,6 +59,8 @@ class TestWhere:
         cond = a1 < 5
         result = ak.where(cond, a1, a2)
         assert np_result.tolist() == result.to_list()
+        result = ak.where2(cond, a1, a2)
+        assert np_result.tolist() == result.to_list()
 
     def test_greater_than_where_clause(self):
         n1 = np.arange(1, 10)
@@ -70,6 +74,8 @@ class TestWhere:
         cond = a1 > 5
         result = ak.where(cond, a1, a2)
         assert np_result.tolist() == result.to_list()
+        result = ak.where2(cond, a1, a2)
+        assert np_result.tolist() == result.to_list()
 
     def test_greater_than_where_clause_with_scalars(self):
         n1 = np.arange(1, 10)
@@ -81,10 +87,21 @@ class TestWhere:
         condA = a1 > 5
         result = ak.where(condA, a1, 1)
         assert np_result.tolist() == result.to_list()
+        result = ak.where2(condA, a1, 1)
+        assert np_result.tolist() == result.to_list()
 
         np_result = np.where(condN, 1, n1)
 
         result = ak.where(condA, 1, a1)
+        assert np_result.tolist() == result.to_list()
+        result = ak.where2(condA, 1, a1)
+        assert np_result.tolist() == result.to_list()
+
+        np_result = np.where(condN, 1, 0)
+
+        result = ak.where(condA, 1, 0)
+        assert np_result.tolist() == result.to_list()
+        result = ak.where2(condA, 1, 0)
         assert np_result.tolist() == result.to_list()
 
     def test_not_equal_where_clause(self):
@@ -99,6 +116,8 @@ class TestWhere:
         cond = a1 != 5
         result = ak.where(cond, a1, a2)
         assert np_result.tolist() == result.to_list()
+        result = ak.where2(cond, a1, a2)
+        assert np_result.tolist() == result.to_list()
 
     def test_equals_where_clause(self):
         n1 = np.arange(1, 10)
@@ -111,6 +130,8 @@ class TestWhere:
 
         cond = a1 == 5
         result = ak.where(cond, a1, a2)
+        assert np_result.tolist() == result.to_list()
+        result = ak.where2(cond, a1, a2)
         assert np_result.tolist() == result.to_list()
 
     def test_where_filter(self):
@@ -148,3 +169,6 @@ class TestWhere:
             assert ak.where(cond, a, b).to_list() == a.to_list()
             assert ak.where(cond, 1, b).to_list() == a.to_list()
             assert ak.where(cond, a, 1).to_list() == a.to_list()
+            assert ak.where2(cond, a, b).to_list() == a.to_list()
+            assert ak.where2(cond, 1, b).to_list() == a.to_list()
+            assert ak.where2(cond, a, 1).to_list() == a.to_list()
