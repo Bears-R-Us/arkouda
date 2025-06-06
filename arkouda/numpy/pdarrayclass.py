@@ -1615,17 +1615,7 @@ class pdarray:
         return information(self._list_component_names())
 
     def pretty_print_info(self) -> None:
-        """
-        Print information about all components of self in a human readable format
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
+        """Print information about all components of self in a human readable format."""
         pretty_print_information(self._list_component_names())
 
     def is_sorted(
@@ -2837,7 +2827,7 @@ class pdarray:
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
 
-        generic_msg(
+        msg = generic_msg(
             cmd="tohdf",
             args={
                 "values": self,
@@ -2853,6 +2843,8 @@ class pdarray:
 
         if repack:
             _repack_hdf(prefix_path)
+
+        return msg
 
     @typechecked
     def to_csv(
@@ -2989,13 +2981,6 @@ class pdarray:
         """
         Unregister a pdarray in the arkouda server which was previously
         registered using register() and/or attahced to using attach()
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-        None
 
         Raises
         ------
@@ -3148,11 +3133,7 @@ def create_pdarrays(repMsg: str) -> List[pdarray]:
 
 def clear() -> None:
     """
-    Send a clear message to clear all unregistered data from the server symbol table
-
-    Returns
-    -------
-    None
+    Send a clear message to clear all unregistered data from the server symbol table.
 
     Raises
     ------

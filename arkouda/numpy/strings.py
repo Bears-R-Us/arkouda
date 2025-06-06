@@ -193,10 +193,6 @@ class Strings:
         bytes_size : int_scalars
             length of the bytes array contained on the server aka total bytes
 
-        Returns
-        -------
-        None
-
         Raises
         ------
         RuntimeError
@@ -2675,10 +2671,6 @@ class Strings:
         """
         Return a JSON formatted string containing information about all components of self
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         str
@@ -2687,18 +2679,7 @@ class Strings:
         return information(self._list_component_names())
 
     def pretty_print_info(self) -> None:
-        """
-        Print information about all components of self in a human readable format
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        """
+        """Print information about all components of self in a human readable format."""
         self.entry.pretty_print_info()
 
     @typechecked
@@ -2759,13 +2740,6 @@ class Strings:
         """
         Unregister a Strings object in the arkouda server which was previously
         registered using register() and/or attached to using attach()
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-        None
 
         Raises
         ------

@@ -146,10 +146,6 @@ class ArkoudaLogger(Logger):
             Names of 1..n Handlers configured for the ArkoudaLogger that
             the log level will be changed for.
 
-        Returns
-        -------
-        None
-
         Raises
         ------
         TypeError
@@ -175,14 +171,7 @@ class ArkoudaLogger(Logger):
                     handler.setLevel(newLevel)
 
     def enableVerbose(self) -> None:
-        """
-        Enable verbose output by setting the log level for all handlers to DEBUG.
-
-        Returns
-        -------
-        None
-
-        """
+        """Enable verbose output by setting the log level for all handlers to DEBUG."""
         self.changeLogLevel(LogLevel.DEBUG)
 
     @typechecked
@@ -203,10 +192,6 @@ class ArkoudaLogger(Logger):
         ------
         TypeError
             Raised if logLevel is not a LogLevel enum
-
-        Returns
-        -------
-        None
 
         """
         self.changeLogLevel(logLevel)

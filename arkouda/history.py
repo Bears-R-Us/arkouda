@@ -42,7 +42,7 @@ class HistoryRetriever:
         command_filter : str
             String containing characters used to select a subset of command history.
 
-        Returns
+        Returns  # noqa: DAR202
         -------
         List[str]
             A list of commands from the Python shell, Jupyter notebook, or IPython notebook

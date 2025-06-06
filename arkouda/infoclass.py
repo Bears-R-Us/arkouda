@@ -161,10 +161,6 @@ def pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -
        if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
        if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
 
-    Returns
-    -------
-    None
-
     Raises
     ------
     RuntimeError
