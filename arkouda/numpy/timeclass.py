@@ -1,6 +1,6 @@
 import datetime
 import json
-from typing import TYPE_CHECKING, Optional, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Optional, TypeVar, Union
 
 import numpy as np
 from pandas import Series as pdSeries
@@ -914,7 +914,7 @@ class Timedelta(_AbstractBaseTime):
 
     def abs(self):
         """Absolute value of time interval."""
-        from arkouda.numpy import cast as akcast
+        from arkouda.numpy.numeric import cast as akcast
         return self.__class__(akcast(abs(self.values), "int64"))
 
     def register(self, user_defined_name):
