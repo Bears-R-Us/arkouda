@@ -1484,6 +1484,99 @@ class pdarray:
             },
         )
 
+    def any(
+        self, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False
+    ) -> Union[bool_scalars, pdarray]:
+        """
+        Return True iff any element of the array along the given axis evaluates to True.
+
+        Parameters
+        ----------
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        boolean or pdarray
+            boolean if axis is omitted, else pdarray if axis is supplied
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.any(ak.array([True,False,False]))
+        np.True_
+        >>> ak.any(ak.array([[True,True,False],[False,True,True]]),axis=0)
+        array([True True True])
+        >>> ak.any(ak.array([[True,True,True],[False,False,False]]),axis=0,keepdims=True)
+        array([array([True True True])])
+        >>> ak.any(ak.array([[True,True,True],[False,False,False]]),axis=1,keepdims=True)
+        array([array([True]) array([False])])
+        >>> ak.array([True,False,False]).any()
+        np.True_
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        Notes
+        -----
+        Works as a method of a pdarray (e.g. a.any()) or a standalone function (e.g. ak.any(a))
+        """
+        #   Function is generated at runtime with _make_reduction_func.
+        return any(self, axis=axis, keepdims=keepdims)
+
+    def all(
+        self, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False
+    ) -> Union[bool_scalars, pdarray]:
+        """
+        Return True iff all elements of the array along the given axis evaluate to True.
+
+        Parameters
+        ----------
+        axis : int, Tuple[int, ...], optional, default = None
+            The axis or axes along which to do the operation
+            If None, the computation is done across the entire array.
+        keepdims : bool, optional, default = False
+            Whether to keep the singleton dimension(s) along `axis` in the result.
+
+        Returns
+        -------
+        boolean or pdarray
+            boolean if axis is omitted, pdarray if axis is supplied
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> ak.all(ak.array([True,False,False]))
+        np.False_
+        >>> ak.all(ak.array([[True,True,False],[False,True,True]]),axis=0)
+        array([False True False])
+        >>> ak.all(ak.array([[True,True,True],[False,False,False]]),axis=0,keepdims=True)
+        array([array([False False False])])
+        >>> ak.all(ak.array([[True,True,True],[False,False,False]]),axis=1,keepdims=True)
+        array([array([True]) array([False])])
+        >>> ak.array([True,False,False]).all()
+        np.False_
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        Notes
+        -----
+        Works as a method of a pdarray (e.g. a.any()) or a standalone function (e.g. ak.all(a))
+        """
+        return all(self, axis=axis, keepdims=keepdims)
+
     def is_registered(self) -> np.bool_:
         """
         Return True iff the object is contained in the registry
