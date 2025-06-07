@@ -34,9 +34,10 @@ def cp_test_base_tmp(request):
 
 class TestCheckpoint:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_checkpoint(self, prob_size):
-        arr = ak.zeros(prob_size, int)
-        arr[2] = 2
+    @pytest.mark.parametrize("dtype", ["int64", "float64", "bool"])
+    def test_checkpoint(self, prob_size, dtype):
+        arr = ak.zeros(prob_size, dtype)
+        arr[2] = 2 if dtype != "bool" else True
 
         cp_name = ak.save_checkpoint()
 
@@ -47,13 +48,14 @@ class TestCheckpoint:
             assert path.isdir(expected_dir)
             assert path.isfile(path.join(expected_dir, "server.md"))
 
-            arr[3] = 3
+            arr[3] = 3 if dtype != "bool" else False
 
             # should overwrite the value
             ak.load_checkpoint(cp_name)
 
             assert arr[3] == 0
-            assert arr[2] == 2
+            assert arr[2] == (2 if dtype != "bool" else True)
+            assert arr.dtype == dtype
 
         finally:
             rmtree(expected_dir)
@@ -89,6 +91,7 @@ class TestCheckpoint:
         create_fake_cp(cp_name, num_locales=ak.get_config()["numLocales"] + 1)
         try:
             ak.load_checkpoint(cp_name)
+            assert False  # should not get here
         except RuntimeError as err:
             assert (
                 "Attempting to load a checkpoint that was made with a different number of locales"
@@ -102,16 +105,15 @@ class TestCheckpoint:
 
         metadata_name = create_fake_array(cp_name)
 
-        num_locales = ak.get_config()["numLocales"]
-
         with open(metadata_name, "a") as f:
-            for i in range(0, num_locales + 5):
+            for i in range(0, 0):  # do not generate any chunks to test an error
                 f.write(json.dumps({"filename": "dummy file", "numElems": 100}))
 
         try:
             ak.load_checkpoint(cp_name)
+            assert False  # should not get here
         except RuntimeError as err:
-            assert ("does not contain correct number of chunks") in str(err)
+            assert "could not read chunk 1 metadata" in str(err)
         finally:
             clean_fake_cp(cp_name)
 
@@ -122,16 +124,18 @@ class TestCheckpoint:
 
         try:
             ak.load_checkpoint(cp_name)
+            assert False  # should not get here
         except RuntimeError as err:
-            assert ("has incorrect format") in str(err)
+            assert "field 'size' not found" in str(err)
         finally:
             clean_fake_cp(cp_name)
 
     def test_wrong_argument(self):
         try:
             ak.save_checkpoint(mode="override")
+            assert False  # should not get here
         except ValueError as err:
-            assert "can be 'overwrite' or 'error'" in str(err)
+            assert 'invalid checkpointing mode "override"' in str(err)
 
 
 def create_fake_array(cp_name, arr_name="dummy", num_target_locales=-1, corrupt_json=False):
@@ -142,17 +146,29 @@ def create_fake_array(cp_name, arr_name="dummy", num_target_locales=-1, corrupt_
     if num_target_locales == -1:
         num_target_locales = ak.get_config()["numLocales"]
 
-    name_field = "name" if not corrupt_json else "junk"
+    size_field = "size" if not corrupt_json else "junk"
 
     with open(arr_metadata, "w") as f:
         f.write(
             json.dumps(
                 {
-                    name_field: arr_name,
-                    "size": 10,
-                    "numTargetLocales": num_target_locales,
+                    "entryName": arr_name,
+                    "entryType": "PrimitiveTypedArraySymEntry",
                 }
             )
+            + "\n"
+        )
+        f.write(
+            json.dumps(
+                {
+                    "dtype": "int64",
+                    size_field: 10,
+                    "ndim": 1,
+                    "numTargetLocales": num_target_locales,
+                    "numChunks": num_target_locales,
+                }
+            )
+            + "\n"
         )
 
     return arr_metadata

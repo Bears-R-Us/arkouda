@@ -1,6 +1,6 @@
 module CheckpointMsg {
   use FileSystem;
-  use List;
+  use Types, List;
   use ArkoudaJSONCompat;
   import IO, Path, Time;
   import Reflection.{getModuleName as M,
@@ -74,6 +74,8 @@ module CheckpointMsg {
   }
 
 
+  private param SymEntryType = SymbolEntryType.PrimitiveTypedArraySymEntry;
+
   private proc removeIt(path) throws do
     if isDir(path) then rmTree(path); else remove(path);
 
@@ -111,26 +113,17 @@ module CheckpointMsg {
     saveServerMetadata(cpPath, st);
 
     for (name, entry) in zip(st.tab.keys(), st.tab.values()) {
-      try {
-        var gse = toGenSymEntry(entry);
+      if name != entry.name then
+        cpLogger.error(M(), R(), L(), "SymTab name ", name,
+                       " differs from entry.name ", entry.name, ".");
 
-        // TODO we can expand this
-        if gse.ndim != 1 then continue;
-
-        // These types are the only types parquet IO supports right now.
-        select gse.dtype {
-          when DType.UInt64  do saveArr(cpPath, name, gse: getSEType(uint(64)));
-          when DType.Int64   do saveArr(cpPath, name, gse: getSEType(int(64)));
-          when DType.Float64 do saveArr(cpPath, name, gse: getSEType(real(64)));
-          when DType.Bool    do saveArr(cpPath, name, gse: getSEType(bool));
-          otherwise          do continue;
-        }
-        cpLogger.debug(M(), R(), L(), "Saved entry %s".format(name));
-      }
-      catch err: ClassCastError {
-        // we couldn't build a symentry, not saving this entry
-        cpLogger.debug(M(), R(), L(), "Cannot save %s".format(name));
-      }
+      const entryMD = new entryMetadata(name, entry.entryType:string);
+      const mdName = Path.joinPath(cpPath, ".".join(name, metadataExt));
+      var mdWriter = IO.open(mdName, ioMode.cw).writer(locking=false);
+      writeJson(mdWriter, entryMD, "entry metadata", mdName);
+        
+      // actual work is done here
+      entry.saveEntry(name, cpPath, mdName, mdWriter);
     }
 
     updateLastCkptCompletion();
@@ -154,45 +147,43 @@ module CheckpointMsg {
     const nameArg = msgArgs.getValueOf("name");
 
     if !exists(basePath) {
-      return Msg.error("The base save directory not found: " + basePath);
+      return Msg.error("The base checkpoint directory not found: " + basePath);
     }
 
     const cpPath = Path.joinPath(basePath, nameArg);
 
     if !exists(cpPath) {
-      return Msg.error("The Arkouda save directory not found: " + cpPath);
+      return Msg.error("The checkpoint directory not found: " + cpPath);
     }
 
-    cpLogger.debug(M(), R(), L(), "Save directory found: %s".format(cpPath));
+    loadServerMetadata(cpPath);
 
-    var loadedId: string;
-    try {
-      loadedId = loadServerMetadata(cpPath);
-    }
-    catch e: FileNotFoundError {
-      return Msg.error("Can't find the server metadata in the saved session.");
-    }
-
-    cpLogger.debug(M(), R(), L(), "Metadata loaded");
-
-    var rnames: list((string, ObjType, string));
-
-    // iterate over metadata while loading individual data for each metadata
+    // iterate over metadata files, loading an entry for each metadata
     for mdName in glob(cpPath+"/*"+metadataExt) {
       // skip the server metadata
       if mdName == Path.joinPath(cpPath, serverMetadataName) then continue;
 
-      cpLogger.debug(M(), R(), L(),
-                     "Loading array with metadata %s".format(mdName));
-      // load the array (data and metadata)
-      var (name, entry) = loadArr(cpPath, mdName, loadedId);
+      cpLogger.debug(M(), R(), L(), "Loading entry metadata from ", mdName);
+      var mdReader = IO.open(mdName, ioMode.r).reader(locking=false);
+      const entryMD = readJson(mdReader, entryMetadata, "entry metadata", mdName);
 
-      st.addEntry(name, entry);
+      const entry: shared AbstractSymEntry;
+      select entryMD.entryType {
+        when SymEntryType:string do
+          entry = loadSymEntry(mdName, entryMD, mdReader);
+        otherwise do
+          // we should be able to load everything we saved
+          throw new NotImplementedError(cpNotImplementedMsg("Loading",
+            entryMD.entryName, entryMD.entryType, mdName), L(), R(), M());
+      }
 
-      cpLogger.debug(M(), R(), L(),
-                     "Loaded array with metadata %s".format(mdName));
+      if entry.name.isEmpty() then
+        throw new LoadCheckpointError("Entry in " + mdName + " has empty name");
 
+      st.addEntry(entry.name, entry);
+      cpLogger.debug(M(), R(), L(), "Added entry with metadata ", mdName);
     }
+
     updateLastCkptCompletion();
     return Msg.send(nameArg);
   }
@@ -331,99 +322,101 @@ module CheckpointMsg {
     return "";
   }
 
-  private proc getSEType(type t) type {
-    return borrowed SymEntry(t, dimensions=1);
-  }
-
   private proc saveServerMetadata(path, st: borrowed SymTab) throws {
     const serverMD = new serverMetadata(st.serverid, numLocales);
-
     const mdName = Path.joinPath(path, serverMetadataName);
-    var mdFile = IO.open(mdName, ioMode.cw);
-    var mdWriter = mdFile.writer();
-    mdWriter.writeln(toJson(serverMD));
+    writeJson(mdName, serverMD, "server metadata");
+    cpLogger.debug(M(), R(), L(), "Server metadata saved into ", mdName);
   }
 
-  private proc saveArr(path, name, entry) throws {
-    const arrMD = new arrayMetadata(name, entry.size,
-                                    entry.a.targetLocales().size);
+  private proc loadServerMetadata(path) throws {
+    const mdName = Path.joinPath(path, serverMetadataName);
+    cpLogger.debug(M(), R(), L(), "Loading server metadata from ", mdName);
+    const serverMD = readJson(mdName, serverMetadata, "server metadata");
+
+    if serverMD.numLocales != numLocales {
+      throw new owned LoadCheckpointError(
+          ("Attempting to load a checkpoint that was made with a different " +
+           "number of locales (%i) than the current execution (%i)" +
+           "").format(serverMD.numLocales, numLocales));
+    }
+  }
+
+  private proc cpNotImplementedMsg(direction, entryName, entryType, mdName) {
+    return " ".join(direction, "a checkpoint is not implemented for entry",
+                    entryName, "which is a", entryType, "with metadata file", mdName);
+  }
+
+  // to be implemented by concrete subclasses
+  proc AbstractSymEntry.saveEntry(name, path, mdName, mdWriter) throws {
+    // this is not an error at the moment.
+    cpLogger.debug(M(), R(), L(), cpNotImplementedMsg("Saving",
+                          name, this.entryType:string, mdName));
+  }
+
+  private proc checkSymEntryType(entry: SymEntry(?), direction: string) {
+    if entry.entryType != SymEntryType then
+      cpLogger.error(M(), R(), L(), "unexpected SymEntry.entryType=",
+                     entry.entryType:string, ", expected: ", SymEntryType:string,
+                     " when ", direction, " an entry with name:", entry.name);
+  }
+
+  override proc SymEntry.saveEntry(name, path, mdName, mdWriter) throws {
+    const entry = this;
+    checkSymEntryType(entry, "saving");
+
+    // SymEntry.saveEntry() will be instantiated by the compiler for each
+    // (etype, dimensions) combination that the program can create.
+    // So we just need to check whether our implementation can handle
+    // the given instantiation. Cf. the comment for loadSymEntry().
+
+    if entry.dimensions > 1 {
+        cpLogger.debug(M(), R(), L(), cpNotImplementedMsg(" ".join(
+          "Saving an array with >1 dimensions into"),
+          name, entry.entryType:string, mdName));
+        return;
+    }
+    proc isSupportedEtype(type t) do return isIntegral(t) || isReal(t) || isBool(t);
+    if ! isSupportedEtype(entry.etype) {
+        cpLogger.debug(M(), R(), L(), cpNotImplementedMsg(" ".join(
+          "Saving an array with", entry.etype:string, "element type into"),
+          name, entry.entryType:string, mdName));
+        return;
+    }
 
     // write the array
     const dataName = Path.joinPath(path, ".".join(name, dataExt));
     const (warnFlag, filenames, numElems) =
         write1DDistArrayParquet(filename=dataName,
                                 dsetname=dsetname,
-                                dtype="int64",
+                                dtype=type2str(entry.etype),
                                 compression=0,
                                 mode=TRUNCATE,
                                 A=entry.a);
 
     cpLogger.debug(M(), R(), L(), "Data created: %s".format(dataName));
 
-    // write the metadata
-    const mdName = Path.joinPath(path, ".".join(name, metadataExt));
-    var mdFile = IO.open(mdName, ioMode.cw);
-    var mdWriter = mdFile.writer();
-    mdWriter.writeln(toJson(arrMD));
+    const arrayMD = new arrayMetadata(dtype=dtype2str(entry.dtype), size=entry.size,
+                                      numTargetLocales=entry.a.targetLocales().size,
+                                      ndim=entry.ndim, numChunks=numElems.size);
+    writeJson(mdWriter, arrayMD, "array metadata", mdName);
 
     for data in zip(filenames, numElems) {
-      const metadata = new chunkMetadata((...data));
-      mdWriter.writeln(toJson(metadata));
+      const chunkMD = new chunkMetadata((...data));
+      writeJson(mdWriter, chunkMD, "chunk metadata", mdName);
     }
-
-    mdWriter.close();
-    mdFile.close();
 
     cpLogger.debug(M(), R(), L(), "Metadata created: %s".format(mdName));
   }
 
-  private proc loadServerMetadata(path) throws {
-    const mdName = Path.joinPath(path, serverMetadataName);
-
-    var mdFile = IO.open(mdName, ioMode.r);
-    var mdReader = mdFile.reader();
-
-    const metadata: serverMetadata;
-    try {
-      metadata = fromJsonThrow(mdReader.readAll(string), serverMetadata);
-    }
-    catch IllegalArgumentError {
-      throw new owned LoadCheckpointError(
-          "Server metadata has incorrect format (%s) ".format(mdName)
-      );
-    }
-
-    if metadata.numLocales!=numLocales {
-      throw new owned LoadCheckpointError(
-          ("Attempting to load a checkpoint that was made with a different " +
-           "number of locales (%i) then the current execution (%i)" +
-           "").format(metadata.numLocales, numLocales));
-    }
-
-    return metadata.serverid;
-  }
-
-  private proc loadArr(path, mdName, loadedId) throws {
+  // load and return a SymEntry / PrimitiveTypedArraySymEntry
+  private proc loadSymEntry(mdName, entryMD, mdReader) : shared GenSymEntry throws {
     cpLogger.debug(M(), R(), L(), "Reading %s".format(mdName));
 
-    var mdFile = IO.open(mdName, ioMode.r);
-    var mdReader = mdFile.reader();
-
-    const metadata: arrayMetadata;
-    try {
-      metadata = fromJsonThrow(mdReader.readThrough("\n"), arrayMetadata);
-    }
-    catch IllegalArgumentError {
-      throw new owned LoadCheckpointError(
-          "Array metadata header has incorrect format (%s) ".format(mdName)
-      );
-    }
-
+    const arrayMD = readJson(mdReader, arrayMetadata, "array metadata", mdName);
     cpLogger.debug(M(), R(), L(), "Metadata read %s".format(mdName));
 
-    const ref name = metadata.name;
-    const ref size = metadata.size;
-    const ref numTargetLocales = metadata.numTargetLocales;
+    const numTargetLocales = arrayMD.numTargetLocales;
 
     if numTargetLocales!=numLocales {
       throw new owned LoadCheckpointError(
@@ -432,39 +425,46 @@ module CheckpointMsg {
            "").format(numTargetLocales, numLocales));
     }
 
+    // Below we instantiate loadHelperSE() for each (dtype, ndim) combination
+    // provided by the registration framework. This may not cover all the
+    // combinations for which `SymEntry.saveEntry()`is instantiated.
+
+    for param dimIdx in 0..arrayDimensionsTy.size-1 do
+      if arrayMD.ndim == arrayDimensionsTy[dimIdx].size then
+        for param eltyIdx in 0..arrayElementsTy.size-1 do
+          if arrayMD.dtype == type2str(arrayElementsTy[eltyIdx]) then
+            return loadHelperSE(mdName, entryMD, arrayMD, mdReader,
+              arrayDimensionsTy[dimIdx].size, arrayElementsTy[eltyIdx]);
+
+    // we should be able to load everything we saved
+    throw new NotImplementedError(cpNotImplementedMsg(" ".join(
+      "Loading an array with", arrayMD.ndim:string,
+      "dimensions and", arrayMD.dtype, "element type from"),
+      entryMD.entryName, entryMD.entryType, mdName), L(), R(), M());
+  }
+
+  private proc loadHelperSE(mdName, entryMD, arrayMD, mdReader,
+                            param ndim, type etype) : shared GenSymEntry throws {
+    if ndim > 1 then
+      throw new NotImplementedError(cpNotImplementedMsg(" ".join(
+      "Loading an array with >1 dimensions from"),
+      entryMD.entryName, entryMD.entryType, mdName), L(), R(), M());
+
+    const numTargetLocales = arrayMD.numTargetLocales;
     var filenames: [0..#numTargetLocales] string;
     var numElems: [0..#numTargetLocales] int;
 
-    var line: string;
-    var curChunk = 0;
-    while mdReader.readLine(line) {
-      const metadata: chunkMetadata;
-      try {
-        metadata = fromJsonThrow(line, chunkMetadata);
-      }
-      catch IllegalArgumentError {
-        throw new owned LoadCheckpointError(
-            "Array chunk metadata has incorrect format (%s) ".format(mdName)
-        );
-      }
-
+    for curChunk in 0..#arrayMD.numChunks {
+      const metadata = readJson(mdReader, chunkMetadata,
+                         "chunk " + (curChunk+1):string + " metadata", mdName);
       filenames[curChunk] = metadata.filename;
       numElems[curChunk] = metadata.numElems;
-      curChunk += 1;
-    }
-
-    if curChunk != numTargetLocales {
-      cpLogger.debug(M(), R(), L(), "Chunk count mismatch, will throw");
-      throw new owned LoadCheckpointError(
-          ("Array metadata (%s) does not contain correct number of chunks " +
-           "(%i found, %i expected).").format(mdName, curChunk,
-                                              numTargetLocales)
-      );
     }
 
     cpLogger.debug(M(), R(), L(), "Filenames loaded %s".format(mdName));
 
-    var entryVal = new shared SymEntry(size, int);
+    const entryVal = new shared SymEntry(arrayMD.size, etype);
+    entryVal.name = entryMD.entryName;
     readFilesByName(A=entryVal.a,
                     filenames=filenames,
                     sizes=numElems,
@@ -472,11 +472,8 @@ module CheckpointMsg {
                     ty=0);
 
     cpLogger.debug(M(), R(), L(), "Data loaded %s".format(mdName));
-
-    mdReader.close();
-    mdFile.close();
-
-    return (name, entryVal);
+    checkSymEntryType(entryVal, "loading");
+    return entryVal;
   }
 
   use CommandMap;
@@ -510,13 +507,22 @@ module CheckpointMsg {
     const numLocales: int;
   }
 
+  /* Entry metadata: name and entryType. Saved as the first line
+     in each entry's metadata type. */
+  record entryMetadata {
+    const entryName: string;
+    const entryType: string;
+  }
+
   /* Representation of array metadata. Created per array per checkpoint. Will be
      saved to a metadata file in JSON format along with chunk metadata.
   */
   record arrayMetadata {
-    const name: string;
+    const dtype: string;
     const size: int;
+    const ndim: int;
     const numTargetLocales: int;
+    const numChunks: int;
   }
 
   /* Representation of array metadata. Created per locale per array per
@@ -528,16 +534,48 @@ module CheckpointMsg {
     const numElems: int;
   }
 
-  // this works around an issue in Chapel's standard fromJson, where some errors
-  // cannot be caught. https://github.com/chapel-lang/chapel/pull/26656 will be
-  // the fix for that. This helper can be removed or moved to compatibility
-  // modules when that fix goes in.
-  private proc fromJsonThrow(s: string, type t) throws {
-    var fileReader = openStringReader(s, deserializer=new jsonDeserializer());
-    var ret: t;
-    fileReader.read(ret);
-    return ret;
+  // Write 'data' to 'w' in JSON, followed by a newline, by convention.
+  private proc writeJson(w: fileWriter(?), data,
+                        description: string, mdName: string) throws {
+    w.withSerializer(jsonSerializer).write(data);
+    w.writeln();
   }
+
+  // Write 'data' to file 'mdName' in JSON, followed by a newline.
+  private proc writeJson(mdName: string, data, description: string) throws {
+    writeJson(IO.open(mdName, ioMode.cw).writer(locking=false),
+              data, description, mdName);
+  }
+
+  // Read JSON data of type 'resultType' from 'r'.
+  // Apply the workaround in https://github.com/chapel-lang/chapel/pull/26656
+  private proc readJson(r: fileReader(?), type resultType,
+                        description: string, mdName: string) throws {
+    var result: resultType;
+    var ok: bool;
+    try {
+      ok = r.withDeserializer(jsonDeserializer).read(result);
+      cpLogger.debug(M(), R(), L(), "readJson -> ",
+        if ok then "%s=%?".format(resultType:string, result) else "failure");
+    }
+    catch e {
+      throw new LoadCheckpointError("".join("invalid ", description, " in ",
+                                            mdName, ": ", e.message()));
+    }
+    if !ok {
+      throw new LoadCheckpointError("".join("could not read ", description,
+                                            " from ", mdName));
+    }
+    return result;
+  }
+
+  // Read JSON data of type 'resultType' from file 'mdName',
+  // assuming it is located at start of the file.
+  private proc readJson(mdName: string, type resultType, description: string) throws {
+    return readJson(IO.open(mdName, ioMode.r).reader(locking=false),
+                    resultType, description, mdName);
+  }
+
 
   /* Convenience wrapper for sending messages to the client. */
   module Msg {

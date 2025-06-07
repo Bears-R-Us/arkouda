@@ -356,6 +356,7 @@ module ServerDaemon {
             registerFunction("str", strMsg);
             registerFunction("repr", reprMsg);
             registerFunction("getconfig", getconfigMsg);
+            registerFunction('getRegistrationConfig', getRegistrationConfig);
             registerFunction("getmemused", getmemusedMsg);
             registerFunction("getavailmem", getmemavailMsg);
             registerFunction("getmemstatus", getMemoryStatusMsg);
@@ -687,7 +688,7 @@ module ServerDaemon {
 
                     (response, wasError) = sendRepMsg(repMsg, user);
                 } catch e {
-                    (response, wasError) = sendRepMsg(MsgTuple.error("Error executing command: %s".format(e.message())), user);
+                    (response, wasError) = sendRepMsg(MsgTuple.error("Error executing command %s: %s".format(cmd, e.message())), user);
                 }
 
                 var elapsedTime = timeSinceEpoch().totalSeconds() - s0;

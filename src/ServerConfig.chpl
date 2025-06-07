@@ -6,6 +6,8 @@ module ServerConfig
     use SymArrayDmap only makeDistDomType;
 
     public use IO;
+    public use RegistrationConfig;
+
     use ServerErrorStrings;
     use Reflection;
     use ServerErrors;
@@ -376,6 +378,22 @@ module ServerConfig
                 }
             }
         }
+    }
+
+    // use this arrayDimIsSupported() instead of MaxArrayDims
+    // could clone it for a non-param argument
+    proc arrayDimIsSupported(param dim: int) param : bool {
+      for param idx in 0..arrayDimensionsTy.size-1 do
+        if dim == arrayDimensionsTy[idx].size then
+          return true;
+      return false;
+    }
+
+    proc arrayElmTypeIsSupported(type eltType) param : bool {
+      for param idx in 0..arrayElementsTy.size-1 do
+        if eltType == arrayElementsTy[idx] then
+          return true;
+      return false;
     }
 
     proc string.splitMsgToTuple(param numChunks: int) {
