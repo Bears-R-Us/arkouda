@@ -2988,19 +2988,23 @@ def matmul(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
     )
 
 
-def vecdot(x1: pdarray, x2: pdarray) -> pdarray:
+@typechecked
+def vecdot(
+    x1: pdarray, x2: pdarray, axis: Optional[Union[int, None]] = None
+) -> Union[numeric_scalars, pdarray]:
     """
-    Compute the generalized dot product of two vectors along the given axis.
-    Assumes that both tensors have already been broadcast to the same shape.
+    Computes the numpy-style vecdot product of two matrices.  This differs from the
+    vecdot function above.  See https://numpy.org/doc/stable/reference/index.html.
 
     Parameters
     ----------
     x1 : pdarray
     x2 : pdarray
+    axis : int, None, optional, default = None
 
     Returns
     -------
-    pdarray
+    pdarray, numeric_scalar
         x1 vecdot x2
 
     Examples
@@ -3009,43 +3013,49 @@ def vecdot(x1: pdarray, x2: pdarray) -> pdarray:
     >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
     >>> b = ak.array([[2,2,2,2,2],[2,2,2,2,2]])
     >>> ak.vecdot(a,b)
-    array([4 8 12 16 20])
+    array([30 30])
     >>> ak.vecdot(b,a)
-    array([4 8 12 16 20])
+    array([30 30])
 
     Raises
     ------
-    ValueTypeError
-        Raised if x1 and x2 are not of matching shape or if rank of x1 < 2
+    ValueError
+        Raised if x1 and x2 can not be broadcast to a compatible shape
+        or if the last dimensions of x1 and x2 don't match.
+
+    Notes
+    -----
+    This matches the behavior of numpy vecdot, but as commented above, it is not the
+    behavior of the deprecated vecdot, which calls the chapel-side vecdot function.
+    This function only uses broadcast_dims, broadcast_to_shape, ak.sum, and the
+    binops pdarray multiplication function.  The last dimension of x1 and x2 must
+    match, and it must be possible to broadcast them to a compatible shape.
+    The deprecated vecdot can be computed via ak.vecdot(a,b,axis=0) on pdarrays
+    of matching shape.
 
     """
+    #  Imports are here because they caused circular import otherwise
+    from arkouda.numpy.pdarrayclass import broadcast_to_shape
+    from arkouda.numpy.util import broadcast_dims
 
-    if x1.shape != x2.shape:
-        raise ValueError("vecdot requires matrices of matching rank.")
-    if x1.ndim < 2:
-        raise ValueError("vector requires matrices of rank 2 or more.")
+    if x1.shape[-1] != x2.shape[-1]:
+        raise ValueError("Last dimensions of inputs must match for vecdot.")
 
-    x1b, x2b, tmp_x1, tmp_x2 = broadcast_if_needed(x1, x2)
+    if x1.shape == x2.shape:
+        if axis is None:
+            axis = -1
+        elif -x1.ndim <= axis < x1.ndim:
+            pass
+        else:
+            raise ValueError(f"axis {axis} is out of bounds of given inputs.")
+    else:
+        if axis is not None:
+            raise ValueError("axis param can only be supplied if input shapes match.")
+        else:
+            axis = -1
 
-    cmd = f"vecdot<{x1.dtype},{x2.dtype},{x1.ndim}>"
-    args = {
-        "x1": x1b,
-        "x2": x2b,
-        "bcShape": tuple(x1.shape),
-        "axis": 0,
-    }
-
-    repMsg = generic_msg(
-        cmd=cmd,
-        args=args,
-    )
-
-    if tmp_x1:
-        del x1
-    if tmp_x2:
-        del x2
-
-    return create_pdarray(repMsg)
+    ns = broadcast_dims(x1.shape, x2.shape)
+    return sum((broadcast_to_shape(x1, ns) * broadcast_to_shape(x2, ns)), axis=axis)
 
 
 def quantile(
