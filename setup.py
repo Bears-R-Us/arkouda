@@ -1,3 +1,42 @@
+"""
+Setup script for the Arkouda Python package.
+
+This script uses setuptools to configure installation of the Arkouda Python client,
+which provides a NumPy-like interface for distributed data analytics backed by
+a Chapel-based server.
+
+Backend Build Requirement
+-------------------------
+Before installing the Python package, you must first build the Chapel backend:
+
+    make
+
+This compiles the Arkouda server binary, which is required to connect from the Python client.
+Failure to do so will result in runtime errors when attempting to use Arkouda.
+
+Usage
+-----
+To install the client package after building the backend:
+
+    pip install .
+
+Or for development mode (editable install):
+
+    pip install -e .
+
+Functionality
+-------------
+- Defines metadata (name, version, author, etc.)
+- Specifies package requirements
+- Registers console scripts
+- Packages Python modules and data files
+
+See Also
+--------
+- Makefile       : Used to build the Chapel backend
+
+"""
+
 from os import path
 
 from setuptools import find_packages, setup
