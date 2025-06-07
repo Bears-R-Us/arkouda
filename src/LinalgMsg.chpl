@@ -29,35 +29,35 @@ module LinalgMsg {
     where array_dtype != BigInteger.bigint
     {
 
-        const rows = msgArgs["rows"].toScalar(int),
-              cols = msgArgs["cols"].toScalar(int),
-              diag = msgArgs["diag"].toScalar(int),
-              shape = (rows, cols);
+        const N = msgArgs["N"].toScalar(int),
+              M = msgArgs["M"].toScalar(int),
+              k = msgArgs["k"].toScalar(int),
+              shape = (N, M);
 
-        // rows, cols = dimensions of 2 dimensional matrix.
-        // diag = 0 gives ones along center diagonal
-        // diag = nonzero moves the diagonal up/right for diag > 0, and down/left for diag < 0
+        // N, M = dimensions of 2 dimensional matrix.
+        // k = 0 gives ones along center diagonal
+        // k = nonzero moves the diagonal up/right for diag > 0, and down/left for diag < 0
         //        See comment below
 
         linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s dtype: %s aRows: %i: aCols: %i aDiag: %i".format(
-            cmd,type2str(array_dtype),rows,cols,diag));
+            "cmd: %s dtype: %s aN: %i: aM: %i ak: %i".format(
+            cmd,type2str(array_dtype),N,M,k));
 
         var e = createSymEntry((...shape), array_dtype);
 
-        // Now put the ones where they go, on the main diagonal if diag == 0, otherise
-        // up-and-right by 'diag' spaces) if diag > 0,
-        // or down-and-left by abs(diag) spaces if diag < 0
+        // Now put the ones where they go, on the main diagonal if k == 0, otherise
+        // up-and-right by 'k' spaces) if k > 0,
+        // or down-and-left by abs(k) spaces if k < 0
 
-        if diag == 0 {
-            forall ij in 0..<min(rows, cols) do
+        if k == 0 {
+            forall ij in 0..<min(N, M) do
                 e.a[ij, ij] = 1 : array_dtype;
-        } else if diag > 0 {
-            forall i in 0..<min(rows, cols-diag) do
-                e.a[i, i+diag] = 1 : array_dtype;
-        } else if diag < 0 {
-            forall j in 0..<min(rows+diag, cols) do
-                e.a[j-diag, j] = 1 : array_dtype;
+        } else if k > 0 {
+            forall i in 0..<min(N, M-k) do
+                e.a[i, i+k] = 1 : array_dtype;
+        } else if k < 0 {
+            forall j in 0..<min(N+k, M) do
+                e.a[j-k, j] = 1 : array_dtype;
         }
 
         return st.insert(e);
