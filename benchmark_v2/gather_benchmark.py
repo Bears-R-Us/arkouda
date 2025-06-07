@@ -16,7 +16,7 @@ def _run_gather(a, i):
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Gather")
 @pytest.mark.parametrize("dtype", TYPES)
-def bench_ak_gather(benchmark, dtype):
+def bench_gather(benchmark, dtype):
     cfg = ak.get_config()
     isize = pytest.prob_size if pytest.idx_size is None else pytest.idx_size
     vsize = pytest.prob_size if pytest.val_size is None else pytest.val_size

@@ -20,7 +20,7 @@ def _perform_shift_binop(a):
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Bigint Bitwise Binops")
 @pytest.mark.parametrize("op", OPS)
-def bench_ak_bitwise_binops(benchmark, op):
+def bench_bitwise_binops(benchmark, op):
     """
     Measures the performance of bigint bitwise binops
     """

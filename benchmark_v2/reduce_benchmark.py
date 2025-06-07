@@ -11,7 +11,7 @@ TYPES = ("int64", "float64")
 @pytest.mark.benchmark(group="Arkouda_Reduce")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)
-def bench_ak_reduce(benchmark, op, dtype):
+def bench_reduce(benchmark, op, dtype):
     if dtype in pytest.dtype:
         cfg = ak.get_config()
         N = pytest.prob_size * cfg["numLocales"]

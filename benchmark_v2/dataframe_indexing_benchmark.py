@@ -34,7 +34,7 @@ def generate_dataframe():
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Dataframe_Indexing")
 @pytest.mark.parametrize("op", OPS)
-def bench_ak_dataframe(benchmark, op):
+def bench_dataframe(benchmark, op):
     """
     Measures the performance of arkouda Dataframe indexing
 
