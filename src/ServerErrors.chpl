@@ -1,6 +1,6 @@
 module ServerErrors {
 
-    private use IO; // for string.format
+    private use IO;
 
     class OutOfBoundsError: Error {}
 
@@ -23,10 +23,9 @@ module ServerErrors {
          */
         proc init(msg : string, lineNumber: int, routineName: string, 
                       moduleName: string, errorClass: string='ErrorWithContext') {
-            try! super.init("%s Line %? In %s.%s: %s".format(errorClass,lineNumber,
-                                                          moduleName,
-                                                          routineName,
-                                                          msg));
+            super.init(generateErrorContext(msg=msg, lineNumber=lineNumber,
+              moduleName=moduleName, routineName=routineName, errorClass=errorClass));
+
             this.lineNumber = lineNumber;
             this.routineName = routineName;
             this.moduleName = moduleName;
@@ -44,7 +43,7 @@ module ServerErrors {
          * understandable to front-end developers as well as users.
          */
         proc publish() : string {
-            return try! "Error: %s".format(publishMsg);
+            return "Error: " + publishMsg;
         }
     }
     
@@ -96,7 +95,7 @@ module ServerErrors {
 
         proc init(msg : string, lineNumber: int, routineName: string, 
                                                            moduleName: string) { 
-           super.init(msg,lineNumber,routineName,moduleName,errorClass='NotHDF5FileError'); 
+           super.init(msg,lineNumber,routineName,moduleName,errorClass='HDF5FileFormatError'); 
         } 
 
         proc init(){ super.init(); }
@@ -220,7 +219,7 @@ module ServerErrors {
 
         proc init(msg : string, lineNumber: int, routineName: string,
                                                            moduleName: string) {
-           super.init(msg,lineNumber,routineName,moduleName,errorClass='IOError');
+           super.init(msg,lineNumber,routineName,moduleName,errorClass='ConfigurationError');
         }
 
         proc init(){ super.init(); }
@@ -233,7 +232,8 @@ module ServerErrors {
      */
     proc generateErrorContext(msg: string, lineNumber: int, moduleName: string, routineName: string, 
                                         errorClass: string="ErrorWithContext") : string {
-        return try! "%s %? %s:%s %s".format(errorClass,lineNumber,moduleName,routineName,msg);
+        return "".join(errorClass, " Line ", lineNumber:string, " In ",
+                       moduleName, ".", routineName, ": ", msg);
     }
  
     /*
