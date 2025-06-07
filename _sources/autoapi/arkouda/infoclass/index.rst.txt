@@ -3,6 +3,70 @@ arkouda.infoclass
 
 .. py:module:: arkouda.infoclass
 
+.. autoapi-nested-parse::
+
+   Utilities for introspecting Arkouda server-side objects.
+
+   The `arkouda.infoclass` module provides tools to inspect, query, and display metadata
+   about objects stored in the Arkouda symbol table or registry. These utilities are useful
+   for debugging, exploratory analysis, and monitoring the state of server-managed data.
+
+   Exports
+   -------
+   __all__ = [
+       "AllSymbols",
+       "RegisteredSymbols",
+       "information",
+       "list_registry",
+       "list_symbol_table",
+       "pretty_print_information",
+   ]
+
+   Constants
+   ---------
+   AllSymbols : str
+       Special string flag to query all objects in the symbol table.
+   RegisteredSymbols : str
+       Special string flag to query only registered objects.
+
+   Classes
+   -------
+   InfoEntry
+       Lightweight container representing object metadata (name, dtype, size, shape, etc.).
+   EntryDecoder
+       JSON encoder for serializing InfoEntry objects.
+
+   Functions
+   ---------
+   information(names)
+       Return JSON-formatted string describing the server-side objects given by `names`.
+
+   list_registry(detailed=False)
+       Return all registered Arkouda objects, optionally including type information.
+
+   list_symbol_table()
+       Return a list of all object names currently stored in the Arkouda symbol table.
+
+   pretty_print_information(names)
+       Print human-readable metadata about objects specified by `names`.
+
+   .. rubric:: Notes
+
+   - The symbol table includes all objects created during a session.
+   - The registry includes only explicitly registered objects (e.g., for persistence or sharing).
+   - `information` uses `generic_msg` to request metadata from the Arkouda server.
+   - These functions are useful for interactive sessions, diagnostics, or automated logging.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> x = ak.arange(5)
+   >>> ak.information(ak.AllSymbols)
+   >>> x.register("name1")
+   >>> ak.list_registry(detailed=True)
+   >>> ak.list_symbol_table()
+
+
 
 Attributes
 ----------

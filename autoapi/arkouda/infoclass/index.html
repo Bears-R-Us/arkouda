@@ -385,6 +385,70 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.infoclass">
 <span id="arkouda-infoclass"></span><h1>arkouda.infoclass<a class="headerlink" href="#module-arkouda.infoclass" title="Link to this heading">¶</a></h1>
+<p>Utilities for introspecting Arkouda server-side objects.</p>
+<p>The <cite>arkouda.infoclass</cite> module provides tools to inspect, query, and display metadata
+about objects stored in the Arkouda symbol table or registry. These utilities are useful
+for debugging, exploratory analysis, and monitoring the state of server-managed data.</p>
+<section id="exports">
+<h2>Exports<a class="headerlink" href="#exports" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>__all__ = [</dt><dd><p>“AllSymbols”,
+“RegisteredSymbols”,
+“information”,
+“list_registry”,
+“list_symbol_table”,
+“pretty_print_information”,</p>
+</dd>
+</dl>
+<p>]</p>
+</section>
+<section id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>AllSymbols<span class="classifier">str</span></dt><dd><p>Special string flag to query all objects in the symbol table.</p>
+</dd>
+<dt>RegisteredSymbols<span class="classifier">str</span></dt><dd><p>Special string flag to query only registered objects.</p>
+</dd>
+</dl>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>InfoEntry</dt><dd><p>Lightweight container representing object metadata (name, dtype, size, shape, etc.).</p>
+</dd>
+<dt>EntryDecoder</dt><dd><p>JSON encoder for serializing InfoEntry objects.</p>
+</dd>
+</dl>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>information(names)</dt><dd><p>Return JSON-formatted string describing the server-side objects given by <cite>names</cite>.</p>
+</dd>
+<dt>list_registry(detailed=False)</dt><dd><p>Return all registered Arkouda objects, optionally including type information.</p>
+</dd>
+<dt>list_symbol_table()</dt><dd><p>Return a list of all object names currently stored in the Arkouda symbol table.</p>
+</dd>
+<dt>pretty_print_information(names)</dt><dd><p>Print human-readable metadata about objects specified by <cite>names</cite>.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The symbol table includes all objects created during a session.</p></li>
+<li><p>The registry includes only explicitly registered objects (e.g., for persistence or sharing).</p></li>
+<li><p><cite>information</cite> uses <cite>generic_msg</cite> to request metadata from the Arkouda server.</p></li>
+<li><p>These functions are useful for interactive sessions, diagnostics, or automated logging.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">information</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">AllSymbols</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;name1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">list_registry</span><span class="p">(</span><span class="n">detailed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">list_symbol_table</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
 <section id="attributes">
 <h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -400,8 +464,8 @@
 </table>
 </div>
 </section>
-<section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<section id="id1">
+<h2>Functions<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -573,8 +637,12 @@ retrieving information about the objects in names</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.infoclass</a><ul>
-<li><a class="reference internal" href="#attributes">Attributes</a></li>
+<li><a class="reference internal" href="#exports">Exports</a></li>
+<li><a class="reference internal" href="#constants">Constants</a></li>
+<li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#attributes">Attributes</a></li>
+<li><a class="reference internal" href="#id1">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.infoclass.AllSymbols"><code class="docutils literal notranslate"><span class="pre">AllSymbols</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.infoclass.RegisteredSymbols"><code class="docutils literal notranslate"><span class="pre">RegisteredSymbols</span></code></a></li>

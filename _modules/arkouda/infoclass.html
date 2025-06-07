@@ -377,7 +377,71 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.infoclass</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Utilities for introspecting Arkouda server-side objects.</span>
+
+<span class="sd">The `arkouda.infoclass` module provides tools to inspect, query, and display metadata</span>
+<span class="sd">about objects stored in the Arkouda symbol table or registry. These utilities are useful</span>
+<span class="sd">for debugging, exploratory analysis, and monitoring the state of server-managed data.</span>
+
+<span class="sd">Exports</span>
+<span class="sd">-------</span>
+<span class="sd">__all__ = [</span>
+<span class="sd">    &quot;AllSymbols&quot;,</span>
+<span class="sd">    &quot;RegisteredSymbols&quot;,</span>
+<span class="sd">    &quot;information&quot;,</span>
+<span class="sd">    &quot;list_registry&quot;,</span>
+<span class="sd">    &quot;list_symbol_table&quot;,</span>
+<span class="sd">    &quot;pretty_print_information&quot;,</span>
+<span class="sd">]</span>
+
+<span class="sd">Constants</span>
+<span class="sd">---------</span>
+<span class="sd">AllSymbols : str</span>
+<span class="sd">    Special string flag to query all objects in the symbol table.</span>
+<span class="sd">RegisteredSymbols : str</span>
+<span class="sd">    Special string flag to query only registered objects.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">InfoEntry</span>
+<span class="sd">    Lightweight container representing object metadata (name, dtype, size, shape, etc.).</span>
+<span class="sd">EntryDecoder</span>
+<span class="sd">    JSON encoder for serializing InfoEntry objects.</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">information(names)</span>
+<span class="sd">    Return JSON-formatted string describing the server-side objects given by `names`.</span>
+
+<span class="sd">list_registry(detailed=False)</span>
+<span class="sd">    Return all registered Arkouda objects, optionally including type information.</span>
+
+<span class="sd">list_symbol_table()</span>
+<span class="sd">    Return a list of all object names currently stored in the Arkouda symbol table.</span>
+
+<span class="sd">pretty_print_information(names)</span>
+<span class="sd">    Print human-readable metadata about objects specified by `names`.</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">- The symbol table includes all objects created during a session.</span>
+<span class="sd">- The registry includes only explicitly registered objects (e.g., for persistence or sharing).</span>
+<span class="sd">- `information` uses `generic_msg` to request metadata from the Arkouda server.</span>
+<span class="sd">- These functions are useful for interactive sessions, diagnostics, or automated logging.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">&gt;&gt;&gt; x = ak.arange(5)</span>
+<span class="sd">&gt;&gt;&gt; ak.information(ak.AllSymbols)</span>
+<span class="sd">&gt;&gt;&gt; x.register(&quot;name1&quot;)</span>
+<span class="sd">&gt;&gt;&gt; ak.list_registry(detailed=True)</span>
+<span class="sd">&gt;&gt;&gt; ak.list_symbol_table()</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">json</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONEncoder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
