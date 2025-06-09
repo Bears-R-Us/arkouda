@@ -63,9 +63,5 @@ class TestLinalg:
         pda_b = xp.asarray(ak.randint(0, 10, (depth, width), dtype=data_type2))
         nda_b = pda_b.to_ndarray()
         akProduct = xp.vecdot(pda_a, pda_b)
-
-        # there is no vecdot in numpy (and vdot doesn't do the same thing).
-        # np.add.reduce does.
-
-        npProduct = np.add.reduce(nda_a * nda_b)
+        npProduct = np.vecdot(nda_a, nda_b)
         assert_almost_equivalent(npProduct, akProduct._array)
