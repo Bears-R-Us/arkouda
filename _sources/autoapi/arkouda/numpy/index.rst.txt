@@ -6753,9 +6753,9 @@ Package Contents
        instantiation.
 
 
-.. py:function:: flip(x: arkouda.numpy.pdarrayclass.pdarray, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.numpy.pdarrayclass.pdarray
-                 flip(x: arkouda.numpy.strings.Strings, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.numpy.strings.Strings
-                 flip(x: arkouda.categorical.Categorical, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.categorical.Categorical
+.. py:function:: flip(x: arkouda.numpy.pdarrayclass.pdarray, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.numpy.pdarrayclass.pdarray
+                 flip(x: arkouda.numpy.strings.Strings, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.numpy.strings.Strings
+                 flip(x: arkouda.categorical.Categorical, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.categorical.Categorical
 
    Reverse an array's values along a particular axis or axes.
 
@@ -9149,6 +9149,34 @@ Package Contents
 
       Finds the indices corresponding to the `k` minimum values of an array.
       See ``arkouda.argmink`` for details.
+
+
+
+   .. py:method:: argsort(algorithm: arkouda.numpy.sorting.SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = 0, ascending: bool = True) -> pdarray
+
+      Return the permutation that sorts the pdarray.
+
+      :param algorithm: The algorithm to use for sorting.
+      :type algorithm: SortingAlgorithm, default SortingAlgorithm.RadixSortLSD
+      :param axis: The axis to sort along. Must be between -1 and the array rank.
+      :type axis: int_scalars, default 0
+      :param ascending: Whether to sort in ascending order. If False, returns a reversed permutation.
+                        Note: ascending=False is only supported for 1D arrays.
+      :type ascending: bool, default True
+
+      :returns: The indices that would sort the array.
+      :rtype: pdarray
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> a = ak.array([42, 7, 19])
+      >>> a.argsort()
+      array([1 2 0])
+      >>> a[a.argsort()]
+      array([7 19 42])
+      >>> a.argsort(ascending=False)
+      array([0 2 1])
 
 
 

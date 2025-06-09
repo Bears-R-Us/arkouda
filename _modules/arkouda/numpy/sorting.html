@@ -382,7 +382,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_type</span><span class="p">,</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
@@ -460,23 +459,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
-    <span class="n">ndim</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">],</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;ndim&quot;</span><span class="p">))</span>
-
-    <span class="k">if</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">axis</span> <span class="o">&gt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">ndim</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis must be between -1 and the PD Array&#39;s rank (</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-        <span class="n">axis</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-
     <span class="n">check_type</span><span class="p">(</span><span class="n">argname</span><span class="o">=</span><span class="s2">&quot;argsort&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">pda</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;argsort&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Categorical</span><span class="p">,</span> <span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">coargsort</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">(),</span> <span class="n">algorithm</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;argsortStrings&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
@@ -484,18 +471,11 @@
                 <span class="s2">&quot;algoName&quot;</span><span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">pda</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;argsort&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s2">&quot;algoName&quot;</span><span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
-                <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ak.argsort only supports pdarray, Strings, and Categorical, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 

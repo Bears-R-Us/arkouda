@@ -1371,6 +1371,39 @@ See <code class="docutils literal notranslate"><span class="pre">arkouda.argmink
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.argsort">
+<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.numpy.sorting.SortingAlgorithm</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SortingAlgorithm.RadixSortLSD</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.argsort" title="Link to this definition">¶</a></dt>
+<dd><p>Return the permutation that sorts the pdarray.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>algorithm</strong> (<em>SortingAlgorithm</em><em>, </em><em>default SortingAlgorithm.RadixSortLSD</em>) – The algorithm to use for sorting.</p></li>
+<li><p><strong>axis</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default 0</em>) – The axis to sort along. Must be between -1 and the array rank.</p></li>
+<li><p><strong>ascending</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to sort in ascending order. If False, returns a reversed permutation.
+Note: ascending=False is only supported for 1D arrays.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices that would sort the array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">42</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">19</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
+<span class="go">array([1 2 0])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">argsort</span><span class="p">()]</span>
+<span class="go">array([7 19 42])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">array([0 2 1])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.astype">
 <span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.astype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.astype" title="Link to this definition">¶</a></dt>
 <dd><p>Cast values of pdarray to provided dtype</p>
@@ -2884,6 +2917,7 @@ subject to the boolean where condition.</p>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.argmaxk"><code class="docutils literal notranslate"><span class="pre">pdarray.argmaxk()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.argmin"><code class="docutils literal notranslate"><span class="pre">pdarray.argmin()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.argmink"><code class="docutils literal notranslate"><span class="pre">pdarray.argmink()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.argsort"><code class="docutils literal notranslate"><span class="pre">pdarray.argsort()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.astype"><code class="docutils literal notranslate"><span class="pre">pdarray.astype()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.bigint_to_uint_arrays"><code class="docutils literal notranslate"><span class="pre">pdarray.bigint_to_uint_arrays()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.clz"><code class="docutils literal notranslate"><span class="pre">pdarray.clz()</span></code></a></li>

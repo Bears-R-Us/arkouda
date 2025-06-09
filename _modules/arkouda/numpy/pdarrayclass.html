@@ -410,37 +410,17 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">str_</span> <span class="k">as</span> <span class="n">akstr_</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_axis_parser</span><span class="p">(</span><span class="n">axis</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">axis_</span> <span class="o">=</span> <span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">axis</span>
-        <span class="k">return</span> <span class="n">axis_</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_axis_validation</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">rank</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">None</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span> <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">rank</span> <span class="o">+</span> <span class="n">axis</span>
-        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">axis</span> <span class="ow">and</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="n">rank</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">axis</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">axis</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>  <span class="c1"># it&#39;s a list</span>
-        <span class="n">valid</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">axis_</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axis_</span><span class="p">)):</span>
-            <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">rank</span> <span class="o">+</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">rank</span><span class="p">:</span>
-                <span class="n">valid</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="n">valid</span><span class="p">,</span> <span class="n">axis_</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">axis</span>
-
-
 <span class="n">module</span> <span class="o">=</span> <span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">]</span>
+
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">SortingAlgorithm</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">SortingAlgorithm</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+        <span class="n">RadixSortLSD</span> <span class="o">=</span> <span class="s2">&quot;RadixSortLSD&quot;</span>
+
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="c1">#   These are dummy functions that are used only for type checking.</span>
@@ -609,6 +589,35 @@
 <span class="n">SUPPORTED_INDEX_REDUCTION_OPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argmin&quot;</span><span class="p">,</span> <span class="s2">&quot;argmax&quot;</span><span class="p">]</span>
 
 <span class="n">SUPPORTED_STATS_REDUCTION_OPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;var&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_axis_parser</span><span class="p">(</span><span class="n">axis</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">axis_</span> <span class="o">=</span> <span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">axis</span>
+        <span class="k">return</span> <span class="n">axis_</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_axis_validation</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">rank</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span> <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">rank</span> <span class="o">+</span> <span class="n">axis</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">axis</span> <span class="ow">and</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="n">rank</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">axis</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">axis</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">axis_</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axis_</span><span class="p">)):</span>
+            <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">rank</span> <span class="o">+</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">axis_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">rank</span><span class="p">:</span>
+                <span class="n">valid</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">valid</span><span class="p">,</span> <span class="n">axis_</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">axis</span>
 
 
 <span class="nd">@typechecked</span>
@@ -1856,6 +1865,80 @@
                 <span class="s2">&quot;val&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_other</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
             <span class="p">},</span>
         <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pdarray.argsort">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.argsort">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
+        <span class="n">axis</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the permutation that sorts the pdarray.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        algorithm : SortingAlgorithm, default SortingAlgorithm.RadixSortLSD</span>
+<span class="sd">            The algorithm to use for sorting.</span>
+<span class="sd">        axis : int_scalars, default 0</span>
+<span class="sd">            The axis to sort along. Must be between -1 and the array rank.</span>
+<span class="sd">        ascending : bool, default True</span>
+<span class="sd">            Whether to sort in ascending order. If False, returns a reversed permutation.</span>
+<span class="sd">            Note: ascending=False is only supported for 1D arrays.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdarray</span>
+<span class="sd">            The indices that would sort the array.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.array([42, 7, 19])</span>
+<span class="sd">        &gt;&gt;&gt; a.argsort()</span>
+<span class="sd">        array([1 2 0])</span>
+<span class="sd">        &gt;&gt;&gt; a[a.argsort()]</span>
+<span class="sd">        array([7 19 42])</span>
+<span class="sd">        &gt;&gt;&gt; a.argsort(ascending=False)</span>
+<span class="sd">        array([0 2 1])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.manipulation_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">flip</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">coargsort</span>
+
+        <span class="n">ndim</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">],</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;ndim&quot;</span><span class="p">))</span>
+        <span class="n">is_valid</span><span class="p">,</span> <span class="n">axis_</span> <span class="o">=</span> <span class="n">_axis_validation</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;axis=</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is invalid for array with ndim=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">coargsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">(),</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;argsort&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;algoName&quot;</span><span class="p">:</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
+                <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="n">sorted_array</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">ascending</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sorted_array</span>
+        <span class="k">return</span> <span class="n">flip</span><span class="p">(</span><span class="n">sorted_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pdarray.any">
