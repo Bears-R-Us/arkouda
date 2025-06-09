@@ -24,6 +24,7 @@ from numpy import ndarray
 from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
 from typeguard import typechecked
 
+from arkouda.client import maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.index import Index, MultiIndex
 from arkouda.numpy.dtypes import _is_dtype_in_union, bigint
@@ -43,7 +44,6 @@ from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.pandas.join import inner_join
 from arkouda.pandas.row import Row
-from arkouda.client import maxTransferBytes
 
 if TYPE_CHECKING:
     from arkouda.numpy import cast as akcast
@@ -4251,8 +4251,8 @@ class DataFrame(UserDict):
         +----+---------+---------+
 
         """
-        from arkouda.pandas.series import Series
         from arkouda.numpy import cumsum
+        from arkouda.pandas.series import Series
 
         if isinstance(values, pdarray):
             # flatten the DataFrame so single in1d can be used.
@@ -4382,9 +4382,9 @@ class DataFrame(UserDict):
 
         """
         from arkouda import full, isnan
+        from arkouda.numpy import cast as akcast
         from arkouda.numpy.util import is_numeric
         from arkouda.pandas.series import Series
-        from arkouda.numpy import cast as akcast
 
         if (isinstance(axis, int) and axis == 0) or (isinstance(axis, str) and axis == "index"):
             index_values_list = []

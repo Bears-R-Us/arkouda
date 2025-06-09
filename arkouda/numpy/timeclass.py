@@ -98,6 +98,7 @@ class _AbstractBaseTime(pdarray):
 
     def __init__(self, pda, unit: str = _BASE_UNIT):
         from arkouda.numpy import cast as akcast
+
         if isinstance(pda, Datetime) or isinstance(pda, Timedelta):
             self.unit: str = pda.unit
             self._factor: int = pda._factor
@@ -483,6 +484,7 @@ class Datetime(_AbstractBaseTime):
     -----
     The ``.values`` attribute is always in nanoseconds with int64 dtype.
     """
+
     supported_with_datetime = frozenset(("==", "!=", "<", "<=", ">", ">=", "-"))
     supported_with_r_datetime = frozenset(("==", "!=", "<", "<=", ">", ">=", "-"))
     supported_with_timedelta = frozenset(("+", "-", "/", "//", "%"))
@@ -495,6 +497,7 @@ class Datetime(_AbstractBaseTime):
 
     def _ensure_components(self):
         from arkouda.client import generic_msg
+
         if self._is_populated:
             return
         # lazy initialize all attributes in one server call
@@ -806,6 +809,7 @@ class Timedelta(_AbstractBaseTime):
 
     def _ensure_components(self):
         from arkouda.client import generic_msg
+
         if self._is_populated:
             return
         # lazy initialize all attributes in one server call
@@ -914,8 +918,9 @@ class Timedelta(_AbstractBaseTime):
 
     def abs(self):
         """Absolute value of time interval."""
-        from arkouda.numpy.numeric import cast as akcast
         from arkouda.numpy import abs as akabs
+        from arkouda.numpy.numeric import cast as akcast
+
         return self.__class__(akcast(akabs(self.values), "int64"))
 
     def register(self, user_defined_name):

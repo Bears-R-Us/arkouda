@@ -4,11 +4,11 @@ import tempfile
 from datetime import datetime
 from os import path
 from shutil import rmtree
-from arkouda.pandas import io_util
 
 import pytest
 
 import arkouda as ak
+from arkouda.pandas import io_util
 
 
 @pytest.fixture

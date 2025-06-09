@@ -117,6 +117,7 @@ if TYPE_CHECKING:
     prod = numeric_reduce
     max = numeric_reduce
     min = numeric_reduce
+    mean = numeric_reduce
 
     # ----- boolean_reduce overloads -----
     # docstr-coverage:excused `overload-only, docs live on impl`
@@ -186,6 +187,10 @@ if TYPE_CHECKING:
         keepdims: Optional[bool] = False,
     ) -> Union[np.float64, pdarray]:
         pass
+
+    # aliases
+    var = stats_reduce
+    std = stats_reduce
 
     from arkouda.client import generic_msg, get_array_ranks
 else:
@@ -360,6 +365,7 @@ def _slice_index(array: pdarray, starts: List[int], stops: List[int], strides: L
     Slice a pdarray with a set of start, stop and stride values
     """
     from arkouda.client import generic_msg
+
     return create_pdarray(
         generic_msg(
             cmd=f"[slice]<{array.dtype},{array.ndim}>",
@@ -581,6 +587,7 @@ class pdarray:
     def __del__(self):
         try:
             from arkouda.client import generic_msg
+
             logger.debug(f"deleting pdarray with name {self.name}")
             generic_msg(cmd="delete", args={"name": self.name})
         except (RuntimeError, AttributeError):
@@ -3429,6 +3436,7 @@ def _common_stats_reduction(
     """
 
     from arkouda.client import generic_msg
+
     if kind not in SUPPORTED_STATS_REDUCTION_OPS:
         raise ValueError(f"Unsupported reduction type: {kind}")
 
@@ -3863,7 +3871,6 @@ def dot(
     #   The following unreachable line prevents mypy from flagging a "missing return" error
 
     return None  # type: ignore
-
 
 
 @typechecked

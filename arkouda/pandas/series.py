@@ -1451,6 +1451,7 @@ class Series:
 
         """
         from arkouda.numpy import isnan
+
         if not is_float(self.values):
             return Series(full(self.values.size, True, dtype=bool), index=self.index)
 
@@ -1531,6 +1532,7 @@ class Series:
 
         """
         from arkouda.numpy import isnan
+
         if is_float(self.values):
             result = any(isnan(self.values))
             if isinstance(result, (bool, np.bool_)):
