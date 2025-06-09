@@ -1538,7 +1538,7 @@ class TestNumeric:
     def test_vecdot_1d(self, dtype, size):
         seed = pytest.seed if pytest.seed is not None else 8675309
         a = ak.randint(0, 100, size, dtype=dtype, seed=seed)
-        b = ak.randint(0, 100, size, dtype=dtype)
+        b = ak.randint(0, 100, size, dtype=dtype, seed=seed + 1)
         np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray())
         ak_vecdot_f = ak.vecdot(a, b)
         ak_vecdot_r = ak.vecdot(a, b)
@@ -1558,7 +1558,7 @@ class TestNumeric:
             a_shape = (1, size // 2)
             b_shape = (2, size // 2)
         a = ak.randint(0, 100, a_shape, dtype=dtype, seed=seed)
-        b = ak.randint(0, 100, b_shape, dtype=dtype)
+        b = ak.randint(0, 100, b_shape, dtype=dtype, seed=seed + 1)
         if same_shape:
             for axis in [0, 1]:
                 np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray(), axis=axis)
@@ -1586,7 +1586,7 @@ class TestNumeric:
             a_shape = (1, size // 4)
             b_shape = (2, 2, size // 4)
         a = ak.randint(0, 100, a_shape, dtype=dtype, seed=seed)
-        b = ak.randint(0, 100, b_shape, dtype=dtype)
+        b = ak.randint(0, 100, b_shape, dtype=dtype, seed=seed + 1)
         if same_shape:
             for axis in [0, 1, 2]:
                 np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray(), axis=axis)
@@ -1622,7 +1622,7 @@ class TestNumeric:
         ashape.append(lastdim)
         bshape.append(lastdim)
         a = ak.randint(0, 100, tuple(ashape), dtype=dtype, seed=seed)
-        b = ak.randint(0, 100, tuple(bshape), dtype=dtype)
+        b = ak.randint(0, 100, tuple(bshape), dtype=dtype, seed=seed + 1)
         np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray())
         ak_vecdot_f = ak.vecdot(a, b)
         ak_vecdot_r = ak.vecdot(b, a)
@@ -1641,5 +1641,5 @@ class TestNumeric:
         b_shape = (2, size // 4)
         with pytest.raises(ValueError):
             a = ak.randint(0, 100, a_shape, dtype=dtype, seed=seed)
-            b = ak.randint(0, 100, b_shape, dtype=dtype)
+            b = ak.randint(0, 100, b_shape, dtype=dtype, seed=seed + 1)
             ak.vecdot(a, b)  # causes the ValueError
