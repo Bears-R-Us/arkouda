@@ -95,6 +95,7 @@ from arkouda.numpy import (
     all,
     all_scalars,
     any,
+    append,
     arange,
     arccos,
     arccosh,
