@@ -1198,7 +1198,6 @@ class TestNumeric:
     def test_can_cast(self):
         from arkouda.numpy.dtypes import can_cast
 
-        assert can_cast(np.int64(5), "uint64")
         assert can_cast(ak.int64, ak.int64)
         assert not can_cast(ak.int64, ak.uint64)
 

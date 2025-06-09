@@ -21,6 +21,7 @@ from arkouda.numpy.dtypes import get_byteorder, get_server_byteorder
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import (
     int_scalars,
+    isSupportedBool,
     isSupportedInt,
     isSupportedNumber,
     numeric_scalars,
@@ -725,27 +726,17 @@ class pdarray:
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
-
-        from arkouda.dtypes import float64 as akfloat64
-        from arkouda.dtypes import int64 as akint64
-
-        if self.dtype == akuint64 and dtype(other) == akint64:
-            dt = "float64"
-            other = akfloat64(other)
+        if dt not in DTypes:
+            raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
 
         from arkouda.numpy.dtypes import can_cast as ak_can_cast
 
-        if self.dtype != bigint and ak_can_cast(other, self.dtype):
-            # If scalar can be losslessly cast to array dtype,
-            # do the cast so that return array will have same dtype
+        if self.dtype != "bigint" and ak_can_cast(other, self.dtype):
+            dt = self.dtype.name
 
-            from arkouda.dtypes import dtype as ak_dtype
+        if isSupportedBool(other):
+            dt = "bool"
 
-            dt = ak_dtype(self.dtype).name
-            other = self.dtype.type(other)
-
-        if dt not in DTypes:
-            raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
             cmd=f"binopvs<{self.dtype},{dt},{self.ndim}>",
             args={"op": op, "a": self, "value": other},
@@ -785,18 +776,20 @@ class pdarray:
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
 
-        from arkouda.numpy.dtypes import can_cast as ak_can_cast
-
-        if self.dtype != bigint and ak_can_cast(other, self.dtype):
-            # If scalar can be losslessly cast to array dtype,
-            # do the cast so that return array will have same dtype
-            dt = self.dtype.name
-            other = self.dtype.type(other)
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
+
+        from arkouda.numpy.dtypes import can_cast as ak_can_cast
+
+        if self.dtype != "bigint" and ak_can_cast(other, self.dtype):
+            dt = self.dtype.name
+
+        if isSupportedBool(other):
+            dt = "bool"
+
         repMsg = generic_msg(
             cmd=f"binopsv<{self.dtype},{dt},{self.ndim}>",
-            args={"op": op, "dtype": dt, "a": self, "value": other},
+            args={"op": op, "a": self, "value": other},
         )
         return create_pdarray(repMsg)
 

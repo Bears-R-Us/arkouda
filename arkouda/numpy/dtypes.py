@@ -219,8 +219,13 @@ def can_cast(from_, to) -> builtins.bool:
 
     """
     if isSupportedInt(from_):
-        if (from_ < 2**64) and (from_ >= 0) and (to == dtype(uint64)):
-            return True
+        if isinstance(from_, int):
+            if (from_ < 2**64) and (from_ >= 0) and (to == dtype(uint64)):
+                return True
+            elif (from_ < 2**63) and (from_ >= -(2**63)) and (to == dtype(int64)):
+                return True
+    elif isSupportedFloat(from_):
+        return _is_dtype_in_union(to, float_scalars)
 
     if (np.isscalar(from_) or _is_dtype_in_union(from_, numeric_scalars)) and not isinstance(
         from_, (int, float, complex)
@@ -255,7 +260,7 @@ def result_type(*args: Union[pdarray, np.dtype, type]) -> Union[np.dtype, type]:
     Notes
     -----
     This function is meant to be a drop-in replacement for numpy.result_type
-    but includes logic to support Arkouda's bigint types.
+    but includes logic to support Arkouda's bigint type.
     """
     from numpy.typing import DTypeLike
 

@@ -154,10 +154,10 @@ class TestSort:
                 pytest.skip(f"Server not compiled for rank {len(v_shape)}")
             else:
                 v = ak.randint(low=low, high=high, size=v_shape, dtype=dtype_, seed=pytest.seed)
-                v = ak.array(ak.array(v, dtype) + shift, dtype)
+                v = ak.array(v, dtype) + shift
         a = ak.randint(low=low, high=high, size=size, dtype=dtype_, seed=pytest.seed)
         a = ak.sort(a)
-        a = ak.array(ak.array(a, dtype) + shift, dtype)
+        a = ak.array(a, dtype) + shift
         np_a = a.to_ndarray()
         if isinstance(v, ak.pdarray):
             np_v = v.to_ndarray()
