@@ -1772,18 +1772,20 @@ Module Contents
    (array([0 2 4]), array([3 2 1]))
 
 
-.. py:function:: vecdot(x1: arkouda.numpy.pdarrayclass.pdarray, x2: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: vecdot(x1: arkouda.numpy.pdarrayclass.pdarray, x2: arkouda.numpy.pdarrayclass.pdarray, axis: Optional[Union[int, None]] = None) -> Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]
 
-   Compute the generalized dot product of two vectors along the given axis.
-   Assumes that both tensors have already been broadcast to the same shape.
+   Computes the numpy-style vecdot product of two matrices.  This differs from the
+   vecdot function above.  See https://numpy.org/doc/stable/reference/index.html.
 
    :param x1:
    :type x1: pdarray
    :param x2:
    :type x2: pdarray
+   :param axis:
+   :type axis: int, None, optional, default = None
 
    :returns: x1 vecdot x2
-   :rtype: pdarray
+   :rtype: pdarray, numeric_scalar
 
    .. rubric:: Examples
 
@@ -1791,11 +1793,22 @@ Module Contents
    >>> a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])
    >>> b = ak.array([[2,2,2,2,2],[2,2,2,2,2]])
    >>> ak.vecdot(a,b)
-   array([4 8 12 16 20])
+   array([30 30])
    >>> ak.vecdot(b,a)
-   array([4 8 12 16 20])
+   array([30 30])
 
-   :raises ValueTypeError: Raised if x1 and x2 are not of matching shape or if rank of x1 < 2
+   :raises ValueError: Raised if x1 and x2 can not be broadcast to a compatible shape
+       or if the last dimensions of x1 and x2 don't match.
+
+   .. rubric:: Notes
+
+   This matches the behavior of numpy vecdot, but as commented above, it is not the
+   behavior of the deprecated vecdot, which calls the chapel-side vecdot function.
+   This function only uses broadcast_dims, broadcast_to_shape, ak.sum, and the
+   binops pdarray multiplication function.  The last dimension of x1 and x2 must
+   match, and it must be possible to broadcast them to a compatible shape.
+   The deprecated vecdot can be computed via ak.vecdot(a,b,axis=0) on pdarrays
+   of matching shape.
 
 
 .. py:function:: where(condition: arkouda.numpy.pdarrayclass.pdarray, A: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], B: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]

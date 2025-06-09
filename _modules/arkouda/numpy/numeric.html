@@ -3525,19 +3525,23 @@
 
 <div class="viewcode-block" id="vecdot">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.vecdot">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">vecdot</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">vecdot</span><span class="p">(</span>
+    <span class="n">x1</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the generalized dot product of two vectors along the given axis.</span>
-<span class="sd">    Assumes that both tensors have already been broadcast to the same shape.</span>
+<span class="sd">    Computes the numpy-style vecdot product of two matrices.  This differs from the</span>
+<span class="sd">    vecdot function above.  See https://numpy.org/doc/stable/reference/index.html.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x1 : pdarray</span>
 <span class="sd">    x2 : pdarray</span>
+<span class="sd">    axis : int, None, optional, default = None</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    pdarray</span>
+<span class="sd">    pdarray, numeric_scalar</span>
 <span class="sd">        x1 vecdot x2</span>
 
 <span class="sd">    Examples</span>
@@ -3546,43 +3550,49 @@
 <span class="sd">    &gt;&gt;&gt; a = ak.array([[1,2,3,4,5],[1,2,3,4,5]])</span>
 <span class="sd">    &gt;&gt;&gt; b = ak.array([[2,2,2,2,2],[2,2,2,2,2]])</span>
 <span class="sd">    &gt;&gt;&gt; ak.vecdot(a,b)</span>
-<span class="sd">    array([4 8 12 16 20])</span>
+<span class="sd">    array([30 30])</span>
 <span class="sd">    &gt;&gt;&gt; ak.vecdot(b,a)</span>
-<span class="sd">    array([4 8 12 16 20])</span>
+<span class="sd">    array([30 30])</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
-<span class="sd">    ValueTypeError</span>
-<span class="sd">        Raised if x1 and x2 are not of matching shape or if rank of x1 &lt; 2</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if x1 and x2 can not be broadcast to a compatible shape</span>
+<span class="sd">        or if the last dimensions of x1 and x2 don&#39;t match.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This matches the behavior of numpy vecdot, but as commented above, it is not the</span>
+<span class="sd">    behavior of the deprecated vecdot, which calls the chapel-side vecdot function.</span>
+<span class="sd">    This function only uses broadcast_dims, broadcast_to_shape, ak.sum, and the</span>
+<span class="sd">    binops pdarray multiplication function.  The last dimension of x1 and x2 must</span>
+<span class="sd">    match, and it must be possible to broadcast them to a compatible shape.</span>
+<span class="sd">    The deprecated vecdot can be computed via ak.vecdot(a,b,axis=0) on pdarrays</span>
+<span class="sd">    of matching shape.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#  Imports are here because they caused circular import otherwise</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">broadcast_to_shape</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">broadcast_dims</span>
 
-    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;vecdot requires matrices of matching rank.&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;vector requires matrices of rank 2 or more.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Last dimensions of inputs must match for vecdot.&quot;</span><span class="p">)</span>
 
-    <span class="n">x1b</span><span class="p">,</span> <span class="n">x2b</span><span class="p">,</span> <span class="n">tmp_x1</span><span class="p">,</span> <span class="n">tmp_x2</span> <span class="o">=</span> <span class="n">broadcast_if_needed</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">elif</span> <span class="o">-</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;=</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;axis </span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is out of bounds of given inputs.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;axis param can only be supplied if input shapes match.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
-    <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;vecdot&lt;</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x2</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-    <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;x1&quot;</span><span class="p">:</span> <span class="n">x1b</span><span class="p">,</span>
-        <span class="s2">&quot;x2&quot;</span><span class="p">:</span> <span class="n">x2b</span><span class="p">,</span>
-        <span class="s2">&quot;bcShape&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
-        <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="p">}</span>
-
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">tmp_x1</span><span class="p">:</span>
-        <span class="k">del</span> <span class="n">x1</span>
-    <span class="k">if</span> <span class="n">tmp_x2</span><span class="p">:</span>
-        <span class="k">del</span> <span class="n">x2</span>
-
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="n">ns</span> <span class="o">=</span> <span class="n">broadcast_dims</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">broadcast_to_shape</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span> <span class="o">*</span> <span class="n">broadcast_to_shape</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">ns</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
 
 
 
