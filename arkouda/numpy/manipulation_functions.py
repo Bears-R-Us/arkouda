@@ -6,7 +6,7 @@ from typeguard import typechecked
 
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
-from arkouda.numpy.dtypes import bool_scalars, numeric_scalars
+from arkouda.numpy.dtypes import bool_scalars, int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.numpy.strings import Strings
@@ -16,21 +16,30 @@ __all__ = ["flip", "repeat", "squeeze", "tile"]
 
 # docstr-coverage:excused `overload-only, docs live on impl`
 @overload
-def flip(x: pdarray, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> pdarray: ...
+def flip(
+    x: pdarray, /, *, axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None
+) -> pdarray: ...
 
 
 # docstr-coverage:excused `overload-only, docs live on impl`
 @overload
-def flip(x: Strings, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Strings: ...
+def flip(
+    x: Strings, /, *, axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None
+) -> Strings: ...
 
 
 # docstr-coverage:excused `overload-only, docs live on impl`
 @overload
-def flip(x: Categorical, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> Categorical: ...
+def flip(
+    x: Categorical, /, *, axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None
+) -> Categorical: ...
 
 
 def flip(
-    x: Union[pdarray, Strings, Categorical], /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None
+    x: Union[pdarray, Strings, Categorical],
+    /,
+    *,
+    axis: Optional[Union[int_scalars, Tuple[int_scalars, ...]]] = None,
 ) -> Union[pdarray, Strings, Categorical]:
     """
     Reverse an array's values along a particular axis or axes.

@@ -1,7 +1,9 @@
+import numpy as np
 import pytest
 
 import arkouda as ak
 import arkouda.array_api as xp
+from arkouda.testing import assert_equivalent
 
 # requires the server to be built with 2D array support
 SHAPES = [(1,), (25,), (5, 10), (10, 5)]
@@ -22,36 +24,21 @@ class TestSortingFunctions:
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @pytest.mark.skip_if_rank_not_compiled([2])
-    def test_argsort(self):
-        for shape in SHAPES:
-            for dtype in ak.ScalarDTypes:
-                for axis in range(len(shape)):
-                    a = xp.asarray(ak.randint(0, 100, shape, dtype=dtype, seed=SEED))
-                    b = xp.argsort(a, axis=axis)
+    @pytest.mark.parametrize("shape", SHAPES)
+    @pytest.mark.parametrize("dtype", ak.ScalarDTypes)
+    @pytest.mark.parametrize("descending", [True, False])
+    def test_argsort(self, shape, dtype, descending):
+        for axis in range(len(shape)):
+            a = xp.asarray(ak.randint(0, 100, shape, dtype=dtype, seed=SEED))
+            b = xp.argsort(a, axis=axis, descending=descending)
+            np_b = a.to_ndarray().argsort(axis=axis, stable=True)
+            np_b = np.flip(np_b, axis=axis) if descending else np_b
 
-                    assert b.size == a.size
-                    assert b.ndim == a.ndim
-                    assert b.shape == a.shape
+            assert b.size == a.size
+            assert b.ndim == a.ndim
+            assert b.shape == a.shape
 
-                    if len(shape) == 1:
-                        aSorted = xp.take(a, b, axis=axis).tolist()
-
-                        for i in range(1, len(aSorted)):
-                            assert aSorted[i - 1] <= aSorted[i]
-                    else:
-                        if axis == 0:
-                            for j in range(shape[1]):
-                                # TODO: use take once 'squeeze' is implemented
-                                # aSorted = xp.take(a, squeeze(b[:, j]), axis=0).tolist())
-                                for i in range(shape[0] - 1):
-                                    assert a[b[i, j], j] <= a[b[i + 1, j], j]
-
-                        else:
-                            for i in range(shape[0]):
-                                # TODO: use take once 'squeeze' is implemented
-                                # aSorted = xp.take(a, squeeze(b[i, :]), axis=1).tolist())
-                                for j in range(shape[1] - 1):
-                                    assert a[i, b[i, j]] <= a[i, b[i, j + 1]]
+            assert_equivalent(b._array, np_b)
 
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("dtype", SCALAR_TYPES)

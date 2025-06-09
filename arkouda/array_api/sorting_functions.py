@@ -29,14 +29,11 @@ def argsort(x: Array, /, *, axis: int = -1, descending: bool = False, stable: bo
         this argument is ignored.
 
     """
-    if axis == -1:
-        axis = x.ndim - 1
-
     a = Array._new(ak.argsort(x._array, axis=axis))
 
     # TODO: pass a 'flip' argument to the server to avoid this extra step
     if descending:
-        flip(a, axis=axis)
+        return flip(a, axis=axis)
 
     return a
 
