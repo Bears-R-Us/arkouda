@@ -168,6 +168,7 @@ module OperatorMsg
                                           cmd,op,st.attrib(msgArgs['a'].val), val));
 
         use Set;
+
         // This boolOps set is a filter to determine the output type for the operation.
         // All operations that involve one of these operations result in a `bool` symbol
         // table entry.
@@ -179,135 +180,11 @@ module OperatorMsg
         boolOps.add("==");
         boolOps.add("!=");
 
-        var realOps: set(string);
-        realOps.add("+");
-        realOps.add("-");
-        realOps.add("*");
-        realOps.add("/");
-        realOps.add("//");
+        // This probably doesn't handle all normal bigint cases, but it handles a decent number.
+        // This, at least, can be expanded when BinOp.chpl is cleaned up
+        // It will be reasonably straightforward to clean up here.
 
-        if binop_dtype_a == int && binop_dtype_b == int {
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          } else if op == "/" {
-            // True division is the only case in this int, int case
-            // that results in a `real` symbol table entry.
-            return doBinOpvs(l, val, real, op, pn, st);
-          }
-          return doBinOpvs(l, val, int, op, pn, st);
-        } else if binop_dtype_a == int && binop_dtype_b == real {
-          // Only two possible resultant types are `bool` and `real`
-          // for this case
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          return doBinOpvs(l, val, real, op, pn, st);
-        }
-        else if binop_dtype_a == real && binop_dtype_b == int {
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          return doBinOpvs(l, val, real, op, pn, st);
-        }
-        else if binop_dtype_a == uint && binop_dtype_b == real {
-          // Only two possible resultant types are `bool` and `real`
-          // for this case
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          return doBinOpvs(l, val, real, op, pn, st);
-        }
-        else if binop_dtype_a == real && binop_dtype_b == uint {
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          return doBinOpvs(l, val, real, op, pn, st);
-        }
-        else if binop_dtype_a == real && binop_dtype_b == real {
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          return doBinOpvs(l, val, real, op, pn, st);
-        }
-        // For cases where a boolean operand is involved, the only
-        // possible resultant type is `bool`
-        else if binop_dtype_a == bool && binop_dtype_b == bool {
-          if (op == "<<") || (op == ">>") {
-            return doBinOpvs(l, val, int, op, pn, st);
-          }
-          return doBinOpvs(l, val, bool, op, pn, st);
-        }
-        else if binop_dtype_a == bool && binop_dtype_b == int {
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          return doBinOpvs(l, val, int, op, pn, st);
-        }
-        else if binop_dtype_a == int && binop_dtype_b == bool {
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          return doBinOpvs(l, val, int, op, pn, st);
-        }
-        else if binop_dtype_a == bool && binop_dtype_b == real {
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          return doBinOpvs(l, val, real, op, pn, st);
-        }
-        else if binop_dtype_a == real && binop_dtype_b == bool {
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          return doBinOpvs(l, val, real, op, pn, st);
-        }
-        else if binop_dtype_a == bool && binop_dtype_b == uint {
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          return doBinOpvs(l, val, uint, op, pn, st);
-        }
-        else if binop_dtype_a == uint && binop_dtype_b == bool {
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          return doBinOpvs(l, val, uint, op, pn, st);
-        }
-        else if binop_dtype_a == uint && binop_dtype_b == uint {
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          if op == "/"{
-            return doBinOpvs(l, val, real, op, pn, st);
-          } else {
-            return doBinOpvs(l, val, uint, op, pn, st);
-          }
-        }
-        else if binop_dtype_a == uint && binop_dtype_b == int {
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          // +, -, /, // both result in real outputs to match NumPy
-          if realOps.contains(op) {
-            return doBinOpvs(l, val, real, op, pn, st);
-          } else {
-            // isn't +, -, /, // so we can use LHS to determine type
-            return doBinOpvs(l, val, uint, op, pn, st);
-          }
-        }
-        else if binop_dtype_a == int && binop_dtype_b == uint {
-          if boolOps.contains(op) {
-            return doBinOpvs(l, val, bool, op, pn, st);
-          }
-          // +, -, /, // both result in real outputs to match NumPy
-          if realOps.contains(op) {
-            return doBinOpvs(l, val, real, op, pn, st);
-          } else {
-            // isn't +, -, /, // so we can use LHS to determine type
-            return doBinOpvs(l, val, int, op, pn, st);
-          }
-        }
-        else if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
+        if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
                 !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
         {
           if boolOps.contains(op) {
@@ -317,11 +194,57 @@ module OperatorMsg
           // call bigint specific func which returns dist bigint array
           const (tmp, max_bits) = doBigIntBinOpvs(l, val, op);
           return st.insert(new shared SymEntry(tmp, max_bits));
-        } else {
+        } else if (binop_dtype_a == bigint || binop_dtype_b == bigint) {
           const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
           omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return MsgTuple.error(errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
         }
+
+        if boolOps.contains(op) {
+          return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
+        }
+
+        if op == "/" {
+          if binop_dtype_a == real(32) && isSmallType(binop_dtype_b) {
+            return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, real(32), op, pn, st);
+          }
+          if binop_dtype_b == real(32) && isSmallType(binop_dtype_a) {
+            return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, real(32), op, pn, st);
+          }
+          return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, real(64), op, pn, st);
+        }
+
+        var realOps: set(string);
+        realOps.add("+");
+        realOps.add("-");
+        realOps.add("*");
+        realOps.add("//");
+        realOps.add("%");
+        realOps.add("**");
+
+        type returnType = mySafeCast(binop_dtype_a, binop_dtype_b);
+
+        if (!realOps.contains(op)) && (returnType == real(32) || returnType == real(64)) {
+          const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
+          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
+        if returnType == bool {
+          if op == "+" || op == "*" || (!realOps.contains(op)) {
+            return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
+          }
+          if op == "-" {
+            const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+          if op == "//" || op == "%" || op == "**" {
+            return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, uint(8), op, pn, st);
+          }
+        }
+
+        return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, returnType, op, pn, st);
     }
 
     /*
@@ -354,6 +277,7 @@ module OperatorMsg
                                    cmd,op,type2str(binop_dtype_b),msgArgs['value'].val,st.attrib(msgArgs['a'].val)));
 
         use Set;
+
         // This boolOps set is a filter to determine the output type for the operation.
         // All operations that involve one of these operations result in a `bool` symbol
         // table entry.
@@ -365,147 +289,71 @@ module OperatorMsg
         boolOps.add("==");
         boolOps.add("!=");
 
-        var realOps: set(string);
-        realOps.add("+");
-        realOps.add("-");
-        realOps.add("/");
-        realOps.add("//");
+        // This probably doesn't handle all normal bigint cases, but it handles a decent number.
+        // This, at least, can be expanded when BinOp.chpl is cleaned up
+        // It will be reasonably straightforward to clean up here.
 
-        if binop_dtype_a == int && binop_dtype_b == int {
+        if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
+                !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
+        {
           if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          } else if op == "/" {
-            // True division is the only case in this int, int case
-            // that results in a `real` symbol table entry.
-            return doBinOpsv(val, r, real, op, pn, st);
-          }
-          return doBinOpsv(val, r, int, op, pn, st);
-        }
-        else if binop_dtype_a == int && binop_dtype_b == real {
-          // Only two possible resultant types are `bool` and `real`
-          // for this case
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          return doBinOpsv(val, r, real, op, pn, st);
-        }
-        else if binop_dtype_a == real && binop_dtype_b == int {
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          return doBinOpsv(val, r, real, op, pn, st);
-        }
-        else if binop_dtype_a == uint && binop_dtype_b == real {
-          // Only two possible resultant types are `bool` and `real`
-          // for this case
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          return doBinOpsv(val, r, real, op, pn, st);
-        }
-        else if binop_dtype_a == real && binop_dtype_b == uint {
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          return doBinOpsv(val, r, real, op, pn, st);
-        }
-        else if binop_dtype_a == real && binop_dtype_b == real {
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          return doBinOpsv(val, r, real, op, pn, st);
-        }
-        // For cases where a boolean operand is involved, the only
-        // possible resultant type is `bool`
-        else if binop_dtype_a == bool && binop_dtype_b == bool {
-          if (op == "<<") || (op == ">>") {
-            return doBinOpsv(val, r, int, op, pn, st);
-          }
-          return doBinOpsv(val, r, bool, op, pn, st);
-        }
-        else if binop_dtype_a == bool && binop_dtype_b == int {
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          return doBinOpsv(val, r, int, op, pn, st);
-        }
-        else if binop_dtype_a == int && binop_dtype_b == bool {
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          return doBinOpsv(val, r, int, op, pn, st);
-        }
-        else if binop_dtype_a == bool && binop_dtype_b == real {
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          return doBinOpsv(val, r, real, op, pn, st);
-        }
-        else if binop_dtype_a == real && binop_dtype_b == bool {
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          return doBinOpsv(val, r, real, op, pn, st);
-        }
-        else if binop_dtype_a == bool && binop_dtype_b == uint {
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          return doBinOpsv(val, r, uint, op, pn, st);
-        }
-        else if binop_dtype_a == uint && binop_dtype_b == bool {
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          return doBinOpsv(val, r, uint, op, pn, st);
-        }
-        else if binop_dtype_a == uint && binop_dtype_b == uint {
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          if op == "/"{
-            return doBinOpsv(val, r, real, op, pn, st);
-          } else {
-            return doBinOpsv(val, r, uint, op, pn, st);
-          }
-        }
-        else if binop_dtype_a == uint && binop_dtype_b == int {
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          // +, -, /, // both result in real outputs to match NumPy
-          if realOps.contains(op) {
-            return doBinOpsv(val, r, real, op, pn, st);
-          } else {
-            // isn't +, -, /, // so we can use LHS to determine type
-            return doBinOpsv(val, r, uint, op, pn, st);
-          }
-        }
-        else if binop_dtype_a == int && binop_dtype_b == uint {
-          if boolOps.contains(op) {
-            return doBinOpsv(val, r, bool, op, pn, st);
-          }
-          // +, -, /, // both result in real outputs to match NumPy
-          if realOps.contains(op) {
-            return doBinOpsv(val, r, real, op, pn, st);
-          } else {
-            // isn't +, -, /, // so we can use LHS to determine type
-            return doBinOpsv(val, r, int, op, pn, st);
-          }
-        }
-        else if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
-                !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b) {
-          if boolOps.contains(op) {
+            // call bigint specific func which returns distr bool array
             return st.insert(new shared SymEntry(doBigIntBinOpsvBoolReturn(val, r, op)));
           }
           // call bigint specific func which returns dist bigint array
           const (tmp, max_bits) = doBigIntBinOpsv(val, r, op);
           return st.insert(new shared SymEntry(tmp, max_bits));
-        } else {
+        } else if (binop_dtype_a == bigint || binop_dtype_b == bigint) {
           const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
           omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return MsgTuple.error(errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
         }
+
+        if boolOps.contains(op) {
+          return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
+        }
+
+        if op == "/" {
+          if binop_dtype_a == real(32) && isSmallType(binop_dtype_b) {
+            return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, real(32), op, pn, st);
+          }
+          if binop_dtype_b == real(32) && isSmallType(binop_dtype_a) {
+            return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, real(32), op, pn, st);
+          }
+          return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, real(64), op, pn, st);
+        }
+
+        var realOps: set(string);
+        realOps.add("+");
+        realOps.add("-");
+        realOps.add("*");
+        realOps.add("//");
+        realOps.add("%");
+        realOps.add("**");
+
+        type returnType = mySafeCast(binop_dtype_a, binop_dtype_b);
+
+        if (!realOps.contains(op)) && (returnType == real(32) || returnType == real(64)) {
+          const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
+          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
+        if returnType == bool {
+          if op == "+" || op == "*" || (!realOps.contains(op)) {
+            return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
+          }
+          if op == "-" {
+            const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+          if op == "//" || op == "%" || op == "**" {
+            return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, uint(8), op, pn, st);
+          }
+        }
+
+        return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, returnType, op, pn, st);
     }
 
     /*
