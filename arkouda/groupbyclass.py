@@ -551,10 +551,6 @@ class GroupBy:
 
         This counts the total number of rows (including NaN values).
 
-        Parameters
-        ----------
-        none
-
         Returns
         -------
         List[pdarray|Strings], pdarray|int64

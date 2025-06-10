@@ -223,7 +223,7 @@ def assert_arkouda_array_equivalent(
 
     Parameters
     ----------
-    left, right : np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.numpy.Strings or
+    left, right : np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.numpy.Strings or \
     arkouda.Categorical
         The two arrays to be compared.
     check_dtype : bool, default True
@@ -470,11 +470,17 @@ def assert_equivalent(left, right, **kwargs) -> None:
 
     Parameters
     ----------
-    left, right : Index, pd.Index, Series, pd.Series, DataFrame, pd.DataFrame,
-    Strings, Categorical, pd.Categorical, SegArray, pdarray, np.ndarray,
-        The two items to be compared.
+    left : Index, pd.Index, Series, pd.Series, DataFrame, pd.DataFrame, \
+Strings, Categorical, pd.Categorical, SegArray, pdarray, np.ndarray
+        The first item to be compared.
+
+    right : Index, pd.Index, Series, pd.Series, DataFrame, pd.DataFrame, \
+Strings, Categorical, pd.Categorical, SegArray, pdarray, np.ndarray
+        The second item to be compared.
+
     **kwargs
         All keyword arguments are passed through to the underlying assert method.
+
     """
     __tracebackhide__ = not DEBUG
 

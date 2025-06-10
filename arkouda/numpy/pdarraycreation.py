@@ -957,7 +957,7 @@ def arange(
     dtype: Optional[Union[np.dtype, type, bigint]] = None,
     max_bits: Optional[int] = None,
 ) -> pdarray:
-    """
+    """# noqa: DAR102
     arange([start,] stop[, step,] dtype=int64)
 
     Create a pdarray of consecutive integers within the interval [start, stop).

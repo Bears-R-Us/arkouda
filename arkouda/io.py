@@ -658,7 +658,7 @@ def read_hdf(
         Default False, if True this will tell the server to calculate the
         offsets/segments array on the server versus loading them from HDF5 files.
         In the future this option may be set to True as the default.
-    tagData: bool
+    tag_data: bool
         Default False, if True tag the data with the code associated with the filename
         that the data was pulled from.
 
@@ -793,7 +793,7 @@ def read_parquet(
         Default False, if True will allow files with read errors to be skipped
         instead of failing.  A warning will be included in the return containing
         the total number of files skipped due to failure and up to 10 filenames.
-    tagData: bool
+    tag_data: bool
         Default False, if True tag the data with the code associated with the filename
         that the data was pulled from.
     read_nested: bool
@@ -2204,7 +2204,7 @@ def snapshot(filename):
     Parameters
     ----------
     filename: str
-    Name to use when storing file
+        Name to use when storing file
 
     See Also
     --------
@@ -2238,7 +2238,7 @@ def restore(filename):
     Parameters
     ----------
     filename: str
-    Name used to create snapshot to be read
+        Name used to create snapshot to be read
 
     Returns
     -------

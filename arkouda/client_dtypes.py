@@ -751,9 +751,9 @@ def is_ipv4(ip: Union[pdarray, IPv4], ip2: Optional[pdarray] = None) -> pdarray:
     Parameters
     ----------
     ip: pdarray (int64) or ak.IPv4
-    IPv4 value. High Bits of IPv6 if IPv6 is passed in.
+        IPv4 value. High Bits of IPv6 if IPv6 is passed in.
     ip2: pdarray (int64), Optional
-    Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as well.
+        Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as well.
 
     Returns
     -------
@@ -790,9 +790,9 @@ def is_ipv6(ip: Union[pdarray, IPv4], ip2: Optional[pdarray] = None) -> pdarray:
     Parameters
     ----------
     ip: pdarray (int64) or ak.IPv4
-    High Bits of IPv6.
+        High Bits of IPv6.
     ip2: pdarray (int64), Optional
-    Low Bits of IPv6
+        Low Bits of IPv6
 
     Returns
     -------
