@@ -76,14 +76,14 @@ Module Contents
    Return a new array whose shape and dtype match the input array, without initializing entries.
 
 
-.. py:function:: eye(n_rows: int, n_cols: Optional[int] = None, /, *, k: int = 0, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api.array_object.Array
+.. py:function:: eye(N: int, M: Optional[int] = None, /, *, k: int = 0, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api.array_object.Array
 
    Return a 2D array with ones on the diagonal and zeros elsewhere.
 
-   :param n_rows: Number of rows in the output.
-   :type n_rows: int
-   :param n_cols: Number of columns in the output. If None, defaults to `n_rows`.
-   :type n_cols: Optional[int]
+   :param N: Number of rows in the output.
+   :type N: int
+   :param M: Number of columns in the output. If None, defaults to N.
+   :type M: Optional[int]
    :param k: Index of the diagonal: 0 (the default) refers to the main diagonal, a
              positive value refers to an upper diagonal, and a negative value to a
              lower diagonal.

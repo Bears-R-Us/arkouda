@@ -3227,22 +3227,21 @@
 
 <div class="viewcode-block" id="eye">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.eye">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">eye</span><span class="p">(</span><span class="n">rows</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">diag</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">ak_float64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">eye</span><span class="p">(</span><span class="n">N</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">M</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">ak_float64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a pdarray with zeros everywhere except along a diagonal, which is all ones.</span>
 <span class="sd">    The matrix need not be square.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    rows : int_scalars</span>
-<span class="sd">    cols : int_scalars</span>
-<span class="sd">    diag : int_scalars, default=0</span>
-<span class="sd">        | if diag = 0, zeros start at element [0,0] and proceed along diagonal</span>
-<span class="sd">        | if diag &gt; 0, zeros start at element [0,diag] and proceed along diagonal</span>
-<span class="sd">        | if diag &lt; 0, zeros start at element [diag,0] and proceed along diagonal</span>
-<span class="sd">        | etc. Default set to 0.</span>
-<span class="sd">    dt : type, default=ak_int64</span>
-<span class="sd">        The data type of the elements in the matrix being returned. Default set to ak_int64</span>
+<span class="sd">    N : int_scalars</span>
+<span class="sd">    M : int_scalars</span>
+<span class="sd">    k : int_scalars, default=0</span>
+<span class="sd">        | if k = 0, zeros start at element [0,0] and proceed along diagonal</span>
+<span class="sd">        | if k &gt; 0, zeros start at element [0,k] and proceed along diagonal</span>
+<span class="sd">        | if k &lt; 0, zeros start at element [k,0] and proceed along diagonal</span>
+<span class="sd">    dt : type, default=ak_float64</span>
+<span class="sd">        The data type of the elements in the matrix being returned. Default set to ak_float64</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -3252,28 +3251,28 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; ak.eye(rows=4,cols=4,diag=0,dt=ak.int64)</span>
+<span class="sd">    &gt;&gt;&gt; ak.eye(N=4,M=4,k=0,dt=ak.int64)</span>
 <span class="sd">    array([array([1 0 0 0]) array([0 1 0 0]) array([0 0 1 0]) array([0 0 0 1])])</span>
-<span class="sd">    &gt;&gt;&gt; ak.eye(rows=3,cols=3,diag=1,dt=ak.float64)</span>
+<span class="sd">    &gt;&gt;&gt; ak.eye(N=3,M=3,k=1,dt=ak.float64)</span>
 <span class="sd">    array([array([0.00000000000000000 1.00000000000000000 0.00000000000000000])</span>
 <span class="sd">    array([0.00000000000000000 0.00000000000000000 1.00000000000000000])</span>
 <span class="sd">    array([0.00000000000000000 0.00000000000000000 0.00000000000000000])])</span>
-<span class="sd">    &gt;&gt;&gt; ak.eye(rows=4,cols=4,diag=-1,dt=ak.bool_)</span>
+<span class="sd">    &gt;&gt;&gt; ak.eye(N=4,M=4,k=-1,dt=ak.bool_)</span>
 <span class="sd">    array([array([False False False False]) array([True False False False])</span>
 <span class="sd">    array([False True False False]) array([False False True False])])</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    if rows = cols and diag = 0, the result is an identity matrix</span>
+<span class="sd">    if N = M and k = 0, the result is an identity matrix</span>
 <span class="sd">    Server returns an error if rank of pda &lt; 2</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;eye&lt;</span><span class="si">{</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
     <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="n">rows</span><span class="p">,</span>
-        <span class="s2">&quot;cols&quot;</span><span class="p">:</span> <span class="n">cols</span><span class="p">,</span>
-        <span class="s2">&quot;diag&quot;</span><span class="p">:</span> <span class="n">diag</span><span class="p">,</span>
+        <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="n">N</span><span class="p">,</span>
+        <span class="s2">&quot;M&quot;</span><span class="p">:</span> <span class="n">M</span><span class="p">,</span>
+        <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>

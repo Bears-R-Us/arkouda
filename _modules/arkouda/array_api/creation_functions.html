@@ -586,8 +586,8 @@
 <div class="viewcode-block" id="eye">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/creation_functions/index.html#arkouda.array_api.creation_functions.eye">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">eye</span><span class="p">(</span>
-    <span class="n">n_rows</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">n_cols</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">N</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">M</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -599,11 +599,10 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-
-<span class="sd">    n_rows: int</span>
+<span class="sd">    N: int</span>
 <span class="sd">        Number of rows in the output.</span>
-<span class="sd">    n_cols: Optional[int]</span>
-<span class="sd">        Number of columns in the output. If None, defaults to `n_rows`.</span>
+<span class="sd">    M: Optional[int]</span>
+<span class="sd">        Number of columns in the output. If None, defaults to N.</span>
 <span class="sd">    k: int</span>
 <span class="sd">        Index of the diagonal: 0 (the default) refers to the main diagonal, a</span>
 <span class="sd">        positive value refers to an upper diagonal, and a negative value to a</span>
@@ -616,13 +615,12 @@
     <span class="k">if</span> <span class="n">device</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">cols</span> <span class="o">=</span> <span class="n">n_rows</span>
-    <span class="k">if</span> <span class="n">n_cols</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">cols</span> <span class="o">=</span> <span class="n">n_cols</span>
+    <span class="k">if</span> <span class="n">M</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="n">N</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
 
-    <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="n">n_rows</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span> <span class="n">diag</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)))</span></div>
+    <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">M</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)))</span></div>
 
 
 
