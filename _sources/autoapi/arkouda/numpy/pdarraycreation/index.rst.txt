@@ -36,6 +36,7 @@ Module Contents
                  arange(__arg1: arkouda.numpy.dtypes.int_scalars, __arg2: arkouda.numpy.dtypes.int_scalars, *, dtype: Optional[Union[numpy.dtype, type, arkouda.numpy.dtypes.bigint]] = None, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
                  arange(__arg1: arkouda.numpy.dtypes.int_scalars, __arg2: arkouda.numpy.dtypes.int_scalars, __arg3: arkouda.numpy.dtypes.int_scalars, *, dtype: Optional[Union[numpy.dtype, type, arkouda.numpy.dtypes.bigint]] = None, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
+   # noqa: DAR102
    arange([start,] stop[, step,] dtype=int64)
 
    Create a pdarray of consecutive integers within the interval [start, stop).

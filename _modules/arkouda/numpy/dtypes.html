@@ -541,7 +541,7 @@
 
 
 <div class="viewcode-block" id="dtype">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.dtype">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.dtype">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a data type object.</span>
@@ -583,7 +583,7 @@
 
 
 <div class="viewcode-block" id="can_cast">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.can_cast">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.can_cast">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">can_cast</span><span class="p">(</span><span class="n">from_</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns True if cast between data types can occur according to the casting rule.</span>
@@ -616,7 +616,7 @@
 
 
 <div class="viewcode-block" id="result_type">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.result_type">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.result_type">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine the promoted result dtype of inputs, including support for Arkouda&#39;s bigint.</span>
@@ -717,7 +717,7 @@
 
 
 <div class="viewcode-block" id="bigint">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.bigint">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.bigint">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">bigint</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Datatype for representing integers of variable size.</span>
@@ -752,7 +752,7 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
 
 <div class="viewcode-block" id="bigint.type">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.bigint.type">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.bigint.type">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 </div>
@@ -801,7 +801,7 @@
 
 
 <div class="viewcode-block" id="DType">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.DType">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.DType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">FLOAT</span> <span class="o">=</span> <span class="s2">&quot;float&quot;</span>
     <span class="n">FLOAT64</span> <span class="o">=</span> <span class="s2">&quot;float64&quot;</span>
@@ -905,14 +905,15 @@
 
 
 <div class="viewcode-block" id="isSupportedInt">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedInt">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedInt">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedInt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported integer dtype.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    scalar: object</span>
+<span class="sd">    num: object</span>
+<span class="sd">        A scalar.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -933,14 +934,15 @@
 
 
 <div class="viewcode-block" id="isSupportedFloat">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedFloat">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedFloat">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedFloat</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported float dtype.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    scalar: object</span>
+<span class="sd">    num: object</span>
+<span class="sd">        A scalar.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -961,14 +963,15 @@
 
 
 <div class="viewcode-block" id="isSupportedNumber">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedNumber">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedNumber">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedNumber</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported numeric dtype.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    scalar: object</span>
+<span class="sd">    num: object</span>
+<span class="sd">        A scalar.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -989,14 +992,15 @@
 
 
 <div class="viewcode-block" id="isSupportedBool">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedBool">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedBool">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedBool</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported boolean dtype.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    scalar: object</span>
+<span class="sd">    num: object</span>
+<span class="sd">        A scalar.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1017,7 +1021,7 @@
 
 
 <div class="viewcode-block" id="isSupportedDType">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedDType">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedDType">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedDType</span><span class="p">(</span><span class="n">scalar</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported dtype.</span>
@@ -1045,7 +1049,7 @@
 
 
 <div class="viewcode-block" id="resolve_scalar_dtype">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.resolve_scalar_dtype">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.resolve_scalar_dtype">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">resolve_scalar_dtype</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Try to infer what dtype arkouda_server should treat val as.</span>
@@ -1102,7 +1106,7 @@
 
 
 <div class="viewcode-block" id="get_byteorder">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.get_byteorder">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.get_byteorder">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_byteorder</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a concrete byteorder (turns &#39;=&#39; into &#39;&lt;&#39; or &#39;&gt;&#39;) on the client.</span>
@@ -1142,7 +1146,7 @@
 
 
 <div class="viewcode-block" id="get_server_byteorder">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.get_server_byteorder">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.get_server_byteorder">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_server_byteorder</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the server&#39;s byteorder</span>

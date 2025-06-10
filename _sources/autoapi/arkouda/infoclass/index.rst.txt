@@ -133,8 +133,6 @@ Module Contents
 
    Return a list containing the names of all objects in the symbol table.
 
-   :param None:
-
    :returns: List of all object names in the symbol table
    :rtype: list
 

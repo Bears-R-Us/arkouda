@@ -351,12 +351,10 @@ Module Contents
 
    Indicate which values are ipv4 when passed data containing IPv4 and IPv6 values.
 
-   :param ip:
+   :param ip: IPv4 value. High Bits of IPv6 if IPv6 is passed in.
    :type ip: pdarray (int64) or ak.IPv4
-   :param IPv4 value. High Bits of IPv6 if IPv6 is passed in.:
-   :param ip2:
+   :param ip2: Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as well.
    :type ip2: pdarray (int64), Optional
-   :param Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as well.:
 
    :rtype: pdarray of bools indicating which indexes are IPv4.
 
@@ -367,12 +365,10 @@ Module Contents
 
    Indicate which values are ipv6 when passed data containing IPv4 and IPv6 values.
 
-   :param ip:
+   :param ip: High Bits of IPv6.
    :type ip: pdarray (int64) or ak.IPv4
-   :param High Bits of IPv6.:
-   :param ip2:
+   :param ip2: Low Bits of IPv6
    :type ip2: pdarray (int64), Optional
-   :param Low Bits of IPv6:
 
    :rtype: pdarray of bools indicating which indexes are IPv6.
 

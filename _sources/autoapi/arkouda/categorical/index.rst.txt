@@ -336,8 +336,6 @@ Module Contents
 
       Return a JSON formatted string containing information about all components of self.
 
-      :param None:
-
       :returns: JSON string containing information about all components of self
       :rtype: str
 

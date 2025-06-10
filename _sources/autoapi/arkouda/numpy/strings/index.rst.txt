@@ -609,8 +609,6 @@ Module Contents
 
       Return True iff the object is contained in the registry
 
-      :param None:
-
       :returns: Indicates if the object is contained in the registry
       :rtype: bool
 

@@ -610,7 +610,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    left, right : np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.numpy.Strings or</span>
+<span class="sd">    left, right : np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.numpy.Strings or \</span>
 <span class="sd">    arkouda.Categorical</span>
 <span class="sd">        The two arrays to be compared.</span>
 <span class="sd">    check_dtype : bool, default True</span>
@@ -866,11 +866,17 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    left, right : Index, pd.Index, Series, pd.Series, DataFrame, pd.DataFrame,</span>
-<span class="sd">    Strings, Categorical, pd.Categorical, SegArray, pdarray, np.ndarray,</span>
-<span class="sd">        The two items to be compared.</span>
+<span class="sd">    left : Index, pd.Index, Series, pd.Series, DataFrame, pd.DataFrame, \</span>
+<span class="sd">Strings, Categorical, pd.Categorical, SegArray, pdarray, np.ndarray</span>
+<span class="sd">        The first item to be compared.</span>
+
+<span class="sd">    right : Index, pd.Index, Series, pd.Series, DataFrame, pd.DataFrame, \</span>
+<span class="sd">Strings, Categorical, pd.Categorical, SegArray, pdarray, np.ndarray</span>
+<span class="sd">        The second item to be compared.</span>
+
 <span class="sd">    **kwargs</span>
 <span class="sd">        All keyword arguments are passed through to the underlying assert method.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">__tracebackhide__</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">DEBUG</span>
 

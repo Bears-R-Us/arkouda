@@ -1941,8 +1941,8 @@ Module Contents
 
    Whether a scalar is an arkouda supported boolean dtype.
 
-   :param scalar:
-   :type scalar: object
+   :param num: A scalar.
+   :type num: object
 
    :returns: True if scalar is an instance of an arkouda supported boolean dtype, else False.
    :rtype: bool
@@ -1979,8 +1979,8 @@ Module Contents
 
    Whether a scalar is an arkouda supported float dtype.
 
-   :param scalar:
-   :type scalar: object
+   :param num: A scalar.
+   :type num: object
 
    :returns: True if scalar is an instance of an arkouda supported float dtype, else False.
    :rtype: bool
@@ -1998,8 +1998,8 @@ Module Contents
 
    Whether a scalar is an arkouda supported integer dtype.
 
-   :param scalar:
-   :type scalar: object
+   :param num: A scalar.
+   :type num: object
 
    :returns: True if scalar is an instance of an arkouda supported integer dtype, else False.
    :rtype: bool
@@ -2017,8 +2017,8 @@ Module Contents
 
    Whether a scalar is an arkouda supported numeric dtype.
 
-   :param scalar:
-   :type scalar: object
+   :param num: A scalar.
+   :type num: object
 
    :returns: True if scalar is an instance of an arkouda supported numeric dtype, else False.
    :rtype: bool

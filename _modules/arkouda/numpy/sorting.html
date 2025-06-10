@@ -403,7 +403,7 @@
 
 
 <div class="viewcode-block" id="argsort">
-<a class="viewcode-back" href="../../../usage/argsort.html#arkouda.argsort">[docs]</a>
+<a class="viewcode-back" href="../../../usage/argsort.html#arkouda.numpy.argsort">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span>
     <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
@@ -480,7 +480,7 @@
 
 
 <div class="viewcode-block" id="coargsort">
-<a class="viewcode-back" href="../../../usage/argsort.html#arkouda.coargsort">[docs]</a>
+<a class="viewcode-back" href="../../../usage/argsort.html#arkouda.numpy.coargsort">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">coargsort</span><span class="p">(</span>
     <span class="n">arrays</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]],</span>
     <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
@@ -606,7 +606,7 @@
 
 
 <div class="viewcode-block" id="sort">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/sorting/index.html#arkouda.sort">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/sorting/index.html#arkouda.numpy.sort">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -671,7 +671,7 @@
 
 
 <div class="viewcode-block" id="searchsorted">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/sorting/index.html#arkouda.searchsorted">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/sorting/index.html#arkouda.numpy.searchsorted">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">searchsorted</span><span class="p">(</span>
     <span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">bigint</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span> <span class="n">side</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span>

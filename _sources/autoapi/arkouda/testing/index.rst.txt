@@ -89,11 +89,10 @@ Package Contents
 
    Check that 'ak.pdarray' or 'ak.Strings', 'ak.Categorical', or 'ak.SegArray' is equivalent.
 
-   :param left:
-   :type left: arkouda.pdarray or arkouda.numpy.Strings or arkouda.Categorical or
-   :param right:
-   :type right: arkouda.pdarray or arkouda.numpy.Strings or arkouda.Categorical or
-   :param arkouda.numpy.SegArray: The two arrays to be compared.
+   :param left: The two arrays to be compared.
+   :type left: pdarray or Strings or Categorical or SegArray
+   :param right: The two arrays to be compared.
+   :type right: pdarray or Strings or Categorical or SegArray
    :param check_dtype: Check dtype if both a and b are ak.pdarray.
    :type check_dtype: bool, default True
    :param err_msg: If provided, used as assertion message.
@@ -115,11 +114,10 @@ Package Contents
    np.nparray's and pd.Categorical's will be converted to the arkouda equivalent.
    Then assert_arkouda_pdarray_equal will be applied to the result.
 
-   :param left:
-   :type left: np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.numpy.Strings or
-   :param right:
-   :type right: np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.numpy.Strings or
-   :param arkouda.Categorical: The two arrays to be compared.
+   :param left: The two arrays to be compared.
+   :type left: np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.numpy.Strings or     arkouda.Categorical
+   :param right: The two arrays to be compared.
+   :type right: np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.numpy.Strings or     arkouda.Categorical
    :param check_dtype: Check dtype if both a and b are ak.pdarray or np.ndarray.
    :type check_dtype: bool, default True
    :param err_msg: If provided, used as assertion message.
@@ -282,17 +280,10 @@ Package Contents
 
    Wrapper for tm.assert_*_equivalent to dispatch to the appropriate test function.
 
-   :param left:
-   :type left: Index, pd.Index, Series, pd.Series, DataFrame, pd.DataFrame,
-   :param right:
-   :type right: Index, pd.Index, Series, pd.Series, DataFrame, pd.DataFrame,
-   :param Strings: The two items to be compared.
-   :param Categorical: The two items to be compared.
-   :param pd.Categorical: The two items to be compared.
-   :param SegArray: The two items to be compared.
-   :param pdarray: The two items to be compared.
-   :param np.ndarray: The two items to be compared.
-   :param : The two items to be compared.
+   :param left: The first item to be compared.
+   :type left: Index, pd.Index, Series, pd.Series, DataFrame, pd.DataFrame, Strings, Categorical, pd.Categorical, SegArray, pdarray, np.ndarray
+   :param right: The second item to be compared.
+   :type right: Index, pd.Index, Series, pd.Series, DataFrame, pd.DataFrame, Strings, Categorical, pd.Categorical, SegArray, pdarray, np.ndarray
    :param \*\*kwargs: All keyword arguments are passed through to the underlying assert method.
 
 

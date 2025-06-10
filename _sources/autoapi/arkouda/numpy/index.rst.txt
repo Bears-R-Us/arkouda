@@ -2716,8 +2716,6 @@ Package Contents
 
       Return True iff the object is contained in the registry
 
-      :param None:
-
       :returns: Indicates if the object is contained in the registry
       :rtype: bool
 
@@ -4200,6 +4198,7 @@ Package Contents
                  arange(__arg1: arkouda.numpy.dtypes.int_scalars, __arg2: arkouda.numpy.dtypes.int_scalars, *, dtype: Optional[Union[numpy.dtype, type, arkouda.numpy.dtypes.bigint]] = None, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
                  arange(__arg1: arkouda.numpy.dtypes.int_scalars, __arg2: arkouda.numpy.dtypes.int_scalars, __arg3: arkouda.numpy.dtypes.int_scalars, *, dtype: Optional[Union[numpy.dtype, type, arkouda.numpy.dtypes.bigint]] = None, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
+   # noqa: DAR102
    arange([start,] stop[, step,] dtype=int64)
 
    Create a pdarray of consecutive integers within the interval [start, stop).
@@ -8086,8 +8085,8 @@ Package Contents
 
    Whether a scalar is an arkouda supported boolean dtype.
 
-   :param scalar:
-   :type scalar: object
+   :param num: A scalar.
+   :type num: object
 
    :returns: True if scalar is an instance of an arkouda supported boolean dtype, else False.
    :rtype: bool
@@ -8124,8 +8123,8 @@ Package Contents
 
    Whether a scalar is an arkouda supported float dtype.
 
-   :param scalar:
-   :type scalar: object
+   :param num: A scalar.
+   :type num: object
 
    :returns: True if scalar is an instance of an arkouda supported float dtype, else False.
    :rtype: bool
@@ -8143,8 +8142,8 @@ Package Contents
 
    Whether a scalar is an arkouda supported integer dtype.
 
-   :param scalar:
-   :type scalar: object
+   :param num: A scalar.
+   :type num: object
 
    :returns: True if scalar is an instance of an arkouda supported integer dtype, else False.
    :rtype: bool
@@ -8162,8 +8161,8 @@ Package Contents
 
    Whether a scalar is an arkouda supported numeric dtype.
 
-   :param scalar:
-   :type scalar: object
+   :param num: A scalar.
+   :type num: object
 
    :returns: True if scalar is an instance of an arkouda supported numeric dtype, else False.
    :rtype: bool
@@ -9336,9 +9335,7 @@ Package Contents
 
    .. py:method:: info() -> str
 
-      Return a JSON formatted string containing information about all components of self
-
-      :param None:
+      Return a JSON formatted string containing information about all components of self.
 
       :returns: JSON string containing information about all components of self
       :rtype: str
@@ -9348,8 +9345,6 @@ Package Contents
    .. py:method:: is_registered() -> numpy.bool_
 
       Return True iff the object is contained in the registry
-
-      :param None:
 
       :returns: Indicates if the object is contained in the registry
       :rtype: bool
@@ -9446,8 +9441,6 @@ Package Contents
 
       Return the mean of the array.
 
-      :param pda: Values for which to calculate the mean
-      :type pda: pdarray
       :param axis: The axis or axes along which to do the operation
                    If None, the computation is done across the entire array.
       :type axis: int, Tuple[int, ...], optional, default = None
@@ -9560,7 +9553,7 @@ Package Contents
 
    .. py:method:: pretty_print_info() -> None
 
-      Print information about all components of self in a human readable format.
+      Print information about all components of self in a human-readable format.
 
 
 
@@ -9738,8 +9731,6 @@ Package Contents
       Return the standard deviation of values in the array. The standard
       deviation is implemented as the square root of the variance.
 
-      :param pda: values for which to calculate the standard deviation
-      :type pda: pdarray
       :param ddof: "Delta Degrees of Freedom" used in calculating std
       :type ddof: int_scalars
       :param axis: The axis or axes along which to do the operation
@@ -10190,8 +10181,6 @@ Package Contents
 
       Return the variance of values in the array.
 
-      :param pda: Values for which to calculate the variance
-      :type pda: pdarray
       :param ddof: "Delta Degrees of Freedom" used in calculating var
       :type ddof: int_scalars
       :param axis: The axis or axes along which to do the operation

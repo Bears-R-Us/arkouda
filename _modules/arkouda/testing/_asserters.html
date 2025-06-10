@@ -1166,8 +1166,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    left, right : arkouda.pdarray or arkouda.numpy.Strings or arkouda.Categorical or</span>
-<span class="sd">    arkouda.numpy.SegArray</span>
+<span class="sd">    left, right : pdarray or Strings or Categorical or SegArray</span>
 <span class="sd">        The two arrays to be compared.</span>
 <span class="sd">    check_dtype : bool, default True</span>
 <span class="sd">        Check dtype if both a and b are ak.pdarray.</span>
@@ -1180,6 +1179,7 @@
 <span class="sd">        assertion message.</span>
 <span class="sd">    index_values : Index | arkouda.pdarray, default None</span>
 <span class="sd">        optional index (shared by both left and right), used in output.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">assert_class_equal</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
 

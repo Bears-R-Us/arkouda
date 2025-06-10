@@ -691,7 +691,7 @@ it from the null-byte terminators.  Defaults to False currently</p></li>
 with the previously saved pdarrays, Strings, SegArrays, or Categoricals</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Mapping[str, <a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>, <a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray">SegArray</a>, <a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a>]]</p>
+<dd class="field-odd"><p>Mapping[str, <a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray">SegArray</a>, <a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a>]]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -751,7 +751,7 @@ Parquet files only</p></li>
 with the previously saved pdarrays, Strings, SegArrays, or Categoricals</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Mapping[str, <a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>, <a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray">SegArray</a>, <a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a>]]</p>
+<dd class="field-odd"><p>Mapping[str, <a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray">SegArray</a>, <a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a>]]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1030,7 +1030,7 @@ the total number of files skipped due to failure and up to 10 filenames.</p></li
 <li><p><strong>calc_string_offsets</strong> (<em>bool</em>) – Default False, if True this will tell the server to calculate the
 offsets/segments array on the server versus loading them from HDF5 files.
 In the future this option may be set to True as the default.</p></li>
-<li><p><strong>tagData</strong> (<em>bool</em>) – Default False, if True tag the data with the code associated with the filename
+<li><p><strong>tag_data</strong> (<em>bool</em>) – Default False, if True tag the data with the code associated with the filename
 that the data was pulled from.</p></li>
 </ul>
 </dd>
@@ -1096,7 +1096,7 @@ into an int64 pdarray.</p></li>
 <li><p><strong>allow_errors</strong> (<em>bool</em>) – Default False, if True will allow files with read errors to be skipped
 instead of failing.  A warning will be included in the return containing
 the total number of files skipped due to failure and up to 10 filenames.</p></li>
-<li><p><strong>tagData</strong> (<em>bool</em>) – Default False, if True tag the data with the code associated with the filename
+<li><p><strong>tag_data</strong> (<em>bool</em>) – Default False, if True tag the data with the code associated with the filename
 that the data was pulled from.</p></li>
 <li><p><strong>read_nested</strong> (<em>bool</em>) – Default True, when True, SegArray objects will be read from the file. When False,
 SegArray (or other nested Parquet columns) will be ignored.
@@ -1216,7 +1216,7 @@ file containing the Zarr store metadata.</p></li>
 <dd class="field-even"><p>The pdarray read from the Zarr store.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1229,7 +1229,7 @@ file containing the Zarr store metadata.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>hostname</strong> (<em>str</em>) – The hostname of the pdarray that sent the array</p></li>
-<li><p><strong>port</strong> (<a class="reference internal" href="../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The port to send the array over. This needs to be an
+<li><p><strong>port</strong> (<a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The port to send the array over. This needs to be an
 open port (i.e., not one that the Arkouda server is
 running on). This will open up <cite>numLocales</cite> ports,
 each of which in succession, so will use ports of the
@@ -1246,7 +1246,7 @@ This port much match the port passed to the call to
 receiving server.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1266,7 +1266,7 @@ a supported dtype</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>hostname</strong> (<em>str</em>) – The hostname of the dataframe that sent the array</p></li>
-<li><p><strong>port</strong> (<a class="reference internal" href="../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The port to send the dataframe over. This needs to be an
+<li><p><strong>port</strong> (<a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The port to send the dataframe over. This needs to be an
 open port (i.e., not one that the Arkouda server is
 running on). This will open up <cite>numLocales</cite> ports,
 each of which in succession, so will use ports of the
@@ -1283,7 +1283,7 @@ This port much match the port passed to the call to
 current receiving server.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1301,10 +1301,7 @@ a supported dtype</p></li>
 <dd><p>Return data saved using <cite>ak.snapshot</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em>)</p></li>
-<li><p><strong>read</strong> (<em>Name used to create snapshot to be</em>)</p></li>
-</ul>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Name used to create snapshot to be read</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dict</p>
@@ -1382,10 +1379,7 @@ Arkouda objects will be written to an HDF5 file.</p>
 <p>Current Variable names are used as the dataset name when saving.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em>)</p></li>
-<li><p><strong>file</strong> (<em>Name to use when storing</em>)</p></li>
-</ul>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Name to use when storing file</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1403,7 +1397,7 @@ include a header denoting data types of the columns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>columns</strong> (<em>Mapping</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>] or </em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>]</em>) – The objects to be written to CSV file. If a mapping is used and <cite>names</cite> is None
+<li><p><strong>columns</strong> (<em>Mapping</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>] or </em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>[</em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>]</em>) – The objects to be written to CSV file. If a mapping is used and <cite>names</cite> is None
 the keys of the mapping will be used as the dataset names.</p></li>
 <li><p><strong>prefix_path</strong> (<em>str</em>) – The filename prefix to be used for saving files. Files will have _LOCALE#### appended
 when they are written to disk.</p></li>
@@ -1560,7 +1554,7 @@ and have included <cite>ZarrMsg.chpl</cite> in the <cite>ServerModules.cfg</cite
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>store_path</strong> (<em>str</em>) – The path at which Zarr store should be written</p></li>
-<li><p><strong>arr</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray to be written to disk</p></li>
+<li><p><strong>arr</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The pdarray to be written to disk</p></li>
 <li><p><strong>chunk_shape</strong> (<em>tuple</em>) – The shape of the chunks to be used in the Zarr store</p></li>
 </ul>
 </dd>

@@ -501,9 +501,9 @@ Module Contents
                                offsets/segments array on the server versus loading them from HDF5 files.
                                In the future this option may be set to True as the default.
    :type calc_string_offsets: bool
-   :param tagData: Default False, if True tag the data with the code associated with the filename
-                   that the data was pulled from.
-   :type tagData: bool
+   :param tag_data: Default False, if True tag the data with the code associated with the filename
+                    that the data was pulled from.
+   :type tag_data: bool
 
    :returns: Dictionary of {datasetName: pdarray, String, SegArray}
    :rtype: Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.
@@ -563,9 +563,9 @@ Module Contents
                         instead of failing.  A warning will be included in the return containing
                         the total number of files skipped due to failure and up to 10 filenames.
    :type allow_errors: bool
-   :param tagData: Default False, if True tag the data with the code associated with the filename
-                   that the data was pulled from.
-   :type tagData: bool
+   :param tag_data: Default False, if True tag the data with the code associated with the filename
+                    that the data was pulled from.
+   :type tag_data: bool
    :param read_nested: Default True, when True, SegArray objects will be read from the file. When False,
                        SegArray (or other nested Parquet columns) will be ignored.
                        If datasets is not None, this will be ignored.
@@ -743,9 +743,8 @@ Module Contents
 
    Return data saved using `ak.snapshot`.
 
-   :param filename:
+   :param filename: Name used to create snapshot to be read
    :type filename: str
-   :param Name used to create snapshot to be read:
 
    :rtype: Dict
 
@@ -816,9 +815,8 @@ Module Contents
 
    Current Variable names are used as the dataset name when saving.
 
-   :param filename:
+   :param filename: Name to use when storing file
    :type filename: str
-   :param Name to use when storing file:
 
    .. seealso:: :py:obj:`ak.restore`
 

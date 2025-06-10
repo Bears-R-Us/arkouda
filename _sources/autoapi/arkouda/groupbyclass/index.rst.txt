@@ -988,8 +988,6 @@ Module Contents
 
       This counts the total number of rows (including NaN values).
 
-      :param none:
-
       :returns:
 
                 unique_keys : (list of) pdarray or Strings
