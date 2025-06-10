@@ -439,12 +439,16 @@ Module Contents
    array([False True True True True])
 
 
-.. py:function:: ceil(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: ceil(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the element-wise ceiling of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is applied over the input. At locations where the condition is True, the
+                 corresponding value will be acted on by the function. Elsewhere, it will retain its
+                 original value. Default set to True.
+   :type where: bool or pdarray, default=True
 
    :returns: A pdarray containing ceiling values of the input array elements
    :rtype: pdarray
@@ -762,12 +766,16 @@ Module Contents
    Server returns an error if rank of pda < 2
 
 
-.. py:function:: floor(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: floor(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the element-wise floor of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is applied over the input. At locations where the condition is True, the
+                 corresponding value will be acted on by the function. Elsewhere, it will retain its
+                 original value. Default set to True.
+   :type where: bool or pdarray, default=True
 
    :returns: A pdarray containing floor values of the input array elements
    :rtype: pdarray
@@ -1428,12 +1436,16 @@ Module Contents
    array([0.00000000000000000 119.93916511405233 239.87833022810466 359.81749534215703])
 
 
-.. py:function:: round(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: round(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the element-wise rounding of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is applied over the input. At locations where the condition is True, the
+                 corresponding value will be acted on by the function. Elsewhere, it will retain its
+                 original value. Default set to True.
+   :type where: bool or pdarray, default=True
 
    :returns: A pdarray containing input array elements rounded to the nearest integer
    :rtype: pdarray
@@ -1516,12 +1528,16 @@ Module Contents
    array([-1.0265167257081753 -0.37493812328444776 0.16743934398751592 0.75858370183953339])
 
 
-.. py:function:: square(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: square(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the element-wise square of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is applied over the input. At locations where the condition is True, the
+                 corresponding value will be acted on by the function. Elsewhere, it will retain its
+                 original value. Default set to True.
+   :type where: bool or pdarray, default=True
 
    :returns: A pdarray containing square values of the input
              array elements
@@ -1724,12 +1740,16 @@ Module Contents
    Server returns an error if rank of pda < 2
 
 
-.. py:function:: trunc(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: trunc(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the element-wise truncation of the array.
 
    :param pda:
    :type pda: pdarray
+   :param where: This condition is applied over the input. At locations where the condition is True, the
+                 corresponding value will be acted on by the function. Elsewhere, it will retain its
+                 original value. Default set to True.
+   :type where: bool or pdarray, default=True
 
    :returns: A pdarray containing input array elements truncated to the nearest integer
    :rtype: pdarray

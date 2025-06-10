@@ -423,7 +423,7 @@ instances directly.</p>
 <dd><p>The number of elements in the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars">int_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -434,7 +434,7 @@ instances directly.</p>
 <dd><p>The rank of the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars">int_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -456,7 +456,7 @@ instances directly.</p>
 <dd><p>The size in bytes of each element</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars">int_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -517,7 +517,7 @@ may override this limit by setting client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.pdarray.to_list" title="arkouda.pdarray.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -548,8 +548,8 @@ value, but proceed with caution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The array of values to cast</p></li>
-<li><p><strong>dt</strong> (<em>np.dtype</em><em>, </em><em>type</em><em>, </em><em>str</em><em>, or </em><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><em>bigint</em></a>) – The target dtype to cast values to</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The array of values to cast</p></li>
+<li><p><strong>dt</strong> (<em>np.dtype</em><em>, </em><em>type</em><em>, </em><em>str</em><em>, or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bigint" title="arkouda.bigint"><em>bigint</em></a>) – The target dtype to cast values to</p></li>
 <li><p><strong>errors</strong> (<em>{strict</em><em>, </em><em>ignore</em><em>, </em><em>return_validity}</em><em>, </em><em>default=ErrorMode.strict</em>) – <p>Controls how errors are handled when casting strings to a numeric type
 (ignored for casts from numeric types).</p>
 <blockquote>
@@ -581,7 +581,7 @@ returned with True where the cast succeeded and False where it failed.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, <a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a>], Tuple[<a class="reference internal" href="#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]]</p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>, <a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a>], Tuple[<a class="reference internal" href="#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]]</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

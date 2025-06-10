@@ -568,7 +568,7 @@ to compute the shape resulting from broadcasting two arrays together.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>nbytes</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The number of bytes to convert.</p></li>
+<li><p><strong>nbytes</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The number of bytes to convert.</p></li>
 <li><p><strong>unit</strong> (<em>{&quot;B&quot;</em><em>, </em><em>&quot;KB&quot;</em><em>, </em><em>&quot;MB&quot;</em><em>, </em><em>&quot;GB&quot;}</em><em>, </em><em>default=&quot;B&quot;</em>) – The unit to convert to. One of {“B”, “KB”, “MB”, “GB”}.</p></li>
 </ul>
 </dd>
@@ -576,7 +576,7 @@ to compute the shape resulting from broadcasting two arrays together.</p>
 <dd class="field-even"><p>The converted value in the specified unit.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars">numeric_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars">numeric_scalars</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – If <cite>unit</cite> is not one of {“B”, “KB”, “MB”, “GB”}.</p>
@@ -613,7 +613,7 @@ based on its codes. If not, the input is returned unchanged.</p>
 <dd class="field-even"><p>The string labels if <cite>values</cite> is a Categorical, otherwise the original input.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a> or original type</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings">Strings</a> or original type</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -657,13 +657,13 @@ For a valid permutation array <cite>perm</cite>, this function returns an array 
 such that <cite>inv[perm[i]] == i</cite> for all <cite>i</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>perm</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – A permutation of the integers <cite>[0, N-1]</cite>, where <cite>N</cite> is the length of the array.</p>
+<dd class="field-odd"><p><strong>perm</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – A permutation of the integers <cite>[0, N-1]</cite>, where <cite>N</cite> is the length of the array.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The inverse of the input permutation.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – If <cite>perm</cite> is not a valid permutation of the range <cite>[0, N-1]</cite>, such as
@@ -687,7 +687,7 @@ containing duplicates or missing values.</p>
 <dd><p>Check if the dtype of the given array-like object is a float type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>arry</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, or </em><a class="reference internal" href="../../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>) – The object to check.</p>
+<dd class="field-odd"><p><strong>arry</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, or </em><a class="reference internal" href="../../index/index.html#arkouda.index.Index" title="arkouda.index.Index"><em>Index</em></a>) – The object to check.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the dtype of <cite>arry</cite> is a float type, False otherwise.</p>
@@ -721,7 +721,7 @@ containing duplicates or missing values.</p>
 <dd><p>Check if the dtype of the given array-like object is an integer type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>arry</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, or </em><a class="reference internal" href="../../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>) – The object to check.</p>
+<dd class="field-odd"><p><strong>arry</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, or </em><a class="reference internal" href="../../index/index.html#arkouda.index.Index" title="arkouda.index.Index"><em>Index</em></a>) – The object to check.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the dtype of <cite>arry</cite> is an integer type, False otherwise.</p>
@@ -755,7 +755,7 @@ containing duplicates or missing values.</p>
 <dd><p>Check if the dtype of the given array-like object is numeric.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>arry</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, or </em><a class="reference internal" href="../../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>) – The object to check.</p>
+<dd class="field-odd"><p><strong>arry</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, or </em><a class="reference internal" href="../../index/index.html#arkouda.index.Index" title="arkouda.index.Index"><em>Index</em></a>) – The object to check.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the dtype of <cite>arry</cite> is numeric, False otherwise.</p>
@@ -832,7 +832,7 @@ False</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The values to be mapped.</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The values to be mapped.</p></li>
 <li><p><strong>mapping</strong> (<em>dict</em><em> or </em><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a>) – The mapping correspondence. A dictionary or Series that defines how
 to map the <cite>values</cite> array.</p></li>
 </ul>
@@ -843,7 +843,7 @@ The return type matches the type of <cite>values</cite>. If the input <cite>Seri
 has Categorical values, the return type will be <cite>Strings</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>]</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – If <cite>mapping</cite> is not of type <cite>dict</cite> or <cite>Series</cite>.
@@ -949,10 +949,10 @@ their indices and values. Internally, it performs the equivalent of:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>idx1</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Indices for the first sparse matrix.</p></li>
-<li><p><strong>idx2</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Indices for the second sparse matrix.</p></li>
-<li><p><strong>val1</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Values for the first sparse matrix.</p></li>
-<li><p><strong>val2</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Values for the second sparse matrix.</p></li>
+<li><p><strong>idx1</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Indices for the first sparse matrix.</p></li>
+<li><p><strong>idx2</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Indices for the second sparse matrix.</p></li>
+<li><p><strong>val1</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Values for the first sparse matrix.</p></li>
+<li><p><strong>val2</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Values for the second sparse matrix.</p></li>
 <li><p><strong>merge</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, the indices are combined using a merge-based workflow.
 If False, a sort-based workflow is used.</p></li>
 <li><p><strong>percent_transfer_limit</strong> (<em>int</em><em>, </em><em>default=100</em>) – Only used when <cite>merge</cite> is True. This defines the maximum percentage of
@@ -966,7 +966,7 @@ is exceeded, a sort-based workflow is used instead.</p></li>
 - The summed values associated with those indices.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>

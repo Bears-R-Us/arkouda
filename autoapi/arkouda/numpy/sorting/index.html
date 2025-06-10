@@ -432,16 +432,16 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The array to sort (int64, uint64, or float64)</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The array to sort (int64, uint64, or float64)</p></li>
 <li><p><strong>algorithm</strong> (<em>SortingAlgorithm</em><em>, </em><em>default=SortingAlgorithm.RadixSortLSD</em>) – The algorithm to be used for sorting the array.</p></li>
-<li><p><strong>axis</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=0</em>) – The axis to sort over.</p></li>
+<li><p><strong>axis</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=0</em>) – The axis to sort over.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The indices such that <code class="docutils literal notranslate"><span class="pre">pda[indices]</span></code> is sorted</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is other than a pdarray, Strings or Categorical</p>
@@ -485,7 +485,7 @@ columns, but not Strings or Categoricals — those are grouped, not ordered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>Sequence</em><em> of </em><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The columns (int64, uint64, float64, Strings, or Categorical) to sort by row.</p></li>
+<li><p><strong>arrays</strong> (<em>Sequence</em><em> of </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The columns (int64, uint64, float64, Strings, or Categorical) to sort by row.</p></li>
 <li><p><strong>algorithm</strong> (<em>SortingAlgorithm</em><em>, </em><em>default=SortingAlgorithm.RadixSortLSD</em>) – The algorithm to be used for sorting the arrays.</p></li>
 <li><p><strong>ascending</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Whether to sort in ascending order. Ignored when arrays have ndim &gt; 1.</p></li>
 </ul>
@@ -494,7 +494,7 @@ columns, but not Strings or Categoricals — those are grouped, not ordered.</p>
 <dd class="field-even"><p>The indices that permute the rows into grouped order.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – If the inputs are not all the same size or not valid array types.</p>
@@ -534,8 +534,8 @@ elements in <cite>v</cite> were inserted before the indices, the order of <cite>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – 1-D input array. Must be sorted in ascending order. <cite>sorter</cite> is not currently supported.</p></li>
-<li><p><strong>v</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.float64" title="arkouda.numpy.dtypes.float64"><em>float64</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><em>bigint</em></a><em>, or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Values to insert into <cite>a</cite>. Can be a scalar or array-like.</p></li>
+<li><p><strong>a</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – 1-D input array. Must be sorted in ascending order. <cite>sorter</cite> is not currently supported.</p></li>
+<li><p><strong>v</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.float64" title="arkouda.float64"><em>float64</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.bigint" title="arkouda.bigint"><em>bigint</em></a><em>, or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Values to insert into <cite>a</cite>. Can be a scalar or array-like.</p></li>
 <li><p><strong>side</strong> (<em>{'left'</em><em>, </em><em>'right'}</em><em>, </em><em>default='left'</em>) – If ‘left’, the index of the first suitable location found is given.
 If ‘right’, return the last such index.</p></li>
 </ul>
@@ -545,7 +545,7 @@ If ‘right’, return the last such index.</p></li>
 If <cite>v</cite> is a scalar, returns a single integer index.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int or <a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p>int or <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -577,16 +577,16 @@ for Strings, use argsort.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The array to sort (int64, uint64, or float64)</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The array to sort (int64, uint64, or float64)</p></li>
 <li><p><strong>algorithm</strong> (<em>SortingAlgorithm</em><em>, </em><em>default=SortingAlgorithm.RadixSortLSD</em>) – The algorithm to be used for sorting the arrays.</p></li>
-<li><p><strong>axis</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=-1</em>) – The axis to sort over. Setting to -1 means that it will sort over axis = ndim - 1.</p></li>
+<li><p><strong>axis</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=-1</em>) – The axis to sort over. Setting to -1 means that it will sort over axis = ndim - 1.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The sorted copy of pda</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">

@@ -439,7 +439,7 @@
 
 
 <div class="viewcode-block" id="SegArray">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SegArray</span><span class="p">:</span>
     <span class="n">objType</span> <span class="o">=</span> <span class="s2">&quot;SegArray&quot;</span>
 
@@ -489,7 +489,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_grouping</span> <span class="o">=</span> <span class="n">grouping</span>
 
 <div class="viewcode-block" id="SegArray.from_return_msg">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.from_return_msg">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.from_return_msg">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_return_msg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegArray</span><span class="p">:</span>
         <span class="c1"># parse return json</span>
@@ -507,7 +507,7 @@
 
 
 <div class="viewcode-block" id="SegArray.from_multi_array">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.from_multi_array">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.from_multi_array">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_multi_array</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -596,7 +596,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid index type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SegArray.concat">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.concat">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.concat">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">concat</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -669,7 +669,7 @@
 
 
 <div class="viewcode-block" id="SegArray.copy">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.copy">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.copy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a deep copy.</span>
@@ -713,7 +713,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SegArray.get_suffixes">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.get_suffixes">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.get_suffixes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_suffixes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">return_origins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">proper</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the n-long suffix of each sub-array, where possible</span>
@@ -755,7 +755,7 @@
 
 
 <div class="viewcode-block" id="SegArray.get_prefixes">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.get_prefixes">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.get_prefixes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_prefixes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">return_origins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">proper</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all sub-array prefixes of length n (for sub-arrays that are at least n+1 long)</span>
@@ -797,7 +797,7 @@
 
 
 <div class="viewcode-block" id="SegArray.get_ngrams">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.get_ngrams">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.get_ngrams">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_ngrams</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">return_origins</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all n-grams from all sub-arrays.</span>
@@ -851,7 +851,7 @@
         <span class="k">return</span> <span class="n">longenough</span><span class="p">,</span> <span class="n">j</span>
 
 <div class="viewcode-block" id="SegArray.get_jth">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.get_jth">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.get_jth">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_jth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">return_origins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compressed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select the j-th element of each sub-array, where possible.</span>
@@ -901,7 +901,7 @@
 
 
 <div class="viewcode-block" id="SegArray.set_jth">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.set_jth">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.set_jth">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_jth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the j-th element of each sub-array in a subset.</span>
@@ -931,7 +931,7 @@
 
 
 <div class="viewcode-block" id="SegArray.get_length_n">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.get_length_n">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.get_length_n">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_length_n</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">return_origins</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all sub-arrays of length n, as a list of columns.</span>
@@ -966,7 +966,7 @@
 
 
 <div class="viewcode-block" id="SegArray.append">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.append">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.append">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Append other to self, either vertically (axis=0, length of resulting SegArray</span>
@@ -995,7 +995,7 @@
 
 
 <div class="viewcode-block" id="SegArray.append_single">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.append_single">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.append_single">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">append_single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Append a single value to each sub-array.</span>
@@ -1035,13 +1035,13 @@
 
 
 <div class="viewcode-block" id="SegArray.prepend_single">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.prepend_single">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.prepend_single">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prepend_single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">append_single</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SegArray.remove_repeats">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.remove_repeats">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.remove_repeats">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">remove_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_multiplicity</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Condense sequences of repeated values within a sub-array to a single value.</span>
@@ -1082,7 +1082,7 @@
 
 
 <div class="viewcode-block" id="SegArray.to_ndarray">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.to_ndarray">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.to_ndarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array into a numpy.ndarray containing sub-arrays</span>
@@ -1116,7 +1116,7 @@
 
 
 <div class="viewcode-block" id="SegArray.to_list">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.to_list">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.to_list">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the segarray into a list containing sub-arrays</span>
@@ -1143,7 +1143,7 @@
 
 
 <div class="viewcode-block" id="SegArray.sum">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.sum">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.sum">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1151,7 +1151,7 @@
 
 
 <div class="viewcode-block" id="SegArray.prod">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.prod">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.prod">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1159,7 +1159,7 @@
 
 
 <div class="viewcode-block" id="SegArray.min">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.min">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.min">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1167,7 +1167,7 @@
 
 
 <div class="viewcode-block" id="SegArray.max">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.max">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.max">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1175,7 +1175,7 @@
 
 
 <div class="viewcode-block" id="SegArray.argmin">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.argmin">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.argmin">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1183,7 +1183,7 @@
 
 
 <div class="viewcode-block" id="SegArray.argmax">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.argmax">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.argmax">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1191,7 +1191,7 @@
 
 
 <div class="viewcode-block" id="SegArray.any">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.any">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.any">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1199,7 +1199,7 @@
 
 
 <div class="viewcode-block" id="SegArray.all">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.all">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1207,7 +1207,7 @@
 
 
 <div class="viewcode-block" id="SegArray.OR">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.OR">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.OR">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">OR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1215,7 +1215,7 @@
 
 
 <div class="viewcode-block" id="SegArray.AND">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.AND">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.AND">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">AND</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1223,7 +1223,7 @@
 
 
 <div class="viewcode-block" id="SegArray.XOR">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.XOR">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.XOR">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">XOR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1231,7 +1231,7 @@
 
 
 <div class="viewcode-block" id="SegArray.nunique">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.nunique">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.nunique">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">nunique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1239,7 +1239,7 @@
 
 
 <div class="viewcode-block" id="SegArray.mean">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.mean">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.mean">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1247,7 +1247,7 @@
 
 
 <div class="viewcode-block" id="SegArray.aggregate">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.aggregate">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.aggregate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -1255,7 +1255,7 @@
 
 
 <div class="viewcode-block" id="SegArray.unique">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.unique">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.unique">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return sub-arrays of unique values.</span>
@@ -1282,7 +1282,7 @@
 
 
 <div class="viewcode-block" id="SegArray.hash">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.hash">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.hash">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute a 128-bit hash of each segment.</span>
@@ -1310,7 +1310,7 @@
 
 
 <div class="viewcode-block" id="SegArray.to_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.to_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.to_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">,</span>
@@ -1366,7 +1366,7 @@
 
 
 <div class="viewcode-block" id="SegArray.update_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.update_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1437,7 +1437,7 @@
 
 
 <div class="viewcode-block" id="SegArray.to_parquet">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.to_parquet">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.to_parquet">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_parquet</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s2">&quot;segarray&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
@@ -1507,7 +1507,7 @@
 
 
 <div class="viewcode-block" id="SegArray.read_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.read_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.read_hdf">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">read_hdf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s2">&quot;segarray&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1531,7 +1531,7 @@
 
 
 <div class="viewcode-block" id="SegArray.intersect">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.intersect">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.intersect">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">intersect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the intersection of 2 SegArrays.</span>
@@ -1589,7 +1589,7 @@
 
 
 <div class="viewcode-block" id="SegArray.union">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.union">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.union">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the union of 2 SegArrays.</span>
@@ -1647,7 +1647,7 @@
 
 
 <div class="viewcode-block" id="SegArray.setdiff">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.setdiff">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.setdiff">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">setdiff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the set difference of 2 SegArrays.</span>
@@ -1705,7 +1705,7 @@
 
 
 <div class="viewcode-block" id="SegArray.setxor">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.setxor">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.setxor">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">setxor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the symmetric difference of 2 SegArrays.</span>
@@ -1763,7 +1763,7 @@
 
 
 <div class="viewcode-block" id="SegArray.filter">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.filter">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.filter">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="n">discard_empty</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter values out of the SegArray object</span>
@@ -1805,7 +1805,7 @@
 
 
 <div class="viewcode-block" id="SegArray.register">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.register">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.register">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register this SegArray object and underlying components with the Arkouda server</span>
@@ -1854,7 +1854,7 @@
 
 
 <div class="viewcode-block" id="SegArray.unregister">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.unregister">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.unregister">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister this SegArray object in the arkouda server which was previously</span>
@@ -1883,7 +1883,7 @@
 
 
 <div class="viewcode-block" id="SegArray.is_registered">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.is_registered">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.is_registered">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the name of the SegArray object is registered in the Symbol Table</span>
@@ -1909,7 +1909,7 @@
 
 
 <div class="viewcode-block" id="SegArray.transfer">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.SegArray.transfer">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.transfer">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a Segmented Array to a different Arkouda server.</span>

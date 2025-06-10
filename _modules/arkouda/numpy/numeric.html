@@ -502,7 +502,7 @@
 
 
 <div class="viewcode-block" id="ErrorMode">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.ErrorMode">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.ErrorMode">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ErrorMode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">strict</span> <span class="o">=</span> <span class="s2">&quot;strict&quot;</span>
     <span class="n">ignore</span> <span class="o">=</span> <span class="s2">&quot;ignore&quot;</span>
@@ -522,7 +522,7 @@
 
 
 <div class="viewcode-block" id="cast">
-<a class="viewcode-back" href="../../../usage/pdarray.html#arkouda.numpy.cast">[docs]</a>
+<a class="viewcode-back" href="../../../usage/pdarray.html#arkouda.cast">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cast</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span>  <span class="c1"># type: ignore</span>
@@ -629,7 +629,7 @@
 
 
 <div class="viewcode-block" id="abs">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.numpy.abs">[docs]</a>
+<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.abs">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -670,15 +670,19 @@
 
 
 <div class="viewcode-block" id="ceil">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.ceil">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.ceil">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">ceil</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ceil</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the element-wise ceiling of the array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
+<span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
+<span class="sd">        corresponding value will be acted on by the function. Elsewhere, it will retain its</span>
+<span class="sd">        original value. Default set to True.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -698,26 +702,24 @@
 <span class="sd">    5.00000000000000000 6.00000000000000000])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;ceil&quot;</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ceil&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
-        <span class="p">},</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;ceil&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="floor">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.floor">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.floor">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the element-wise floor of the array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
+<span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
+<span class="sd">        corresponding value will be acted on by the function. Elsewhere, it will retain its</span>
+<span class="sd">        original value. Default set to True.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -737,26 +739,24 @@
 <span class="sd">    4.00000000000000000 5.00000000000000000])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;floor&quot;</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;floor&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
-        <span class="p">},</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;floor&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="round">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.round">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.round">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the element-wise rounding of the array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
+<span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
+<span class="sd">        corresponding value will be acted on by the function. Elsewhere, it will retain its</span>
+<span class="sd">        original value. Default set to True.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -775,26 +775,24 @@
 <span class="sd">    array([1.00000000000000000 3.00000000000000000 3.00000000000000000])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;round&quot;</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;round&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
-        <span class="p">},</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;round&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="trunc">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.trunc">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.trunc">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">trunc</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trunc</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the element-wise truncation of the array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
+<span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
+<span class="sd">        corresponding value will be acted on by the function. Elsewhere, it will retain its</span>
+<span class="sd">        original value. Default set to True.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -813,13 +811,7 @@
 <span class="sd">    array([1.00000000000000000 2.00000000000000000 3.00000000000000000])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;trunc&quot;</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;trunc&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
-        <span class="p">},</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;trunc&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
@@ -828,7 +820,7 @@
 
 
 <div class="viewcode-block" id="sign">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.sign">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.sign">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sign</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -866,7 +858,7 @@
 
 
 <div class="viewcode-block" id="isfinite">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.isfinite">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.isfinite">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">isfinite</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -906,7 +898,7 @@
 
 
 <div class="viewcode-block" id="isinf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.isinf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.isinf">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">isinf</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -946,7 +938,7 @@
 
 
 <div class="viewcode-block" id="isnan">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.isnan">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.isnan">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">isnan</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -995,7 +987,7 @@
 
 
 <div class="viewcode-block" id="log">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.numpy.log">[docs]</a>
+<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.log">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1048,7 +1040,7 @@
 
 
 <div class="viewcode-block" id="log10">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.log10">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.log10">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">log10</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1082,7 +1074,7 @@
 
 
 <div class="viewcode-block" id="log2">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.log2">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.log2">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">log2</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1116,7 +1108,7 @@
 
 
 <div class="viewcode-block" id="log1p">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.log1p">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.log1p">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">log1p</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1150,7 +1142,7 @@
 
 
 <div class="viewcode-block" id="nextafter">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.nextafter">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.nextafter">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">nextafter</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">bigint</span><span class="p">],</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]</span>
@@ -1222,7 +1214,7 @@
 
 
 <div class="viewcode-block" id="exp">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.numpy.exp">[docs]</a>
+<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.exp">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">exp</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1264,7 +1256,7 @@
 
 
 <div class="viewcode-block" id="expm1">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.expm1">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.expm1">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">expm1</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1306,15 +1298,19 @@
 
 
 <div class="viewcode-block" id="square">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.square">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.square">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">square</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">square</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the element-wise square of the array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
+<span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
+<span class="sd">        corresponding value will be acted on by the function. Elsewhere, it will retain its</span>
+<span class="sd">        original value. Default set to True.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1333,18 +1329,13 @@
 <span class="sd">    &gt;&gt;&gt; ak.square(ak.arange(1,5))</span>
 <span class="sd">    array([1 4 9 16])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;square&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
-        <span class="p">},</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">NUMERIC_TYPES</span><span class="p">,</span> <span class="s2">&quot;floor&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;square&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="cumsum">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.numpy.cumsum">[docs]</a>
+<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.cumsum">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cumsum</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1392,7 +1383,7 @@
 
 
 <div class="viewcode-block" id="cumprod">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.numpy.cumprod">[docs]</a>
+<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.cumprod">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cumprod</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1438,7 +1429,7 @@
 
 
 <div class="viewcode-block" id="sin">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.numpy.sin">[docs]</a>
+<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.sin">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sin</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1470,12 +1461,12 @@
 <span class="sd">    &gt;&gt;&gt; ak.sin(a)</span>
 <span class="sd">    array([-0.99749498660405445 -0.68163876002333412 0.00000000000000000 0.68163876002333412])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;sin&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;sin&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="cos">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.numpy.cos">[docs]</a>
+<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.cos">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cos</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1507,12 +1498,12 @@
 <span class="sd">    &gt;&gt;&gt; ak.cos(a)</span>
 <span class="sd">    array([0.070737201667702906 0.7316888688738209 1.00000000000000000 0.7316888688738209])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;cos&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;cos&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="tan">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.tan">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.tan">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">tan</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1544,12 +1535,12 @@
 <span class="sd">    &gt;&gt;&gt; ak.tan(a)</span>
 <span class="sd">    array([-14.101419947171719 -0.93159645994407247 0.00000000000000000 0.93159645994407247])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;tan&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;tan&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="arcsin">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.arcsin">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.arcsin">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">arcsin</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1581,12 +1572,12 @@
 <span class="sd">    &gt;&gt;&gt; ak.arcsin(a)</span>
 <span class="sd">    array([-0.77539749661075297 -0.30469265401539752 0.10016742116155977 0.52359877559829893])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arcsin&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arcsin&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="arccos">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.arccos">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.arccos">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">arccos</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1618,12 +1609,12 @@
 <span class="sd">    &gt;&gt;&gt; ak.arccos(a)</span>
 <span class="sd">    array([2.3461938234056494 1.8754889808102941 1.4706289056333368 1.0471975511965979])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arccos&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arccos&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="arctan">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.arctan">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.arctan">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">arctan</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1655,12 +1646,12 @@
 <span class="sd">    &gt;&gt;&gt; ak.arctan(a)</span>
 <span class="sd">    array([-1.4776090650260174 -1.3022168962760161 1.2873750736468446 1.4758446204521403])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arctan&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arctan&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="arctan2">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.arctan2">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.arctan2">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">arctan2</span><span class="p">(</span>
     <span class="n">num</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">],</span>
@@ -1778,7 +1769,7 @@
 
 
 <div class="viewcode-block" id="sinh">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.sinh">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.sinh">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sinh</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1810,12 +1801,12 @@
 <span class="sd">    &gt;&gt;&gt; ak.sinh(a)</span>
 <span class="sd">    array([-1.0265167257081753 -0.37493812328444776 0.16743934398751592 0.75858370183953339])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;sinh&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;sinh&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="cosh">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.cosh">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.cosh">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cosh</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1847,12 +1838,12 @@
 <span class="sd">    &gt;&gt;&gt; ak.cosh(a)</span>
 <span class="sd">    array([1.4330863854487745 1.0679787433708894 1.0139210688781299 1.255169005630943])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;cosh&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;cosh&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="tanh">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.tanh">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.tanh">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">tanh</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1884,12 +1875,12 @@
 <span class="sd">    &gt;&gt;&gt; ak.tanh(a)</span>
 <span class="sd">    array([-0.71629787019902447 -0.35107264597890853 0.1651404129246293 0.60436777711716361])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;tanh&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;tanh&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="arcsinh">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.arcsinh">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.arcsinh">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">arcsinh</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1921,12 +1912,12 @@
 <span class="sd">    &gt;&gt;&gt; ak.arcsinh(a)</span>
 <span class="sd">    array([-6.9077562789806368 -5.8091519901925297 5.8091519901925297 6.9077562789806368])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arcsinh&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arcsinh&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="arccosh">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.arccosh">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.arccosh">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">arccosh</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1958,12 +1949,12 @@
 <span class="sd">    &gt;&gt;&gt; ak.arccosh(a)</span>
 <span class="sd">    array([0.00000000000000000 5.8131260830342795 6.5032874256927515 6.9077542789806374])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arccosh&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arccosh&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="arctanh">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.arctanh">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.arctanh">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">arctanh</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1995,28 +1986,29 @@
 <span class="sd">    &gt;&gt;&gt; ak.arctanh(a)</span>
 <span class="sd">    array([-3.8002011672501994 -0.34619863713154242 0.34619863713154253 3.8002011672501994])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arctanh&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arctanh&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_trig_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the result of the input trig function acting element-wise on the array.</span>
+<span class="sd">    Returns the result of the input function acting element-wise on the array.</span>
+<span class="sd">    This is used for functions that allow a &quot;where&quot; parameter in their arguments.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
 <span class="sd">    func : str</span>
-<span class="sd">        The designated trig function that is passed in</span>
+<span class="sd">        The designated function that is passed in</span>
 <span class="sd">    where : bool or pdarray, default=True</span>
 <span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
-<span class="sd">        corresponding value will be acted on by the respective trig function. Elsewhere,</span>
+<span class="sd">        corresponding value will be acted on by the respective function. Elsewhere,</span>
 <span class="sd">        it will retain its original value. Default set to True.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
-<span class="sd">        A pdarray with the trig function applied at each element of pda</span>
+<span class="sd">        A pdarray with the given function applied at each element of pda</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -2053,7 +2045,7 @@
 
 
 <div class="viewcode-block" id="rad2deg">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.rad2deg">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.rad2deg">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">rad2deg</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2095,7 +2087,7 @@
 
 
 <div class="viewcode-block" id="deg2rad">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.deg2rad">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.deg2rad">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">deg2rad</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2158,7 +2150,7 @@
 <span class="c1"># the type hints are there as a reference to show which types are expected</span>
 <span class="c1"># type validation is done within the function</span>
 <div class="viewcode-block" id="hash">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.hash">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.hash">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>  <span class="c1"># type: ignore</span>
         <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span>
@@ -2363,7 +2355,7 @@
 
 
 <div class="viewcode-block" id="where">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.numpy.where">[docs]</a>
+<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.where">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">where</span><span class="p">(</span>
     <span class="n">condition</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
@@ -2521,7 +2513,7 @@
 
 
 <div class="viewcode-block" id="histogram">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.histogram">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.histogram">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">histogram</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
@@ -2604,7 +2596,7 @@
 <span class="c1"># Typechecking removed due to circular dependencies with arrayview</span>
 <span class="c1"># @typechecked</span>
 <div class="viewcode-block" id="histogram2d">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.histogram2d">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.histogram2d">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">histogram2d</span><span class="p">(</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
     <span class="n">y</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
@@ -2724,7 +2716,7 @@
 
 
 <div class="viewcode-block" id="histogramdd">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.histogramdd">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.histogramdd">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">histogramdd</span><span class="p">(</span>
     <span class="n">sample</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">pdarray</span><span class="p">],</span>
     <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
@@ -2838,7 +2830,7 @@
 
 
 <div class="viewcode-block" id="value_counts">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.value_counts">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.value_counts">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">value_counts</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
@@ -2887,7 +2879,7 @@
 
 
 <div class="viewcode-block" id="clip">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.clip">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.clip">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">clip</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
@@ -2989,7 +2981,7 @@
 
 
 <div class="viewcode-block" id="median">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.median">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.median">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the median of a given array.  1d case only, for now.</span>
@@ -3035,7 +3027,7 @@
 
 
 <div class="viewcode-block" id="count_nonzero">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.count_nonzero">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.count_nonzero">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">count_nonzero</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the nonzero count of a given array. 1D case only, for now.</span>
@@ -3096,7 +3088,7 @@
 
 
 <div class="viewcode-block" id="array_equal">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.array_equal">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.array_equal">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">array_equal</span><span class="p">(</span><span class="n">pda_a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pda_b</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compares two pdarrays for equality.</span>
@@ -3151,7 +3143,7 @@
 
 
 <div class="viewcode-block" id="putmask">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.putmask">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.putmask">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">putmask</span><span class="p">(</span>
     <span class="n">A</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Values</span><span class="p">:</span> <span class="n">pdarray</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># doesn&#39;t return anything, as A is overwritten in place</span>
@@ -3234,7 +3226,7 @@
 
 
 <div class="viewcode-block" id="eye">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.eye">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.eye">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">eye</span><span class="p">(</span><span class="n">rows</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">diag</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">ak_float64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a pdarray with zeros everywhere except along a diagonal, which is all ones.</span>
@@ -3293,7 +3285,7 @@
 
 
 <div class="viewcode-block" id="triu">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.triu">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.triu">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">triu</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">diag</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a copy of the pda with the lower triangle zeroed out</span>
@@ -3353,7 +3345,7 @@
 
 
 <div class="viewcode-block" id="tril">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.tril">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.tril">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">tril</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">diag</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a copy of the pda with the upper triangle zeroed out</span>
@@ -3412,7 +3404,7 @@
 
 
 <div class="viewcode-block" id="transpose">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.transpose">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.transpose">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">transpose</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">axes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3472,7 +3464,7 @@
 
 
 <div class="viewcode-block" id="matmul">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.matmul">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.matmul">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">matmul</span><span class="p">(</span><span class="n">pdaLeft</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pdaRight</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the product of two matrices.</span>
@@ -3524,7 +3516,7 @@
 
 
 <div class="viewcode-block" id="vecdot">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.vecdot">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.vecdot">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">vecdot</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -3597,7 +3589,7 @@
 
 
 <div class="viewcode-block" id="quantile">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.quantile">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.quantile">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">quantile</span><span class="p">(</span>
     <span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
     <span class="n">q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
@@ -3774,7 +3766,7 @@
 
 
 <div class="viewcode-block" id="percentile">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.percentile">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.percentile">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">percentile</span><span class="p">(</span>
     <span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
     <span class="n">q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
@@ -3862,7 +3854,7 @@
 
 
 <div class="viewcode-block" id="take">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.numpy.take">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.take">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take elements from an array along an axis.</span>

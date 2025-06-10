@@ -836,7 +836,7 @@
 
 <span class="c1"># class for the pdarray</span>
 <div class="viewcode-block" id="pdarray">
-<a class="viewcode-back" href="../../../usage/pdarray.html#arkouda.numpy.pdarray">[docs]</a>
+<a class="viewcode-back" href="../../../usage/pdarray.html#arkouda.pdarray">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The basic arkouda array class. This class contains only the</span>
@@ -979,7 +979,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_max_bits</span> <span class="o">=</span> <span class="n">max_bits</span>
 
 <div class="viewcode-block" id="pdarray.equals">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.equals">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.equals">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool_scalars</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Whether pdarrays are the same size and all entries are equal.</span>
@@ -1016,7 +1016,7 @@
 
 
 <div class="viewcode-block" id="pdarray.format_other">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.format_other">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.format_other">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">format_other</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attempt to cast scalar other to the element dtype of this pdarray,</span>
@@ -1188,7 +1188,7 @@
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
 
 <div class="viewcode-block" id="pdarray.transfer">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.transfer">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.transfer">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a pdarray to a different Arkouda server.</span>
@@ -1376,7 +1376,7 @@
 
     <span class="c1"># op= operators</span>
 <div class="viewcode-block" id="pdarray.opeq">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.opeq">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.opeq">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">opeq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">OpEqOps</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bad operator </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1841,7 +1841,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span>
 
 <div class="viewcode-block" id="pdarray.fill">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.fill">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.fill">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1868,7 +1868,7 @@
 
 
 <div class="viewcode-block" id="pdarray.argsort">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.argsort">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.argsort">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
@@ -1942,7 +1942,7 @@
 
 
 <div class="viewcode-block" id="pdarray.any">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.any">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.any">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
@@ -1992,7 +1992,7 @@
 
 
 <div class="viewcode-block" id="pdarray.all">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.all">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
@@ -2041,7 +2041,7 @@
 
 
 <div class="viewcode-block" id="pdarray.is_registered">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.is_registered">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.is_registered">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True iff the object is contained in the registry</span>
@@ -2080,7 +2080,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
 
 <div class="viewcode-block" id="pdarray.info">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.info">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.info">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a JSON formatted string containing information about all components of self.</span>
@@ -2094,14 +2094,14 @@
 
 
 <div class="viewcode-block" id="pdarray.pretty_print_info">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.pretty_print_info">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.pretty_print_info">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">pretty_print_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print information about all components of self in a human-readable format.&quot;&quot;&quot;</span>
         <span class="n">pretty_print_information</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_list_component_names</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="pdarray.is_sorted">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.is_sorted">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.is_sorted">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_sorted</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
@@ -2148,7 +2148,7 @@
 
 
 <div class="viewcode-block" id="pdarray.sum">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.sum">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.sum">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2197,7 +2197,7 @@
 
 
 <div class="viewcode-block" id="pdarray.prod">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.prod">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.prod">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prod</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2246,7 +2246,7 @@
 
 
 <div class="viewcode-block" id="pdarray.min">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.min">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.min">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2295,7 +2295,7 @@
 
 
 <div class="viewcode-block" id="pdarray.max">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.max">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.max">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2344,7 +2344,7 @@
 
 
 <div class="viewcode-block" id="pdarray.argmin">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.argmin">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.argmin">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmin</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
@@ -2391,7 +2391,7 @@
 
 
 <div class="viewcode-block" id="pdarray.argmax">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.argmax">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.argmax">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmax</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
@@ -2438,7 +2438,7 @@
 
 
 <div class="viewcode-block" id="pdarray.mean">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.mean">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.mean">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
@@ -2487,7 +2487,7 @@
 
 
 <div class="viewcode-block" id="pdarray.var">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.var">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.var">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -2561,7 +2561,7 @@
 
 
 <div class="viewcode-block" id="pdarray.std">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.std">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.std">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ddof</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -2639,7 +2639,7 @@
 
 
 <div class="viewcode-block" id="pdarray.cov">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.cov">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.cov">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cov</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the covariance between self and y.</span>
@@ -2648,7 +2648,7 @@
 
 
 <div class="viewcode-block" id="pdarray.corr">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.corr">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.corr">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">corr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the correlation between self and y using pearson correlation coefficient.</span>
@@ -2658,7 +2658,7 @@
 
 
 <div class="viewcode-block" id="pdarray.mink">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.mink">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.mink">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the minimum &quot;k&quot; values.  See ``arkouda.mink`` for details.</span>
@@ -2667,7 +2667,7 @@
 
 
 <div class="viewcode-block" id="pdarray.maxk">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.maxk">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.maxk">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">maxk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2677,7 +2677,7 @@
 
 
 <div class="viewcode-block" id="pdarray.argmink">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.argmink">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.argmink">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finds the indices corresponding to the `k` minimum values of an array.</span>
@@ -2687,7 +2687,7 @@
 
 
 <div class="viewcode-block" id="pdarray.argmaxk">
-<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.numpy.pdarray.argmaxk">[docs]</a>
+<a class="viewcode-back" href="../../../usage/histogram.html#arkouda.pdarray.argmaxk">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmaxk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finds the indices corresponding to the `k` maximum values of an array.</span>
@@ -2697,7 +2697,7 @@
 
 
 <div class="viewcode-block" id="pdarray.popcount">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.popcount">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.popcount">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">popcount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the population (number of bits set) in each element. See `ak.popcount`.</span>
@@ -2706,7 +2706,7 @@
 
 
 <div class="viewcode-block" id="pdarray.parity">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.parity">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.parity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">parity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the parity (XOR of all bits) in each element. See `ak.parity`.</span>
@@ -2715,7 +2715,7 @@
 
 
 <div class="viewcode-block" id="pdarray.clz">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.clz">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.clz">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clz</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Count the number of leading zeros in each element. See `ak.clz`.</span>
@@ -2724,7 +2724,7 @@
 
 
 <div class="viewcode-block" id="pdarray.ctz">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.ctz">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.ctz">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">ctz</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Count the number of trailing zeros in each element. See `ak.ctz`.</span>
@@ -2733,7 +2733,7 @@
 
 
 <div class="viewcode-block" id="pdarray.rotl">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.rotl">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.rotl">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rotl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Rotate bits left by &lt;other&gt;.</span>
@@ -2742,7 +2742,7 @@
 
 
 <div class="viewcode-block" id="pdarray.rotr">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.rotr">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.rotr">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rotr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Rotate bits right by &lt;other&gt;.</span>
@@ -2751,7 +2751,7 @@
 
 
 <div class="viewcode-block" id="pdarray.value_counts">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.value_counts">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.value_counts">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">value_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Count the occurrences of the unique values of self.</span>
@@ -2781,7 +2781,7 @@
 
 
 <div class="viewcode-block" id="pdarray.astype">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.astype">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.astype">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cast values of pdarray to provided dtype</span>
@@ -2816,7 +2816,7 @@
 
 
 <div class="viewcode-block" id="pdarray.slice_bits">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.slice_bits">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.slice_bits">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">slice_bits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a pdarray containing only bits from low to high of self.</span>
@@ -2864,7 +2864,7 @@
 
 
 <div class="viewcode-block" id="pdarray.bigint_to_uint_arrays">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.bigint_to_uint_arrays">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.bigint_to_uint_arrays">[docs]</a>
     <span class="nd">@typechecked</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">bigint_to_uint_arrays</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2904,7 +2904,7 @@
 
 
 <div class="viewcode-block" id="pdarray.reshape">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.reshape">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.reshape">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reshape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">shape</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gives a new shape to an array without changing its data.</span>
@@ -2959,7 +2959,7 @@
 
 
 <div class="viewcode-block" id="pdarray.flatten">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.flatten">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.flatten">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a copy of the array collapsed into one dimension.</span>
@@ -2984,7 +2984,7 @@
 
 
 <div class="viewcode-block" id="pdarray.to_ndarray">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.to_ndarray">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.to_ndarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a np.ndarray, transferring array data from the</span>
@@ -3078,7 +3078,7 @@
 
 
 <div class="viewcode-block" id="pdarray.to_list">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.to_list">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.to_list">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a list, transferring array data from the</span>
@@ -3123,7 +3123,7 @@
 
 
 <div class="viewcode-block" id="pdarray.to_cuda">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.to_cuda">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.to_cuda">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_cuda</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a Numba DeviceND array, transferring array data from the</span>
@@ -3185,7 +3185,7 @@
 
 
 <div class="viewcode-block" id="pdarray.to_parquet">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.to_parquet">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.to_parquet">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_parquet</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3270,7 +3270,7 @@
 
 
 <div class="viewcode-block" id="pdarray.to_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.to_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.to_hdf">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3360,7 +3360,7 @@
 
 
 <div class="viewcode-block" id="pdarray.update_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.update_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overwrite the dataset with the name provided with this pdarray. If</span>
@@ -3425,7 +3425,7 @@
 
 
 <div class="viewcode-block" id="pdarray.to_csv">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.to_csv">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.to_csv">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_csv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3495,7 +3495,7 @@
 
 
 <div class="viewcode-block" id="pdarray.register">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.register">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.register">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3562,7 +3562,7 @@
 
 
 <div class="viewcode-block" id="pdarray.unregister">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarray.unregister">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.unregister">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister a pdarray in the arkouda server which was previously</span>
@@ -3720,7 +3720,7 @@
 
 
 <div class="viewcode-block" id="clear">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.clear">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.clear">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Send a clear message to clear all unregistered data from the server symbol table.</span>
@@ -4304,7 +4304,7 @@
 
 
 <div class="viewcode-block" id="dot">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.dot">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.dot">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">dot</span><span class="p">(</span>
     <span class="n">pda1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
@@ -4438,7 +4438,7 @@
 
 
 <div class="viewcode-block" id="cov">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.cov">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.cov">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cov</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4489,7 +4489,7 @@
 
 
 <div class="viewcode-block" id="corr">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.corr">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.corr">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">corr</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4540,7 +4540,7 @@
 
 
 <div class="viewcode-block" id="divmod">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.divmod">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.divmod">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">divmod</span><span class="p">(</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
@@ -4622,7 +4622,7 @@
 
 
 <div class="viewcode-block" id="mink">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.numpy.mink">[docs]</a>
+<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.mink">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">mink</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4680,7 +4680,7 @@
 
 
 <div class="viewcode-block" id="maxk">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.numpy.maxk">[docs]</a>
+<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.maxk">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">maxk</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4739,7 +4739,7 @@
 
 
 <div class="viewcode-block" id="argmink">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.numpy.argmink">[docs]</a>
+<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.argmink">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">argmink</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4795,7 +4795,7 @@
 
 
 <div class="viewcode-block" id="argmaxk">
-<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.numpy.argmaxk">[docs]</a>
+<a class="viewcode-back" href="../../../usage/arithmetic.html#arkouda.argmaxk">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">argmaxk</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4853,7 +4853,7 @@
 
 
 <div class="viewcode-block" id="popcount">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.popcount">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.popcount">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">popcount</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the population (number of bits set) for each integer in an array.</span>
@@ -4898,7 +4898,7 @@
 
 
 <div class="viewcode-block" id="parity">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.parity">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.parity">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parity</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the bit parity (XOR of all bits) for each integer in an array.</span>
@@ -4942,7 +4942,7 @@
 
 
 <div class="viewcode-block" id="clz">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.clz">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.clz">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">clz</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Count leading zeros for each integer in an array.</span>
@@ -5024,7 +5024,7 @@
 
 
 <div class="viewcode-block" id="ctz">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.ctz">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.ctz">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ctz</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Count trailing zeros for each integer in an array.</span>
@@ -5108,7 +5108,7 @@
 
 
 <div class="viewcode-block" id="rotl">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.rotl">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.rotl">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">rotl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">rot</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</span>
@@ -5150,7 +5150,7 @@
 
 
 <div class="viewcode-block" id="rotr">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.rotr">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.rotr">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">rotr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">rot</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</span>
@@ -5192,7 +5192,7 @@
 
 
 <div class="viewcode-block" id="power">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.power">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.power">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">power</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
@@ -5256,7 +5256,7 @@
 
 
 <div class="viewcode-block" id="sqrt">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.sqrt">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.sqrt">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sqrt</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5362,7 +5362,7 @@
 
 <span class="c1"># there&#39;s no need for typechecking, % can handle that</span>
 <div class="viewcode-block" id="mod">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.mod">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.mod">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">mod</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">divisor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the element-wise remainder of division.</span>
@@ -5401,7 +5401,7 @@
 
 
 <div class="viewcode-block" id="fmod">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.fmod">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.fmod">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">fmod</span><span class="p">(</span><span class="n">dividend</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">],</span> <span class="n">divisor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5528,7 +5528,7 @@
 
 
 <div class="viewcode-block" id="broadcast_to_shape">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.broadcast_to_shape">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.broadcast_to_shape">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">broadcast_to_shape</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5593,7 +5593,7 @@
 
 
 <div class="viewcode-block" id="diff">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.diff">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.diff">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">diff</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the n-th discrete difference along the given axis.</span>
@@ -5685,7 +5685,7 @@
 
 <span class="c1"># TODO In the future move this to a specific errors file</span>
 <div class="viewcode-block" id="RegistrationError">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.RegistrationError">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.RegistrationError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RegistrationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Error/Exception used when the Arkouda Server cannot register an object&quot;&quot;&quot;</span></div>
 

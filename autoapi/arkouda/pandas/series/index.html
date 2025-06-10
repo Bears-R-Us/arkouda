@@ -406,10 +406,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
+<li><p><strong>index</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
 If empty, it will default to a range of ints whose size match the size of the data.
 optional</p></li>
-<li><p><strong>data</strong> (<em>Tuple</em><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>, </em><em>groupable_element_type</em><em>, </em><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a>) – a 1D array. Must not be None.</p></li>
+<li><p><strong>data</strong> (<em>Tuple</em><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>, </em><em>groupable_element_type</em><em>, </em><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – a 1D array. Must not be None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -516,7 +516,7 @@ vs. performance-optimized concatenation.</p></li>
 <dd><p>Fill NA/NaN values using the specified method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<em>supported_scalars</em><em>, </em><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Value to use to fill holes (e.g. 0), alternately a
+<dd class="field-odd"><p><strong>value</strong> (<em>supported_scalars</em><em>, </em><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Value to use to fill holes (e.g. 0), alternately a
 Series of values specifying which value to use for
 each index.  Values not in the Series will not be filled.
 This value cannot be a list.</p>
@@ -785,7 +785,7 @@ registered object.</p>
 <dd class="field-even"><p>bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.RegistrationError" title="arkouda.numpy.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -803,7 +803,7 @@ they are unregistered.</p>
 <dd><p>Find Series elements whose values are in the specified list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>lst</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a>) – Either a Python list or an Arkouda array to check membership against.</p>
+<dd class="field-odd"><p><strong>lst</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a>) – Either a Python list or an Arkouda array to check membership against.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A Series of booleans that is True for elements found in the list,
@@ -936,7 +936,7 @@ that indicates whether an element is an NA value.</p>
 <dd><p>Lookup values by index label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>, or </em><em>Tuple</em>) – <p>The key or keys to look up. This can be:
+<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em>, </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index/index.html#arkouda.index.Index" title="arkouda.index.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>, or </em><em>Tuple</em>) – <p>The key or keys to look up. This can be:
 - A scalar
 - A list of scalars
 - A list of lists (for MultiIndex)
@@ -1091,7 +1091,7 @@ the index.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.numpy.pdarrayclass.nbytes</span></code>, <a class="reference internal" href="../../index.html#arkouda.Index.memory_usage" title="arkouda.Index.memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.Index.memory_usage</span></code></a>, <a class="reference internal" href="#arkouda.pandas.series.Series.memory_usage" title="arkouda.pandas.series.Series.memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pandas.series.Series.memory_usage</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.datafame.DataFrame.memory_usage</span></code></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.numpy.pdarrayclass.nbytes</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.Index.memory_usage</span></code>, <a class="reference internal" href="#arkouda.pandas.series.Series.memory_usage" title="arkouda.pandas.series.Series.memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pandas.series.Series.memory_usage</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.datafame.DataFrame.memory_usage</span></code></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -1242,7 +1242,7 @@ each level is converted to a separate column.</p>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>default=0</em>) – The axis along which to concatenate:
 - 0 = vertical (stack into a Series)
 - 1 = horizontal (align by index into a DataFrame)</p></li>
-<li><p><strong>labels</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – Names to assign to the resulting columns in the DataFrame.</p></li>
+<li><p><strong>labels</strong> (<a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – Names to assign to the resulting columns in the DataFrame.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1279,7 +1279,7 @@ Please note you cannot register two different Series with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.RegistrationError" title="arkouda.numpy.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Series with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Series with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -1468,7 +1468,7 @@ of allowed keys and values.</p></li>
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.RegistrationError" title="arkouda.numpy.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister</p>
 </dd>
 </dl>
@@ -1488,7 +1488,7 @@ they are unregistered.</p>
 Also converts list and tuple arguments into pdarrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>, </em><em>supported_scalars</em><em>, or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a>) – The key or container of keys that might be used to index into the Series.</p>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>, </em><em>supported_scalars</em><em>, or </em><a class="reference internal" href="../../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – The key or container of keys that might be used to index into the Series.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>The validated key(s), with lists and tuples converted to pdarrays</p>
@@ -1512,7 +1512,7 @@ from the Series</p></li>
 Also converts list and tuple arguments into pdarrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>val</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><em>supported_scalars</em><em>, or </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a>) – The value or container of values that might be assigned into the Series.</p>
+<dd class="field-odd"><p><strong>val</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><em>supported_scalars</em><em>, or </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a>) – The value or container of values that might be assigned into the Series.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>The validated value, with lists converted to pdarrays</p>
