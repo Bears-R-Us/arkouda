@@ -738,7 +738,7 @@ class DiffAggregate:
 
     Attributes
     ----------
-    gb : arkouda.pandas.groupbyclass.GroupBy
+    gb : GroupBy
         GroupBy object, where the aggregation keys are values of column(s) of a dataframe.
     values : Series
         A column to compute the difference on.
