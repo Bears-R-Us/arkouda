@@ -19189,7 +19189,7 @@ Package Contents
    .. rubric:: Notes
 
    This function is meant to be a drop-in replacement for numpy.result_type
-   but includes logic to support Arkouda's bigint types.
+   but includes logic to support Arkouda's bigint type.
 
 
 .. py:function:: right_align(left, right)
