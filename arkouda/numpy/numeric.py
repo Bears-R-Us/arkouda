@@ -269,8 +269,8 @@ def abs(pda: pdarray) -> pdarray:
     array([5 4 3 2])
 
     >>> ak.abs(ak.linspace(-5,-1,5))
-    array([5.00000000000000000 4.00000000000000000 3.00000000000000000
-    2.00000000000000000 1.00000000000000000])
+    array([5.00000000... 4.00000000... 3.00000000...
+    2.00000000... 1.00000000...])
     """
     repMsg = generic_msg(
         cmd=f"abs<{pda.dtype},{pda.ndim}>",
@@ -308,8 +308,8 @@ def ceil(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     --------
     >>> import arkouda as ak
     >>> ak.ceil(ak.linspace(1.1,5.5,5))
-    array([2.00000000000000000 3.00000000000000000 4.00000000000000000
-    5.00000000000000000 6.00000000000000000])
+    array([2.00000000... 3.00000000... 4.00000000... 5.00000000... 6.00000000...])
+
     """
     _datatype_check(pda.dtype, [float], "ceil")
     return _general_helper(pda, "ceil", where)
@@ -342,8 +342,8 @@ def floor(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     --------
     >>> import arkouda as ak
     >>> ak.floor(ak.linspace(1.1,5.5,5))
-    array([1.00000000000000000 2.00000000000000000 3.00000000000000000
-    4.00000000000000000 5.00000000000000000])
+    array([1.00000000... 2.00000000... 3.00000000...
+    4.00000000... 5.00000000...])
     """
     _datatype_check(pda.dtype, [float], "floor")
     return _general_helper(pda, "floor", where)
@@ -376,7 +376,7 @@ def round(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     --------
     >>> import arkouda as ak
     >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
-    array([1.00000000000000000 3.00000000000000000 3.00000000000000000])
+    array([1.00000000... 3.00000000... 3.00000000...])
     """
     _datatype_check(pda.dtype, [float], "round")
     return _general_helper(pda, "round", where)
@@ -409,7 +409,7 @@ def trunc(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     --------
     >>> import arkouda as ak
     >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
-    array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
+    array([1.00000000... 2.00000000... 3.00000000...])
     """
     _datatype_check(pda.dtype, [float], "trunc")
     return _general_helper(pda, "trunc", where)
@@ -605,15 +605,15 @@ def log(pda: pdarray) -> pdarray:
 
     Natural log
     >>> ak.log(A)
-    array([0.00000000000000000 2.3025850929940459 4.6051701859880918])
+    array([0.00000000... 2.30258509... 4.60517018...])
 
     Log base 10
     >>> ak.log(A) / np.log(10)
-    array([0.00000000000000000 1.00000000000000000 2.00000000000000000])
+    array([0.00000000... 1.00000000... 2.00000000...])
 
     Log base 2
     >>> ak.log(A) / np.log(2)
-    array([0.00000000000000000 3.3219280948873626 6.6438561897747253])
+    array([0.00000000... 3.32192809... 6.64385618...])
     """
     repMsg = generic_msg(
         cmd=f"log<{pda.dtype},{pda.ndim}>",
@@ -644,7 +644,7 @@ def log10(pda: pdarray) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.arange(1,5)
     >>> ak.log10(a)
-    array([0.00000000000000000 0.3010299956639812 0.47712125471966244 0.6020599913279624])
+    array([0.00000000... 0.30102999... 0.47712125... 0.60205999...])
     """
     repMsg = generic_msg(
         cmd=f"log10<{pda.dtype},{pda.ndim}>",
@@ -675,7 +675,7 @@ def log2(pda: pdarray) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.arange(1,5)
     >>> ak.log2(a)
-    array([0.00000000000000000 1.00000000000000000 1.5849625007211561 2.00000000000000000])
+    array([0.00000000... 1.00000000... 1.58496250... 2.00000000...])
     """
     repMsg = generic_msg(
         cmd=f"log2<{pda.dtype},{pda.ndim}>",
@@ -706,7 +706,7 @@ def log1p(pda: pdarray) -> pdarray:
     --------
     >>> import arkouda as ak
     >>> ak.log1p(ak.arange(1,5))
-    array([0.69314718055994529 1.0986122886681098 1.3862943611198906 1.6094379124341003])
+    array([0.69314718... 1.09861228... 1.38629436... 1.60943791...])
     """
     repMsg = generic_msg(
         cmd=f"log1p<{pda.dtype},{pda.ndim}>",
@@ -810,10 +810,10 @@ def exp(pda: pdarray) -> pdarray:
     --------
     >>> import arkouda as ak
     >>> ak.exp(ak.arange(1,5))
-    array([2.7182818284590451 7.3890560989306504 20.085536923187668 54.598150033144236])
+    array([2.71828182... 7.38905609... 20.0855369... 54.5981500...])
 
     >>> ak.exp(ak.uniform(4, 1.0, 5.0, seed=1))
-    array([63.344862048230922 3.8079467144568273 54.725428723251447 36.234416869913829])
+    array([63.3448620... 3.80794671... 54.7254287... 36.2344168...])
 
     """
     repMsg = generic_msg(
@@ -849,11 +849,11 @@ def expm1(pda: pdarray) -> pdarray:
     --------
     >>> import arkouda as ak
     >>> ak.expm1(ak.arange(1,5))
-    array([1.7182818284590451 6.3890560989306504 19.085536923187668 53.598150033144236])
+    array([1.71828182... 6.38905609... 19.0855369... 53.5981500...])
 
     >>> ak.expm1(ak.uniform(5,1.0,5.0, seed=1))
-    array([62.344862048230922 2.8079467144568273 53.725428723251447
-        35.234416869913829 41.192939934258227])
+    array([62.3448620... 2.80794671... 53.7254287...
+        35.2344168... 41.1929399...])
     """
     repMsg = generic_msg(
         cmd=f"expm1<{pda.dtype},{pda.ndim}>",
@@ -928,7 +928,7 @@ def cumsum(pda: pdarray) -> pdarray:
     array([1 3 6 10])
 
     >>> ak.cumsum(ak.uniform(5,1.0,5.0, seed=1))
-    array([4.1485937992669886 5.4856839230459 9.4880124005630435 13.078021809988414 16.820274716898091])
+    array([4.14859379... 5.48568392... 9.48801240... 13.0780218... 16.8202747...])
 
     >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_, seed=1))
     array([1 1 2 3 4])
@@ -973,8 +973,8 @@ def cumprod(pda: pdarray) -> pdarray:
     array([1 2 6 24])
 
     >>> ak.cumprod(ak.uniform(5,1.0,5.0, seed=1))
-    array([4.1485937992669886 5.5470437965703221 22.201091353048209
-        79.702126856955317 298.26551591732482])
+    array([4.14859379... 5.54704379... 22.2010913...
+        79.7021268... 298.265515...])
     """
     _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], "cumprod")
     repMsg = generic_msg(
@@ -1015,7 +1015,7 @@ def sin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(-1.5,0.75,4)
     >>> ak.sin(a)
-    array([-0.99749498660405445 -0.68163876002333412 0.00000000000000000 0.68163876002333412])
+    array([-0.99749498... -0.68163876... 0.00000000... 0.68163876...])
     """
     return _general_helper(pda, "sin", where)
 
@@ -1049,7 +1049,7 @@ def cos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(-1.5,0.75,4)
     >>> ak.cos(a)
-    array([0.070737201667702906 0.7316888688738209 1.00000000000000000 0.7316888688738209])
+    array([0.07073720... 0.73168886... 1.00000000... 0.73168886...])
     """
     return _general_helper(pda, "cos", where)
 
@@ -1083,7 +1083,7 @@ def tan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(-1.5,0.75,4)
     >>> ak.tan(a)
-    array([-14.101419947171719 -0.93159645994407247 0.00000000000000000 0.93159645994407247])
+    array([-14.1014199... -0.93159645... 0.00000000... 0.93159645...])
     """
     return _general_helper(pda, "tan", where)
 
@@ -1117,7 +1117,7 @@ def arcsin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(-0.7,0.5,4)
     >>> ak.arcsin(a)
-    array([-0.77539749661075297 -0.30469265401539752 0.10016742116155977 0.52359877559829893])
+    array([-0.77539749... -0.30469265... 0.10016742... 0.52359877...])
     """
     return _general_helper(pda, "arcsin", where)
 
@@ -1151,7 +1151,7 @@ def arccos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(-0.7,0.5,4)
     >>> ak.arccos(a)
-    array([2.3461938234056494 1.8754889808102941 1.4706289056333368 1.0471975511965979])
+    array([2.34619382... 1.87548898... 1.47062890... 1.04719755...])
     """
     return _general_helper(pda, "arccos", where)
 
@@ -1185,7 +1185,7 @@ def arctan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(-10.7,10.5,4)
     >>> ak.arctan(a)
-    array([-1.4776090650260174 -1.3022168962760161 1.2873750736468446 1.4758446204521403])
+    array([-1.47760906... -1.30221689... 1.28737507... 1.47584462...])
     """
     return _general_helper(pda, "arctan", where)
 
@@ -1234,7 +1234,7 @@ def arctan2(
     >>> x = ak.array([1,-1,-1,1])
     >>> y = ak.array([1,1,-1,-1])
     >>> ak.arctan2(y,x)
-    array([0.78539816339744828 2.3561944901923448 -2.3561944901923448 -0.78539816339744828])
+    array([0.78539816... 2.35619449... -2.35619449... -0.78539816...])
     """
     if not all(isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
         raise TypeError(
@@ -1334,7 +1334,7 @@ def sinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(-0.9,0.7,4)
     >>> ak.sinh(a)
-    array([-1.0265167257081753 -0.37493812328444776 0.16743934398751592 0.75858370183953339])
+    array([-1.02651672... -0.37493812... 0.16743934... 0.75858370...])
     """
     return _general_helper(pda, "sinh", where)
 
@@ -1368,7 +1368,7 @@ def cosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(-0.9,0.7,4)
     >>> ak.cosh(a)
-    array([1.4330863854487745 1.0679787433708894 1.0139210688781299 1.255169005630943])
+    array([1.43308638... 1.06797874... 1.01392106... 1.25516900...])
     """
     return _general_helper(pda, "cosh", where)
 
@@ -1402,7 +1402,7 @@ def tanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(-0.9,0.7,4)
     >>> ak.tanh(a)
-    array([-0.71629787019902447 -0.35107264597890853 0.1651404129246293 0.60436777711716361])
+    array([-0.71629787... -0.35107264... 0.16514041... 0.60436777...])
     """
     return _general_helper(pda, "tanh", where)
 
@@ -1436,7 +1436,7 @@ def arcsinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(-500,500,4)
     >>> ak.arcsinh(a)
-    array([-6.9077562789806368 -5.8091519901925297 5.8091519901925297 6.9077562789806368])
+    array([-6.90775627... -5.80915199... 5.80915199... 6.90775627...])
     """
     return _general_helper(pda, "arcsinh", where)
 
@@ -1470,7 +1470,7 @@ def arccosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(1,500,4)
     >>> ak.arccosh(a)
-    array([0.00000000000000000 5.8131260830342795 6.5032874256927515 6.9077542789806374])
+    array([0.00000000... 5.81312608... 6.50328742... 6.90775427...])
     """
     return _general_helper(pda, "arccosh", where)
 
@@ -1504,7 +1504,7 @@ def arctanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(-.999,.999,4)
     >>> ak.arctanh(a)
-    array([-3.8002011672501994 -0.34619863713154242 0.34619863713154253 3.8002011672501994])
+    array([-3.80020116... -0.34619863... 0.34619863... 3.80020116...])
     """
     return _general_helper(pda, "arctanh", where)
 
@@ -1592,7 +1592,7 @@ def rad2deg(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(0,6.28,4)
     >>> ak.rad2deg(a)
-    array([0.00000000000000000 119.93916511405233 239.87833022810466 359.81749534215703])
+    array([0.00000000... 119.939165... 239.878330... 359.817495...])
     """
     if where is True:
         return 180 * (pda / np.pi)
@@ -1631,7 +1631,7 @@ def deg2rad(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> import arkouda as ak
     >>> a = ak.linspace(0,359,4)
     >>> ak.deg2rad(a)
-    array([0.00000000000000000 2.0885773382198809 4.1771546764397618 6.2657320146596422])
+    array([0.00000000... 2.08857733... 4.17715467... 6.26573201...])
     """
     if where is True:
         return np.pi * pda / 180
@@ -2075,7 +2075,7 @@ def histogram(
     >>> h
     array([3 3 4])
     >>> b
-    array([0.00000000000000000 3.00000000000000000 6.00000000000000000 9.00000000000000000])
+    array([0.00000000... 3.00000000... 6.00000000... 9.00000000...])
 
     To plot, export the left edges and the histogram to NumPy
     >>> b_np = b.to_ndarray()
@@ -2173,13 +2173,13 @@ def histogram2d(
     >>> nbins = 3
     >>> h, x_edges, y_edges = ak.histogram2d(x, y, bins=nbins)
     >>> h
-    array([array([0.00000000000000000 0.00000000000000000 3.00000000000000000])
-           array([0.00000000000000000 2.00000000000000000 1.00000000000000000])
-           array([3.00000000000000000 1.00000000000000000 0.00000000000000000])])
+    array([array([0.00000000... 0.00000000... 3.00000000...])
+           array([0.00000000... 2.00000000... 1.00000000...])
+           array([3.00000000... 1.00000000... 0.00000000...])])
     >>> x_edges
-    array([0.00000000000000000 3.00000000000000000 6.00000000000000000 9.00000000000000000])
+    array([0.00000000... 3.00000000... 6.00000000... 9.00000000...])
     >>> y_edges
-    array([0.00000000000000000 3.00000000000000000 6.00000000000000000 9.00000000000000000])
+    array([0.00000000... 3.00000000... 6.00000000... 9.00000000...])
     """
     if not isinstance(bins, Sequence):
         x_bins, y_bins = bins, bins
@@ -2277,14 +2277,14 @@ def histogramdd(
     >>> z = ak.where(x % 2 == 0, x, y)
     >>> h, edges = ak.histogramdd((x, y,z), bins=(2,2,3))
     >>> h
-    array([array([array([0.00000000000000000 0.00000000000000000 0.00000000000000000])
-        array([2.00000000000000000 1.00000000000000000 2.00000000000000000])])
-        array([array([2.00000000000000000 1.00000000000000000 2.00000000000000000])
-        array([0.00000000000000000 0.00000000000000000 0.00000000000000000])])])
+    array([array([array([0.00000000... 0.00000000... 0.00000000...])
+        array([2.00000000... 1.00000000... 2.00000000...])])
+        array([array([2.00000000... 1.00000000... 2.00000000...])
+        array([0.00000000... 0.00000000... 0.00000000...])])])
     >>> edges
-    [array([0.00000000000000000 4.5 9.00000000000000000]),
-        array([0.00000000000000000 4.5 9.00000000000000000]),
-        array([0.00000000000000000 2.6666666666666665 5.333333333333333 8.00000000000000000])]
+    [array([0.00000000... 4.5 9.00000000...]),
+        array([0.00000000... 4.5 9.00000000...]),
+        array([0.00000000... 2.66666666... 5.33333333... 8.00000000...])]
     """
     if not isinstance(sample, Sequence):
         raise ValueError("Sample must be a sequence of pdarrays")
@@ -2416,9 +2416,9 @@ def clip(
     >>> ak.clip(a,3,8)
     array([3 3 3 4 5 6 7 8 8 8])
     >>> ak.clip(a,3,8.0)
-    array([3.00000000000000000 3.00000000000000000 3.00000000000000000 4.00000000000000000
-           5.00000000000000000 6.00000000000000000 7.00000000000000000 8.00000000000000000
-           8.00000000000000000 8.00000000000000000])
+    array([3.00000000... 3.00000000... 3.00000000... 4.00000000...
+           5.00000000... 6.00000000... 7.00000000... 8.00000000...
+           8.00000000... 8.00000000...])
     >>> ak.clip(a,None,7)
     array([1 2 3 4 5 6 7 7 7 7])
     >>> ak.clip(a,5,None)
@@ -2732,9 +2732,9 @@ def eye(N: int_scalars, M: int_scalars, k: int_scalars = 0, dt: type = ak_float6
     >>> ak.eye(N=4,M=4,k=0,dt=ak.int64)
     array([array([1 0 0 0]) array([0 1 0 0]) array([0 0 1 0]) array([0 0 0 1])])
     >>> ak.eye(N=3,M=3,k=1,dt=ak.float64)
-    array([array([0.00000000000000000 1.00000000000000000 0.00000000000000000])
-    array([0.00000000000000000 0.00000000000000000 1.00000000000000000])
-    array([0.00000000000000000 0.00000000000000000 0.00000000000000000])])
+    array([array([0.00000000... 1.00000000... 0.00000000...])
+    array([0.00000000... 0.00000000... 1.00000000...])
+    array([0.00000000... 0.00000000... 0.00000000...])])
     >>> ak.eye(N=4,M=4,k=-1,dt=ak.bool_)
     array([array([False False False False]) array([True False False False])
     array([False True False False]) array([False False True False])])
@@ -2955,8 +2955,8 @@ def matmul(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
     >>> x = ak.array([[1,2,3],[1.1,2.1,3.1]])
     >>> y = ak.array([[1,1,1],[0,2,2],[0,0,3]])
     >>> ak.matmul(x,y)
-    array([array([1.00000000000000000 5.00000000000000000 14.00000000000000000])
-    array([1.1000000000000001 5.3000000000000007 14.600000000000001])])
+    array([array([1.00000000... 5.00000000... 14.0000000...])
+    array([1.10000000... 5.30000000... 14.6000000...])])
 
     Notes
     -----
@@ -3104,14 +3104,14 @@ def quantile(
     >>> ak.quantile(a,q,axis=None,method="linear")
     np.float64(4.0)
     >>> ak.quantile(a,q,axis=1,method="lower")
-    array([3.00000000000000000 3.00000000000000000])
+    array([3.00000000... 3.00000000...])
     >>> q = np.array([0.4,0.6])
     >>> ak.quantile(a,q,axis=None,method="weibull")
-    array([2.4000000000000004 3.5999999999999996])
+    array([2.40000000... 3.59999999...])
     >>> a = ak.array([[1,2],[5,3]])
     >>> ak.quantile(a,q,axis=0,method="hazen")
-    array([array([2.2000000000000002 2.2999999999999998])
-        array([3.7999999999999998 2.6999999999999997])])
+    array([array([2.20000000... 2.29999999...])
+        array([3.79999999... 2.69999999...])])
 
     Raises
     ------
@@ -3278,14 +3278,14 @@ def percentile(
     >>> ak.percentile(a,q,axis=None,method="linear")
     np.float64(4.0)
     >>> ak.percentile(a,q,axis=1,method="lower")
-    array([3.00000000000000000 3.00000000000000000])
+    array([3.00000000... 3.00000000...])
     >>> q = np.array([40,60])
     >>> ak.percentile(a,q,axis=None,method="weibull")
-    array([2.4000000000000004 3.5999999999999996])
+    array([2.40000000... 3.59999999...])
     >>> a = ak.array([[1,2],[5,3]])
     >>> ak.percentile(a,q,axis=0,method="hazen")
-    array([array([2.2000000000000002 2.2999999999999998])
-        array([3.7999999999999998 2.6999999999999997])])
+    array([array([2.20000000... 2.29999999...])
+        array([3.79999999... 2.69999999...])])
 
     Raises
     ------
