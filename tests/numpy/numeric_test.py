@@ -230,13 +230,12 @@ class TestNumeric:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_cast(self, prob_size, cast_to):
         seed = pytest.seed if pytest.seed is not None else 8675309
-        np.random.seed(seed)
         arrays = {
-            ak.int64: ak.randint(-(2**48), 2**48, prob_size),
-            ak.uint64: ak.randint(0, 2**48, prob_size, dtype=ak.uint64),
-            ak.float64: ak.randint(0, 1, prob_size, dtype=ak.float64),
-            ak.bool_: ak.randint(0, 2, prob_size, dtype=ak.bool_),
-            ak.str_: ak.cast(ak.randint(0, 2**48, prob_size), "str"),
+            ak.int64: ak.randint(-(2**48), 2**48, prob_size, seed=seed),
+            ak.uint64: ak.randint(0, 2**48, prob_size, dtype=ak.uint64, seed=seed + 1),
+            ak.float64: ak.randint(0, 1, prob_size, dtype=ak.float64, seed=seed + 2),
+            ak.bool_: ak.randint(0, 2, prob_size, dtype=ak.bool_, seed=seed + 3),
+            ak.str_: ak.cast(ak.randint(0, 2**48, prob_size, seed=seed + 4), "str"),
         }
 
         for t1, orig in arrays.items():
@@ -306,8 +305,7 @@ class TestNumeric:
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_histogram(self, num_type):
         seed = pytest.seed if pytest.seed is not None else 8675309
-        np.random.seed(seed)
-        pda = ak.randint(10, 30, 40, dtype=num_type)
+        pda = ak.randint(10, 30, 40, dtype=num_type, seed=seed)
         result, bins = ak.histogram(pda, bins=20)
 
         assert isinstance(result, ak.pdarray)
@@ -338,7 +336,8 @@ class TestNumeric:
     @pytest.mark.parametrize("num_type2", NO_BOOL)
     def test_histogram_multidim(self, num_type1, num_type2):
         # test 2d histogram
-        seed = 1
+        seed = pytest.seed if pytest.seed is not None else 8675309
+        np.random.seed(seed)
         ak_x = ak.randint(1, 100, 1000, seed=seed, dtype=num_type1)
         ak_y = ak.randint(1, 100, 1000, seed=seed + 1, dtype=num_type2)
         np_x, np_y = ak_x.to_ndarray(), ak_y.to_ndarray()
@@ -645,10 +644,11 @@ class TestNumeric:
         # See https://github.com/Bears-R-Us/arkouda/issues/964
         # Grouped sum was exacerbating floating point errors
         # This test verifies the fix
+        seed = pytest.seed if pytest.seed is not None else 8675309
         G = prob_size // 10
         ub = 2**63 // prob_size
-        groupnum = ak.randint(0, G, prob_size, seed=1)
-        intval = ak.randint(0, ub, prob_size, seed=2)
+        groupnum = ak.randint(0, G, prob_size, seed=seed)
+        intval = ak.randint(0, ub, prob_size, seed=seed + 1)
         floatval = ak.cast(intval, ak.float64)
         g = ak.GroupBy(groupnum)
         _, intmean = g.mean(intval)
