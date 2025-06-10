@@ -282,13 +282,17 @@ def abs(pda: pdarray) -> pdarray:
 
 
 @typechecked
-def ceil(pda: pdarray) -> pdarray:
+def ceil(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise ceiling of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -308,23 +312,21 @@ def ceil(pda: pdarray) -> pdarray:
     5.00000000000000000 6.00000000000000000])
     """
     _datatype_check(pda.dtype, [float], "ceil")
-    repMsg = generic_msg(
-        cmd=f"ceil<{pda.dtype},{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    return _general_helper(pda, "ceil", where)
 
 
 @typechecked
-def floor(pda: pdarray) -> pdarray:
+def floor(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise floor of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -344,23 +346,21 @@ def floor(pda: pdarray) -> pdarray:
     4.00000000000000000 5.00000000000000000])
     """
     _datatype_check(pda.dtype, [float], "floor")
-    repMsg = generic_msg(
-        cmd=f"floor<{pda.dtype},{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    return _general_helper(pda, "floor", where)
 
 
 @typechecked
-def round(pda: pdarray) -> pdarray:
+def round(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise rounding of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -379,23 +379,21 @@ def round(pda: pdarray) -> pdarray:
     array([1.00000000000000000 3.00000000000000000 3.00000000000000000])
     """
     _datatype_check(pda.dtype, [float], "round")
-    repMsg = generic_msg(
-        cmd=f"round<{pda.dtype},{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    return _general_helper(pda, "round", where)
 
 
 @typechecked
-def trunc(pda: pdarray) -> pdarray:
+def trunc(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise truncation of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -414,13 +412,7 @@ def trunc(pda: pdarray) -> pdarray:
     array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
     """
     _datatype_check(pda.dtype, [float], "trunc")
-    repMsg = generic_msg(
-        cmd=f"trunc<{pda.dtype},{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    return _general_helper(pda, "trunc", where)
 
 
 #   Noted during Sept 2024 rewrite of EfuncMsg.chpl -- although it's "sign" here, inside the
@@ -873,13 +865,17 @@ def expm1(pda: pdarray) -> pdarray:
 
 
 @typechecked
-def square(pda: pdarray) -> pdarray:
+def square(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     """
     Return the element-wise square of the array.
 
     Parameters
     ----------
     pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -898,13 +894,8 @@ def square(pda: pdarray) -> pdarray:
     >>> ak.square(ak.arange(1,5))
     array([1 4 9 16])
     """
-    repMsg = generic_msg(
-        cmd=f"square<{pda.dtype},{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(type_cast(str, repMsg))
+    _datatype_check(pda.dtype, NUMERIC_TYPES, "floor")
+    return _general_helper(pda, "square", where)
 
 
 @typechecked
@@ -1026,7 +1017,7 @@ def sin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.sin(a)
     array([-0.99749498660405445 -0.68163876002333412 0.00000000000000000 0.68163876002333412])
     """
-    return _trig_helper(pda, "sin", where)
+    return _general_helper(pda, "sin", where)
 
 
 @typechecked
@@ -1060,7 +1051,7 @@ def cos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.cos(a)
     array([0.070737201667702906 0.7316888688738209 1.00000000000000000 0.7316888688738209])
     """
-    return _trig_helper(pda, "cos", where)
+    return _general_helper(pda, "cos", where)
 
 
 @typechecked
@@ -1094,7 +1085,7 @@ def tan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.tan(a)
     array([-14.101419947171719 -0.93159645994407247 0.00000000000000000 0.93159645994407247])
     """
-    return _trig_helper(pda, "tan", where)
+    return _general_helper(pda, "tan", where)
 
 
 @typechecked
@@ -1128,7 +1119,7 @@ def arcsin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.arcsin(a)
     array([-0.77539749661075297 -0.30469265401539752 0.10016742116155977 0.52359877559829893])
     """
-    return _trig_helper(pda, "arcsin", where)
+    return _general_helper(pda, "arcsin", where)
 
 
 @typechecked
@@ -1162,7 +1153,7 @@ def arccos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.arccos(a)
     array([2.3461938234056494 1.8754889808102941 1.4706289056333368 1.0471975511965979])
     """
-    return _trig_helper(pda, "arccos", where)
+    return _general_helper(pda, "arccos", where)
 
 
 @typechecked
@@ -1196,7 +1187,7 @@ def arctan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.arctan(a)
     array([-1.4776090650260174 -1.3022168962760161 1.2873750736468446 1.4758446204521403])
     """
-    return _trig_helper(pda, "arctan", where)
+    return _general_helper(pda, "arctan", where)
 
 
 @typechecked
@@ -1345,7 +1336,7 @@ def sinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.sinh(a)
     array([-1.0265167257081753 -0.37493812328444776 0.16743934398751592 0.75858370183953339])
     """
-    return _trig_helper(pda, "sinh", where)
+    return _general_helper(pda, "sinh", where)
 
 
 @typechecked
@@ -1379,7 +1370,7 @@ def cosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.cosh(a)
     array([1.4330863854487745 1.0679787433708894 1.0139210688781299 1.255169005630943])
     """
-    return _trig_helper(pda, "cosh", where)
+    return _general_helper(pda, "cosh", where)
 
 
 @typechecked
@@ -1413,7 +1404,7 @@ def tanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.tanh(a)
     array([-0.71629787019902447 -0.35107264597890853 0.1651404129246293 0.60436777711716361])
     """
-    return _trig_helper(pda, "tanh", where)
+    return _general_helper(pda, "tanh", where)
 
 
 @typechecked
@@ -1447,7 +1438,7 @@ def arcsinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.arcsinh(a)
     array([-6.9077562789806368 -5.8091519901925297 5.8091519901925297 6.9077562789806368])
     """
-    return _trig_helper(pda, "arcsinh", where)
+    return _general_helper(pda, "arcsinh", where)
 
 
 @typechecked
@@ -1481,7 +1472,7 @@ def arccosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.arccosh(a)
     array([0.00000000000000000 5.8131260830342795 6.5032874256927515 6.9077542789806374])
     """
-    return _trig_helper(pda, "arccosh", where)
+    return _general_helper(pda, "arccosh", where)
 
 
 @typechecked
@@ -1515,27 +1506,28 @@ def arctanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.arctanh(a)
     array([-3.8002011672501994 -0.34619863713154242 0.34619863713154253 3.8002011672501994])
     """
-    return _trig_helper(pda, "arctanh", where)
+    return _general_helper(pda, "arctanh", where)
 
 
-def _trig_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) -> pdarray:
+def _general_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) -> pdarray:
     """
-    Returns the result of the input trig function acting element-wise on the array.
+    Returns the result of the input function acting element-wise on the array.
+    This is used for functions that allow a "where" parameter in their arguments.
 
     Parameters
     ----------
     pda : pdarray
     func : str
-        The designated trig function that is passed in
+        The designated function that is passed in
     where : bool or pdarray, default=True
         This condition is applied over the input. At locations where the condition is True, the
-        corresponding value will be acted on by the respective trig function. Elsewhere,
+        corresponding value will be acted on by the respective function. Elsewhere,
         it will retain its original value. Default set to True.
 
     Returns
     -------
     pdarray
-        A pdarray with the trig function applied at each element of pda
+        A pdarray with the given function applied at each element of pda
 
     Raises
     ------
