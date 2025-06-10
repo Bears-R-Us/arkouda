@@ -3255,9 +3255,9 @@ def _array_if_needed(x: Union[numeric_scalars, pdarray]) -> pdarray:
 @typechecked
 def where(
     condition: pdarray,
-    A: Union[str, numeric_scalars, pdarray, Strings, Categorical],  # type: ignore
-    B: Union[str, numeric_scalars, pdarray, Strings, Categorical],  # type: ignore
-) -> Union[pdarray, Strings, Categorical]:  # type: ignore
+    A: Union[str, numeric_scalars, pdarray, Strings, Categorical],
+    B: Union[str, numeric_scalars, pdarray, Strings, Categorical],
+) -> Union[pdarray, Strings, Categorical]:
     """
     Return an array with elements chosen from A and B based upon a
     conditioning array. As is the case with numpy.where, the return array
@@ -3337,11 +3337,9 @@ def where(
     ):
         from arkouda.categorical import Categorical  # type: ignore
 
-        # fmt: off
-        if (
-            not isinstance(A, (str, Strings, Categorical))  # type: ignore
-           or not isinstance(B, (str, Strings, Categorical))):  # type: ignore
-            # fmt:on
+        if not isinstance(A, (str, Strings, Categorical)) or not isinstance(
+            B, (str, Strings, Categorical)
+        ):
             raise TypeError(
                 "both A and B must be an int, np.int64, float, np.float64, pdarray OR"
                 " both A and B must be an str, Strings, Categorical"
@@ -3349,7 +3347,8 @@ def where(
         return _str_cat_where(condition, A, B)
 
     #   The code below broadcasts the 3 inputs to a common shape if possible, and then
-    #   calls wherevv.
+    #   calls wherevv.  This includes broadcasting scalars to vectors, and thereby
+    #   eliminates the need for wherevs, wheresv and wheress.
 
     else:
         A_ = _array_if_needed(A)
