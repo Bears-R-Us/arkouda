@@ -1,3 +1,50 @@
+r"""
+Regular expression match results for segmented string arrays in Arkouda.
+
+The `arkouda.match` module defines the `Match` class, which encapsulates results from
+regex-based operations such as `search`, `match`, and `fullmatch` on Arkouda `Strings` arrays.
+
+This class provides methods to retrieve:
+- Match booleans (`matched`)
+- Start and end positions of matches
+- Capture groups
+- Matched substrings
+- Origin indices of matched elements (optional)
+
+These operations enable powerful pattern recognition and substring extraction
+on large-scale segmented string arrays, implemented efficiently in the Arkouda server.
+
+Exports
+-------
+- Match : Object representing a regex match result
+- MatchType : Enum indicating the regex method used (SEARCH, MATCH, FULLMATCH)
+
+Examples
+--------
+>>> import arkouda as ak
+>>> strings = ak.array(["Isaac Newton", "Ada Lovelace", ""])
+>>> m = strings.search("(\\w+) (\\w+)")
+>>> m.matched()
+array([True True False])
+>>> m.group(1)
+array(['Isaac', 'Ada'])
+>>> m.group(2, return_group_origins=True)
+(array(['Newton', 'Lovelace']), array([0 1]))
+
+Notes
+-----
+- `group(0)` returns the full match by default.
+- If `regexMaxCaptures` is exceeded, the server must be recompiled with a higher limit.
+- `Match` objects are typically obtained via `Strings.search()`, /
+`Strings.match()`, or `Strings.fullmatch()`.
+
+See Also
+--------
+arkouda.strings.Strings
+arkouda.client.regexMaxCaptures
+
+"""
+
 import json
 from enum import Enum
 from typing import cast
