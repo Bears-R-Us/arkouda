@@ -1,3 +1,66 @@
+"""
+Accessor utilities for Arkouda Series-like objects.
+
+This module defines infrastructure for namespace-based accessors (e.g., `.str`, `.dt`)
+on Arkouda Series, mimicking the behavior of pandas-style accessors. It supports
+extension methods for string and datetime-like values, enabling operations to be
+performed in a clean, grouped syntax.
+
+Exports
+-------
+__all__ = [
+    "CachedAccessor",
+    "DatetimeAccessor",
+    "Properties",
+    "StringAccessor",
+    "date_operators",
+    "string_operators",
+]
+
+Components
+----------
+CachedAccessor : class
+    Descriptor that lazily initializes and caches accessor objects, such as `.str` or `.dt`.
+
+DatetimeAccessor : class
+    Implements datetime-like operations (e.g., floor, ceil, round) via the `.dt` accessor.
+
+StringAccessor : class
+    Implements string-like operations (e.g., contains, startswith, endswith) via the `.str` accessor.
+
+Properties : base class
+    Base class that provides `_make_op` for dynamically attaching operations to accessors.
+
+date_operators : function
+    Class decorator that adds datetime operations to `DatetimeAccessor`.
+
+string_operators : function
+    Class decorator that adds string operations to `StringAccessor`.
+
+Usage
+-----
+>>> import arkouda as ak
+>>> from arkouda import Series
+>>> s = Series(["apple", "banana", "apricot"])
+>>> s.str.startswith("a")
+0     True
+1    False
+2     True
+dtype: bool
+
+>>> from arkouda import Datetime
+>>> t = Series(Datetime(ak.array([1_000_000_000_000])))
+>>> t.dt.floor("D")
+0   1970-01-01
+dtype: datetime64[ns]
+
+Notes
+-----
+These accessors are automatically attached to compatible Series objects.
+Users should not instantiate accessors directly — use `.str` and `.dt` instead.
+
+"""
+
 from arkouda.categorical import Categorical
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime
@@ -66,7 +129,7 @@ class Properties:
     @classmethod
     def _make_op(cls, name):
         def accessop(self, *args, **kwargs):
-            from . import Series
+            from .pandas import Series
 
             results = getattr(self.series.values, name)(*args, **kwargs)
             return Series(data=results, index=self.series.index)
