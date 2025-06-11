@@ -8062,7 +8062,7 @@ Package Contents
 
 
 
-   .. py:attribute:: str_acc
+   .. py:attribute:: str
 
 
    .. py:method:: tail(n: int = 10) -> Series

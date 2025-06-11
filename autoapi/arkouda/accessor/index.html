@@ -385,6 +385,64 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.accessor">
 <span id="arkouda-accessor"></span><h1>arkouda.accessor<a class="headerlink" href="#module-arkouda.accessor" title="Link to this heading">¶</a></h1>
+<p>Accessor utilities for Arkouda Series-like objects.</p>
+<p>This module defines infrastructure for namespace-based accessors (e.g., <cite>.str</cite>, <cite>.dt</cite>)
+on Arkouda Series, mimicking the behavior of pandas-style accessors. It supports
+extension methods for string and datetime-like values, enabling operations to be
+performed in a clean, grouped syntax.</p>
+<section id="exports">
+<h2>Exports<a class="headerlink" href="#exports" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>__all__ = [</dt><dd><p>“CachedAccessor”,
+“DatetimeAccessor”,
+“Properties”,
+“StringAccessor”,
+“date_operators”,
+“string_operators”,</p>
+</dd>
+</dl>
+<p>]</p>
+</section>
+<section id="components">
+<h2>Components<a class="headerlink" href="#components" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>CachedAccessor<span class="classifier">class</span></dt><dd><p>Descriptor that lazily initializes and caches accessor objects, such as <cite>.str</cite> or <cite>.dt</cite>.</p>
+</dd>
+<dt>DatetimeAccessor<span class="classifier">class</span></dt><dd><p>Implements datetime-like operations (e.g., floor, ceil, round) via the <cite>.dt</cite> accessor.</p>
+</dd>
+<dt>StringAccessor<span class="classifier">class</span></dt><dd><p>Implements string-like operations (e.g., contains, startswith, endswith) via the <cite>.str</cite> accessor.</p>
+</dd>
+<dt>Properties<span class="classifier">base class</span></dt><dd><p>Base class that provides <cite>_make_op</cite> for dynamically attaching operations to accessors.</p>
+</dd>
+<dt>date_operators<span class="classifier">function</span></dt><dd><p>Class decorator that adds datetime operations to <cite>DatetimeAccessor</cite>.</p>
+</dd>
+<dt>string_operators<span class="classifier">function</span></dt><dd><p>Class decorator that adds string operations to <cite>StringAccessor</cite>.</p>
+</dd>
+</dl>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Series</span><span class="p">([</span><span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;banana&quot;</span><span class="p">,</span> <span class="s2">&quot;apricot&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
+<span class="go">0     True</span>
+<span class="go">1    False</span>
+<span class="go">2     True</span>
+<span class="go">dtype: bool</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">Datetime</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1_000_000_000_000</span><span class="p">])))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
+<span class="go">0   1970-01-01</span>
+<span class="go">dtype: datetime64[ns]</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>These accessors are automatically attached to compatible Series objects.
+Users should not instantiate accessors directly — use <cite>.str</cite> and <cite>.dt</cite> instead.</p>
+</section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -538,6 +596,9 @@ single argument <code class="docutils literal notranslate"><span class="pre">dat
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.accessor</a><ul>
+<li><a class="reference internal" href="#exports">Exports</a></li>
+<li><a class="reference internal" href="#components">Components</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>

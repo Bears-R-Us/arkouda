@@ -377,7 +377,70 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.accessor</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Accessor utilities for Arkouda Series-like objects.</span>
+
+<span class="sd">This module defines infrastructure for namespace-based accessors (e.g., `.str`, `.dt`)</span>
+<span class="sd">on Arkouda Series, mimicking the behavior of pandas-style accessors. It supports</span>
+<span class="sd">extension methods for string and datetime-like values, enabling operations to be</span>
+<span class="sd">performed in a clean, grouped syntax.</span>
+
+<span class="sd">Exports</span>
+<span class="sd">-------</span>
+<span class="sd">__all__ = [</span>
+<span class="sd">    &quot;CachedAccessor&quot;,</span>
+<span class="sd">    &quot;DatetimeAccessor&quot;,</span>
+<span class="sd">    &quot;Properties&quot;,</span>
+<span class="sd">    &quot;StringAccessor&quot;,</span>
+<span class="sd">    &quot;date_operators&quot;,</span>
+<span class="sd">    &quot;string_operators&quot;,</span>
+<span class="sd">]</span>
+
+<span class="sd">Components</span>
+<span class="sd">----------</span>
+<span class="sd">CachedAccessor : class</span>
+<span class="sd">    Descriptor that lazily initializes and caches accessor objects, such as `.str` or `.dt`.</span>
+
+<span class="sd">DatetimeAccessor : class</span>
+<span class="sd">    Implements datetime-like operations (e.g., floor, ceil, round) via the `.dt` accessor.</span>
+
+<span class="sd">StringAccessor : class</span>
+<span class="sd">    Implements string-like operations (e.g., contains, startswith, endswith) via the `.str` accessor.</span>
+
+<span class="sd">Properties : base class</span>
+<span class="sd">    Base class that provides `_make_op` for dynamically attaching operations to accessors.</span>
+
+<span class="sd">date_operators : function</span>
+<span class="sd">    Class decorator that adds datetime operations to `DatetimeAccessor`.</span>
+
+<span class="sd">string_operators : function</span>
+<span class="sd">    Class decorator that adds string operations to `StringAccessor`.</span>
+
+<span class="sd">Usage</span>
+<span class="sd">-----</span>
+<span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">&gt;&gt;&gt; from arkouda import Series</span>
+<span class="sd">&gt;&gt;&gt; s = Series([&quot;apple&quot;, &quot;banana&quot;, &quot;apricot&quot;])</span>
+<span class="sd">&gt;&gt;&gt; s.str.startswith(&quot;a&quot;)</span>
+<span class="sd">0     True</span>
+<span class="sd">1    False</span>
+<span class="sd">2     True</span>
+<span class="sd">dtype: bool</span>
+
+<span class="sd">&gt;&gt;&gt; from arkouda import Datetime</span>
+<span class="sd">&gt;&gt;&gt; t = Series(Datetime(ak.array([1_000_000_000_000])))</span>
+<span class="sd">&gt;&gt;&gt; t.dt.floor(&quot;D&quot;)</span>
+<span class="sd">0   1970-01-01</span>
+<span class="sd">dtype: datetime64[ns]</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">These accessors are automatically attached to compatible Series objects.</span>
+<span class="sd">Users should not instantiate accessors directly — use `.str` and `.dt` instead.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.timeclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">Datetime</span>
 
@@ -456,7 +519,7 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_make_op</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">accessop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 
             <span class="n">results</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
