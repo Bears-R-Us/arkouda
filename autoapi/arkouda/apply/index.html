@@ -385,8 +385,63 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.apply">
 <span id="arkouda-apply"></span><h1>arkouda.apply<a class="headerlink" href="#module-arkouda.apply" title="Link to this heading">¶</a></h1>
+<p>Element-wise function application for Arkouda arrays.</p>
+<p>The <cite>arkouda.apply</cite> module provides functionality for applying user-defined Python
+functions to Arkouda <cite>pdarray</cite> objects in an element-wise fashion. This includes support
+for both <cite>lambda</cite> expressions passed as strings and pickled Python callables. The function
+is applied on the server side via embedded Python interpreters.</p>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>apply(arr, func, result_dtype=None)</dt><dd><p>Apply a Python function to each element of a <cite>pdarray</cite>, returning a new <cite>pdarray</cite>.</p>
+</dd>
+</dl>
+</section>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Supports passing functions as callables (pickled using <cite>cloudpickle</cite>) /</p></li>
+</ul>
+<p>or as specially formatted strings.
+- Automatically initializes server-side Python interpreter support if needed.
+- Validates compatibility between client and server Python versions.
+- Supports specifying the output data type via <cite>result_dtype</cite>.</p>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Experimental: May not work in all environments or server builds.</p></li>
+<li><p>Any Python modules used in the function must also be available on the server.</p></li>
+<li><p>String functions must follow a strict format: e.g. <cite>“lambda x,: x+1”</cite> (note the comma).</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">array([2 3 4])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">square</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">square</span><span class="p">)</span>
+<span class="go">array([1 4 9])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="s2">&quot;lambda x,: x*2&quot;</span><span class="p">)</span>
+<span class="go">array([2 4 6])</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If <cite>result_dtype</cite> is not specified, it defaults to the input array’s dtype.</p></li>
+<li><p>If using a string-based function, <cite>result_dtype</cite> must match the input dtype.</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code></p>
+</div>
+</section>
+<section id="id1">
+<h2>Functions<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -509,6 +564,9 @@ array([21.991148575128552 28.274333882308138 15.707963267948966 3.14159265358979
             <ul>
 <li><a class="reference internal" href="#">arkouda.apply</a><ul>
 <li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#key-features">Key Features</a></li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+<li><a class="reference internal" href="#id1">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.apply.apply"><code class="docutils literal notranslate"><span class="pre">apply()</span></code></a></li>
 </ul>

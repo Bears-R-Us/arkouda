@@ -377,7 +377,60 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.apply</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Element-wise function application for Arkouda arrays.</span>
+
+<span class="sd">The `arkouda.apply` module provides functionality for applying user-defined Python</span>
+<span class="sd">functions to Arkouda `pdarray` objects in an element-wise fashion. This includes support</span>
+<span class="sd">for both `lambda` expressions passed as strings and pickled Python callables. The function</span>
+<span class="sd">is applied on the server side via embedded Python interpreters.</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">apply(arr, func, result_dtype=None)</span>
+<span class="sd">    Apply a Python function to each element of a `pdarray`, returning a new `pdarray`.</span>
+
+<span class="sd">Key Features</span>
+<span class="sd">------------</span>
+<span class="sd">- Supports passing functions as callables (pickled using `cloudpickle`) /</span>
+<span class="sd">or as specially formatted strings.</span>
+<span class="sd">- Automatically initializes server-side Python interpreter support if needed.</span>
+<span class="sd">- Validates compatibility between client and server Python versions.</span>
+<span class="sd">- Supports specifying the output data type via `result_dtype`.</span>
+
+<span class="sd">Limitations</span>
+<span class="sd">-----------</span>
+<span class="sd">- Experimental: May not work in all environments or server builds.</span>
+<span class="sd">- Any Python modules used in the function must also be available on the server.</span>
+<span class="sd">- String functions must follow a strict format: e.g. `&quot;lambda x,: x+1&quot;` (note the comma).</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">&gt;&gt;&gt; arr = ak.array([1, 2, 3])</span>
+<span class="sd">&gt;&gt;&gt; ak.apply(arr, lambda x: x + 1)</span>
+<span class="sd">array([2 3 4])</span>
+
+<span class="sd">&gt;&gt;&gt; def square(x): return x ** 2</span>
+<span class="sd">&gt;&gt;&gt; ak.apply(arr, square)</span>
+<span class="sd">array([1 4 9])</span>
+
+<span class="sd">&gt;&gt;&gt; ak.apply(arr, &quot;lambda x,: x*2&quot;)</span>
+<span class="sd">array([2 4 6])</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">- If `result_dtype` is not specified, it defaults to the input array’s dtype.</span>
+<span class="sd">- If using a string-based function, `result_dtype` must match the input dtype.</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">- arkouda.pdarray</span>
+<span class="sd">- arkouda.client.generic_msg</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 

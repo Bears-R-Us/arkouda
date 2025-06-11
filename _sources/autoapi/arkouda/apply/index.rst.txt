@@ -3,6 +3,56 @@ arkouda.apply
 
 .. py:module:: arkouda.apply
 
+.. autoapi-nested-parse::
+
+   Element-wise function application for Arkouda arrays.
+
+   The `arkouda.apply` module provides functionality for applying user-defined Python
+   functions to Arkouda `pdarray` objects in an element-wise fashion. This includes support
+   for both `lambda` expressions passed as strings and pickled Python callables. The function
+   is applied on the server side via embedded Python interpreters.
+
+   Functions
+   ---------
+   apply(arr, func, result_dtype=None)
+       Apply a Python function to each element of a `pdarray`, returning a new `pdarray`.
+
+   Key Features
+   ------------
+   - Supports passing functions as callables (pickled using `cloudpickle`) /
+   or as specially formatted strings.
+   - Automatically initializes server-side Python interpreter support if needed.
+   - Validates compatibility between client and server Python versions.
+   - Supports specifying the output data type via `result_dtype`.
+
+   Limitations
+   -----------
+   - Experimental: May not work in all environments or server builds.
+   - Any Python modules used in the function must also be available on the server.
+   - String functions must follow a strict format: e.g. `"lambda x,: x+1"` (note the comma).
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> arr = ak.array([1, 2, 3])
+   >>> ak.apply(arr, lambda x: x + 1)
+   array([2 3 4])
+
+   >>> def square(x): return x ** 2
+   >>> ak.apply(arr, square)
+   array([1 4 9])
+
+   >>> ak.apply(arr, "lambda x,: x*2")
+   array([2 4 6])
+
+   .. rubric:: Notes
+
+   - If `result_dtype` is not specified, it defaults to the input array’s dtype.
+   - If using a string-based function, `result_dtype` must match the input dtype.
+
+   .. seealso:: :py:obj:`-`, :py:obj:`-`
+
+
 
 Functions
 ---------
