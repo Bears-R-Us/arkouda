@@ -430,8 +430,8 @@
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="go">array([5.00000000000000000 4.00000000000000000 3.00000000000000000</span>
-<span class="go">2.00000000000000000 1.00000000000000000])</span>
+<span class="go">array([5.00000000... 4.00000000... 3.00000000...</span>
+<span class="go">2.00000000... 1.00000000...])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -464,13 +464,13 @@ array elements</p>
 </div>
 <p>Natural log
 &gt;&gt;&gt; ak.log(A)
-array([0.00000000000000000 2.3025850929940459 4.6051701859880918])</p>
+array([0.00000000… 2.30258509… 4.60517018…])</p>
 <p>Log base 10
 &gt;&gt;&gt; ak.log(A) / np.log(10)
-array([0.00000000000000000 1.00000000000000000 2.00000000000000000])</p>
+array([0.00000000… 1.00000000… 2.00000000…])</p>
 <p>Log base 2
 &gt;&gt;&gt; ak.log(A) / np.log(2)
-array([0.00000000000000000 3.3219280948873626 6.6438561897747253])</p>
+array([0.00000000… 3.32192809… 6.64385618…])</p>
 </dd></dl>
 
 <dl class="py function">
@@ -495,11 +495,11 @@ array elements</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
-<span class="go">array([2.7182818284590451 7.3890560989306504 20.085536923187668 54.598150033144236])</span>
+<span class="go">array([2.71828182... 7.38905609... 20.0855369... 54.5981500...])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-<span class="go">array([63.344862048230922 3.8079467144568273 54.725428723251447 36.234416869913829])</span>
+<span class="go">array([63.3448620... 3.80794671... 54.7254287... 36.2344168...])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -532,7 +532,7 @@ of the original pdarray</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">0.75</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="go">array([-0.99749498660405445 -0.68163876002333412 0.00000000000000000 0.68163876002333412])</span>
+<span class="go">array([-0.99749498... -0.68163876... 0.00000000... 0.68163876...])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -565,7 +565,7 @@ of the original pdarray</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">0.75</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="go">array([0.070737201667702906 0.7316888688738209 1.00000000000000000 0.7316888688738209])</span>
+<span class="go">array([0.07073720... 0.73168886... 1.00000000... 0.73168886...])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -602,7 +602,7 @@ of the original pdarray</p>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-<span class="go">array([4.1485937992669886 5.4856839230459 9.4880124005630435 13.078021809988414 16.820274716898091])</span>
+<span class="go">array([4.14859379... 5.48568392... 9.48801240... 13.0780218... 16.8202747...])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
@@ -639,8 +639,8 @@ of the original pdarray</p>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-<span class="go">array([4.1485937992669886 5.5470437965703221 22.201091353048209</span>
-<span class="go">    79.702126856955317 298.26551591732482])</span>
+<span class="go">array([4.14859379... 5.54704379... 22.2010913...</span>
+<span class="go">    79.7021268... 298.265515...])</span>
 </pre></div>
 </div>
 </dd></dl>
