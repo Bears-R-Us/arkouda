@@ -6,10 +6,12 @@ import arkouda as ak
 TYPES = ("int64", "uint64", "float64")
 STYLES = ("vv", "vs", "sv", "ss")
 
+
 def alternate(L, R, n):
     v = np.full(n, R)
     v[::2] = L
     return v
+
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Numpy_Scan")
@@ -30,22 +32,26 @@ def bench_where(benchmark, dtype, v_or_s):
         elif dtype == "uint64":
             a = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
             b = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
-        else :
+        else:
             a = ak.randint(0, 2**32, N, seed=seed, dtype=ak.float64)
             b = ak.randint(0, 2**32, N, seed=seed, dtype=ak.float64)
         c = ak.array(alternate(True, False, N))
 
         fxn = getattr(ak, "where")
-        if v_or_s == "vv" :
-            left = a ; right = b 
-        elif v_or_s == "vs" :
-            left = a; right = b[0]
-        elif v_or_s == "sv" :
-            left = a[0] ; right = b
-        else :
-            left = a[0] ; right = b[0]
-        
-        benchmark.pedantic(fxn, args=[c,left,right], rounds=pytest.trials)
+        if v_or_s == "vv":
+            left = a
+            right = b
+        elif v_or_s == "vs":
+            left = a
+            right = b[0]
+        elif v_or_s == "sv":
+            left = a[0]
+            right = b
+        else:
+            left = a[0]
+            right = b[0]
 
-        benchmark.extra_info["description"] = "Measures the performance of where"+" "+v_or_s
+        benchmark.pedantic(fxn, args=[c, left, right], rounds=pytest.trials)
+
+        benchmark.extra_info["description"] = "Measures the performance of where" + " " + v_or_s
         benchmark.extra_info["problem_size"] = pytest.prob_size
