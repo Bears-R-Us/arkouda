@@ -385,6 +385,50 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.alignment">
 <span id="arkouda-alignment"></span><h1>arkouda.alignment<a class="headerlink" href="#module-arkouda.alignment" title="Link to this heading">¶</a></h1>
+<p>Alignment and lookup utilities for Arkouda arrays.</p>
+<p>This module provides functions to align multiple arrays to a common
+0-up index, perform lookups and mappings across sparse identifiers,
+and search within defined intervals. It supports single and multi-dimensional
+key matching, including hierarchical keys, and interval-based function evaluation.</p>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>align: Align multiple arrays to a common index.</p></li>
+<li><p>left_align: Align two arrays to the index defined by the left array.</p></li>
+<li><p>right_align: Align two arrays to the index defined by the right array.</p></li>
+<li><p>zero_up: Map sparse identifiers to 0-up indices.</p></li>
+<li><p>lookup: Evaluate a function defined by keys and values on input arguments.</p></li>
+<li><p>interval_lookup: Evaluate a function defined over intervals.</p></li>
+<li><p>search_intervals: Return index of best interval for each query value.</p></li>
+<li><p>in1d_intervals: Check membership of values in half-open intervals.</p></li>
+<li><p>find: Locate indices of query values in a search space.</p></li>
+<li><p>is_cosorted: Determine if a list of arrays are cosorted.</p></li>
+<li><p>unsqueeze: Wrap a pdarray in a list if not already a sequence.</p></li>
+</ul>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>NonUniqueError: Raised when duplicate values are found in keys.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keep</span><span class="p">,</span> <span class="p">(</span><span class="n">a_aligned</span><span class="p">,</span> <span class="n">b_aligned</span><span class="p">)</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">right_align</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="n">keep</span><span class="p">],</span> <span class="n">a_aligned</span><span class="p">,</span> <span class="n">b_aligned</span>
+<span class="go">(array([10 20 40]), array([0 1 2]), array([1 0 2 3]))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">starts</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ends</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">interval_lookup</span><span class="p">((</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">),</span> <span class="n">values</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="go">array([100 200 200])</span>
+</pre></div>
+</div>
+</section>
 <section id="exceptions">
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -397,8 +441,8 @@
 </table>
 </div>
 </section>
-<section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<section id="id1">
+<h2>Functions<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -868,8 +912,10 @@ When False, sequences of pdarrays will be specifying multi-dimensional intervals
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.alignment</a><ul>
-<li><a class="reference internal" href="#exceptions">Exceptions</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#exceptions">Exceptions</a></li>
+<li><a class="reference internal" href="#id1">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.alignment.NonUniqueError"><code class="docutils literal notranslate"><span class="pre">NonUniqueError</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.alignment.align"><code class="docutils literal notranslate"><span class="pre">align()</span></code></a></li>

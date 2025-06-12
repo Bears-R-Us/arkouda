@@ -377,7 +377,51 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.alignment</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Alignment and lookup utilities for Arkouda arrays.</span>
+
+<span class="sd">This module provides functions to align multiple arrays to a common</span>
+<span class="sd">0-up index, perform lookups and mappings across sparse identifiers,</span>
+<span class="sd">and search within defined intervals. It supports single and multi-dimensional</span>
+<span class="sd">key matching, including hierarchical keys, and interval-based function evaluation.</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">- align: Align multiple arrays to a common index.</span>
+<span class="sd">- left_align: Align two arrays to the index defined by the left array.</span>
+<span class="sd">- right_align: Align two arrays to the index defined by the right array.</span>
+<span class="sd">- zero_up: Map sparse identifiers to 0-up indices.</span>
+<span class="sd">- lookup: Evaluate a function defined by keys and values on input arguments.</span>
+<span class="sd">- interval_lookup: Evaluate a function defined over intervals.</span>
+<span class="sd">- search_intervals: Return index of best interval for each query value.</span>
+<span class="sd">- in1d_intervals: Check membership of values in half-open intervals.</span>
+<span class="sd">- find: Locate indices of query values in a search space.</span>
+<span class="sd">- is_cosorted: Determine if a list of arrays are cosorted.</span>
+<span class="sd">- unsqueeze: Wrap a pdarray in a list if not already a sequence.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">- NonUniqueError: Raised when duplicate values are found in keys.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">&gt;&gt;&gt; a = ak.array([10, 20, 30, 40])</span>
+<span class="sd">&gt;&gt;&gt; b = ak.array([20, 10, 40, 50])</span>
+<span class="sd">&gt;&gt;&gt; keep, (a_aligned, b_aligned) = ak.right_align(a, b)</span>
+<span class="sd">&gt;&gt;&gt; a[keep], a_aligned, b_aligned</span>
+<span class="sd">(array([10 20 40]), array([0 1 2]), array([1 0 2 3]))</span>
+
+<span class="sd">&gt;&gt;&gt; starts = ak.array([0, 5])</span>
+<span class="sd">&gt;&gt;&gt; ends = ak.array([3, 10])</span>
+<span class="sd">&gt;&gt;&gt; values = ak.array([100, 200])</span>
+<span class="sd">&gt;&gt;&gt; x = ak.array([1, 6, 8])</span>
+<span class="sd">&gt;&gt;&gt; ak.interval_lookup((starts, ends), values, x)</span>
+<span class="sd">array([100 200 200])</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
