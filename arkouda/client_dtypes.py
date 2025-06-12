@@ -1,3 +1,54 @@
+"""
+Arkouda client-defined dtypes and helper utilities for structured or specialized array semantics.
+
+This module introduces specialized subclasses of `pdarray` for handling and representing
+data with specific interpretations or domain semantics. These include:
+
+- `BitVector`: For representing integers as sets of binary flags.
+- `Fields`: For displaying and interacting with named binary flags.
+- `IPv4`: For storing and displaying 32-bit integers as IPv4 addresses.
+
+These classes enhance usability and improve readability when working with encoded or
+domain-specific data while preserving Arkouda’s performance model and distributed data structures.
+
+Functions
+---------
+- `BitVectorizer`: Creates a partially applied BitVector constructor.
+- `ip_address`: Converts various formats to an Arkouda IPv4 object.
+- `is_ipv4`: Returns a boolean array indicating IPv4 addresses.
+- `is_ipv6`: Returns a boolean array indicating IPv6 addresses.
+
+Examples
+--------
+>>> import arkouda as ak
+>>> from arkouda.client_dtypes import BitVector, Fields, IPv4, ip_address, is_ipv4
+
+Create and use BitVectors:
+>>> a = ak.array([3, 5, 7])
+>>> bv = BitVector(a, width=4)
+>>> print(bv)
+BitVector([..||,
+           .|.|,
+           .|||],
+          width=4, reverse=False)
+
+Create Fields with named binary flags:
+>>> f = Fields(ak.array([1, 2, 3]), names=['read', 'write', 'exec'], separator=':')
+>>> print(f[0])  # doctest: +SKIP
+--:--:read (1)
+
+Convert and work with IP addresses:
+>>> ips = ip_address(['192.168.0.1', '10.0.0.1'])
+>>> print(ips)
+IPv4([192.168.0.1,
+      10.0.0.1],
+     )
+
+>>> is_ipv4(ips)
+array([True True])
+
+"""
+
 from functools import partial
 from ipaddress import ip_address as _ip_address
 from typing import Optional, Union
