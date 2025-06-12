@@ -430,7 +430,7 @@
 
 
 <div class="viewcode-block" id="from_series">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.from_series">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.numpy.from_series">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_series</span><span class="p">(</span><span class="n">series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -529,7 +529,7 @@
 
 
 <div class="viewcode-block" id="array">
-<a class="viewcode-back" href="../../../usage/IO.html#arkouda.array">[docs]</a>
+<a class="viewcode-back" href="../../../usage/IO.html#arkouda.numpy.array">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">array</span><span class="p">(</span>
     <span class="n">a</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">],</span>
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -734,7 +734,7 @@
 
 
 <div class="viewcode-block" id="promote_to_common_dtype">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.promote_to_common_dtype">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.numpy.promote_to_common_dtype">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">promote_to_common_dtype</span><span class="p">(</span><span class="n">arrays</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pdarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -790,7 +790,7 @@
 
 
 <div class="viewcode-block" id="bigint_from_uint_arrays">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.bigint_from_uint_arrays">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.numpy.bigint_from_uint_arrays">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">bigint_from_uint_arrays</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a bigint pdarray from an iterable of uint pdarrays.</span>
@@ -878,7 +878,7 @@
 
 
 <div class="viewcode-block" id="zeros">
-<a class="viewcode-back" href="../../../usage/creation.html#arkouda.zeros">[docs]</a>
+<a class="viewcode-back" href="../../../usage/creation.html#arkouda.numpy.zeros">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">zeros</span><span class="p">(</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span>
@@ -959,7 +959,7 @@
 
 
 <div class="viewcode-block" id="ones">
-<a class="viewcode-back" href="../../../usage/creation.html#arkouda.ones">[docs]</a>
+<a class="viewcode-back" href="../../../usage/creation.html#arkouda.numpy.ones">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">ones</span><span class="p">(</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span>
@@ -1022,7 +1022,7 @@
 
 
 <div class="viewcode-block" id="full">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.full">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.numpy.full">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">full</span><span class="p">(</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span>
@@ -1116,7 +1116,7 @@
 
 
 <div class="viewcode-block" id="scalar_array">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.scalar_array">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.numpy.scalar_array">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">scalar_array</span><span class="p">(</span>
     <span class="n">value</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1188,7 +1188,7 @@
 
 
 <div class="viewcode-block" id="zeros_like">
-<a class="viewcode-back" href="../../../usage/creation.html#arkouda.zeros_like">[docs]</a>
+<a class="viewcode-back" href="../../../usage/creation.html#arkouda.numpy.zeros_like">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">zeros_like</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1232,7 +1232,7 @@
 
 
 <div class="viewcode-block" id="ones_like">
-<a class="viewcode-back" href="../../../usage/creation.html#arkouda.ones_like">[docs]</a>
+<a class="viewcode-back" href="../../../usage/creation.html#arkouda.numpy.ones_like">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">ones_like</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1281,7 +1281,7 @@
 
 
 <div class="viewcode-block" id="full_like">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.full_like">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.numpy.full_like">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">full_like</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1365,7 +1365,7 @@
 
 
 <div class="viewcode-block" id="arange">
-<a class="viewcode-back" href="../../../usage/creation.html#arkouda.arange">[docs]</a>
+<a class="viewcode-back" href="../../../usage/creation.html#arkouda.numpy.arange">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">arange</span><span class="p">(</span>
     <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span>
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1492,7 +1492,7 @@
 
 
 <div class="viewcode-block" id="linspace">
-<a class="viewcode-back" href="../../../usage/creation.html#arkouda.linspace">[docs]</a>
+<a class="viewcode-back" href="../../../usage/creation.html#arkouda.numpy.linspace">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">linspace</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1548,7 +1548,7 @@
 
 
 <div class="viewcode-block" id="randint">
-<a class="viewcode-back" href="../../../usage/creation.html#arkouda.randint">[docs]</a>
+<a class="viewcode-back" href="../../../usage/creation.html#arkouda.numpy.randint">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">randint</span><span class="p">(</span>
     <span class="n">low</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span>
@@ -1615,7 +1615,7 @@
 
 
 <div class="viewcode-block" id="uniform">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.uniform">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.numpy.uniform">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">uniform</span><span class="p">(</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span>
@@ -1670,7 +1670,7 @@
 
 
 <div class="viewcode-block" id="standard_normal">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.standard_normal">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.numpy.standard_normal">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1718,7 +1718,7 @@
 
 
 <div class="viewcode-block" id="random_strings_uniform">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.random_strings_uniform">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.numpy.random_strings_uniform">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">random_strings_uniform</span><span class="p">(</span>
     <span class="n">minlen</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span>
@@ -1787,7 +1787,7 @@
 
 
 <div class="viewcode-block" id="random_strings_lognormal">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.random_strings_lognormal">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.numpy.random_strings_lognormal">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">random_strings_lognormal</span><span class="p">(</span>
     <span class="n">logmean</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span>

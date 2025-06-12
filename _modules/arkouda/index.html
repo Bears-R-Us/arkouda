@@ -414,7 +414,7 @@
 
 
 <div class="viewcode-block" id="Index">
-<a class="viewcode-back" href="../../usage/Index.html#arkouda.index.Index">[docs]</a>
+<a class="viewcode-back" href="../../usage/Index.html#arkouda.Index">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Index</span><span class="p">:</span>
     <span class="n">objType</span> <span class="o">=</span> <span class="s2">&quot;Index&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -692,7 +692,7 @@
             <span class="k">return</span> <span class="p">(</span><span class="n">ct</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Index.factory">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.factory">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.factory">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">factory</span><span class="p">(</span><span class="n">index</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">Index</span><span class="p">):</span>
@@ -704,7 +704,7 @@
 
 
 <div class="viewcode-block" id="Index.from_return_msg">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.from_return_msg">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.from_return_msg">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_return_msg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
@@ -723,7 +723,7 @@
 
 
 <div class="viewcode-block" id="Index.equals">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.equals">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.equals">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool_scalars</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Whether Indexes are the same size, and all entries are equal.</span>
@@ -793,7 +793,7 @@
 
 
 <div class="viewcode-block" id="Index.memory_usage">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.memory_usage">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.memory_usage">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the memory usage of the Index values.</span>
@@ -830,7 +830,7 @@
 
 
 <div class="viewcode-block" id="Index.to_pandas">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.to_pandas">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.to_pandas">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the equivalent Pandas Index.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -844,7 +844,7 @@
 
 
 <div class="viewcode-block" id="Index.to_ndarray">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.to_ndarray">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.to_ndarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
@@ -854,7 +854,7 @@
 
 
 <div class="viewcode-block" id="Index.to_list">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.to_list">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.to_list">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
@@ -863,7 +863,7 @@
 
 
 <div class="viewcode-block" id="Index.set_dtype">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.set_dtype">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.set_dtype">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change the data type of the index.</span>
@@ -876,7 +876,7 @@
 
 
 <div class="viewcode-block" id="Index.register">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.register">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.register">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register this Index object and underlying components with the Arkouda server.</span>
@@ -957,7 +957,7 @@
 
 
 <div class="viewcode-block" id="Index.unregister">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.unregister">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.unregister">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister this Index object in the arkouda server.</span>
@@ -990,7 +990,7 @@
 
 
 <div class="viewcode-block" id="Index.is_registered">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.is_registered">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.is_registered">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether the object is registered.</span>
@@ -1037,7 +1037,7 @@
 
 
 <div class="viewcode-block" id="Index.to_dict">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.to_dict">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.to_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1075,7 +1075,7 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">==</span> <span class="n">length</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="n">length</span>
 
 <div class="viewcode-block" id="Index.argsort">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.argsort">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.argsort">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">reverse</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">ascending</span>
@@ -1092,7 +1092,7 @@
 
 
 <div class="viewcode-block" id="Index.map">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.map">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.map">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;Series&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Index&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Map values of Index according to an input mapping.</span>
@@ -1134,7 +1134,7 @@
 
 
 <div class="viewcode-block" id="Index.concat">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.concat">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.concat">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">concat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_types</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
@@ -1143,7 +1143,7 @@
 
 
 <div class="viewcode-block" id="Index.lookup">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.lookup">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.lookup">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="c1"># try to handle single value</span>
@@ -1156,7 +1156,7 @@
 
 
 <div class="viewcode-block" id="Index.to_hdf">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.to_hdf">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.to_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1262,7 +1262,7 @@
 
 
 <div class="viewcode-block" id="Index.update_hdf">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.update_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1360,7 +1360,7 @@
 
 
 <div class="viewcode-block" id="Index.to_parquet">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.to_parquet">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.to_parquet">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_parquet</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1421,7 +1421,7 @@
 
 
 <div class="viewcode-block" id="Index.to_csv">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.Index.to_csv">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.Index.to_csv">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_csv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1484,7 +1484,7 @@
 
 
 <div class="viewcode-block" id="MultiIndex">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MultiIndex</span><span class="p">(</span><span class="n">Index</span><span class="p">):</span>
     <span class="n">objType</span> <span class="o">=</span> <span class="s2">&quot;MultiIndex&quot;</span>
     <span class="n">levels</span><span class="p">:</span> <span class="nb">list</span>
@@ -1612,7 +1612,7 @@
         <span class="k">return</span> <span class="n">npdtype</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MultiIndex.get_level_values">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.get_level_values">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.get_level_values">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_level_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1637,7 +1637,7 @@
 
 
 <div class="viewcode-block" id="MultiIndex.equal_levels">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.equal_levels">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.equal_levels">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">equal_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">MultiIndex</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if the levels of both MultiIndex objects are the same.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nlevels</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">nlevels</span><span class="p">:</span>
@@ -1650,7 +1650,7 @@
 
 
 <div class="viewcode-block" id="MultiIndex.memory_usage">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.memory_usage">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.memory_usage">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the memory usage of the MultiIndex levels.</span>
@@ -1691,7 +1691,7 @@
 
 
 <div class="viewcode-block" id="MultiIndex.to_pandas">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.to_pandas">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.to_pandas">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">mi</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
             <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="k">else</span> <span class="n">i</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">],</span>
@@ -1702,7 +1702,7 @@
 
 
 <div class="viewcode-block" id="MultiIndex.set_dtype">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.set_dtype">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.set_dtype">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change the data type of the index.</span>
@@ -1715,19 +1715,19 @@
 
 
 <div class="viewcode-block" id="MultiIndex.to_ndarray">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.to_ndarray">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.to_ndarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ndarray</span><span class="p">([</span><span class="n">convert_if_categorical</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="MultiIndex.to_list">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.to_list">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.to_list">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="MultiIndex.register">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.register">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.register">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register this Index object and underlying components with the Arkouda server.</span>
@@ -1802,7 +1802,7 @@
 
 
 <div class="viewcode-block" id="MultiIndex.unregister">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.unregister">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.unregister">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">unregister</span>
 
@@ -1813,7 +1813,7 @@
 
 
 <div class="viewcode-block" id="MultiIndex.is_registered">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.is_registered">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.is_registered">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_registered</span>
 
@@ -1823,7 +1823,7 @@
 
 
 <div class="viewcode-block" id="MultiIndex.to_dict">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.to_dict">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.to_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1848,7 +1848,7 @@
         <span class="k">return</span> <span class="n">MultiIndex</span><span class="p">(</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MultiIndex.argsort">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.argsort">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.argsort">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">i</span> <span class="o">=</span> <span class="n">coargsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ascending</span><span class="p">:</span>
@@ -1857,7 +1857,7 @@
 
 
 <div class="viewcode-block" id="MultiIndex.concat">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.concat">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.concat">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">concat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_types</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">generic_concat</span><span class="p">([</span><span class="n">ix1</span><span class="p">,</span> <span class="n">ix2</span><span class="p">],</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">ix1</span><span class="p">,</span> <span class="n">ix2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>
@@ -1865,7 +1865,7 @@
 
 
 <div class="viewcode-block" id="MultiIndex.lookup">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.lookup">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.lookup">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;MultiIndex lookup failure&quot;</span><span class="p">)</span>
@@ -1878,7 +1878,7 @@
 
 
 <div class="viewcode-block" id="MultiIndex.to_hdf">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.to_hdf">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.to_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1972,7 +1972,7 @@
 
 
 <div class="viewcode-block" id="MultiIndex.update_hdf">
-<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.index.MultiIndex.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index/index.html#arkouda.MultiIndex.update_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>

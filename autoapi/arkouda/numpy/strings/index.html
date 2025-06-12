@@ -418,7 +418,7 @@ the arkouda server.  This is a composite of</p>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -429,7 +429,7 @@ the arkouda server.  This is a composite of</p>
 <dd><p>The number of strings in the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars">int_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -440,7 +440,7 @@ the arkouda server.  This is a composite of</p>
 <dd><p>The total number of bytes in all strings</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars">int_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -451,7 +451,7 @@ the arkouda server.  This is a composite of</p>
 <dd><p>The rank of the array (currently only rank 1 arrays supported)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars">int_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -510,7 +510,7 @@ raw bytes of all strings, delimited by nulls.</p>
 <dd class="field-even"><p>An arkouda pdarray with values converted to the specified data type</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -579,7 +579,7 @@ containing only unique strings. Order may not be preserved.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>substr</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The substring in the form of string or byte array to search for</p></li>
+<li><p><strong>substr</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – The substring in the form of string or byte array to search for</p></li>
 <li><p><strong>regex</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Indicates whether substr is a regular expression
 Note: only handles regular expressions supported by re2
 (does not support lookaheads/lookbehinds)</p></li>
@@ -589,7 +589,7 @@ Note: only handles regular expressions supported by re2
 <dd class="field-even"><p>True for elements that contain substr, False otherwise</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -679,7 +679,7 @@ UTF-8</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>substr</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The suffix to search for</p></li>
+<li><p><strong>substr</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – The suffix to search for</p></li>
 <li><p><strong>regex</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Indicates whether substr is a regular expression
 Note: only handles regular expressions supported by re2
 (does not support lookaheads/lookbehinds)</p></li>
@@ -689,7 +689,7 @@ Note: only handles regular expressions supported by re2
 <dd class="field-even"><p>True for elements that end with substr, False otherwise</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -736,7 +736,7 @@ Note: only handles regular expressions supported by re2
 <dd class="field-even"><p>True if the Strings are the same, o.w. False.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.bool_scalars" title="arkouda.bool_scalars">bool_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars">bool_scalars</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -760,7 +760,7 @@ Note: only handles regular expressions supported by re2
 and lengths of matches</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The regex pattern used to find matches</p>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – The regex pattern used to find matches</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
@@ -774,7 +774,7 @@ and lengths of matches</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -809,7 +809,7 @@ and lengths of matches</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p></li>
+<li><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p></li>
 <li><p><strong>return_match_origins</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If True, return a pdarray containing the index of the original string each
 pattern match is from</p></li>
 </ul>
@@ -874,9 +874,9 @@ and byte data are created or transported independently.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>offset_attrib</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><em>str</em>) – The array of starting positions for each string, or a string
+<li><p><strong>offset_attrib</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> or </em><em>str</em>) – The array of starting positions for each string, or a string
 expression that can be passed to <cite>create_pdarray</cite> to build it.</p></li>
-<li><p><strong>bytes_attrib</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><em>str</em>) – The array of raw byte values (e.g., uint8 character codes), or a string
+<li><p><strong>bytes_attrib</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> or </em><em>str</em>) – The array of raw byte values (e.g., uint8 character codes), or a string
 expression that can be passed to <cite>create_pdarray</cite> to build it.</p></li>
 </ul>
 </dd>
@@ -946,7 +946,7 @@ True</p>
 regular expression pattern</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Match object where elements match only if the whole string matches the
@@ -975,7 +975,7 @@ regular expression pattern</p>
 <dd class="field-odd"><p>Pdarray of bytes of the string accessed</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -996,7 +996,7 @@ regular expression pattern</p>
 <dd class="field-odd"><p>The length of each string</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
@@ -1013,7 +1013,7 @@ regular expression pattern</p>
 <dd class="field-odd"><p>Pdarray of offsets of the string accessed</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -1032,7 +1032,7 @@ regular expression pattern</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – Length of prefix</p></li>
+<li><p><strong>n</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – Length of prefix</p></li>
 <li><p><strong>return_origins</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, return a logical index indicating which strings
 were long enough to return an n-prefix</p></li>
 <li><p><strong>proper</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, only return proper prefixes, i.e. from strings
@@ -1052,7 +1052,7 @@ an n-character prefix, False otherwise.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings">Strings</a>, Tuple[<a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings">Strings</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]]</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings">Strings</a>, Tuple[<a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings">Strings</a>, <a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1064,7 +1064,7 @@ an n-character prefix, False otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – Length of suffix</p></li>
+<li><p><strong>n</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – Length of suffix</p></li>
 <li><p><strong>return_origins</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, return a logical index indicating which strings
 were long enough to return an n-suffix</p></li>
 <li><p><strong>proper</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, only return proper suffixes, i.e. from strings
@@ -1084,7 +1084,7 @@ an n-character suffix, False otherwise.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings">Strings</a>, Tuple[<a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings">Strings</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]]</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings">Strings</a>, Tuple[<a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings">Strings</a>, <a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1101,7 +1101,7 @@ necessarily ordered.</p>
 <dd class="field-odd"><p>The permutation that groups the array by value</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1132,7 +1132,7 @@ creating the pdarray encapsulating the return message</p>
 of the ith values from each array.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>Tuple[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>,<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-even"><p>Tuple[<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>,<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -1189,7 +1189,7 @@ Strings is alphanumeric.</p>
 <dd class="field-odd"><p>True for elements that are alphanumeric, False otherwise</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
@@ -1223,7 +1223,7 @@ and all the characters are alphabetic.</p>
 <dd class="field-odd"><p>True for elements that are alphabetic, False otherwise</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
@@ -1256,7 +1256,7 @@ Strings has all decimal characters.</p>
 <dd class="field-odd"><p>True for elements that are decimals, False otherwise</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
@@ -1297,7 +1297,7 @@ Strings has all digit characters.</p>
 <dd class="field-odd"><p>True for elements that are digits, False otherwise</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
@@ -1339,7 +1339,7 @@ Strings is empty.</p>
 <dd class="field-odd"><p>True for elements that are digits, False otherwise</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
@@ -1372,7 +1372,7 @@ Strings is entirely lowercase</p>
 <dd class="field-odd"><p>True for elements that are entirely lowercase, False otherwise</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
@@ -1405,7 +1405,7 @@ whitespace characters (‘ ’, ‘\t’, ‘\n’, ‘\v’, ‘\f’, ‘\r’
 <dd class="field-odd"><p>True for elements that are whitespace, False otherwise</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
@@ -1438,7 +1438,7 @@ Strings is titlecase</p>
 <dd class="field-odd"><p>True for elements that are titlecase, False otherwise</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
@@ -1471,7 +1471,7 @@ Strings is entirely uppercase</p>
 <dd class="field-odd"><p>True for elements that are entirely uppercase, False otherwise</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
@@ -1541,7 +1541,7 @@ of this array, optionally inserting a delimiter.
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><em>Strings</em></a>) – The strings to join onto self’s strings</p></li>
-<li><p><strong>delimiter</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a><em>, </em><em>default=&quot;&quot;</em>) – String inserted between self and other</p></li>
+<li><p><strong>delimiter</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a><em>, </em><em>default=&quot;&quot;</em>) – String inserted between self and other</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1579,7 +1579,7 @@ or if the other parameter is not a Strings instance</p></li>
 regular expression pattern</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Match object where elements match only if the beginning of the string matches the
@@ -1623,8 +1623,8 @@ to string.partition), returning two new arrays of strings.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>delimiter</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The separator where the split will occur</p></li>
-<li><p><strong>times</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=1</em>) – The number of times the delimiter is sought, i.e. skip over
+<li><p><strong>delimiter</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – The separator where the split will occur</p></li>
+<li><p><strong>times</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=1</em>) – The number of times the delimiter is sought, i.e. skip over
 the first (times-1) delimiters</p></li>
 <li><p><strong>includeDelimiter</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, append the delimiter to the end of the first return
 array. By default, it is prepended to the beginning of the
@@ -1701,7 +1701,7 @@ If maxsplit is nonzero, at most maxsplit splits occur</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – Regex used to split strings into substrings</p></li>
+<li><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – Regex used to split strings into substrings</p></li>
 <li><p><strong>maxsplit</strong> (<em>int</em><em>, </em><em>default=0</em>) – The max number of pattern match occurences in each element to split.
 The default maxsplit=0 splits on all occurences</p></li>
 <li><p><strong>return_segments</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If True, return mapping of original strings to first substring
@@ -1756,7 +1756,7 @@ Please note you cannot register two different objects with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Strings object with the user_defined_name
+<li><p><a class="reference internal" href="../index.html#arkouda.numpy.RegistrationError" title="arkouda.numpy.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Strings object with the user_defined_name
 If the user is attempting to register more than one object with the same name,
 the former should be unregistered first to free up the registration name.</p></li>
 </ul>
@@ -1785,8 +1785,8 @@ until they are unregistered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>delimiter</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The separator where the split will occur</p></li>
-<li><p><strong>times</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=1</em>) – The number of times the delimiter is sought, i.e. skip over
+<li><p><strong>delimiter</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – The separator where the split will occur</p></li>
+<li><p><strong>times</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=1</em>) – The number of times the delimiter is sought, i.e. skip over
 the last (times-1) delimiters</p></li>
 <li><p><strong>includeDelimiter</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, prepend the delimiter to the start of the first return
 array. By default, it is appended to the end of the
@@ -1845,7 +1845,7 @@ if times is not int64</p></li>
 Elements match if any part of the string matches the regular expression pattern</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Match object where elements match if any part of the string matches the
@@ -1933,7 +1933,7 @@ in the return array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>substr</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The prefix to search for</p></li>
+<li><p><strong>substr</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – The prefix to search for</p></li>
 <li><p><strong>regex</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Indicates whether substr is a regular expression
 Note: only handles regular expressions supported by re2
 (does not support lookaheads/lookbehinds)</p></li>
@@ -1943,7 +1943,7 @@ Note: only handles regular expressions supported by re2
 <dd class="field-even"><p>True for elements that start with substr, False otherwise</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1983,7 +1983,7 @@ of this array, optionally inserting a delimiter.
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><em>Strings</em></a>) – The strings to join onto self’s strings</p></li>
-<li><p><strong>delimiter</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a><em>, </em><em>default=&quot;&quot;</em>) – String inserted between self and other</p></li>
+<li><p><strong>delimiter</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a><em>, </em><em>default=&quot;&quot;</em>) – String inserted between self and other</p></li>
 <li><p><strong>toLeft</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, join other strings to the left of self. By default,
 other is joined to the right of self.</p></li>
 </ul>
@@ -2026,7 +2026,7 @@ If omitted, the chars argument defaults to removing whitespace. The chars argume
 prefix or suffix; rather, all combinations of its values are stripped.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chars</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a><em>, </em><em>optional</em>) – the set of characters to be removed</p>
+<dd class="field-odd"><p><strong>chars</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a><em>, </em><em>optional</em>) – the set of characters to be removed</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Strings object with the leading and trailing characters matching the set of characters in
@@ -2064,8 +2064,8 @@ If count is nonzero, at most count substitutions occur</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The regex to substitue</p></li>
-<li><p><strong>repl</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The substring to replace pattern matches with</p></li>
+<li><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – The regex to substitue</p></li>
+<li><p><strong>repl</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – The substring to replace pattern matches with</p></li>
 <li><p><strong>count</strong> (<em>int</em><em>, </em><em>default=0</em>) – The max number of pattern match occurences in each element to replace.
 The default count=0 replaces all occurences of pattern with repl</p></li>
 </ul>
@@ -2104,8 +2104,8 @@ The default count=0 replaces all occurences of pattern with repl</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The regex to substitue</p></li>
-<li><p><strong>repl</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The substring to replace pattern matches with</p></li>
+<li><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – The regex to substitue</p></li>
+<li><p><strong>repl</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><em>str_scalars</em></a>) – The substring to replace pattern matches with</p></li>
 <li><p><strong>count</strong> (<em>int</em><em>, </em><em>default=0</em>) – The max number of pattern match occurences in each element to replace.
 The default count=0 replaces all occurences of pattern with repl</p></li>
 </ul>
@@ -2120,7 +2120,7 @@ The default count=0 replaces all occurences of pattern with repl</p></li>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[<a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings">Strings</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings">Strings</a>, <a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -2401,7 +2401,7 @@ determine the file format.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>hostname</strong> (<em>str</em>) – The hostname where the Arkouda server intended to
 receive the Strings object is running.</p></li>
-<li><p><strong>port</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The port to send the array over. This needs to be an
+<li><p><strong>port</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The port to send the array over. This needs to be an
 open port (i.e., not one that the Arkouda server is
 running on). This will open up <cite>numLocales</cite> ports,
 each of which in succession, so will use ports of the

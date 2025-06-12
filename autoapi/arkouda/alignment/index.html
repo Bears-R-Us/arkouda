@@ -492,7 +492,7 @@ the space. If all_occurrences is True, remove_missing is automatically enabled.
 If remove_missing is True, exclude missing values, otherwise return -1.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray">SegArray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a> or <a class="reference internal" href="../numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray">SegArray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -553,7 +553,7 @@ will be empty segments</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>vals</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><em>float</em><em>)</em>) – Values to test for membership in intervals</p></li>
+<li><p><strong>vals</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><em>float</em><em>)</em>) – Values to test for membership in intervals</p></li>
 <li><p><strong>intervals</strong> (<em>2-tuple</em><em> of </em><em>pdarrays</em>) – Non-overlapping, half-open intervals, as a tuple of
 (lower_bounds_inclusive, upper_bounds_exclusive)</p></li>
 <li><p><strong>symmetric</strong> (<em>bool</em>) – If True, also return boolean pdarray indicating which intervals
@@ -598,10 +598,10 @@ interval contains any of the values in &lt;vals&gt;.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>2-tuple</em><em> of </em><em>(</em><em>sequences of</em><em>) </em><em>pdarrays</em>) – Tuple of closed intervals expressed as (lower_bounds_inclusive, upper_bounds_inclusive).
 Must have same dtype(s) as vals.</p></li>
-<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Function value to return for each entry in keys.</p></li>
-<li><p><strong>arguments</strong> (<em>(</em><em>sequences of</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Values to search for in intervals. If multiple arrays, each “row” is an item.</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Function value to return for each entry in keys.</p></li>
+<li><p><strong>arguments</strong> (<em>(</em><em>sequences of</em><em>) </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Values to search for in intervals. If multiple arrays, each “row” is an item.</p></li>
 <li><p><strong>fillvalue</strong> (<em>scalar</em>) – Default value to return when argument is not in any interval.</p></li>
-<li><p><strong>tiebreak</strong> (<em>(</em><em>optional</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>numeric</em>) – When an argument is present in more than one key interval, the interval with the
+<li><p><strong>tiebreak</strong> (<em>(</em><em>optional</em><em>) </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>numeric</em>) – When an argument is present in more than one key interval, the interval with the
 lowest tiebreak value will be chosen. If no tiebreak is given, the
 first valid key interval will be chosen.</p></li>
 </ul>
@@ -612,7 +612,7 @@ containing each argument, or fillvalue if argument not
 in any interval.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -659,7 +659,7 @@ discarding values from right that do not appear in left.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>(</em><em>sequence of</em><em>) </em><em>array-like</em>) – The domain of the function. Entries must be unique (if a sequence of
 arrays is given, each row is treated as a tuple-valued entry).</p></li>
-<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The range of the function. Must be same length as keys.</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The range of the function. Must be same length as keys.</p></li>
 <li><p><strong>arguments</strong> (<em>(</em><em>sequence of</em><em>) </em><em>array-like</em>) – The arguments on which to evaluate the function. Must have same dtype
 (or tuple of dtypes, for a sequence) as keys.</p></li>
 <li><p><strong>fillvalue</strong> (<em>scalar</em>) – The default value to return for arguments not in keys.</p></li>
@@ -669,7 +669,7 @@ arrays is given, each row is treated as a tuple-valued entry).</p></li>
 <dd class="field-even"><p><strong>evaluated</strong> – The result of evaluating the function over arguments.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -707,8 +707,8 @@ discarding values from left that do not appear in right.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><em>a sequence</em><em> of </em><em>pdarrays</em>) – Left-hand identifiers</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><em>a sequence</em><em> of </em><em>pdarrays</em>) – Right-hand identifiers that define the index</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> or </em><em>a sequence</em><em> of </em><em>pdarrays</em>) – Left-hand identifiers</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> or </em><em>a sequence</em><em> of </em><em>pdarrays</em>) – Right-hand identifiers that define the index</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -721,7 +721,7 @@ discarding values from left that do not appear in right.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>)</p>
+<dd class="field-odd"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -736,11 +736,11 @@ or -1 if not present in any interval.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>vals</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><a class="reference internal" href="../index.html#arkouda.uint" title="arkouda.uint"><em>uint</em></a><em>, </em><em>float</em><em>)</em>) – Values to search for in intervals. If multiple arrays, each “row” is an item.</p></li>
+<li><p><strong>vals</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><a class="reference internal" href="../numpy/imports/index.html#arkouda.numpy.imports.uint" title="arkouda.numpy.imports.uint"><em>uint</em></a><em>, </em><em>float</em><em>)</em>) – Values to search for in intervals. If multiple arrays, each “row” is an item.</p></li>
 <li><p><strong>intervals</strong> (<em>2-tuple</em><em> of </em><em>(</em><em>sequences of</em><em>) </em><em>pdarrays</em>) – Non-overlapping, half-open intervals, as a tuple of
 (lower_bounds_inclusive, upper_bounds_exclusive)
 Must have same dtype(s) as vals.</p></li>
-<li><p><strong>tiebreak</strong> (<em>(</em><em>optional</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>numeric</em>) – When a value is present in more than one interval, the interval with the
+<li><p><strong>tiebreak</strong> (<em>(</em><em>optional</em><em>) </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>numeric</em>) – When a value is present in more than one interval, the interval with the
 lowest tiebreak value will be chosen. If no tiebreak is given, the
 first containing interval will be chosen.</p></li>
 <li><p><strong>hierarchical</strong> (<em>boolean</em>) – When True, sequences of pdarrays will be treated as components specifying
@@ -752,7 +752,7 @@ When False, sequences of pdarrays will be specifying multi-dimensional intervals
 <dd class="field-even"><p><strong>idx</strong> – Index of interval containing each query value, or -1 if not found</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>(<a class="reference internal" href="../index.html#arkouda.int64" title="arkouda.int64">int64</a>)</p>
+<dd class="field-odd"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>(<a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64">int64</a>)</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -798,13 +798,13 @@ When False, sequences of pdarrays will be specifying multi-dimensional intervals
 <dd><p>Map an array of sparse values to 0-up indices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>vals</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Array to map to dense index</p>
+<dd class="field-odd"><p><strong>vals</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Array to map to dense index</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>aligned</strong> – Array with values replaced by 0-up indices</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>

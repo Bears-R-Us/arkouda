@@ -1440,6 +1440,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+
 <span class="sd">    This example shows comparing two DataFrames that are equal</span>
 <span class="sd">    but with columns of differing dtypes.</span>
 
@@ -1448,12 +1449,10 @@
 <span class="sd">    &gt;&gt;&gt; df2 = ak.DataFrame({&#39;a&#39;: [1, 2], &#39;b&#39;: [3.0, 4.0]})</span>
 
 <span class="sd">    df1 equals itself.</span>
-
 <span class="sd">    &gt;&gt;&gt; assert_frame_equal(df1, df1)</span>
 
 <span class="sd">    df1 differs from df2 as column &#39;b&#39; is of a different type.</span>
-
-<span class="sd">    &gt;&gt;&gt; assert_frame_equal(df1, df2)</span>
+<span class="sd">    &gt;&gt;&gt; assert_frame_equal(df1, df2) # doctest: +SKIP</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">    ...</span>
 <span class="sd">    AssertionError: Attributes of DataFrame.iloc[:, 1] (column name=&quot;b&quot;) are different</span>
