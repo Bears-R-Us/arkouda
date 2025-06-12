@@ -1,5 +1,6 @@
 # flake8: noqa
 # isort: skip_file
+# arkouda/__init__.py
 # do not run isort, imports are order dependent
 """
 Arkouda: Exploratory data science at scale.
@@ -118,6 +119,7 @@ from arkouda.numpy import (
     binary_repr,
     bitType,
     bool_,
+    bool,
     bool_scalars,
     broadcast_dims,
     broadcast_to_shape,
@@ -346,6 +348,12 @@ from arkouda.pandas import (
     join_on_eq_with_dt,
     row,
     series,
+    ArkoudaArray,
+    ArkoudaDtype,
+    ArkoudaStringArray,
+    ArkoudaStringDtype,
+    ArkoudaCategoricalArray,
+    ArkoudaCategoricalDtype,
 )
 from arkouda.client import (
     connect,

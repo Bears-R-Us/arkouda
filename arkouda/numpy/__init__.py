@@ -1,5 +1,6 @@
 # flake8: noqa
 # isort: skip_file
+# arkouda/numpy/__init__.py
 from arkouda.numpy.imports import (
     False_,
     ScalarType,
@@ -102,6 +103,7 @@ from arkouda.numpy.dtypes import (
     all_scalars,
     bigint,
     bitType,
+    bool,
     bool_scalars,
     can_cast,
     complex128,
