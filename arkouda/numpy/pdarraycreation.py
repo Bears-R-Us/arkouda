@@ -214,6 +214,9 @@ def array(
     """
     from arkouda.numpy import cast as akcast
 
+    if dtype == "bigint":
+        dtype = bigint
+
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
         casted = a if dtype is None else akcast(a, dtype)
@@ -238,6 +241,9 @@ def array(
                 a = np.array(a)
         except (RuntimeError, TypeError, ValueError):
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
+
+    if isinstance(a, np.ndarray) and a.dtype != dtype and dtype != bigint and dtype is not None:
+        a = np.array(a, dtype=dtype)
 
     if a.dtype == bigint or a.dtype.name not in DTypes or dtype == bigint:
         # We need this array whether the number of dimensions is 1 or greater.
