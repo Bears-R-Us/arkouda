@@ -377,7 +377,54 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.match</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Regular expression match results for segmented string arrays in Arkouda.</span>
+
+<span class="sd">The `arkouda.match` module defines the `Match` class, which encapsulates results from</span>
+<span class="sd">regex-based operations such as `search`, `match`, and `fullmatch` on Arkouda `Strings` arrays.</span>
+
+<span class="sd">This class provides methods to retrieve:</span>
+<span class="sd">- Match booleans (`matched`)</span>
+<span class="sd">- Start and end positions of matches</span>
+<span class="sd">- Capture groups</span>
+<span class="sd">- Matched substrings</span>
+<span class="sd">- Origin indices of matched elements (optional)</span>
+
+<span class="sd">These operations enable powerful pattern recognition and substring extraction</span>
+<span class="sd">on large-scale segmented string arrays, implemented efficiently in the Arkouda server.</span>
+
+<span class="sd">Exports</span>
+<span class="sd">-------</span>
+<span class="sd">- Match : Object representing a regex match result</span>
+<span class="sd">- MatchType : Enum indicating the regex method used (SEARCH, MATCH, FULLMATCH)</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">&gt;&gt;&gt; strings = ak.array([&quot;Isaac Newton&quot;, &quot;Ada Lovelace&quot;, &quot;&quot;])</span>
+<span class="sd">&gt;&gt;&gt; m = strings.search(&quot;(\\w+) (\\w+)&quot;)</span>
+<span class="sd">&gt;&gt;&gt; m.matched()</span>
+<span class="sd">array([True True False])</span>
+<span class="sd">&gt;&gt;&gt; m.group(1)</span>
+<span class="sd">array([&#39;Isaac&#39;, &#39;Ada&#39;])</span>
+<span class="sd">&gt;&gt;&gt; m.group(2, return_group_origins=True)</span>
+<span class="sd">(array([&#39;Newton&#39;, &#39;Lovelace&#39;]), array([0 1]))</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">- `group(0)` returns the full match by default.</span>
+<span class="sd">- If `regexMaxCaptures` is exceeded, the server must be recompiled with a higher limit.</span>
+<span class="sd">- `Match` objects are typically obtained via `Strings.search()`, /</span>
+<span class="sd">`Strings.match()`, or `Strings.fullmatch()`.</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">arkouda.strings.Strings</span>
+<span class="sd">arkouda.client.regexMaxCaptures</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span>
 
