@@ -300,7 +300,7 @@ def _module_server() -> Iterator[None]:
         yield
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(autouse=True)
 def manage_connection():
     try:
         ak.connect(server=pytest.host, port=pytest.port, timeout=pytest.client_timeout)
