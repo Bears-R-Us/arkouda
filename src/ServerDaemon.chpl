@@ -517,7 +517,6 @@ module ServerDaemon {
                     
             var startTime = timeSinceEpoch().totalSeconds();
         
-            label defaultREPL
             while !this.shutdownDaemon {
                 serverIdleStart();
 
@@ -549,7 +548,7 @@ module ServerDaemon {
                         "illegal byte sequence in command: %?".format(
                                         rawRequest.decode(decodePolicy.replace)));
                     sendRepMsg(MsgTuple.error(e.message()), "Unknown");
-                    continue defaultREPL;
+                    continue;
                 }
 
                 // deserialize the decoded, JSON-formatted cmdStr into a RequestMsg
@@ -567,7 +566,7 @@ module ServerDaemon {
                     sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                             "Argument List size is not an integer. %s cannot be cast".format(msg.size));
                     sendRepMsg(MsgTuple.error(e.message()), "Unknown");
-                    continue defaultREPL;
+                    continue;
                 }
 
                 const msgArgs: owned MessageArgs;
@@ -620,7 +619,7 @@ module ServerDaemon {
                 // If cmd is shutdown, don't bother generating a repMsg
                 if cmd == "shutdown" {
                     sendShutdownRequest(user=user);
-                    break defaultREPL;
+                    break;
                 }
 
                 /*
@@ -725,7 +724,7 @@ module ServerDaemon {
                         processMetrics(user, cmd, msgArgs, elapsedTime, memUsed);
                     }
                 }
-            } // defaultREPL
+            }
 
             var elapsed = timeSinceEpoch().totalSeconds() - startTime;
 
