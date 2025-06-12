@@ -1094,9 +1094,9 @@ def _get_config_msg() -> Mapping[str, Union[str, int, float]]:
 def wait_for_async_activity() -> None:
     """
     Wait for the completion of asynchronous activities on the server.
-    The server will consider itself "idle" despite serving this message.
 
     Intended to help with testing of automatic checkpointing.
+    The server will consider itself "idle" despite serving this message.
 
     """
     generic_msg("wait_for_async_activity")
