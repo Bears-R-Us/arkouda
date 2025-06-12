@@ -4802,7 +4802,9 @@ def rotl(x, rot) -> pdarray:
     array([0 2 8 24 64 160 384 896 2048 4608])
     """
     if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
-        if (isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]) or isSupportedInt(rot):
+        if (
+            isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64, bigint, bool]
+        ) or isSupportedInt(rot):
             return x._binop(rot, "<<<")
         else:
             raise TypeError("Rotations only supported on integers")
@@ -4841,7 +4843,9 @@ def rotr(x, rot) -> pdarray:
     array([0 512 512 384 256 160 96 56 32 18])
     """
     if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
-        if (isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]) or isSupportedInt(rot):
+        if (
+            isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64, bigint, bool]
+        ) or isSupportedInt(rot):
             return x._binop(rot, ">>>")
         else:
             raise TypeError("Rotations only supported on integers")
