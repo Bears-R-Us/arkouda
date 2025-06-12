@@ -102,6 +102,7 @@ from arkouda.numpy.dtypes import (
     all_scalars,
     bigint,
     bitType,
+    bool,
     bool_scalars,
     can_cast,
     complex128,
