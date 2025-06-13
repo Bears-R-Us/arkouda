@@ -5,7 +5,34 @@ module Repartition
   // locales.
 
   use PrivateDist;
+  use SegmentedString;
   use List;
+
+  // Note, the arrays passed here must have PrivateSpace domains.
+  proc repartitionByHashString(const ref strOffsets: [] list(int),
+                                 const ref strBytes: [] list(uint(8))):
+    ([PrivateSpace] list(int), [PrivateSpace] list(uint(8)))
+  {
+    var destLocales: [PrivateSpace] list(int);
+
+    coforall loc in Locales do on loc {
+
+      var myStrOffsets = strOffsets[here.id].toArray();
+      var myStrBytes = strBytes[here.id].toArray();
+      var myDestLocales: [0..#myStrOffsets.size] int;
+
+      forall i in myStrOffsets.domain {
+        var start = myStrOffsets[i];
+        var end = if i == myStrOffsets.size - 1 then myStrBytes.size else myStrOffsets[i + 1];
+        var str = interpretAsString(myStrBytes, start..<end);
+        myDestLocales[i] = (str.hash() % numLocales): int;
+      }
+
+      destLocales[here.id] = new list(myDestLocales);
+    }
+
+    return repartitionByLocaleString(destLocales, strOffsets, strBytes);
+  }
 
   // Note, the arrays passed here must have PrivateSpace domains. With Chapel
   // 2.5, distribution equality with PrivateSpace doesn't work.
