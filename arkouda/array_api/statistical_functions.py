@@ -64,7 +64,7 @@ def max(
 
     from arkouda import max as ak_max
 
-    return Array._new(ak_max(x._array, axis=axis, keepdims=keepdims))
+    return Array._new(ak_max(x._array, axis=None, keepdims=keepdims))
 
 
 # this is a temporary fix to get mean working with XArray
