@@ -55,7 +55,7 @@ BENCHMARKS = [
     # "sort-cases",
     # "multiIO",
     # "str-locality",
-    # "dataframe",
+    "dataframe",
     # "encode",
     # "bigint_conversion",
     "bigint_stream",
@@ -361,12 +361,54 @@ def gen_lookup_map(write=False, out_file="field_lookup_map.json"):
     )
 
     #   Field aliases:
+    #   bigint
     field_lookup_map["bigint_stream"]["Average bigint stream time ="] = field_lookup_map[
         "bigint_stream"
     ]["Average time ="]
     field_lookup_map["bigint_stream"]["Average bigint stream rate ="] = field_lookup_map[
         "bigint_stream"
     ]["Average rate ="]
+
+    #   dataframe
+    field_lookup_map["dataframe"]["_get_head_tail_server Average time ="] = get_lookup_dict(
+        group="Dataframe_Indexing",
+        name="bench_dataframe[_get_head_tail_server]",
+        benchmark_name="dataframe",
+        lookup_path=[
+            "stats",
+            "mean",
+        ],
+    )
+
+    field_lookup_map["dataframe"]["_get_head_tail_server Average rate ="] = get_lookup_dict(
+        group="Dataframe_Indexing",
+        name="bench_dataframe[_get_head_tail_server]",
+        benchmark_name="dataframe",
+        lookup_path=[
+            "extra_info",
+            "transfer_rate",
+        ],
+    )
+
+    field_lookup_map["dataframe"]["_get_head_tail Average time ="] = get_lookup_dict(
+        group="Dataframe_Indexing",
+        name="bench_dataframe[_get_head_tail]",
+        benchmark_name="dataframe",
+        lookup_path=[
+            "stats",
+            "mean",
+        ],
+    )
+
+    field_lookup_map["dataframe"]["_get_head_tail Average rate ="] = get_lookup_dict(
+        group="Dataframe_Indexing",
+        name="bench_dataframe[_get_head_tail]",
+        benchmark_name="dataframe",
+        lookup_path=[
+            "extra_info",
+            "transfer_rate",
+        ],
+    )
 
     if write:
         with open(out_file, "w") as fp:
