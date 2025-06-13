@@ -2311,7 +2311,7 @@ class pdarray:
 
         Returns
         -------
-        ak.pdarray
+        pdarray
             An arkouda pdarray with values converted to the specified data type
 
         Raises
