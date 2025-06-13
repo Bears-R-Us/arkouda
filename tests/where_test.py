@@ -87,6 +87,11 @@ class TestWhere:
         result = ak.where(condA, 1, a1)
         assert np_result.tolist() == result.to_list()
 
+        np_result = np.where(condN, 1, 0)
+
+        result = ak.where(condA, 1, 0)
+        assert np_result.tolist() == result.to_list()
+
     def test_not_equal_where_clause(self):
         n1 = np.arange(1, 10)
         n2 = np.ones(9, dtype=np.int64)
