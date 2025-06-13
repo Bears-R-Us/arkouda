@@ -142,17 +142,15 @@ module Logging {
         
         proc generateLogMessage(moduleName: string, routineName: string, lineNumber: int,
                                 level: LogLevel, msg: string...) {
-            var lineStr = if lineNumber != 0 then "Line " + lineNumber:string + " " else "";
+            var lineStr = if lineNumber != 0 then ":" + lineNumber:string + " " else "";
             var dateStr = if printDate then generateDateTimeString(" ") else "";
-            return (dateStr, "[", moduleName, "] ", routineName, " ", lineStr, level:string,
-                    " [Chapel ] ", (...msg));
+            return (dateStr, try! "%15s:%<4i ".format(moduleName, lineNumber), (...msg));
         }
          
         proc generateDateTimeString(tail = "") {
             const t = dateTime.now();
             try {
-                return "%i-%02i-%02i %02i:%02i:%02i%s".format(t.year, t.month, t.day,
-                                                              t.hour, t.minute, t.second, tail);
+                return "%02i:%02i:%02i%s".format(t.hour, t.minute, t.second, tail);
             } catch {
                 return "".join(t.year:string, "-", t.month:string, "-", t.day:string, " ",
                                t.hour:string, ":", t.minute:string, ":", t.second:string, tail);
