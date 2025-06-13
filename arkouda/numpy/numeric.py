@@ -316,8 +316,6 @@ def ceil(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     array([2.00000000... 3.00000000... 4.00000000... 5.00000000... 6.00000000...])
 
     """
-    from arkouda.client import generic_msg
-
     _datatype_check(pda.dtype, [float], "ceil")
     return _general_helper(pda, "ceil", where)
 
@@ -352,8 +350,6 @@ def floor(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     array([1.00000000... 2.00000000... 3.00000000...
     4.00000000... 5.00000000...])
     """
-    from arkouda.client import generic_msg
-
     _datatype_check(pda.dtype, [float], "floor")
     return _general_helper(pda, "floor", where)
 
@@ -387,8 +383,6 @@ def round(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
     array([1.00000000... 3.00000000... 3.00000000...])
     """
-    from arkouda.client import generic_msg
-
     _datatype_check(pda.dtype, [float], "round")
     return _general_helper(pda, "round", where)
 
@@ -422,8 +416,6 @@ def trunc(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
     array([1.00000000... 2.00000000... 3.00000000...])
     """
-    from arkouda.client import generic_msg
-
     _datatype_check(pda.dtype, [float], "trunc")
     return _general_helper(pda, "trunc", where)
 
@@ -3094,21 +3086,12 @@ def vecdot(
     of matching shape.
 
     """
-<<<<<<< HEAD
-    #  Imports are here because they caused circular import otherwise
-    from arkouda.numpy.pdarrayclass import broadcast_to_shape
     from arkouda.numpy.util import broadcast_dims
-
-    if x1.shape[-1] != x2.shape[-1]:
-        raise ValueError("Last dimensions of inputs must match for vecdot.")
-=======
-    from arkouda.client import generic_msg
-
+    from arkouda.numpy.pdarrayclass import broadcast_to_shape
     if x1.shape != x2.shape:
         raise ValueError("vecdot requires matrices of matching rank.")
     if x1.ndim < 2:
         raise ValueError("vector requires matrices of rank 2 or more.")
->>>>>>> 174f20e41 (first round of add import to py files for generic_msg)
 
     if x1.shape == x2.shape:
         if axis is None:
