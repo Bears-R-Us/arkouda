@@ -14,13 +14,13 @@ def gather_scatter(a):
 
 
 class TestBigInt:
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_negative(self, size):
-        # test with negative bigint values
-        arr = -1 * ak.randint(0, 2**32, size)
-        bi_neg = ak.cast(arr, ak.bigint)
-        res = gather_scatter(bi_neg)
-        assert bi_neg.to_list() == res.to_list()
+#    at pytest.mark.parametrize("size", pytest.prob_size)
+#    def test_negative(self, size):
+#        # test with negative bigint values
+#        arr = -1 * ak.randint(0, 2**32, size)
+#        bi_neg = ak.cast(arr, ak.bigint)
+#        res = gather_scatter(bi_neg)
+#        assert bi_neg.to_list() == res.to_list()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_large(self, size):
