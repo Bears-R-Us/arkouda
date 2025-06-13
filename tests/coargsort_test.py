@@ -20,7 +20,7 @@ def make_ak_arrays(size, dtype, minimum=-(2**32), maximum=2**32, seed=1):
         # Prior to disallowing negative numbers in bigints, the next line was:
         # return ak.cast(ak.randint(minimum, maximum, size=size, seed=seed), dtype) + 2**200
         # But 2**64 is interpreted as a negative number when casting
-        return ak.cast(ak.randint(0, min(maximum,2**63), size=size, seed=seed), dtype) + 2**200
+        return ak.cast(ak.randint(0, min(maximum, 2**63), size=size, seed=seed), dtype) + 2**200
     raise ValueError(f"Unsupported dtype: {dtype}")
 
 
