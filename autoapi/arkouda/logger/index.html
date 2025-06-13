@@ -385,8 +385,74 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.logger">
 <span id="arkouda-logger"></span><h1>arkouda.logger<a class="headerlink" href="#module-arkouda.logger" title="Link to this heading">¶</a></h1>
+<p>Logging utilities for Arkouda client operations.</p>
+<p>The <cite>arkouda.logger</cite> module provides an extensible, configurable logging system tailored
+to Arkouda’s Python client. It supports structured logging using the standard <cite>logging</cite>
+module with added conveniences, such as type-safe log level enums, named handlers,
+and global verbosity toggles.</p>
+<section id="main-features">
+<h2>Main Features<a class="headerlink" href="#main-features" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><cite>ArkoudaLogger</cite>: A subclass of <cite>logging.Logger</cite> with Arkouda-specific defaults and
+dynamic handler configuration.</p></li>
+<li><p><cite>LogLevel</cite>: Enum of supported logging levels (<cite>DEBUG</cite>, <cite>INFO</cite>, <cite>WARN</cite>, etc.)</p></li>
+<li><p>Global registry of loggers for coordinated verbosity control</p></li>
+<li><p>Utility methods for enabling/disabling verbose output globally</p></li>
+<li><p>Client-side custom log injection into the Arkouda server logs via <cite>write_log</cite></p></li>
+</ul>
+</section>
+<section id="exports">
+<h2>Exports<a class="headerlink" href="#exports" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>__all__ = [</dt><dd><p>“LogLevel”,
+“enableVerbose”,
+“disableVerbose”,
+“write_log”,</p>
+</dd>
+</dl>
+<p>]</p>
+</section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>LogLevel<span class="classifier">Enum</span></dt><dd><p>Enum for defining log levels in a type-safe way (<cite>DEBUG</cite>, <cite>INFO</cite>, <cite>WARN</cite>, etc.).</p>
+</dd>
+<dt>ArkoudaLogger<span class="classifier">Logger</span></dt><dd><p>A wrapper around Python’s standard <cite>Logger</cite> that adds Arkouda-specific conventions,
+log formatting, and runtime handler reconfiguration.</p>
+</dd>
+</dl>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>getArkoudaLogger(name, handlers=None, logFormat=None, logLevel=None)</dt><dd><p>Instantiate a logger with customizable format and log level.</p>
+</dd>
+<dt>getArkoudaClientLogger(name)</dt><dd><p>Instantiate a logger for client-facing output (no formatting, INFO level default).</p>
+</dd>
+<dt>enableVerbose()</dt><dd><p>Globally set all ArkoudaLoggers to DEBUG level.</p>
+</dd>
+<dt>disableVerbose(logLevel=LogLevel.INFO)</dt><dd><p>Globally disable DEBUG output by setting all loggers to the specified level.</p>
+</dd>
+<dt>write_log(log_msg, tag=”ClientGeneratedLog”, log_lvl=LogLevel.INFO)</dt><dd><p>Submit a custom log message to the Arkouda server’s logging system.</p>
+</dd>
+</dl>
+</section>
+<section id="usage-example">
+<h2>Usage Example<a class="headerlink" href="#usage-example" title="Link to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">getArkoudaLogger</span><span class="p">,</span> <span class="n">LogLevel</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="s2">&quot;myLogger&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;This is an info message.&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">enableVerbose</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Now showing debug messages.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code></p>
+</div>
+</section>
+<section id="id1">
+<h2>Classes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -397,8 +463,8 @@
 </table>
 </div>
 </section>
-<section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<section id="id2">
+<h2>Functions<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -591,8 +657,13 @@ Defaults to LogLevel.INFO</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.logger</a><ul>
+<li><a class="reference internal" href="#main-features">Main Features</a></li>
+<li><a class="reference internal" href="#exports">Exports</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#usage-example">Usage Example</a></li>
+<li><a class="reference internal" href="#id1">Classes</a></li>
+<li><a class="reference internal" href="#id2">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.logger.LogLevel"><code class="docutils literal notranslate"><span class="pre">LogLevel</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.logger.LogLevel.CRITICAL"><code class="docutils literal notranslate"><span class="pre">LogLevel.CRITICAL</span></code></a></li>

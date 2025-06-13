@@ -377,7 +377,74 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.logger</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Logging utilities for Arkouda client operations.</span>
+
+<span class="sd">The `arkouda.logger` module provides an extensible, configurable logging system tailored</span>
+<span class="sd">to Arkouda&#39;s Python client. It supports structured logging using the standard `logging`</span>
+<span class="sd">module with added conveniences, such as type-safe log level enums, named handlers,</span>
+<span class="sd">and global verbosity toggles.</span>
+
+<span class="sd">Main Features</span>
+<span class="sd">-------------</span>
+<span class="sd">- `ArkoudaLogger`: A subclass of `logging.Logger` with Arkouda-specific defaults and</span>
+<span class="sd">  dynamic handler configuration.</span>
+<span class="sd">- `LogLevel`: Enum of supported logging levels (`DEBUG`, `INFO`, `WARN`, etc.)</span>
+<span class="sd">- Global registry of loggers for coordinated verbosity control</span>
+<span class="sd">- Utility methods for enabling/disabling verbose output globally</span>
+<span class="sd">- Client-side custom log injection into the Arkouda server logs via `write_log`</span>
+
+<span class="sd">Exports</span>
+<span class="sd">-------</span>
+<span class="sd">__all__ = [</span>
+<span class="sd">    &quot;LogLevel&quot;,</span>
+<span class="sd">    &quot;enableVerbose&quot;,</span>
+<span class="sd">    &quot;disableVerbose&quot;,</span>
+<span class="sd">    &quot;write_log&quot;,</span>
+<span class="sd">]</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">LogLevel : Enum</span>
+<span class="sd">    Enum for defining log levels in a type-safe way (`DEBUG`, `INFO`, `WARN`, etc.).</span>
+
+<span class="sd">ArkoudaLogger : Logger</span>
+<span class="sd">    A wrapper around Python&#39;s standard `Logger` that adds Arkouda-specific conventions,</span>
+<span class="sd">    log formatting, and runtime handler reconfiguration.</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">getArkoudaLogger(name, handlers=None, logFormat=None, logLevel=None)</span>
+<span class="sd">    Instantiate a logger with customizable format and log level.</span>
+
+<span class="sd">getArkoudaClientLogger(name)</span>
+<span class="sd">    Instantiate a logger for client-facing output (no formatting, INFO level default).</span>
+
+<span class="sd">enableVerbose()</span>
+<span class="sd">    Globally set all ArkoudaLoggers to DEBUG level.</span>
+
+<span class="sd">disableVerbose(logLevel=LogLevel.INFO)</span>
+<span class="sd">    Globally disable DEBUG output by setting all loggers to the specified level.</span>
+
+<span class="sd">write_log(log_msg, tag=&quot;ClientGeneratedLog&quot;, log_lvl=LogLevel.INFO)</span>
+<span class="sd">    Submit a custom log message to the Arkouda server’s logging system.</span>
+
+<span class="sd">Usage Example</span>
+<span class="sd">-------------</span>
+<span class="sd">&gt;&gt;&gt; from arkouda.logger import getArkoudaLogger, LogLevel</span>
+<span class="sd">&gt;&gt;&gt; logger = getArkoudaLogger(&quot;myLogger&quot;)</span>
+<span class="sd">&gt;&gt;&gt; logger.info(&quot;This is an info message.&quot;)</span>
+<span class="sd">&gt;&gt;&gt; logger.enableVerbose()</span>
+<span class="sd">&gt;&gt;&gt; logger.debug(&quot;Now showing debug messages.&quot;)</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">- logging (Python Standard Library)</span>
+<span class="sd">- arkouda.client.generic_msg</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CRITICAL</span><span class="p">,</span>
