@@ -377,7 +377,60 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.security</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Security and user identity utilities for Arkouda clients.</span>
+
+<span class="sd">The `arkouda.security` module provides functionality for managing access credentials,</span>
+<span class="sd">user identity, and secure client-side metadata used in communicating with the Arkouda server.</span>
+
+<span class="sd">Features</span>
+<span class="sd">--------</span>
+<span class="sd">- Platform-independent retrieval of the current user’s username and home directory.</span>
+<span class="sd">- Creation and management of a `.arkouda` directory for client-specific data.</span>
+<span class="sd">- Secure generation of authentication tokens using Python’s `secrets` module.</span>
+<span class="sd">- Serialization of user credentials for use with token-based server authentication.</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">generate_token(length=32)</span>
+<span class="sd">    Generate a secure hexadecimal token using `secrets.token_hex`.</span>
+
+<span class="sd">generate_username_token_json(token)</span>
+<span class="sd">    Return a JSON-formatted string containing both the current user&#39;s username and a token.</span>
+
+<span class="sd">get_home_directory()</span>
+<span class="sd">    Return the user&#39;s home directory in a cross-platform manner.</span>
+
+<span class="sd">get_arkouda_client_directory()</span>
+<span class="sd">    Get or create the `.arkouda` directory where client configuration and credentials are stored.</span>
+
+<span class="sd">get_username()</span>
+<span class="sd">    Determine the system username based on the user&#39;s home directory path.</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">- The `.arkouda` directory can be overridden using the `ARKOUDA_CLIENT_DIRECTORY` environment variable.</span>
+<span class="sd">- This module supports Linux, macOS (Darwin), and Windows platforms.</span>
+<span class="sd">- Token storage conventions in this module differ from the Arkouda server’s expectations /</span>
+<span class="sd">and must not be confused.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; from arkouda.security import generate_token, get_username, generate_username_token_json</span>
+<span class="sd">&gt;&gt;&gt; token = generate_token()</span>
+<span class="sd">&gt;&gt;&gt; print(token)  # doctest: +SKIP</span>
+<span class="sd">&#39;8f3a52e1b75f44d1a3a57a869488b637&#39;</span>
+
+<span class="sd">&gt;&gt;&gt; user = get_username()</span>
+<span class="sd">&gt;&gt;&gt; print(user)  # doctest: +SKIP</span>
+<span class="sd">&#39;emma&#39;</span>
+
+<span class="sd">&gt;&gt;&gt; generate_username_token_json(token)  # doctest: +SKIP</span>
+<span class="sd">&#39;{&quot;username&quot;: &quot;emma&quot;, &quot;token&quot;: &quot;8f3a52e1b75f44d1a3a57a869488b637&quot;}&#39;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">secrets</span>

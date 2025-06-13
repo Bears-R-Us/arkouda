@@ -385,8 +385,58 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.security">
 <span id="arkouda-security"></span><h1>arkouda.security<a class="headerlink" href="#module-arkouda.security" title="Link to this heading">¶</a></h1>
+<p>Security and user identity utilities for Arkouda clients.</p>
+<p>The <cite>arkouda.security</cite> module provides functionality for managing access credentials,
+user identity, and secure client-side metadata used in communicating with the Arkouda server.</p>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Platform-independent retrieval of the current user’s username and home directory.</p></li>
+<li><p>Creation and management of a <cite>.arkouda</cite> directory for client-specific data.</p></li>
+<li><p>Secure generation of authentication tokens using Python’s <cite>secrets</cite> module.</p></li>
+<li><p>Serialization of user credentials for use with token-based server authentication.</p></li>
+</ul>
+</section>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>generate_token(length=32)</dt><dd><p>Generate a secure hexadecimal token using <cite>secrets.token_hex</cite>.</p>
+</dd>
+<dt>generate_username_token_json(token)</dt><dd><p>Return a JSON-formatted string containing both the current user’s username and a token.</p>
+</dd>
+<dt>get_home_directory()</dt><dd><p>Return the user’s home directory in a cross-platform manner.</p>
+</dd>
+<dt>get_arkouda_client_directory()</dt><dd><p>Get or create the <cite>.arkouda</cite> directory where client configuration and credentials are stored.</p>
+</dd>
+<dt>get_username()</dt><dd><p>Determine the system username based on the user’s home directory path.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The <cite>.arkouda</cite> directory can be overridden using the <cite>ARKOUDA_CLIENT_DIRECTORY</cite> environment variable.</p></li>
+<li><p>This module supports Linux, macOS (Darwin), and Windows platforms.</p></li>
+<li><p>Token storage conventions in this module differ from the Arkouda server’s expectations /</p></li>
+</ul>
+<p>and must not be confused.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.security</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_token</span><span class="p">,</span> <span class="n">get_username</span><span class="p">,</span> <span class="n">generate_username_token_json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">generate_token</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+<span class="go">&#39;8f3a52e1b75f44d1a3a57a869488b637&#39;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">user</span> <span class="o">=</span> <span class="n">get_username</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+<span class="go">&#39;emma&#39;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">generate_username_token_json</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+<span class="go">&#39;{&quot;username&quot;: &quot;emma&quot;, &quot;token&quot;: &quot;8f3a52e1b75f44d1a3a57a869488b637&quot;}&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h2>Functions<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -567,7 +617,9 @@ and MacOS AKA Darwin</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.security</a><ul>
+<li><a class="reference internal" href="#features">Features</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#id1">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.security.generate_token"><code class="docutils literal notranslate"><span class="pre">generate_token()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.security.generate_username_token_json"><code class="docutils literal notranslate"><span class="pre">generate_username_token_json()</span></code></a></li>
