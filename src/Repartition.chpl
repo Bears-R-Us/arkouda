@@ -5,7 +5,33 @@ module Repartition
   // locales.
 
   use PrivateDist;
+  use SegmentedString;
   use List;
+
+  proc repartitionByHashString(const ref strOffsets: [PrivateSpace] list(int),
+                                 const ref strBytes: [PrivateSpace] list(uint(8))):
+    ([PrivateSpace] list(int), [PrivateSpace] list(uint(8)))
+  {
+    var destLocales: [PrivateSpace] list(int);
+
+    coforall loc in Locales do on loc {
+
+      var myStrOffsets = strOffsets[here.id].toArray();
+      var myStrBytes = strBytes[here.id].toArray();
+      var myDestLocales: [0..#myStrOffsets.size] int;
+
+      forall i in myStrOffsets.domain {
+        var start = myStrOffsets[i];
+        var end = if i == myStrOffsets.size - 1 then myStrBytes.size else myStrOffsets[i + 1];
+        var str = interpretAsString(myStrBytes, start..<end);
+        myDestLocales[i] = (str.hash() % numLocales): int;
+      }
+
+      destLocales[here.id] = new list(myDestLocales);
+    }
+
+    return repartitionByLocaleString(destLocales, strOffsets, strBytes);
+  }
 
   proc repartitionByLocaleString(const ref destLocales: [PrivateSpace] list(int),
                                  const ref strOffsets: [PrivateSpace] list(int),
