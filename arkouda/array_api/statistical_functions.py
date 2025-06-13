@@ -150,7 +150,7 @@ def min(
 
     from arkouda import min as ak_min
 
-    return Array._new(ak_min(x._array, axis=axis, keepdims=keepdims))
+    return Array._new(ak_min(x._array, axis=None, keepdims=keepdims))
 
 
 def prod(
@@ -188,7 +188,7 @@ def prod(
 
     from arkouda import prod as ak_prod
 
-    return Array._new(ak_prod(x_op, axis=axis, keepdims=keepdims))
+    return Array._new(ak_prod(x_op, axis=None, keepdims=keepdims))
 
 
 # Not working with XArray yet, pending a fix for:
@@ -283,7 +283,7 @@ def sum(
 
     from arkouda import sum as ak_sum
 
-    return Array._new(ak_sum(x_op, axis=axis, keepdims=keepdims))
+    return Array._new(ak_sum(x_op, axis=None, keepdims=keepdims))
 
 
 # Not working with XArray yet, pending a fix for:
