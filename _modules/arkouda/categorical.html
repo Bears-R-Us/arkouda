@@ -377,7 +377,54 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.categorical</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Categorical data type for Arkouda.</span>
+
+<span class="sd">This module provides the `Categorical` class, which represents arrays of values drawn</span>
+<span class="sd">from a fixed set of named categories. It enables efficient storage and manipulation of</span>
+<span class="sd">string-like or repeated-value data by internally mapping each category label to a</span>
+<span class="sd">numerical code.</span>
+
+<span class="sd">__all__ = [&quot;Categorical&quot;]</span>
+
+<span class="sd">The `Categorical` type is especially useful for grouping operations, filtering by label,</span>
+<span class="sd">and performing category-level reductions, much like pandas&#39; `Categorical` type. It</span>
+<span class="sd">supports conversions from `Strings`, other `Categorical` objects, or even pandas</span>
+<span class="sd">Categoricals, making it suitable for interoperability and high-performance analytics</span>
+<span class="sd">in Arkouda.</span>
+
+<span class="sd">Features</span>
+<span class="sd">--------</span>
+<span class="sd">- Automatic detection of unique category labels</span>
+<span class="sd">- Integer-based encoding via `.codes` attribute</span>
+<span class="sd">- Efficient groupby-compatible structure (`.permutation` and `.segments`)</span>
+<span class="sd">- Support for missing data using a configurable `NAvalue`</span>
+<span class="sd">- Pandas-like API for accessing labels and categories</span>
+
+<span class="sd">Typical Use</span>
+<span class="sd">-----------</span>
+<span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">&gt;&gt;&gt; from arkouda.categorical import Categorical</span>
+<span class="sd">&gt;&gt;&gt; strings = ak.array([&quot;apple&quot;, &quot;banana&quot;, &quot;apple&quot;, &quot;banana&quot;, &quot;pear&quot;])</span>
+<span class="sd">&gt;&gt;&gt; cat = Categorical(strings)</span>
+<span class="sd">&gt;&gt;&gt; cat.codes</span>
+<span class="sd">array([1 2 1 2 0])</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">- GroupBy operations on `Categorical` objects are significantly faster than on raw strings.</span>
+<span class="sd">- Memory usage can be greatly reduced when there are many repeated labels.</span>
+<span class="sd">- Currently only 1-dimensional arrays are supported.</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">- arkouda.Strings</span>
+<span class="sd">- arkouda.groupbyclass.GroupBy</span>
+<span class="sd">- pandas.Categorical</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>

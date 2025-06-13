@@ -385,6 +385,48 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.categorical">
 <span id="arkouda-categorical"></span><h1>arkouda.categorical<a class="headerlink" href="#module-arkouda.categorical" title="Link to this heading">¶</a></h1>
+<p>Categorical data type for Arkouda.</p>
+<p>This module provides the <cite>Categorical</cite> class, which represents arrays of values drawn
+from a fixed set of named categories. It enables efficient storage and manipulation of
+string-like or repeated-value data by internally mapping each category label to a
+numerical code.</p>
+<p>__all__ = [“Categorical”]</p>
+<p>The <cite>Categorical</cite> type is especially useful for grouping operations, filtering by label,
+and performing category-level reductions, much like pandas’ <cite>Categorical</cite> type. It
+supports conversions from <cite>Strings</cite>, other <cite>Categorical</cite> objects, or even pandas
+Categoricals, making it suitable for interoperability and high-performance analytics
+in Arkouda.</p>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Automatic detection of unique category labels</p></li>
+<li><p>Integer-based encoding via <cite>.codes</cite> attribute</p></li>
+<li><p>Efficient groupby-compatible structure (<cite>.permutation</cite> and <cite>.segments</cite>)</p></li>
+<li><p>Support for missing data using a configurable <cite>NAvalue</cite></p></li>
+<li><p>Pandas-like API for accessing labels and categories</p></li>
+</ul>
+</section>
+<section id="typical-use">
+<h2>Typical Use<a class="headerlink" href="#typical-use" title="Link to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;banana&quot;</span><span class="p">,</span> <span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;banana&quot;</span><span class="p">,</span> <span class="s2">&quot;pear&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cat</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cat</span><span class="o">.</span><span class="n">codes</span>
+<span class="go">array([1 2 1 2 0])</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>GroupBy operations on <cite>Categorical</cite> objects are significantly faster than on raw strings.</p></li>
+<li><p>Memory usage can be greatly reduced when there are many repeated labels.</p></li>
+<li><p>Currently only 1-dimensional arrays are supported.</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code></p>
+</div>
+</section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -1370,6 +1412,8 @@ automatic creation of a file without the inaccessible data.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.categorical</a><ul>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#typical-use">Typical Use</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical"><code class="docutils literal notranslate"><span class="pre">Categorical</span></code></a><ul>
