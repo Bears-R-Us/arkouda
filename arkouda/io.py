@@ -1,3 +1,68 @@
+"""
+Input/output utilities for Arkouda.
+
+The `arkouda.io` module provides a comprehensive interface for reading from and writing to
+various file formats including HDF5, Parquet, CSV, and Zarr. It supports importing/exporting
+data between Arkouda and Pandas, data checkpointing, and server snapshot/restore functionality.
+
+Core functionality includes:
+- File format detection and dataset inspection
+- Reading and writing structured datasets using HDF5 and Parquet
+- CSV read/write support with header parsing
+- Zarr format support for chunked array storage
+- Pandas interop via `import_data` and `export`
+- Checkpointing (`save_checkpoint`, `load_checkpoint`)
+- Serialization and deserialization of Arkouda objects (`snapshot`, `restore`)
+- Dataset tagging for provenance tracking during read operations
+- Transferring arrays/dataframes between Arkouda server instances (`receive`, `receive_dataframe`)
+
+Supported data types include `pdarray`, `Strings`, `SegArray`, `Categorical`, `DataFrame`, `Index`,
+and `MultiIndex`. Many operations also offer compatibility with standard Pandas file formats
+for interoperability.
+
+Functions
+---------
+- File inspection: `get_filetype`, `ls`, `ls_csv`, `get_datasets`, `get_columns`
+- Data import/export: `read_hdf`, `read_parquet`, `read_csv`, `read_zarr`, `read`, `to_hdf`,
+  `to_parquet`, `to_csv`, `to_zarr`, `import_data`, `export`
+- Snapshotting: `snapshot`, `restore`, `save_checkpoint`, `load_checkpoint`
+- Advanced features: `update_hdf`, `load`, `load_all`, `read_tagged_data`, `receive`, `receive_dataframe`
+
+Examples
+--------
+>>> import arkouda as ak
+>>> from arkouda.io import to_parquet, read_parquet
+>>> import os.path
+>>> from pathlib import Path
+>>> my_path = os.path.join(os.getcwd(), 'output')
+>>> Path(my_path).mkdir(parents=True, exist_ok=True)
+
+Create and save a DataFrame
+>>> data = [ak.arange(10), ak.linspace(0, 1, 10)]
+>>> Path(my_path + '/parquet_data').mkdir(parents=True, exist_ok=True)
+>>> to_parquet(data, my_path + '/parquet_data/data.parquet')
+File written successfully!
+
+Load the DataFrame back
+>>> data2 = read_parquet(my_path + '/parquet_data/data*')
+
+Save to HDF5
+>>> ak.to_hdf(data, my_path + 'data.hdf5')
+
+Read from HDF5 with explicit dataset name
+>>> data3 = ak.read_hdf(my_path + 'data*')
+
+Export to Pandas-compatible Parquet
+>>> df = ak.DataFrame({'a': ak.arange(10), 'b': ak.linspace(0, 1, 10)})
+>>> df2 = ak.export(my_path + '/parquet_data/data.parquet')
+
+See Also
+--------
+arkouda.DataFrame, arkouda.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray,
+arkouda.categorical.Categorical, arkouda.index.Index, arkouda.index.MultiIndex
+
+"""
+
 import glob
 import json
 import os
