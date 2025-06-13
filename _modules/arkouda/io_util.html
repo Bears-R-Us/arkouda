@@ -377,7 +377,56 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.io_util</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">File and directory utility functions for Arkouda&#39;s pandas module.</span>
+
+<span class="sd">This module provides a set of helper functions for performing common I/O operations</span>
+<span class="sd">needed during data processing, configuration, and metadata management. It includes</span>
+<span class="sd">utilities for creating and deleting directories, reading and writing key-value pairs</span>
+<span class="sd">from/to delimited text files, and appending lines to files.</span>
+
+<span class="sd">Exports</span>
+<span class="sd">-------</span>
+<span class="sd">__all__ = [</span>
+<span class="sd">    &quot;delete_directory&quot;,</span>
+<span class="sd">    &quot;delimited_file_to_dict&quot;,</span>
+<span class="sd">    &quot;dict_to_delimited_file&quot;,</span>
+<span class="sd">    &quot;get_directory&quot;,</span>
+<span class="sd">    &quot;write_line_to_file&quot;,</span>
+<span class="sd">]</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">get_directory(path: str) -&gt; Path</span>
+<span class="sd">    Create a directory if it doesn&#39;t exist and return its `Path` object.</span>
+
+<span class="sd">write_line_to_file(path: str, line: str) -&gt; None</span>
+<span class="sd">    Append a single line to a file, creating it if necessary.</span>
+
+<span class="sd">delimited_file_to_dict(path: str, delimiter: str = &quot;,&quot;) -&gt; Dict[str, str]</span>
+<span class="sd">    Load key-value pairs from a delimited file into a dictionary.</span>
+
+<span class="sd">dict_to_delimited_file(path: str, values: Mapping[Any, Any], delimiter: str = &quot;,&quot;) -&gt; None</span>
+<span class="sd">    Write a dictionary to a file as delimited key-value lines.</span>
+
+<span class="sd">delete_directory(dir: str) -&gt; None</span>
+<span class="sd">    Recursively delete a directory if it exists.</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">- `dict_to_delimited_file` currently only supports a comma (`,`) as a delimiter.</span>
+<span class="sd">- Errors encountered during I/O are either printed or raised, depending on context.</span>
+<span class="sd">- This module is intended for internal use within Arkouda&#39;s pandas compatibility layer.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; from arkouda.io_util import get_directory, write_line_to_file</span>
+<span class="sd">&gt;&gt;&gt; path = get_directory(&quot;tmp/output&quot;)</span>
+<span class="sd">&gt;&gt;&gt; write_line_to_file(path / &quot;log.txt&quot;, &quot;Computation completed&quot;)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">isdir</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Mapping</span>

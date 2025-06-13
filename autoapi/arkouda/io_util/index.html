@@ -385,8 +385,52 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.io_util">
 <span id="arkouda-io-util"></span><h1>arkouda.io_util<a class="headerlink" href="#module-arkouda.io_util" title="Link to this heading">¶</a></h1>
+<p>File and directory utility functions for Arkouda’s pandas module.</p>
+<p>This module provides a set of helper functions for performing common I/O operations
+needed during data processing, configuration, and metadata management. It includes
+utilities for creating and deleting directories, reading and writing key-value pairs
+from/to delimited text files, and appending lines to files.</p>
+<section id="exports">
+<h2>Exports<a class="headerlink" href="#exports" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>__all__ = [</dt><dd><p>“delete_directory”,
+“delimited_file_to_dict”,
+“dict_to_delimited_file”,
+“get_directory”,
+“write_line_to_file”,</p>
+</dd>
+</dl>
+<p>]</p>
+</section>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>get_directory(path: str) -&gt; Path</dt><dd><p>Create a directory if it doesn’t exist and return its <cite>Path</cite> object.</p>
+</dd>
+<dt>write_line_to_file(path: str, line: str) -&gt; None</dt><dd><p>Append a single line to a file, creating it if necessary.</p>
+</dd>
+<dt>delimited_file_to_dict(path: str, delimiter: str = “,”) -&gt; Dict[str, str]</dt><dd><p>Load key-value pairs from a delimited file into a dictionary.</p>
+</dd>
+<dt>dict_to_delimited_file(path: str, values: Mapping[Any, Any], delimiter: str = “,”) -&gt; None</dt><dd><p>Write a dictionary to a file as delimited key-value lines.</p>
+</dd>
+<dt>delete_directory(dir: str) -&gt; None</dt><dd><p>Recursively delete a directory if it exists.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p><cite>dict_to_delimited_file</cite> currently only supports a comma (<cite>,</cite>) as a delimiter.</p></li>
+<li><p>Errors encountered during I/O are either printed or raised, depending on context.</p></li>
+<li><p>This module is intended for internal use within Arkouda’s pandas compatibility layer.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io_util</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_directory</span><span class="p">,</span> <span class="n">write_line_to_file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">get_directory</span><span class="p">(</span><span class="s2">&quot;tmp/output&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">write_line_to_file</span><span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;log.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;Computation completed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h2>Functions<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -582,7 +626,9 @@ writing to the file</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.io_util</a><ul>
+<li><a class="reference internal" href="#exports">Exports</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#id1">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.io_util.delete_directory"><code class="docutils literal notranslate"><span class="pre">delete_directory()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io_util.delimited_file_to_dict"><code class="docutils literal notranslate"><span class="pre">delimited_file_to_dict()</span></code></a></li>
