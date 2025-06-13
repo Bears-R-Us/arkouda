@@ -1,34 +1,10 @@
 #!/usr/bin/env python3
 import numpy as np
-import pandas as pd
 import pytest
 
 import arkouda as ak
 
 OPS = ["_get_head_tail_server", "_get_head_tail"]
-
-
-def generate_dataframe():
-    cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
-    types = [ak.Categorical, ak.pdarray, ak.Strings, ak.SegArray]
-
-    # generate random columns to build dataframe
-    df_dict = {}
-    np.random.seed(pytest.seed)
-    for x in range(20):  # loop to create 20 random columns
-        key = f"c_{x}"
-        d = types[x % 4]
-        if d == ak.Categorical:
-            str_arr = ak.random_strings_uniform(minlen=5, maxlen=6, size=N, seed=pytest.seed)
-            df_dict[key] = ak.Categorical(str_arr)
-        elif d == ak.pdarray:
-            df_dict[key] = ak.array(np.random.randint(0, 2**32, N))
-        elif d == ak.Strings:
-            df_dict[key] = ak.random_strings_uniform(minlen=5, maxlen=6, size=N, seed=pytest.seed)
-        elif d == ak.SegArray:
-            df_dict[key] = ak.SegArray(ak.arange(0, N), ak.array(np.random.randint(0, 2**32, N)))
-    return ak.DataFrame(df_dict)
 
 
 @pytest.mark.skip_correctness_only(True)
@@ -37,18 +13,29 @@ def generate_dataframe():
 def bench_dataframe(benchmark, op):
     """
     Measures the performance of arkouda Dataframe indexing
-
     """
-    pd.set_option("display.max_rows", 100)
-    pd.set_option("display.min_rows", 10)
-    pd.set_option("display.max_columns", 20)
+    N = 10**4 if pytest.correctness_only else pytest.prob_size * ak.get_config()["numLocales"]
 
-    df = generate_dataframe()
+    types = [ak.Categorical, ak.pdarray, ak.Strings, ak.SegArray]
+    df_dict = {}
+    np.random.seed(pytest.seed)
 
-    fxn = getattr(df, op)
-    benchmark.pedantic(fxn, rounds=pytest.trials)
+    for x in range(20):
+        key = f"c_{x}"
+        dtype = types[x % 4]
+        if dtype == ak.Categorical:
+            str_arr = ak.random_strings_uniform(5, 6, N, seed=pytest.seed)
+            df_dict[key] = ak.Categorical(str_arr)
+        elif dtype == ak.pdarray:
+            df_dict[key] = ak.array(np.random.randint(0, 2**32, N))
+        elif dtype == ak.Strings:
+            df_dict[key] = ak.random_strings_uniform(5, 6, N, seed=pytest.seed)
+        elif dtype == ak.SegArray:
+            df_dict[key] = ak.SegArray(ak.arange(0, N), ak.array(np.random.randint(0, 2**32, N)))
 
-    # calculate nbytes based on the columns
+    df = ak.DataFrame(df_dict)
+
+    # calculate nbytes
     nbytes = 0
     for col in df.columns:
         col_obj = df[col]
@@ -59,12 +46,32 @@ def bench_dataframe(benchmark, op):
         elif isinstance(col_obj, ak.Strings):
             nbytes += col_obj.nbytes * col_obj.entry.itemsize
         elif isinstance(col_obj, ak.SegArray):
-            nbytes += col_obj.values.size * col_obj.values.itemsize + (
-                col_obj.segments.size * col_obj.segments.itemsize
+            nbytes += (
+                col_obj.values.size * col_obj.values.itemsize
+                + col_obj.segments.size * col_obj.segments.itemsize
             )
 
+    if pytest.numpy:
+        # simulate with pandas
+        df_sim = df.to_pandas()
+
+        def pandas_op():
+            if op == "_get_head_tail_server" or op == "_get_head_tail":
+                df_sim.head()  # simplified equivalent
+            return nbytes
+
+        numBytes = benchmark.pedantic(pandas_op, rounds=pytest.trials)
+    else:
+        fxn = getattr(df, op)
+
+        def arkouda_op():
+            fxn()
+            return nbytes
+
+        numBytes = benchmark.pedantic(arkouda_op, rounds=pytest.trials)
+
     benchmark.extra_info["description"] = "Measures the performance of arkouda Dataframe indexing"
-    benchmark.extra_info["problem_size"] = pytest.prob_size
+    benchmark.extra_info["problem_size"] = N
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (nbytes / benchmark.stats["mean"]) / 2**30
+        (numBytes / benchmark.stats["mean"]) / 2**30
     )
