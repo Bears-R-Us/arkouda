@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Optional, Tuple, Union
 
 import arkouda as ak
-from arkouda.client import generic_msg
 from arkouda.numpy.pdarrayclass import create_pdarray
 from arkouda.numpy.pdarraycreation import scalar_array
 
@@ -79,6 +78,8 @@ def clip(a: Array, a_min, a_max, /) -> Array:
     a_max : scalar
         The maximum value
     """
+    from arkouda.client import generic_msg
+
     if a.dtype == ak.bigint or a.dtype == ak.bool_:
         raise RuntimeError(f"Error executing command: clip does not support dtype {a.dtype}")
 
@@ -154,6 +155,9 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
 
     """
     from arkouda.numpy.pdarrayclass import diff
+
+    if a.dtype == ak.bigint:
+        raise RuntimeError(f"Error executing command: diff does not support dtype {a.dtype}")
 
     return Array._new(diff(a._array, n, axis, prepend, append))
 
@@ -320,6 +324,8 @@ def pad(
         Padding mode. Only 'constant' is currently supported. Use the `constant_values` keyword argument
         to specify the padding value or values (in the same format as `pad_width`).
     """
+    from arkouda.client import generic_msg
+
     if mode != "constant":
         raise NotImplementedError(f"pad mode '{mode}' is not supported")
 

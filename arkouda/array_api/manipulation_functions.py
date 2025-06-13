@@ -4,7 +4,6 @@ from typing import List, Optional, Tuple, Union, cast
 
 import numpy as np
 
-from arkouda.client import generic_msg
 from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
 from arkouda.numpy.pdarraycreation import promote_to_common_dtype, scalar_array
 from arkouda.numpy.util import broadcast_dims
@@ -50,6 +49,7 @@ def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
 
     See: https://data-apis.org/array-api/latest/API_specification/broadcasting.html for details.
     """
+    from arkouda.client import generic_msg
 
     try:
         return Array._new(
@@ -83,6 +83,7 @@ def concat(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[i
         flattened before concatenation.
 
     """
+    from arkouda.client import generic_msg
 
     ndim = arrays[0].ndim
     for a in arrays:
@@ -124,6 +125,8 @@ def expand_dims(x: Array, /, *, axis: int) -> Array:
         The axis at which to insert the new (size one) dimension. Must be in the range
         `[-x.ndim-1, x.ndim]`.
     """
+    from arkouda.client import generic_msg
+
     try:
         return Array._new(
             create_pdarray(
@@ -154,6 +157,8 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
     axis : int or Tuple[int, ...], optional
         The axis or axes along which to flip the array. If None, flip the array along all axes.
     """
+    from arkouda.client import generic_msg
+
     axisList = []
     if axis is not None:
         axisList = list(axis) if isinstance(axis, tuple) else [axis]
@@ -227,6 +232,8 @@ def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
     axes : Tuple[int, ...]
         The new order of the dimensions. Must be a permutation of the integers from 0 to `x.ndim-1`.
     """
+    from arkouda.client import generic_msg
+
     try:
         return Array._new(
             create_pdarray(
@@ -262,6 +269,8 @@ def repeat(x: Array, repeats: Union[int, Array], /, *, axis: Optional[int] = Non
     axis : int, optional
         The axis along which to repeat elements. If None, the array is flattened before repeating.
     """
+    from arkouda.client import generic_msg
+
     if isinstance(repeats, int):
         reps = Array._new(scalar_array(repeats))
     else:
@@ -300,6 +309,7 @@ def reshape(x: Array, /, shape: Tuple[int, ...], *, copy: Optional[bool] = None)
         Whether to create a copy of the array.
         WARNING: currently always creates a copy, ignoring the value of this parameter.
     """
+    from arkouda.client import generic_msg
 
     # TODO: figure out copying semantics (currently always creates a copy)
     try:
@@ -345,6 +355,8 @@ def roll(
         The axis or axes along which to roll the array. If None, the array is flattened before
         rolling.
     """
+    from arkouda.client import generic_msg
+
     axisList = []
     if axis is not None:
         axisList = list(axis) if isinstance(axis, tuple) else [axis]
@@ -405,6 +417,7 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
         The axis along which to stack the arrays. Must be in the range `[-N, N)`, where N is the number
         of dimensions in the input arrays. The default is 0.
     """
+    from arkouda.client import generic_msg
 
     ndim = arrays[0].ndim
     for a in arrays:
@@ -445,6 +458,8 @@ def tile(x: Array, repetitions: Tuple[int, ...], /) -> Array:
         repetitions. If there are more array dimensions than repetitions, ones are prepended to the
         repetitions tuple to make it's length match the number of array dimensions.
     """
+    from arkouda.client import generic_msg
+
     if len(repetitions) > x.ndim:
         xr = reshape(x, (1,) * (len(repetitions) - x.ndim) + x.shape)
         reps = repetitions
@@ -482,6 +497,8 @@ def unstack(x: Array, /, *, axis: int = 0) -> Tuple[Array, ...]:
     axis : int, optional
         The axis along which to unstack the array. The default is 0.
     """
+    from arkouda.client import generic_msg
+
     return tuple(
         Array._new(
             create_pdarrays(

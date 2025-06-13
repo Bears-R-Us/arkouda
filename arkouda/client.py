@@ -4,7 +4,7 @@ import warnings
 from enum import Enum
 from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 
-from arkouda import __version__, io_util, security
+from arkouda import __version__, security
 from arkouda.logger import ArkoudaLogger, LogLevel, getArkoudaLogger
 from arkouda.message import (
     MessageFormat,
@@ -13,6 +13,7 @@ from arkouda.message import (
     ReplyMessage,
     RequestMessage,
 )
+from arkouda.pandas import io_util
 
 __all__ = [
     "connect",

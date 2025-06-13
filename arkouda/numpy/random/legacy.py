@@ -2,7 +2,6 @@ from typing import Optional, Tuple, Union, cast
 
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
@@ -84,6 +83,8 @@ def randint(
     >>> ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
     array([False, True, True, True, True, False, True, True, True, True])
     """
+    from arkouda.client import generic_msg
+
     shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
     if isinstance(size, tuple):
         shape = cast(Tuple, size)
@@ -166,6 +167,8 @@ def standard_normal(
     >>> ak.standard_normal(3,1)
     array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
     """
+    from arkouda.client import generic_msg
+
     shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
     if isinstance(size, tuple):
         shape = cast(Tuple, size)

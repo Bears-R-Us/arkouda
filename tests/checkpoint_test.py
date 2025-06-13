@@ -8,6 +8,7 @@ from shutil import rmtree
 import pytest
 
 import arkouda as ak
+from arkouda.pandas import io_util
 
 
 @pytest.fixture
@@ -19,12 +20,12 @@ def cp_test_base_tmp(request):
         timestamp = str(datetime.now()).replace(" ", "_")
         cp_test_base_tmp = "{}/.cp_test_{}".format(os.getcwd(), timestamp)
 
-    ak.io_util.get_directory(cp_test_base_tmp)
+    io_util.get_directory(cp_test_base_tmp)
 
     # Define a finalizer function for teardown
     def finalizer():
         # Clean up any resources if needed
-        ak.io_util.delete_directory(cp_test_base_tmp)
+        io_util.delete_directory(cp_test_base_tmp)
 
     # Register the finalizer to ensure cleanup
     request.addfinalizer(finalizer)

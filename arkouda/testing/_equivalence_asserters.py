@@ -271,25 +271,19 @@ def assert_arkouda_array_equivalent(
 
     Parameters
     ----------
-    left : pdarray, Strings, Categorical, SegArray, np.ndarray, or pd.Categorical
-        First array to compare.
-    right : pdarray, Strings, Categorical, SegArray, np.ndarray, or pd.Categorical
-        Second array to compare.
-    check_dtype : bool
-        Whether to verify that dtypes match. Default is True.
-    err_msg : str or None
-        Optional message to display on failure.
-    check_same : None or {"copy", "same"}
-        Whether to ensure identity or separation in memory. Default is None.
-    obj : str
-        Object label for error messages. Default is "pdarray".
-    index_values : Index or pdarray, optional
-        Shared index used in error output. Default is None.
-
-    Raises
-    ------
-    TypeError
-        If either input is not a supported array type.
+    left, right : ndarray, Categorical, pdarray or Strings or Categorical
+        The two arrays to be compared.
+    check_dtype : bool, default True
+        Check dtype if both a and b are ak.pdarray or np.ndarray.
+    err_msg : str, default None
+        If provided, used as assertion message.
+    check_same : None|'copy'|'same', default None
+        Ensure left and right refer/do not refer to the same memory area.
+    obj : str, default 'numpy array'
+        Specify object name being compared, internally used to show appropriate
+        assertion message.
+    index_values : Index | arkouda.pdarray, default None
+        optional index (shared by both left and right), used in output.
 
     See Also
     --------
@@ -510,7 +504,7 @@ def assert_frame_equivalent(
         right, (DataFrame, pd.DataFrame)
     ):
         raise TypeError(
-            f"left and right must be type arkouda.DataFrame or pandas.DataFrame.  "
+            f"left and right must be type arkouda.pandas.vDataFrame or pandas.DataFrame.  "
             f"Instead types were {type(left)} and {type(right)}."
         )
 
