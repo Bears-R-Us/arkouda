@@ -15,10 +15,33 @@ def gather_scatter(a):
 
 class TestBigInt:
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_negative(self, size):
-        # test with negative bigint values
+    def test_negative_bug_reproducer(self, size):
+        # test with negative bigint values.
+        arr = ak.array([-1, -2, -3], dtype=ak.bigint)  # if this returns a value, the bug was fixed
+        brr = ak.array([1, 2, 3], dtype=ak.bigint)
+        assert ((arr + brr) == 0).all()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_negative_cast(self, size):
+        # test with negative bigint values.
         arr = -1 * ak.randint(0, 2**32, size)
         bi_neg = ak.cast(arr, ak.bigint)
+        res = gather_scatter(bi_neg)
+        assert bi_neg.to_list() == res.to_list()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_negative_arraycreation(self, size):
+        # test with negative bigint values.
+        arr = -1 * ak.randint(0, 2**32, size)
+        bi_neg = ak.array(arr, dtype=ak.bigint)
+        res = gather_scatter(bi_neg)
+        assert bi_neg.to_list() == res.to_list()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_negative_astype(self, size):
+        # test with negative bigint values.
+        arr = -1 * ak.randint(0, 2**32, size)
+        bi_neg = arr.astype(ak.bigint)
         res = gather_scatter(bi_neg)
         assert bi_neg.to_list() == res.to_list()
 

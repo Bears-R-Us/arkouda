@@ -292,9 +292,10 @@ def result_type(*args: Union[pdarray, np.dtype, type]) -> Union[np.dtype, type]:
             # Fallback for unrecognized types
             np_dtypes.append(np.result_type(dt))
 
+    if has_float:
+        return np.result_type(float64)
+
     if has_bigint:
-        if has_float:
-            return float64
         return bigint
     else:
         return np.result_type(*np_dtypes)

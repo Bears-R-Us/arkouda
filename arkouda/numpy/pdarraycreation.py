@@ -239,6 +239,12 @@ def array(
         except (RuntimeError, TypeError, ValueError):
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
 
+    #   Special case, to get around error when putting negative numbers in a bigint
+
+    if dtype == bigint:
+        if a.dtype == "int64" and (a < 0).any():
+            return akcast(array(a), bigint)
+
     if a.dtype == bigint or a.dtype.name not in DTypes or dtype == bigint:
         # We need this array whether the number of dimensions is 1 or greater.
         uint_arrays: List[Union[pdarray, Strings]] = []
