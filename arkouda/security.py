@@ -1,3 +1,56 @@
+"""
+Security and user identity utilities for Arkouda clients.
+
+The `arkouda.security` module provides functionality for managing access credentials,
+user identity, and secure client-side metadata used in communicating with the Arkouda server.
+
+Features
+--------
+- Platform-independent retrieval of the current user’s username and home directory.
+- Creation and management of a `.arkouda` directory for client-specific data.
+- Secure generation of authentication tokens using Python’s `secrets` module.
+- Serialization of user credentials for use with token-based server authentication.
+
+Functions
+---------
+generate_token(length=32)
+    Generate a secure hexadecimal token using `secrets.token_hex`.
+
+generate_username_token_json(token)
+    Return a JSON-formatted string containing both the current user's username and a token.
+
+get_home_directory()
+    Return the user's home directory in a cross-platform manner.
+
+get_arkouda_client_directory()
+    Get or create the `.arkouda` directory where client configuration and credentials are stored.
+
+get_username()
+    Determine the system username based on the user's home directory path.
+
+Notes
+-----
+- The `.arkouda` directory can be overridden using the `ARKOUDA_CLIENT_DIRECTORY` environment variable.
+- This module supports Linux, macOS (Darwin), and Windows platforms.
+- Token storage conventions in this module differ from the Arkouda server’s expectations /
+and must not be confused.
+
+Examples
+--------
+>>> from arkouda.security import generate_token, get_username, generate_username_token_json
+>>> token = generate_token()
+>>> print(token)  # doctest: +SKIP
+'8f3a52e1b75f44d1a3a57a869488b637'
+
+>>> user = get_username()
+>>> print(user)  # doctest: +SKIP
+'emma'
+
+>>> generate_username_token_json(token)  # doctest: +SKIP
+'{"username": "emma", "token": "8f3a52e1b75f44d1a3a57a869488b637"}'
+
+"""
+
 import json
 import os
 import platform
