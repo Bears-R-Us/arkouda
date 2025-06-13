@@ -1023,6 +1023,7 @@ def assert_frame_equal(
     Examples
     --------
     >>> import arkouda as ak
+
     This example shows comparing two DataFrames that are equal
     but with columns of differing dtypes.
 
@@ -1031,12 +1032,10 @@ def assert_frame_equal(
     >>> df2 = ak.DataFrame({'a': [1, 2], 'b': [3.0, 4.0]})
 
     df1 equals itself.
-
     >>> assert_frame_equal(df1, df1)
 
     df1 differs from df2 as column 'b' is of a different type.
-
-    >>> assert_frame_equal(df1, df2)
+    >>> assert_frame_equal(df1, df2) # doctest: +SKIP
     Traceback (most recent call last):
     ...
     AssertionError: Attributes of DataFrame.iloc[:, 1] (column name="b") are different

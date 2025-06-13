@@ -27,7 +27,15 @@ from arkouda.testing import (
 )
 
 
-class TestDataFrame:
+class TestAsserters:
+    def test_asserters_docstrings(self):
+        import doctest
+
+        from arkouda.testing import _asserters
+
+        result = doctest.testmod(_asserters, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @staticmethod
     def build_index(self) -> Index:
         idx = ak.Index(ak.arange(5), name="test1")

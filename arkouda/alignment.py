@@ -1,3 +1,47 @@
+"""
+Alignment and lookup utilities for Arkouda arrays.
+
+This module provides functions to align multiple arrays to a common
+0-up index, perform lookups and mappings across sparse identifiers,
+and search within defined intervals. It supports single and multi-dimensional
+key matching, including hierarchical keys, and interval-based function evaluation.
+
+Functions
+---------
+- align: Align multiple arrays to a common index.
+- left_align: Align two arrays to the index defined by the left array.
+- right_align: Align two arrays to the index defined by the right array.
+- zero_up: Map sparse identifiers to 0-up indices.
+- lookup: Evaluate a function defined by keys and values on input arguments.
+- interval_lookup: Evaluate a function defined over intervals.
+- search_intervals: Return index of best interval for each query value.
+- in1d_intervals: Check membership of values in half-open intervals.
+- find: Locate indices of query values in a search space.
+- is_cosorted: Determine if a list of arrays are cosorted.
+- unsqueeze: Wrap a pdarray in a list if not already a sequence.
+
+Classes
+-------
+- NonUniqueError: Raised when duplicate values are found in keys.
+
+Examples
+--------
+>>> import arkouda as ak
+>>> a = ak.array([10, 20, 30, 40])
+>>> b = ak.array([20, 10, 40, 50])
+>>> keep, (a_aligned, b_aligned) = ak.right_align(a, b)
+>>> a[keep], a_aligned, b_aligned
+(array([10 20 40]), array([0 1 2]), array([1 0 2 3]))
+
+>>> starts = ak.array([0, 5])
+>>> ends = ak.array([3, 10])
+>>> values = ak.array([100, 200])
+>>> x = ak.array([1, 6, 8])
+>>> ak.interval_lookup((starts, ends), values, x)
+array([100 200 200])
+
+"""
+
 import functools
 from typing import Sequence
 from warnings import warn

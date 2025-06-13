@@ -8,7 +8,7 @@ SECONDS = pytest.trials
 
 @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_No_Op", max_time=SECONDS)
-def bench_ak_noop(benchmark):
+def bench_noop(benchmark):
     benchmark(ak.client._no_op)
 
     benchmark.extra_info["description"] = (

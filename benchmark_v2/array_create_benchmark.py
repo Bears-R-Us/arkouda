@@ -40,7 +40,7 @@ def _create_np_array(size, op, dtype, seed):
 @pytest.mark.benchmark(group="AK Array Create")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)
-def bench_ak_array_create(benchmark, op, dtype):
+def bench_array_create(benchmark, op, dtype):
     """
     Measures Arkouda array creation performance
     """

@@ -23,14 +23,18 @@ sys.path.insert(0, os.path.abspath(util_dir))
 
 logging.basicConfig(level=logging.INFO)
 
+#   The elements of BENCHMARKS should match file names here:
+#   arkouda/benchmark_v2/graph_infra/<benchmark>.perfkeys
+#   and the benchmark tests should have naming convention:
+#   bench_<benchmark>
 BENCHMARKS = [
-    # "stream",
+    "stream",
     "argsort",
     "coargsort",
     # "groupby",
     "aggregate",
-    # "gather",
-    # "scatter",
+    "gather",
+    "scatter",
     # "reduce",
     # "in1d",
     # "scan",
@@ -54,7 +58,7 @@ BENCHMARKS = [
     # "dataframe",
     # "encode",
     # "bigint_conversion",
-    # "bigint_stream",
+    "bigint_stream",
     # "bigint_bitwise_binops",
     # "bigint_groupby",
     # "bigint_array_transfer",
@@ -238,17 +242,21 @@ def get_value(field: str, benchmark_name: str, field_lookup_map: dict, benchmark
 def compute_average(benchmark_name_regex: str, keys: list, benchmark_data):
     """Compute the average value of a statistic, using a regex on
     the benchmark name to determine which values to use."""
-    sum = 0.0
-    N = 0
-    for benchmark in benchmark_data["benchmarks"]:
-        if re.match(benchmark_name_regex, benchmark["name"]):
-            value = get_float_value(get_nested_value(benchmark, keys))
-            sum += value
-            N += 1
-    if N > 0:
-        return sum / N
-    else:
-        print(f"Could not compute average over {benchmark_name_regex}.")
+    total = 0.0
+    count = 0
+    try:
+        for benchmark in benchmark_data["benchmarks"]:
+            if re.match(benchmark_name_regex, benchmark["name"]):
+                value = get_float_value(get_nested_value(benchmark, keys))
+                total += value
+                count += 1
+        if count > 0:
+            return total / count
+        else:
+            logging.warning(f"Could not compute average over {benchmark_name_regex}.")
+            return -1.0
+    except Exception as e:
+        logging.error(f"Exception in compute_average for {benchmark_name_regex}: {e}")
         return -1.0
 
 
@@ -340,6 +348,25 @@ def gen_lookup_map(write=False, out_file="field_lookup_map.json"):
             ],
             lookup_regex=f"bench_coargsort\\[[\\w\\d]*-{num}\\]",
         )
+
+    field_lookup_map["bigint_stream"]["Average bigint stream time ="] = get_lookup_dict(
+        group="stream",
+        name="bench_bigint_stream",
+        benchmark_name="bigint_stream",
+        lookup_path=[
+            "stats",
+            "mean",
+        ],
+        lookup_regex="bench_bigint_stream\\[[\\w\\d]*\\]",
+    )
+
+    #   Field aliases:
+    field_lookup_map["bigint_stream"]["Average bigint stream time ="] = field_lookup_map[
+        "bigint_stream"
+    ]["Average time ="]
+    field_lookup_map["bigint_stream"]["Average bigint stream rate ="] = field_lookup_map[
+        "bigint_stream"
+    ]["Average rate ="]
 
     if write:
         with open(out_file, "w") as fp:

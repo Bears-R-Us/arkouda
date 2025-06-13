@@ -1,3 +1,52 @@
+"""
+File and directory utility functions for Arkouda's pandas module.
+
+This module provides a set of helper functions for performing common I/O operations
+needed during data processing, configuration, and metadata management. It includes
+utilities for creating and deleting directories, reading and writing key-value pairs
+from/to delimited text files, and appending lines to files.
+
+Exports
+-------
+__all__ = [
+    "delete_directory",
+    "delimited_file_to_dict",
+    "dict_to_delimited_file",
+    "get_directory",
+    "write_line_to_file",
+]
+
+Functions
+---------
+get_directory(path: str) -> Path
+    Create a directory if it doesn't exist and return its `Path` object.
+
+write_line_to_file(path: str, line: str) -> None
+    Append a single line to a file, creating it if necessary.
+
+delimited_file_to_dict(path: str, delimiter: str = ",") -> Dict[str, str]
+    Load key-value pairs from a delimited file into a dictionary.
+
+dict_to_delimited_file(path: str, values: Mapping[Any, Any], delimiter: str = ",") -> None
+    Write a dictionary to a file as delimited key-value lines.
+
+delete_directory(dir: str) -> None
+    Recursively delete a directory if it exists.
+
+Notes
+-----
+- `dict_to_delimited_file` currently only supports a comma (`,`) as a delimiter.
+- Errors encountered during I/O are either printed or raised, depending on context.
+- This module is intended for internal use within Arkouda's pandas compatibility layer.
+
+Examples
+--------
+>>> from arkouda.io_util import get_directory, write_line_to_file
+>>> path = get_directory("tmp/output")
+>>> write_line_to_file(path / "log.txt", "Computation completed")
+
+"""
+
 import shutil
 from os.path import isdir
 from pathlib import Path

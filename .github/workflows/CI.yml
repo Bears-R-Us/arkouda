@@ -622,5 +622,11 @@ jobs:
     - name: Arkouda benchmark
       run: |
         make benchmark size_bm=10
+    - name: Arkouda benchmark -- Numpy
+      run: |
+        python3 -m pytest -c benchmark.ini --size=10 --numpy 
+    - name: Arkouda benchmark -- Correctness Only
+      run: |
+        python3 -m pytest -c benchmark.ini --size=10 --correctness_only     
           
             
