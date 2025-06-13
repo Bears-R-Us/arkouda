@@ -385,8 +385,62 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.io">
 <span id="arkouda-io"></span><h1>arkouda.io<a class="headerlink" href="#module-arkouda.io" title="Link to this heading">¶</a></h1>
+<p>Input/output utilities for Arkouda.</p>
+<p>The <cite>arkouda.io</cite> module provides a comprehensive interface for reading from and writing to
+various file formats including HDF5, Parquet, CSV, and Zarr. It supports importing/exporting
+data between Arkouda and Pandas, data checkpointing, and server snapshot/restore functionality.</p>
+<p>Core functionality includes:
+- File format detection and dataset inspection
+- Reading and writing structured datasets using HDF5 and Parquet
+- CSV read/write support with header parsing
+- Zarr format support for chunked array storage
+- Pandas interop via <cite>import_data</cite> and <cite>export</cite>
+- Checkpointing (<cite>save_checkpoint</cite>, <cite>load_checkpoint</cite>)
+- Serialization and deserialization of Arkouda objects (<cite>snapshot</cite>, <cite>restore</cite>)
+- Dataset tagging for provenance tracking during read operations
+- Transferring arrays/dataframes between Arkouda server instances (<cite>receive</cite>, <cite>receive_dataframe</cite>)</p>
+<p>Supported data types include <cite>pdarray</cite>, <cite>Strings</cite>, <cite>SegArray</cite>, <cite>Categorical</cite>, <cite>DataFrame</cite>, <cite>Index</cite>,
+and <cite>MultiIndex</cite>. Many operations also offer compatibility with standard Pandas file formats
+for interoperability.</p>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>File inspection: <cite>get_filetype</cite>, <cite>ls</cite>, <cite>ls_csv</cite>, <cite>get_datasets</cite>, <cite>get_columns</cite></p></li>
+<li><p>Data import/export: <cite>read_hdf</cite>, <cite>read_parquet</cite>, <cite>read_csv</cite>, <cite>read_zarr</cite>, <cite>read</cite>, <cite>to_hdf</cite>,
+<cite>to_parquet</cite>, <cite>to_csv</cite>, <cite>to_zarr</cite>, <cite>import_data</cite>, <cite>export</cite></p></li>
+<li><p>Snapshotting: <cite>snapshot</cite>, <cite>restore</cite>, <cite>save_checkpoint</cite>, <cite>load_checkpoint</cite></p></li>
+<li><p>Advanced features: <cite>update_hdf</cite>, <cite>load</cite>, <cite>load_all</cite>, <cite>read_tagged_data</cite>, <cite>receive</cite>, <cite>receive_dataframe</cite></p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_parquet</span><span class="p">,</span> <span class="n">read_parquet</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;output&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Path</span><span class="p">(</span><span class="n">my_path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Create and save a DataFrame
+&gt;&gt;&gt; data = [ak.arange(10), ak.linspace(0, 1, 10)]
+&gt;&gt;&gt; Path(my_path + ‘/parquet_data’).mkdir(parents=True, exist_ok=True)
+&gt;&gt;&gt; to_parquet(data, my_path + ‘/parquet_data/data.parquet’)
+File written successfully!</p>
+<p>Load the DataFrame back
+&gt;&gt;&gt; data2 = read_parquet(my_path + ‘/parquet_data/data*’)</p>
+<p>Save to HDF5
+&gt;&gt;&gt; ak.to_hdf(data, my_path + ‘data.hdf5’)</p>
+<p>Read from HDF5 with explicit dataset name
+&gt;&gt;&gt; data3 = ak.read_hdf(my_path + ‘data*’)</p>
+<p>Export to Pandas-compatible Parquet
+&gt;&gt;&gt; df = ak.DataFrame({‘a’: ak.arange(10), ‘b’: ak.linspace(0, 1, 10)})
+&gt;&gt;&gt; df2 = ak.export(my_path + ‘/parquet_data/data.parquet’)</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../../usage/dataframe.html#arkouda.DataFrame" title="arkouda.DataFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.DataFrame</span></code></a>, <a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pdarray</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.strings.Strings</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.segarray.SegArray</span></code>, <a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.categorical.Categorical</span></code></a>, <a class="reference internal" href="../index/index.html#arkouda.index.Index" title="arkouda.index.Index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.index.Index</span></code></a>, <a class="reference internal" href="../index/index.html#arkouda.index.MultiIndex" title="arkouda.index.MultiIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.index.MultiIndex</span></code></a></p>
+</div>
+</section>
+<section id="id1">
+<h2>Functions<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -1337,7 +1391,7 @@ exists.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Only <a href="#id1"><span class="problematic" id="id2">``</span></a>pdarray``s are saved. Other data structures will not be recorded. We
+<p>Only <a href="#id2"><span class="problematic" id="id3">``</span></a>pdarray``s are saved. Other data structures will not be recorded. We
 expect to expand the coverage in the future.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1658,6 +1712,7 @@ creating a copy of the file for each dataset</p></li>
             <ul>
 <li><a class="reference internal" href="#">arkouda.io</a><ul>
 <li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#id1">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.io.export"><code class="docutils literal notranslate"><span class="pre">export()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.get_columns"><code class="docutils literal notranslate"><span class="pre">get_columns()</span></code></a></li>

@@ -377,7 +377,72 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.io</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Input/output utilities for Arkouda.</span>
+
+<span class="sd">The `arkouda.io` module provides a comprehensive interface for reading from and writing to</span>
+<span class="sd">various file formats including HDF5, Parquet, CSV, and Zarr. It supports importing/exporting</span>
+<span class="sd">data between Arkouda and Pandas, data checkpointing, and server snapshot/restore functionality.</span>
+
+<span class="sd">Core functionality includes:</span>
+<span class="sd">- File format detection and dataset inspection</span>
+<span class="sd">- Reading and writing structured datasets using HDF5 and Parquet</span>
+<span class="sd">- CSV read/write support with header parsing</span>
+<span class="sd">- Zarr format support for chunked array storage</span>
+<span class="sd">- Pandas interop via `import_data` and `export`</span>
+<span class="sd">- Checkpointing (`save_checkpoint`, `load_checkpoint`)</span>
+<span class="sd">- Serialization and deserialization of Arkouda objects (`snapshot`, `restore`)</span>
+<span class="sd">- Dataset tagging for provenance tracking during read operations</span>
+<span class="sd">- Transferring arrays/dataframes between Arkouda server instances (`receive`, `receive_dataframe`)</span>
+
+<span class="sd">Supported data types include `pdarray`, `Strings`, `SegArray`, `Categorical`, `DataFrame`, `Index`,</span>
+<span class="sd">and `MultiIndex`. Many operations also offer compatibility with standard Pandas file formats</span>
+<span class="sd">for interoperability.</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">- File inspection: `get_filetype`, `ls`, `ls_csv`, `get_datasets`, `get_columns`</span>
+<span class="sd">- Data import/export: `read_hdf`, `read_parquet`, `read_csv`, `read_zarr`, `read`, `to_hdf`,</span>
+<span class="sd">  `to_parquet`, `to_csv`, `to_zarr`, `import_data`, `export`</span>
+<span class="sd">- Snapshotting: `snapshot`, `restore`, `save_checkpoint`, `load_checkpoint`</span>
+<span class="sd">- Advanced features: `update_hdf`, `load`, `load_all`, `read_tagged_data`, `receive`, `receive_dataframe`</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">&gt;&gt;&gt; from arkouda.io import to_parquet, read_parquet</span>
+<span class="sd">&gt;&gt;&gt; import os.path</span>
+<span class="sd">&gt;&gt;&gt; from pathlib import Path</span>
+<span class="sd">&gt;&gt;&gt; my_path = os.path.join(os.getcwd(), &#39;output&#39;)</span>
+<span class="sd">&gt;&gt;&gt; Path(my_path).mkdir(parents=True, exist_ok=True)</span>
+
+<span class="sd">Create and save a DataFrame</span>
+<span class="sd">&gt;&gt;&gt; data = [ak.arange(10), ak.linspace(0, 1, 10)]</span>
+<span class="sd">&gt;&gt;&gt; Path(my_path + &#39;/parquet_data&#39;).mkdir(parents=True, exist_ok=True)</span>
+<span class="sd">&gt;&gt;&gt; to_parquet(data, my_path + &#39;/parquet_data/data.parquet&#39;)</span>
+<span class="sd">File written successfully!</span>
+
+<span class="sd">Load the DataFrame back</span>
+<span class="sd">&gt;&gt;&gt; data2 = read_parquet(my_path + &#39;/parquet_data/data*&#39;)</span>
+
+<span class="sd">Save to HDF5</span>
+<span class="sd">&gt;&gt;&gt; ak.to_hdf(data, my_path + &#39;data.hdf5&#39;)</span>
+
+<span class="sd">Read from HDF5 with explicit dataset name</span>
+<span class="sd">&gt;&gt;&gt; data3 = ak.read_hdf(my_path + &#39;data*&#39;)</span>
+
+<span class="sd">Export to Pandas-compatible Parquet</span>
+<span class="sd">&gt;&gt;&gt; df = ak.DataFrame({&#39;a&#39;: ak.arange(10), &#39;b&#39;: ak.linspace(0, 1, 10)})</span>
+<span class="sd">&gt;&gt;&gt; df2 = ak.export(my_path + &#39;/parquet_data/data.parquet&#39;)</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">arkouda.DataFrame, arkouda.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray,</span>
+<span class="sd">arkouda.categorical.Categorical, arkouda.index.Index, arkouda.index.MultiIndex</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
