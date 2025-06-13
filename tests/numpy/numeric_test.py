@@ -243,6 +243,8 @@ class TestNumeric:
                 # we don't support casting a float to a bigint
                 # we do support str to bool, but it's expected to contain "true/false" not numerics
                 continue
+            if t1 == ak.int64 and cast_to == ak.bigint:
+                orig = ak.abs(orig)  # we can't cast negative ints to bigint
             other = ak.cast(orig, cast_to)
             assert orig.size == other.size
             if (t1, cast_to) in ROUNDTRIP_CAST:

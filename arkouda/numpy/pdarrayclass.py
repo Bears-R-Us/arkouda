@@ -2310,15 +2310,27 @@ class pdarray:
         array([1 0])
 
         Returns
-        _______
+        -------
         ak.pdarray
             An arkouda pdarray with values converted to the specified data type
 
+        Raises
+        ------
+        ValueError
+            Raised if the array contains negative numbers. Arkouda cannot at present
+            handle negative bigints.
+
         Notes
-        _____
+        -----
         This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
         """
         from arkouda.numpy import cast as akcast
+
+        # check for negative numbers and bigint, which arkouda doesn't presently handle.
+
+        if dtype == bigint:
+            if (self < 0).any():
+                raise ValueError("arkouda cannot convert negative numbers to bigints.")
 
         return akcast(self, dtype)
 

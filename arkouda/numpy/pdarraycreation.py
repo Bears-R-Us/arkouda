@@ -180,7 +180,8 @@ def array(
         or if the product of a size and a.itemsize > maxTransferBytes
     ValueError
         Raised if a has rank is not in get_array_ranks(), or if the returned message is malformed or does
-        not contain the fields required to generate the array.
+        not contain the fields required to generate the array, or if the array contains negative numbers,
+        because arkouda cannot at present handle negative bigints.
 
     See Also
     --------

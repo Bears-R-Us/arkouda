@@ -208,22 +208,26 @@ def cast(
             )
             return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
         else:
-            dt = akdtype(dt)
-            return create_pdarray(
+            new_dt = akdtype(dt)
+            tmp = create_pdarray(
                 generic_msg(
-                    cmd=f"cast<{pda.dtype},{dt},{pda.ndim}>",
+                    cmd=f"cast<{pda.dtype},{new_dt},{pda.ndim}>",
                     args={"name": pda},
                 )
             )
+            if new_dt.name == "bigint" and (tmp < 0).any():
+                raise ValueError("Cannot cast negative values to bigints")
+            else:
+                return tmp
     elif isinstance(pda, Strings):
         if dt is Categorical or dt == "Categorical":
             return Categorical(pda)  # type: ignore
         elif dt is Strings or akdtype(dt) == str_:
             return pda[:]
         else:
-            dt = akdtype(dt)
+            new_dt = akdtype(dt)
             repMsg = generic_msg(
-                cmd=f"castStringsTo<{dt}>",
+                cmd=f"castStringsTo<{new_dt}>",
                 args={
                     "name": pda.entry.name,
                     "opt": errors.name,
@@ -231,9 +235,13 @@ def cast(
             )
             if errors == ErrorMode.return_validity:
                 a, b = type_cast(str, repMsg).split("+")
-                return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
+                tmp = create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
             else:
-                return create_pdarray(type_cast(str, repMsg))
+                tmp = create_pdarray(type_cast(str, repMsg))
+            if new_dt.name == "bigint" and (tmp < 0).any():
+                raise ValueError("bigints don't support negative numbers at present")
+            else:
+                return tmp
     elif isinstance(pda, Categorical):  # type: ignore
         if dt is Strings or dt in ["Strings", "str"] or dt == str_:
             return pda.categories[pda.codes]
