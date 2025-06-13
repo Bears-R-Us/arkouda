@@ -77,6 +77,7 @@ __all__ = [
     "all_scalars",
     "bigint",
     "bitType",
+    "bool",
     "bool_scalars",
     "can_cast",
     "complex128",
@@ -154,6 +155,8 @@ NUMBER_FORMAT_STRINGS = {
     "uint64": "{:d}",
     "bigint": "{:d}",
 }
+
+bool = bool_
 
 
 def _datatype_check(the_dtype, allowed_list, name):
@@ -616,7 +619,7 @@ def isSupportedBool(num):
     return isinstance(num, ARKOUDA_SUPPORTED_BOOLS)
 
 
-def isSupportedDType(scalar: object) -> bool:
+def isSupportedDType(scalar: object) -> builtins.bool:
     """
     Whether a scalar is an arkouda supported dtype.
 
