@@ -4,6 +4,7 @@ import arkouda.array_api as xp
 
 
 class TestArrayObject:
+    @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
     def test_array_object_docstrings(self):
         import doctest
 
