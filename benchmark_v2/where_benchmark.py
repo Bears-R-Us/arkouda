@@ -26,15 +26,8 @@ def bench_where(benchmark, dtype, v_or_s):
         N = pytest.prob_size * cfg["numLocales"]
         seed = pytest.seed
 
-        if dtype == "int64":
-            a = ak.randint(0, 2**32, N, seed=seed, dtype=ak.int64)
-            b = ak.randint(0, 2**32, N, seed=seed, dtype=ak.int64)
-        elif dtype == "uint64":
-            a = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
-            b = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
-        else:
-            a = ak.randint(0, 2**32, N, seed=seed, dtype=ak.float64)
-            b = ak.randint(0, 2**32, N, seed=seed, dtype=ak.float64)
+        a = ak.randint(0, 2**32, N, seed=seed, dtype=dtype)
+        b = ak.randint(0, 2**32, N, seed=seed, dtype=dtype)
         c = ak.array(alternate(True, False, N))
 
         fxn = getattr(ak, "where")
