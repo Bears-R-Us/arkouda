@@ -488,8 +488,12 @@ module ConcatenateMsg
             localeSets[here.id] = new set(string);
         }
 
+        var strOffsetInLocale: [PrivateSpace] list(int);
+        var strBytesInLocale: [PrivateSpace] list(uint(8));
+
         // Collect all unique strings from each input SegmentedString
-        for rawName in names {
+        for i in 0..#names.size {
+            var rawName = names[i];
             var (strName, _) = rawName.splitMsgToTuple('+', 2);
             try {
                 var segString = getSegString(strName, st);
@@ -510,6 +514,34 @@ module ConcatenateMsg
                         locSet.add(str);
                     }
                     localeSets[here.id] |= locSet;
+
+                    if i == names.size - 1 {
+
+                        const strArray = localeSets[here.id].toArray();
+                        var strOffsets: [0..#strArray.size] int;
+                        var strSize: [0..#strArray.size] int;
+
+                        forall strIdx in strArray.domain {
+                            const str = strArray[strIdx];
+                            const strBytes = str.bytes();
+                            strSize[strIdx] = strBytes.size + 1;
+                        }
+
+                        var numStrBytes = + reduce strSize;
+                        strOffsets = (+ scan strSize) - strSize;
+
+                        var strBytes: [0..#numStrBytes] uint(8);
+
+                        forall strIdx in strArray.domain {
+                            const str = strArray[strIdx];
+                            const currStrBytes = str.bytes();
+                            strBytes[strOffsets[strIdx]..#(strSize[strIdx] - 1)] = currStrBytes;
+                        }
+
+                        strOffsetInLocale[here.id] = new list(strOffsets);
+                        strBytesInLocale[here.id] = new list(strBytes);
+
+                    }
                 }
 
             } catch e: Error {
@@ -522,43 +554,7 @@ module ConcatenateMsg
             }
         }
 
-        var destLocaleByStrIdx: [PrivateSpace] list(int);
-        var strOffsetInLocale: [PrivateSpace] list(int);
-        var strBytesInLocale: [PrivateSpace] list(uint(8));
-
-        // Hash all the strings and figure out which strings are going to which locale
-        coforall loc in Locales do on loc {
-            const strArray = localeSets[here.id].toArray();
-            var destLoc: [0..#strArray.size] int;
-            var strOffsets: [0..#strArray.size] int;
-            var strSize: [0..#strArray.size] int;
-
-            forall strIdx in strArray.domain {
-                const str = strArray[strIdx];
-                const targetID: int = (str.hash() % numLocales): int;
-                const strBytes = str.bytes();
-                destLoc[strIdx] = targetID;
-                strSize[strIdx] = strBytes.size + 1;
-            }
-
-            var numStrBytes = + reduce strSize;
-            strOffsets = (+ scan strSize) - strSize;
-
-            var strBytes: [0..#numStrBytes] uint(8);
-
-            forall strIdx in strArray.domain {
-                const str = strArray[strIdx];
-                const currStrBytes = str.bytes();
-                strBytes[strOffsets[strIdx]..#(strSize[strIdx] - 1)] = currStrBytes;
-            }
-
-            destLocaleByStrIdx[here.id] = new list(destLoc);
-            strOffsetInLocale[here.id] = new list(strOffsets);
-            strBytesInLocale[here.id] = new list(strBytes);
-            
-        }
-
-        var (strOffsetInLocaleOut, strBytesInLocaleOut) = repartitionByLocaleString(destLocaleByStrIdx, strOffsetInLocale, strBytesInLocale);
+        var (strOffsetInLocaleOut, strBytesInLocaleOut) = repartitionByHashString(strOffsetInLocale, strBytesInLocale);
 
         // I need variables to store how many strings each locale has
         // how many bytes each locale has
