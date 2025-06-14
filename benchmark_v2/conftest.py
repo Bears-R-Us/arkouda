@@ -324,13 +324,15 @@ def manage_connection():
 
 @pytest.fixture(autouse=True)
 def skip_correctness_only(request):
-    if request.node.get_closest_marker("skip_correctness_only"):
-        if request.node.get_closest_marker("skip_correctness_only").args[0] == pytest.correctness_only:
-            pytest.skip("this test requires --correctness_only != {}".format(pytest.correctness_only))
+    marker = request.node.get_closest_marker("skip_correctness_only")
+    if marker and marker.args and marker.args[0] == pytest.correctness_only:
+        pytest.skip(
+            f"{request.node.name} skipped: requires --correctness_only != {pytest.correctness_only}"
+        )
 
 
 @pytest.fixture(autouse=True)
 def skip_numpy(request):
-    if request.node.get_closest_marker("skip_numpy"):
-        if request.node.get_closest_marker("skip_numpy").args[0] == pytest.numpy:
-            pytest.skip("this test requires --numpy != {}".format(pytest.numpy))
+    marker = request.node.get_closest_marker("skip_numpy")
+    if marker and marker.args and marker.args[0] == pytest.numpy:
+        pytest.skip(f"{request.node.name} skipped: requires --numpy != {pytest.numpy}")
