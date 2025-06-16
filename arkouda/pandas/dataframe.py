@@ -1045,6 +1045,26 @@ class DataFrame(UserDict):
             self.update_nrows()
 
     def __getattr__(self, key):
+        """
+        Return the column in the DataFrame with the given name.
+
+        Parameters
+        ----------
+        key
+            The name or index of the column to retrieve.
+
+
+        Returns
+        -------
+        Series
+            The column corresponding to the given name.
+
+        Raises
+        ------
+        AttributeError
+            If the column name does not exist.
+
+        """
         from arkouda.pandas.series import Series
 
         if key not in self.columns.values:
@@ -1053,10 +1073,33 @@ class DataFrame(UserDict):
         return Series(data=self[key], index=self.index.index)
 
     def __dir__(self):
+        """
+        Return a list of attributes for use with dir().
+
+        Returns
+        -------
+        list
+            List of DataFrame attributes and column names.
+
+        """
         return dir(DataFrame) + self.columns.values + ["columns"]
 
     # delete a column
-    def __delitem__(self, key):
+    def __delitem__(self, key: str):
+        """
+        Delete the specified column from the DataFrame.
+
+        Parameters
+        ----------
+        key : str
+            The name of the column to delete.
+
+        Raises
+        ------
+        KeyError
+            If the column does not exist.
+
+        """
         # This function is a backdoor to messing up the indices and columns.
         # I needed to reimplement it to prevent bad behavior
         UserDict.__delitem__(self, key)
@@ -1069,6 +1112,20 @@ class DataFrame(UserDict):
         self.update_nrows()
 
     def __getitem__(self, key):
+        """
+        Retrieve one or more columns from the DataFrame.
+
+        Parameters
+        ----------
+        key
+            A single column name or list/tuple of column names.
+
+        Returns
+        -------
+        Series or DataFrame
+            The requested column(s).
+
+        """
         from arkouda.pandas.series import Series
 
         # convert series to underlying values
@@ -1130,7 +1187,18 @@ class DataFrame(UserDict):
         else:
             raise IndexError("Invalid selector: unknown error.")
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value):
+        """
+        Set the value of a column in the DataFrame.
+
+        Parameters
+        ----------
+        key : str
+            The name of the column to set.
+        value : Series or array-like
+            The new values for the column.
+
+        """
         from arkouda.pandas.series import Series
 
         self.update_nrows()
@@ -1196,7 +1264,8 @@ class DataFrame(UserDict):
         Return number of columns.
 
         If index appears, we now want to utilize this
-        because the actual index has been moved to a property
+        because the actual index has been moved to a property.
+
         """
         return len(self._columns)
 
