@@ -86,15 +86,31 @@ __all__ = ["LogLevel", "enableVerbose", "disableVerbose", "write_log"]
 
 loggers = {}
 
-"""
-The LogLevel enum class defines the log levels for the ArkoudaLogger, the
-purpose of which is to provide controlled vocabulary for setting the log
-levels for ArkoudaLogger.
-
-"""
-
 
 class LogLevel(Enum):
+    """
+    Enum for defining valid log levels used by ArkoudaLogger.
+
+    Members
+    -------
+    INFO : str
+        Confirmation that things are working as expected.
+    DEBUG : str
+        Detailed information, typically of interest only when diagnosing problems.
+    WARN : str
+        An indication that something unexpected happened, or indicative of some problem.
+    ERROR : str
+        A more serious problem, the software has not been able to perform some function.
+    CRITICAL : str
+        An extremely serious error, indicating the program itself may be unable to continue.
+
+    Notes
+    -----
+    This enum provides a controlled vocabulary for setting log levels on ArkoudaLogger
+    instances. These are mapped internally to the standard Python `logging` levels.
+
+    """
+
     DEBUG = "DEBUG"
     CRITICAL = "CRITICAL"
     INFO = "INFO"
