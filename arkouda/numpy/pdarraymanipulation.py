@@ -1,4 +1,4 @@
-from typing import Literal, Optional, Sequence, Union, cast
+from typing import Literal, Optional, Sequence, Tuple, Union, cast
 
 import numpy as np
 from typeguard import typechecked
@@ -10,6 +10,37 @@ from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array
 
 __all__ = ["hstack", "vstack", "delete", "append"]
+
+
+def _max_bits_list(pda_list: Sequence[pdarray]) -> Tuple[bool, int]:
+    """
+    Finds the minimum `max_bits` when there are bigint arrays in the input.
+
+    Determines whether any arrays in the input list use the `bigint` dtype
+    and returns the minimum bit width among those that do.
+
+    Parameters
+    ----------
+        pda_list : Sequence[pdarray]
+            A sequence of `pdarray` objects to examine.
+
+    Returns
+    -------
+        bool
+            A boolean indicating whether any array uses the `bigint` dtype.
+        int
+            An integer representing the smallest `max_bits` value among the
+            `bigint` arrays. Returns -1 if no `bigint` arrays are present.
+    """
+    has_bigint = False
+    m_bits = -1
+    for a in pda_list:
+        if a.dtype == bigint:
+            has_bigint = True
+            curr_bits = a.max_bits
+            if curr_bits > 0 and (m_bits == -1 or curr_bits < m_bits):
+                m_bits = curr_bits
+    return has_bigint, m_bits
 
 
 @typechecked
@@ -73,18 +104,7 @@ def hstack(
         if a.ndim != ndim:
             raise ValueError("all input arrays must have the same number of dimensions")
 
-    has_bigint = False
-    m_bits = -1
-
-    for a in tup:
-        if a.dtype == bigint:
-            has_bigint = True
-
-            # I think a.max_bits creates a call to Chapel, so maybe this cuts down
-            # on how many times we bother the server.
-            curr_bits = a.max_bits
-            if curr_bits > 0 and (m_bits == -1 or curr_bits < m_bits):
-                m_bits = curr_bits
+    has_bigint, m_bits = _max_bits_list(tup)
 
     # establish the dtype of the output array
     if has_bigint and dtype is None:
@@ -202,18 +222,7 @@ def vstack(
         if a.ndim != ndim:
             raise ValueError("all input arrays must have the same number of dimensions")
 
-    has_bigint = False
-    m_bits = -1
-
-    for a in tup:
-        if a.dtype == bigint:
-            has_bigint = True
-
-            # I think a.max_bits creates a call to Chapel, so maybe this cuts down
-            # on how many times we bother the server.
-            curr_bits = a.max_bits
-            if curr_bits > 0 and (m_bits == -1 or curr_bits < m_bits):
-                m_bits = curr_bits
+    has_bigint, m_bits = _max_bits_list(tup)
 
     # establish the dtype of the output array
     if has_bigint and dtype is None:
@@ -393,15 +402,7 @@ def append(
             raise ValueError(f"Axis {axis} out of bounds for {arr.ndim} dimensions")
         axis = cast(int, (axis + arr.ndim) % arr.ndim)
 
-    m_bits = -1
-    has_bigint = False
-
-    for a in (arr, values):
-        if a.dtype == bigint:
-            has_bigint = True
-            curr_bits = a.max_bits
-            if curr_bits > 0 and (m_bits == -1 or curr_bits < m_bits):
-                m_bits = curr_bits
+    has_bigint, m_bits = _max_bits_list([arr, values])
 
     # establish the dtype of the output array
     dtype_ = ak_result_type(arr, values)
