@@ -381,6 +381,27 @@ class GroupBy:
 
     @staticmethod
     def from_return_msg(rep_msg):
+        """
+        Reconstruct a GroupBy object from a server return message.
+
+        This is used to deserialize a GroupBy object that was previously saved or transferred.
+
+        Parameters
+        ----------
+        rep_msg : str
+            A JSON-formatted string containing GroupBy components returned by the Arkouda server.
+
+        Returns
+        -------
+        GroupBy
+            A reconstructed GroupBy object.
+
+        Raises
+        ------
+        ValueError
+            If an unsupported or unknown data type is encountered during reconstruction.
+
+        """
         from arkouda.categorical import Categorical as Categorical_
 
         data = json.loads(rep_msg)
@@ -486,6 +507,26 @@ class GroupBy:
         dataset: str = "groupby",
         repack: bool = True,
     ):
+        """
+        Update an existing HDF5 dataset with new GroupBy data.
+
+        This overwrites the previous GroupBy data stored in HDF5 files and optionally repacks the file.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Path prefix for the HDF5 files to update.
+        dataset : str, default="groupby"
+            Name of the dataset within the HDF5 file.
+        repack : bool, default=True
+            Whether to repack the HDF5 file after updating.
+
+        Raises
+        ------
+        ValueError
+            If the file type cannot be determined or required metadata is missing.
+
+        """
         from arkouda.io import (
             _file_type_to_int,
             _get_hdf_filetype,
