@@ -91,6 +91,28 @@ __all__ = [
 
 
 class ParameterObject:
+    """
+    Represents a typed key-value parameter used in Arkouda command messages.
+
+    This class is responsible for wrapping Python values, such as pdarrays,
+    Strings, SegArrays, and scalars, into a common structure that can be
+    serialized and passed to the Arkouda server.
+
+    Attributes
+    ----------
+    key : str
+        The name of the parameter.
+    dtype : str
+        A string representation of the type of the value.
+    val : str
+        A string-encoded representation of the value.
+
+    See Also
+    --------
+    ParameterObject.factory : Main method for constructing ParameterObjects
+
+    """
+
     __slots__ = ("key", "dtype", "val")
 
     key: str
@@ -104,6 +126,15 @@ class ParameterObject:
 
     @property
     def dict(self):
+        """
+        Return the dictionary representation of the ParameterObject.
+
+        Returns
+        -------
+        dict
+            A dictionary with keys 'key', 'dtype', and 'val'.
+
+        """
         return {
             "key": self.key,
             "dtype": self.dtype,
@@ -383,13 +414,14 @@ class ParameterObject:
             return ParameterObject._build_gen_param(key, val)
 
 
-"""
-The MessageFormat enum provides controlled vocabulary for the message
-format which can be either a string or a binary (bytes) object.
-"""
-
-
 class MessageFormat(Enum):
+    """
+    Enum representing the format of an Arkouda message.
+
+    Used to distinguish between STRING and BINARY format messages
+    exchanged between client and server.
+    """
+
     STRING = "STRING"
     BINARY = "BINARY"
 
@@ -398,6 +430,7 @@ class MessageFormat(Enum):
         Return value.
 
         Overridden method returns value, which is useful in outputting a MessageFormat object to JSON.
+
         """
         return self.value
 
@@ -406,17 +439,19 @@ class MessageFormat(Enum):
         Return value.
 
         Overridden method returns value, which is useful in outputting a MessageFormat object to JSON.
+
         """
         return self.value
 
 
-"""
-The MessageType enum provides controlled vocabulary for the message
-type which can be either NORMAL, WARNING, or ERROR.
-"""
-
-
 class MessageType(Enum):
+    """
+    Enum representing the type of server response message.
+
+    Values indicate whether a server message is NORMAL, a WARNING, or an ERROR.
+
+    """
+
     NORMAL = "NORMAL"
     WARNING = "WARNING"
     ERROR = "ERROR"
@@ -430,14 +465,31 @@ class MessageType(Enum):
         return self.value
 
 
-"""
-The Message class encapsulates the attributes required to capture the full
-context of an Arkouda server request.
-"""
-
-
 @dataclass(frozen=True)
 class RequestMessage:
+    """
+    Encapsulates client-to-server command messages.
+
+    Represents a structured message used to communicate commands from
+    the Arkouda Python client to the Chapel server.
+
+    Attributes
+    ----------
+    user : str
+        The name of the requesting user.
+    token : str
+        The user's session token.
+    cmd : str
+        The command to execute.
+    format : MessageFormat
+        The format of the message (STRING or BINARY).
+    args : str
+        The argument string passed to the command.
+    size : str
+        Size of the parameter payload, -1 if unknown.
+
+    """
+
     __slots__ = ("user", "token", "cmd", "format", "args", "size")
 
     user: str
@@ -514,14 +566,25 @@ class RequestMessage:
         }
 
 
-"""
-The ReplyMessage class encapsulates the data and metadata corresponding to
-a message returned by the Arkouda server
-"""
-
-
 @dataclass(frozen=True)
 class ReplyMessage:
+    """
+    Encapsulates server-to-client reply messages.
+
+    Represents the result of a command sent to the server, including
+    message type and body.
+
+    Attributes
+    ----------
+    msg : str
+        The message body returned from the server.
+    msgType : MessageType
+        Type of the message (e.g., NORMAL, WARNING, ERROR).
+    user : str
+        The user to whom the message is addressed.
+
+    """
+
     __slots__ = ("msg", "msgType", "user")
 
     msg: str
