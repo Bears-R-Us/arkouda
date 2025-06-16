@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, List, Union, cast
 
 import numpy as np
 from numpy import (
+    bool,
     bool_,
     complex64,
     complex128,
@@ -77,6 +78,7 @@ __all__ = [
     "all_scalars",
     "bigint",
     "bitType",
+    "bool",
     "bool_scalars",
     "can_cast",
     "complex128",
@@ -195,7 +197,7 @@ def dtype(dtype):
             return np.dtype(np.int64)
     if isinstance(dtype, float):
         return np.dtype(np.float64)
-    if isinstance(dtype, bool):
+    if isinstance(dtype, builtins.bool):
         return np.dtype(np.bool)
     return np.dtype(dtype)
 
@@ -214,7 +216,7 @@ def can_cast(from_, to) -> builtins.bool:
 
     Return
     ------
-    bool
+    builtins.bool
         True if cast can occur according to the casting rule.
 
     """
@@ -311,7 +313,7 @@ def _is_dtype_in_union(dtype, union_type) -> builtins.bool:
 
     Returns
     -------
-        bool: True if the dtype is in the union_type, False otherwise.
+        bool True if the dtype is in the union_type, False otherwise.
     """
     return hasattr(union_type, "__args__") and dtype in union_type.__args__
 
@@ -446,7 +448,7 @@ class DType(Enum):
         return self.value
 
 
-ARKOUDA_SUPPORTED_BOOLS = (bool, np.bool_)
+ARKOUDA_SUPPORTED_BOOLS = (builtins.bool, np.bool_)
 
 ARKOUDA_SUPPORTED_INTS = (
     int,
@@ -616,7 +618,7 @@ def isSupportedBool(num):
     return isinstance(num, ARKOUDA_SUPPORTED_BOOLS)
 
 
-def isSupportedDType(scalar: object) -> bool:
+def isSupportedDType(scalar: object) -> builtins.bool:
     """
     Whether a scalar is an arkouda supported dtype.
 
@@ -626,7 +628,7 @@ def isSupportedDType(scalar: object) -> bool:
 
     Returns
     -------
-    bool
+    builtins.bool
         True if scalar is an instance of an arkouda supported dtype, else False.
 
     Examples
@@ -665,7 +667,7 @@ def resolve_scalar_dtype(val: object) -> str:
 
     """
 
-    # Python bool or np.bool
+    # Python builtins.bool or np.bool
     if isinstance(val, builtins.bool) or (
         hasattr(val, "dtype") and cast(np.bool_, val).dtype.kind == "b"
     ):

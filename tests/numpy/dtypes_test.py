@@ -257,3 +257,7 @@ class TestDTypes:
         # mixed: pdarray vs dtype
         assert ak.result_type(a, dtype2) == expected_result
         assert ak.result_type(dtype1, b) == expected_result
+
+    def test_bool_alias(self):
+        assert ak.bool == ak.bool_
+        assert ak.bool == np.bool_
