@@ -489,7 +489,7 @@ module EfuncMsg
             return (atan2(a,b));
         }
 
-    // The above comment re scalar types allso applies to "where"
+    // The above comment re scalar types (in fmod) allso applies to "where"
 
     // where's return type depends on the type of its two inputs.  The function below provides
     // the return type.  The (int,uint) -> real may look odd, but it is done to match numpy.
@@ -512,23 +512,48 @@ module EfuncMsg
     proc wherevv ( condition: [?d] bool, a : [d] ?ta, b : [d] ?tb) : [d] whereReturnType(ta,tb) throws
     where ((ta==real || ta==int || ta==uint || ta==bool) && (tb==real || tb==int || tb==uint || tb==bool))
     {
-         var c = makeDistArray(d, whereReturnType(ta,tb));
-         forall (ch, A, B, C) in zip(condition, a, b, c) {
-             C = if ch then A:whereReturnType(ta,tb) else B:whereReturnType(ta,tb) ;
-         }
-         return c;
+        var c = makeDistArray(d, whereReturnType(ta,tb));
+        if numLocales == 1 { 
+           forall (ch, A, B, C) in zip(condition, a, b, c) { 
+                C = if ch then A:whereReturnType(ta,tb) else B:whereReturnType(ta,tb) ;
+           }    
+        } else {
+            coforall loc in Locales do on loc {
+                var cLD = c.localSubdomain() ;   // they all have the same domain
+                forall idx in cLD { 
+                   c[idx] = if condition[idx] then a[idx]:whereReturnType(ta,tb)
+                                              else b[idx]:whereReturnType(ta,tb) ;
+                }
+            }
+        }
+        return c;
     }
+
+    // The latest change to where eliminates the needs for wherevs, wheresv, and wheress.
+    // So as a test, I'm commenting them all out.
 
     // The wherevs (vector, scalar), wheresv (scalar, vector) and wheress (scalar, scalar)
     // implementations all call corresponding helper functions.  This is done because the
     // arkouda interface requires the scalar types to be specified, but the helper functions,
     // since they're not registered as commands, can be more generic.
 
+ 
+ /*
     proc wherevsHelper (condition: [?d] bool, a : [d] ?ta, b : ?tb) : [d] whereReturnType(ta,tb) throws
     {
         var c = makeDistArray(d, whereReturnType(ta,tb));
-        forall (ch, A, C) in zip(condition, a, c) {
-            C = if ch then A:whereReturnType(ta,tb) else b:whereReturnType(ta,tb);
+        if numLocales == 1 { 
+           forall (ch, A, C) in zip(condition, a, c) { 
+                C = if ch then A:whereReturnType(ta,tb) else b:whereReturnType(ta,tb) ;
+           }    
+        } else {
+            coforall loc in Locales do on loc {
+                var cLD = c.localSubdomain() ;   // they all have the same domain
+                forall idx in cLD { 
+                   c[idx] = if condition[idx] then a[idx]:whereReturnType(ta,tb)
+                                              else b:whereReturnType(ta,tb) ;
+                }
+            }
         }
         return c;
     }
@@ -564,8 +589,18 @@ module EfuncMsg
     proc wheresvHelper (condition: [?d] bool, a : ?ta, b : [d] ?tb) : [d] whereReturnType(ta,tb) throws
     {
         var c = makeDistArray(d, whereReturnType(ta,tb));
-        forall (ch, B, C) in zip(condition, b, c) {
-            C = if ch then a:whereReturnType(ta,tb) else B:whereReturnType(ta,tb);
+        if numLocales == 1 { 
+           forall (ch, B, C) in zip(condition, b, c) { 
+                C = if ch then a:whereReturnType(ta,tb) else B:whereReturnType(ta,tb) ;
+           }    
+        } else {
+            coforall loc in Locales do on loc {
+                var cLD = c.localSubdomain() ;   // they all have the same domain
+                forall idx in cLD { 
+                   c[idx] = if condition[idx] then a:whereReturnType(ta,tb)
+                                              else b[idx]:whereReturnType(ta,tb) ;
+                }
+            }
         }
         return c;
     }
@@ -601,8 +636,18 @@ module EfuncMsg
     proc wheressHelper (condition: [?d] bool, a : ?ta, b : ?tb) : [d] whereReturnType(ta,tb) throws
     {
         var c = makeDistArray(d, whereReturnType(ta,tb));
-        forall (ch, C) in zip(condition, c) {
-            C = if ch then a:whereReturnType(ta,tb) else b:whereReturnType(ta,tb);
+        if numLocales == 1 { 
+           forall (ch, C) in zip(condition, c) { 
+                C = if ch then a:whereReturnType(ta,tb) else b:whereReturnType(ta,tb) ;
+           }    
+        } else {
+            coforall loc in Locales do on loc {
+                var cLD = c.localSubdomain() ;   // they all have the same domain
+                forall idx in cLD { 
+                   c[idx] = if condition[idx] then a:whereReturnType(ta,tb)
+                                              else b:whereReturnType(ta,tb) ;
+                }
+            }
         }
         return c;
     }
@@ -703,6 +748,8 @@ module EfuncMsg
         return wheressHelper (condition, a, b);
     }
 
+  */  
+
     //  putmask has been rewritten for both the new interface and the multi-dimensional case.
     //  The specifics are based on the observation that np.putmask behaves as if multi-dim
     //  inputs were flattened before the operation, and then de-flattened after.
@@ -725,8 +772,8 @@ module EfuncMsg
         //    overwritten with the nth element of v (v doesn't actually have to be the same
         //    size as a and mask, but hold that thought for now).
 
-        //    In a departure from np.putmask, we require a and mask to have the same domain,
-        //    so that they'll be distributed identically. We don't know what that distribution
+        //    As with np.putmask, we require a and mask to have the same domain, so that
+        //    they'll be distributed identically. We don't know what that distribution
         //    will be, and it may vary from locale to locale.
 
         //    Further comments are embedded in the code.

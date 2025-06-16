@@ -29,6 +29,7 @@ from arkouda.numpy.pdarrayclass import any as ak_any
 from arkouda.numpy.pdarrayclass import (
     argmax,
     broadcast_if_needed,
+    broadcast_to_shape,
     create_pdarray,
     parse_single_value,
     pdarray,
@@ -1864,147 +1865,6 @@ def _str_cat_where(
     raise TypeError("ak.where is not supported between Strings and Categorical")
 
 
-@typechecked
-def where(
-    condition: pdarray,
-    A: Union[str, numeric_scalars, pdarray, Strings, Categorical],  # type: ignore
-    B: Union[str, numeric_scalars, pdarray, Strings, Categorical],  # type: ignore
-) -> Union[pdarray, Strings, Categorical]:  # type: ignore
-    """
-    Return an array with elements chosen from A and B based upon a
-    conditioning array. As is the case with numpy.where, the return array
-    consists of values from the first array (A) where the conditioning array
-    elements are True and from the second array (B) where the conditioning
-    array elements are False.
-
-    Parameters
-    ----------
-    condition : pdarray
-        Used to choose values from A or B
-    A : str, numeric_scalars, pdarray, Strings, or Categorical
-        Value(s) used when condition is True
-    B : str, numeric_scalars, pdarray, Strings, or Categorical
-        Value(s) used when condition is False
-
-    Returns
-    -------
-    pdarray
-        Values chosen from A where the condition is True and B where
-        the condition is False
-
-    Raises
-    ------
-    TypeError
-        Raised if the condition object is not a pdarray, if A or B is not
-        an int, np.int64, float, np.float64, bool, pdarray, str, Strings, Categorical
-        if pdarray dtypes are not supported or do not match, or multiple
-        condition clauses (see Notes section) are applied
-    ValueError
-        Raised if the shapes of the condition, A, and B pdarrays are unequal
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a1 = ak.arange(1,10)
-    >>> a2 = ak.ones(9, dtype=np.int64)
-    >>> cond = a1 < 5
-    >>> ak.where(cond,a1,a2)
-    array([1 2 3 4 1 1 1 1 1])
-
-    >>> a1 = ak.arange(1,10)
-    >>> a2 = ak.ones(9, dtype=np.int64)
-    >>> cond = a1 == 5
-    >>> ak.where(cond,a1,a2)
-    array([1 1 1 1 5 1 1 1 1])
-
-    >>> a1 = ak.arange(1,10)
-    >>> a2 = 10
-    >>> cond = a1 < 5
-    >>> ak.where(cond,a1,a2)
-    array([1 2 3 4 10 10 10 10 10])
-
-    >>> s1 = ak.array([f'str {i}' for i in range(10)])
-    >>> s2 = 'str 21'
-    >>> cond = (ak.arange(10) % 2 == 0)
-    >>> ak.where(cond,s1,s2)
-    array(['str 0', 'str 21', 'str 2', 'str 21', 'str 4',
-    'str 21', 'str 6', 'str 21', 'str 8', 'str 21'])
-
-    >>> c1 = ak.Categorical(ak.array([f'str {i}' for i in range(10)]))
-    >>> c2 = ak.Categorical(ak.array([f'str {i}' for i in range(9, -1, -1)]))
-    >>> cond = (ak.arange(10) % 2 == 0)
-    >>> ak.where(cond,c1,c2)
-    array(['str 0', 'str 8', 'str 2', 'str 6', 'str 4',
-    'str 4', 'str 6', 'str 2', 'str 8', 'str 0'])
-
-    Notes
-    -----
-    A and B must have the same dtype and only one conditional clause
-    is supported e.g., n < 5, n > 1, which is supported in numpy
-    is not currently supported in Arkouda
-    """
-
-    if (not isSupportedNumber(A) and not isinstance(A, pdarray)) or (
-        not isSupportedNumber(B) and not isinstance(B, pdarray)
-    ):
-        from arkouda.categorical import Categorical  # type: ignore
-
-        # fmt: off
-        if (
-            not isinstance(A, (str, Strings, Categorical))  # type: ignore
-            or not isinstance(B, (str, Strings, Categorical))  # type: ignore
-        ):
-            # fmt:on
-            raise TypeError(
-                "both A and B must be an int, np.int64, float, np.float64, pdarray OR"
-                " both A and B must be an str, Strings, Categorical"
-            )
-        return _str_cat_where(condition, A, B)
-
-    #   The code below creates a command string for wherevv, wherevs, wheresv or wheress,
-    #   based on A and B.
-
-    if isinstance(A, pdarray) and isinstance(B, pdarray):
-        cmdstring = f"wherevv<{condition.ndim},{A.dtype},{B.dtype}>"
-
-    elif isinstance(A, pdarray) and np.isscalar(B):
-        if resolve_scalar_dtype(B) in ["float64", "int64", "uint64", "bool"]:
-            ltr = resolve_scalar_dtype(B)
-            cmdstring = "wherevs_" + ltr + f"<{condition.ndim},{A.dtype}>"
-        else:  # *should* be impossible because of the IsSupportedNumber check
-            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(B)}")
-
-    elif isinstance(B, pdarray) and np.isscalar(A):
-        if resolve_scalar_dtype(A) in ["float64", "int64", "uint64", "bool"]:
-            ltr = resolve_scalar_dtype(A)
-            cmdstring = "wheresv_" + ltr + f"<{condition.ndim},{B.dtype}>"
-        else:  # *should* be impossible because of the IsSupportedNumber check
-            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
-
-    else:  # both are scalars
-        if resolve_scalar_dtype(A) in ["float64", "int64", "uint64", "bool"]:
-            ta = resolve_scalar_dtype(A)
-            if resolve_scalar_dtype(B) in ["float64", "int64", "uint64", "bool"]:
-                tb = resolve_scalar_dtype(B)
-            else:
-                raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(B)}")
-        else:
-            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
-        cmdstring = "wheress_" + ta + "_" + tb + f"<{condition.ndim}>"
-
-    repMsg = generic_msg(
-        cmd=cmdstring,
-        args={
-            "condition": condition,
-            "a": A,
-            "b": B,
-        },
-    )
-
-    return create_pdarray(type_cast(str, repMsg))
-
-
-# histogram helper
 def _pyrange(count):
     """Simply makes a range(count). For use in histogram* functions
     that, like in numpy, have a 'range' parameter."""
@@ -3368,3 +3228,276 @@ def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[in
     )
 
     return result
+
+
+@typechecked
+def _array_if_needed(x: Union[numeric_scalars, pdarray]) -> pdarray:
+    if isinstance(x, pdarray):
+        return x
+    else:
+        return array([x]).reshape(1)  # type: ignore
+
+
+@typechecked
+def where(
+    condition: pdarray,
+    A: Union[str, numeric_scalars, pdarray, Strings, Categorical],
+    B: Union[str, numeric_scalars, pdarray, Strings, Categorical],
+) -> Union[pdarray, Strings, Categorical]:
+    """
+    Return an array with elements chosen from A and B based upon a
+    conditioning array. As is the case with numpy.where, the return array
+    consists of values from the first array (A) where the conditioning array
+    elements are True and from the second array (B) where the conditioning
+    array elements are False.
+
+    Parameters
+    ----------
+    condition : pdarray
+        Used to choose values from A or B
+    A : str, numeric_scalars, pdarray, Strings, or Categorical
+        Value(s) used when condition is True
+    B : str, numeric_scalars, pdarray, Strings, or Categorical
+        Value(s) used when condition is False
+
+    Returns
+    -------
+    pdarray
+        Values chosen from A where the condition is True and B where
+        the condition is False
+
+    Raises
+    ------
+    RuntimeError
+        Raised if the condition cannot be cast to bool
+    TypeError
+        Raised if the condition object is not a pdarray, if A or B is not
+        an int, np.int64, float, np.float64, bool, pdarray, str, Strings, Categorical
+        if pdarray dtypes are not supported or do not match, or multiple
+        condition clauses (see Notes section) are applied
+    ValueError
+        Raised if it is not possible to broadcast all 3 inputs to a common shape
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a1 = ak.arange(1,10)
+    >>> a2 = ak.ones(9, dtype=np.int64)
+    >>> cond = a1 < 5
+    >>> ak.where(cond,a1,a2)
+    array([1 2 3 4 1 1 1 1 1])
+
+    >>> a1 = ak.arange(1,10)
+    >>> a2 = ak.ones(9, dtype=np.int64)
+    >>> cond = a1 == 5
+    >>> ak.where(cond,a1,a2)
+    array([1 1 1 1 5 1 1 1 1])
+
+    >>> a1 = ak.arange(1,10)
+    >>> a2 = 10
+    >>> cond = a1 < 5
+    >>> ak.where(cond,a1,a2)
+    array([1 2 3 4 10 10 10 10 10])
+
+    >>> s1 = ak.array([f'str {i}' for i in range(10)])
+    >>> s2 = 'str 21'
+    >>> cond = (ak.arange(10) % 2 == 0)
+    >>> ak.where(cond,s1,s2)
+    array(['str 0', 'str 21', 'str 2', 'str 21', 'str 4',
+    'str 21', 'str 6', 'str 21', 'str 8', 'str 21'])
+
+    >>> c1 = ak.Categorical(ak.array([f'str {i}' for i in range(10)]))
+    >>> c2 = ak.Categorical(ak.array([f'str {i}' for i in range(9, -1, -1)]))
+    >>> cond = (ak.arange(10) % 2 == 0)
+    >>> ak.where(cond,c1,c2)
+    array(['str 0', 'str 8', 'str 2', 'str 6', 'str 4',
+    'str 4', 'str 6', 'str 2', 'str 8', 'str 0'])
+
+    Notes
+    -----
+    A and B must have the same dtype and only one conditional clause
+    is supported e.g., n < 5, n > 1, which is supported in numpy
+    is not currently supported in Arkouda
+    """
+
+    if (not isSupportedNumber(A) and not isinstance(A, pdarray)) or (
+        not isSupportedNumber(B) and not isinstance(B, pdarray)
+    ):
+        from arkouda.categorical import Categorical  # type: ignore
+
+        if not isinstance(A, (str, Strings, Categorical)) or not isinstance(
+            B, (str, Strings, Categorical)
+        ):
+            raise TypeError(
+                "both A and B must be an int, np.int64, float, np.float64, pdarray OR"
+                " both A and B must be an str, Strings, Categorical"
+            )
+        return _str_cat_where(condition, A, B)
+
+    #   The code below broadcasts the 3 inputs to a common shape if possible, and then
+    #   calls wherevv.  This includes broadcasting scalars to vectors, and thereby
+    #   eliminates the need for wherevs, wheresv and wheress.
+
+    else:
+        A_ = _array_if_needed(A)
+        B_ = _array_if_needed(B)
+
+        newshape = np.broadcast_shapes(A_.shape, B_.shape, condition.shape)  # ak lacks this fn
+
+        A__ = broadcast_to_shape(A_, newshape)
+        B__ = broadcast_to_shape(B_, newshape)
+        cond__ = broadcast_to_shape(condition, newshape)
+
+        repMsg = generic_msg(
+            cmd=f"wherevv<{cond__.ndim},{A__.dtype},{B__.dtype}>",
+            args={
+                "condition": cond__,
+                "a": A__,
+                "b": B__,
+            },
+        )
+
+        return create_pdarray(type_cast(str, repMsg))
+
+
+#  And this is the older version, which I won't export or use in this test.
+
+
+@typechecked
+def oldWhere(
+    condition: pdarray,
+    A: Union[str, numeric_scalars, pdarray, Strings, Categorical],  # type: ignore
+    B: Union[str, numeric_scalars, pdarray, Strings, Categorical],  # type: ignore
+) -> Union[pdarray, Strings, Categorical]:  # type: ignore
+    """
+    Return an array with elements chosen from A and B based upon a
+    conditioning array. As is the case with numpy.where, the return array
+    consists of values from the first array (A) where the conditioning array
+    elements are True and from the second array (B) where the conditioning
+    array elements are False.
+
+    Parameters
+    ----------
+    condition : pdarray
+        Used to choose values from A or B
+    A : str, numeric_scalars, pdarray, Strings, or Categorical
+        Value(s) used when condition is True
+    B : str, numeric_scalars, pdarray, Strings, or Categorical
+        Value(s) used when condition is False
+
+    Returns
+    -------
+    pdarray
+        Values chosen from A where the condition is True and B where
+        the condition is False
+
+    Raises
+    ------
+    TypeError
+        Raised if the condition object is not a pdarray, if A or B is not
+        an int, np.int64, float, np.float64, bool, pdarray, str, Strings, Categorical
+        if pdarray dtypes are not supported or do not match, or multiple
+        condition clauses (see Notes section) are applied
+    ValueError
+        Raised if the shapes of the condition, A, and B pdarrays are unequal
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a1 = ak.arange(1,10)
+    >>> a2 = ak.ones(9, dtype=np.int64)
+    >>> cond = a1 < 5
+    >>> ak.where(cond,a1,a2)
+    array([1 2 3 4 1 1 1 1 1])
+
+    >>> a1 = ak.arange(1,10)
+    >>> a2 = ak.ones(9, dtype=np.int64)
+    >>> cond = a1 == 5
+    >>> ak.where(cond,a1,a2)
+    array([1 1 1 1 5 1 1 1 1])
+
+    >>> a1 = ak.arange(1,10)
+    >>> a2 = 10
+    >>> cond = a1 < 5
+    >>> ak.where(cond,a1,a2)
+    array([1 2 3 4 10 10 10 10 10])
+
+    >>> s1 = ak.array([f'str {i}' for i in range(10)])
+    >>> s2 = 'str 21'
+    >>> cond = (ak.arange(10) % 2 == 0)
+    >>> ak.where(cond,s1,s2)
+    array(['str 0', 'str 21', 'str 2', 'str 21', 'str 4',
+    'str 21', 'str 6', 'str 21', 'str 8', 'str 21'])
+
+    >>> c1 = ak.Categorical(ak.array([f'str {i}' for i in range(10)]))
+    >>> c2 = ak.Categorical(ak.array([f'str {i}' for i in range(9, -1, -1)]))
+    >>> cond = (ak.arange(10) % 2 == 0)
+    >>> ak.where(cond,c1,c2)
+    array(['str 0', 'str 8', 'str 2', 'str 6', 'str 4',
+    'str 4', 'str 6', 'str 2', 'str 8', 'str 0'])
+
+    Notes
+    -----
+    A and B must have the same dtype and only one conditional clause
+    is supported e.g., n < 5, n > 1, which is supported in numpy
+    is not currently supported in Arkouda
+    """
+
+    if (not isSupportedNumber(A) and not isinstance(A, pdarray)) or (
+        not isSupportedNumber(B) and not isinstance(B, pdarray)
+    ):
+        from arkouda.categorical import Categorical  # type: ignore
+
+        # fmt: off
+        if (
+            not isinstance(A, (str, Strings, Categorical))  # type: ignore
+            or not isinstance(B, (str, Strings, Categorical))  # type: ignore
+        ):
+            # fmt:on
+            raise TypeError(
+                "both A and B must be an int, np.int64, float, np.float64, pdarray OR"
+                " both A and B must be an str, Strings, Categorical"
+            )
+        return _str_cat_where(condition, A, B)
+
+    #   The code below creates a command string for wherevv, wherevs, wheresv or wheress,
+    #   based on A and B.
+
+    if isinstance(A, pdarray) and isinstance(B, pdarray):
+        cmdstring = f"wherevv<{condition.ndim},{A.dtype},{B.dtype}>"
+
+    elif isinstance(A, pdarray) and np.isscalar(B):
+        if resolve_scalar_dtype(B) in ["float64", "int64", "uint64", "bool"]:
+            ltr = resolve_scalar_dtype(B)
+            cmdstring = "wherevs_" + ltr + f"<{condition.ndim},{A.dtype}>"
+        else:  # *should* be impossible because of the IsSupportedNumber check
+            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(B)}")
+
+    elif isinstance(B, pdarray) and np.isscalar(A):
+        if resolve_scalar_dtype(A) in ["float64", "int64", "uint64", "bool"]:
+            ltr = resolve_scalar_dtype(A)
+            cmdstring = "wheresv_" + ltr + f"<{condition.ndim},{B.dtype}>"
+        else:  # *should* be impossible because of the IsSupportedNumber check
+            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
+
+    else:  # both are scalars
+        if resolve_scalar_dtype(A) in ["float64", "int64", "uint64", "bool"]:
+            ta = resolve_scalar_dtype(A)
+            if resolve_scalar_dtype(B) in ["float64", "int64", "uint64", "bool"]:
+                tb = resolve_scalar_dtype(B)
+            else:
+                raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(B)}")
+        else:
+            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
+        cmdstring = "wheress_" + ta + "_" + tb + f"<{condition.ndim}>"
+
+    repMsg = generic_msg(
+        cmd=cmdstring,
+        args={
+            "condition": condition,
+            "a": A,
+            "b": B,
+        },
+    )
+
+    return create_pdarray(type_cast(str, repMsg))
