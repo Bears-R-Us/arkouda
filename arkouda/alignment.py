@@ -79,6 +79,30 @@ __all__ = [
 
 
 def unsqueeze(p):
+    """
+    Ensure that the input is returned as a list.
+
+    If the input is a single pdarray, Strings, or Categorical object, wrap it in a list.
+    Otherwise, return the input unchanged.
+
+    Parameters
+    ----------
+    p : pdarray, Strings, Categorical, or Sequence
+        The input object to be wrapped or returned as-is.
+
+    Returns
+    -------
+    Sequence
+        A list containing the input, or the input itself if it is already a sequence.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.array([1, 2, 3])
+    >>> unsqueeze(a)
+    [array([1 2 3])]
+
+    """
     if isinstance(p, pdarray) or isinstance(p, Strings) or isinstance(p, Categorical):
         return [p]
     else:
@@ -174,6 +198,22 @@ def left_align(left, right):
 
 
 class NonUniqueError(ValueError):
+    """
+    Exception raised when duplicate values are found in a set of keys that are expected to be unique.
+
+    This is typically raised in lookup and alignment operations that assume
+    a one-to-one mapping between keys and values.
+
+    Examples
+    --------
+    >>> from arkouda.alignment import NonUniqueError
+    >>> raise NonUniqueError("Duplicate values found in key array.")
+    Traceback (most recent call last):
+        ...
+    arkouda.alignment.NonUniqueError: Duplicate values found in key array.
+
+    """
+
     pass
 
 
