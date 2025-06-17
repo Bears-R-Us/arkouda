@@ -7,9 +7,13 @@ module Repartition
   use PrivateDist;
   use List;
 
-  proc repartitionByLocaleString(const ref destLocales: [PrivateSpace] list(int),
-                                 const ref strOffsets: [PrivateSpace] list(int),
-                                 const ref strBytes: [PrivateSpace] list(uint(8))):
+  // Note, the arrays passed here must have PrivateSpace domains. With Chapel
+  // 2.5, distribution equality with PrivateSpace doesn't work.
+  // https://github.com/chapel-lang/chapel/pull/27397 is the upstream PR to
+  // fix it.
+  proc repartitionByLocaleString(const ref destLocales: [] list(int),
+                                 const ref strOffsets: [] list(int),
+                                 const ref strBytes: [] list(uint(8))):
     ([PrivateSpace] list(int), [PrivateSpace] list(uint(8)))
   {
     var maxBytesPerLocale: int;
