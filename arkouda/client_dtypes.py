@@ -109,6 +109,15 @@ class BitVector(pdarray):
             return fmt
 
     def __str__(self):
+        """
+        Return a string representation of the BitVector.
+
+        Returns
+        -------
+        str
+            Human-readable string showing formatted bit vectors.
+
+        """
         from arkouda.client import pdarrayIterThresh
 
         if self.size <= pdarrayIterThresh:
@@ -125,6 +134,15 @@ class BitVector(pdarray):
         )
 
     def __repr__(self):
+        """
+        Return the official string representation of the BitVector.
+
+        Returns
+        -------
+        str
+            Same as __str__.
+
+        """
         return self.__str__()
 
     def to_ndarray(self):
@@ -139,6 +157,20 @@ class BitVector(pdarray):
         return self.__class__(values, width=self.width, reverse=self.reverse)
 
     def __getitem__(self, key):
+        """
+        Retrieve a formatted bit vector or a subarray.
+
+        Parameters
+        ----------
+        key : int or slice
+            Index or range to access.
+
+        Returns
+        -------
+        str or BitVector
+            A single formatted string or a BitVector slice.
+
+        """
         if isSupportedInt(key):
             # Return single value as a formatted string
             return self.format(self.values[key])
@@ -147,6 +179,17 @@ class BitVector(pdarray):
             return self._cast(self.values[key])
 
     def __setitem__(self, key, value):
+        """
+        Set value(s) in the BitVector.
+
+        Parameters
+        ----------
+        key : int or slice
+            Index or range to set.
+        value : int or BitVector
+            New value(s) to assign.
+
+        """
         if isinstance(value, self.__class__):
             # Set a slice or selection of values directly
             self.values[key] = value.values
@@ -192,6 +235,17 @@ class BitVector(pdarray):
             return NotImplemented
 
     def opeq(self, other, op):
+        """
+        In-place binary operation on the BitVector.
+
+        Parameters
+        ----------
+        other : int, BitVector, or pdarray
+            Right-hand operand.
+        op : str
+            Binary operator as a string (e.g., '+', '&').
+
+        """
         # Based on other type, select data to pass to pdarray opeq
         if isSupportedInt(other):
             otherdata = other
@@ -257,6 +311,20 @@ class BitVector(pdarray):
 
     @classmethod
     def from_return_msg(cls, rep_msg):
+        """
+        Reconstruct a BitVector from a server return message.
+
+        Parameters
+        ----------
+        rep_msg : str
+            JSON-encoded response from Arkouda server.
+
+        Returns
+        -------
+        BitVector
+            Reconstructed BitVector instance.
+
+        """
         import json
 
         data = json.loads(rep_msg)
@@ -409,6 +477,17 @@ class Fields(BitVector):
         return s
 
     def __setitem__(self, key, value):
+        """
+        Set value(s) in the Fields object.
+
+        Parameters
+        ----------
+        key : int or slice
+            Index or range to set.
+        value : str or int
+            Value(s) to assign, which may be parsed field strings.
+
+        """
         if isinstance(value, str):
             v = self._parse_scalar(value)
             return super().__setitem__(key, v)
@@ -440,6 +519,17 @@ class Fields(BitVector):
             return super()._r_binop(other, op)
 
     def opeq(self, other, op):
+        """
+        Perform in-place binary operation on the Fields object.
+
+        Parameters
+        ----------
+        other : str or BitVector
+            Operand to apply the binary operation with.
+        op : str
+            Binary operation to apply (e.g., '|', '&').
+
+        """
         if isinstance(other, str):
             o = self._parse_scalar(other)
             return super().opeq(o, op)
@@ -526,6 +616,15 @@ class IPv4(pdarray):
         )
 
     def export_uint(self):
+        """
+        Export the internal values as unsigned 64-bit integers.
+
+        Returns
+        -------
+        pdarray
+            Array of uint64 values representing the data.
+
+        """
         return akcast(self.values, akuint64)
 
     def format(self, x):
@@ -540,6 +639,7 @@ class IPv4(pdarray):
 
         Take in an IP address as a string, integer, or IPAddress object,
         and convert it to an integer.
+
         """
         if not isSupportedInt(x):
             x = int(_ip_address(x))
@@ -554,6 +654,15 @@ class IPv4(pdarray):
             return False, None
 
     def __str__(self):
+        """
+        Return a string representation of the IPv4 object.
+
+        Returns
+        -------
+        str
+            Human-readable string showing IP addresses.
+
+        """
         from arkouda.client import pdarrayIterThresh
 
         if self.size <= pdarrayIterThresh:
@@ -569,6 +678,15 @@ class IPv4(pdarray):
         )
 
     def __repr__(self):
+        """
+        Return the official string representation of the IPv4 object.
+
+        Returns
+        -------
+        str
+            Same as __str__.
+
+        """
         return self.__str__()
 
     def to_ndarray(self):
@@ -580,6 +698,20 @@ class IPv4(pdarray):
         return self.to_ndarray().tolist()
 
     def __getitem__(self, key):
+        """
+        Retrieve an IP address or a slice.
+
+        Parameters
+        ----------
+        key : int or slice
+            Index to retrieve.
+
+        Returns
+        -------
+        str or IPv4
+            Formatted IP address string or a sliced IPv4 instance.
+
+        """
         if isSupportedInt(key):
             # Display single item as string
             return self.format(self.values[key])
@@ -588,6 +720,17 @@ class IPv4(pdarray):
             return self.__class__(self.values[key])
 
     def __setitem__(self, key, value):
+        """
+        Set IP address value(s).
+
+        Parameters
+        ----------
+        key : int or slice
+            Index or range to set.
+        value : str or IPv4
+            IP address string or IPv4 instance.
+
+        """
         # If scalar, convert to integer and set
         isscalar, scalarval = self._is_supported_scalar(value)
         if isscalar:
@@ -621,6 +764,17 @@ class IPv4(pdarray):
             return NotImplemented
 
     def opeq(self, other, op):
+        """
+        Perform an in-place binary operation on the IPv4 object.
+
+        Parameters
+        ----------
+        other : int, str, pdarray, or IPv4
+            Operand for the operation.
+        op : str
+            Binary operator as a string.
+
+        """
         # Based on other type, select data to pass to pdarray opeq
         isscalar, scalarval = self._is_supported_scalar(other)
         if isscalar:
