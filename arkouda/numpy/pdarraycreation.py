@@ -38,6 +38,7 @@ __all__ = [
     "full_like",
     "arange",
     "linspace",
+    "logspace",
     "randint",
     "uniform",
     "standard_normal",
@@ -1074,6 +1075,54 @@ def arange(
         return arr if aktype == akint64 else akcast(arr, dt=aktype)
 
     raise TypeError(f"start, stop, step must be ints; got {args!r}")
+
+
+@typechecked
+def logspace(
+    start: numeric_scalars, stop: numeric_scalars, length: int_scalars, base: numeric_scalars = 10.0
+) -> pdarray:
+    """
+    Create a pdarray of numbers evenly spaced on a log scale.
+
+    Parameters
+    ----------
+    start : numeric_scalars
+        Start of interval (inclusive)
+    stop : numeric_scalars
+        End of interval (inclusive)
+    length : int_scalars
+        Number of points
+    base : the base of the log space
+
+    Returns
+    -------
+    pdarray
+        Array of float values evenly space along the log interval from start**base to stop**base
+
+    Raises
+    ------
+    TypeError
+        Raised if start or stop is not a float or int or if length is not an int
+
+    See Also
+    --------
+    linspace
+
+    Notes
+    -----
+    If start is greater than stop, the pdarray values are generated
+    in descending order.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.logspace(2, 3, 3, 4)
+    array([16.00000000000000000 32.00000000000000000 64.00000000000000000])
+
+    >>> ak.logspace(10, 5, 3, 4)
+    array([1048576.00000000000000000 32768.00000000000000000 1024.00000000000000000])
+    """
+    return base ** linspace(start, stop, length)
 
 
 @typechecked

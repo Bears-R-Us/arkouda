@@ -797,12 +797,13 @@ class TestPdarrayCreation:
             assert (full_like_arr == 1).all()
             assert full_like_arr.size == ran_arr.size
 
-    def test_linspace(self):
-        pda = ak.linspace(0, 100, 1000)
-        assert 1000 == len(pda)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_linspace(self, size):
+        pda = ak.linspace(0, 100, size)
+        assert size == len(pda)
         assert float == pda.dtype
         assert isinstance(pda, ak.pdarray)
-        assert (pda.to_ndarray() == np.linspace(0, 100, 1000)).all()
+        assert (pda.to_ndarray() == np.linspace(0, 100, size)).all()
 
         pda = ak.linspace(start=5, stop=0, length=6)
         assert 5.0000 == pda[0]
@@ -820,20 +821,20 @@ class TestPdarrayCreation:
         assert (pda.to_ndarray() == np.linspace(float(5.0), float(0.0), np.int64(6))).all()
 
         with pytest.raises(TypeError):
-            ak.linspace(0, "100", 1000)
+            ak.linspace(0, "100", size)
 
         with pytest.raises(TypeError):
-            ak.linspace("0", 100, 1000)
+            ak.linspace("0", 100, size)
 
         with pytest.raises(TypeError):
-            ak.linspace(0, 100, "1000")
+            ak.linspace(0, 100, "size")
 
         # Test that int_scalars covers uint8, uint16, uint32
-        int_arr = ak.linspace(0, 100, (1000 % 256))
+        int_arr = ak.linspace(0, 100, (size % 256))
         for args in [
-            (np.uint8(0), np.uint16(100), np.uint32(1000 % 256)),
-            (np.uint32(0), np.uint8(100), np.uint16(1000 % 256)),
-            (np.uint16(0), np.uint32(100), np.uint8(1000 % 256)),
+            (np.uint8(0), np.uint16(100), np.uint32(size % 256)),
+            (np.uint32(0), np.uint8(100), np.uint16(size % 256)),
+            (np.uint16(0), np.uint32(100), np.uint8(size % 256)),
         ]:
             assert (int_arr == ak.linspace(*args)).all()
 
@@ -845,7 +846,17 @@ class TestPdarrayCreation:
         a = np.linspace(start, stop, size)
         # create ak version
         b = ak.linspace(start, stop, size)
-        assert np.allclose(a, b.to_ndarray())
+        assert_equivalent(a, b)
+
+    @pytest.mark.parametrize("start", [0, 0.5, 2])
+    @pytest.mark.parametrize("stop", [50, 101])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_compare_logspace(self, size, start, stop):
+        # create np version
+        a = np.logspace(start, stop, size)
+        # create ak version
+        b = ak.logspace(start, stop, size)
+        assert_equivalent(a, b)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INT_SCALARS)

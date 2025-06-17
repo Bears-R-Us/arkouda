@@ -223,6 +223,7 @@ from arkouda.numpy import (
     log10,
     log1p,
     log2,
+    logspace,
     longdouble,
     longlong,
     ma,
