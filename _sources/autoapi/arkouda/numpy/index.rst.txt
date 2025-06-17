@@ -177,6 +177,7 @@ Functions
 .. autoapisummary::
 
    arkouda.numpy.abs
+   arkouda.numpy.append
    arkouda.numpy.arange
    arkouda.numpy.arccos
    arkouda.numpy.arccosh
@@ -4192,6 +4193,38 @@ Package Contents
 
 
    .. py:method:: copy_with(params)
+
+
+.. py:function:: append(arr: arkouda.numpy.pdarrayclass.pdarray, values: arkouda.numpy.pdarrayclass.pdarray, axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Append values to the end of an array.
+
+   :param arr: Values are appended to a copy of this array.
+   :type arr: pdarray
+   :param values: These values are appended to a copy of arr.
+                  It must be of the correct shape (the same shape as arr, excluding axis).
+                  If axis is not specified, values can be any shape and will be flattened before use.
+   :type values: pdarray
+   :param axis: The axis along which values are appended.
+                If axis is not given, both arr and values are flattened before use.
+   :type axis: Optional[int], default=None
+
+   :returns: A copy of arr with values appended to axis.
+             Note that append does not occur in-place: a new array is allocated and filled.
+             If axis is None, out is a flattened array.
+   :rtype: pdarray
+
+   .. seealso:: :py:obj:`delete`
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.array([1, 2, 3])
+   >>> b = ak.array([[4, 5, 6], [7, 8, 9]])
+   >>> ak.append(a, b)
+   array([1 2 3 4 5 6 7 8 9])
+   >>> ak.append(b, b, axis = 0)
+   array([array([4 5 6]) array([7 8 9]) array([4 5 6]) array([7 8 9])])
 
 
 .. py:function:: arange(__arg1: arkouda.numpy.dtypes.int_scalars, *, dtype: Optional[Union[numpy.dtype, type, arkouda.numpy.dtypes.bigint]] = None, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray

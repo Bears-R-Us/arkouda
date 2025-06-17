@@ -385,10 +385,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bigint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">result_type</span> <span class="k">as</span> <span class="n">ak_result_type</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hstack&quot;</span><span class="p">,</span> <span class="s2">&quot;vstack&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hstack&quot;</span><span class="p">,</span> <span class="s2">&quot;vstack&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="hstack">
@@ -714,6 +715,104 @@
                 <span class="s2">&quot;eIn&quot;</span><span class="p">:</span> <span class="n">_arr</span><span class="p">,</span>
                 <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">_axis</span><span class="p">,</span>
                 <span class="s2">&quot;del&quot;</span><span class="p">:</span> <span class="n">_del</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="append">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html#arkouda.numpy.append">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span>
+    <span class="n">arr</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Append values to the end of an array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arr : pdarray</span>
+<span class="sd">        Values are appended to a copy of this array.</span>
+<span class="sd">    values : pdarray</span>
+<span class="sd">        These values are appended to a copy of arr.</span>
+<span class="sd">        It must be of the correct shape (the same shape as arr, excluding axis).</span>
+<span class="sd">        If axis is not specified, values can be any shape and will be flattened before use.</span>
+<span class="sd">    axis : Optional[int], default=None</span>
+<span class="sd">        The axis along which values are appended.</span>
+<span class="sd">        If axis is not given, both arr and values are flattened before use.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        A copy of arr with values appended to axis.</span>
+<span class="sd">        Note that append does not occur in-place: a new array is allocated and filled.</span>
+<span class="sd">        If axis is None, out is a flattened array.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    delete</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; b = ak.array([[4, 5, 6], [7, 8, 9]])</span>
+<span class="sd">    &gt;&gt;&gt; ak.append(a, b)</span>
+<span class="sd">    array([1 2 3 4 5 6 7 8 9])</span>
+<span class="sd">    &gt;&gt;&gt; ak.append(b, b, axis = 0)</span>
+<span class="sd">    array([array([4 5 6]) array([7 8 9]) array([4 5 6]) array([7 8 9])])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># ensure both arrays have the same number of dimensions</span>
+        <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">values</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;all input arrays must have the same number of dimensions&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;=</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">or</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis </span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> out of bounds for </span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimensions&quot;</span><span class="p">)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="p">(</span><span class="n">axis</span> <span class="o">+</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="o">%</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+
+    <span class="n">m_bits</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">has_bigint</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
+            <span class="n">has_bigint</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">curr_bits</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">max_bits</span>
+            <span class="k">if</span> <span class="n">curr_bits</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">m_bits</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">curr_bits</span> <span class="o">&lt;</span> <span class="n">m_bits</span><span class="p">):</span>
+                <span class="n">m_bits</span> <span class="o">=</span> <span class="n">curr_bits</span>
+
+    <span class="c1"># establish the dtype of the output array</span>
+    <span class="n">dtype_</span> <span class="o">=</span> <span class="n">ak_result_type</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+
+    <span class="c1"># cast the input arrays to the output dtype if necessary</span>
+    <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dtype_</span> <span class="k">else</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">)]</span>
+
+    <span class="k">if</span> <span class="n">has_bigint</span> <span class="ow">and</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)):</span>
+            <span class="n">arrays</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">max_bits</span> <span class="o">=</span> <span class="n">m_bits</span>
+
+    <span class="n">offsets</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">))]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)):</span>
+        <span class="n">offsets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">offsets</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">arrays</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+
+    <span class="c1"># stack the arrays along the given axis</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+        <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;concatenate&lt;</span><span class="si">{</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype_</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">arrays</span><span class="p">),</span>
+                <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis</span><span class="p">,</span>
+                <span class="s2">&quot;offsets&quot;</span><span class="p">:</span> <span class="n">offsets</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span></div>
