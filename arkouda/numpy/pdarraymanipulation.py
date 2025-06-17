@@ -6,10 +6,11 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import result_type as ak_result_type
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array
 
-__all__ = ["hstack", "vstack", "delete"]
+__all__ = ["hstack", "vstack", "delete", "append"]
 
 
 @typechecked
@@ -327,6 +328,101 @@ def delete(
                 "eIn": _arr,
                 "axis": _axis,
                 "del": _del,
+            },
+        )
+    )
+
+
+@typechecked
+def append(
+    arr: pdarray,
+    values: pdarray,
+    axis: Optional[int] = None,
+) -> pdarray:
+    """
+    Append values to the end of an array.
+
+    Parameters
+    ----------
+    arr : pdarray
+        Values are appended to a copy of this array.
+    values : pdarray
+        These values are appended to a copy of arr.
+        It must be of the correct shape (the same shape as arr, excluding axis).
+        If axis is not specified, values can be any shape and will be flattened before use.
+    axis : Optional[int], default=None
+        The axis along which values are appended.
+        If axis is not given, both arr and values are flattened before use.
+
+    Returns
+    -------
+    pdarray
+        A copy of arr with values appended to axis.
+        Note that append does not occur in-place: a new array is allocated and filled.
+        If axis is None, out is a flattened array.
+
+    See Also
+    --------
+    delete
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.array([1, 2, 3])
+    >>> b = ak.array([[4, 5, 6], [7, 8, 9]])
+    >>> ak.append(a, b)
+    array([1 2 3 4 5 6 7 8 9])
+    >>> ak.append(b, b, axis = 0)
+    array([array([4 5 6]) array([7 8 9]) array([4 5 6]) array([7 8 9])])
+    """
+
+    if axis is None:
+        axis = 0
+        if arr.ndim != 1:
+            arr = arr.flatten()
+        if values.ndim != 1:
+            values = values.flatten()
+    else:
+        # ensure both arrays have the same number of dimensions
+        if arr.ndim != values.ndim:
+            raise ValueError("all input arrays must have the same number of dimensions")
+        if axis >= arr.ndim or axis < -arr.ndim:
+            raise ValueError(f"Axis {axis} out of bounds for {arr.ndim} dimensions")
+        axis = cast(int, (axis + arr.ndim) % arr.ndim)
+
+    m_bits = -1
+    has_bigint = False
+
+    for a in (arr, values):
+        if a.dtype == bigint:
+            has_bigint = True
+            curr_bits = a.max_bits
+            if curr_bits > 0 and (m_bits == -1 or curr_bits < m_bits):
+                m_bits = curr_bits
+
+    # establish the dtype of the output array
+    dtype_ = ak_result_type(arr, values)
+
+    # cast the input arrays to the output dtype if necessary
+    arrays = [a.astype(dtype_) if a.dtype != dtype_ else a for a in (arr, values)]
+
+    if has_bigint and akdtype(dtype_).name == "bigint":
+        for i in range(len(arrays)):
+            arrays[i].max_bits = m_bits
+
+    offsets = [0 for _ in range(len(arrays))]
+
+    for i in range(1, len(arrays)):
+        offsets[i] = offsets[i - 1] + arrays[i - 1].shape[axis]
+
+    # stack the arrays along the given axis
+    return create_pdarray(
+        generic_msg(
+            cmd=f"concatenate<{akdtype(dtype_).name},{arrays[0].ndim}>",
+            args={
+                "names": list(arrays),
+                "axis": axis,
+                "offsets": offsets,
             },
         )
     )
