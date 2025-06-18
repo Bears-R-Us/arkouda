@@ -1351,8 +1351,8 @@ def register_commands(config, source_files):
 
 
 def make_reg_config_module(config):
-    arr_dims = config['parameter_classes']['array']['nd']
-    arr_elts = config['parameter_classes']['array']['dtype']
+    arr_dims = config["parameter_classes"]["array"]["nd"]
+    arr_elts = config["parameter_classes"]["array"]["dtype"]
     dims_str = ",".join(str(dim) for dim in arr_dims)
     dims_ty = " ".join(f"{dim}*nothing," for dim in arr_dims)
     elts_ty = " ".join(f"{dim}," for dim in arr_elts)
@@ -1360,15 +1360,12 @@ def make_reg_config_module(config):
     stamps = [
         "module RegistrationConfig {",
         "use BigInteger;",
-
         watermarkConfig(config),
         f"param arrayDimensionsStr = '{dims_str}';\n"
         f"type arrayDimensionsTy = ({dims_ty});\n"
         f"type arrayElementsTy   = ({elts_ty});",
-
         "}  // module RegistrationConfig",
-
-        ""  # for an empty line between this and the other module
+        "",  # for an empty line between this and the other module
     ]
     return "\n\n".join(stamps)
 

@@ -36,7 +36,7 @@ class TestCheckpoint:
     @pytest.mark.parametrize("dtype", ["int64", "float64", "bool"])
     def test_checkpoint(self, prob_size, dtype):
         arr = ak.zeros(prob_size, dtype)
-        arr[2] = (2 if dtype != "bool" else True)
+        arr[2] = 2 if dtype != "bool" else True
 
         cp_name = ak.save_checkpoint()
 
@@ -47,7 +47,7 @@ class TestCheckpoint:
             assert path.isdir(expected_dir)
             assert path.isfile(path.join(expected_dir, "server.md"))
 
-            arr[3] = (3 if dtype != "bool" else False)
+            arr[3] = 3 if dtype != "bool" else False
 
             # should overwrite the value
             ak.load_checkpoint(cp_name)
@@ -154,7 +154,8 @@ def create_fake_array(cp_name, arr_name="dummy", num_target_locales=-1, corrupt_
                     "entryName": arr_name,
                     "entryType": "PrimitiveTypedArraySymEntry",
                 }
-            ) + "\n"
+            )
+            + "\n"
         )
         f.write(
             json.dumps(
@@ -165,7 +166,8 @@ def create_fake_array(cp_name, arr_name="dummy", num_target_locales=-1, corrupt_
                     "numTargetLocales": num_target_locales,
                     "numChunks": num_target_locales,
                 }
-            ) + "\n"
+            )
+            + "\n"
         )
 
     return arr_metadata
