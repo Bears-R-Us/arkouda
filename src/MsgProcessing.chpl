@@ -148,9 +148,24 @@ module MsgProcessing
     :returns: MsgTuple
      */
     proc getconfigMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        var repMsg: string; // response message
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
         return new MsgTuple(getConfig(), MsgType.NORMAL);
+    }
+    
+    /* 
+    query server registration config - registration-config.json
+    
+    :arg reqMsg: request containing (cmd)
+    :type reqMsg: string 
+
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab 
+
+    :returns: MsgTuple
+     */
+    proc getRegistrationConfig(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: ", cmd);
+        return new MsgTuple(ServerConfig.registrationConfigSpec, MsgType.NORMAL);
     }
 
     /* 
