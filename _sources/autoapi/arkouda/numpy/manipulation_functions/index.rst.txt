@@ -20,7 +20,7 @@ Module Contents
 
 .. py:function:: flip(x: arkouda.numpy.pdarrayclass.pdarray, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.numpy.pdarrayclass.pdarray
                  flip(x: arkouda.numpy.strings.Strings, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.numpy.strings.Strings
-                 flip(x: arkouda.categorical.Categorical, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.categorical.Categorical
+                 flip(x: arkouda.pandas.categorical.Categorical, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.pandas.categorical.Categorical
 
    Reverse an array's values along a particular axis or axes.
 

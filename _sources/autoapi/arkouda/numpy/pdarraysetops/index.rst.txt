@@ -21,7 +21,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: concatenate(arrays: Sequence[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]], axis: int = 0, ordered: bool = True) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, Sequence[arkouda.categorical.Categorical]]
+.. py:function:: concatenate(arrays: Sequence[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]], axis: int = 0, ordered: bool = True) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, Sequence[arkouda.pandas.categorical.Categorical]]
 
    Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
    one ``pdarray`` or ``Strings`` object, respectively.
@@ -61,7 +61,7 @@ Module Contents
    array(['one', 'two', 'three', 'four', 'five'])
 
 
-.. py:function:: in1d(A: arkouda.groupbyclass.groupable, B: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> arkouda.groupbyclass.groupable
+.. py:function:: in1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> arkouda.pandas.groupbyclass.groupable
 
    Test whether each element of a 1-D array is also present in a second array.
 
@@ -103,7 +103,7 @@ Module Contents
    >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
    array([False True])
 
-   .. seealso:: :py:obj:`arkouda.groupbyclass.unique`, :py:obj:`intersect1d`, :py:obj:`union1d`
+   .. seealso:: :py:obj:`arkouda.pandas.groupbyclass.unique`, :py:obj:`intersect1d`, :py:obj:`union1d`
 
    .. rubric:: Notes
 
@@ -115,7 +115,7 @@ Module Contents
    ak.in1d is not supported for bool or float64 pdarrays
 
 
-.. py:function:: indexof1d(query: arkouda.groupbyclass.groupable, space: arkouda.groupbyclass.groupable) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: indexof1d(query: arkouda.pandas.groupbyclass.groupable, space: arkouda.pandas.groupbyclass.groupable) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return indices of query items in a search list of items. Items not found will be excluded.
    When duplicate terms are present in search space return indices of all occurrences.
@@ -154,7 +154,7 @@ Module Contents
    :raises RuntimeError: Raised if the dtype of either array is not supported
 
 
-.. py:function:: intersect1d(A: arkouda.groupbyclass.groupable, B: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: intersect1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]
 
    Find the intersection of two arrays.
 
@@ -174,7 +174,7 @@ Module Contents
    :raises TypeError: Raised if either A or B is not a groupable
    :raises RuntimeError: Raised if the dtype of either pdarray is not supported
 
-   .. seealso:: :py:obj:`arkouda.groupbyclass.unique`, :py:obj:`union1d`
+   .. seealso:: :py:obj:`arkouda.pandas.groupbyclass.unique`, :py:obj:`union1d`
 
    .. rubric:: Examples
 
@@ -195,7 +195,7 @@ Module Contents
    [array([1 3]), array([1 3]), array([1 3])]
 
 
-.. py:function:: setdiff1d(A: arkouda.groupbyclass.groupable, B: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: setdiff1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]
 
    Find the set difference of two arrays.
 
@@ -215,7 +215,7 @@ Module Contents
    :raises TypeError: Raised if either A or B is not a pdarray
    :raises RuntimeError: Raised if the dtype of either pdarray is not supported
 
-   .. seealso:: :py:obj:`arkouda.groupbyclass.unique`, :py:obj:`setxor1d`
+   .. seealso:: :py:obj:`arkouda.pandas.groupbyclass.unique`, :py:obj:`setxor1d`
 
    .. rubric:: Notes
 
@@ -241,7 +241,7 @@ Module Contents
    [array([2 4 5]), array([2 4 5]), array([2 4 5])]
 
 
-.. py:function:: setxor1d(A: arkouda.groupbyclass.groupable, B: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: setxor1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]
 
    Find the set exclusive-or (symmetric difference) of two arrays.
 
@@ -283,7 +283,7 @@ Module Contents
    [array([2 2 4 4 5 5]), array([2 5 2 4 4 5]), array([2 4 5 4 2 5])]
 
 
-.. py:function:: union1d(A: arkouda.groupbyclass.groupable, B: arkouda.groupbyclass.groupable) -> arkouda.groupbyclass.groupable
+.. py:function:: union1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable) -> arkouda.pandas.groupbyclass.groupable
 
    Find the union of two arrays/List of Arrays.
 
@@ -301,7 +301,7 @@ Module Contents
    :raises TypeError: Raised if either A or B is not a groupable
    :raises RuntimeError: Raised if the dtype of either input is not supported
 
-   .. seealso:: :py:obj:`intersect1d`, :py:obj:`arkouda.groupbyclass.unique`
+   .. seealso:: :py:obj:`intersect1d`, :py:obj:`arkouda.pandas.groupbyclass.unique`
 
    .. rubric:: Examples
 

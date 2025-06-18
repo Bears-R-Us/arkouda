@@ -388,7 +388,7 @@ Module Contents
    True
 
 
-.. py:function:: cast(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]]
+.. py:function:: cast(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
@@ -788,7 +788,7 @@ Module Contents
    4.00000000... 5.00000000...])
 
 
-.. py:function:: hash(pda: Union[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical]]], full: bool = True) -> Union[Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray], arkouda.numpy.pdarrayclass.pdarray]
+.. py:function:: hash(pda: Union[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical]]], full: bool = True) -> Union[Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray], arkouda.numpy.pdarrayclass.pdarray]
 
    Return an element-wise hash of the array or list of arrays.
 
@@ -1829,7 +1829,7 @@ Module Contents
    of matching shape.
 
 
-.. py:function:: where(condition: arkouda.numpy.pdarrayclass.pdarray, A: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], B: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]
+.. py:function:: where(condition: arkouda.numpy.pdarrayclass.pdarray, A: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], B: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]
 
    Return an array with elements chosen from A and B based upon a
    conditioning array. As is the case with numpy.where, the return array

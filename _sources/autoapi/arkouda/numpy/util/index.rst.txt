@@ -215,7 +215,7 @@ Module Contents
    [1 3 0 2]
 
 
-.. py:function:: is_float(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.pandas.series.Series, arkouda.index.Index]) -> bool
+.. py:function:: is_float(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
 
    Check if the dtype of the given array-like object is a float type.
 
@@ -241,7 +241,7 @@ Module Contents
    False
 
 
-.. py:function:: is_int(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.pandas.series.Series, arkouda.index.Index]) -> bool
+.. py:function:: is_int(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
 
    Check if the dtype of the given array-like object is an integer type.
 
@@ -267,7 +267,7 @@ Module Contents
    False
 
 
-.. py:function:: is_numeric(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.pandas.series.Series, arkouda.index.Index]) -> bool
+.. py:function:: is_numeric(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
 
    Check if the dtype of the given array-like object is numeric.
 
@@ -330,7 +330,7 @@ Module Contents
    False
 
 
-.. py:function:: map(values: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], mapping: Union[dict, arkouda.Series]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
+.. py:function:: map(values: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], mapping: Union[dict, arkouda.Series]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
 
    Map the values of an array according to an input mapping.
 

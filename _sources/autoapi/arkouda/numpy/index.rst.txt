@@ -2538,7 +2538,7 @@ Package Contents
 
 
 
-   .. py:method:: fullmatch(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> arkouda.match.Match
+   .. py:method:: fullmatch(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> arkouda.pandas.match.Match
 
       Return a match object where elements match only if the whole string matches the
       regular expression pattern
@@ -3027,7 +3027,7 @@ Package Contents
 
 
 
-   .. py:method:: match(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> arkouda.match.Match
+   .. py:method:: match(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> arkouda.pandas.match.Match
 
       Return a match object where elements match only if the beginning of the string matches the
       regular expression pattern
@@ -3256,7 +3256,7 @@ Package Contents
 
 
 
-   .. py:method:: search(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> arkouda.match.Match
+   .. py:method:: search(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> arkouda.pandas.match.Match
 
       Return a match object with the first location in each element where pattern produces a match.
       Elements match if any part of the string matches the regular expression pattern
@@ -4540,7 +4540,7 @@ Package Contents
    array([7 2 5 3])
 
 
-.. py:function:: argsort(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: argsort(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the permutation that sorts the array.
 
@@ -5610,7 +5610,7 @@ Package Contents
    :rtype: bool
 
 
-.. py:function:: cast(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]]
+.. py:function:: cast(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
@@ -5795,7 +5795,7 @@ Package Contents
    array([64 63 62 62 61 61 61 61 60 60])
 
 
-.. py:function:: coargsort(arrays: Sequence[Union[arkouda.numpy.strings.Strings, arkouda.numpy.pdarrayclass.pdarray, arkouda.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, ascending: bool = True) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: coargsort(arrays: Sequence[Union[arkouda.numpy.strings.Strings, arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, ascending: bool = True) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the permutation that groups the rows (left-to-right), if the
    input arrays are treated as columns. The permutation sorts numeric
@@ -5864,7 +5864,7 @@ Package Contents
        :Alias on this platform (Linux x86_64): `numpy.complex64`: Complex number type composed of 2 32-bit-precision floating-point numbers.
 
 
-.. py:function:: concatenate(arrays: Sequence[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]], axis: int = 0, ordered: bool = True) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, Sequence[arkouda.categorical.Categorical]]
+.. py:function:: concatenate(arrays: Sequence[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]], axis: int = 0, ordered: bool = True) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, Sequence[arkouda.pandas.categorical.Categorical]]
 
    Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
    one ``pdarray`` or ``Strings`` object, respectively.
@@ -6789,7 +6789,7 @@ Package Contents
 
 .. py:function:: flip(x: arkouda.numpy.pdarrayclass.pdarray, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.numpy.pdarrayclass.pdarray
                  flip(x: arkouda.numpy.strings.Strings, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.numpy.strings.Strings
-                 flip(x: arkouda.categorical.Categorical, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.categorical.Categorical
+                 flip(x: arkouda.pandas.categorical.Categorical, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.pandas.categorical.Categorical
 
    Reverse an array's values along a particular axis or axes.
 
@@ -7394,7 +7394,7 @@ Package Contents
 
 
 
-.. py:function:: hash(pda: Union[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical]]], full: bool = True) -> Union[Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray], arkouda.numpy.pdarrayclass.pdarray]
+.. py:function:: hash(pda: Union[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical]]], full: bool = True) -> Union[Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray], arkouda.numpy.pdarrayclass.pdarray]
 
    Return an element-wise hash of the array or list of arrays.
 
@@ -7727,7 +7727,7 @@ Package Contents
       Minimum value of given dtype.
 
 
-.. py:function:: in1d(A: arkouda.groupbyclass.groupable, B: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> arkouda.groupbyclass.groupable
+.. py:function:: in1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> arkouda.pandas.groupbyclass.groupable
 
    Test whether each element of a 1-D array is also present in a second array.
 
@@ -7769,7 +7769,7 @@ Package Contents
    >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
    array([False True])
 
-   .. seealso:: :py:obj:`arkouda.groupbyclass.unique`, :py:obj:`intersect1d`, :py:obj:`union1d`
+   .. seealso:: :py:obj:`arkouda.pandas.groupbyclass.unique`, :py:obj:`intersect1d`, :py:obj:`union1d`
 
    .. rubric:: Notes
 
@@ -7781,7 +7781,7 @@ Package Contents
    ak.in1d is not supported for bool or float64 pdarrays
 
 
-.. py:function:: indexof1d(query: arkouda.groupbyclass.groupable, space: arkouda.groupbyclass.groupable) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: indexof1d(query: arkouda.pandas.groupbyclass.groupable, space: arkouda.pandas.groupbyclass.groupable) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return indices of query items in a search list of items. Items not found will be excluded.
    When duplicate terms are present in search space return indices of all occurrences.
@@ -8049,7 +8049,7 @@ Package Contents
 
 
 
-.. py:function:: intersect1d(A: arkouda.groupbyclass.groupable, B: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: intersect1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]
 
    Find the intersection of two arrays.
 
@@ -8069,7 +8069,7 @@ Package Contents
    :raises TypeError: Raised if either A or B is not a groupable
    :raises RuntimeError: Raised if the dtype of either pdarray is not supported
 
-   .. seealso:: :py:obj:`arkouda.groupbyclass.unique`, :py:obj:`union1d`
+   .. seealso:: :py:obj:`arkouda.pandas.groupbyclass.unique`, :py:obj:`union1d`
 
    .. rubric:: Examples
 
@@ -10974,7 +10974,7 @@ Package Contents
    array([0 5 1 2])
 
 
-.. py:function:: setdiff1d(A: arkouda.groupbyclass.groupable, B: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: setdiff1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]
 
    Find the set difference of two arrays.
 
@@ -10994,7 +10994,7 @@ Package Contents
    :raises TypeError: Raised if either A or B is not a pdarray
    :raises RuntimeError: Raised if the dtype of either pdarray is not supported
 
-   .. seealso:: :py:obj:`arkouda.groupbyclass.unique`, :py:obj:`setxor1d`
+   .. seealso:: :py:obj:`arkouda.pandas.groupbyclass.unique`, :py:obj:`setxor1d`
 
    .. rubric:: Notes
 
@@ -11020,7 +11020,7 @@ Package Contents
    [array([2 4 5]), array([2 4 5]), array([2 4 5])]
 
 
-.. py:function:: setxor1d(A: arkouda.groupbyclass.groupable, B: arkouda.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
+.. py:function:: setxor1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]
 
    Find the set exclusive-or (symmetric difference) of two arrays.
 
@@ -12527,7 +12527,7 @@ Package Contents
    array([0.30013431967121934 0.47383036230759112 1.0441791878997098])
 
 
-.. py:function:: union1d(A: arkouda.groupbyclass.groupable, B: arkouda.groupbyclass.groupable) -> arkouda.groupbyclass.groupable
+.. py:function:: union1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable) -> arkouda.pandas.groupbyclass.groupable
 
    Find the union of two arrays/List of Arrays.
 
@@ -12545,7 +12545,7 @@ Package Contents
    :raises TypeError: Raised if either A or B is not a groupable
    :raises RuntimeError: Raised if the dtype of either input is not supported
 
-   .. seealso:: :py:obj:`intersect1d`, :py:obj:`arkouda.groupbyclass.unique`
+   .. seealso:: :py:obj:`intersect1d`, :py:obj:`arkouda.pandas.groupbyclass.unique`
 
    .. rubric:: Examples
 
@@ -12816,7 +12816,7 @@ Package Contents
    array([array([1]) array([2]) array([3]) array([4]) array([5]) array([6])])
 
 
-.. py:function:: where(condition: arkouda.numpy.pdarrayclass.pdarray, A: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], B: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]
+.. py:function:: where(condition: arkouda.numpy.pdarrayclass.pdarray, A: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], B: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]
 
    Return an array with elements chosen from A and B based upon a
    conditioning array. As is the case with numpy.where, the return array

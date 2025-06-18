@@ -3,68 +3,6 @@ arkouda.io
 
 .. py:module:: arkouda.io
 
-.. autoapi-nested-parse::
-
-   Input/output utilities for Arkouda.
-
-   The `arkouda.io` module provides a comprehensive interface for reading from and writing to
-   various file formats including HDF5, Parquet, CSV, and Zarr. It supports importing/exporting
-   data between Arkouda and Pandas, data checkpointing, and server snapshot/restore functionality.
-
-   Core functionality includes:
-   - File format detection and dataset inspection
-   - Reading and writing structured datasets using HDF5 and Parquet
-   - CSV read/write support with header parsing
-   - Zarr format support for chunked array storage
-   - Pandas interop via `import_data` and `export`
-   - Checkpointing (`save_checkpoint`, `load_checkpoint`)
-   - Serialization and deserialization of Arkouda objects (`snapshot`, `restore`)
-   - Dataset tagging for provenance tracking during read operations
-   - Transferring arrays/dataframes between Arkouda server instances (`receive`, `receive_dataframe`)
-
-   Supported data types include `pdarray`, `Strings`, `SegArray`, `Categorical`, `DataFrame`, `Index`,
-   and `MultiIndex`. Many operations also offer compatibility with standard Pandas file formats
-   for interoperability.
-
-   Functions
-   ---------
-   - File inspection: `get_filetype`, `ls`, `ls_csv`, `get_datasets`, `get_columns`
-   - Data import/export: `read_hdf`, `read_parquet`, `read_csv`, `read_zarr`, `read`, `to_hdf`,
-     `to_parquet`, `to_csv`, `to_zarr`, `import_data`, `export`
-   - Snapshotting: `snapshot`, `restore`, `save_checkpoint`, `load_checkpoint`
-   - Advanced features: `update_hdf`, `load`, `load_all`, `read_tagged_data`, `receive`, `receive_dataframe`
-
-   .. rubric:: Examples
-
-   >>> import arkouda as ak
-   >>> from arkouda.io import to_parquet, read_parquet
-   >>> import os.path
-   >>> from pathlib import Path
-   >>> my_path = os.path.join(os.getcwd(), 'output')
-   >>> Path(my_path).mkdir(parents=True, exist_ok=True)
-
-   Create and save a DataFrame
-   >>> data = [ak.arange(10), ak.linspace(0, 1, 10)]
-   >>> Path(my_path + '/parquet_data').mkdir(parents=True, exist_ok=True)
-   >>> to_parquet(data, my_path + '/parquet_data/data.parquet')
-   File written successfully!
-
-   Load the DataFrame back
-   >>> data2 = read_parquet(my_path + '/parquet_data/data*')
-
-   Save to HDF5
-   >>> ak.to_hdf(data, my_path + 'data.hdf5')
-
-   Read from HDF5 with explicit dataset name
-   >>> data3 = ak.read_hdf(my_path + 'data*')
-
-   Export to Pandas-compatible Parquet
-   >>> df = ak.DataFrame({'a': ak.arange(10), 'b': ak.linspace(0, 1, 10)})
-   >>> df2 = ak.export(my_path + '/parquet_data/data.parquet')
-
-   .. seealso:: :py:obj:`arkouda.DataFrame`, :py:obj:`arkouda.pdarray`, :py:obj:`arkouda.strings.Strings`, :py:obj:`arkouda.segarray.SegArray`, :py:obj:`arkouda.categorical.Categorical`, :py:obj:`arkouda.index.Index`, :py:obj:`arkouda.index.MultiIndex`
-
-
 
 Functions
 ---------
@@ -100,8 +38,8 @@ Functions
    arkouda.io.update_hdf
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
 .. py:function:: export(read_path: str, dataset_name: str = 'ak_data', write_file: Optional[str] = None, return_obj: bool = True, index: bool = False)
 
@@ -242,7 +180,7 @@ Module Contents
    - Import can only be performed from hdf5 or parquet files written by pandas.
 
 
-.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False, column_delim: str = ',') -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False, column_delim: str = ',') -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical, arkouda.pandas.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.pandas.index.Index]]]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -297,7 +235,7 @@ Module Contents
    the extension is not required to be a specific format.
 
 
-.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER', column_delim: str = ',', read_nested: bool = True) -> Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical]]
+.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER', column_delim: str = ',', read_nested: bool = True) -> Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical]]
 
    Load multiple pdarrays, Strings, SegArrays, or Categoricals previously saved with ``save_all()``.
 
@@ -419,7 +357,7 @@ Module Contents
    .. seealso:: :py:obj:`ls`
 
 
-.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, column_delim: str = ',', read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical, arkouda.pandas.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.pandas.index.Index]]]
 
    Read datasets from files.
 
@@ -496,7 +434,7 @@ Module Contents
    >>> x = ak.read('path/name_prefix*') # Reads HDF5
 
 
-.. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical, arkouda.pandas.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.pandas.index.Index]]]
 
    Read CSV file(s) into Arkouda objects.
 
@@ -538,7 +476,7 @@ Module Contents
      bytes as uint(8).
 
 
-.. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False, tag_data=False) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False, tag_data=False) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical, arkouda.pandas.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.pandas.index.Index]]]
 
    Read Arkouda objects from HDF5 file/s.
 
@@ -604,7 +542,7 @@ Module Contents
    >>> x = ak.read_hdf('path/name_prefix*') # Reads HDF5
 
 
-.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.categorical.Categorical, arkouda.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.index.Index]]]
+.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical, arkouda.pandas.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.pandas.index.Index]]]
 
    Read Arkouda objects from Parquet file/s.
 

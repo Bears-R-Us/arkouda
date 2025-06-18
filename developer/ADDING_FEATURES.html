@@ -310,7 +310,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -418,6 +426,7 @@ To demonstrate this process, this guide walks through the process of implementin
 <span class="sd">    pdarray</span>
 <span class="sd">        The doubled array</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;times2&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span> <span class="p">:</span> <span class="n">pda</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>

@@ -310,7 +310,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -415,8 +423,8 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arr</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Values are appended to a copy of this array.</p></li>
-<li><p><strong>values</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – These values are appended to a copy of arr.
+<li><p><strong>arr</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Values are appended to a copy of this array.</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – These values are appended to a copy of arr.
 It must be of the correct shape (the same shape as arr, excluding axis).
 If axis is not specified, values can be any shape and will be flattened before use.</p></li>
 <li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>default=None</em>) – The axis along which values are appended.
@@ -429,7 +437,7 @@ Note that append does not occur in-place: a new array is allocated and filled.
 If axis is None, out is a flattened array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -455,8 +463,8 @@ If axis is None, out is a flattened array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arr</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The array to remove elements from</p></li>
-<li><p><strong>obj</strong> (<em>slice</em><em>, </em><em>int</em><em>, </em><em>Sequence</em><em> of </em><em>int</em><em>, </em><em>Sequence</em><em> of </em><em>bool</em><em>, or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The indices to remove from ‘arr’. If obj is a pdarray, it must
+<li><p><strong>arr</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The array to remove elements from</p></li>
+<li><p><strong>obj</strong> (<em>slice</em><em>, </em><em>int</em><em>, </em><em>Sequence</em><em> of </em><em>int</em><em>, </em><em>Sequence</em><em> of </em><em>bool</em><em>, or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The indices to remove from ‘arr’. If obj is a pdarray, it must
 have an integer or bool dtype.</p></li>
 <li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – The axis along which to remove elements. If None, the array will
 be flattened before removing elements. Defaults to None.</p></li>
@@ -466,7 +474,7 @@ be flattened before removing elements. Defaults to None.</p></li>
 <dd class="field-even"><p>A copy of ‘arr’ with elements removed</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -498,7 +506,7 @@ with a height (first axis), width (second axis), and r/g/b channels (third axis)
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>tup</strong> (<em>sequence</em><em> of </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The arrays must have the same shape along all but the second axis, except 1-D arrays which
+<li><p><strong>tup</strong> (<em>sequence</em><em> of </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The arrays must have the same shape along all but the second axis, except 1-D arrays which
 can be any length. In the case of a single array_like input, it will be treated as a sequence of
 arrays; i.e., each element along the zeroth axis is treated as a separate array.</p></li>
 <li><p><strong>dtype</strong> (<em>str</em><em> or </em><em>type</em><em>, </em><em>optional</em>) – If provided, the destination array will have this type.</p></li>
@@ -509,7 +517,7 @@ arrays; i.e., each element along the zeroth axis is treated as a separate array.
 <dd class="field-even"><p>The array formed by stacking the given arrays.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -543,7 +551,7 @@ provide more general stacking and concatenation operations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>tup</strong> (<em>sequence</em><em> of </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The arrays must have the same shape along all but the first axis. 1-D arrays
+<li><p><strong>tup</strong> (<em>sequence</em><em> of </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The arrays must have the same shape along all but the first axis. 1-D arrays
 must have the same length. In the case of a single array_like input, it will be
 treated as a sequence of arrays; i.e., each element along the zeroth axis is treated
 as a separate array.</p></li>
@@ -555,7 +563,7 @@ as a separate array.</p></li>
 <dd class="field-even"><p>The array formed by stacking the given arrays, will be at least 2-D.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">

@@ -1,0 +1,181 @@
+arkouda.pandas.match
+====================
+
+.. py:module:: arkouda.pandas.match
+
+.. autoapi-nested-parse::
+
+   Regular expression match results for segmented string arrays in Arkouda.
+
+   The `arkouda.match` module defines the `Match` class, which encapsulates results from
+   regex-based operations such as `search`, `match`, and `fullmatch` on Arkouda `Strings` arrays.
+
+   This class provides methods to retrieve:
+   - Match booleans (`matched`)
+   - Start and end positions of matches
+   - Capture groups
+   - Matched substrings
+   - Origin indices of matched elements (optional)
+
+   These operations enable powerful pattern recognition and substring extraction
+   on large-scale segmented string arrays, implemented efficiently in the Arkouda server.
+
+   Exports
+   -------
+   - Match : Object representing a regex match result
+   - MatchType : Enum indicating the regex method used (SEARCH, MATCH, FULLMATCH)
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> strings = ak.array(["Isaac Newton", "Ada Lovelace", ""])
+   >>> m = strings.search("(\\w+) (\\w+)")
+   >>> m.matched()
+   array([True True False])
+   >>> m.group(1)
+   array(['Isaac', 'Ada'])
+   >>> m.group(2, return_group_origins=True)
+   (array(['Newton', 'Lovelace']), array([0 1]))
+
+   .. rubric:: Notes
+
+   - `group(0)` returns the full match by default.
+   - If `regexMaxCaptures` is exceeded, the server must be recompiled with a higher limit.
+   - `Match` objects are typically obtained via `Strings.search()`, /
+   `Strings.match()`, or `Strings.fullmatch()`.
+
+   .. seealso:: :py:obj:`arkouda.strings.Strings`, :py:obj:`arkouda.client.regexMaxCaptures`
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   arkouda.pandas.match.Match
+
+
+Module Contents
+---------------
+
+.. py:class:: Match(matched: arkouda.numpy.pdarrayclass.pdarray, starts: arkouda.numpy.pdarrayclass.pdarray, lengths: arkouda.numpy.pdarrayclass.pdarray, indices: arkouda.numpy.pdarrayclass.pdarray, parent_entry_name: str, match_type: MatchType, pattern: str)
+
+   .. py:method:: end() -> arkouda.numpy.pdarrayclass.pdarray
+
+      Return the ends of matches.
+
+      :returns: The end positions of matches
+      :rtype: pdarray
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.search('_+').end()
+      array([2 4 2])
+
+
+
+   .. py:method:: find_matches(return_match_origins: bool = False)
+
+      Return all matches as a new Strings object.
+
+      :param return_match_origins: If True, return a pdarray containing the index of the original string each pattern
+                                   match is from
+      :type return_match_origins: bool
+
+      :returns: * *Strings* -- Strings object containing only matches
+                * *pdarray, int64 (optional)* -- The index of the original string each pattern match is from
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.search('_+').find_matches(return_match_origins=True)
+      (array(['_', '____', '__']), array([0 1 3]))
+
+
+
+   .. py:method:: group(group_num: int = 0, return_group_origins: bool = False)
+
+      Return a new Strings containing the capture group corresponding to group_num.
+
+      For the default, group_num=0, return the full match.
+
+      :param group_num: The index of the capture group to be returned
+      :type group_num: int
+      :param return_group_origins: If True, return a pdarray containing the index of the original string each
+                                   capture group is from
+      :type return_group_origins: bool
+
+      :returns: * *Strings* -- Strings object containing only the capture groups corresponding to group_num
+                * *pdarray, int64 (optional)* -- The index of the original string each group is from
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> strings = ak.array(["Isaac Newton, physics", '<-calculus->', 'Gottfried Leibniz, math'])
+      >>> m = strings.search("(\\w+) (\\w+)")
+      >>> m.group()
+      array(['Isaac Newton', 'Gottfried Leibniz'])
+      >>> m.group(1)
+      array(['Isaac', 'Gottfried'])
+      >>> m.group(2, return_group_origins=True)
+      (array(['Newton', 'Leibniz']), array([0 2]))
+
+
+
+   .. py:method:: match_type() -> str
+
+      Return the type of the Match object.
+
+      :returns: MatchType of the Match object
+      :rtype: str
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.search('_+').match_type()
+      'SEARCH'
+
+
+
+   .. py:method:: matched() -> arkouda.numpy.pdarrayclass.pdarray
+
+      Return a boolean array indiciating whether each element matched.
+
+      :returns: True for elements that match, False otherwise
+      :rtype: pdarray
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.search('_+').matched()
+      array([True True False True False])
+
+
+
+   .. py:attribute:: re
+
+
+   .. py:method:: start() -> arkouda.numpy.pdarrayclass.pdarray
+
+      Return the starts of matches.
+
+      :returns: The start positions of matches
+      :rtype: pdarray
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.search('_+').start()
+      array([1 0 0])
+
+
+

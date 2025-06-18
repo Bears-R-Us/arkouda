@@ -309,7 +309,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -382,7 +390,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bigint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">result_type</span> <span class="k">as</span> <span class="n">ak_result_type</span>
@@ -393,7 +400,7 @@
 
 
 <div class="viewcode-block" id="hstack">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html#arkouda.numpy.hstack">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html#arkouda.hstack">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hstack</span><span class="p">(</span>
     <span class="n">tup</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">pdarray</span><span class="p">],</span>
@@ -443,6 +450,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.hstack((a, b))</span>
 <span class="sd">    array([array([1 4]) array([2 5]) array([3 6])])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="k">if</span> <span class="n">casting</span> <span class="o">!=</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">:</span>
         <span class="c1"># TODO: align with https://numpy.org/doc/stable/glossary.html#term-casting</span>
@@ -516,7 +524,7 @@
 
 
 <div class="viewcode-block" id="vstack">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html#arkouda.numpy.vstack">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html#arkouda.vstack">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">vstack</span><span class="p">(</span>
     <span class="n">tup</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">pdarray</span><span class="p">],</span>
@@ -570,6 +578,7 @@
 <span class="sd">    array([array([1]) array([2]) array([3]) array([4]) array([5]) array([6])])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="k">if</span> <span class="n">casting</span> <span class="o">!=</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">:</span>
         <span class="c1"># TODO: align with https://numpy.org/doc/stable/glossary.html#term-casting</span>
@@ -633,7 +642,7 @@
 
 
 <div class="viewcode-block" id="delete">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html#arkouda.numpy.delete">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html#arkouda.delete">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span>
     <span class="n">arr</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
@@ -673,6 +682,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.delete(arr, [1, 3, 5], None)</span>
 <span class="sd">    array([1 3 5 7 8 9 10 11 12])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">shape</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
 
@@ -722,7 +732,7 @@
 
 
 <div class="viewcode-block" id="append">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html#arkouda.numpy.append">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html#arkouda.append">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span>
     <span class="n">arr</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
@@ -765,6 +775,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.append(b, b, axis = 0)</span>
 <span class="sd">    array([array([4 5 6]) array([7 8 9]) array([4 5 6]) array([7 8 9])])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>

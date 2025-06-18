@@ -10,7 +10,15 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
+   /autoapi/arkouda/pandas/categorical/index
+   /autoapi/arkouda/pandas/dataframe/index
+   /autoapi/arkouda/pandas/groupbyclass/index
+   /autoapi/arkouda/pandas/index/index
+   /autoapi/arkouda/pandas/io/index
+   /autoapi/arkouda/pandas/io_util/index
    /autoapi/arkouda/pandas/join/index
+   /autoapi/arkouda/pandas/match/index
+   /autoapi/arkouda/pandas/matcher/index
    /autoapi/arkouda/pandas/row/index
    /autoapi/arkouda/pandas/series/index
 
@@ -65,7 +73,7 @@ Package Contents
    y       a
 
 
-.. py:class:: Series(data: Union[Tuple, List, arkouda.groupbyclass.groupable_element_type, Series, arkouda.numpy.segarray.SegArray, pandas.Series, pandas.Categorical], name=None, index: Optional[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Tuple, List, arkouda.index.Index]] = None)
+.. py:class:: Series(data: Union[Tuple, List, arkouda.pandas.groupbyclass.groupable_element_type, Series, arkouda.numpy.segarray.SegArray, pandas.Series, pandas.Categorical], name=None, index: Optional[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Tuple, List, arkouda.pandas.index.Index]] = None)
 
    One-dimensional arkouda array with axis labels.
 
@@ -109,7 +117,7 @@ Package Contents
       :rtype: _LocIndexer
 
 
-   .. py:method:: concat(arrays: List, axis: int = 0, index_labels: Union[List[str], None] = None, value_labels: Union[List[str], None] = None, ordered: bool = False) -> Union[arkouda.dataframe.DataFrame, Series]
+   .. py:method:: concat(arrays: List, axis: int = 0, index_labels: Union[List[str], None] = None, value_labels: Union[List[str], None] = None, ordered: bool = False) -> Union[arkouda.pandas.dataframe.DataFrame, Series]
       :staticmethod:
 
 
@@ -446,7 +454,7 @@ Package Contents
       :rtype: _LocIndexer
 
 
-   .. py:method:: locate(key: Union[int, arkouda.numpy.pdarrayclass.pdarray, arkouda.index.Index, Series, List, Tuple]) -> Series
+   .. py:method:: locate(key: Union[int, arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.index.Index, Series, List, Tuple]) -> Series
 
       Lookup values by index label.
 
@@ -551,7 +559,7 @@ Package Contents
       :returns: Bytes of memory consumed.
       :rtype: int
 
-      .. seealso:: :py:obj:`arkouda.numpy.pdarrayclass.nbytes`, :py:obj:`arkouda.Index.memory_usage`, :py:obj:`arkouda.pandas.series.Series.memory_usage`, :py:obj:`arkouda.datafame.DataFrame.memory_usage`
+      .. seealso:: :py:obj:`arkouda.numpy.pdarrayclass.nbytes`, :py:obj:`arkouda.Index.memory_usage`, :py:obj:`arkouda.pandas.series.Series.memory_usage`, :py:obj:`arkouda.pandas.datafame.DataFrame.memory_usage`
 
       .. rubric:: Examples
 
@@ -760,7 +768,7 @@ Package Contents
 
 
 
-   .. py:method:: to_dataframe(index_labels: Union[List[str], None] = None, value_label: Union[str, None] = None) -> arkouda.dataframe.DataFrame
+   .. py:method:: to_dataframe(index_labels: Union[List[str], None] = None, value_label: Union[str, None] = None) -> arkouda.pandas.dataframe.DataFrame
 
       Convert the Series to an Arkouda DataFrame.
 
@@ -870,7 +878,7 @@ Package Contents
 
 
 
-   .. py:method:: validate_key(key: Union[Series, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, List, supported_scalars, arkouda.numpy.segarray.SegArray]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, supported_scalars, arkouda.numpy.segarray.SegArray]
+   .. py:method:: validate_key(key: Union[Series, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, List, supported_scalars, arkouda.numpy.segarray.SegArray]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, supported_scalars, arkouda.numpy.segarray.SegArray]
 
       Validate type requirements for keys when reading or writing the Series.
       Also converts list and tuple arguments into pdarrays.

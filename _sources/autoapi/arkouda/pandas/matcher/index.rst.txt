@@ -1,0 +1,122 @@
+arkouda.pandas.matcher
+======================
+
+.. py:module:: arkouda.pandas.matcher
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   arkouda.pandas.matcher.generic_msg
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   arkouda.pandas.matcher.Matcher
+
+
+Module Contents
+---------------
+
+.. py:class:: Matcher(pattern: arkouda.numpy.dtypes.str_scalars, parent_entry_name: str)
+
+   .. py:attribute:: LocationsInfo
+
+
+   .. py:method:: find_locations() -> None
+
+      Populate Matcher object by finding the positions of matches.
+
+
+
+   .. py:method:: findall(return_match_origins: bool = False)
+
+      Return all non-overlapping matches of pattern in Strings as a new Strings object.
+
+
+
+   .. py:attribute:: full_match_bool
+      :type:  arkouda.numpy.pdarrayclass.pdarray
+
+
+   .. py:attribute:: full_match_ind
+      :type:  arkouda.numpy.pdarrayclass.pdarray
+
+
+   .. py:method:: get_match(match_type: arkouda.pandas.match.MatchType, parent: object = None) -> arkouda.pandas.match.Match
+
+      Create a Match object of type match_type.
+
+
+
+   .. py:attribute:: indices
+      :type:  arkouda.numpy.pdarrayclass.pdarray
+
+
+   .. py:attribute:: lengths
+      :type:  arkouda.numpy.pdarrayclass.pdarray
+
+
+   .. py:attribute:: logger
+
+
+   .. py:attribute:: match_bool
+      :type:  arkouda.numpy.pdarrayclass.pdarray
+
+
+   .. py:attribute:: match_ind
+      :type:  arkouda.numpy.pdarrayclass.pdarray
+
+
+   .. py:attribute:: num_matches
+      :type:  arkouda.numpy.pdarrayclass.pdarray
+
+
+   .. py:attribute:: objType
+      :value: 'Matcher'
+
+
+
+   .. py:attribute:: parent_entry_name
+
+
+   .. py:attribute:: populated
+      :value: False
+
+
+
+   .. py:attribute:: search_bool
+      :type:  arkouda.numpy.pdarrayclass.pdarray
+
+
+   .. py:attribute:: search_ind
+      :type:  arkouda.numpy.pdarrayclass.pdarray
+
+
+   .. py:method:: split(maxsplit: int = 0, return_segments: bool = False)
+
+      Split string by the occurrences of pattern.
+      If maxsplit is nonzero, at most maxsplit splits occur.
+
+
+
+   .. py:attribute:: starts
+      :type:  arkouda.numpy.pdarrayclass.pdarray
+
+
+   .. py:method:: sub(repl: str, count: int = 0, return_num_subs: bool = False)
+
+      Return the Strings obtained by replacing non-overlapping occurrences of pattern
+      with the replacement repl.
+      If count is nonzero, at most count substitutions occur
+      If return_num_subs is True, return the number of substitutions that occurred
+
+
+
+.. py:data:: generic_msg
+

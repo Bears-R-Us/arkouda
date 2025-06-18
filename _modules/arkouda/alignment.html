@@ -309,7 +309,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -427,10 +435,6 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">broadcast</span><span class="p">,</span> <span class="n">unique</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">where</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bigint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
@@ -440,6 +444,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraysetops</span><span class="w"> </span><span class="kn">import</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">in1d</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">argsort</span><span class="p">,</span> <span class="n">coargsort</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">broadcast</span><span class="p">,</span> <span class="n">unique</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;NonUniqueError&quot;</span><span class="p">,</span>
@@ -656,6 +662,9 @@
 <span class="sd">     [0, 4]]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">where</span>
+
     <span class="c1"># Concatenate the space and query in fast (block interleaved) mode</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">space</span><span class="p">):</span>

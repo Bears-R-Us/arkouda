@@ -41,7 +41,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: get_comm_diagnostics() -> arkouda.dataframe.DataFrame
+.. py:function:: get_comm_diagnostics() -> arkouda.pandas.dataframe.DataFrame
 
    Return a DataFrame with the communication diagnostics statistics.
 

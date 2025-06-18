@@ -28,7 +28,7 @@ Module Contents
 
 .. py:data:: SortingAlgorithm
 
-.. py:function:: argsort(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: argsort(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the permutation that sorts the array.
 
@@ -69,7 +69,7 @@ Module Contents
    array([9 3 5 4 2 7 8 0 6 1])
 
 
-.. py:function:: coargsort(arrays: Sequence[Union[arkouda.numpy.strings.Strings, arkouda.numpy.pdarrayclass.pdarray, arkouda.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, ascending: bool = True) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: coargsort(arrays: Sequence[Union[arkouda.numpy.strings.Strings, arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, ascending: bool = True) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the permutation that groups the rows (left-to-right), if the
    input arrays are treated as columns. The permutation sorts numeric

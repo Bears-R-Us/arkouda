@@ -309,7 +309,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -384,9 +392,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client_dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitVector</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">groupable_element_type</span><span class="p">,</span> <span class="n">unique</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">getArkoudaLogger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bigint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_</span> <span class="k">as</span> <span class="n">akbool</span>
@@ -397,11 +403,19 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">zeros_like</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">argsort</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">GroupBy</span><span class="p">,</span>
+    <span class="n">groupable</span><span class="p">,</span>
+    <span class="n">groupable_element_type</span><span class="p">,</span>
+    <span class="n">unique</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">Categorical</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Categorical&quot;</span><span class="p">)</span>
+    <span class="n">generic_msg</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;generic_msg&quot;</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;in1d&quot;</span><span class="p">,</span> <span class="s2">&quot;concatenate&quot;</span><span class="p">,</span> <span class="s2">&quot;union1d&quot;</span><span class="p">,</span> <span class="s2">&quot;intersect1d&quot;</span><span class="p">,</span> <span class="s2">&quot;setdiff1d&quot;</span><span class="p">,</span> <span class="s2">&quot;setxor1d&quot;</span><span class="p">,</span> <span class="s2">&quot;indexof1d&quot;</span><span class="p">]</span>
 
@@ -450,7 +464,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    arkouda.groupbyclass.unique, intersect1d, union1d</span>
+<span class="sd">    arkouda.pandas.groupbyclass.unique, intersect1d, union1d</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -470,7 +484,8 @@
 <span class="sd">    &gt;&gt;&gt; ak.in1d(ak.array([&#39;one&#39;,&#39;two&#39;]),ak.array([&#39;two&#39;, &#39;three&#39;,&#39;four&#39;,&#39;five&#39;]))</span>
 <span class="sd">    array([False True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">):</span>
         <span class="c1"># While isinstance(thing, type) can be called on a tuple of types,</span>
@@ -514,7 +529,7 @@
 
 
 <div class="viewcode-block" id="in1d">
-<a class="viewcode-back" href="../../../usage/setops.html#arkouda.numpy.in1d">[docs]</a>
+<a class="viewcode-back" href="../../../usage/setops.html#arkouda.in1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">in1d</span><span class="p">(</span>
     <span class="n">A</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
@@ -574,7 +589,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    arkouda.groupbyclass.unique, intersect1d, union1d</span>
+<span class="sd">    arkouda.pandas.groupbyclass.unique, intersect1d, union1d</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    ------</span>
@@ -586,7 +601,7 @@
 <span class="sd">    ak.in1d is not supported for bool or float64 pdarrays</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.alignment</span><span class="w"> </span><span class="kn">import</span> <span class="n">NonUniqueError</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
     <span class="n">ua</span><span class="p">:</span> <span class="n">groupable</span>
     <span class="n">ub</span><span class="p">:</span> <span class="n">groupable</span>
@@ -659,7 +674,7 @@
 
 
 <div class="viewcode-block" id="indexof1d">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraysetops/index.html#arkouda.numpy.indexof1d">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraysetops/index.html#arkouda.indexof1d">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">indexof1d</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">space</span><span class="p">:</span> <span class="n">groupable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return indices of query items in a search list of items. Items not found will be excluded.</span>
@@ -706,7 +721,7 @@
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if the dtype of either array is not supported</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
@@ -723,7 +738,7 @@
 
 <span class="c1"># fmt: off</span>
 <div class="viewcode-block" id="concatenate">
-<a class="viewcode-back" href="../../../usage/creation.html#arkouda.numpy.concatenate">[docs]</a>
+<a class="viewcode-back" href="../../../usage/creation.html#arkouda.concatenate">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">concatenate</span><span class="p">(</span>
     <span class="n">arrays</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="s2">&quot;Categorical&quot;</span><span class="p">,</span> <span class="p">]],</span>
@@ -778,10 +793,10 @@
 <span class="sd">    array([&#39;one&#39;, &#39;two&#39;, &#39;three&#39;, &#39;four&#39;, &#39;five&#39;])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int_scalars</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_callback</span>
-
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">objtype</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
@@ -893,7 +908,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">multiarray_setop_validation</span><span class="p">(</span>
     <span class="n">pda1</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">groupable_element_type</span><span class="p">],</span> <span class="n">pda2</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">groupable_element_type</span><span class="p">]</span>
 <span class="p">):</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pda2</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;multi-array setops require same number of arrays in arguments.&quot;</span><span class="p">)</span>
@@ -911,7 +926,7 @@
 
 <span class="c1"># (A | B) Set Union: elements are in one or the other or both</span>
 <div class="viewcode-block" id="union1d">
-<a class="viewcode-back" href="../../../usage/setops.html#arkouda.numpy.union1d">[docs]</a>
+<a class="viewcode-back" href="../../../usage/setops.html#arkouda.union1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">union1d</span><span class="p">(</span>
     <span class="n">A</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
@@ -942,7 +957,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    intersect1d, arkouda.groupbyclass.unique</span>
+<span class="sd">    intersect1d, arkouda.pandas.groupbyclass.unique</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -963,7 +978,8 @@
 <span class="sd">    [array([1 2 2 3 4 4 5 5]), array([1 2 5 3 2 4 4 5]), array([1 2 4 3 5 4 2 5])]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
     <span class="k">if</span> <span class="p">(</span>
         <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">))</span>
@@ -999,7 +1015,7 @@
 
 <span class="c1"># (A &amp; B) Set Intersection: elements have to be in both arrays</span>
 <div class="viewcode-block" id="intersect1d">
-<a class="viewcode-back" href="../../../usage/setops.html#arkouda.numpy.intersect1d">[docs]</a>
+<a class="viewcode-back" href="../../../usage/setops.html#arkouda.intersect1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">intersect1d</span><span class="p">(</span><span class="n">A</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">groupable</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1029,7 +1045,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    arkouda.groupbyclass.unique, union1d</span>
+<span class="sd">    arkouda.pandas.groupbyclass.unique, union1d</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1050,7 +1066,8 @@
 <span class="sd">    [array([1 3]), array([1 3]), array([1 3])]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
     <span class="n">ua</span><span class="p">:</span> <span class="n">groupable</span>
     <span class="n">ub</span><span class="p">:</span> <span class="n">groupable</span>
@@ -1114,7 +1131,7 @@
 
 <span class="c1"># (A - B) Set Difference: elements have to be in first array but not second</span>
 <div class="viewcode-block" id="setdiff1d">
-<a class="viewcode-back" href="../../../usage/setops.html#arkouda.numpy.setdiff1d">[docs]</a>
+<a class="viewcode-back" href="../../../usage/setops.html#arkouda.setdiff1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">setdiff1d</span><span class="p">(</span><span class="n">A</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">groupable</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1144,7 +1161,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    arkouda.groupbyclass.unique, setxor1d</span>
+<span class="sd">    arkouda.pandas.groupbyclass.unique, setxor1d</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -1169,7 +1186,8 @@
 <span class="sd">    &gt;&gt;&gt; ak.setdiff1d(multia, multib)</span>
 <span class="sd">    [array([2 4 5]), array([2 4 5]), array([2 4 5])]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
     <span class="n">ua</span><span class="p">:</span> <span class="n">groupable</span>
     <span class="n">ub</span><span class="p">:</span> <span class="n">groupable</span>
@@ -1230,7 +1248,7 @@
 
 <span class="c1"># (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection</span>
 <div class="viewcode-block" id="setxor1d">
-<a class="viewcode-back" href="../../../usage/setops.html#arkouda.numpy.setxor1d">[docs]</a>
+<a class="viewcode-back" href="../../../usage/setops.html#arkouda.setxor1d">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">setxor1d</span><span class="p">(</span><span class="n">A</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span> <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">groupable</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1279,7 +1297,8 @@
 <span class="sd">    &gt;&gt;&gt; ak.setxor1d(multia, multib)</span>
 <span class="sd">    [array([2 2 4 4 5 5]), array([2 5 2 4 4 5]), array([2 4 5 4 2 5])]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
     <span class="n">ua</span><span class="p">:</span> <span class="n">groupable</span>
     <span class="n">ub</span><span class="p">:</span> <span class="n">groupable</span>

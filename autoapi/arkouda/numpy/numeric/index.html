@@ -310,7 +310,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -640,13 +648,13 @@ attributes – see the documentation for details.</p>
 <dd><p>Return the element-wise absolute value of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray containing absolute values of the input array elements</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -672,8 +680,8 @@ attributes – see the documentation for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the inverse cosine will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -683,7 +691,7 @@ its original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -705,8 +713,8 @@ of the original pdarray</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the inverse hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will
 retain its original value. Default set to True.</p></li>
 </ul>
@@ -716,7 +724,7 @@ retain its original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -738,8 +746,8 @@ of the original pdarray</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the inverse sine will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -749,7 +757,7 @@ its original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -771,8 +779,8 @@ of the original pdarray</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the inverse hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -782,7 +790,7 @@ its original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -804,8 +812,8 @@ of the original pdarray</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the inverse tangent will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -815,7 +823,7 @@ its original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -840,9 +848,9 @@ The result is between -pi and pi.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>num</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – Numerator of the arctan2 argument.</p></li>
-<li><p><strong>denom</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – Denominator of the arctan2 argument.</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>num</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – Numerator of the arctan2 argument.</p></li>
+<li><p><strong>denom</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – Denominator of the arctan2 argument.</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the inverse tangent will be applied to the corresponding values. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -853,7 +861,7 @@ of the original pdarray, using the signed values or the numerator and
 denominator to get proper placement on unit circle.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – <div class="line-block">
@@ -882,8 +890,8 @@ denominator to get proper placement on unit circle.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the inverse hyperbolic tangent will be applied to the corresponding value. Elsewhere,
 it will retain its original value. Default set to True.</p></li>
 </ul>
@@ -893,7 +901,7 @@ it will retain its original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameters are not a pdarray or numeric scalar.</p>
@@ -919,8 +927,8 @@ If equal_Nan is True, then pairwise-corresponding nans are considered equal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda_a</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>pda_b</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>pda_a</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>pda_b</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
 <li><p><strong>equal_nan</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Determines how to handle nans</p></li>
 </ul>
 </dd>
@@ -959,13 +967,13 @@ If equal_Nan is True, then pairwise-corresponding nans are considered equal.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.numeric.cast">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.numeric.</span></span><span class="sig-name descname"><span class="pre">cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><span class="pre">arkouda.numpy.dtypes.bigint</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.numpy.numeric.ErrorMode" title="arkouda.numpy.numeric.ErrorMode"><span class="pre">ErrorMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ErrorMode.strict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/numeric.html#cast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.numeric.cast" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.numeric.</span></span><span class="sig-name descname"><span class="pre">cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><span class="pre">arkouda.numpy.dtypes.bigint</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.numpy.numeric.ErrorMode" title="arkouda.numpy.numeric.ErrorMode"><span class="pre">ErrorMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ErrorMode.strict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/numeric.html#cast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.numeric.cast" title="Link to this definition">¶</a></dt>
 <dd><p>Cast an array to another dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The array of values to cast</p></li>
-<li><p><strong>dt</strong> (<em>np.dtype</em><em>, </em><em>type</em><em>, </em><em>str</em><em>, or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><em>bigint</em></a>) – The target dtype to cast values to</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The array of values to cast</p></li>
+<li><p><strong>dt</strong> (<em>np.dtype</em><em>, </em><em>type</em><em>, </em><em>str</em><em>, or </em><a class="reference internal" href="../../index.html#arkouda.bigint" title="arkouda.bigint"><em>bigint</em></a>) – The target dtype to cast values to</p></li>
 <li><p><strong>errors</strong> (<em>{strict</em><em>, </em><em>ignore</em><em>, </em><em>return_validity}</em><em>, </em><em>default=ErrorMode.strict</em>) – <p>Controls how errors are handled when casting strings to a numeric type
 (ignored for casts from numeric types).</p>
 <blockquote>
@@ -997,7 +1005,7 @@ returned with True where the cast succeeded and False where it failed.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, <a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a>], Tuple[<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]]</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>, <a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a>], Tuple[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]]</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -1031,8 +1039,8 @@ has the precision and capacity to hold the desired result.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is applied over the input. At locations where the condition is True, the
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is applied over the input. At locations where the condition is True, the
 corresponding value will be acted on by the function. Elsewhere, it will retain its
 original value. Default set to True.</p></li>
 </ul>
@@ -1041,7 +1049,7 @@ original value. Default set to True.</p></li>
 <dd class="field-even"><p>A pdarray containing ceiling values of the input array elements</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -1068,9 +1076,9 @@ See examples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – the array of values to clip</p></li>
-<li><p><strong>lo</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – the lower value of the clipping range</p></li>
-<li><p><strong>hi</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – the higher value of the clipping range
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – the array of values to clip</p></li>
+<li><p><strong>lo</strong> (<a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – the lower value of the clipping range</p></li>
+<li><p><strong>hi</strong> (<a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – the higher value of the clipping range
 If lo or hi (or both) are pdarrays, the check is by pairwise elements.
 See examples.</p></li>
 </ul>
@@ -1084,7 +1092,7 @@ or becomes hi if x &gt; hi.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1126,8 +1134,8 @@ If all inputs are int64, output is int64, but if any input is float64, output is
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the cosine will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -1137,7 +1145,7 @@ its original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -1159,8 +1167,8 @@ of the original pdarray</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -1170,7 +1178,7 @@ its original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -1191,7 +1199,7 @@ of the original pdarray</p>
 <dd><p>Compute the nonzero count of a given array. 1D case only, for now.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The input data, in pdarray form, numeric, bool, or str</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The input data, in pdarray form, numeric, bool, or str</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The nonzero count of the entire pdarray</p>
@@ -1229,14 +1237,14 @@ of the original pdarray</p>
 result is the product of elements up to and including <code class="docutils literal notranslate"><span class="pre">i</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray containing cumulative products for each element
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -1263,14 +1271,14 @@ of the original pdarray</p>
 result is the sum of elements up to and including <code class="docutils literal notranslate"><span class="pre">i</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray containing cumulative sums for each element
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -1299,8 +1307,8 @@ of the original pdarray</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True, the
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True, the
 corresponding value will be converted from degrees to radians. Elsewhere, it will retain its
 original value. Default set to True.</p></li>
 </ul>
@@ -1310,7 +1318,7 @@ original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -1331,14 +1339,14 @@ of the original pdarray</p>
 <dd><p>Return the element-wise exponential of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray containing exponential values of the input
 array elements</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -1362,14 +1370,14 @@ array elements</p>
 <dd><p>Return the element-wise exponential of the array minus one.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray containing e raised to each of the inputs,
 then subtracting one.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -1396,9 +1404,9 @@ The matrix need not be square.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>N</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>)</p></li>
-<li><p><strong>M</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>)</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=0</em>) – <div class="line-block">
+<li><p><strong>N</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>)</p></li>
+<li><p><strong>M</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>)</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=0</em>) – <div class="line-block">
 <div class="line">if k = 0, zeros start at element [0,0] and proceed along diagonal</div>
 <div class="line">if k &gt; 0, zeros start at element [0,k] and proceed along diagonal</div>
 <div class="line">if k &lt; 0, zeros start at element [k,0] and proceed along diagonal</div>
@@ -1411,7 +1419,7 @@ The matrix need not be square.</p>
 <dd class="field-even"><p>an array of zeros with ones along the specified diagonal</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1439,8 +1447,8 @@ Server returns an error if rank of pda &lt; 2</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is applied over the input. At locations where the condition is True, the
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is applied over the input. At locations where the condition is True, the
 corresponding value will be acted on by the function. Elsewhere, it will retain its
 original value. Default set to True.</p></li>
 </ul>
@@ -1449,7 +1457,7 @@ original value. Default set to True.</p></li>
 <dd class="field-even"><p>A pdarray containing floor values of the input array elements</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -1466,12 +1474,12 @@ original value. Default set to True.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.numeric.hash">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.numeric.</span></span><span class="sig-name descname"><span class="pre">hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/numeric.html#hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.numeric.hash" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.numeric.</span></span><span class="sig-name descname"><span class="pre">hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/numeric.html#hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.numeric.hash" title="Link to this definition">¶</a></dt>
 <dd><p>Return an element-wise hash of the array or list of arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>     or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em> of </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>     or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em> of </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>)</p></li>
 <li><p><strong>full</strong> (<em>bool</em><em>, </em><em>default=True</em>) – This is only used when a single pdarray is passed into hash
 By default, a 128-bit hash is computed and returned as
 two int64 arrays. If full=False, then a 64-bit hash
@@ -1528,8 +1536,8 @@ do a rotation by the ordinal of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The values to histogram</p></li>
-<li><p><strong>bins</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=10</em>) – The number of equal-size bins to use (default: 10)</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to histogram</p></li>
+<li><p><strong>bins</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=10</em>) – The number of equal-size bins to use (default: 10)</p></li>
 <li><p><strong>range</strong> (<em>(</em><em>minVal</em><em>, </em><em>maxVal</em><em>)</em><em>, </em><em>optional</em>) – The range of the values to count.
 Values outside of this range are dropped.
 By default, all values are counted.</p></li>
@@ -1539,7 +1547,7 @@ By default, all values are counted.</p></li>
 <dd class="field-even"><p>The number of values present in each bin and the bin edges</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64">int64</a> or <a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.float64" title="arkouda.numpy.dtypes.float64">float64</a>])</p>
+<dd class="field-odd"><p>(<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64">int64</a> or <a class="reference internal" href="../../index.html#arkouda.float64" title="arkouda.float64">float64</a>])</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1585,9 +1593,9 @@ If range parameter is provided, the interval is [range[0], range[1]].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – A pdarray containing the x coordinates of the points to be histogrammed.</p></li>
-<li><p><strong>y</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – A pdarray containing the y coordinates of the points to be histogrammed.</p></li>
-<li><p><strong>bins</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em> or </em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>, </em><em>default=10</em>) – The number of equal-size bins to use.
+<li><p><strong>x</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – A pdarray containing the x coordinates of the points to be histogrammed.</p></li>
+<li><p><strong>y</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – A pdarray containing the y coordinates of the points to be histogrammed.</p></li>
+<li><p><strong>bins</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em> or </em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>, </em><em>default=10</em>) – The number of equal-size bins to use.
 If int, the number of bins for the two dimensions (nx=ny=bins).
 If [int, int], the number of bins in each dimension (nx, ny = bins).
 Defaults to 10</p></li>
@@ -1611,7 +1619,7 @@ values in y are histogrammed along the second dimension.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1656,8 +1664,8 @@ by range[0] for x and range[1] for y..</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sample</strong> (<em>Sequence</em><em> of </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – A sequence of pdarrays containing the coordinates of the points to be histogrammed.</p></li>
-<li><p><strong>bins</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em> or </em><em>Sequence</em><em> of </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=10</em>) – The number of equal-size bins to use.
+<li><p><strong>sample</strong> (<em>Sequence</em><em> of </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – A sequence of pdarrays containing the coordinates of the points to be histogrammed.</p></li>
+<li><p><strong>bins</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em> or </em><em>Sequence</em><em> of </em><a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=10</em>) – The number of equal-size bins to use.
 If int, the number of bins for all dimensions (nx=ny=…=bins).
 If [int, int, …], the number of bins in each dimension (nx, ny, … = bins).
 Defaults to 10</p></li>
@@ -1679,7 +1687,7 @@ Values in second pdarray are histogrammed along the second dimension and so on.<
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, Sequence[<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, Sequence[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1720,14 +1728,14 @@ or in the inverval determined by range[dimension], if provided.</p>
 <dd><p>Return the element-wise isfinite check applied to the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray containing boolean values indicating whether the
 input array elements are finite</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1750,14 +1758,14 @@ input array elements are finite</p>
 <dd><p>Return the element-wise isinf check applied to the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray containing boolean values indicating whether the
 input array elements are infinite (positive or negative)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1780,14 +1788,14 @@ input array elements are infinite (positive or negative)</p>
 <dd><p>Return the element-wise isnan check applied to the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray containing boolean values indicating whether the
 input array elements are NaN</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1810,14 +1818,14 @@ input array elements are NaN</p>
 <dd><p>Return the element-wise natural log of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray containing natural log values of the input
 array elements</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -1847,13 +1855,13 @@ array([0.00000000… 3.32192809… 6.64385618…])</p>
 <dd><p>Return the element-wise base 10 log of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – array to compute on</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – array to compute on</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>pdarray containing base 10 log values of the input array elements</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1871,14 +1879,14 @@ array([0.00000000… 3.32192809… 6.64385618…])</p>
 <dd><p>Return the element-wise natural log of one plus the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – array to compute on</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – array to compute on</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>pdarray containing natural log values of the input array elements,
 adding one before taking the log</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1895,13 +1903,13 @@ adding one before taking the log</p>
 <dd><p>Return the element-wise base 2 log of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – array to compute on</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – array to compute on</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>pdarray containing base 2 log values of the input array elements</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1920,15 +1928,15 @@ adding one before taking the log</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pdaLeft</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>pdaRight</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>pdaLeft</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>pdaRight</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the matrix product pdaLeft x pdaRight</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1957,7 +1965,7 @@ are incompatible with matrix multiplication.</p>
 <dd><p>Compute the median of a given array.  1d case only, for now.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The input data, in pdarray form, numeric type or boolean</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The input data, in pdarray form, numeric type or boolean</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><div class="line-block">
@@ -1992,8 +2000,8 @@ Accuracy only guaranteed for 64 bit values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><em>bigint</em></a>) – Values to find the next representable value of.</p></li>
-<li><p><strong>x2</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, or </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><em>bigint</em></a>) – The direction where to look for the next representable value of <cite>x1</cite>.
+<li><p><strong>x1</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, or </em><a class="reference internal" href="../../index.html#arkouda.bigint" title="arkouda.bigint"><em>bigint</em></a>) – Values to find the next representable value of.</p></li>
+<li><p><strong>x2</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, or </em><a class="reference internal" href="../../index.html#arkouda.bigint" title="arkouda.bigint"><em>bigint</em></a>) – The direction where to look for the next representable value of <cite>x1</cite>.
 If <cite>x1.shape != x2.shape</cite>, they must be broadcastable to a common shape
 (which becomes the shape of the output).</p></li>
 </ul>
@@ -2003,7 +2011,7 @@ If <cite>x1.shape != x2.shape</cite>, they must be broadcastable to a common sha
 This is a scalar if both <cite>x1</cite> and <cite>x2</cite> are scalars.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a> or float</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or float</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -2026,8 +2034,8 @@ This is a scalar if both <cite>x1</cite> and <cite>x2</cite> are scalars.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – data whose percentile will be computed</p></li>
-<li><p><strong>q</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>Tuple</em><em>, or </em><em>np.ndarray</em>) – a scalar, tuple, or np.ndarray of q values for the computation.  All values
+<li><p><strong>a</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – data whose percentile will be computed</p></li>
+<li><p><strong>q</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>Tuple</em><em>, or </em><em>np.ndarray</em>) – a scalar, tuple, or np.ndarray of q values for the computation.  All values
 must be in the range 0 &lt;= q &lt;= 100</p></li>
 <li><p><strong>axis</strong> (<em>None</em><em>, </em><em>int scalar</em><em>, or </em><em>tuple</em><em> of </em><em>int scalars</em>) – the axis or axes along which the percentiles are computed.  The default is None,
 which computes the percenntile along a flattened version of the array.</p></li>
@@ -2048,7 +2056,7 @@ q.ndim + pda.ndim.  If this is not in the compiled ranks, an error will be throw
 even if the final result would be in the compiled ranks.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a> or scalar</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or scalar</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -2093,9 +2101,9 @@ but where mask = True, A is overwritten with the corresponding entry from Values
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Value(s) used when mask is False (see Notes for allowed dtypes)</p></li>
-<li><p><strong>mask</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Used to choose values from A or B, must be same size as A, and of type <a href="#id5"><span class="problematic" id="id6">ak.bool_</span></a></p></li>
-<li><p><strong>Values</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Value(s) used when mask is False (see Notes for allowed dtypes)</p></li>
+<li><p><strong>A</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Value(s) used when mask is False (see Notes for allowed dtypes)</p></li>
+<li><p><strong>mask</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Used to choose values from A or B, must be same size as A, and of type <a href="#id5"><span class="problematic" id="id6">ak.bool_</span></a></p></li>
+<li><p><strong>Values</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Value(s) used when mask is False (see Notes for allowed dtypes)</p></li>
 </ul>
 </dd>
 </dl>
@@ -2140,8 +2148,8 @@ an allowed pair (see Notes for details).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – data whose quantile will be computed</p></li>
-<li><p><strong>q</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>Tuple</em><em>, or </em><em>np.ndarray</em>) – a scalar, tuple, or np.ndarray of q values for the computation.  All values
+<li><p><strong>a</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – data whose quantile will be computed</p></li>
+<li><p><strong>q</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>Tuple</em><em>, or </em><em>np.ndarray</em>) – a scalar, tuple, or np.ndarray of q values for the computation.  All values
 must be in the range 0 &lt;= q &lt;= 1</p></li>
 <li><p><strong>axis</strong> (<em>None</em><em>, </em><em>int scalar</em><em>, or </em><em>tuple</em><em> of </em><em>int scalars</em>) – the axis or axes along which the quantiles are computed.  The default is None,
 which computes the quantile along a flattened version of the array.</p></li>
@@ -2162,7 +2170,7 @@ q.ndim + pda.ndim.  If this is not in the compiled ranks, an error will be throw
 even if the final result would be in the compiled ranks.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a> or scalar</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or scalar</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -2203,8 +2211,8 @@ Raised if the result would have a rank not in the compiled ranks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True, the
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True, the
 corresponding value will be converted from radians to degrees. Elsewhere, it will retain its
 original value. Default set to True.</p></li>
 </ul>
@@ -2214,7 +2222,7 @@ original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -2236,8 +2244,8 @@ of the original pdarray</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is applied over the input. At locations where the condition is True, the
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is applied over the input. At locations where the condition is True, the
 corresponding value will be acted on by the function. Elsewhere, it will retain its
 original value. Default set to True.</p></li>
 </ul>
@@ -2246,7 +2254,7 @@ original value. Default set to True.</p></li>
 <dd class="field-even"><p>A pdarray containing input array elements rounded to the nearest integer</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -2266,13 +2274,13 @@ original value. Default set to True.</p></li>
 <dd><p>Return the element-wise sign of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray containing sign values of the input array elements</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -2293,8 +2301,8 @@ original value. Default set to True.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the sine will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -2304,7 +2312,7 @@ its original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -2326,8 +2334,8 @@ of the original pdarray</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -2337,7 +2345,7 @@ its original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -2359,8 +2367,8 @@ of the original pdarray</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is applied over the input. At locations where the condition is True, the
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is applied over the input. At locations where the condition is True, the
 corresponding value will be acted on by the function. Elsewhere, it will retain its
 original value. Default set to True.</p></li>
 </ul>
@@ -2370,7 +2378,7 @@ original value. Default set to True.</p></li>
 array elements</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -2394,8 +2402,8 @@ A call such as <code class="docutils literal notranslate"><span class="pre">np.t
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The array from which to take elements</p></li>
-<li><p><strong>indices</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The indices of the values to extract. Also allow scalars for indices.</p></li>
+<li><p><strong>a</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The array from which to take elements</p></li>
+<li><p><strong>indices</strong> (<a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The indices of the values to extract. Also allow scalars for indices.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – The axis over which to select values. By default, the flattened input array is used.</p></li>
 </ul>
 </dd>
@@ -2403,7 +2411,7 @@ A call such as <code class="docutils literal notranslate"><span class="pre">np.t
 <dd class="field-even"><p>The returned array has the same type as <cite>a</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -2423,8 +2431,8 @@ A call such as <code class="docutils literal notranslate"><span class="pre">np.t
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the tangent will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -2434,7 +2442,7 @@ its original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -2456,8 +2464,8 @@ of the original pdarray</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the hyperbolic tangent will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -2467,7 +2475,7 @@ its original value. Default set to True.</p></li>
 of the original pdarray</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -2489,7 +2497,7 @@ of the original pdarray</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
 <li><p><strong>axes</strong> (<em>Tuple</em><em>[</em><em>int</em><em>,</em><em>...</em><em>] </em><em>Optional</em><em>, </em><em>defaults to None</em>) – If specified, must be a tuple which contains a permutation of the axes of pda.</p></li>
 </ul>
 </dd>
@@ -2501,7 +2509,7 @@ For an n-D array, if axes are given, their order indicates how the axes are perm
 If axes is None, the axes are reversed.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -2532,8 +2540,8 @@ If axes is None, the axes are reversed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>diag</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – <div class="line-block">
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>diag</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – <div class="line-block">
 <div class="line">if diag = 0, zeros start just above the main diagonal</div>
 <div class="line">if diag = 1, zeros start at the main diagonal</div>
 <div class="line">if diag = 2, zeros start just below the main diagonal</div>
@@ -2546,7 +2554,7 @@ If axes is None, the axes are reversed.</p>
 <dd class="field-even"><p>a copy of pda with zeros in the upper triangle</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -2580,8 +2588,8 @@ If axes is None, the axes are reversed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>diag</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=0</em>) – <div class="line-block">
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>diag</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=0</em>) – <div class="line-block">
 <div class="line">if diag = 0, zeros start just below the main diagonal</div>
 <div class="line">if diag = 1, zeros start at the main diagonal</div>
 <div class="line">if diag = 2, zeros start just above the main diagonal</div>
@@ -2594,7 +2602,7 @@ If axes is None, the axes are reversed.</p>
 <dd class="field-even"><p>a copy of pda with zeros in the lower triangle</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -2628,8 +2636,8 @@ If axes is None, the axes are reversed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is applied over the input. At locations where the condition is True, the
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>where</strong> (<em>bool</em><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is applied over the input. At locations where the condition is True, the
 corresponding value will be acted on by the function. Elsewhere, it will retain its
 original value. Default set to True.</p></li>
 </ul>
@@ -2638,7 +2646,7 @@ original value. Default set to True.</p></li>
 <dd class="field-even"><p>A pdarray containing input array elements truncated to the nearest integer</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
@@ -2654,11 +2662,11 @@ original value. Default set to True.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.numeric.value_counts">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.numeric.</span></span><span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../groupbyclass/index.html#arkouda.groupbyclass.groupable" title="arkouda.groupbyclass.groupable"><span class="pre">arkouda.groupbyclass.groupable</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/numeric.html#value_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.numeric.value_counts" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.numeric.</span></span><span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">arkouda.groupbyclass.groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/numeric.html#value_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.numeric.value_counts" title="Link to this definition">¶</a></dt>
 <dd><p>Count the occurrences of the unique values of an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The array of values to count</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The array of values to count</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
@@ -2697,8 +2705,8 @@ vecdot function above.  See <a class="reference external" href="https://numpy.or
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>x2</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>x1</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
+<li><p><strong>x2</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>None</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>)</p></li>
 </ul>
 </dd>
@@ -2706,7 +2714,7 @@ vecdot function above.  See <a class="reference external" href="https://numpy.or
 <dd class="field-even"><p>x1 vecdot x2</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, numeric_scalar</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, numeric_scalar</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -2737,7 +2745,7 @@ of matching shape.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.numeric.where">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.numeric.</span></span><span class="sig-name descname"><span class="pre">where</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/numeric.html#where"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.numeric.where" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.numeric.</span></span><span class="sig-name descname"><span class="pre">where</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/numeric.html#where"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.numeric.where" title="Link to this definition">¶</a></dt>
 <dd><p>Return an array with elements chosen from A and B based upon a
 conditioning array. As is the case with numpy.where, the return array
 consists of values from the first array (A) where the conditioning array
@@ -2746,9 +2754,9 @@ array elements are False.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>condition</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Used to choose values from A or B</p></li>
-<li><p><strong>A</strong> (<em>str</em><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Value(s) used when condition is True</p></li>
-<li><p><strong>B</strong> (<em>str</em><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Value(s) used when condition is False</p></li>
+<li><p><strong>condition</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Used to choose values from A or B</p></li>
+<li><p><strong>A</strong> (<em>str</em><em>, </em><a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Value(s) used when condition is True</p></li>
+<li><p><strong>B</strong> (<em>str</em><em>, </em><a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Value(s) used when condition is False</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2756,7 +2764,7 @@ array elements are False.</p>
 the condition is False</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">

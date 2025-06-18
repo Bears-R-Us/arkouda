@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="arkouda.pandas.row" href="../row/index.html" /><link rel="prev" title="arkouda.pandas" href="../index.html" />
+<link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="arkouda.pandas.match" href="../match/index.html" /><link rel="prev" title="arkouda.pandas.io_util" href="../io_util/index.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>arkouda.pandas.join - arkouda documentation</title>
@@ -310,7 +310,15 @@
 </ul>
 </li>
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">arkouda.pandas</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4 current current-page"><a class="current reference internal" href="#">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -420,8 +428,8 @@ start- and end-points.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>starts</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a>) – The start value of each range</p></li>
-<li><p><strong>ends</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a>) – The end value (exclusive) of each range</p></li>
+<li><p><strong>starts</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a>) – The start value of each range</p></li>
+<li><p><strong>ends</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a>) – The end value (exclusive) of each range</p></li>
 <li><p><strong>stride</strong> (<em>int</em>) – Difference between successive elements of each range</p></li>
 <li><p><strong>return_lengths</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to return the lengths of each segment. Default False.</p></li>
 </ul>
@@ -438,7 +446,7 @@ start- and end-points.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>|<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64">int64</a>, <a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>|<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64">int64</a>, <a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>|<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64">int64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>|<a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64">int64</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>|<a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64">int64</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>|<a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64">int64</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -450,10 +458,10 @@ start- and end-points.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a1</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a>) – pdarray to be joined</p></li>
-<li><p><strong>a2</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a>) – pdarray to be joined</p></li>
-<li><p><strong>t1</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – timestamps in millis corresponding to the a1 pdarray</p></li>
-<li><p><strong>t2</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – timestamps in millis corresponding to the a2 pdarray</p></li>
+<li><p><strong>a1</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a>) – pdarray to be joined</p></li>
+<li><p><strong>a2</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a>) – pdarray to be joined</p></li>
+<li><p><strong>t1</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – timestamps in millis corresponding to the a1 pdarray</p></li>
+<li><p><strong>t2</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – timestamps in millis corresponding to the a2 pdarray</p></li>
 <li><p><strong>dt</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>int</em><em>,</em><em>np.int64</em><em>]</em>) – time delta</p></li>
 <li><p><strong>pred</strong> (<em>str</em>) – time window predicate</p></li>
 <li><p><strong>result_limit</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>int</em><em>,</em><em>np.int64</em><em>]</em>) – size limit for returned result</p></li>
@@ -469,7 +477,7 @@ start- and end-points.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -490,23 +498,23 @@ result_limit is not an int</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../row/index.html">
+          <a class="next-page" href="../match/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">arkouda.pandas.row</div>
+                <div class="title">arkouda.pandas.match</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../index.html">
+          <a class="prev-page" href="../io_util/index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">arkouda.pandas</div>
+                <div class="title">arkouda.pandas.io_util</div>
                 
               </div>
             </a>

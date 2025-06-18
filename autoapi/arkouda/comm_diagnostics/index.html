@@ -310,7 +310,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -390,7 +398,7 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics" title="arkouda.comm_diagnostics.get_comm_diagnostics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics</span></code></a>(→ arkouda.dataframe.DataFrame)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics" title="arkouda.comm_diagnostics.get_comm_diagnostics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics</span></code></a>(→ arkouda.pandas.dataframe.DataFrame)</p></td>
 <td><p>Return a DataFrame with the communication diagnostics statistics.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_amo" title="arkouda.comm_diagnostics.get_comm_diagnostics_amo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_comm_diagnostics_amo</span></code></a>()</p></td>
@@ -479,11 +487,11 @@
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.comm_diagnostics.get_comm_diagnostics">
-<span class="sig-prename descclassname"><span class="pre">arkouda.comm_diagnostics.</span></span><span class="sig-name descname"><span class="pre">get_comm_diagnostics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">arkouda.dataframe.DataFrame</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/comm_diagnostics.html#get_comm_diagnostics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.comm_diagnostics.get_comm_diagnostics" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.comm_diagnostics.</span></span><span class="sig-name descname"><span class="pre">get_comm_diagnostics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><span class="pre">arkouda.pandas.dataframe.DataFrame</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/comm_diagnostics.html#get_comm_diagnostics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.comm_diagnostics.get_comm_diagnostics" title="Link to this definition">¶</a></dt>
 <dd><p>Return a DataFrame with the communication diagnostics statistics.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -498,7 +506,7 @@
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -514,7 +522,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -529,7 +537,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -544,7 +552,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -560,7 +568,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -577,7 +585,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -594,7 +602,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -609,7 +617,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -624,7 +632,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -641,7 +649,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -659,7 +667,7 @@ but did not arrive in the cache before being accessed
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -674,7 +682,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -689,7 +697,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -704,7 +712,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -719,7 +727,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -734,7 +742,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -749,7 +757,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -764,7 +772,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -779,7 +787,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -794,7 +802,7 @@ populated with the statistic value from each locale.</p>
 populated with the statistic value from each locale.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>

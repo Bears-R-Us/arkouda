@@ -310,7 +310,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -388,7 +396,7 @@
 <p>Like Pandas, Arkouda supports <code class="docutils literal notranslate"><span class="pre">DataFrames</span></code>. The purpose and intended functionality remains the same in Arkouda, but are configured to be based on <code class="docutils literal notranslate"><span class="pre">arkouda.pdarrays</span></code>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.DataFrame">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">DataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initialdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/dataframe.html#DataFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">DataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initialdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/dataframe.html#DataFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame" title="Link to this definition">¶</a></dt>
 <dd><p>A DataFrame structure based on arkouda arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -396,8 +404,8 @@
 <li><p><strong>initialdata</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em> or </em><em>dictionary</em><em> of </em><em>lists</em><em>, </em><em>tuples</em><em>, or </em><em>pdarrays</em>) – Each list/dictionary entry corresponds to one column of the data and
 should be a homogenous type. Different columns may have different
 types. If using a dictionary, keys should be strings.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
-<li><p><strong>columns</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
+<li><p><strong>index</strong> (<a class="reference internal" href="Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
+<li><p><strong>columns</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
 be strings. Defaults to an stringified integer range.</p></li>
 </ul>
 </dd>
@@ -753,7 +761,7 @@ to keep the index column, set this to True.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak_df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">)})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">ak_df</span><span class="p">)</span>
-<span class="go">arkouda.dataframe.DataFrame</span>
+<span class="go">arkouda.pandas.dataframe.DataFrame</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">display</span><span class="p">(</span><span class="n">ak_df</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -830,7 +838,7 @@ When False, return a new object.</p></li>
 None when <cite>inplace=True</cite></p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a> or None</p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a> or None</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -915,8 +923,8 @@ None when <cite>inplace=True</cite></p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em>) – An (ordered) list of column names or a single string to group by.</p></li>
-<li><p><strong>use_series</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, returns an arkouda.dataframe.DataFrameGroupBy object.
-Otherwise an arkouda.groupbyclass.GroupBy object.</p></li>
+<li><p><strong>use_series</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
+Otherwise an arkouda.pandas.groupbyclass.GroupBy object.</p></li>
 <li><p><strong>as_index</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, groupby columns will be set as index
 otherwise, the groupby columns will be treated as DataFrame columns.</p></li>
 <li><p><strong>dropna</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, and the groupby keys contain NaN values,
@@ -925,11 +933,11 @@ Otherwise, the rows corresponding to NaN values will be kept.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>If use_series = True, returns an arkouda.dataframe.DataFrameGroupBy object.
-Otherwise returns an arkouda.groupbyclass.GroupBy object.</p>
+<dd class="field-even"><p>If use_series = True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
+Otherwise returns an arkouda.pandas.groupbyclass.GroupBy object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrameGroupBy" title="arkouda.dataframe.DataFrameGroupBy">arkouda.dataframe.DataFrameGroupBy</a> or <a class="reference internal" href="../autoapi/arkouda/groupbyclass/index.html#arkouda.groupbyclass.GroupBy" title="arkouda.groupbyclass.GroupBy">arkouda.groupbyclass.GroupBy</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy" title="arkouda.pandas.dataframe.DataFrameGroupBy">arkouda.pandas.dataframe.DataFrameGroupBy</a> or <a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.GroupBy" title="arkouda.pandas.groupbyclass.GroupBy">arkouda.pandas.groupbyclass.GroupBy</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -972,7 +980,7 @@ Otherwise returns an arkouda.groupbyclass.GroupBy object.</p>
 </table>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">)</span>
-<span class="go">&lt;arkouda.groupbyclass.GroupBy at 0x7f2cf23e10c0&gt;</span>
+<span class="go">&lt;arkouda.pandas.groupbyclass.GroupBy at 0x7f2cf23e10c0&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
 <span class="go">(array([1.00000000000000000 2.00000000000000000]), array([2 1]))</span>
 </pre></div>
@@ -1028,7 +1036,7 @@ be reflected in the shallow copy, and vice versa.</p>
 <dd class="field-even"><p>A deep or shallow copy according to caller specification.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1126,7 +1134,7 @@ apply an arbitrary permutation such as the inverse of a sorting
 permutation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>perm</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – A permutation array. Should be the same size as the data
+<dd class="field-odd"><p><strong>perm</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – A permutation array. Should be the same size as the data
 arrays, and should consist of the integers [0,size-1] in
 some order. Very minimal testing is done to ensure this
 is a permutation.</p>
@@ -1507,12 +1515,12 @@ it.</p>
 <dd class="field-even"><p>The last <cite>n</cite> rows of the DataFrame.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.dataframe.head</span></code></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pandas.dataframe.head</span></code></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -1648,7 +1656,7 @@ appending rows.</p>
 <dd class="field-even"><p>The first <cite>n</cite> rows of the DataFrame.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1807,7 +1815,7 @@ When False, return a new object.</p></li>
 None when <cite>inplace=True</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a> or None</p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a> or None</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1963,7 +1971,7 @@ When False, return a new object.</p></li>
 None when <cite>inplace=True</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a> or None</p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a> or None</p>
 </dd>
 </dl>
 <div class="admonition note">
@@ -2077,7 +2085,7 @@ duplicated row will be returned (keep determines which row).</p>
 <dd class="field-even"><p>DataFrame with duplicates removed.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a></p>
 </dd>
 </dl>
 <p class="rubric">Example</p>

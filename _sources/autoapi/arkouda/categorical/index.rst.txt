@@ -3,49 +3,6 @@ arkouda.categorical
 
 .. py:module:: arkouda.categorical
 
-.. autoapi-nested-parse::
-
-   Categorical data type for Arkouda.
-
-   This module provides the `Categorical` class, which represents arrays of values drawn
-   from a fixed set of named categories. It enables efficient storage and manipulation of
-   string-like or repeated-value data by internally mapping each category label to a
-   numerical code.
-
-   __all__ = ["Categorical"]
-
-   The `Categorical` type is especially useful for grouping operations, filtering by label,
-   and performing category-level reductions, much like pandas' `Categorical` type. It
-   supports conversions from `Strings`, other `Categorical` objects, or even pandas
-   Categoricals, making it suitable for interoperability and high-performance analytics
-   in Arkouda.
-
-   Features
-   --------
-   - Automatic detection of unique category labels
-   - Integer-based encoding via `.codes` attribute
-   - Efficient groupby-compatible structure (`.permutation` and `.segments`)
-   - Support for missing data using a configurable `NAvalue`
-   - Pandas-like API for accessing labels and categories
-
-   Typical Use
-   -----------
-   >>> import arkouda as ak
-   >>> from arkouda.categorical import Categorical
-   >>> strings = ak.array(["apple", "banana", "apple", "banana", "pear"])
-   >>> cat = Categorical(strings)
-   >>> cat.codes
-   array([1 2 1 2 0])
-
-   .. rubric:: Notes
-
-   - GroupBy operations on `Categorical` objects are significantly faster than on raw strings.
-   - Memory usage can be greatly reduced when there are many repeated labels.
-   - Currently only 1-dimensional arrays are supported.
-
-   .. seealso:: :py:obj:`-`, :py:obj:`-`, :py:obj:`-`
-
-
 
 Classes
 -------
@@ -55,8 +12,8 @@ Classes
    arkouda.categorical.Categorical
 
 
-Module Contents
----------------
+Package Contents
+----------------
 
 .. py:class:: Categorical(values, **kwargs)
 

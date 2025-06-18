@@ -310,7 +310,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -499,7 +507,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to maxmum array values</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to maxmum array values</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -540,7 +548,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to minimum array values</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to minimum array values</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -636,7 +644,7 @@ values from the other dimensions are repeated along the new dimension.</p>
 <dd><p>Count leading zeros for each integer in an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.uint64" title="arkouda.numpy.dtypes.uint64"><em>uint64</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><em>bigint</em></a>) – Input array (must be integral).</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.uint64" title="arkouda.uint64"><em>uint64</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.bigint" title="arkouda.bigint"><em>bigint</em></a>) – Input array (must be integral).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The number of leading zeros of each element.</p>
@@ -753,7 +761,7 @@ cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))</p>
 <dd><p>Count trailing zeros for each integer in an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.uint64" title="arkouda.numpy.dtypes.uint64"><em>uint64</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><em>bigint</em></a>) – Input array (must be integral).</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.uint64" title="arkouda.uint64"><em>uint64</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.bigint" title="arkouda.bigint"><em>bigint</em></a>) – Input array (must be integral).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The number of trailing zeros of each element.</p>
@@ -839,9 +847,9 @@ integer type first:</p>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>(</em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.float_scalars" title="arkouda.numpy.dtypes.float_scalars"><em>float_scalars</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>) or </em><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a>) – The dividend array, the values that will be the numerator of the floordivision and will be
+<li><p><strong>x</strong> (<a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>(</em><a class="reference internal" href="../../index.html#arkouda.float_scalars" title="arkouda.float_scalars"><em>float_scalars</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>) or </em><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a>) – The dividend array, the values that will be the numerator of the floordivision and will be
 acted on by the bases for modular division.</p></li>
-<li><p><strong>y</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>(</em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.float_scalars" title="arkouda.numpy.dtypes.float_scalars"><em>float_scalars</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>) or </em><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a>) – The divisor array, the values that will be the denominator of the division and will be the
+<li><p><strong>y</strong> (<a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>(</em><a class="reference internal" href="../../index.html#arkouda.float_scalars" title="arkouda.float_scalars"><em>float_scalars</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>) or </em><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a>) – The divisor array, the values that will be the denominator of the division and will be the
 bases for the modular division.</p></li>
 <li><p><strong>where</strong> (<em>Boolean</em><em> or </em><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a>) – This condition is broadcast over the input. At locations where the condition is True, the
 corresponding value will be divided using floor and modular division. Elsewhere, it will retain
@@ -903,7 +911,7 @@ ak.dot(pda1,pda2) has rank (3,3,2), and</p>
 <dd class="field-even"><p>as described above</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars">numeric_scalars</a>, <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars">numeric_scalars</a>, <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a>]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -964,7 +972,7 @@ or if any scalar or pdarray element is not one of int, uint, float, bigint</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1006,7 +1014,7 @@ about a <cite>k</cite> of 5 million is where performance degredation has been ob
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The desired count of minimum values to be returned by the output.</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of minimum values to be returned by the output.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1080,7 +1088,7 @@ It is equivalent to np.mod, the remainder has the same sign as the divisor.</p>
 <dd><p>Find the bit parity (XOR of all bits) for each integer in an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.uint64" title="arkouda.numpy.dtypes.uint64"><em>uint64</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><em>bigint</em></a>) – Input array (must be integral).</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.uint64" title="arkouda.uint64"><em>uint64</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.bigint" title="arkouda.bigint"><em>bigint</em></a>) – Input array (must be integral).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The parity of each element: 0 if even number of bits set, 1 if odd.</p>
@@ -1138,7 +1146,7 @@ instances directly.</p>
 <dd><p>The number of elements in the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars">int_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1149,7 +1157,7 @@ instances directly.</p>
 <dd><p>The rank of the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars">int_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1171,7 +1179,7 @@ instances directly.</p>
 <dd><p>The size in bytes of each element</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars">int_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars">int_scalars</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1293,7 +1301,7 @@ If None, the computation is done across the entire array.</p></li>
 pdarray if axis is supplied, in which case the operation is done along that axis</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64">int64</a>, <a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.uint64" title="arkouda.numpy.dtypes.uint64">uint64</a> or <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64">int64</a>, <a class="reference internal" href="../../index.html#arkouda.uint64" title="arkouda.uint64">uint64</a> or <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1340,7 +1348,7 @@ If None, the computation is done across the entire array.</p></li>
 pdarray if axis is supplied, in which case the operation is done along that axis</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64">int64</a>, <a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.uint64" title="arkouda.numpy.dtypes.uint64">uint64</a> or <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64">int64</a>, <a class="reference internal" href="../../index.html#arkouda.uint64" title="arkouda.uint64">uint64</a> or <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1378,7 +1386,7 @@ See <code class="docutils literal notranslate"><span class="pre">arkouda.argmink
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>algorithm</strong> (<em>SortingAlgorithm</em><em>, </em><em>default SortingAlgorithm.RadixSortLSD</em>) – The algorithm to use for sorting.</p></li>
-<li><p><strong>axis</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>default 0</em>) – The axis to sort along. Must be between -1 and the array rank.</p></li>
+<li><p><strong>axis</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default 0</em>) – The axis to sort along. Must be between -1 and the array rank.</p></li>
 <li><p><strong>ascending</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to sort in ascending order. If False, returns a reversed permutation.
 Note: ascending=False is only supported for 1D arrays.</p></li>
 </ul>
@@ -1511,7 +1519,7 @@ See <code class="docutils literal notranslate"><span class="pre">arkouda.corr</s
 <dd class="field-even"><p>True if the pdarrays are the same, o.w. False.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars">bool_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.bool_scalars" title="arkouda.bool_scalars">bool_scalars</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1533,7 +1541,7 @@ See <code class="docutils literal notranslate"><span class="pre">arkouda.corr</s
 <dd><p>Fill the array (in place) with a constant value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a>)</p>
+<dd class="field-odd"><p><strong>value</strong> (<a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>)</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if value is not an int, int64, float, or float64</p>
@@ -1878,7 +1886,7 @@ If None, the computation is done across the entire array.</p></li>
 pdarray if axis is supplied, in which case the operation is done along that axis</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars">numeric_scalars</a> or <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars">numeric_scalars</a> or <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -2067,7 +2075,7 @@ deviation is implemented as the square root of the variance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ddof</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p></li>
+<li><p><strong>ddof</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to do the operation
 If None, the computation is done across the entire array.</p></li>
 <li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
@@ -2146,7 +2154,7 @@ If None, the computation is done across the entire array.</p></li>
 pdarray if axis is supplied, in which case the operation is done along that axis</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars">numeric_scalars</a> or <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars">numeric_scalars</a> or <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -2326,7 +2334,7 @@ client.maxTransferBytes, a RuntimeError is raised.</p>
 <dd class="field-odd"><p>A list with the same data as the pdarray</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars">numeric_scalars</a>]</p>
+<dd class="field-even"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[<a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars">numeric_scalars</a>]</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown, if the pdarray size
@@ -2461,7 +2469,7 @@ Saves the array to numLocales HDF5 files with the name
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>hostname</strong> (<em>str</em>) – The hostname where the Arkouda server intended to
 receive the pdarray is running.</p></li>
-<li><p><strong>port</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The port to send the array over. This needs to be an
+<li><p><strong>port</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The port to send the array over. This needs to be an
 open port (i.e., not one that the Arkouda server is
 running on). This will open up <cite>numLocales</cite> ports,
 each of which in succession, so will use ports of the
@@ -2562,7 +2570,7 @@ the file name is checked for _LOCALE#### to determine if it is distributed.</p><
 </p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a>|<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64">int64</a></p>
+<dd class="field-even"><p><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">pdarray</a>|<a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64">int64</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -2580,7 +2588,7 @@ the file name is checked for _LOCALE#### to determine if it is distributed.</p><
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ddof</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating var</p></li>
+<li><p><strong>ddof</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating var</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to do the operation
 If None, the computation is done across the entire array.</p></li>
 <li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
@@ -2644,7 +2652,7 @@ normally distributed variables.</p>
 <dd><p>Find the population (number of bits set) for each integer in an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.uint64" title="arkouda.numpy.dtypes.uint64"><em>uint64</em></a><em>, </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><em>bigint</em></a>) – Input array (must be integral).</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.uint64" title="arkouda.uint64"><em>uint64</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.bigint" title="arkouda.bigint"><em>bigint</em></a>) – Input array (must be integral).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The number of bits set (1) in each element</p>

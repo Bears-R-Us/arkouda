@@ -309,7 +309,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -379,9 +387,8 @@
           <h1>Source code for arkouda.comm_diagnostics</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">typecast</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;start_comm_diagnostics&quot;</span><span class="p">,</span>
@@ -426,6 +433,8 @@
 <span class="sd">        Completion message.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;startCommDiagnostics&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -446,6 +455,8 @@
 <span class="sd">        Completion message.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;stopCommDiagnostics&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -466,6 +477,8 @@
 <span class="sd">        Completion message.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;resetCommDiagnostics&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -499,6 +512,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="nb">sum</span> <span class="k">as</span> <span class="n">ak_sum</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;printCommDiagnosticsTable&quot;</span><span class="p">,</span>
@@ -531,6 +545,8 @@
 <span class="sd">        Completion message.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;startVerboseComm&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -551,6 +567,8 @@
 <span class="sd">        Completion message.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;stopVerboseComm&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -572,6 +590,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsPut&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -593,6 +613,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsGet&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -614,6 +636,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsPutNb&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -635,6 +659,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsGetNb&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -654,6 +680,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsTestNb&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -674,6 +702,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsWaitNb&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -695,6 +725,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsTryNb&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -716,6 +748,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsAmo&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -737,6 +771,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsExecuteOn&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -758,6 +794,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsExecuteOnFast&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -779,6 +817,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsExecuteOnNb&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -802,6 +842,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheGetHits&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -823,6 +865,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheGetMisses&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -844,6 +888,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCachePutHits&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -865,6 +911,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCachePutMisses&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -888,6 +936,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheNumPrefetches&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -909,6 +959,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheNumPageReadaheads&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -933,6 +985,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCachePrefetchUnused&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -957,6 +1011,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCachePrefetchWaited&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -981,6 +1037,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheReadaheadUnused&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
@@ -1006,6 +1064,8 @@
 <span class="sd">        populated with the statistic value from each locale.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheReadaheadWaited&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>

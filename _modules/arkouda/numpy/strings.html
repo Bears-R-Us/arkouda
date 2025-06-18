@@ -309,7 +309,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -382,17 +390,26 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">codecs</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Literal</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">cast</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">npdtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.infoclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">information</span><span class="p">,</span> <span class="n">list_symbol_table</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaLogger</span><span class="p">,</span> <span class="n">getArkoudaLogger</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.match</span><span class="w"> </span><span class="kn">import</span> <span class="n">Match</span><span class="p">,</span> <span class="n">MatchType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">,</span>
     <span class="n">bool_scalars</span><span class="p">,</span>
@@ -403,8 +420,15 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegistrationError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">akall</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">parse_single_value</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.match</span><span class="w"> </span><span class="kn">import</span> <span class="n">Match</span><span class="p">,</span> <span class="n">MatchType</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">generic_msg</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;generic_msg&quot;</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Strings&quot;</span><span class="p">]</span>
+
 
 <span class="c1"># Command strings for message passing to arkouda server, specific to Strings</span>
 <span class="n">CMD_ASSEMBLE</span> <span class="o">=</span> <span class="s2">&quot;segStr-assemble&quot;</span>
@@ -412,7 +436,7 @@
 
 
 <div class="viewcode-block" id="Strings">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Strings</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents an array of strings whose data resides on the</span>
@@ -457,7 +481,7 @@
     <span class="n">objType</span> <span class="o">=</span> <span class="s2">&quot;Strings&quot;</span>
 
 <div class="viewcode-block" id="Strings.from_return_msg">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.from_return_msg">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.from_return_msg">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -508,7 +532,7 @@
 
 
 <div class="viewcode-block" id="Strings.from_parts">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.from_parts">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.from_parts">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_parts</span><span class="p">(</span><span class="n">offset_attrib</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">bytes_attrib</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -547,6 +571,8 @@
 <span class="sd">        - Internally uses the `CMD_ASSEMBLE` command to merge offsets and values.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">offset_attrib</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">offset_attrib</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">offset_attrib</span><span class="p">)</span>
@@ -665,6 +691,8 @@
 <span class="sd">            Raised if a server-side error is thrown while executing the</span>
 <span class="sd">            binary operation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">BinOps</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Strings: unsupported operator: </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
@@ -702,6 +730,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">other</span><span class="p">),</span> <span class="s2">&quot;!=&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">]):</span>
             <span class="n">orig_key</span> <span class="o">=</span> <span class="n">key</span>
             <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -770,7 +800,7 @@
         <span class="k">return</span> <span class="s2">&quot;string&quot;</span>
 
 <div class="viewcode-block" id="Strings.equals">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.equals">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.equals">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool_scalars</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Whether Strings are the same size and all entries are equal.</span>
@@ -808,7 +838,7 @@
 
 
 <div class="viewcode-block" id="Strings.get_lengths">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.get_lengths">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.get_lengths">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the length of each string in the array.</span>
@@ -823,13 +853,15 @@
 <span class="sd">        RuntimeError</span>
 <span class="sd">            Raised if there is a server-side error thrown</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentLengths&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">})</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Strings.get_bytes">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.get_bytes">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.get_bytes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Getter for the bytes component (uint8 pdarray) of this Strings.</span>
@@ -846,6 +878,8 @@
 <span class="sd">        &gt;&gt;&gt; x.get_bytes()</span>
 <span class="sd">        array([111 110 101 0 116 119 111 0 116 104 114 101 101 0])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bytes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bytes</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">list_symbol_table</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_bytes</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span>
                 <span class="n">generic_msg</span><span class="p">(</span>
@@ -858,7 +892,7 @@
 
 
 <div class="viewcode-block" id="Strings.get_offsets">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.get_offsets">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.get_offsets">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_offsets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Getter for the offsets component (int64 pdarray) of this Strings.</span>
@@ -875,6 +909,8 @@
 <span class="sd">        &gt;&gt;&gt; x.get_offsets()</span>
 <span class="sd">        array([0 4 8])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offsets</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offsets</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">list_symbol_table</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_offsets</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span>
                 <span class="n">generic_msg</span><span class="p">(</span>
@@ -887,7 +923,7 @@
 
 
 <div class="viewcode-block" id="Strings.encode">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.encode">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.encode">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">toEncoding</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fromEncoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a new strings object in `toEncoding`, expecting that the</span>
@@ -911,6 +947,8 @@
 <span class="sd">        RuntimeError</span>
 <span class="sd">            Raised if there is a server-side error thrown</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">if</span> <span class="p">(</span><span class="n">toEncoding</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;IDNA&quot;</span> <span class="ow">and</span> <span class="n">fromEncoding</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
             <span class="n">toEncoding</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;UTF-8&quot;</span> <span class="ow">and</span> <span class="n">fromEncoding</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;IDNA&quot;</span>
         <span class="p">):</span>
@@ -947,7 +985,7 @@
 
 
 <div class="viewcode-block" id="Strings.decode">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.decode">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.decode">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromEncoding</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">toEncoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a new strings object in `fromEncoding`, expecting that the</span>
@@ -975,7 +1013,7 @@
 
 
 <div class="viewcode-block" id="Strings.lower">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.lower">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.lower">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">lower</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1006,6 +1044,8 @@
 <span class="sd">        &gt;&gt;&gt; strings.lower()</span>
 <span class="sd">        array([&#39;strings 0&#39;, &#39;strings 1&#39;, &#39;strings 2&#39;, &#39;strings 3&#39;, &#39;strings 4&#39;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;caseChange&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;toLower&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
         <span class="p">)</span>
@@ -1013,7 +1053,7 @@
 
 
 <div class="viewcode-block" id="Strings.upper">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.upper">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.upper">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">upper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1044,6 +1084,8 @@
 <span class="sd">        &gt;&gt;&gt; strings.upper()</span>
 <span class="sd">        array([&#39;STRINGS 0&#39;, &#39;STRINGS 1&#39;, &#39;STRINGS 2&#39;, &#39;STRINGS 3&#39;, &#39;STRINGS 4&#39;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;caseChange&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;toUpper&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
         <span class="p">)</span>
@@ -1051,7 +1093,7 @@
 
 
 <div class="viewcode-block" id="Strings.title">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.title">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.title">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1081,6 +1123,8 @@
 <span class="sd">        &gt;&gt;&gt; strings.title()</span>
 <span class="sd">        array([&#39;Strings 0&#39;, &#39;Strings 1&#39;, &#39;Strings 2&#39;, &#39;Strings 3&#39;, &#39;Strings 4&#39;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;caseChange&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;toTitle&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
         <span class="p">)</span>
@@ -1088,7 +1132,7 @@
 
 
 <div class="viewcode-block" id="Strings.isdecimal">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.isdecimal">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.isdecimal">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">isdecimal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1128,6 +1172,8 @@
 <span class="sd">        &gt;&gt;&gt; special_strings.isdecimal()</span>
 <span class="sd">        array([False True False False False])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;checkChars&quot;</span><span class="p">,</span>
@@ -1137,7 +1183,7 @@
 
 
 <div class="viewcode-block" id="Strings.capitalize">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.capitalize">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.capitalize">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">capitalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1171,6 +1217,8 @@
 <span class="sd">        array([&#39;Strings Are Here 0&#39;, &#39;Strings Are Here 1&#39;, &#39;Strings Are Here 2&#39;, \</span>
 <span class="sd">&#39;Strings Are Here 3&#39;, &#39;Strings Are Here 4&#39;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;caseChange&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;capitalize&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
         <span class="p">)</span>
@@ -1178,7 +1226,7 @@
 
 
 <div class="viewcode-block" id="Strings.islower">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.islower">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.islower">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">islower</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1210,6 +1258,8 @@
 <span class="sd">        &gt;&gt;&gt; strings.islower()</span>
 <span class="sd">        array([True True True False False False])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;checkChars&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;isLower&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
@@ -1218,7 +1268,7 @@
 
 
 <div class="viewcode-block" id="Strings.isupper">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.isupper">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.isupper">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">isupper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1250,6 +1300,8 @@
 <span class="sd">        &gt;&gt;&gt; strings.isupper()</span>
 <span class="sd">        array([False False False True True True])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;checkChars&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;isUpper&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
@@ -1258,7 +1310,7 @@
 
 
 <div class="viewcode-block" id="Strings.istitle">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.istitle">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.istitle">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">istitle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1291,6 +1343,8 @@
 <span class="sd">        &gt;&gt;&gt; strings.istitle()</span>
 <span class="sd">        array([False False False True True True])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;checkChars&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;isTitle&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
@@ -1299,7 +1353,7 @@
 
 
 <div class="viewcode-block" id="Strings.isalnum">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.isalnum">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.isalnum">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">isalnum</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1333,6 +1387,8 @@
 <span class="sd">        &gt;&gt;&gt; strings.isalnum()</span>
 <span class="sd">        array([False False False True True True])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;checkChars&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;isalnum&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
@@ -1341,7 +1397,7 @@
 
 
 <div class="viewcode-block" id="Strings.isalpha">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.isalpha">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.isalpha">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">isalpha</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1377,6 +1433,8 @@
 <span class="sd">        &gt;&gt;&gt; strings.isalpha()</span>
 <span class="sd">        array([False False False True True True])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;checkChars&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;isalpha&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
@@ -1385,7 +1443,7 @@
 
 
 <div class="viewcode-block" id="Strings.isdigit">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.isdigit">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.isdigit">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">isdigit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1427,6 +1485,8 @@
 <span class="sd">        &gt;&gt;&gt; special_strings.isdigit()</span>
 <span class="sd">        array([False True True True False])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;checkChars&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;isdigit&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
@@ -1435,7 +1495,7 @@
 
 
 <div class="viewcode-block" id="Strings.isempty">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.isempty">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.isempty">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">isempty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1472,6 +1532,8 @@
 <span class="sd">        &gt;&gt;&gt; strings.isempty()</span>
 <span class="sd">        array([False False False True True True])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;checkChars&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;isempty&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
@@ -1480,7 +1542,7 @@
 
 
 <div class="viewcode-block" id="Strings.isspace">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.isspace">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.isspace">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">isspace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1515,6 +1577,8 @@
 <span class="sd">        &gt;&gt;&gt; strings.isspace()</span>
 <span class="sd">        array([False False False True True True True True True True])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;checkChars&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;subcmd&quot;</span><span class="p">:</span> <span class="s2">&quot;isspace&quot;</span><span class="p">,</span> <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">}</span>
@@ -1523,7 +1587,7 @@
 
 
 <div class="viewcode-block" id="Strings.strip">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.strip">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.strip">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">strip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1561,6 +1625,8 @@
 <span class="sd">        &gt;&gt;&gt; s</span>
 <span class="sd">        array([&#39;Strings&#39;, &#39;StringS&#39;, &#39;StringS&#39;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chars</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">chars</span> <span class="o">=</span> <span class="n">chars</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
@@ -1570,7 +1636,7 @@
 
 
 <div class="viewcode-block" id="Strings.cached_regex_patterns">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.cached_regex_patterns">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.cached_regex_patterns">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">cached_regex_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1580,7 +1646,7 @@
 
 
 <div class="viewcode-block" id="Strings.purge_cached_regex_patterns">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.purge_cached_regex_patterns">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.purge_cached_regex_patterns">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">purge_cached_regex_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1601,7 +1667,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        internal function to fetch cached Matcher objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.matcher</span><span class="w"> </span><span class="kn">import</span> <span class="n">Matcher</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.matcher</span><span class="w"> </span><span class="kn">import</span> <span class="n">Matcher</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
@@ -1619,7 +1685,7 @@
         <span class="k">return</span> <span class="n">matcher</span>
 
 <div class="viewcode-block" id="Strings.find_locations">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.find_locations">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.find_locations">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">find_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1672,7 +1738,7 @@
 
 
 <div class="viewcode-block" id="Strings.search">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.search">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.search">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Match</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1702,7 +1768,7 @@
 
 
 <div class="viewcode-block" id="Strings.match">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.match">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.match">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Match</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1732,7 +1798,7 @@
 
 
 <div class="viewcode-block" id="Strings.fullmatch">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.fullmatch">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.fullmatch">[docs]</a>
     <span class="nd">@typechecked</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fullmatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Match</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1762,7 +1828,7 @@
 
 
 <div class="viewcode-block" id="Strings.regex_split">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.regex_split">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.regex_split">[docs]</a>
     <span class="nd">@typechecked</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">regex_split</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">maxsplit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">return_segments</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1802,7 +1868,7 @@
 
 
 <div class="viewcode-block" id="Strings.findall">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.findall">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.findall">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">findall</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">return_match_origins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1850,7 +1916,7 @@
 
 
 <div class="viewcode-block" id="Strings.sub">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.sub">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.sub">[docs]</a>
     <span class="nd">@typechecked</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sub</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">repl</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1901,7 +1967,7 @@
 
 
 <div class="viewcode-block" id="Strings.subn">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.subn">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.subn">[docs]</a>
     <span class="nd">@typechecked</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">subn</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">repl</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1953,7 +2019,7 @@
 
 
 <div class="viewcode-block" id="Strings.contains">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.contains">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.contains">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1997,6 +2063,8 @@
 <span class="sd">        &gt;&gt;&gt; strings.contains(&#39;string \\d&#39;, regex=True)</span>
 <span class="sd">        array([True True True True True])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">substr</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">substr</span> <span class="o">=</span> <span class="n">substr</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">regex</span><span class="p">:</span>
@@ -2014,7 +2082,7 @@
 
 
 <div class="viewcode-block" id="Strings.startswith">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.startswith">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.startswith">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">startswith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2074,7 +2142,7 @@
 
 
 <div class="viewcode-block" id="Strings.endswith">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.endswith">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.endswith">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">endswith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2130,7 +2198,7 @@
 
 
 <div class="viewcode-block" id="Strings.split">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.split">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.split">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">split</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">delimiter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_segments</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">]:</span>
@@ -2177,6 +2245,8 @@
 <span class="sd">        &gt;&gt;&gt; under_map</span>
 <span class="sd">        array([0 2 5])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">if</span> <span class="n">regex</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">delimiter</span><span class="p">)</span>
@@ -2206,7 +2276,7 @@
 
 
 <div class="viewcode-block" id="Strings.peel">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.peel">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.peel">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">peel</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2282,6 +2352,8 @@
 <span class="sd">        &gt;&gt;&gt; s.peel(&#39;.&#39;, times=2, keepPartial=True)</span>
 <span class="sd">        (array([&#39;a.b&#39;, &#39;c.d&#39;, &#39;e.f&#39;]), array([&#39;&#39;, &#39;&#39;, &#39;g&#39;]))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">delimiter</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">delimiter</span> <span class="o">=</span> <span class="n">delimiter</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">regex</span><span class="p">:</span>
@@ -2318,7 +2390,7 @@
 
 
 <div class="viewcode-block" id="Strings.rpeel">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.rpeel">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.rpeel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rpeel</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">delimiter</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span>
@@ -2397,7 +2469,7 @@
 
 
 <div class="viewcode-block" id="Strings.stick">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.stick">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.stick">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">stick</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">delimiter</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">toLeft</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -2444,6 +2516,8 @@
 <span class="sd">        &gt;&gt;&gt; s.stick(t, delimiter=&#39;.&#39;)</span>
 <span class="sd">        array([&#39;a.b&#39;, &#39;c.d&#39;, &#39;e.f&#39;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">delimiter</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">delimiter</span> <span class="o">=</span> <span class="n">delimiter</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
@@ -2465,7 +2539,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stick</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Strings.lstick">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.lstick">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.lstick">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lstick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">delimiter</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Join the strings from another array onto the left of the strings</span>
@@ -2512,7 +2586,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstick</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Strings.get_prefixes">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.get_prefixes">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.get_prefixes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_prefixes</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">return_origins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">proper</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]:</span>
@@ -2541,6 +2615,8 @@
 <span class="sd">                Boolean array that is True where the string was long enough to return</span>
 <span class="sd">                an n-character prefix, False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
@@ -2565,7 +2641,7 @@
 
 
 <div class="viewcode-block" id="Strings.get_suffixes">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.get_suffixes">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.get_suffixes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_suffixes</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">return_origins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">proper</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]:</span>
@@ -2594,6 +2670,8 @@
 <span class="sd">                Boolean array that is True where the string was long enough to return</span>
 <span class="sd">                an n-character suffix, False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
@@ -2618,7 +2696,7 @@
 
 
 <div class="viewcode-block" id="Strings.hash">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.hash">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.hash">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute a 128-bit hash of each string.</span>
@@ -2636,6 +2714,8 @@
 <span class="sd">        to about 10**15), the probability of a collision between two 128-bit hash</span>
 <span class="sd">        values is negligible.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="c1"># TODO fix this to return a single pdarray of hashes</span>
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedHash&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">})</span>
         <span class="n">h1</span><span class="p">,</span> <span class="n">h2</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
@@ -2643,7 +2723,7 @@
 
 
 <div class="viewcode-block" id="Strings.group">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.group">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.group">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">group</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the permutation that groups the array, placing equivalent</span>
@@ -2674,6 +2754,8 @@
 <span class="sd">            Raised if there is a server-side error in executing group request or</span>
 <span class="sd">            creating the pdarray encapsulating the return message</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedGroup&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="p">})</span>
         <span class="p">)</span></div>
@@ -2689,7 +2771,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Strings.flatten">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.flatten">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.flatten">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a copy of the array collapsed into one dimension.</span>
@@ -2707,7 +2789,7 @@
 
 
 <div class="viewcode-block" id="Strings.to_ndarray">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.to_ndarray">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.to_ndarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a np.ndarray, transferring array data from the</span>
@@ -2759,7 +2841,7 @@
 
 
 <div class="viewcode-block" id="Strings.to_list">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.to_list">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.to_list">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the SegString to a list, transferring data from the</span>
@@ -2828,7 +2910,7 @@
 <span class="sd">        may override this limit by setting client.maxTransferBytes to a larger</span>
 <span class="sd">        value, but proceed with caution.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">maxTransferBytes</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">maxTransferBytes</span>
 
         <span class="c1"># Total number of bytes in the array data</span>
         <span class="n">array_bytes</span> <span class="o">=</span> <span class="p">(</span>
@@ -2865,7 +2947,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Strings.astype">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.astype">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.astype">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cast values of Strings object to provided dtype</span>
@@ -2890,7 +2972,7 @@
 
 
 <div class="viewcode-block" id="Strings.to_parquet">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.to_parquet">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.to_parquet">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_parquet</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -2938,7 +3020,8 @@
 <span class="sd">        - Any file extension can be used.The file I/O does not rely on the extension to</span>
 <span class="sd">        determine the file format.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">_mode_str_to_int</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">_mode_str_to_int</span>
 
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
@@ -2958,7 +3041,7 @@
 
 
 <div class="viewcode-block" id="Strings.to_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.to_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.to_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -3020,7 +3103,8 @@
 <span class="sd">        ---------</span>
 <span class="sd">        to_hdf</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">_file_type_to_int</span><span class="p">,</span> <span class="n">_mode_str_to_int</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">_file_type_to_int</span><span class="p">,</span> <span class="n">_mode_str_to_int</span>
 
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
@@ -3041,7 +3125,7 @@
 
 
 <div class="viewcode-block" id="Strings.update_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.update_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -3086,7 +3170,8 @@
 <span class="sd">          the file name is checked for _LOCALE#### to determine if it is distributed.</span>
 <span class="sd">        - If the dataset provided does not exist, it will be added</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">_file_type_to_int</span><span class="p">,</span>
             <span class="n">_get_hdf_filetype</span><span class="p">,</span>
             <span class="n">_mode_str_to_int</span><span class="p">,</span>
@@ -3118,7 +3203,7 @@
 
 
 <div class="viewcode-block" id="Strings.to_csv">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.to_csv">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.to_csv">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_csv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3171,6 +3256,8 @@
 <span class="sd">        - Be sure that column delimiters are not found within your data.</span>
 <span class="sd">        - All CSV files must delimit rows using newline (``\\n``) at this time.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
@@ -3201,7 +3288,7 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="o">.</span><span class="n">_list_component_names</span><span class="p">()]))</span>
 
 <div class="viewcode-block" id="Strings.info">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.info">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.info">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a JSON formatted string containing information about all components of self</span>
@@ -3215,14 +3302,14 @@
 
 
 <div class="viewcode-block" id="Strings.pretty_print_info">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.pretty_print_info">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.pretty_print_info">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">pretty_print_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print information about all components of self in a human readable format.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">entry</span><span class="o">.</span><span class="n">pretty_print_info</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Strings.register">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.register">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.register">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3264,6 +3351,8 @@
 <span class="sd">        Registered names/Strings objects in the server are immune to deletion</span>
 <span class="sd">        until they are unregistered.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">generic_msg</span><span class="p">(</span>
@@ -3279,7 +3368,7 @@
 
 
 <div class="viewcode-block" id="Strings.unregister">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.unregister">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.unregister">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister a Strings object in the arkouda server which was previously</span>
@@ -3309,7 +3398,7 @@
 
 
 <div class="viewcode-block" id="Strings.is_registered">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.is_registered">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.is_registered">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True iff the object is contained in the registry</span>
@@ -3333,7 +3422,7 @@
 
 
 <div class="viewcode-block" id="Strings.transfer">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.transfer">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.transfer">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a Strings object to a different Arkouda server.</span>
@@ -3369,6 +3458,8 @@
 <span class="sd">            Raised if other is not a pdarray or the pdarray.dtype is not</span>
 <span class="sd">            a supported dtype</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
         <span class="c1"># hostname is the hostname to send to</span>
         <span class="k">return</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;sendArray&quot;</span><span class="p">,</span>
@@ -3377,7 +3468,7 @@
 
 
 <div class="viewcode-block" id="Strings.concatenate_uniquely">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.Strings.concatenate_uniquely">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.concatenate_uniquely">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">concatenate_uniquely</span><span class="p">(</span><span class="n">strings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Strings</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3394,6 +3485,7 @@
 <span class="sd">        Strings</span>
 <span class="sd">            A new Strings object containing the unique values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">strings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must provide at least one Strings object&quot;</span><span class="p">)</span>

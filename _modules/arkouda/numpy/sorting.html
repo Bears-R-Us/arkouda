@@ -309,7 +309,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -382,13 +390,20 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_type</span><span class="p">,</span> <span class="n">typechecked</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bigint</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">int64</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">uint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">zeros</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">generic_msg</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;generic_msg&quot;</span><span class="p">)</span>
+    <span class="n">Categorical</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Categorical&quot;</span><span class="p">)</span>
 
 <span class="n">numeric_dtypes</span> <span class="o">=</span> <span class="p">{</span><span class="n">dtype</span><span class="p">(</span><span class="n">int64</span><span class="p">),</span> <span class="n">dtype</span><span class="p">(</span><span class="n">uint64</span><span class="p">),</span> <span class="n">dtype</span><span class="p">(</span><span class="n">float64</span><span class="p">)}</span>
 
@@ -396,14 +411,9 @@
 
 <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s2">&quot;SortingAlgorithm&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;RadixSortLSD&quot;</span><span class="p">,</span> <span class="s2">&quot;TwoArrayRadixSort&quot;</span><span class="p">])</span>
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="n">Categorical</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Categorical&quot;</span><span class="p">)</span>
-
 
 <div class="viewcode-block" id="argsort">
-<a class="viewcode-back" href="../../../usage/argsort.html#arkouda.numpy.argsort">[docs]</a>
+<a class="viewcode-back" href="../../../usage/argsort.html#arkouda.argsort">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span>
     <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
@@ -457,7 +467,15 @@
 <span class="sd">    &gt;&gt;&gt; ak.argsort(a, ak.sorting.SortingAlgorithm[&quot;TwoArrayRadixSort&quot;])</span>
 <span class="sd">    array([9 3 5 4 2 7 8 0 6 1])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+
+    <span class="n">ndim</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">],</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;ndim&quot;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">axis</span> <span class="o">&gt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">ndim</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis must be between -1 and the PD Array&#39;s rank (</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
 
     <span class="n">check_type</span><span class="p">(</span><span class="n">argname</span><span class="o">=</span><span class="s2">&quot;argsort&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">pda</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">])</span>
 
@@ -480,7 +498,7 @@
 
 
 <div class="viewcode-block" id="coargsort">
-<a class="viewcode-back" href="../../../usage/argsort.html#arkouda.numpy.coargsort">[docs]</a>
+<a class="viewcode-back" href="../../../usage/argsort.html#arkouda.coargsort">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">coargsort</span><span class="p">(</span>
     <span class="n">arrays</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]],</span>
     <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
@@ -537,11 +555,13 @@
 <span class="sd">    array([0 1 0 1])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
-    <span class="n">check_type</span><span class="p">(</span><span class="s2">&quot;coargsort&quot;</span><span class="p">,</span> <span class="n">arrays</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]])</span>
-
+    <span class="n">check_type</span><span class="p">(</span>
+        <span class="n">argname</span><span class="o">=</span><span class="s2">&quot;coargsort&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">arrays</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]]</span>
+    <span class="p">)</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">anames</span><span class="p">,</span> <span class="n">atypes</span><span class="p">,</span> <span class="n">expanded_arrays</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
     <span class="n">max_dim</span> <span class="o">=</span> <span class="mi">1</span>
@@ -606,7 +626,7 @@
 
 
 <div class="viewcode-block" id="sort">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/sorting/index.html#arkouda.numpy.sort">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/sorting/index.html#arkouda.sort">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span>
     <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -656,6 +676,8 @@
 <span class="sd">    &gt;&gt;&gt; sorted</span>
 <span class="sd">    array([0 1 1 4 5 5 5 7 8 9])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pda</span><span class="p">[</span><span class="n">coargsort</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">(),</span> <span class="n">algorithm</span><span class="p">)]</span>
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">numeric_dtypes</span><span class="p">:</span>
@@ -671,7 +693,7 @@
 
 
 <div class="viewcode-block" id="searchsorted">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/sorting/index.html#arkouda.numpy.searchsorted">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/sorting/index.html#arkouda.searchsorted">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">searchsorted</span><span class="p">(</span>
     <span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">bigint</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span> <span class="n">side</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span>
@@ -719,6 +741,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.searchsorted(a, v)</span>
 <span class="sd">    array([0 5 1 2])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;a must be one dimensional, but has </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimensions.&quot;</span><span class="p">)</span>

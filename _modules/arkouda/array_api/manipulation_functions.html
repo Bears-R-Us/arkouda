@@ -309,7 +309,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -383,7 +391,6 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">create_pdarrays</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">promote_to_common_dtype</span><span class="p">,</span> <span class="n">scalar_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">broadcast_dims</span>
@@ -434,6 +441,7 @@
 
 <span class="sd">    See: https://data-apis.org/array-api/latest/API_specification/broadcasting.html for details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
@@ -470,6 +478,7 @@
 <span class="sd">        flattened before concatenation.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">ndim</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">:</span>
@@ -514,6 +523,8 @@
 <span class="sd">        The axis at which to insert the new (size one) dimension. Must be in the range</span>
 <span class="sd">        `[-x.ndim-1, x.ndim]`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
             <span class="n">create_pdarray</span><span class="p">(</span>
@@ -547,6 +558,8 @@
 <span class="sd">    axis : int or Tuple[int, ...], optional</span>
 <span class="sd">        The axis or axes along which to flip the array. If None, flip the array along all axes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">axisList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">axisList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">axis</span><span class="p">]</span>
@@ -626,6 +639,8 @@
 <span class="sd">    axes : Tuple[int, ...]</span>
 <span class="sd">        The new order of the dimensions. Must be a permutation of the integers from 0 to `x.ndim-1`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
             <span class="n">create_pdarray</span><span class="p">(</span>
@@ -664,6 +679,8 @@
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis along which to repeat elements. If None, the array is flattened before repeating.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repeats</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">reps</span> <span class="o">=</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">scalar_array</span><span class="p">(</span><span class="n">repeats</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
@@ -705,6 +722,7 @@
 <span class="sd">        Whether to create a copy of the array.</span>
 <span class="sd">        WARNING: currently always creates a copy, ignoring the value of this parameter.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="c1"># TODO: figure out copying semantics (currently always creates a copy)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -753,6 +771,8 @@
 <span class="sd">        The axis or axes along which to roll the array. If None, the array is flattened before</span>
 <span class="sd">        rolling.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="n">axisList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">axisList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">axis</span><span class="p">]</span>
@@ -819,6 +839,7 @@
 <span class="sd">        The axis along which to stack the arrays. Must be in the range `[-N, N)`, where N is the number</span>
 <span class="sd">        of dimensions in the input arrays. The default is 0.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">ndim</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">:</span>
@@ -862,6 +883,8 @@
 <span class="sd">        repetitions. If there are more array dimensions than repetitions, ones are prepended to the</span>
 <span class="sd">        repetitions tuple to make it&#39;s length match the number of array dimensions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">repetitions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
         <span class="n">xr</span> <span class="o">=</span> <span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">repetitions</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">reps</span> <span class="o">=</span> <span class="n">repetitions</span>
@@ -902,6 +925,8 @@
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis along which to unstack the array. The default is 0.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
         <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span>
             <span class="n">create_pdarrays</span><span class="p">(</span>

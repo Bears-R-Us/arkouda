@@ -310,7 +310,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -413,18 +421,18 @@ specified range bounded by the low and high parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>low</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – The low value (inclusive) of the range</p></li>
-<li><p><strong>high</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – The high value (exclusive for int, inclusive for float) of the range</p></li>
-<li><p><strong>size</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The length of the returned array</p></li>
-<li><p><strong>dtype</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.float64" title="arkouda.numpy.dtypes.float64"><em>float64</em></a><em>, </em><em>bool</em><em>]</em>) – The dtype of the array</p></li>
-<li><p><strong>seed</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – Seed to allow for reproducible random number generation</p></li>
+<li><p><strong>low</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – The low value (inclusive) of the range</p></li>
+<li><p><strong>high</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – The high value (exclusive for int, inclusive for float) of the range</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The length of the returned array</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../../../index.html#arkouda.float64" title="arkouda.float64"><em>float64</em></a><em>, </em><em>bool</em><em>]</em>) – The dtype of the array</p></li>
+<li><p><strong>seed</strong> (<a class="reference internal" href="../../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – Seed to allow for reproducible random number generation</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Values drawn uniformly from the specified range having the desired dtype</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -474,15 +482,15 @@ it exceeds the maximum value that can be stored on the server (uint64)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The number of samples to draw (size of the returned array)</p></li>
-<li><p><strong>seed</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – Value used to initialize the random number generator</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The number of samples to draw (size of the returned array)</p></li>
+<li><p><strong>seed</strong> (<a class="reference internal" href="../../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – Value used to initialize the random number generator</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The array of random numbers</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -514,17 +522,17 @@ in a specified range.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>low</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.float_scalars" title="arkouda.numpy.dtypes.float_scalars"><em>float_scalars</em></a>) – The low value (inclusive) of the range, defaults to 0.0</p></li>
-<li><p><strong>high</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.float_scalars" title="arkouda.numpy.dtypes.float_scalars"><em>float_scalars</em></a>) – The high value (inclusive) of the range, defaults to 1.0</p></li>
-<li><p><strong>size</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The length of the returned array</p></li>
-<li><p><strong>seed</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – Value used to initialize the random number generator</p></li>
+<li><p><strong>low</strong> (<a class="reference internal" href="../../../index.html#arkouda.float_scalars" title="arkouda.float_scalars"><em>float_scalars</em></a>) – The low value (inclusive) of the range, defaults to 0.0</p></li>
+<li><p><strong>high</strong> (<a class="reference internal" href="../../../index.html#arkouda.float_scalars" title="arkouda.float_scalars"><em>float_scalars</em></a>) – The high value (inclusive) of the range, defaults to 1.0</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The length of the returned array</p></li>
+<li><p><strong>seed</strong> (<a class="reference internal" href="../../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – Value used to initialize the random number generator</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Values drawn uniformly from the specified range</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">

@@ -310,7 +310,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -395,8 +403,8 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – Size or shape of the array</p></li>
-<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.all_scalars" title="arkouda.numpy.dtypes.all_scalars"><em>all_scalars</em></a>) – Type of resulting array, default ak.float64</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – Size or shape of the array</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.all_scalars" title="arkouda.all_scalars"><em>all_scalars</em></a>) – Type of resulting array, default ak.float64</p></li>
 <li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays
 Included for consistency, as zeros are represented as all zeros, regardless
 of the value of max_bits</p></li>
@@ -445,8 +453,8 @@ of the value of max_bits</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – Size or shape of the array</p></li>
-<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.float64" title="arkouda.numpy.dtypes.float64"><em>float64</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a><em>, </em><em>bool</em><em>]</em>) – Resulting array type, default ak.float64</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – Size or shape of the array</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.float64" title="arkouda.float64"><em>float64</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>, </em><em>bool</em><em>]</em>) – Resulting array type, default ak.float64</p></li>
 <li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays
 Included for consistency, as ones are all zeros ending on a one, regardless
 of max_bits</p></li>
@@ -588,9 +596,9 @@ given, then the first arg is start, second is stop, third is step.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>stop</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>step</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – if one of these three is supplied, it’s used as stop, and start = 0, step = 1
+<li><p><strong>start</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>stop</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>step</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – if one of these three is supplied, it’s used as stop, and start = 0, step = 1
 if two of them are supplied, start = start, stop = stop, step = 1
 if all three are supplied, start = start, stop = stop, step = step</p></li>
 <li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><em>type</em><em>, or </em><em>str</em>) – The target dtype to cast values to</p></li>
@@ -646,9 +654,9 @@ the linspace method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – Start of interval (inclusive)</p></li>
-<li><p><strong>stop</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – End of interval (inclusive)</p></li>
-<li><p><strong>length</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – Number of points</p></li>
+<li><p><strong>start</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – Start of interval (inclusive)</p></li>
+<li><p><strong>stop</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – End of interval (inclusive)</p></li>
+<li><p><strong>length</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – Number of points</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -695,11 +703,11 @@ specified range bounded by the low and high parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>low</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – The low value (inclusive) of the range</p></li>
-<li><p><strong>high</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – The high value (exclusive for int, inclusive for float) of the range</p></li>
-<li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The size or shape of the returned array</p></li>
-<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.float64" title="arkouda.numpy.dtypes.float64"><em>float64</em></a><em>, </em><em>bool</em><em>]</em>) – The dtype of the array</p></li>
-<li><p><strong>seed</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – Index for where to pull the first returned value</p></li>
+<li><p><strong>low</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – The low value (inclusive) of the range</p></li>
+<li><p><strong>high</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – The high value (exclusive for int, inclusive for float) of the range</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The size or shape of the returned array</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.float64" title="arkouda.float64"><em>float64</em></a><em>, </em><em>bool</em><em>]</em>) – The dtype of the array</p></li>
+<li><p><strong>seed</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – Index for where to pull the first returned value</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -749,7 +757,7 @@ one <code class="docutils literal notranslate"><span class="pre">pdarray</span><
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>,</em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>]</em><em>]</em>) – The arrays to concatenate. Must all have same dtype.</p></li>
+<li><p><strong>arrays</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>,</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>]</em><em>]</em>) – The arrays to concatenate. Must all have same dtype.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>default = 0</em>) – The axis along which the arrays will be joined.
 If axis is None, arrays are flattened before use. Only for use with pdarray, and when
 ordered is True. Default is 0.</p></li>
@@ -764,7 +772,7 @@ results in non-deterministic ordering of elements.</p></li>
 the original order</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>,<a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>,<a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a>]</p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>,<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>,<a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">

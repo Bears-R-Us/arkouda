@@ -310,7 +310,15 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/series/index.html">arkouda.pandas.series</a></li>
 </ul>
@@ -2019,7 +2027,7 @@ is treated specially.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>from</strong> (<em>dtype</em><em>, </em><em>dtype specifier</em><em>, </em><em>NumPy scalar</em><em>, or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Data type, NumPy scalar, or array to cast from.</p></li>
+<li><p><strong>from</strong> (<em>dtype</em><em>, </em><em>dtype specifier</em><em>, </em><em>NumPy scalar</em><em>, or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Data type, NumPy scalar, or array to cast from.</p></li>
 <li><p><strong>to</strong> (<em>dtype</em><em> or </em><em>dtype specifier</em>) – Data type to cast to.</p></li>
 </ul>
 </dd>
@@ -2800,7 +2808,7 @@ is treated specially.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.result_type">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">result_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><span class="pre">pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#result_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.result_type" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">result_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#result_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.result_type" title="Link to this definition">¶</a></dt>
 <dd><p>Determine the promoted result dtype of inputs, including support for Arkouda’s bigint.</p>
 <p>Determine the result dtype that would be returned by a NumPy-like operation
 on the provided input arguments, accounting for Arkouda’s extended types
@@ -2808,7 +2816,7 @@ such as ak.bigint.</p>
 <p>This function mimics numpy.result_type, with support for Arkouda types.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>*args</strong> (<a class="reference internal" href="#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>np.dtype</em><em>, </em><em>type</em><em>]</em>) – One or more input objects. These can be NumPy arrays, dtypes, Python
+<dd class="field-odd"><p><strong>*args</strong> (<a class="reference internal" href="#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>np.dtype</em><em>, </em><em>type</em><em>]</em>) – One or more input objects. These can be NumPy arrays, dtypes, Python
 scalar types, or Arkouda pdarrays.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
