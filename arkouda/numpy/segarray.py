@@ -1,15 +1,12 @@
 from __future__ import annotations
 
 import json
-from typing import Optional, Sequence, Tuple
+from typing import TYPE_CHECKING, Optional, Sequence, Tuple, TypeVar
 from typing import cast as type_cast
 
 import numpy as np
 
-from arkouda.client import generic_msg
-from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.logger import getArkoudaLogger
-from arkouda.numpy import cumsum
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, isSupportedInt, str_
@@ -23,6 +20,7 @@ from arkouda.numpy.pdarrayclass import (
 from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate
 from arkouda.numpy.strings import Strings
+from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.pandas.join import gen_ranges
 
 __all__ = [
@@ -33,6 +31,13 @@ __all__ = [
 SEG_SUFFIX = "_segments"
 VAL_SUFFIX = "_values"
 LEN_SUFFIX = "_lengths"
+
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+    from arkouda.numpy import cumsum
+else:
+    generic_msg = TypeVar("generic_msg")
+    cumsum = TypeVar("cumsum")
 
 
 def _aggregator(func):
@@ -229,6 +234,8 @@ class SegArray:
         SegArray
             The input arrays joined into one SegArray
         """
+        from arkouda.numpy import cumsum
+
         if not ordered:
             raise ValueError("Unordered concatenation not yet supported on SegArray; use ordered=True.")
         if len(x) == 0:
@@ -594,6 +601,8 @@ class SegArray:
         SegArray
             Copy of original SegArray with values from x appended to each sub-array
         """
+        from arkouda.numpy import cumsum
+
         if self.dtype == str_:
             raise TypeError("String elements are immutable and cannot accept a single value")
         if hasattr(x, "size"):
@@ -638,6 +647,8 @@ class SegArray:
                 If return_multiplicity=True, this array contains the number of times
                 each value in the returned SegArray was repeated in the original SegArray.
         """
+        from arkouda.numpy import cumsum
+
         isrepeat = zeros(self.values.size, dtype=akbool)
         isrepeat[1:] = self.values[:-1] == self.values[1:]
         isrepeat[self.segments[self.non_empty]] = False
@@ -817,6 +828,8 @@ class SegArray:
             A tuple of two int64 pdarrays. The ith hash value is the concatenation
             of the ith values from each array.
         """
+        from arkouda.client import generic_msg
+
         repMsg = type_cast(
             str,
             generic_msg(
@@ -866,7 +879,8 @@ class SegArray:
         ---------
         load
         """
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.client import generic_msg
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return type_cast(
             str,
@@ -921,7 +935,8 @@ class SegArray:
         - Because HDF5 deletes do not release memory, this will create a copy of the
           file with the new data
         """
-        from arkouda.io import (
+        from arkouda.client import generic_msg
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,
@@ -999,7 +1014,8 @@ class SegArray:
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
         """
-        from arkouda.io import _mode_str_to_int
+        from arkouda.client import generic_msg
+        from arkouda.pandas.io import _mode_str_to_int
 
         if mode.lower() == "append":
             raise ValueError("Append mode is not supported for SegArray.")
@@ -1037,7 +1053,7 @@ class SegArray:
         -------
         SegArray
         """
-        from arkouda.io import read_hdf
+        from arkouda.pandas.io import read_hdf
 
         return read_hdf(prefix_path, datasets=dataset)
 
@@ -1277,6 +1293,7 @@ class SegArray:
         --------
         SegArray
         """
+        from arkouda.numpy import cumsum
         from arkouda.numpy.pdarraysetops import in1d
 
         # convert to pdarray if more than 1 element
@@ -1331,6 +1348,8 @@ class SegArray:
         --------
         unregister, attach, is_registered
         """
+        from arkouda.client import generic_msg
+
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         generic_msg(
@@ -1428,6 +1447,8 @@ class SegArray:
             Raised if other is not a pdarray or the pdarray.dtype is not
             a supported dtype
         """
+        from arkouda.client import generic_msg
+
         return generic_msg(
             cmd="sendArray",
             args={

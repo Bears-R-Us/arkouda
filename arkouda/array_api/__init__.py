@@ -1,3 +1,4 @@
+# isort: skip_file
 import warnings
 
 from .array_object import Array

@@ -5,7 +5,6 @@ from typing import Union, cast
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import NumericDTypes
 from arkouda.numpy.dtypes import dtype as akdtype
@@ -48,6 +47,8 @@ def random_sparse_matrix(
     ValueError
         Raised if density is not in the range [0,1]
     """
+    from arkouda.client import generic_msg
+
     if density < 0.0 or density > 1.0:
         raise ValueError("density must be in the range [0,1]")
 
@@ -82,6 +83,8 @@ def sparse_matrix_matrix_mult(A, B: sparray) -> sparray:
     sparray
         The product of the two sparse matrices
     """
+    from arkouda.client import generic_msg
+
     if not (isinstance(A, sparray) and isinstance(B, sparray)):
         raise TypeError("A and B must be sparrays for sparse_matrix_matrix_mult")
     if not A.dtype == B.dtype:
@@ -113,6 +116,8 @@ def create_sparse_matrix(size: int, rows: pdarray, cols: pdarray, vals: pdarray,
     sparray
         A sparse matrix with the specified row and column indices and values
     """
+    from arkouda.client import generic_msg
+
     if not (isinstance(rows, pdarray) and isinstance(cols, pdarray) and isinstance(vals, pdarray)):
         raise TypeError("rows, cols, and vals must be pdarrays for create_sparse_matrix")
     if not (rows.ndim == 1 and cols.ndim == 1 and vals.ndim == 1):

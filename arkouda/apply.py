@@ -59,7 +59,7 @@ import cloudpickle
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg, get_config
+from arkouda.client import get_config
 from arkouda.numpy.dtypes import dtype
 from arkouda.numpy.pdarrayclass import parse_single_value, pdarray
 from arkouda.numpy.pdarraycreation import create_pdarray
@@ -133,6 +133,8 @@ def apply(
     array([21.991148575128552 28.274333882308138 15.707963267948966 3.1415926535897931])
 
     """
+    from arkouda.client import generic_msg
+
     if getattr(apply, "is_apply_supported", None) is None:
         res = generic_msg("isPythonModuleSupported")
         is_supported = parse_single_value(cast(str, res))

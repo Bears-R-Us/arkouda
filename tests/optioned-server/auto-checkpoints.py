@@ -3,7 +3,7 @@ from time import sleep
 import pytest
 
 import arkouda as ak
-from arkouda.io_util import delete_directory, directory_exists
+from arkouda.pandas.io_util import delete_directory, directory_exists
 
 autockptPath = ".akdata"
 autockptName = "auto_checkpoint"
