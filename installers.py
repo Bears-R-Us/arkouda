@@ -7,6 +7,19 @@ from setuptools.command.build_py import build_py
 
 
 class ArkoudaBuildError(Exception):
+    """
+    Custom exception raised when Arkouda server build or installation fails.
+
+    This exception is used to indicate errors during the Chapel dependency check,
+    server compilation (`make`), or installation into the Python environment.
+
+    Examples
+    --------
+    >>> if not chpl_installed():
+    ...     raise ArkoudaBuildError("Chapel is not installed.")
+
+    """
+
     pass
 
 
