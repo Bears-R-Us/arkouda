@@ -21,6 +21,7 @@ Functions
    arkouda.client.print_server_commands
    arkouda.client.ruok
    arkouda.client.shutdown
+   arkouda.client.wait_for_async_activity
 
 
 Module Contents
@@ -218,5 +219,14 @@ Module Contents
 
    :raises RuntimeError: Raised if the client is not connected to the Arkouda server or
        there is an error in disconnecting from the server
+
+
+.. py:function:: wait_for_async_activity() -> None
+
+   Wait for the completion of asynchronous activities on the server.
+
+   Intended to help with testing of automatic checkpointing.
+   The server will consider itself "idle" despite serving this message.
+
 
 

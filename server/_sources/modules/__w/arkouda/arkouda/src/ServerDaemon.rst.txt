@@ -204,9 +204,20 @@ or
 
    .. method:: proc serverIdleStart()
 
+      Indicates that the server is "idle".
+      Records "now" as the time when idle-ness started,
+      unless the server is already "idle", in which case
+      the previous idle-start time is preserved. 
+
    .. method:: proc serverIdleStop()
 
+      Indicates that the server is no longer "idle". 
+
    .. method:: proc serverActivityMark()
+
+   .. method:: proc waitForActivityMutex()
+
+      Waits until 'activityMutex' is empty; leaves it empty. 
 
 .. class:: MetricsServerDaemon : ArkoudaServerDaemon
 

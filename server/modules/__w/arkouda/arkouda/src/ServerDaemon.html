@@ -450,17 +450,28 @@ which stops the arkouda_server listener thread and closes socket.</p>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.serverIdleStart">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">serverIdleStart</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.serverIdleStart" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Indicates that the server is “idle”.
+Records “now” as the time when idle-ness started,
+unless the server is already “idle”, in which case
+the previous idle-start time is preserved.</p>
+</dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.serverIdleStop">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">serverIdleStop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.serverIdleStop" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Indicates that the server is no longer “idle”.</p>
+</dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.serverActivityMark">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">serverActivityMark</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.serverActivityMark" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.waitForActivityMutex">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">waitForActivityMutex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.waitForActivityMutex" title="Link to this definition">¶</a></dt>
+<dd><p>Waits until ‘activityMutex’ is empty; leaves it empty.</p>
+</dd></dl>
 
 </dd></dl>
 

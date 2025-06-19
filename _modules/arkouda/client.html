@@ -411,6 +411,7 @@
     <span class="s2">&quot;get_mem_used&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_mem_avail&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_mem_status&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;wait_for_async_activity&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_server_commands&quot;</span><span class="p">,</span>
     <span class="s2">&quot;print_server_commands&quot;</span><span class="p">,</span>
     <span class="s2">&quot;generate_history&quot;</span><span class="p">,</span>
@@ -1491,6 +1492,20 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Returned config is not valid JSON: </span><span class="si">{</span><span class="n">raw_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> in retrieving Arkouda server config&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="wait_for_async_activity">
+<a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.wait_for_async_activity">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">wait_for_async_activity</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wait for the completion of asynchronous activities on the server.</span>
+
+<span class="sd">    Intended to help with testing of automatic checkpointing.</span>
+<span class="sd">    The server will consider itself &quot;idle&quot; despite serving this message.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">generic_msg</span><span class="p">(</span><span class="s2">&quot;wait_for_async_activity&quot;</span><span class="p">)</span></div>
+
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_registration_config_msg</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>

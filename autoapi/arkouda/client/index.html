@@ -434,6 +434,9 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client.shutdown" title="arkouda.client.shutdown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shutdown</span></code></a>(→ None)</p></td>
 <td><p>Send a shutdown message.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client.wait_for_async_activity" title="arkouda.client.wait_for_async_activity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_async_activity</span></code></a>(→ None)</p></td>
+<td><p>Wait for the completion of asynchronous activities on the server.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -702,6 +705,14 @@ there is an error in disconnecting from the server</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.client.wait_for_async_activity">
+<span class="sig-prename descclassname"><span class="pre">arkouda.client.</span></span><span class="sig-name descname"><span class="pre">wait_for_async_activity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/client.html#wait_for_async_activity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.client.wait_for_async_activity" title="Link to this definition">¶</a></dt>
+<dd><p>Wait for the completion of asynchronous activities on the server.</p>
+<p>Intended to help with testing of automatic checkpointing.
+The server will consider itself “idle” despite serving this message.</p>
+</dd></dl>
+
 </section>
 </section>
 
@@ -775,6 +786,7 @@ there is an error in disconnecting from the server</p>
 <li><a class="reference internal" href="#arkouda.client.print_server_commands"><code class="docutils literal notranslate"><span class="pre">print_server_commands()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client.ruok"><code class="docutils literal notranslate"><span class="pre">ruok()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client.shutdown"><code class="docutils literal notranslate"><span class="pre">shutdown()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.client.wait_for_async_activity"><code class="docutils literal notranslate"><span class="pre">wait_for_async_activity()</span></code></a></li>
 </ul>
 </li>
 </ul>
