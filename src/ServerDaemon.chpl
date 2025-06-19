@@ -372,6 +372,7 @@ module ServerDaemon {
             registerFunction("disconnect", akMsgSign);
             registerFunction("noop", akMsgSign);
             registerFunction("ruok", akMsgSign);
+            registerFunction("wait_for_async_activity", akMsgSign);
             registerFunction("shutdown", akMsgSign);
         }
         
@@ -522,7 +523,6 @@ module ServerDaemon {
                 // receive message on the zmq socket
                 var reqMsgRaw = socket.recv(bytes);
 
-                serverIdleStop();
                 this.reqCount += 1;
                 var s0 = timeSinceEpoch().totalSeconds();
 
@@ -541,13 +541,14 @@ module ServerDaemon {
                     */
                 var request : string;
 
-                try! {
+                try {
                     request = rawRequest.decode();
                 } catch e: DecodeError {
                     sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                         "illegal byte sequence in command: %?".format(
                                         rawRequest.decode(decodePolicy.replace)));
                     sendRepMsg(MsgTuple.error(e.message()), "Unknown");
+                    continue;
                 }
 
                 // deserialize the decoded, JSON-formatted cmdStr into a RequestMsg
@@ -565,9 +566,10 @@ module ServerDaemon {
                     sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                             "Argument List size is not an integer. %s cannot be cast".format(msg.size));
                     sendRepMsg(MsgTuple.error(e.message()), "Unknown");
+                    continue;
                 }
 
-                var msgArgs: owned MessageArgs;
+                const msgArgs: owned MessageArgs;
                 if size > 0 {
                     if reqMsgRaw.endsWith(b"BINARY_PAYLOAD")
                         then msgArgs = parseMessageArgs(args, size, socket.recv(bytes));
@@ -661,7 +663,14 @@ module ServerDaemon {
                         when "ruok" {
                             repMsg = new MsgTuple("imok", MsgType.NORMAL);
                         }
+                        when "wait_for_async_activity" {
+                            repMsg = MsgTuple.success(waitForActivityMutex());
+                        }
+                        when "" {
+                            repMsg = MsgTuple.error("Server received an empty command");
+                        }
                         otherwise { // Look up in CommandMap
+                            serverIdleStop();
                             if commandMap.contains(cmd) {
                                 activityMutex.writeEF("server");
                                 defer { activityMutex.readFE(); }
@@ -752,10 +761,16 @@ module ServerDaemon {
             numAsyncTasks.sub(1);
         }
 
+        /* Indicates that the server is "idle".
+           Records "now" as the time when idle-ness started,
+           unless the server is already "idle", in which case
+           the previous idle-start time is preserved. */
         proc serverIdleStart() {
-          idlePeriodStart.write(timeSinceEpoch().totalSeconds());
+          var notIdle = 0: real;  // compareExchange needs a ref
+          idlePeriodStart.compareExchange(notIdle, currentTime());
         }
 
+        /* Indicates that the server is no longer "idle". */
         proc serverIdleStop() {
           idlePeriodStart.write(0);
         }
@@ -763,6 +778,15 @@ module ServerDaemon {
         proc serverActivityMark() {
           seenNotableActivity.write(true);
         }
+
+        /* Waits until 'activityMutex' is empty; leaves it empty. */
+        proc waitForActivityMutex() {
+          // 'isFull' is unstable: if ! activityMutex.isFull then return;
+          activityMutex.writeEF("waitForMutex");
+          activityMutex.readFE();
+          return "completed";
+        }
+          
     }
 
     /**

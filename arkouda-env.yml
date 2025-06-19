@@ -26,8 +26,8 @@ dependencies:
   - cloudpickle
   - pre-commit
   - darglint>=1.8.1
-  - pydoclint==0.6.6
   # - chapel-py
 
   - pip:
       - typeguard==2.10.0
+      - pydoclint==0.6.6

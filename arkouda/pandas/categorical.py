@@ -50,7 +50,18 @@ from __future__ import annotations
 import itertools
 import json
 from collections import defaultdict
-from typing import DefaultDict, Dict, List, Mapping, Optional, Sequence, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    DefaultDict,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+)
 from typing import cast as type_cast
 
 import numpy as np
@@ -58,12 +69,8 @@ from pandas import Categorical as pd_Categorical
 from pandas import Index as pd_Index
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
-from arkouda.groupbyclass import GroupBy, unique
 from arkouda.infoclass import information
 from arkouda.logger import getArkoudaLogger
-from arkouda.numpy import cast as akcast
-from arkouda.numpy import where
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
@@ -77,6 +84,17 @@ from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort
 from arkouda.numpy.sorting import sort as pda_sort
 from arkouda.numpy.strings import Strings
+from arkouda.pandas.groupbyclass import GroupBy, unique
+
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import where
+else:
+    generic_msg = TypeVar("generic_msg")
+    akcast = TypeVar("akcast")
+    where = TypeVar("where")
+
 
 __all__ = ["Categorical"]
 
@@ -134,6 +152,8 @@ class Categorical:
     dtype = akdtype(str_)  # this is being set for now because Categoricals only supported on Strings
 
     def __init__(self, values, **kwargs) -> None:
+        from arkouda.numpy import cast as akcast
+
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
         if "codes" in kwargs and "categories" in kwargs:
             # This initialization is called by Categorical.from_codes()
@@ -400,6 +420,9 @@ class Categorical:
             be assigned the NA value.
 
         """
+        from arkouda.numpy import cast as akcast
+        from arkouda.numpy import where
+
         if NAvalue is None:
             NAvalue = self.NAvalue
         findNA = new_categories == NAvalue
@@ -896,6 +919,8 @@ class Categorical:
         values is negligible.
 
         """
+        from arkouda.client import generic_msg
+
         rep_msg = generic_msg(
             cmd="categoricalHash",
             args={"objType": self.objType, "categories": self.categories, "codes": self.codes},
@@ -1050,7 +1075,8 @@ class Categorical:
         load
 
         """
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.client import generic_msg
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         args = {
             "codes": self.codes,
@@ -1104,7 +1130,8 @@ class Categorical:
           automatic creation of a file without the inaccessible data.
 
         """
-        from arkouda.io import (
+        from arkouda.client import generic_msg
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,
@@ -1261,6 +1288,8 @@ class Categorical:
         they are unregistered.
 
         """
+        from arkouda.client import generic_msg
+
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         generic_msg(
@@ -1492,6 +1521,8 @@ class Categorical:
             a supported dtype
 
         """
+        from arkouda.client import generic_msg
+
         # hostname is the hostname to send to
         args = {
             "codes": self.codes,

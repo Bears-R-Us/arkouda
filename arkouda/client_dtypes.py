@@ -1,18 +1,74 @@
+"""
+Arkouda client-defined dtypes and helper utilities for structured or specialized array semantics.
+
+This module introduces specialized subclasses of `pdarray` for handling and representing
+data with specific interpretations or domain semantics. These include:
+
+- `BitVector`: For representing integers as sets of binary flags.
+- `Fields`: For displaying and interacting with named binary flags.
+- `IPv4`: For storing and displaying 32-bit integers as IPv4 addresses.
+
+These classes enhance usability and improve readability when working with encoded or
+domain-specific data while preserving Arkouda’s performance model and distributed data structures.
+
+Functions
+---------
+- `BitVectorizer`: Creates a partially applied BitVector constructor.
+- `ip_address`: Converts various formats to an Arkouda IPv4 object.
+- `is_ipv4`: Returns a boolean array indicating IPv4 addresses.
+- `is_ipv6`: Returns a boolean array indicating IPv6 addresses.
+
+Examples
+--------
+>>> import arkouda as ak
+>>> from arkouda.client_dtypes import BitVector, Fields, IPv4, ip_address, is_ipv4
+
+Create and use BitVectors:
+>>> a = ak.array([3, 5, 7])
+>>> bv = BitVector(a, width=4)
+>>> print(bv)
+BitVector([..||,
+           .|.|,
+           .|||],
+          width=4, reverse=False)
+
+Create Fields with named binary flags:
+>>> f = Fields(ak.array([1, 2, 3]), names=['read', 'write', 'exec'], separator=':')
+>>> print(f[0])  # doctest: +SKIP
+--:--:read (1)
+
+Convert and work with IP addresses:
+>>> ips = ip_address(['192.168.0.1', '10.0.0.1'])
+>>> print(ips)
+IPv4([192.168.0.1,
+      10.0.0.1],
+     )
+
+>>> is_ipv4(ips)
+array([True True])
+
+"""
+
 from functools import partial
 from ipaddress import ip_address as _ip_address
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, TypeVar, Union
 
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.groupbyclass import GroupBy, broadcast
-from arkouda.numpy import cast as akcast
-from arkouda.numpy import where
 from arkouda.numpy.dtypes import bitType, intTypes, isSupportedInt
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.numpy.strings import Strings
+from arkouda.pandas.groupbyclass import GroupBy, broadcast
+
+if TYPE_CHECKING:
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import where as akwhere
+else:
+    akcast = TypeVar("akcast")
+    akwhere = TypeVar("akwhere")
 
 __all__ = [
     "BitVector",
@@ -79,6 +135,8 @@ class BitVector(pdarray):
     special_objType = "BitVector"
 
     def __init__(self, values, width=64, reverse=False):
+        from arkouda.numpy import cast as akcast
+
         self.registered_name = None
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
             self.name = None  # This is needed to silence warnings of missing name during failed creation
@@ -364,7 +422,7 @@ class Fields(BitVector):
             for name, shift in zip(self.names, self.shifts):
                 # Check if name exists in each string
                 bit = s.contains(name)
-                values = values | akcast(where(bit, 1 << shift, 0), bitType)
+                values = values | akcast(akwhere(bit, 1 << shift, 0), bitType)
         else:
             # When separator is non-empty, split on it
             sf, segs = s.flatten(self.separator, return_segments=True)
@@ -374,7 +432,7 @@ class Fields(BitVector):
             for name, shift in zip(self.names, self.shifts):
                 # Check if name matches one of the split fields from originating string
                 bit = g.any(sf == name)[1]
-                values = values | akcast(where(bit, 1 << shift, 0), bitType)
+                values = values | akcast(akwhere(bit, 1 << shift, 0), bitType)
         return values
 
     def _parse_scalar(self, s):
@@ -510,6 +568,8 @@ class IPv4(pdarray):
     special_objType = "IPv4"
 
     def __init__(self, values):
+        from arkouda.numpy import cast as akcast
+
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
             self.name = None  # This is needed to silence warnings of missing name during failed creation
             raise TypeError("Argument must be int64 pdarray")
@@ -526,6 +586,8 @@ class IPv4(pdarray):
         )
 
     def export_uint(self):
+        from arkouda.numpy import cast as akcast
+
         return akcast(self.values, akuint64)
 
     def format(self, x):
@@ -694,7 +756,7 @@ class IPv4(pdarray):
         from typing import cast as typecast
 
         from arkouda.client import generic_msg
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return typecast(
             str,
@@ -715,7 +777,7 @@ class IPv4(pdarray):
     def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
         """Override the pdarray implementation so that the special object type will be used."""
         from arkouda.client import generic_msg
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,

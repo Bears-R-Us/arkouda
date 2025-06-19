@@ -1,17 +1,17 @@
 import json
 import re
-from typing import cast
+from typing import TYPE_CHECKING, TypeVar, cast
 
-from arkouda.client import generic_msg
 from arkouda.infoclass import list_symbol_table
 from arkouda.logger import getArkoudaLogger
-from arkouda.match import Match, MatchType
 from arkouda.numpy.dtypes import str_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.pandas.match import Match, MatchType
 
-__all__ = [
-    "Matcher",
-]
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+else:
+    generic_msg = TypeVar("generic_msg")
 
 
 class Matcher:
@@ -52,6 +52,8 @@ class Matcher:
 
     def find_locations(self) -> None:
         """Populate Matcher object by finding the positions of matches."""
+        from arkouda.client import generic_msg
+
         sym_tab = list_symbol_table()
         if not self.populated or any(
             [getattr(self, pda).name not in sym_tab for pda in self.LocationsInfo]
@@ -111,9 +113,9 @@ class Matcher:
     def split(self, maxsplit: int = 0, return_segments: bool = False):
         """
         Split string by the occurrences of pattern.
-
         If maxsplit is nonzero, at most maxsplit splits occur.
         """
+        from arkouda.client import generic_msg
         from arkouda.numpy.strings import Strings
 
         if re.search(self.pattern, ""):
@@ -140,6 +142,7 @@ class Matcher:
 
     def findall(self, return_match_origins: bool = False):
         """Return all non-overlapping matches of pattern in Strings as a new Strings object."""
+        from arkouda.client import generic_msg
         from arkouda.numpy.strings import Strings
 
         self.find_locations()
@@ -166,14 +169,12 @@ class Matcher:
 
     def sub(self, repl: str, count: int = 0, return_num_subs: bool = False):
         """
-        Substitute pattern.
-
         Return the Strings obtained by replacing non-overlapping occurrences of pattern
         with the replacement repl.
-
         If count is nonzero, at most count substitutions occur
         If return_num_subs is True, return the number of substitutions that occurred
         """
+        from arkouda.client import generic_msg
         from arkouda.numpy.strings import Strings
 
         repMsg = cast(

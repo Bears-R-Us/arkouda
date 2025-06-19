@@ -5,12 +5,11 @@ import json
 from functools import reduce
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast, overload
+from typing import TYPE_CHECKING, List, Optional, Tuple, TypeVar, Union, cast, overload
 
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.client import generic_msg, get_array_ranks
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
@@ -31,6 +30,12 @@ from arkouda.numpy.dtypes import (
 )
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
+
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg, get_array_ranks
+else:
+    generic_msg = TypeVar("generic_msg")
+    get_array_ranks = TypeVar("get_array_ranks")
 
 module = modules[__name__]
 
@@ -152,9 +157,14 @@ if TYPE_CHECKING:
     ) -> Union[np.float64, pdarray]:
         pass
 
+    # aliases
     var = stats_reduce
     std = stats_reduce
 
+    from arkouda.client import generic_msg, get_array_ranks
+else:
+    generic_msg = TypeVar("generic_msg")
+    get_array_ranks = TypeVar("get_array_ranks")
 
 __all__ = [
     "pdarray",
@@ -207,6 +217,7 @@ SUPPORTED_REDUCTION_OPS = [
     "prod",
     "mean",
 ]
+
 
 SUPPORTED_INDEX_REDUCTION_OPS = ["argmin", "argmax"]
 
@@ -309,6 +320,8 @@ def _create_scalar_array(value):
     """
     Create a pdarray from a single scalar value
     """
+    from arkouda.client import generic_msg
+
     return create_pdarray(
         generic_msg(
             cmd=f"createScalarArray<{resolve_scalar_dtype(value)}>",
@@ -323,6 +336,8 @@ def _slice_index(array: pdarray, starts: List[int], stops: List[int], strides: L
     """
     Slice a pdarray with a set of start, stop and stride values
     """
+    from arkouda.client import generic_msg
+
     return create_pdarray(
         generic_msg(
             cmd=f"[slice]<{array.dtype},{array.ndim}>",
@@ -419,7 +434,7 @@ def _parse_none_and_ellipsis_keys(key, ndim):
 
 
 def _to_pdarray(value: np.ndarray, dt=None) -> pdarray:
-    from arkouda.client import maxTransferBytes
+    from arkouda.client import generic_msg, maxTransferBytes
 
     if dt is None:
         _dtype = dtype(value.dtype)
@@ -543,6 +558,8 @@ class pdarray:
 
     def __del__(self):
         try:
+            from arkouda.client import generic_msg
+
             logger.debug(f"deleting pdarray with name {self.name}")
             generic_msg(cmd="delete", args={"name": self.name})
         except (RuntimeError, AttributeError):
@@ -560,12 +577,12 @@ class pdarray:
         return self.size
 
     def __str__(self):
-        from arkouda.client import pdarrayIterThresh
+        from arkouda.client import generic_msg, pdarrayIterThresh
 
         return generic_msg(cmd="str", args={"array": self, "printThresh": pdarrayIterThresh})
 
     def __repr__(self):
-        from arkouda.client import pdarrayIterThresh
+        from arkouda.client import generic_msg, pdarrayIterThresh
 
         return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
 
@@ -583,6 +600,8 @@ class pdarray:
 
     @property
     def max_bits(self):
+        from arkouda.client import generic_msg
+
         if self.dtype == bigint:
             if not hasattr(self, "_max_bits"):
                 # if _max_bits hasn't been set, fetch value from server
@@ -593,6 +612,8 @@ class pdarray:
 
     @max_bits.setter
     def max_bits(self, max_bits):
+        from arkouda.client import generic_msg
+
         if self.dtype == bigint:
             cmd = f"set_max_bits<{self.dtype},{self.ndim}>"
             generic_msg(cmd=cmd, args={"array": self, "max_bits": max_bits})
@@ -693,6 +714,8 @@ class pdarray:
             a supported dtype
 
         """
+        from arkouda.client import generic_msg
+
         # For pdarray subclasses like ak.Datetime and ak.Timedelta, defer to child logic
         if type(other) is not pdarray and issubclass(type(other), pdarray):
             return NotImplemented
@@ -769,6 +792,7 @@ class pdarray:
             Raised if other is not a pdarray or the pdarray.dtype is not
             a supported dtype
         """
+        from arkouda.client import generic_msg
 
         if op not in self.BinOps:
             raise ValueError(f"bad operator {op}")
@@ -827,6 +851,8 @@ class pdarray:
             Raised if other is not a pdarray or the pdarray.dtype is not
             a supported dtype
         """
+        from arkouda.client import generic_msg
+
         # hostname is the hostname to send to
         return generic_msg(
             cmd="sendArray",
@@ -979,6 +1005,8 @@ class pdarray:
 
     # op= operators
     def opeq(self, other, op):
+        from arkouda.client import generic_msg
+
         if op not in self.OpEqOps:
             raise ValueError(f"bad operator {op}")
         # pdarray op= pdarray
@@ -1062,6 +1090,8 @@ class pdarray:
 
     # overload a[] to treat like list
     def __getitem__(self, key):
+        from arkouda.client import generic_msg
+
         if self.ndim == 1 and np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
             orig_key = key
             if key < 0:
@@ -1216,6 +1246,8 @@ class pdarray:
             raise TypeError(f"Unhandled key type: {key} ({type(key)})")
 
     def __setitem__(self, key, value):
+        from arkouda.client import generic_msg
+
         # convert numpy array value to pdarray value
         if isinstance(value, np.ndarray):
             _value = _to_pdarray(value)
@@ -1454,6 +1486,8 @@ class pdarray:
         TypeError
             Raised if value is not an int, int64, float, or float64
         """
+        from arkouda.client import generic_msg
+
         cmd = f"set<{self.dtype},{self.ndim}>"
         generic_msg(
             cmd=cmd,
@@ -1502,6 +1536,7 @@ class pdarray:
         """
         from typing import cast as type_cast
 
+        from arkouda.client import generic_msg
         from arkouda.numpy.manipulation_functions import flip
         from arkouda.numpy.pdarraycreation import zeros
         from arkouda.numpy.sorting import coargsort
@@ -2400,6 +2435,8 @@ class pdarray:
         >>> a.bigint_to_uint_arrays()
         [array([1 1 1 1 1]), array([0 1 2 3 4])]
         """
+        from arkouda.client import generic_msg
+
         cmd = f"bigint_to_uint_list<{self.dtype},{self.ndim}>"
         ret_list = json.loads(generic_msg(cmd=cmd, args={"array": self}))
         return list(reversed([create_pdarray(a) for a in ret_list]))
@@ -2438,6 +2475,8 @@ class pdarray:
         # For example, a.reshape(10, 11) is equivalent to a.reshape((10, 11))
         # the lenshape variable addresses an error that occurred when a single integer was
         # passed
+        from arkouda.client import generic_msg
+
         if len(shape) == 1:
             shape = shape[0]
             lenshape = 1
@@ -2471,6 +2510,8 @@ class pdarray:
         >>> a.flatten()
         array([3 2 1 2 3 1])
         """
+        from arkouda.client import generic_msg
+
         return create_pdarray(
             generic_msg(
                 cmd=f"flatten<{self.dtype.name},{self.ndim}>",
@@ -2519,7 +2560,7 @@ class pdarray:
         >>> type(a.to_ndarray())
         <class 'numpy.ndarray'>
         """
-        from arkouda.client import maxTransferBytes
+        from arkouda.client import generic_msg, maxTransferBytes
 
         dt = dtype(self.dtype)
 
@@ -2734,7 +2775,8 @@ class pdarray:
         Saves the array to numLocales HDF5 files with the name
         ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
         """
-        from arkouda.io import _mode_str_to_int
+        from arkouda.client import generic_msg
+        from arkouda.pandas.io import _mode_str_to_int
 
         return cast(
             str,
@@ -2821,7 +2863,8 @@ class pdarray:
         Saves the array in to single hdf5 file on the root node.
         ``cwd/path/name_prefix.hdf5``
         """
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.client import generic_msg
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return cast(
             str,
@@ -2872,7 +2915,8 @@ class pdarray:
           the file name is checked for _LOCALE#### to determine if it is distributed.
         - If the dataset provided does not exist, it will be added
         """
-        from arkouda.io import (
+        from arkouda.client import generic_msg
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,
@@ -2951,6 +2995,8 @@ class pdarray:
         - Be sure that column delimiters are not found within your data.
         - All CSV files must delimit rows using newline ("\\n") at this time.
         """
+        from arkouda.client import generic_msg
+
         return cast(
             str,
             generic_msg(
@@ -3019,6 +3065,8 @@ class pdarray:
         >>> b = ak.attach("my_zeros")
         >>> b.unregister()
         """
+        from arkouda.client import generic_msg
+
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
         generic_msg(
@@ -3070,6 +3118,8 @@ class pdarray:
         self.registered_name = None
 
     def _float_to_uint(self):
+        from arkouda.client import generic_msg
+
         return generic_msg(cmd="transmuteFloat", args={"name": self})
 
     def _get_grouping_keys(self) -> List[pdarray]:
@@ -3127,6 +3177,7 @@ def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
         Raised if a server-side error is thrown in the process of creating
         the pdarray instance
     """
+
     try:
         fields = repMsg.split()
         name = fields[1]
@@ -3195,6 +3246,8 @@ def clear() -> None:
     RuntimeError
         Raised if there is a server-side error in executing clear request
     """
+    from arkouda.client import generic_msg
+
     generic_msg(cmd="clear")
 
 
@@ -3395,6 +3448,7 @@ def _common_reduction(
     ValueError
         Raised op is not a supported reduction operation.
     """
+    from arkouda.client import generic_msg
 
     if kind not in SUPPORTED_REDUCTION_OPS:
         raise ValueError(f"Unsupported reduction type: {kind}")
@@ -3465,6 +3519,8 @@ def _common_stats_reduction(
         Raised op is not a supported reduction operation.
     """
 
+    from arkouda.client import generic_msg
+
     if kind not in SUPPORTED_STATS_REDUCTION_OPS:
         raise ValueError(f"Unsupported reduction type: {kind}")
 
@@ -3527,6 +3583,8 @@ def _common_index_reduction(
     TypeError
         Raised if axis is not of type int.
     """
+    from arkouda.client import generic_msg
+
     if kind not in SUPPORTED_INDEX_REDUCTION_OPS:
         raise ValueError(f"Unsupported reduction type: {kind}")
 
@@ -3827,6 +3885,7 @@ def dot(
         Raised if either pdda1 or pda2 is not an allowed type, or if shapes are incompatible.
     """
 
+    from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy import cast as akcast
     from arkouda.numpy.numeric import matmul as akmatmul
 
@@ -3941,6 +4000,8 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
     The covariance is calculated by
     ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.
     """
+    from arkouda.client import generic_msg
+
     return parse_single_value(
         generic_msg(cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
     )
@@ -3989,6 +4050,8 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     The correlation is calculated by
     cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
     """
+    from arkouda.client import generic_msg
+
     return parse_single_value(
         generic_msg(cmd=f"corr<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
     )
@@ -4117,6 +4180,8 @@ def mink(pda: pdarray, k: int_scalars) -> pdarray:
     >>> ak.mink(A, 4)
     array([0 1 2 3])
     """
+    from arkouda.client import generic_msg
+
     if k < 1:
         raise ValueError("k must be 1 or greater")
     if pda.size == 0:
@@ -4173,6 +4238,8 @@ def maxk(pda: pdarray, k: int_scalars) -> pdarray:
     >>> ak.maxk(A, 4)
     array([5 7 9 10])
     """
+    from arkouda.client import generic_msg
+
     if k < 1:
         raise ValueError("k must be 1 or greater")
     if pda.size == 0:
@@ -4226,6 +4293,8 @@ def argmink(pda: pdarray, k: int_scalars) -> pdarray:
     >>> ak.argmink(A, 4)
     array([7 2 5 3])
     """
+    from arkouda.client import generic_msg
+
     if k < 1:
         raise ValueError("k must be 1 or greater")
     if pda.size == 0:
@@ -4281,6 +4350,8 @@ def argmaxk(pda: pdarray, k: int_scalars) -> pdarray:
     >>> ak.argmaxk(A, 4)
     array([1 4 6 0])
     """
+    from arkouda.client import generic_msg
+
     if k < 1:
         raise ValueError("k must be 1 or greater")
     if pda.size == 0:
@@ -4318,6 +4389,8 @@ def popcount(pda: pdarray) -> pdarray:
     >>> ak.popcount(A)
     array([0 1 1 2 1 2 2 3 1 2])
     """
+    from arkouda.client import generic_msg
+
     if pda.dtype not in [akint64, akuint64, bigint]:
         raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
     if pda.dtype == bigint:
@@ -4360,6 +4433,8 @@ def parity(pda: pdarray) -> pdarray:
     >>> ak.parity(A)
     array([0 1 1 0 1 0 0 1 1 0])
     """
+    from arkouda.client import generic_msg
+
     if pda.dtype not in [akint64, akuint64, bigint]:
         raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
     if pda.dtype == bigint:
@@ -4401,6 +4476,8 @@ def clz(pda: pdarray) -> pdarray:
     >>> ak.clz(A)
     array([64 63 62 62 61 61 61 61 60 60])
     """
+    from arkouda.client import generic_msg
+
     if pda.dtype not in [akint64, akuint64, bigint]:
         raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
     if pda.dtype == bigint:
@@ -4484,6 +4561,8 @@ def ctz(pda: pdarray) -> pdarray:
     >>> ak.ctz(A)
     array([0 0 1 0 2 0 1 0 3 0])
     """
+    from arkouda.client import generic_msg
+
     if pda.dtype not in [akint64, akuint64, bigint]:
         raise TypeError("BitOps only supported on int64, uint64, and bigint arrays")
     if pda.dtype == bigint:
@@ -4838,6 +4917,8 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         Raised if neither dividend nor divisor is a pdarray (at least one must be)
         or if any scalar or pdarray element is not one of int, uint, float, bigint
     """
+    from arkouda.client import generic_msg
+
     if not builtins.all(
         isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [dividend, divisor]
     ):
@@ -4984,6 +5065,7 @@ def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
     RuntimeError
         raised if the pda can't be broadcast to the given shape
     """
+    from arkouda.client import generic_msg
 
     return create_pdarray(
         cast(
@@ -5058,6 +5140,8 @@ def diff(a: pdarray, n: int = 1, axis: int = -1, prepend=None, append=None) -> p
     array([array([-1 2 0 -2])])
 
     """
+    from arkouda.client import generic_msg
+
     if a.dtype == bigint:
         raise RuntimeError(f"Error executing command: diff does not support dtype {a.dtype}")
     from arkouda.numpy.pdarraysetops import concatenate

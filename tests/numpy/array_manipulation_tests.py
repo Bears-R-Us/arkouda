@@ -206,6 +206,110 @@ class TestManipulationFunctions:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, ak.bigint])
+    def test_append(self, size, dtype):
+        if dtype == ak.bigint:
+            a = [ak.arange(2**200 + i * size, 2**200 + (i + 1) * size, dtype=dtype) for i in range(2)]
+            n = [np.arange(2**200 + i * size, 2**200 + (i + 1) * size) for i in range(2)]
+        else:
+            a = [ak.arange(i * size, (i + 1) * size, dtype=dtype) for i in range(2)]
+            n = [x.to_ndarray() for x in a]
+
+        n_append = np.append(*n)
+        a_append = ak.append(*a)
+
+        assert_arkouda_array_equivalent(n_append, a_append)
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, ak.bigint])
+    @pytest.mark.parametrize("shapes", [[(3, 1), (3, 1)], [(2, 3), (2, 4)], [(3, 5), (3, 2)]])
+    def test_append2D_with_shapes(self, dtype, shapes):
+        shape1, shape2 = shapes
+
+        shape1_prod = 1
+        for i in shape1:
+            shape1_prod = shape1_prod * i
+
+        shape2_prod = 1
+        for i in shape2:
+            shape2_prod = shape2_prod * i
+
+        for axis in [None, 0, 1]:
+            if axis is not None and shape1_prod // shape1[axis] == shape2_prod // shape2[axis]:
+                if dtype == ak.bigint:
+                    ak_a = ak.arange(2**200, 2**200 + shape1_prod, dtype=dtype).reshape(shape1)
+                    ak_b = ak.arange(
+                        2**200 + shape1_prod, 2**200 + (shape1_prod + shape2_prod), dtype=dtype
+                    ).reshape(shape2)
+                    ak_append = ak.append(ak_a, ak_b, axis=axis)
+
+                    np_a = np.arange(2**200, 2**200 + shape1_prod).reshape(shape1)
+                    np_b = np.arange(2**200 + shape1_prod, 2**200 + (shape1_prod + shape2_prod)).reshape(
+                        shape2
+                    )
+                    np_append = np.append(np_a, np_b, axis=axis)
+                else:
+                    ak_a = ak.arange(shape1_prod, dtype=dtype).reshape(shape1)
+                    ak_b = ak.arange(shape1_prod, (shape1_prod + shape2_prod), dtype=dtype).reshape(
+                        shape2
+                    )
+                    ak_append = ak.append(ak_a, ak_b, axis=axis)
+
+                    np_a = np.arange(shape1_prod, dtype=dtype).reshape(shape1)
+                    np_b = np.arange(shape1_prod, (shape1_prod + shape2_prod), dtype=dtype).reshape(
+                        shape2
+                    )
+                    np_append = np.append(np_a, np_b, axis=axis)
+
+                assert_arkouda_array_equivalent(np_append, ak_append)
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, ak.bigint])
+    @pytest.mark.parametrize(
+        "shapes",
+        [[(1, 2, 3), (1, 2, 3)], [(1, 2, 3), (1, 1, 3)], [(2, 2, 2), (2, 4, 2)]],
+    )
+    def test_append3D_with_shapes(self, dtype, shapes):
+        shape1, shape2 = shapes
+
+        shape1_prod = 1
+        for i in shape1:
+            shape1_prod = shape1_prod * i
+
+        shape2_prod = 1
+        for i in shape2:
+            shape2_prod = shape2_prod * i
+
+        for axis in [None, 0, 1, 2]:
+            if axis is not None and shape1_prod // shape1[axis] == shape2_prod // shape2[axis]:
+                if dtype == ak.bigint:
+                    ak_a = ak.arange(2**200, 2**200 + shape1_prod, dtype=dtype).reshape(shape1)
+                    ak_b = ak.arange(
+                        2**200 + shape1_prod, 2**200 + (shape1_prod + shape2_prod), dtype=dtype
+                    ).reshape(shape2)
+                    ak_append = ak.append(ak_a, ak_b, axis=axis)
+
+                    np_a = np.arange(2**200, 2**200 + shape1_prod).reshape(shape1)
+                    np_b = np.arange(2**200 + shape1_prod, 2**200 + (shape1_prod + shape2_prod)).reshape(
+                        shape2
+                    )
+                    np_append = np.append(np_a, np_b, axis=axis)
+                else:
+                    ak_a = ak.arange(shape1_prod, dtype=dtype).reshape(shape1)
+                    ak_b = ak.arange(shape1_prod, (shape1_prod + shape2_prod), dtype=dtype).reshape(
+                        shape2
+                    )
+                    ak_append = ak.append(ak_a, ak_b, axis=axis)
+
+                    np_a = np.arange(shape1_prod, dtype=dtype).reshape(shape1)
+                    np_b = np.arange(shape1_prod, (shape1_prod + shape2_prod), dtype=dtype).reshape(
+                        shape2
+                    )
+                    np_append = np.append(np_a, np_b, axis=axis)
+
+                assert_arkouda_array_equivalent(np_append, ak_append)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, ak.bigint])
     @pytest.mark.parametrize("num_dims", [1, 2, 3])
     def test_delete(self, size, dtype, num_dims):
         if num_dims in get_array_ranks():
