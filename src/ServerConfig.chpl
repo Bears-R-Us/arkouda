@@ -471,4 +471,10 @@ module ServerConfig
       var tmp_json = cfgStr(0..idx_close-1);
       cfgStr = tmp_json + "," + Q + key + QCQ + val + Q + "}";
     }
+
+    /* proposed replacement for `timeSinceEpoch().totalSeconds()` */
+    proc currentTime() {
+      use Time;
+      return timeSinceEpoch().totalSeconds();
+    }
 }

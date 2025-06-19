@@ -24,6 +24,7 @@ __all__ = [
     "get_mem_used",
     "get_mem_avail",
     "get_mem_status",
+    "wait_for_async_activity",
     "get_server_commands",
     "print_server_commands",
     "generate_history",
@@ -1089,6 +1090,17 @@ def _get_config_msg() -> Mapping[str, Union[str, int, float]]:
         raise ValueError(f"Returned config is not valid JSON: {raw_message}")
     except Exception as e:
         raise RuntimeError(f"{e} in retrieving Arkouda server config")
+
+
+def wait_for_async_activity() -> None:
+    """
+    Wait for the completion of asynchronous activities on the server.
+
+    Intended to help with testing of automatic checkpointing.
+    The server will consider itself "idle" despite serving this message.
+
+    """
+    generic_msg("wait_for_async_activity")
 
 
 def _get_registration_config_msg() -> dict:
