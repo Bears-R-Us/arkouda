@@ -465,18 +465,21 @@
 <a class="viewcode-back" href="../../autoapi/arkouda/plotting/index.html#arkouda.hist_all">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">hist_all</span><span class="p">(</span><span class="n">ak_df</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span> <span class="n">cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create a grid plot histogramming all numeric columns in ak dataframe.</span>
+<span class="sd">    Create a grid of histograms for numeric columns in an Arkouda DataFrame.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    ak_df : ak.DataFrame</span>
-<span class="sd">        Full Arkouda DataFrame containing data to be visualized</span>
-<span class="sd">    cols : list</span>
-<span class="sd">        (Optional) A specified list of columns to be plotted</span>
+<span class="sd">        An Arkouda DataFrame containing the data to visualize.</span>
+<span class="sd">    cols : list of str, optional</span>
+<span class="sd">        A list of column names to plot. If empty or not provided, all columns in</span>
+<span class="sd">        the DataFrame are considered.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This function displays the plot.</span>
+<span class="sd">    This function uses matplotlib to display a grid of histograms. It attempts to</span>
+<span class="sd">    select a suitable number of bins using Doane&#39;s formula. Columns with</span>
+<span class="sd">    non-numeric types will be grouped and encoded before plotting.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>

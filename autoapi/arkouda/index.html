@@ -1182,7 +1182,7 @@ to Python users.</p>
 <td><p>Return an element-wise hash of the array or list of arrays.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.hist_all" title="arkouda.hist_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hist_all</span></code></a>(ak_df[, cols])</p></td>
-<td><p>Create a grid plot histogramming all numeric columns in ak dataframe.</p></td>
+<td><p>Create a grid of histograms for numeric columns in an Arkouda DataFrame.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../../usage/histogram.html#arkouda.histogram" title="arkouda.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogram</span></code></a>(→ Tuple[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Compute a histogram of evenly spaced bins over the range of an array.</p></td>
@@ -16235,17 +16235,20 @@ do a rotation by the ordinal of the array.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.hist_all">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">hist_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ak_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dataframe.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/plotting.html#hist_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.hist_all" title="Link to this definition">¶</a></dt>
-<dd><p>Create a grid plot histogramming all numeric columns in ak dataframe.</p>
+<dd><p>Create a grid of histograms for numeric columns in an Arkouda DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ak_df</strong> (<em>ak.DataFrame</em>) – Full Arkouda DataFrame containing data to be visualized</p></li>
-<li><p><strong>cols</strong> (<em>list</em>) – (Optional) A specified list of columns to be plotted</p></li>
+<li><p><strong>ak_df</strong> (<em>ak.DataFrame</em>) – An Arkouda DataFrame containing the data to visualize.</p></li>
+<li><p><strong>cols</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – A list of column names to plot. If empty or not provided, all columns in
+the DataFrame are considered.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This function displays the plot.</p>
+<p>This function uses matplotlib to display a grid of histograms. It attempts to
+select a suitable number of bins using Doane’s formula. Columns with
+non-numeric types will be grouped and encoded before plotting.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
