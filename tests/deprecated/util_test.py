@@ -50,7 +50,7 @@ class UtilTest(ArkoudaTest):
         floats = ak.array([1, np.nan])
 
         from arkouda.pandas.series import Series
-        from arkouda.index import Index
+        from arkouda.pandas.index import Index
 
         for item in [
             strings,

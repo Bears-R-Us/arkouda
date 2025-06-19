@@ -10,10 +10,10 @@ from pandas import Index as pd_Index
 from pandas.testing import assert_index_equal as pd_assert_index_equal
 
 import arkouda as ak
-from arkouda import io_util
-from arkouda.index import Index
 from arkouda.numpy.dtypes import dtype
 from arkouda.numpy.pdarrayclass import pdarray
+from arkouda.pandas import io_util
+from arkouda.pandas.index import Index
 from arkouda.testing import assert_index_equal
 from arkouda.testing import assert_index_equal as ak_assert_index_equal
 
@@ -219,7 +219,7 @@ class TestIndex:
         i3 = ak.Index(["a", "b", "c"], allow_list=True)
         assert i3.inferred_type == "string"
 
-        from arkouda.categorical import Categorical
+        from arkouda.pandas.categorical import Categorical
 
         i4 = ak.Index(Categorical(ak.array(["a", "b", "c"])))
         assert i4.inferred_type == "categorical"
@@ -393,8 +393,8 @@ class TestIndex:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_memory_usage(self, size):
-        from arkouda.index import Index, MultiIndex
         from arkouda.numpy.dtypes import bigint
+        from arkouda.pandas.index import Index, MultiIndex
 
         idx = Index(ak.cast(ak.array([1, 2, 3]), dt="bigint"))
         assert idx.memory_usage() == 3 * bigint.itemsize

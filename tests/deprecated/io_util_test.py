@@ -4,7 +4,7 @@ from pathlib import Path
 
 from base_test import ArkoudaTest
 
-from arkouda import io_util
+from arkouda.pandas import io_util
 
 
 class IOUtilTest(ArkoudaTest):

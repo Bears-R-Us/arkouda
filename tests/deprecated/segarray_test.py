@@ -5,7 +5,7 @@ import numpy as np
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
-from arkouda import io_util
+from arkouda.pandas import io_util
 
 
 class SegArrayTest(ArkoudaTest):

@@ -3,7 +3,7 @@ import tempfile
 
 import pytest
 
-from arkouda import io_util
+from arkouda.pandas import io_util
 
 
 class TestIOUtil:
