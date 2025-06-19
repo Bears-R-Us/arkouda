@@ -48,10 +48,6 @@ from warnings import warn
 
 import numpy as np
 
-from arkouda.categorical import Categorical
-from arkouda.client import generic_msg
-from arkouda.groupbyclass import GroupBy, broadcast, unique
-from arkouda.numpy import cumsum, where
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
@@ -61,6 +57,8 @@ from arkouda.numpy.pdarraycreation import arange, full, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.strings import Strings
+from arkouda.pandas.categorical import Categorical
+from arkouda.pandas.groupbyclass import GroupBy, broadcast, unique
 
 __all__ = [
     "NonUniqueError",
@@ -257,6 +255,9 @@ def find(query, space, all_occurrences=False, remove_missing=False):
      [0, 4]]
 
     """
+    from arkouda.client import generic_msg
+    from arkouda.numpy import cumsum, where
+
     # Concatenate the space and query in fast (block interleaved) mode
     if isinstance(query, (pdarray, Strings, Categorical)):
         if type(query) is not type(space):

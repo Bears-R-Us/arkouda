@@ -35,7 +35,7 @@ Data can also be saved using no compression. Arkouda now supports writting Parqu
 **Append**
 > When writting to Parquet in `append` mode, all datasets will be appended to the file. If no file with the supplied name exists, one will be created. If any datasets being written have a name that is already the name of a dataset within the file, an error will be generated. Append is not supported for SegArray objects.
 >
->*Please Note: appending to a Parquet file is not natively support and is extremely ineffiecent. It is recommended to read the file out and call `arkouda.io.to_parquet` on the output with the additional columns added and then writting in `truncate` mode.*
+>*Please Note: appending to a Parquet file is not natively support and is extremely ineffiecent. It is recommended to read the file out and call `arkouda.pandas.io.to_parquet` on the output with the additional columns added and then writting in `truncate` mode.*
 
 ## API Reference
 

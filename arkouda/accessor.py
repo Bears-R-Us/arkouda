@@ -61,9 +61,9 @@ Users should not instantiate accessors directly — use `.str` and `.dt` instead
 
 """
 
-from arkouda.categorical import Categorical
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime
+from arkouda.pandas.categorical import Categorical
 
 __all__ = [
     "CachedAccessor",

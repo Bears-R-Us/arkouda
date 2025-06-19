@@ -4,7 +4,7 @@ import warnings
 from enum import Enum
 from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 
-from arkouda import __version__, io_util, security
+from arkouda import __version__, security
 from arkouda.logger import ArkoudaLogger, LogLevel, getArkoudaLogger
 from arkouda.message import (
     MessageFormat,
@@ -13,6 +13,7 @@ from arkouda.message import (
     ReplyMessage,
     RequestMessage,
 )
+from arkouda.pandas import io_util
 
 __all__ = [
     "connect",
@@ -23,6 +24,7 @@ __all__ = [
     "get_mem_used",
     "get_mem_avail",
     "get_mem_status",
+    "wait_for_async_activity",
     "get_server_commands",
     "print_server_commands",
     "generate_history",
@@ -1088,6 +1090,17 @@ def _get_config_msg() -> Mapping[str, Union[str, int, float]]:
         raise ValueError(f"Returned config is not valid JSON: {raw_message}")
     except Exception as e:
         raise RuntimeError(f"{e} in retrieving Arkouda server config")
+
+
+def wait_for_async_activity() -> None:
+    """
+    Wait for the completion of asynchronous activities on the server.
+
+    Intended to help with testing of automatic checkpointing.
+    The server will consider itself "idle" despite serving this message.
+
+    """
+    generic_msg("wait_for_async_activity")
 
 
 def _get_registration_config_msg() -> dict:

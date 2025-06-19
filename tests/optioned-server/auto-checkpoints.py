@@ -3,33 +3,46 @@ from time import sleep
 import pytest
 
 import arkouda as ak
-from arkouda.io_util import delete_directory, directory_exists
+from arkouda.pandas.io_util import delete_directory, directory_exists
 
 autockptPath = ".akdata"
 autockptName = "auto_checkpoint"
 autockptDir = f"{autockptPath}/{autockptName}"
-autockptPrev = f"{autockptPath}/{autockptName}.prev"
+autockptPrevName = f"{autockptName}.prev"
+autockptPrevDir = f"{autockptPath}/{autockptPrevName}"
+
+"""
+When testing auto-checkpointing, we need to accommodate the unknown delays
+before checkpointing starts. See directory_exists_delayed().
+
+Another unknown delay is from when the checkpointing starts until it finishes,
+especially it needs to save a noticeable amount of data. For that, we use
+a testing helper that waits for an in-progres auto-checkpointing, if any,
+to complete:
+    ak.client.wait_for_async_activity()
+
+`ak.load_checkpoint()` tells us whether an auto-checkpoint has been created
+successfully. We do not test checkpoint correctness here. We leave that for
+`checkpoint_test.py`, given that automatic and client-driven checkpoints
+use the same implementation.
+"""
 
 
 def directory_exists_delayed(path, num_delays, delay=0.1):
     """
-    Repeats directory_exists() query num_delays times,
+    Repeats directory_exists() query extra `num_delays` times,
     each after a delay of `delay` seconds.
 
-    This allows us to adjust for the server that can delay
-    the detection of a condition by up to `checkpointCheckInterval`,
+    This allows testing to tolerate the delay from a completion
+    of an idle-time period to the server actually starting checkpointing.
+    This delay can be up to `checkpointCheckInterval`
     which defaults to min(`checkpointIdleTime`, `checkpointMemPctDelay`).
-
-    The final sleep() is needed to wait for server checkpointing to complete,
-    once the directory is created. Otherwise delete_directory() executed
-    by the tests may interfer with checkpointing.
     """
     for _ in range(num_delays):
         if directory_exists(path):
-            sleep(0.3)  # conservative estimate
             return True
         sleep(delay)
-    return False
+    return directory_exists(path)
 
 
 class TestIdleAndInterval:
@@ -59,13 +72,14 @@ class TestIdleAndInterval:
         """
 
         delete_directory(autockptDir)  # start with a clean slate
-        delete_directory(autockptPrev)
+        delete_directory(autockptPrevDir)
         a = ak.ones(pytest.prob_size[0])
         # expect auto-checkpointing after ~1 second [checkpointIdleTime]
         sleep(0.5)
         assert not directory_exists(autockptDir)
         sleep(1)
         assert directory_exists_delayed(autockptDir, 10)
+        ak.client.wait_for_async_activity()
         delete_directory(autockptDir)
         b = ak.ones(pytest.prob_size[0])
         # expect auto-checkpointing after ~3 seconds [checkpointInterval]
@@ -73,17 +87,23 @@ class TestIdleAndInterval:
         assert not directory_exists(autockptDir)
         sleep(1)
         assert directory_exists_delayed(autockptDir, 10)
+        ak.client.wait_for_async_activity()
         c = ak.ones(pytest.prob_size[0])
         # expect another auto-checkpointing after ~3 seconds [checkpointInterval]
-        # that will move autockptDir to autockptPrev and create a new autockptDir
+        # that will move autockptDir to autockptPrevDir and create a new autockptDir;
+        # meanwhile, after 1 second this will not have happened yet:
         sleep(1)
         assert directory_exists(autockptDir)
-        assert not directory_exists(autockptPrev)
+        assert not directory_exists(autockptPrevDir)
         sleep(1)
-        assert directory_exists_delayed(autockptPrev, 10)
+        assert directory_exists_delayed(autockptPrevDir, 10)
         assert directory_exists(autockptDir)
+        ak.client.wait_for_async_activity()
+        # verify that these checkpoints were created successfully
+        ak.load_checkpoint(autockptName)
+        ak.load_checkpoint(autockptPrevName)
         delete_directory(autockptDir)
-        delete_directory(autockptPrev)
+        delete_directory(autockptPrevDir)
         del a, b, c  # avoid flake8 errors about unused a,b,c
 
 
@@ -96,28 +116,28 @@ class TestMemPct:
 
     def test_memory_percentage(self):
         """
-        Check the following sequence of events. While class_server_args sets
-        checkpointMemPctDelay and checkpointInterval to 1 second, we pad it.
+        Check the following sequence of events:
+          allocate small memory
+          2.5 [more than checkpointMemPctDelay since activity]
+          verify no auto-checkpoint
+          allocate "big" memory, i.e., over checkpointMemPct
+          1.5 [more than checkpointMemPctDelay since activity]
+          verify an auto-checkpoint exists
+          2.5 [more than checkpointInterval since last checkpoint]
+          verify no new auto-checkpoint, since no server activity since last A-CP
+          perform server activity
+          1.5 [more than checkpointMemPctDelay since activity]
+          verify a new auto-checkpoint exists
+
+        While class_server_args sets checkpointMemPctDelay and checkpointInterval
+        to 1 second, we pad it to accomodate the following scenario:
         First, directory_exists_delayed() allows the CP daemon to wake up
         the first time in just under 1 second after server activity, realize that
         the waiting time of 1 second has not passed, then sleep for another
         1 second before taking action. We add 0.5 seconds on top of that
         to ensure the server completes whatever action it takes.
 
-        Here is the expected sequence:
-          allocate small memory
-          2.5 [more than checkpointMemPctDelay since activity]
-          verify no auto-checkpoint
-          allocate "big" memory, i.e., over checkpointMemPct
-          2.5 [more than checkpointMemPctDelay since activity]
-          verify an auto-checkpoint exists
-          2.5 [more than checkpointInterval since last checkpoint]
-          verify no new auto-checkpoint, since no server activity since last A-CP
-          perform server activity
-          2.5 [more than checkpointMemPctDelay since activity]
-          verify a new auto-checkpoint exists
         """
-
         delete_directory(autockptDir)  # start with a clean slate
         avail_mem = ak.get_mem_avail()
         small_array = ak.zeros(100)  # below memory threshold
@@ -126,11 +146,14 @@ class TestMemPct:
         big_array = ak.zeros(int(avail_mem / 140))  # over 5% of avail_mem
         sleep(1.5)
         assert directory_exists_delayed(autockptDir, 10)
+        ak.client.wait_for_async_activity()
         delete_directory(autockptDir)
         sleep(2.5)
         assert not directory_exists(autockptDir)
-        del small_array
+        small_2 = ak.zeros(100)  # some other server activity
         sleep(1.5)
         assert directory_exists_delayed(autockptDir, 10)
+        # wait() is not needed since it is implicit in load_checkpoint()
+        ak.load_checkpoint(autockptName)
         delete_directory(autockptDir)
-        del big_array  # avoid flake8 errors about unused big_array
+        del small_array, small_2, big_array  # avoid flake8 errors about unused vars

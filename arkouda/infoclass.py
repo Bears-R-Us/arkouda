@@ -64,11 +64,14 @@ Examples
 
 import json
 from json import JSONEncoder
-from typing import List, Union, cast
+from typing import TYPE_CHECKING, List, TypeVar, Union, cast
 
 from typeguard import typechecked
 
-from arkouda.client import generic_msg
+if TYPE_CHECKING:
+    from arkouda.client import generic_msg
+else:
+    generic_msg = TypeVar("generic_msg")
 
 __all__ = [
     "AllSymbols",
@@ -131,6 +134,8 @@ def information(names: Union[List[str], str] = RegisteredSymbols) -> str:
         retrieving information about the objects in names
 
     """
+    from arkouda.client import generic_msg
+
     if isinstance(names, str):
         if names in [AllSymbols, RegisteredSymbols]:
             return cast(str, generic_msg(cmd="info", args={"names": names}))
@@ -160,6 +165,8 @@ def list_registry(detailed: bool = False):
         Raised if there's a server-side error thrown
 
     """
+    from arkouda.client import generic_msg
+
     data = json.loads(cast(str, generic_msg(cmd="list_registry")))
     objs = json.loads(data["Objects"]) if data["Objects"] != "" else []
     obj_types = json.loads(data["Object_Types"]) if data["Object_Types"] != "" else []
