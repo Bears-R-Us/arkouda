@@ -73,18 +73,21 @@ def plot_dist(b, h, log=True, xlabel=None, newfig=True):
 
 def hist_all(ak_df: DataFrame, cols: list = []):
     """
-    Create a grid plot histogramming all numeric columns in ak dataframe.
+    Create a grid of histograms for numeric columns in an Arkouda DataFrame.
 
     Parameters
     ----------
     ak_df : ak.DataFrame
-        Full Arkouda DataFrame containing data to be visualized
-    cols : list
-        (Optional) A specified list of columns to be plotted
+        An Arkouda DataFrame containing the data to visualize.
+    cols : list of str, optional
+        A list of column names to plot. If empty or not provided, all columns in
+        the DataFrame are considered.
 
     Notes
     -----
-    This function displays the plot.
+    This function uses matplotlib to display a grid of histograms. It attempts to
+    select a suitable number of bins using Doane's formula. Columns with
+    non-numeric types will be grouped and encoded before plotting.
 
     Examples
     --------
