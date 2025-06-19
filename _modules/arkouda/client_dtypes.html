@@ -385,7 +385,58 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.client_dtypes</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Arkouda client-defined dtypes and helper utilities for structured or specialized array semantics.</span>
+
+<span class="sd">This module introduces specialized subclasses of `pdarray` for handling and representing</span>
+<span class="sd">data with specific interpretations or domain semantics. These include:</span>
+
+<span class="sd">- `BitVector`: For representing integers as sets of binary flags.</span>
+<span class="sd">- `Fields`: For displaying and interacting with named binary flags.</span>
+<span class="sd">- `IPv4`: For storing and displaying 32-bit integers as IPv4 addresses.</span>
+
+<span class="sd">These classes enhance usability and improve readability when working with encoded or</span>
+<span class="sd">domain-specific data while preserving Arkouda’s performance model and distributed data structures.</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">- `BitVectorizer`: Creates a partially applied BitVector constructor.</span>
+<span class="sd">- `ip_address`: Converts various formats to an Arkouda IPv4 object.</span>
+<span class="sd">- `is_ipv4`: Returns a boolean array indicating IPv4 addresses.</span>
+<span class="sd">- `is_ipv6`: Returns a boolean array indicating IPv6 addresses.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">&gt;&gt;&gt; from arkouda.client_dtypes import BitVector, Fields, IPv4, ip_address, is_ipv4</span>
+
+<span class="sd">Create and use BitVectors:</span>
+<span class="sd">&gt;&gt;&gt; a = ak.array([3, 5, 7])</span>
+<span class="sd">&gt;&gt;&gt; bv = BitVector(a, width=4)</span>
+<span class="sd">&gt;&gt;&gt; print(bv)</span>
+<span class="sd">BitVector([..||,</span>
+<span class="sd">           .|.|,</span>
+<span class="sd">           .|||],</span>
+<span class="sd">          width=4, reverse=False)</span>
+
+<span class="sd">Create Fields with named binary flags:</span>
+<span class="sd">&gt;&gt;&gt; f = Fields(ak.array([1, 2, 3]), names=[&#39;read&#39;, &#39;write&#39;, &#39;exec&#39;], separator=&#39;:&#39;)</span>
+<span class="sd">&gt;&gt;&gt; print(f[0])  # doctest: +SKIP</span>
+<span class="sd">--:--:read (1)</span>
+
+<span class="sd">Convert and work with IP addresses:</span>
+<span class="sd">&gt;&gt;&gt; ips = ip_address([&#39;192.168.0.1&#39;, &#39;10.0.0.1&#39;])</span>
+<span class="sd">&gt;&gt;&gt; print(ips)</span>
+<span class="sd">IPv4([192.168.0.1,</span>
+<span class="sd">      10.0.0.1],</span>
+<span class="sd">     )</span>
+
+<span class="sd">&gt;&gt;&gt; is_ipv4(ips)</span>
+<span class="sd">array([True True])</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ipaddress</span><span class="w"> </span><span class="kn">import</span> <span class="n">ip_address</span> <span class="k">as</span> <span class="n">_ip_address</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 

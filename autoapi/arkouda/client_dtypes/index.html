@@ -393,6 +393,60 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.client_dtypes">
 <span id="arkouda-client-dtypes"></span><h1>arkouda.client_dtypes<a class="headerlink" href="#module-arkouda.client_dtypes" title="Link to this heading">¶</a></h1>
+<p>Arkouda client-defined dtypes and helper utilities for structured or specialized array semantics.</p>
+<p>This module introduces specialized subclasses of <cite>pdarray</cite> for handling and representing
+data with specific interpretations or domain semantics. These include:</p>
+<ul class="simple">
+<li><p><cite>BitVector</cite>: For representing integers as sets of binary flags.</p></li>
+<li><p><cite>Fields</cite>: For displaying and interacting with named binary flags.</p></li>
+<li><p><cite>IPv4</cite>: For storing and displaying 32-bit integers as IPv4 addresses.</p></li>
+</ul>
+<p>These classes enhance usability and improve readability when working with encoded or
+domain-specific data while preserving Arkouda’s performance model and distributed data structures.</p>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><cite>BitVectorizer</cite>: Creates a partially applied BitVector constructor.</p></li>
+<li><p><cite>ip_address</cite>: Converts various formats to an Arkouda IPv4 object.</p></li>
+<li><p><cite>is_ipv4</cite>: Returns a boolean array indicating IPv4 addresses.</p></li>
+<li><p><cite>is_ipv6</cite>: Returns a boolean array indicating IPv6 addresses.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client_dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BitVector</span><span class="p">,</span> <span class="n">Fields</span><span class="p">,</span> <span class="n">IPv4</span><span class="p">,</span> <span class="n">ip_address</span><span class="p">,</span> <span class="n">is_ipv4</span>
+</pre></div>
+</div>
+<p>Create and use BitVectors:
+&gt;&gt;&gt; a = ak.array([3, 5, 7])
+&gt;&gt;&gt; bv = BitVector(a, width=4)
+&gt;&gt;&gt; print(bv)
+BitVector([..||,</p>
+<blockquote>
+<div><blockquote>
+<div><p>.|.|,
+.|||],</p>
+</div></blockquote>
+<p>width=4, reverse=False)</p>
+</div></blockquote>
+<p>Create Fields with named binary flags:
+&gt;&gt;&gt; f = Fields(ak.array([1, 2, 3]), names=[‘read’, ‘write’, ‘exec’], separator=’:’)
+&gt;&gt;&gt; print(f[0])  # doctest: +SKIP
+–:–:read (1)</p>
+<p>Convert and work with IP addresses:
+&gt;&gt;&gt; ips = ip_address([‘192.168.0.1’, ‘10.0.0.1’])
+&gt;&gt;&gt; print(ips)
+IPv4([192.168.0.1,</p>
+<blockquote>
+<div><blockquote>
+<div><p>10.0.0.1],</p>
+</div></blockquote>
+<p>)</p>
+</div></blockquote>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_ipv4</span><span class="p">(</span><span class="n">ips</span><span class="p">)</span>
+<span class="go">array([True True])</span>
+</pre></div>
+</div>
+</section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -411,8 +465,8 @@
 </table>
 </div>
 </section>
-<section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<section id="id1">
+<h2>Functions<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -903,8 +957,9 @@ for importing Python lists of IP addresses into Arkouda.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.client_dtypes</a><ul>
-<li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#id1">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector"><code class="docutils literal notranslate"><span class="pre">BitVector</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.conserves"><code class="docutils literal notranslate"><span class="pre">BitVector.conserves</span></code></a></li>
