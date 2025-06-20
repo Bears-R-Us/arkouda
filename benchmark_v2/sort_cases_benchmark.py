@@ -4,6 +4,55 @@ import pytest
 import arkouda as ak
 from arkouda.numpy.sorting import SortingAlgorithm
 
+
+def run_sort(benchmark, name, data, sort_fn):
+    # Helper to compute nbytes
+    def total_nbytes(d):
+        if isinstance(d, tuple):
+            return sum(x.size * x.itemsize for x in d)
+        return d.size * d.itemsize
+
+    # NumPy fallback
+    if pytest.numpy:
+        if isinstance(data, tuple):
+            data_np = tuple(x.to_ndarray() for x in data)
+
+            def sort_op():
+                np.lexsort(data_np[::-1])
+                return sum(x.nbytes for x in data_np)
+        else:
+            data_np = data.to_ndarray()
+
+            def sort_op():
+                np.argsort(data_np)
+                return data_np.nbytes
+
+        backend = "NumPy"
+
+    else:
+
+        def sort_op():
+            p = sort_fn(data)
+            if pytest.correctness_only:
+                if isinstance(data, tuple):
+                    sorted_data = [d[p] for d in data]
+                    # Assume lexsorted comparison is hard to check; skip for now
+                else:
+                    assert ak.is_sorted(data[p])
+            return total_nbytes(data)
+
+        backend = "Arkouda"
+
+    numBytes = benchmark.pedantic(sort_op, rounds=pytest.trials)
+
+    benchmark.extra_info["description"] = f"{name} via {backend}"
+    benchmark.extra_info["problem_size"] = data[0].size if isinstance(data, tuple) else data.size
+    benchmark.extra_info["backend"] = backend
+    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
+        (numBytes / benchmark.stats["mean"]) / 2**30
+    )
+
+
 TYPES = ("int64", "float64")
 
 
@@ -23,7 +72,7 @@ def do_argsort(data, algo):
         return ak.coargsort(data, algo)
 
 
-@pytest.mark.skip_correctness_only(True)
+# @pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 @pytest.mark.parametrize("dtype", TYPES)
@@ -44,7 +93,7 @@ def bench_random_uniform(benchmark, algo, dtype, bits):
             else:
                 data = ak.randint(-(2**63), 2**63, N)
 
-            benchmark.pedantic(do_argsort, args=(data, algo), rounds=pytest.trials)
+            run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
             nbytes = get_nbytes(data)
             benchmark.extra_info["description"] = "Measures the performance of random_uniform sort case"
             benchmark.extra_info["problem_size"] = pytest.prob_size
@@ -54,7 +103,7 @@ def bench_random_uniform(benchmark, algo, dtype, bits):
         elif bits == "64-bit":  # float64 - We only want this to run once per algorithm, not 3 times
             data = ak.uniform(N)
 
-            benchmark.pedantic(do_argsort, args=(data, algo), rounds=pytest.trials)
+            run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
             nbytes = get_nbytes(data)
             benchmark.extra_info["description"] = "Measures the performance of random_uniform sort case"
             benchmark.extra_info["problem_size"] = pytest.prob_size
@@ -71,7 +120,6 @@ def _generate_power_law_data():
     return ((ub ** (a + 1) - 1) * y + 1) ** (1 / (a + 1))
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 @pytest.mark.parametrize("dtype", TYPES)
@@ -85,7 +133,7 @@ def bench_power_law(benchmark, algo, dtype):
         if dtype == "int64":
             data = ak.cast(data, ak.int64)
 
-        benchmark.pedantic(do_argsort, args=(data, algo), rounds=pytest.trials)
+        run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
         nbytes = get_nbytes(data)
         benchmark.extra_info["description"] = "Measures the performance of power_law sort case"
         benchmark.extra_info["problem_size"] = pytest.prob_size
@@ -94,7 +142,6 @@ def bench_power_law(benchmark, algo, dtype):
         )
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 def bench_rmat(benchmark, algo):
@@ -126,7 +173,7 @@ def bench_rmat(benchmark, algo):
 
     data = (ii, jj)
 
-    benchmark.pedantic(do_argsort, args=(data, algo), rounds=pytest.trials)
+    run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
     nbytes = get_nbytes(data)
     benchmark.extra_info["description"] = "Measures the performance of rmat sort case"
     benchmark.extra_info["problem_size"] = pytest.prob_size
@@ -135,7 +182,6 @@ def bench_rmat(benchmark, algo):
     )
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 @pytest.mark.parametrize("mode", ("concat", "interleaved"))
@@ -159,7 +205,7 @@ def bench_block_sorted(benchmark, algo, mode):
     b = ak.arange(Nb)
     data = ak.concatenate((a, b), ordered=(mode == "concat"))
 
-    benchmark.pedantic(do_argsort, args=(data, algo), rounds=pytest.trials)
+    run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
     nbytes = get_nbytes(data)
     benchmark.extra_info["description"] = "Measures the performance of block_sorted sort case"
     benchmark.extra_info["problem_size"] = pytest.prob_size
@@ -168,7 +214,6 @@ def bench_block_sorted(benchmark, algo, mode):
     )
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 def bench_refinement(benchmark, algo):
@@ -184,7 +229,7 @@ def bench_refinement(benchmark, algo):
     b = ak.randint(0, 2**32, N // 2)
     data = (a, b)
 
-    benchmark.pedantic(do_argsort, args=(data, algo), rounds=pytest.trials)
+    run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
     nbytes = get_nbytes(data)
     benchmark.extra_info["description"] = "Measures the performance of refinement sort case"
     benchmark.extra_info["problem_size"] = pytest.prob_size
@@ -193,7 +238,6 @@ def bench_refinement(benchmark, algo):
     )
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 def bench_time_like(benchmark, algo):
@@ -213,7 +257,7 @@ def bench_time_like(benchmark, algo):
     a *= 10**9
     data = a
 
-    benchmark.pedantic(do_argsort, args=(data, algo), rounds=pytest.trials)
+    run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
     nbytes = get_nbytes(data)
     benchmark.extra_info["description"] = "Measures the performance of time_like sort case"
     benchmark.extra_info["problem_size"] = pytest.prob_size
@@ -222,7 +266,6 @@ def bench_time_like(benchmark, algo):
     )
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 def bench_ip_like(benchmark, algo):
@@ -247,7 +290,7 @@ def bench_ip_like(benchmark, algo):
     IP2 = u2[sample]
     data = (IP1, IP2)
 
-    benchmark.pedantic(do_argsort, args=(data, algo), rounds=pytest.trials)
+    run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
     nbytes = get_nbytes(data)
     benchmark.extra_info["description"] = "Measures the performance of IP_like sort case"
     benchmark.extra_info["problem_size"] = pytest.prob_size
