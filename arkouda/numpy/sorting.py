@@ -78,7 +78,6 @@ def argsort(
     >>> ak.argsort(a, ak.sorting.SortingAlgorithm["TwoArrayRadixSort"])
     array([9 3 5 4 2 7 8 0 6 1])
     """
-    from arkouda.client import generic_msg
     from arkouda.pandas.categorical import Categorical
 
     ndim = cast(Union[int, np.integer], getattr(pda, "ndim"))
@@ -93,14 +92,8 @@ def argsort(
     if isinstance(pda, Categorical):
         return cast(Categorical, pda).argsort()
     elif isinstance(pda, Strings):
-        repMsg = generic_msg(
-            cmd="argsortStrings",
-            args={
-                "name": pda.entry.name,
-                "algoName": algorithm.name,
-            },
-        )
-        return create_pdarray(cast(str, repMsg))
+        perm = pda.argsort(algorithm=algorithm)
+        return perm
     elif isinstance(pda, pdarray):
         return pda.argsort(algorithm=algorithm, axis=axis)
     else:
