@@ -119,6 +119,7 @@ from arkouda.numpy import (
     bigint_from_uint_arrays,
     binary_repr,
     bitType,
+    bool,
     bool_,
     bool_scalars,
     broadcast_dims,
