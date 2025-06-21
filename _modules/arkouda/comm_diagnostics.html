@@ -385,7 +385,96 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.comm_diagnostics</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">typecast</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Communication diagnostics and instrumentation utilities for Arkouda.</span>
+
+<span class="sd">This module provides tools to collect, reset, and report Chapel communication statistics</span>
+<span class="sd">used in Arkouda operations. It is useful for profiling and debugging distributed communication</span>
+<span class="sd">patterns in both blocking and non-blocking modes. The diagnostics can be queried at a per-locale</span>
+<span class="sd">level and printed as a markdown-formatted summary.</span>
+
+<span class="sd">Features</span>
+<span class="sd">--------</span>
+<span class="sd">- Start/stop/reset communication diagnostics tracking</span>
+<span class="sd">- Enable verbose reporting of communication events</span>
+<span class="sd">- Retrieve statistics on blocking/non-blocking gets, puts, AMOs, and remote execution</span>
+<span class="sd">- Inspect remote cache usage (hits, misses, prefetch, readahead)</span>
+<span class="sd">- Aggregate results into a DataFrame</span>
+<span class="sd">- Export markdown summary tables</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">start_comm_diagnostics()</span>
+<span class="sd">stop_comm_diagnostics()</span>
+<span class="sd">reset_comm_diagnostics()</span>
+<span class="sd">print_comm_diagnostics_table(print_empty_columns=False)</span>
+<span class="sd">start_verbose_comm()</span>
+<span class="sd">stop_verbose_comm()</span>
+
+<span class="sd">Getters for specific metrics:</span>
+<span class="sd">- get_comm_diagnostics_{put, get, put_nb, get_nb, try_nb, wait_nb, amo}</span>
+<span class="sd">- get_comm_diagnostics_{execute_on, execute_on_fast, execute_on_nb}</span>
+<span class="sd">- get_comm_diagnostics_cache_{get_hits, get_misses, put_hits, put_misses,</span>
+<span class="sd">  num_prefetches, num_page_readaheads, prefetch_unused, prefetch_waited,</span>
+<span class="sd">  readahead_unused, readahead_waited}</span>
+
+<span class="sd">get_comm_diagnostics() → DataFrame</span>
+<span class="sd">    Collect all diagnostics into a single DataFrame.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">&gt;&gt;&gt; import arkouda.comm_diagnostics as cd</span>
+<span class="sd">&gt;&gt;&gt; ak.connect()</span>
+<span class="sd">&gt;&gt;&gt; from arkouda.comm_diagnostics import start_comm_diagnostics, stop_comm_diagnostics, \</span>
+<span class="sd">get_comm_diagnostics, print_comm_diagnostics_table</span>
+<span class="sd">&gt;&gt;&gt; start_comm_diagnostics()</span>
+<span class="sd">&#39;commDiagnostics started.&#39;</span>
+<span class="sd">&gt;&gt;&gt; a = ak.randint(0, 100, 1_000_000)</span>
+<span class="sd">&gt;&gt;&gt; b = ak.sort(a)</span>
+<span class="sd">&gt;&gt;&gt; stop_comm_diagnostics()</span>
+<span class="sd">&#39;commDiagnostics stopped.&#39;</span>
+<span class="sd">&gt;&gt;&gt; df = get_comm_diagnostics()</span>
+<span class="sd">&gt;&gt;&gt; df.columns</span>
+<span class="sd">Index([&#39;put&#39;, &#39;get&#39;, &#39;put_nb&#39;, &#39;get_nb&#39;, &#39;try_nb&#39;, &#39;amo&#39;, &#39;execute_on&#39;, &#39;execute_on_fast&#39;, \</span>
+<span class="sd">&#39;execute_on_nb&#39;, &#39;cache_get_hits&#39;, &#39;cache_get_misses&#39;, &#39;cache_put_hits&#39;, &#39;cache_put_misses&#39;, \</span>
+<span class="sd">&#39;cache_num_prefetches&#39;, &#39;cache_num_page_readaheads&#39;, &#39;cache_prefetch_unused&#39;, \</span>
+<span class="sd">&#39;cache_prefetch_waited&#39;, &#39;cache_readahead_unused&#39;, &#39;cache_readahead_waited&#39;, &#39;wait_nb&#39;], dtype=&#39;&lt;U0&#39;)</span>
+<span class="sd">&gt;&gt;&gt; df[[&quot;put&quot;,&quot;get&quot;]]  # doctest: +SKIP</span>
+<span class="sd">   put  get</span>
+<span class="sd">0  162  118</span>
+<span class="sd">1  170  198</span>
+<span class="sd">2  170  198</span>
+<span class="sd">3  170  198 (4 rows x 2 columns)</span>
+
+
+<span class="sd">&gt;&gt;&gt; print_comm_diagnostics_table()  # doctest: +SKIP</span>
+<span class="sd">+----+-------+-------+--------------+-----------------+</span>
+<span class="sd">|    |   put |   get |   execute_on |   execute_on_nb |</span>
+<span class="sd">+====+=======+=======+==============+=================+</span>
+<span class="sd">|  0 |   162 |   118 |          180 |             126 |</span>
+<span class="sd">+----+-------+-------+--------------+-----------------+</span>
+<span class="sd">|  1 |   170 |   198 |          184 |               0 |</span>
+<span class="sd">+----+-------+-------+--------------+-----------------+</span>
+<span class="sd">|  2 |   170 |   198 |          184 |               0 |</span>
+<span class="sd">+----+-------+-------+--------------+-----------------+</span>
+<span class="sd">|  3 |   170 |   198 |          184 |               0 |</span>
+<span class="sd">+----+-------+-------+--------------+-----------------+</span>
+<span class="sd">&#39;commDiagnostics printed.&#39;</span>
+
+<span class="sd">...</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">Printed tables and verbose messages appear in the server-side Chapel logs.</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">arkouda.DataFrame, arkouda.client.generic_msg</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">typecast</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>

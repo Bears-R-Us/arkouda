@@ -3,6 +3,88 @@ arkouda.comm_diagnostics
 
 .. py:module:: arkouda.comm_diagnostics
 
+.. autoapi-nested-parse::
+
+   Communication diagnostics and instrumentation utilities for Arkouda.
+
+   This module provides tools to collect, reset, and report Chapel communication statistics
+   used in Arkouda operations. It is useful for profiling and debugging distributed communication
+   patterns in both blocking and non-blocking modes. The diagnostics can be queried at a per-locale
+   level and printed as a markdown-formatted summary.
+
+   Features
+   --------
+   - Start/stop/reset communication diagnostics tracking
+   - Enable verbose reporting of communication events
+   - Retrieve statistics on blocking/non-blocking gets, puts, AMOs, and remote execution
+   - Inspect remote cache usage (hits, misses, prefetch, readahead)
+   - Aggregate results into a DataFrame
+   - Export markdown summary tables
+
+   Functions
+   ---------
+   start_comm_diagnostics()
+   stop_comm_diagnostics()
+   reset_comm_diagnostics()
+   print_comm_diagnostics_table(print_empty_columns=False)
+   start_verbose_comm()
+   stop_verbose_comm()
+
+   Getters for specific metrics:
+   - get_comm_diagnostics_{put, get, put_nb, get_nb, try_nb, wait_nb, amo}
+   - get_comm_diagnostics_{execute_on, execute_on_fast, execute_on_nb}
+   - get_comm_diagnostics_cache_{get_hits, get_misses, put_hits, put_misses,
+     num_prefetches, num_page_readaheads, prefetch_unused, prefetch_waited,
+     readahead_unused, readahead_waited}
+
+   get_comm_diagnostics() → DataFrame
+       Collect all diagnostics into a single DataFrame.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import arkouda.comm_diagnostics as cd
+   >>> ak.connect()
+   >>> from arkouda.comm_diagnostics import start_comm_diagnostics, stop_comm_diagnostics, get_comm_diagnostics, print_comm_diagnostics_table
+   >>> start_comm_diagnostics()
+   'commDiagnostics started.'
+   >>> a = ak.randint(0, 100, 1_000_000)
+   >>> b = ak.sort(a)
+   >>> stop_comm_diagnostics()
+   'commDiagnostics stopped.'
+   >>> df = get_comm_diagnostics()
+   >>> df.columns
+   Index(['put', 'get', 'put_nb', 'get_nb', 'try_nb', 'amo', 'execute_on', 'execute_on_fast', 'execute_on_nb', 'cache_get_hits', 'cache_get_misses', 'cache_put_hits', 'cache_put_misses', 'cache_num_prefetches', 'cache_num_page_readaheads', 'cache_prefetch_unused', 'cache_prefetch_waited', 'cache_readahead_unused', 'cache_readahead_waited', 'wait_nb'], dtype='<U0')
+   >>> df[["put","get"]]  # doctest: +SKIP
+      put  get
+   0  162  118
+   1  170  198
+   2  170  198
+   3  170  198 (4 rows x 2 columns)
+
+   >>> print_comm_diagnostics_table()  # doctest: +SKIP
+   +----+-------+-------+--------------+-----------------+
+   |    |   put |   get |   execute_on |   execute_on_nb |
+   +====+=======+=======+==============+=================+
+   |  0 |   162 |   118 |          180 |             126 |
+   +----+-------+-------+--------------+-----------------+
+   |  1 |   170 |   198 |          184 |               0 |
+   +----+-------+-------+--------------+-----------------+
+   |  2 |   170 |   198 |          184 |               0 |
+   +----+-------+-------+--------------+-----------------+
+   |  3 |   170 |   198 |          184 |               0 |
+   +----+-------+-------+--------------+-----------------+
+   'commDiagnostics printed.'
+
+   ...
+
+   .. rubric:: Notes
+
+   Printed tables and verbose messages appear in the server-side Chapel logs.
+
+   .. seealso:: :py:obj:`arkouda.DataFrame`, :py:obj:`arkouda.client.generic_msg`
+
+
 
 Functions
 ---------

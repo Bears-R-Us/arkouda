@@ -393,8 +393,48 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.history">
 <span id="arkouda-history"></span><h1>arkouda.history<a class="headerlink" href="#module-arkouda.history" title="Link to this heading">¶</a></h1>
+<p>History retrieval utilities for Arkouda command execution.</p>
+<p>This module provides tools for retrieving the history of commands executed
+in Python REPL shells or Jupyter/IPython notebooks. It defines abstract and
+concrete retrievers to access interactive command history for reproducibility,
+debugging, or audit purposes.</p>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>HistoryRetriever</dt><dd><p>Abstract base class defining the <cite>retrieve</cite> method and a helper for filtering commands.</p>
+</dd>
+<dt>ShellHistoryRetriever</dt><dd><p>Retrieves command history from a Python REPL shell using <cite>readline</cite>.</p>
+</dd>
+<dt>NotebookHistoryRetriever</dt><dd><p>Retrieves command history from a Jupyter notebook or IPython shell via IPython’s history database.</p>
+</dd>
+</dl>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<p>Used internally by <cite>arkouda.generate_history()</cite> to provide a user-friendly interface
+for querying and filtering past commands based on optional string filters and count limits.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.history</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShellHistoryRetriever</span><span class="p">,</span> <span class="n">NotebookHistoryRetriever</span>
+</pre></div>
+</div>
+<p># REPL mode
+&gt;&gt;&gt; h = ShellHistoryRetriever()
+&gt;&gt;&gt; h.retrieve(command_filter=”ak.”, num_commands=5)   # doctest: +SKIP
+[‘ak.array([1,2,3])’, ‘ak.sum(…)’, …]</p>
+<p># Notebook mode
+&gt;&gt;&gt; h = NotebookHistoryRetriever()
+&gt;&gt;&gt; h.retrieve(num_commands=3)  # doctest: +SKIP
+[‘ak.connect()’, ‘df = ak.DataFrame(…)’, ‘ak.argsort(…)’]</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.generate_history</span></code></dt><dd><p>High-level function for retrieving command history.</p>
+</dd>
+</dl>
+</div>
+</section>
+<section id="id1">
+<h2>Classes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -580,6 +620,8 @@ optional command filter and number of commands to return.</p>
             <ul>
 <li><a class="reference internal" href="#">arkouda.history</a><ul>
 <li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#id1">Classes</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.history.HistoryRetriever"><code class="docutils literal notranslate"><span class="pre">HistoryRetriever</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.history.HistoryRetriever.retrieve"><code class="docutils literal notranslate"><span class="pre">HistoryRetriever.retrieve()</span></code></a></li>

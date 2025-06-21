@@ -385,7 +385,51 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.history</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">readline</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">History retrieval utilities for Arkouda command execution.</span>
+
+<span class="sd">This module provides tools for retrieving the history of commands executed</span>
+<span class="sd">in Python REPL shells or Jupyter/IPython notebooks. It defines abstract and</span>
+<span class="sd">concrete retrievers to access interactive command history for reproducibility,</span>
+<span class="sd">debugging, or audit purposes.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">HistoryRetriever</span>
+<span class="sd">    Abstract base class defining the `retrieve` method and a helper for filtering commands.</span>
+
+<span class="sd">ShellHistoryRetriever</span>
+<span class="sd">    Retrieves command history from a Python REPL shell using `readline`.</span>
+
+<span class="sd">NotebookHistoryRetriever</span>
+<span class="sd">    Retrieves command history from a Jupyter notebook or IPython shell via IPython&#39;s history database.</span>
+
+<span class="sd">Usage</span>
+<span class="sd">-----</span>
+<span class="sd">Used internally by `arkouda.generate_history()` to provide a user-friendly interface</span>
+<span class="sd">for querying and filtering past commands based on optional string filters and count limits.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; from arkouda.history import ShellHistoryRetriever, NotebookHistoryRetriever</span>
+
+<span class="sd"># REPL mode</span>
+<span class="sd">&gt;&gt;&gt; h = ShellHistoryRetriever()</span>
+<span class="sd">&gt;&gt;&gt; h.retrieve(command_filter=&quot;ak.&quot;, num_commands=5)   # doctest: +SKIP</span>
+<span class="sd">[&#39;ak.array([1,2,3])&#39;, &#39;ak.sum(...)&#39;, ...]</span>
+
+<span class="sd"># Notebook mode</span>
+<span class="sd">&gt;&gt;&gt; h = NotebookHistoryRetriever()</span>
+<span class="sd">&gt;&gt;&gt; h.retrieve(num_commands=3)  # doctest: +SKIP</span>
+<span class="sd">[&#39;ak.connect()&#39;, &#39;df = ak.DataFrame(...)&#39;, &#39;ak.argsort(...)&#39;]</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">arkouda.generate_history : High-level function for retrieving command history.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">readline</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">IPython.core.history</span><span class="w"> </span><span class="kn">import</span> <span class="n">HistoryAccessor</span>

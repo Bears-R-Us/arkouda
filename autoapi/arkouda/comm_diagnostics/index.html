@@ -393,8 +393,89 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.comm_diagnostics">
 <span id="arkouda-comm-diagnostics"></span><h1>arkouda.comm_diagnostics<a class="headerlink" href="#module-arkouda.comm_diagnostics" title="Link to this heading">¶</a></h1>
+<p>Communication diagnostics and instrumentation utilities for Arkouda.</p>
+<p>This module provides tools to collect, reset, and report Chapel communication statistics
+used in Arkouda operations. It is useful for profiling and debugging distributed communication
+patterns in both blocking and non-blocking modes. The diagnostics can be queried at a per-locale
+level and printed as a markdown-formatted summary.</p>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Start/stop/reset communication diagnostics tracking</p></li>
+<li><p>Enable verbose reporting of communication events</p></li>
+<li><p>Retrieve statistics on blocking/non-blocking gets, puts, AMOs, and remote execution</p></li>
+<li><p>Inspect remote cache usage (hits, misses, prefetch, readahead)</p></li>
+<li><p>Aggregate results into a DataFrame</p></li>
+<li><p>Export markdown summary tables</p></li>
+</ul>
+</section>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<p>start_comm_diagnostics()
+stop_comm_diagnostics()
+reset_comm_diagnostics()
+print_comm_diagnostics_table(print_empty_columns=False)
+start_verbose_comm()
+stop_verbose_comm()</p>
+<p>Getters for specific metrics:
+- get_comm_diagnostics_{put, get, put_nb, get_nb, try_nb, wait_nb, amo}
+- get_comm_diagnostics_{execute_on, execute_on_fast, execute_on_nb}
+- get_comm_diagnostics_cache_{get_hits, get_misses, put_hits, put_misses,</p>
+<blockquote>
+<div><p>num_prefetches, num_page_readaheads, prefetch_unused, prefetch_waited,
+readahead_unused, readahead_waited}</p>
+</div></blockquote>
+<dl class="simple">
+<dt>get_comm_diagnostics() → DataFrame</dt><dd><p>Collect all diagnostics into a single DataFrame.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda.comm_diagnostics</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.comm_diagnostics</span><span class="w"> </span><span class="kn">import</span> <span class="n">start_comm_diagnostics</span><span class="p">,</span> <span class="n">stop_comm_diagnostics</span><span class="p">,</span> <span class="n">get_comm_diagnostics</span><span class="p">,</span> <span class="n">print_comm_diagnostics_table</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">start_comm_diagnostics</span><span class="p">()</span>
+<span class="go">&#39;commDiagnostics started.&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1_000_000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stop_comm_diagnostics</span><span class="p">()</span>
+<span class="go">&#39;commDiagnostics stopped.&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">get_comm_diagnostics</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">columns</span>
+<span class="go">Index([&#39;put&#39;, &#39;get&#39;, &#39;put_nb&#39;, &#39;get_nb&#39;, &#39;try_nb&#39;, &#39;amo&#39;, &#39;execute_on&#39;, &#39;execute_on_fast&#39;, &#39;execute_on_nb&#39;, &#39;cache_get_hits&#39;, &#39;cache_get_misses&#39;, &#39;cache_put_hits&#39;, &#39;cache_put_misses&#39;, &#39;cache_num_prefetches&#39;, &#39;cache_num_page_readaheads&#39;, &#39;cache_prefetch_unused&#39;, &#39;cache_prefetch_waited&#39;, &#39;cache_readahead_unused&#39;, &#39;cache_readahead_waited&#39;, &#39;wait_nb&#39;], dtype=&#39;&lt;U0&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[[</span><span class="s2">&quot;put&quot;</span><span class="p">,</span><span class="s2">&quot;get&quot;</span><span class="p">]]</span>
+<span class="go">   put  get</span>
+<span class="go">0  162  118</span>
+<span class="go">1  170  198</span>
+<span class="go">2  170  198</span>
+<span class="go">3  170  198 (4 rows x 2 columns)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">print_comm_diagnostics_table</span><span class="p">()</span>
+<span class="go">+----+-------+-------+--------------+-----------------+</span>
+<span class="go">|    |   put |   get |   execute_on |   execute_on_nb |</span>
+<span class="go">+====+=======+=======+==============+=================+</span>
+<span class="go">|  0 |   162 |   118 |          180 |             126 |</span>
+<span class="go">+----+-------+-------+--------------+-----------------+</span>
+<span class="go">|  1 |   170 |   198 |          184 |               0 |</span>
+<span class="go">+----+-------+-------+--------------+-----------------+</span>
+<span class="go">|  2 |   170 |   198 |          184 |               0 |</span>
+<span class="go">+----+-------+-------+--------------+-----------------+</span>
+<span class="go">|  3 |   170 |   198 |          184 |               0 |</span>
+<span class="go">+----+-------+-------+--------------+-----------------+</span>
+<span class="go">&#39;commDiagnostics printed.&#39;</span>
+</pre></div>
+</div>
+<p>…</p>
+<p class="rubric">Notes</p>
+<p>Printed tables and verbose messages appear in the server-side Chapel logs.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../../usage/dataframe.html#arkouda.DataFrame" title="arkouda.DataFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.DataFrame</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.client.generic_msg</span></code></p>
+</div>
+</section>
+<section id="id1">
+<h2>Functions<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -966,7 +1047,9 @@ though an argument can be used to reverse that behavior.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.comm_diagnostics</a><ul>
+<li><a class="reference internal" href="#features">Features</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#id1">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics"><code class="docutils literal notranslate"><span class="pre">get_comm_diagnostics()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.comm_diagnostics.get_comm_diagnostics_amo"><code class="docutils literal notranslate"><span class="pre">get_comm_diagnostics_amo()</span></code></a></li>
