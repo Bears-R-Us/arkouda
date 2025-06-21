@@ -645,14 +645,14 @@
 <span class="sd">    &gt;&gt;&gt; x = xp.linspace(0, 1, num=50)</span>
 <span class="sd">    &gt;&gt;&gt; y = x**2</span>
 <span class="sd">    &gt;&gt;&gt; xp.trapz(y, x)</span>
-<span class="sd">    0.33340274885464394</span>
+<span class="sd">    0.3334027488546439...</span>
 
 <span class="sd">    Or estimate the area of a circle, noting we repeat the sample which closes</span>
 <span class="sd">    the curve:</span>
 
 <span class="sd">    &gt;&gt;&gt; theta = xp.linspace(0, 2 * xp.pi, num=1000, endpoint=True)</span>
 <span class="sd">    &gt;&gt;&gt; xp.trapz(xp.cos(theta), x=xp.sin(theta))</span>
-<span class="sd">    3.141571941375841</span>
+<span class="sd">    3.14157194137584...</span>
 
 <span class="sd">    ``np.trapz`` can be applied along a specified axis to do multiple</span>
 <span class="sd">    computations in one call:</span>
