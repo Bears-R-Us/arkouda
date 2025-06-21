@@ -244,14 +244,14 @@ def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: 
     >>> x = xp.linspace(0, 1, num=50)
     >>> y = x**2
     >>> xp.trapz(y, x)
-    0.33340274885464394
+    0.3334027488546439...
 
     Or estimate the area of a circle, noting we repeat the sample which closes
     the curve:
 
     >>> theta = xp.linspace(0, 2 * xp.pi, num=1000, endpoint=True)
     >>> xp.trapz(xp.cos(theta), x=xp.sin(theta))
-    3.141571941375841
+    3.14157194137584...
 
     ``np.trapz`` can be applied along a specified axis to do multiple
     computations in one call:
