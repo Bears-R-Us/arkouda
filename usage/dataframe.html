@@ -745,7 +745,7 @@ be strings. Defaults to an stringified integer range.</p></li>
 <li><p><strong>datalimit</strong> (<em>int</em><em>, </em><em>default=arkouda.client.maxTransferBytes</em>) – The maximum number size, in megabytes to transfer. The requested
 DataFrame will be converted to a pandas DataFrame only if the
 estimated size of the DataFrame does not exceed this value.</p></li>
-<li><p><strong>retain_index</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Normally, to_pandas() creates a new range index object. If you want
+<li><p><strong>retain_index</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – Normally, to_pandas() creates a new range index object. If you want
 to keep the index column, set this to True.</p></li>
 </ul>
 </dd>
@@ -829,7 +829,7 @@ to keep the index column, set this to True.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>str</em><em>, </em><em>int</em><em> or </em><em>list</em>) – The labels to be dropped on the given axis.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>str</em>) – The axis on which to drop from. 0/’index’ - drop rows, 1/’columns’ - drop columns.</p></li>
-<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>default=False</em>) – When True, perform the operation on the calling object.
+<li><p><strong>inplace</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – When True, perform the operation on the calling object.
 When False, return a new object.</p></li>
 </ul>
 </dd>
@@ -923,11 +923,11 @@ None when <cite>inplace=True</cite></p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em>) – An (ordered) list of column names or a single string to group by.</p></li>
-<li><p><strong>use_series</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
+<li><p><strong>use_series</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
 Otherwise an arkouda.pandas.groupbyclass.GroupBy object.</p></li>
-<li><p><strong>as_index</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, groupby columns will be set as index
+<li><p><strong>as_index</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, groupby columns will be set as index
 otherwise, the groupby columns will be treated as DataFrame columns.</p></li>
-<li><p><strong>dropna</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, and the groupby keys contain NaN values,
+<li><p><strong>dropna</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, and the groupby keys contain NaN values,
 the NaN values together with the corresponding row will be dropped.
 Otherwise, the rows corresponding to NaN values will be kept.</p></li>
 </ul>
@@ -1030,7 +1030,7 @@ calling object’s data. Any changes to the data of the original object will
 be reflected in the shallow copy, and vice versa.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>deep</strong> (<em>bool</em><em>, </em><em>default=True</em>) – When True, return a deep copy. Otherwise, return a shallow copy.</p>
+<dd class="field-odd"><p><strong>deep</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – When True, return a deep copy. Otherwise, return a shallow copy.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A deep or shallow copy according to caller specification.</p>
@@ -1216,7 +1216,7 @@ is a permutation.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<em>str</em>) – The key to sort on.</p></li>
-<li><p><strong>ascending</strong> (<em>bool</em><em>, </em><em>default = True</em>) – If true, sort the key in ascending order.
+<li><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default = True</em>) – If true, sort the key in ascending order.
 Otherwise, sort the key in descending order.</p></li>
 </ul>
 </dd>
@@ -1390,7 +1390,7 @@ Otherwise, sort the key in descending order.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>by</strong> (<em>str</em><em> or </em><em>list/tuple</em><em> of </em><em>str</em><em>, </em><em>default = None</em>) – The name(s) of the column(s) to sort by.</p></li>
-<li><p><strong>ascending</strong> (<em>bool</em><em>, </em><em>default = True</em>) – Sort values in ascending (default) or descending order.</p></li>
+<li><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default = True</em>) – Sort values in ascending (default) or descending order.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1806,7 +1806,7 @@ When this is set, axis is ignored.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>str</em><em>, </em><em>default=0</em>) – Indicates which axis to perform the rename.
 0/”index” - Indexes
 1/”column” - Columns</p></li>
-<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>default=False</em>) – When True, perform the operation on the calling object.
+<li><p><strong>inplace</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – When True, perform the operation on the calling object.
 When False, return a new object.</p></li>
 </ul>
 </dd>
@@ -1962,7 +1962,7 @@ to keep that ordering on the rows.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>size</strong> (<em>int</em><em>, </em><em>optional</em>) – If size is passed, do not attempt to determine size based on
 existing column sizes. Assume caller handles consistency correctly.</p></li>
-<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>default=False</em>) – When True, perform the operation on the calling object.
+<li><p><strong>inplace</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – When True, perform the operation on the calling object.
 When False, return a new object.</p></li>
 </ul>
 </dd>

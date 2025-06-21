@@ -454,7 +454,7 @@ of the value of max_bits</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – Size or shape of the array</p></li>
-<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.float64" title="arkouda.float64"><em>float64</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>, </em><em>bool</em><em>]</em>) – Resulting array type, default ak.float64</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.float64" title="arkouda.float64"><em>float64</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>]</em>) – Resulting array type, default ak.float64</p></li>
 <li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays
 Included for consistency, as ones are all zeros ending on a one, regardless
 of max_bits</p></li>
@@ -706,7 +706,7 @@ specified range bounded by the low and high parameters.</p>
 <li><p><strong>low</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – The low value (inclusive) of the range</p></li>
 <li><p><strong>high</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – The high value (exclusive for int, inclusive for float) of the range</p></li>
 <li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em> or </em><em>tuple</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The size or shape of the returned array</p></li>
-<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.float64" title="arkouda.float64"><em>float64</em></a><em>, </em><em>bool</em><em>]</em>) – The dtype of the array</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.float64" title="arkouda.float64"><em>float64</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>]</em>) – The dtype of the array</p></li>
 <li><p><strong>seed</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – Index for where to pull the first returned value</p></li>
 </ul>
 </dd>
@@ -761,7 +761,7 @@ one <code class="docutils literal notranslate"><span class="pre">pdarray</span><
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>default = 0</em>) – The axis along which the arrays will be joined.
 If axis is None, arrays are flattened before use. Only for use with pdarray, and when
 ordered is True. Default is 0.</p></li>
-<li><p><strong>ordered</strong> (<em>bool</em>) – If True (default), the arrays will be appended in the
+<li><p><strong>ordered</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True (default), the arrays will be appended in the
 order given. If False, array data may be interleaved
 in blocks, which can greatly improve performance but
 results in non-deterministic ordering of elements.</p></li>

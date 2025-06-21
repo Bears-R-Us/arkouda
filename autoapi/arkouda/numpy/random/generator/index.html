@@ -461,7 +461,7 @@ This mimics the behavior we see in numpy</p></li>
 <li><p><strong>a</strong> (<em>int</em><em> or </em><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – If a is an integer, randomly sample from ak.arange(a).
 If a is a pdarray, randomly sample from a.</p></li>
 <li><p><strong>size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements to be sampled</p></li>
-<li><p><strong>replace</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, sample with replacement. Otherwise sample without replacement.
+<li><p><strong>replace</strong> (<a class="reference internal" href="../../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If True, sample with replacement. Otherwise sample without replacement.
 Defaults to True</p></li>
 <li><p><strong>p</strong> (<a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>optional</em>) – p is the probabilities or weights associated with each element of a</p></li>
 </ul>
@@ -523,7 +523,7 @@ in which case this parameter is 0 and this value is used for high).</p></li>
 (see above for behavior if high=None)</p></li>
 <li><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><em>optional</em>) – Desired dtype of the result. The default value is ak.int64.</p></li>
-<li><p><strong>endpoint</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, sample from the interval [low, high] instead of the default [low, high).
+<li><p><strong>endpoint</strong> (<a class="reference internal" href="../../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If true, sample from the interval [low, high] instead of the default [low, high).
 Defaults to False</p></li>
 </ul>
 </dd>

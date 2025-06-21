@@ -526,11 +526,11 @@ key matching, including hierarchical keys, and interval-based function evaluatio
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>query</strong> (<em>(</em><em>sequence of</em><em>) </em><em>array-like</em>) – The items to search for. If multiple arrays, each “row” is an item.</p></li>
 <li><p><strong>space</strong> (<em>(</em><em>sequence of</em><em>) </em><em>array-like</em>) – The set of items in which to search. Must have same shape/dtype as query.</p></li>
-<li><p><strong>all_occurrences</strong> (<em>bool</em>) – When duplicate terms are present in search space, if all_occurrences is True,
+<li><p><strong>all_occurrences</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – When duplicate terms are present in search space, if all_occurrences is True,
 return all occurrences found as a SegArray, otherwise return only the first
 occurrences as a pdarray. Defaults to only finding the first occurrence.
 Finding all occurrences is not yet supported on sequences of arrays</p></li>
-<li><p><strong>remove_missing</strong> (<em>bool</em>) – If all_occurrences is True, remove_missing is automatically enabled.
+<li><p><strong>remove_missing</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If all_occurrences is True, remove_missing is automatically enabled.
 If False, return -1 for any items in query not found in space. If True,
 remove these and only return indices of items that are found.</p></li>
 </ul>
@@ -608,7 +608,7 @@ will be empty segments</p>
 <li><p><strong>vals</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><em>float</em><em>)</em>) – Values to test for membership in intervals</p></li>
 <li><p><strong>intervals</strong> (<em>2-tuple</em><em> of </em><em>pdarrays</em>) – Non-overlapping, half-open intervals, as a tuple of
 (lower_bounds_inclusive, upper_bounds_exclusive)</p></li>
-<li><p><strong>symmetric</strong> (<em>bool</em>) – If True, also return boolean pdarray indicating which intervals
+<li><p><strong>symmetric</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, also return boolean pdarray indicating which intervals
 contained one or more query values.</p></li>
 </ul>
 </dd>
@@ -683,7 +683,7 @@ then the rows are sorted.</p>
 <dd class="field-even"><p>True iff arrays are cosorted.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">

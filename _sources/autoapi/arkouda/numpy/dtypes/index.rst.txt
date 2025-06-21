@@ -68,6 +68,7 @@ Classes
    arkouda.numpy.dtypes.annotations
    arkouda.numpy.dtypes.bigint
    arkouda.numpy.dtypes.bitType
+   arkouda.numpy.dtypes.bool
    arkouda.numpy.dtypes.bool_
    arkouda.numpy.dtypes.bool_scalars
    arkouda.numpy.dtypes.complex128
@@ -1431,6 +1432,23 @@ Module Contents
 
 
 
+.. py:class:: bool
+
+   Bases: :py:obj:`numpy.generic`
+
+
+   Boolean type (True or False), stored as a byte.
+
+       .. warning::
+
+          The :class:`bool` type is not a subclass of the :class:`int_` type
+          (the :class:`bool` is not even a number type). This is different
+          than Python's default implementation of :class:`bool` as a
+          sub-class of :class:`int`.
+
+       :Character code: ``'?'``
+
+
 .. py:class:: bool_
 
    Bases: :py:obj:`numpy.generic`
@@ -1479,7 +1497,7 @@ Module Contents
    :type to: dtype or dtype specifier
 
    :returns: True if cast can occur according to the casting rule.
-   :rtype: bool
+   :rtype: builtins.bool
 
 
 .. py:function:: cast(typ, val)
@@ -1964,7 +1982,7 @@ Module Contents
    :type scalar: object
 
    :returns: True if scalar is an instance of an arkouda supported dtype, else False.
-   :rtype: bool
+   :rtype: builtins.bool
 
    .. rubric:: Examples
 

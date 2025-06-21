@@ -411,7 +411,7 @@ for aggregating the within-group values of another array.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>(</em><em>list of</em><em>) </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The array to group by value, or if list, the column arrays to group by row</p></li>
-<li><p><strong>assume_sorted</strong> (<em>bool</em>) – If True, assume keys is already sorted (Default: False)</p></li>
+<li><p><strong>assume_sorted</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, assume keys is already sorted (Default: False)</p></li>
 </ul>
 </dd>
 </dl>
@@ -490,7 +490,7 @@ Otherwise, the rows corresponding to NaN values will be kept.
 The default is True</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool (default=True)</p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool">bool</a> (default=True)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -627,7 +627,7 @@ will be used; otherwise, method 1 will be used.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to group and reduce</p></li>
 <li><p><strong>operator</strong> (<em>str</em>) – The name of the reduction operator to use</p></li>
-<li><p><strong>skipna</strong> (<em>bool</em>) – boolean which determines if NANs should be skipped</p></li>
+<li><p><strong>skipna</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – boolean which determines if NANs should be skipped</p></li>
 <li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p></li>
 </ul>
 </dd>
@@ -675,7 +675,7 @@ will be used; otherwise, method 1 will be used.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>bool</em>) – The values to group and reduce with “and”</p>
+<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – The values to group and reduce with “and”</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
@@ -708,7 +708,7 @@ will be used; otherwise, method 1 will be used.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>bool</em>) – The values to group and reduce with “or”</p>
+<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – The values to group and reduce with “or”</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
@@ -842,7 +842,7 @@ passed in, not the permutation applied by the GroupBy instance.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – The values to put in each group’s segment</p></li>
-<li><p><strong>permute</strong> (<em>bool</em>) – If True (default), permute broadcast values back to the ordering
+<li><p><strong>permute</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True (default), permute broadcast values back to the ordering
 of the original array on which GroupBy was called. If False, the
 broadcast values are grouped by value.</p></li>
 </ul>
@@ -986,7 +986,7 @@ array([True False False True True False True True False True])</p>
 <li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default = 5</em>) – Maximum number of items to return for each group.
 If the number of values in a group is less than n,
 all the values from that group will be returned.</p></li>
-<li><p><strong>return_indices</strong> (<em>bool</em><em>, </em><em>default False</em>) – If True, return the indices of the sampled values.
+<li><p><strong>return_indices</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default False</em>) – If True, return the indices of the sampled values.
 Otherwise, return the selected values.</p></li>
 </ul>
 </dd>
@@ -1046,7 +1046,7 @@ O.W. the result are values.</p>
 <dd class="field-odd"><p>Indicates if the object is contained in the registry</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
+<dd class="field-even"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
@@ -1070,7 +1070,7 @@ they are unregistered.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to group and find maxima</p></li>
-<li><p><strong>skipna</strong> (<em>bool</em>) – boolean which determines if NANs should be skipped</p></li>
+<li><p><strong>skipna</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – boolean which determines if NANs should be skipped</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1121,7 +1121,7 @@ they are unregistered.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to group and average</p></li>
-<li><p><strong>skipna</strong> (<em>bool</em>) – boolean which determines if NANs should be skipped</p></li>
+<li><p><strong>skipna</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – boolean which determines if NANs should be skipped</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1173,7 +1173,7 @@ they are unregistered.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to group and find median</p></li>
-<li><p><strong>skipna</strong> (<em>bool</em>) – boolean which determines if NANs should be skipped</p></li>
+<li><p><strong>skipna</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – boolean which determines if NANs should be skipped</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1225,7 +1225,7 @@ they are unregistered.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to group and find minima</p></li>
-<li><p><strong>skipna</strong> (<em>bool</em>) – boolean which determines if NANs should be skipped</p></li>
+<li><p><strong>skipna</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – boolean which determines if NANs should be skipped</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1353,7 +1353,7 @@ Group (4) has values [4] -&gt; 1 unique value</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to group and multiply</p></li>
-<li><p><strong>skipna</strong> (<em>bool</em>) – boolean which determines if NANs should be skipped</p></li>
+<li><p><strong>skipna</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – boolean which determines if NANs should be skipped</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1446,16 +1446,16 @@ Cannot be used with frac and must be no larger than
 the smallest group unless replace is True.
 Default is one if frac is None.</p></li>
 <li><p><strong>frac</strong> (<em>float</em><em>, </em><em>optional</em>) – Fraction of items to return. Cannot be used with n.</p></li>
-<li><p><strong>replace</strong> (<em>bool</em><em>, </em><em>default False</em>) – Allow or disallow sampling of the value more than once.</p></li>
+<li><p><strong>replace</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default False</em>) – Allow or disallow sampling of the value more than once.</p></li>
 <li><p><strong>weights</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>optional</em>) – Default None results in equal probability weighting.
 If passed a pdarray, then values must have the same length as the groupby keys
 and will be used as sampling probabilities after normalization within each group.
 Weights must be non-negative with at least one positive element within each group.</p></li>
 <li><p><strong>random_state</strong> (<em>int</em><em> or </em><em>ak.random.Generator</em><em>, </em><em>optional</em>) – If int, seed for random number generator.
 If ak.random.Generator, use as given.</p></li>
-<li><p><strong>return_indices</strong> (<em>bool</em><em>, </em><em>default False</em>) – if True, return the indices of the sampled values.
+<li><p><strong>return_indices</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default False</em>) – if True, return the indices of the sampled values.
 Otherwise, return the sample values.</p></li>
-<li><p><strong>permute_samples</strong> (<em>bool</em><em>, </em><em>default False</em>) – if True, return permute the samples according to group
+<li><p><strong>permute_samples</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default False</em>) – if True, return permute the samples according to group
 Otherwise, keep samples in original order.</p></li>
 </ul>
 </dd>
@@ -1516,7 +1516,7 @@ Otherwise, return the sample values.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to group and find standard deviation</p></li>
-<li><p><strong>skipna</strong> (<em>bool</em>) – boolean which determines if NANs should be skipped</p></li>
+<li><p><strong>skipna</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – boolean which determines if NANs should be skipped</p></li>
 <li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p></li>
 </ul>
 </dd>
@@ -1579,7 +1579,7 @@ unbiased estimate of the standard deviation per se.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to group and sum</p></li>
-<li><p><strong>skipna</strong> (<em>bool</em>) – boolean which determines if NANs should be skipped</p></li>
+<li><p><strong>skipna</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – boolean which determines if NANs should be skipped</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1632,7 +1632,7 @@ unbiased estimate of the standard deviation per se.</p>
 <li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default = 5</em>) – Maximum number of items to return for each group.
 If the number of values in a group is less than n,
 all the values from that group will be returned.</p></li>
-<li><p><strong>return_indices</strong> (<em>bool</em><em>, </em><em>default False</em>) – If True, return the indices of the sampled values.
+<li><p><strong>return_indices</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default False</em>) – If True, return the indices of the sampled values.
 Otherwise, return the selected values.</p></li>
 </ul>
 </dd>
@@ -1763,7 +1763,7 @@ they are unregistered.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to group and find variance</p></li>
-<li><p><strong>skipna</strong> (<em>bool</em>) – boolean which determines if NANs should be skipped</p></li>
+<li><p><strong>skipna</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – boolean which determines if NANs should be skipped</p></li>
 <li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating var</p></li>
 </ul>
 </dd>

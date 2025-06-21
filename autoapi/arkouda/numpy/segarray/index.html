@@ -501,7 +501,7 @@ axis=1: New SegArray of same length, with pairs of sub-arrays concatenated</p>
 <li><p><strong>x</strong> (<em>sequence</em><em> of </em><a class="reference internal" href="#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><em>SegArray</em></a>) – The SegArrays to concatenate</p></li>
 <li><p><strong>axis</strong> (<em>0</em><em> or </em><em>1</em>) – Select vertical (0) or horizontal (1) concatenation. If axis=1, all
 SegArrays must have same size.</p></li>
-<li><p><strong>ordered</strong> (<em>bool</em>) – Must be True. This option is present for compatibility only, because unordered
+<li><p><strong>ordered</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Must be True. This option is present for compatibility only, because unordered
 concatenation is not yet supported.</p></li>
 </ul>
 </dd>
@@ -527,13 +527,13 @@ concatenation is not yet supported.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.segarray.SegArray.filter">
-<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discard_empty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/segarray.html#SegArray.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.segarray.SegArray.filter" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discard_empty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/segarray.html#SegArray.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.segarray.SegArray.filter" title="Link to this definition">¶</a></dt>
 <dd><p>Filter values out of the SegArray object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filter</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>list</em><em>, or </em><em>value</em>) – The value/s to be filtered out of the SegArray</p></li>
-<li><p><strong>discard_empty</strong> (<em>bool</em>) – Defaults to False. When True, empty segments are removed from
+<li><p><strong>discard_empty</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Defaults to False. When True, empty segments are removed from
 the return SegArray</p></li>
 </ul>
 </dd>
@@ -575,8 +575,8 @@ resulting in an array of rows.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>j</strong> (<em>int</em>) – The index of the value to get from each sub-array. If j is negative,
 it counts backwards from the end of each sub-array.</p></li>
-<li><p><strong>return_origins</strong> (<em>bool</em>) – If True, return a logical index indicating where j is in bounds</p></li>
-<li><p><strong>compressed</strong> (<em>bool</em>) – If False, return array is same size as self, with default value
+<li><p><strong>return_origins</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, return a logical index indicating where j is in bounds</p></li>
+<li><p><strong>compressed</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If False, return array is same size as self, with default value
 where j is out of bounds. If True, the return array only contains
 values where j is in bounds.</p></li>
 <li><p><strong>default</strong> (<em>scalar</em>) – When compressed=False, the value to return when j is out of bounds
@@ -596,7 +596,7 @@ in bounds</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>|bool</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>|<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -611,7 +611,7 @@ in bounds</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> (<em>int</em>) – Length of sub-arrays to select</p></li>
-<li><p><strong>return_origins</strong> (<em>bool</em>) – Return a logical index indicating which sub-arrays are length n</p></li>
+<li><p><strong>return_origins</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Return a logical index indicating which sub-arrays are length n</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -627,7 +627,7 @@ has length n.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a> of <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>|bool</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a> of <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>|<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -640,7 +640,7 @@ has length n.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> (<em>int</em>) – Length of n-gram</p></li>
-<li><p><strong>return_origins</strong> (<em>bool</em>) – If True, return an int64 array indicating which sub-array
+<li><p><strong>return_origins</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, return an int64 array indicating which sub-array
 each returned n-gram came from.</p></li>
 </ul>
 </dd>
@@ -667,9 +667,9 @@ each returned n-gram came from.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> (<em>int</em>) – Length of suffix</p></li>
-<li><p><strong>return_origins</strong> (<em>bool</em>) – If True, return a logical index indicating which sub-arrays
+<li><p><strong>return_origins</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, return a logical index indicating which sub-arrays
 were long enough to return an n-prefix</p></li>
-<li><p><strong>proper</strong> (<em>bool</em>) – If True, only return proper prefixes, i.e. from sub-arrays
+<li><p><strong>proper</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, only return proper prefixes, i.e. from sub-arrays
 that are at least n+1 long. If False, allow the entire
 sub-array to be returned as a prefix.</p></li>
 </ul>
@@ -686,7 +686,7 @@ an n-suffix, False otherwise.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a> of <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>|bool</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a> of <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>|<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -699,9 +699,9 @@ an n-suffix, False otherwise.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> (<em>int</em>) – Length of suffix</p></li>
-<li><p><strong>return_origins</strong> (<em>bool</em>) – If True, return a logical index indicating which sub-arrays
+<li><p><strong>return_origins</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, return a logical index indicating which sub-arrays
 were long enough to return an n-suffix</p></li>
-<li><p><strong>proper</strong> (<em>bool</em>) – If True, only return proper suffixes, i.e. from sub-arrays
+<li><p><strong>proper</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, only return proper suffixes, i.e. from sub-arrays
 that are at least n+1 long. If False, allow the entire
 sub-array to be returned as a suffix.</p></li>
 </ul>
@@ -718,7 +718,7 @@ an n-suffix, False otherwise.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a> of <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>|bool</p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a> of <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>|<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -781,14 +781,14 @@ of the ith values from each array.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.segarray.SegArray.is_registered">
-<span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/segarray.html#SegArray.is_registered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.segarray.SegArray.is_registered" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/segarray.html#SegArray.is_registered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.segarray.SegArray.is_registered" title="Link to this definition">¶</a></dt>
 <dd><p>Check if the name of the SegArray object is registered in the Symbol Table</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True if SegArray is registered, false if not</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
+<dd class="field-even"><p><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -915,7 +915,7 @@ they are unregistered.</p>
 <dd><p>Condense sequences of repeated values within a sub-array to a single value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>return_multiplicity</strong> (<em>bool</em>) – If True, also return the number of times each value was repeated.</p>
+<dd class="field-odd"><p><strong>return_multiplicity</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, also return the number of times each value was repeated.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
@@ -1281,7 +1281,7 @@ they are unregistered.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.segarray.SegArray.update_hdf">
-<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/segarray.html#SegArray.update_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.segarray.SegArray.update_hdf" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/segarray.html#SegArray.update_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.segarray.SegArray.update_hdf" title="Link to this definition">¶</a></dt>
 <dd><p>Overwrite the dataset with the name provided with this SegArray object. If
 the dataset does not exist it is added.</p>
 <dl class="field-list simple">
@@ -1289,7 +1289,7 @@ the dataset does not exist it is added.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
 <li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in files</p></li>
-<li><p><strong>repack</strong> (<em>bool</em>) – Default: True
+<li><p><strong>repack</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default: True
 HDF5 does not release memory on delete. When True, the inaccessible
 data (that was overwritten) is removed. When False, the data remains, but is
 inaccessible. Setting to false will yield better performance, but will cause

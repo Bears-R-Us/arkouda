@@ -169,6 +169,7 @@ Classes
    arkouda.all_scalars
    arkouda.bigint
    arkouda.bitType
+   arkouda.bool
    arkouda.bool_scalars
    arkouda.byte
    arkouda.bytes_
@@ -9832,6 +9833,23 @@ Package Contents
 
 
 
+.. py:class:: bool
+
+   Bases: :py:obj:`numpy.generic`
+
+
+   Boolean type (True or False), stored as a byte.
+
+       .. warning::
+
+          The :class:`bool` type is not a subclass of the :class:`int_` type
+          (the :class:`bool` is not even a number type). This is different
+          than Python's default implementation of :class:`bool` as a
+          sub-class of :class:`int`.
+
+       :Character code: ``'?'``
+
+
 .. py:class:: bool_scalars
 
    Bases: :py:obj:`_NotIterable`
@@ -10509,7 +10527,7 @@ Package Contents
    :type to: dtype or dtype specifier
 
    :returns: True if cast can occur according to the casting rule.
-   :rtype: bool
+   :rtype: builtins.bool
 
 
 .. py:function:: cast(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]]
@@ -13471,7 +13489,7 @@ Package Contents
    :type scalar: object
 
    :returns: True if scalar is an instance of an arkouda supported dtype, else False.
-   :rtype: bool
+   :rtype: builtins.bool
 
    .. rubric:: Examples
 
