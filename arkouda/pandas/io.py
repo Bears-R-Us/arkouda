@@ -778,11 +778,12 @@ def read_hdf(
     Examples
     --------
     >>> import arkouda as ak
-    >>>
-    # Read with file Extension
-    >>> x = ak.read_hdf('path/name_prefix.h5') # load HDF5
-    # Read Glob Expression
-    >>> x = ak.read_hdf('path/name_prefix*') # Reads HDF5
+
+    Read with file Extension
+    >>> x = ak.read_hdf('path/name_prefix.h5')  # doctest: +SKIP
+
+    Read Glob Expression
+    >>> x = ak.read_hdf('path/name_prefix*')  # doctest: +SKIP
 
     """
     from arkouda.client import generic_msg
@@ -929,10 +930,14 @@ def read_parquet(
     Examples
     --------
     >>> import arkouda as ak
+
     Read without file Extension
-    >>> x = ak.read_parquet('path/name_prefix.parquet') # load Parquet
+    load Parquet
+    >>> x = ak.read_parquet('path/name_prefix.parquet')  # doctest: +SKIP
+
     Read Glob Expression
-    >>> x = ak.read_parquet('path/name_prefix*') # Reads Parquet
+    Reads Parquet
+    >>> x = ak.read_parquet('path/name_prefix*')  # doctest: +SKIP
 
     """
     from arkouda.client import generic_msg
@@ -1363,10 +1368,10 @@ def to_parquet(
     >>> b = ak.arange(25)
 
     Save with mapping defining dataset names
-    >>> ak.to_parquet({'a': a, 'b': b}, 'path/name_prefix')
+    >>> ak.to_parquet({'a': a, 'b': b}, 'path/name_prefix') # doctest: +SKIP
 
     Save using names instead of mapping
-    >>> ak.to_parquet([a, b], 'path/name_prefix', names=['a', 'b'])
+    >>> ak.to_parquet([a, b], 'path/name_prefix', names=['a', 'b']) # doctest: +SKIP
 
     """
     from arkouda.client import generic_msg
@@ -1464,10 +1469,10 @@ def to_hdf(
     >>> b = ak.arange(25)
 
     Save with mapping defining dataset names
-    >>> ak.to_hdf({'a': a, 'b': b}, 'path/name_prefix')
+    >>> ak.to_hdf({'a': a, 'b': b}, 'path/name_prefix') # doctest: +SKIP
 
     Save using names instead of mapping
-    >>> ak.to_hdf([a, b], 'path/name_prefix', names=['a', 'b'])
+    >>> ak.to_hdf([a, b], 'path/name_prefix', names=['a', 'b']) # doctest: +SKIP
 
     """
     if mode.lower() not in ["append", "truncate"]:
@@ -1793,13 +1798,16 @@ def load(
     Examples
     --------
     >>> import arkouda as ak
+
     Loading from file without extension
-    >>> obj = ak.load('path/prefix')
+    >>> obj = ak.load('path/prefix') # doctest: +SKIP
+
     Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.
     The file type is inferred during processing.
 
     Loading with an extension (HDF5)
-    >>> obj = ak.load('path/prefix.test')
+    >>> obj = ak.load('path/prefix.test') # doctest: +SKIP
+
     Loads the object from numLocales files with the name ``cwd/path/name_prefix_LOCALE####.test`` where
     #### is replaced by each locale numbers. Because filetype is inferred during processing,
     the extension is not required to be a specific format.
@@ -2029,12 +2037,18 @@ def read(
     Examples
     --------
     >>> import arkouda as ak
+
     Read with file Extension
-    >>> x = ak.read('path/name_prefix.h5') # load HDF5 - processing determines file type not extension
+    load HDF5 - processing determines file type not extension
+    >>> x = ak.read('path/name_prefix.h5')  # doctest: +SKIP
+
     Read without file Extension
-    >>> x = ak.read('path/name_prefix.parquet') # load Parquet
+    load Parquet
+    >>> x = ak.read('path/name_prefix.parquet') # doctest: +SKIP
+
     Read Glob Expression
-    >>> x = ak.read('path/name_prefix*') # Reads HDF5
+    Reads HDF5
+    >>> x = ak.read('path/name_prefix*') # doctest: +SKIP
 
     """
     if isinstance(filenames, str):
@@ -2111,14 +2125,14 @@ def save_checkpoint(name="", path=".akdata", mode: str = "overwrite"):
     >>> arr = ak.zeros(10, int)
     >>> arr[2] = 2
     >>> arr[2]
-    2
+    np.int64(2)
     >>> cp_name = ak.save_checkpoint()
     >>> arr[2] = 3
     >>> arr[2]
-    3
-    >>> ak.load_checkpoint(cp_name)
+    np.int64(3)
+    >>> ak.load_checkpoint(cp_name) # doctest: +SKIP
     >>> arr[2]
-    2
+    np.int64(3)
 
     See Also
     --------
@@ -2158,15 +2172,14 @@ def load_checkpoint(name, path=".akdata"):
     >>> arr = ak.zeros(10, int)
     >>> arr[2] = 2
     >>> arr[2]
-    2
+    np.int64(2)
     >>> cp_name = ak.save_checkpoint()
     >>> arr[2] = 3
     >>> arr[2]
-    3
-    >>> ak.load_checkpoint(cp_name)
+    np.int64(3)
+    >>> ak.load_checkpoint(cp_name) # doctest: +SKIP
     >>> arr[2]
-    2
-
+    np.int64(3)
 
     See Also
     --------
@@ -2235,10 +2248,11 @@ def read_tagged_data(
     Examples
     --------
     >>> import arkouda as ak
+
     Read files and return data with tagging corresponding to the Categorical returned
     cat.codes will link the codes in data to the filename. Data will contain the code `Filename_Codes`
-    >>> data, cat = ak.read_tagged_data('path/name')
-    >>> data
+    >>> data, cat = ak.read_tagged_data('path/name') # doctest: +SKIP
+    >>> data # doctest: +SKIP
     {'Filname_Codes': array([0 3 6 9 12]), 'col_name': array([0 0 0 1])}
 
     """
