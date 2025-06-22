@@ -562,14 +562,41 @@ class Categorical:
         return self.categories[self.codes]
 
     def __iter__(self):
+        """
+        Prevent iteration over Categorical objects.
+
+        Raises
+        ------
+        NotImplementedError
+            Always raised. Iteration is not supported. Use `.to_ndarray()` instead.
+
+        """
         raise NotImplementedError(
             "Categorical does not support iteration. To force data transfer from server, use to_ndarray"
         )
 
     def __len__(self):
+        """
+        Return the number of elements in the Categorical.
+
+        Returns
+        -------
+        int
+            The length of the Categorical array.
+
+        """
         return self.shape[0]
 
     def __str__(self):
+        """
+        Return a short string representation of the Categorical.
+
+        Returns
+        -------
+        str
+            A printable preview of the Categorical values.
+
+        """
         # limit scope of import to pick up changes to global variable
         from arkouda.client import pdarrayIterThresh
 
@@ -582,6 +609,15 @@ class Categorical:
         return "[{}]".format(", ".join(vals))
 
     def __repr__(self):
+        """
+        Return the official string representation of the Categorical.
+
+        Returns
+        -------
+        str
+            A string representing the Categorical for debugging.
+
+        """
         return f"array({self.__str__()})"
 
     @typechecked
@@ -671,12 +707,54 @@ class Categorical:
         return self._binop(other, op)
 
     def __eq__(self, other):
+        """
+        Perform element-wise equality comparison.
+
+        Parameters
+        ----------
+        other : Categorical or str
+            Value or object to compare against.
+
+        Returns
+        -------
+        pdarray
+            Boolean array indicating element-wise equality.
+
+        """
         return self._binop(other, "==")
 
     def __ne__(self, other):
+        """
+        Perform element-wise inequality comparison.
+
+        Parameters
+        ----------
+        other : Categorical or str
+            Value or object to compare against.
+
+        Returns
+        -------
+        pdarray
+            Boolean array indicating element-wise inequality.
+
+        """
         return self._binop(other, "!=")
 
     def __getitem__(self, key) -> Categorical:
+        """
+        Retrieve item(s) from the Categorical.
+
+        Parameters
+        ----------
+        key : int or slice or array-like
+            Index or indices to select.
+
+        Returns
+        -------
+        Categorical
+            The selected value(s).
+
+        """
         if np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
             return self.categories[self.codes[key]]
         else:
@@ -896,6 +974,15 @@ class Categorical:
         return categoriesisin[self.codes]
 
     def unique(self) -> Categorical:
+        """
+        Return the unique category values in the Categorical.
+
+        Returns
+        -------
+        Categorical
+            A new Categorical containing only the unique category labels in use.
+
+        """
         # __doc__ = unique.__doc__
         return Categorical.from_codes(
             arange(self._categories_used.size), self._categories_used, NAvalue=self.NAvalue
@@ -966,11 +1053,20 @@ class Categorical:
 
         API: this method must be defined by all groupable arrays, and it
         must return a list of arrays that can be (co)argsorted.
+
         """
         return [self.codes]
 
     def argsort(self):
-        # __doc__ = argsort.__doc__
+        """
+        Return the indices that would sort the Categorical.
+
+        Returns
+        -------
+        pdarray
+            Permutation indices that would sort the values by category label.
+
+        """
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
@@ -978,7 +1074,15 @@ class Categorical:
         return argsort(newvals)
 
     def sort_values(self):
-        # __doc__ = sort.__doc__
+        """
+        Return a sorted Categorical by category labels.
+
+        Returns
+        -------
+        Categorical
+            A new Categorical with values sorted by category.
+
+        """
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
