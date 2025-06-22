@@ -358,10 +358,10 @@ class Index:
         >>> i = ak.Index([1, 2, 3])
         >>> i_cpy = ak.Index([1, 2, 3])
         >>> i.equals(i_cpy)
-        True
+        np.True_
         >>> i2 = ak.Index([1, 2, 4])
         >>> i.equals(i2)
-        False
+        np.False_
 
         MultiIndex case:
 
@@ -698,14 +698,14 @@ class Index:
         >>> import arkouda as ak
         >>> ak.connect()
         >>> idx = ak.Index(ak.array([2, 3, 2, 3, 4]))
-        >>> display(idx)
+        >>> idx
         Index(array([2 3 2 3 4]), dtype='int64')
         >>> idx.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
         Index(array([30.00000000000000000 5.00000000000000000 30.00000000000000000
         5.00000000000000000 25.00000000000000000]), dtype='float64')
         >>> s2 = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
         >>> idx.map(s2)
-        Index(array(['b', 'b', 'd', 'd', 'a']), dtype='<U0')
+        Index(array(['b', 'd', 'b', 'd', 'a']), dtype='<U0')
 
         """
         from arkouda.numpy.util import map
