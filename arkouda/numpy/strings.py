@@ -421,7 +421,6 @@ class Strings:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
         >>> s = ak.array(["a", "b", "c"])
         >>> s_cpy = ak.array(["a", "b", "c"])
         >>> s.equals(s_cpy)

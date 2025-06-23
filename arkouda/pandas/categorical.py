@@ -547,7 +547,6 @@ class Categorical:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
         >>> a = ak.array(["a","b","c"])
         >>> a
         array(['a', 'b', 'c'])
