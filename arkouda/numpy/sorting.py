@@ -298,7 +298,7 @@ def sort(
 
 @typechecked
 def searchsorted(
-    a: pdarray, v: Union[int_scalars, float64, bigint, pdarray], side: Literal["left", "right"] = "left"
+    a: pdarray, v: Union[int_scalars, float64, bigint, pdarray], side: Literal["left", "right"] = "left", x2_sorted: bool = False
 ) -> Union[int, pdarray]:
     """
     Find indices where elements should be inserted to maintain order.
@@ -368,6 +368,7 @@ def searchsorted(
             "x1": a,
             "x2": v_,
             "side": side,
+            "x2Sorted": x2_sorted,
         },
     )
 
