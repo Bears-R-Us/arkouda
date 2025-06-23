@@ -142,9 +142,13 @@ Module Contents
    >>> import matplotlib.pyplot as plt
    >>> fig, ax = plt.subplots(1, 1)
 
-   Calculate the first four moments:
+   Get the support:
 
    >>> df = 55
+   >>> lb, ub = chi2.support(df)
+
+   Calculate the first four moments:
+
    >>> mean, var, skew, kurt = chi2.stats(df, moments='mvsk')
 
    Display the probability density function (``pdf``):

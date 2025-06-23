@@ -490,6 +490,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_accessor</span> <span class="o">=</span> <span class="n">accessor</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve and cache the accessor instance for the calling object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        obj : object</span>
+<span class="sd">            The instance that the accessor is being called on.</span>
+<span class="sd">        cls : type</span>
+<span class="sd">            The class of the object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        object</span>
+<span class="sd">            The accessor instance attached to the object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># we&#39;re accessing the attribute of the class, i.e., Dataset.geo</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accessor</span>
@@ -506,6 +522,27 @@
 <div class="viewcode-block" id="string_operators">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.accessor.string_operators">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">string_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add common string operation methods to a StringAccessor class.</span>
+
+<span class="sd">    This class decorator dynamically attaches string operations (`contains`,</span>
+<span class="sd">    `startswith`, `endswith`) to the given class using the `_make_op` helper.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        The accessor class to decorate.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    type</span>
+<span class="sd">        The accessor class with string methods added.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used internally to implement the `.str` accessor API.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;contains&quot;</span><span class="p">,</span> <span class="s2">&quot;startswith&quot;</span><span class="p">,</span> <span class="s2">&quot;endswith&quot;</span><span class="p">]:</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_op</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
     <span class="k">return</span> <span class="bp">cls</span></div>
@@ -515,6 +552,27 @@
 <div class="viewcode-block" id="date_operators">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.accessor.date_operators">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">date_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add common datetime operation methods to a DatetimeAccessor class.</span>
+
+<span class="sd">    This class decorator dynamically attaches datetime operations (`floor`,</span>
+<span class="sd">    `ceil`, `round`) to the given class using the `_make_op` helper.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        The accessor class to decorate.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    type</span>
+<span class="sd">        The accessor class with datetime methods added.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Used internally to implement the `.dt` accessor API.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;floor&quot;</span><span class="p">,</span> <span class="s2">&quot;ceil&quot;</span><span class="p">,</span> <span class="s2">&quot;round&quot;</span><span class="p">]:</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_op</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
     <span class="k">return</span> <span class="bp">cls</span></div>
@@ -524,6 +582,24 @@
 <div class="viewcode-block" id="Properties">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.accessor.Properties">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Properties</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for accessor implementations in Arkouda.</span>
+
+<span class="sd">    Provides the `_make_op` class method to dynamically generate accessor methods</span>
+<span class="sd">    that wrap underlying `Strings` or `Datetime` operations and return new Series.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class is subclassed by `StringAccessor` and `DatetimeAccessor`, and is not</span>
+<span class="sd">    intended to be used directly.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Subclasses should define `_make_op(&quot;operation_name&quot;)`, which will generate</span>
+<span class="sd">    a method that applies `series.values.operation_name(...)` and returns a new Series.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_make_op</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">accessop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -540,6 +616,36 @@
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.accessor.DatetimeAccessor">[docs]</a>
 <span class="nd">@date_operators</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DatetimeAccessor</span><span class="p">(</span><span class="n">Properties</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Accessor for datetime-like operations on Arkouda Series.</span>
+
+<span class="sd">    Provides datetime methods such as `.floor()`, `.ceil()`, and `.round()`,</span>
+<span class="sd">    mirroring the `.dt` accessor in pandas.</span>
+
+<span class="sd">    This accessor is automatically attached to Series objects that wrap</span>
+<span class="sd">    `arkouda.Datetime` values. It should not be instantiated directly.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    series : arkouda.pandas.Series</span>
+<span class="sd">        The Series object containing `Datetime` values.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AttributeError</span>
+<span class="sd">        If the underlying Series values are not of type `arkouda.Datetime`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; from arkouda import Datetime, Series</span>
+<span class="sd">    &gt;&gt;&gt; s = Series(Datetime(ak.array([1_000_000_000_000])))</span>
+<span class="sd">    &gt;&gt;&gt; s.dt.floor(&quot;D&quot;)</span>
+<span class="sd">    0   1970-01-01</span>
+<span class="sd">    dtype: datetime64[ns]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Datetime</span><span class="p">):</span>
@@ -553,6 +659,38 @@
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.accessor.StringAccessor">[docs]</a>
 <span class="nd">@string_operators</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">StringAccessor</span><span class="p">(</span><span class="n">Properties</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Accessor for string operations on Arkouda Series.</span>
+
+<span class="sd">    Provides string-like methods such as `.contains()`, `.startswith()`, and</span>
+<span class="sd">    `.endswith()` via the `.str` accessor, similar to pandas.</span>
+
+<span class="sd">    This accessor is automatically attached to Series objects that wrap</span>
+<span class="sd">    `arkouda.Strings` or `arkouda.Categorical` values. It should not be instantiated directly.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    series : arkouda.pandas.Series</span>
+<span class="sd">        The Series object containing `Strings` or `Categorical` values.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AttributeError</span>
+<span class="sd">        If the underlying Series values are not `Strings` or `Categorical`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; from arkouda import Series</span>
+<span class="sd">    &gt;&gt;&gt; s = Series([&quot;apple&quot;, &quot;banana&quot;, &quot;apricot&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; s.str.startswith(&quot;a&quot;)</span>
+<span class="sd">    0     True</span>
+<span class="sd">    1    False</span>
+<span class="sd">    2     True</span>
+<span class="sd">    dtype: bool</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">values</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)):</span>

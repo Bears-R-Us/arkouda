@@ -460,13 +460,13 @@ Users should not instantiate accessors directly — use <cite>.str</cite> and <c
 <td><p>Custom property-like object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.accessor.DatetimeAccessor" title="arkouda.accessor.DatetimeAccessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DatetimeAccessor</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Accessor for datetime-like operations on Arkouda Series.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.accessor.Properties" title="arkouda.accessor.Properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Properties</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Base class for accessor implementations in Arkouda.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.accessor.StringAccessor" title="arkouda.accessor.StringAccessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StringAccessor</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Accessor for string operations on Arkouda Series.</p></td>
 </tr>
 </tbody>
 </table>
@@ -478,10 +478,10 @@ Users should not instantiate accessors directly — use <cite>.str</cite> and <c
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.accessor.date_operators" title="arkouda.accessor.date_operators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">date_operators</span></code></a>(cls)</p></td>
-<td><p></p></td>
+<td><p>Add common datetime operation methods to a DatetimeAccessor class.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.accessor.string_operators" title="arkouda.accessor.string_operators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">string_operators</span></code></a>(cls)</p></td>
-<td><p></p></td>
+<td><p>Add common string operation methods to a StringAccessor class.</p></td>
 </tr>
 </tbody>
 </table>
@@ -512,6 +512,28 @@ single argument <code class="docutils literal notranslate"><span class="pre">dat
 <dt class="sig sig-object py" id="arkouda.accessor.DatetimeAccessor">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">DatetimeAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#DatetimeAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.DatetimeAccessor" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#arkouda.accessor.Properties" title="arkouda.accessor.Properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Properties</span></code></a></p>
+<p>Accessor for datetime-like operations on Arkouda Series.</p>
+<p>Provides datetime methods such as <cite>.floor()</cite>, <cite>.ceil()</cite>, and <cite>.round()</cite>,
+mirroring the <cite>.dt</cite> accessor in pandas.</p>
+<p>This accessor is automatically attached to Series objects that wrap
+<cite>arkouda.Datetime</cite> values. It should not be instantiated directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>series</strong> (<a class="reference internal" href="../pandas/index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><em>arkouda.pandas.Series</em></a>) – The Series object containing <cite>Datetime</cite> values.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AttributeError</strong> – If the underlying Series values are not of type <cite>arkouda.Datetime</cite>.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Series</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">Datetime</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1_000_000_000_000</span><span class="p">])))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
+<span class="go">0   1970-01-01</span>
+<span class="go">dtype: datetime64[ns]</span>
+</pre></div>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.accessor.DatetimeAccessor.series">
 <span class="sig-name descname"><span class="pre">series</span></span><a class="headerlink" href="#arkouda.accessor.DatetimeAccessor.series" title="Link to this definition">¶</a></dt>
@@ -522,12 +544,45 @@ single argument <code class="docutils literal notranslate"><span class="pre">dat
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.accessor.Properties">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">Properties</span></span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#Properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.Properties" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Base class for accessor implementations in Arkouda.</p>
+<p>Provides the <cite>_make_op</cite> class method to dynamically generate accessor methods
+that wrap underlying <cite>Strings</cite> or <cite>Datetime</cite> operations and return new Series.</p>
+<p class="rubric">Notes</p>
+<p>This class is subclassed by <cite>StringAccessor</cite> and <cite>DatetimeAccessor</cite>, and is not
+intended to be used directly.</p>
+<p class="rubric">Examples</p>
+<p>Subclasses should define <cite>_make_op(“operation_name”)</cite>, which will generate
+a method that applies <cite>series.values.operation_name(…)</cite> and returns a new Series.</p>
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.accessor.StringAccessor">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">StringAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#StringAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.StringAccessor" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#arkouda.accessor.Properties" title="arkouda.accessor.Properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Properties</span></code></a></p>
+<p>Accessor for string operations on Arkouda Series.</p>
+<p>Provides string-like methods such as <cite>.contains()</cite>, <cite>.startswith()</cite>, and
+<cite>.endswith()</cite> via the <cite>.str</cite> accessor, similar to pandas.</p>
+<p>This accessor is automatically attached to Series objects that wrap
+<cite>arkouda.Strings</cite> or <cite>arkouda.Categorical</cite> values. It should not be instantiated directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>series</strong> (<a class="reference internal" href="../pandas/index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><em>arkouda.pandas.Series</em></a>) – The Series object containing <cite>Strings</cite> or <cite>Categorical</cite> values.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AttributeError</strong> – If the underlying Series values are not <cite>Strings</cite> or <cite>Categorical</cite>.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Series</span><span class="p">([</span><span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;banana&quot;</span><span class="p">,</span> <span class="s2">&quot;apricot&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
+<span class="go">0     True</span>
+<span class="go">1    False</span>
+<span class="go">2     True</span>
+<span class="go">dtype: bool</span>
+</pre></div>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.accessor.StringAccessor.series">
 <span class="sig-name descname"><span class="pre">series</span></span><a class="headerlink" href="#arkouda.accessor.StringAccessor.series" title="Link to this definition">¶</a></dt>
@@ -538,12 +593,44 @@ single argument <code class="docutils literal notranslate"><span class="pre">dat
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.accessor.date_operators">
 <span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">date_operators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#date_operators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.date_operators" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add common datetime operation methods to a DatetimeAccessor class.</p>
+<p>This class decorator dynamically attaches datetime operations (<cite>floor</cite>,
+<cite>ceil</cite>, <cite>round</cite>) to the given class using the <cite>_make_op</cite> helper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> (<em>type</em>) – The accessor class to decorate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The accessor class with datetime methods added.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>type</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Used internally to implement the <cite>.dt</cite> accessor API.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.accessor.string_operators">
 <span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">string_operators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#string_operators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.string_operators" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add common string operation methods to a StringAccessor class.</p>
+<p>This class decorator dynamically attaches string operations (<cite>contains</cite>,
+<cite>startswith</cite>, <cite>endswith</cite>) to the given class using the <cite>_make_op</cite> helper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> (<em>type</em>) – The accessor class to decorate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The accessor class with string methods added.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>type</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Used internally to implement the <cite>.str</cite> accessor API.</p>
+</dd></dl>
 
 </section>
 </section>
