@@ -117,6 +117,7 @@ def searchsorted(
     /,
     *,
     side: Literal["left", "right"] = "left",
+    x2_sorted: bool = False,
     sorter: Optional[Array] = None,
 ) -> Array:
     """
@@ -155,6 +156,7 @@ def searchsorted(
             "x1": _x1._array,
             "x2": x2._array,
             "side": side,
+            "x2Sorted": x2_sorted,
         },
     )
 
