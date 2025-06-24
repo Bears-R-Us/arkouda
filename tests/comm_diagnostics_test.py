@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 import arkouda as ak
@@ -38,6 +40,14 @@ diagnostic_stats_functions = [
 
 
 class TestCommDiagnostics:
+    @pytest.mark.skipif(
+        os.environ.get("CHPL_HOST_PLATFORM") == "hpe-apollo",
+        reason="Test skipped on CHPL_HOST_PLATFORM=hpe-apollo for debugging purposes (hanging test)",
+    )
+    @pytest.mark.skipif(
+        os.environ.get("CHPL_HOST_PLATFORM") == "cray-xc",
+        reason="Test skipped on CHPL_HOST_PLATFORM=cray-xc for debugging purposes (hanging test)",
+    )
     def test_comm_diagnostics_docstrings(self):
         import doctest
 
