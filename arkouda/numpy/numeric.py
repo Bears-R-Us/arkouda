@@ -2604,17 +2604,17 @@ def count_nonzero(pda: pdarray) -> np.int64:
         value = sum((pda != 0).astype(np.int64))
         if not isinstance(value, np.int64):
             raise ValueError("summing the pdarray did not generate a scalar")
-        return value
+        return value.astype(np.int64)  # otherwise mypy flags this
     elif pda.dtype == bool:
         value = sum((pda).astype(np.int64))
         if not isinstance(value, np.int64):
             raise ValueError("summing the pdarray did not generate a scalar")
-        return value
+        return value.astype(np.int64)  # otherwise mypy flags this
     elif pda.dtype == str:
         value = sum((pda != "").astype(np.int64))
         if not isinstance(value, np.int64):
             raise ValueError("summing the pdarray did not generate a scalar")
-        return value
+        return value.astype(np.int64)  # otherwise mypy flags this
     raise TypeError("pda must be numeric, bool, or str pdarray")
 
 
