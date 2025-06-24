@@ -56,7 +56,7 @@ def pytest_addoption(parser):
 
     default_client_timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 0))
     parser.addoption(
-        "--timeout",
+        "--client_timeout",
         action="store",
         type=int,
         default=default_client_timeout,
@@ -206,7 +206,7 @@ def pytest_configure(config):
     pytest.nl = config.getoption("nl")
     pytest.running_mode = TestRunningMode(config.getoption("running_mode"))
     pytest.verbose = config.getoption("verbose")
-    pytest.timeout = config.getoption("timeout")
+    pytest.client_timeout = config.getoption("client_timeout")
     # NOTE:  Commented out argument that is not yet implemented and therefore has no effect.
     # pytest.log_level = config.getoption("log_level")
     pytest.prob_size = eval(config.getoption("size"))
@@ -310,7 +310,7 @@ def _module_server() -> Iterator[None]:
 @pytest.fixture(scope="function", autouse=True)
 def manage_connection():
     try:
-        ak.connect(server=pytest.host, port=pytest.port, timeout=pytest.timeout)
+        ak.connect(server=pytest.host, port=pytest.port, timeout=pytest.client_timeout)
     except Exception as e:
         raise ConnectionError(e)
 

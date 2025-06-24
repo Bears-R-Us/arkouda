@@ -209,6 +209,7 @@ setup(
             "pydoclint[flake8]==0.6.6",
             "pytest-subtests",
             "numba",
+            "pytest-timeout",
         ],
     },
     # replace original install command with version that also builds
