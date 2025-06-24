@@ -10,7 +10,11 @@ import pytest
 import arkouda as ak
 from arkouda.numpy import newaxis, pdarraycreation
 from arkouda.numpy.util import _generate_test_shape, _infer_shape_from_size
-from arkouda.testing import assert_arkouda_array_equal, assert_equivalent
+from arkouda.testing import (
+    assert_almost_equivalent,
+    assert_arkouda_array_equal,
+    assert_equivalent,
+)
 
 INT_SCALARS = list(ak.numpy.dtypes.int_scalars.__args__)
 NUMERIC_SCALARS = list(ak.numpy.dtypes.numeric_scalars.__args__)
@@ -836,6 +840,60 @@ class TestPdarrayCreation:
             (np.uint16(0), np.uint32(100), np.uint8(1000 % 256)),
         ]:
             assert (int_arr == ak.linspace(*args)).all()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_revised_linspace_1D(self, size):
+        pda = ak.revised_linspace(0, 100, size)
+        nda = np.linspace(0, 100, size)
+        assert size == len(pda)
+        assert float == pda.dtype
+        assert isinstance(pda, ak.pdarray)
+        assert_almost_equivalent(pda, nda)
+
+        pda = ak.revised_linspace(start=5, stop=0, num=6)
+        nda = np.linspace(start=5, stop=0, num=6)
+        assert 5.0000 == pda[0]
+        assert 0.0000 == pda[5]
+        assert_almost_equivalent(pda, nda)
+
+        pda = ak.revised_linspace(start=5, stop=0, num=6, endpoint=False)
+        nda = np.linspace(5, 0, 6, endpoint=False)
+        assert 5.0000 == pda[0]
+        assert 0.0000 != pda[5]
+        assert_almost_equivalent(pda, nda)
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_revised_linspace_2D(self, size):
+        pedge = ak.array([4, 5])
+        pda = ak.revised_linspace(0, pedge, size)
+        nda = np.linspace(0, pedge.to_ndarray(), size)
+        assert 2 * size == pda.size
+        assert float == pda.dtype
+        assert isinstance(pda, ak.pdarray)
+        assert_almost_equivalent(pda, nda)
+
+        pda = ak.revised_linspace(pedge, 10, size)
+        nda = np.linspace(pedge.to_ndarray(), 10, size)
+        assert 2 * size == pda.size
+        assert float == pda.dtype
+        assert isinstance(pda, ak.pdarray)
+        assert_almost_equivalent(pda, nda)
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_revised_linspace_3D(self, size):
+        p_lo = ak.array([4, 5])
+        p_hi = ak.array([7, 20])
+        pda = ak.revised_linspace(p_lo, p_hi, size)
+        nda = np.linspace(p_lo.to_ndarray(), p_hi.to_ndarray(), size)
+        assert 2 * size == pda.size
+        assert float == pda.dtype
+        assert isinstance(pda, ak.pdarray)
+        assert_almost_equivalent(pda, nda)
+
+    # note to reviewers: test_compare_linspace doesn't really cover any ground that's not covered
+    # above, so I'm not repeating it for revised_linspace.
 
     @pytest.mark.parametrize("start", [0, 0.5, 2])
     @pytest.mark.parametrize("stop", [50, 101])

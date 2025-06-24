@@ -222,6 +222,7 @@ from arkouda.numpy import (
     issubdtype,
     lib,
     linspace,
+    revised_linspace,
     log,
     log10,
     log1p,

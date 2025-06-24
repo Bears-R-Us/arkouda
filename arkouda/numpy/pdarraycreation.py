@@ -24,7 +24,12 @@ from arkouda.numpy.dtypes import (
     bigint,
 )
 from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
+from arkouda.numpy.dtypes import (
+    float64,
+    float_scalars,
+    get_byteorder,
+    get_server_byteorder,
+)
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import (
     int_scalars,
@@ -35,7 +40,12 @@ from arkouda.numpy.dtypes import (
     str_,
 )
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import (
+    _axis_validation,
+    broadcast_to_shape,
+    create_pdarray,
+    pdarray,
+)
 from arkouda.numpy.strings import Strings
 
 if TYPE_CHECKING:
@@ -54,6 +64,7 @@ __all__ = [
     "full_like",
     "arange",
     "linspace",
+    "revised_linspace",
     "randint",
     "uniform",
     "standard_normal",
@@ -1105,6 +1116,153 @@ def arange(
         return arr if aktype == akint64 else akcast(arr, dt=aktype)
 
     raise TypeError(f"start, stop, step must be ints; got {args!r}")
+
+
+@typechecked
+def revised_linspace(
+    start: Union[float_scalars, pdarray],
+    stop: Union[float_scalars, pdarray],
+    num: int_scalars = 50,
+    endpoint: Union[None, bool] = True,
+    dtype: Union[None, float64] = None,
+    axis: Union[None, int_scalars] = 0,
+) -> pdarray:
+    """
+    Return evenly spaced numbers over a specified interval.
+
+    Returns `num` evenly spaced samples, calculated over the
+    interval [`start`, `stop`].
+
+    The endpoint of the interval can optionally be excluded.
+
+    Parameters
+    ----------
+    start : Union[float_scalars, pdarray]
+        The starting value of the sequence.
+    stop : Union[float_scalars, pdarray]
+        The end value of the sequence, unless `endpoint` is set to False.
+        In that case, the sequence consists of all but the last of ``num + 1``
+        evenly spaced samples, so that `stop` is excluded.  Note that the step
+        size changes when `endpoint` is False.
+    num : int, optional
+        Number of samples to generate. Default is 50. Must be non-negative.
+    endpoint : bool, optional
+        If True, `stop` is the last sample. Otherwise, it is not included.
+        Default is True.
+    dtype : dtype, optional
+        Allowed for compatibility with numpy linspace, but anything entered
+        is ignored.  The output is always ak.float64.
+    axis : int, optional
+        The axis in the result to store the samples.  Relevant only if start
+        or stop are array-like.  By default (0), the samples will be along a
+        new axis inserted at the beginning. Use -1 to get an axis at the end.
+
+    Returns
+    -------
+    pdarray
+        There are `num` equally spaced samples in the closed interval
+        ``[start, stop]`` or the half-open interval ``[start, stop)``
+        (depending on whether `endpoint` is True or False).
+
+    Raises
+    ------
+    TypeError
+        Raised if start or stop is not a float or a pdarray, or if num
+        is not an int, or if endpoint is not a bool, or if dtype is anything
+        other than None or float64, or axis is not an integer.
+    ValueError
+        Raised if axis is not a valid axis for the given data.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.revised_linspace(0,1,3)
+    array([0.00000000000000000 0.5 1.00000000000000000])
+    >>> ak.revised_linspace(1,0,3)
+    array([1.00000000000000000 0.5 0.00000000000000000])
+    >>> ak.revised_linspace(0,1,3,endpoint=False)
+    array([0.00000000000000000 0.33333333333333331 0.66666666666666663])
+    >>> pstart = ak.array([1,2])
+    >>> pstop = ak.array([5,6])
+    >>> ak.revised_linspace(0,pstop,5)
+    array([array([0.00000000000000000 0.00000000000000000]) array([1.25 1.5])
+        array([2.5 3.00000000000000000]) array([3.75 4.5])
+        array([5.00000000000000000 6.00000000000000000])])
+    >>> ak.revised_linspace(pstart,7,5)
+    array([array([1.00000000000000000 2.00000000000000000]) array([2.5 3.25])
+         array([4.00000000000000000 4.5]) array([5.5 5.75])
+         array([7.00000000000000000 7.00000000000000000])])
+    >>> ak.revised_linspace(pstart,pstop,3,axis=1)
+         array([array([1.00000000000000000 3.00000000000000000 5.00000000000000000])
+                array([2.00000000000000000 4.00000000000000000 6.00000000000000000])])
+
+    """
+
+    from arkouda.numeric import transpose
+    from arkouda.numpy.util import broadcast_dims
+
+    #   The code below creates a command string for revised_linspace_vv, revised_linspace_vs,
+    #   revised_linspace_sv or revised_linspace_ss, based on start and stop.
+    #   start and stop are also converted to floats, and broadcast to a common shape if
+    #   necessary.
+
+    if isinstance(start, pdarray):
+        start = start.astype(float64)
+    if isinstance(stop, pdarray):
+        stop = stop.astype(float64)
+
+    if isinstance(start, pdarray) and isinstance(stop, pdarray):
+        #  they must be broadcast to a matching shape
+        cmdstring = f"revised_linspace_vv<{start.ndim}>"
+        if start.shape != stop.shape:
+            #    start_ = start.astype(float64)
+            #    stop_ = stop.astype(float64)
+            # else:
+            newshape = broadcast_dims(start.shape, stop.shape)
+            start = broadcast_to_shape(start, newshape)
+            stop = broadcast_to_shape(stop, newshape)
+
+    else:
+        # start_ = start
+        # stop_ = stop
+
+        if isinstance(start, pdarray) and np.isscalar(stop):
+            #    start_ = start.astype(float64)
+            #    stop_ = float(stop)
+            cmdstring = f"revised_linspace_vs<{start.ndim}>"
+
+        elif isinstance(stop, pdarray) and np.isscalar(start):
+            #    start_ = float(start)
+            #    stop_ = stop.astype(float64)
+            cmdstring = f"revised_linspace_sv<{stop.ndim}>"
+
+        elif np.isscalar(start) and np.isscalar(stop):  # both are scalars
+            #    start_ = float(start)
+            #    stop_ = float(stop)
+            cmdstring = "revised_linspace_ss"
+
+        else:
+            raise ValueError("This should be unreachable.")
+
+    repMsg = generic_msg(
+        cmd=cmdstring,
+        # args={"start": start_, "stop": stop_, "num": num, "endpoint": endpoint},
+        args={"start": start, "stop": stop, "num": num, "endpoint": endpoint},
+    )
+
+    # Handle the axis parameter if needed
+
+    result = create_pdarray(repMsg)
+    if axis != 0:
+        Good, axis_ = _axis_validation(axis, result.ndim)
+        if not Good:
+            raise ValueError(f"{axis} is not a valid axis for the result of revised_linspace.")
+        axes = list(range(result.ndim))
+        axes[axis_] = 0
+        axes[0] = axis_
+        result = transpose(result, tuple(axes))
+
+    return result
 
 
 @typechecked
