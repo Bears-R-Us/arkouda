@@ -93,6 +93,7 @@
 <li class="toctree-l1"><a class="reference internal" href="compat/eq-22/ArkoudaSortCompat.html">ArkoudaSortCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/eq-22/ArkoudaSparseMatrixCompat.html">ArkoudaSparseMatrixCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/eq-22/ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registry/RegistrationConfig.html">RegistrationConfig</a></li>
 </ul>
 
         </div>
@@ -425,6 +426,16 @@ returns either the memMax if set or a percentage of the physical memory per loca
 <dd><p>check used + amount is over the memory limit
 throw error if we would go over the limit</p>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ServerConfig.arrayDimIsSupported">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">arrayDimIsSupported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">dim:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">param</span></em><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#ServerConfig.arrayDimIsSupported" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ServerConfig.arrayElmTypeIsSupported">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">arrayElmTypeIsSupported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">eltType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">param</span></em><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#ServerConfig.arrayElmTypeIsSupported" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerConfig.string.splitMsgToTuple">

@@ -93,6 +93,7 @@
 <li class="toctree-l1"><a class="reference internal" href="compat/eq-22/ArkoudaSortCompat.html">ArkoudaSortCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/eq-22/ArkoudaSparseMatrixCompat.html">ArkoudaSparseMatrixCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compat/eq-22/ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registry/RegistrationConfig.html">RegistrationConfig</a></li>
 </ul>
 
         </div>
@@ -211,6 +212,23 @@ Returns a string of info for the sym entry that is mapped to the provided name.<
 <dt class="sig sig-object chpl" id="MsgProcessing.getconfigMsg">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getconfigMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.getconfigMsg" title="Link to this definition">¶</a></dt>
 <dd><p>query server configuration…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reqMsg</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – request containing (cmd)</p></li>
+<li><p><strong>st</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">borrowed</span> <span class="pre">SymTab</span></code></span> – SymTab to act on</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>MsgTuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MsgProcessing.getRegistrationConfig">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getRegistrationConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MsgProcessing.getRegistrationConfig" title="Link to this definition">¶</a></dt>
+<dd><p>query server registration config - registration-config.json</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

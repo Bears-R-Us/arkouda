@@ -1,0 +1,41 @@
+.. default-domain:: chpl
+
+.. module:: RegistrationConfig
+
+RegistrationConfig
+==================
+**Usage**
+
+.. code-block:: chapel
+
+   use RegistrationConfig;
+
+
+or
+
+.. code-block:: chapel
+
+   import RegistrationConfig;
+
+.. data:: param registrationConfigSpec: string
+
+   This param contains verbatim the contents of `registration-config.json`
+   that were used when building Arkouda. 
+
+.. data:: param arrayDimensionsStr: string
+
+   This param string contains a list of array dimensions requested in
+   `registration-config.json`. For example: "1," or "1,2,3,". 
+
+.. type:: type arrayDimensionsTy
+
+   This type indicates, implicitly, what array ranks were requensted in
+   `registration-config.json`. For example: `(1*nothing,)` if just rank=1
+   or `(1*nothing, 2*nothing, 3*nothing)` if it requested ranks 1, 2, and 3. 
+
+.. type:: type arrayElementsTy
+
+   This is a tuple type each component of which is an array element type
+   requested in `registration-config.json`. For example: `(int, bigint, real)`
+   if `int`, `bigint`, and `real` were requested. 
+

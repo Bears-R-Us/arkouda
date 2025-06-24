@@ -231,6 +231,10 @@ arkouda server config param and config const
    throw error if we would go over the limit
    
 
+.. function:: proc arrayDimIsSupported(param dim: int) param: bool
+
+.. function:: proc arrayElmTypeIsSupported(type eltType) param: bool
+
 .. method:: proc string.splitMsgToTuple(param numChunks: int)
 
 .. method:: proc string.splitMsgToTuple(sep: string, param numChunks: int)

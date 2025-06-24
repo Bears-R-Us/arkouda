@@ -92,6 +92,20 @@ or
    :returns: MsgTuple
     
 
+.. function:: proc getRegistrationConfig(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+
+    
+   query server registration config - registration-config.json
+   
+   :arg reqMsg: request containing (cmd)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: MsgTuple
+    
+
 .. function:: proc getmemusedMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
 
     
