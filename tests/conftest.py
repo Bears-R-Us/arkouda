@@ -57,6 +57,13 @@ def pytest_addoption(parser):
         help="Directory to store temporary files.",
     )
 
+    parser.addoption(
+        "--skip_doctest",
+        action="store",
+        default="False",
+        help="Set to True to skip doctest-related tests",
+    )
+
 
 def pytest_collection_modifyitems(config, items):
     if config.getoption("--optional-parquet"):
@@ -66,6 +73,12 @@ def pytest_collection_modifyitems(config, items):
     for item in items:
         if "optional_parquet" in item.keywords:
             item.add_marker(skip_parquet)
+
+    if config.getoption("--skip_doctest").lower() == "true":
+        skip_marker = pytest.mark.skip(reason="skipped due to --skip_doctest")
+        for item in items:
+            if "docstrings" in item.name.lower():
+                item.add_marker(skip_marker)
 
 
 def _get_test_locales(config):
