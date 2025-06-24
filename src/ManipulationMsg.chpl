@@ -452,9 +452,9 @@ module ManipulationMsg {
   proc expandDimsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
 
-    if array_nd == MaxArrayDims {
+    if ! arrayDimIsSupported(array_nd+1) {
       const errMsg = "Cannot expand arrays with rank %i, as this would result an an array with rank %i".format(array_nd, array_nd+1) +
-                     ", exceeding the server's configured maximum of %i. ".format(MaxArrayDims) +
+                     " that is not included in the server's configured ranks: " + arrayDimensionsStr + "." +
                      "Please update the configuration and recompile to support higher-dimensional arrays.";
       mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
       return new MsgTuple(errMsg,MsgType.ERROR);
@@ -903,9 +903,9 @@ module ManipulationMsg {
   proc stackMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
 
-    if array_nd == MaxArrayDims {
+    if ! arrayDimIsSupported(array_nd+1) {
       const errMsg = "Cannot stack arrays with rank %i, as this would result an an array with rank %i".format(array_nd, array_nd+1) +
-                     ", exceeding the server's configured maximum of %i. ".format(MaxArrayDims) +
+                     " that is not included in the server's configured ranks: " + arrayDimensionsStr + "." +
                      "Please update the configuration and recompile to support higher-dimensional arrays.";
       mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
       return new MsgTuple(errMsg,MsgType.ERROR);

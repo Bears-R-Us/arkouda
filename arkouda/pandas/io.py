@@ -2127,8 +2127,10 @@ def save_checkpoint(name="", path=".akdata", mode: str = "overwrite"):
     """
     from arkouda.client import generic_msg
 
-    if mode not in ("overwrite", "error"):
-        raise ValueError("mode can be 'overwrite' or 'error' not {}".format(mode))
+    legal_modes = ["overwrite", "error", "preserve_previous"]
+    if mode not in legal_modes:
+        allowed = '", "'.join(legal_modes)
+        raise ValueError(f'invalid checkpointing mode "{mode}"; allowed modes are: "{allowed}"')
 
     return cast(str, generic_msg(cmd="save_checkpoint", args={"name": name, "path": path, "mode": mode}))
 

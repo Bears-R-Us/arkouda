@@ -1223,21 +1223,9 @@ def register_commands(config, source_files):
         "module Commands {",
         "use CommandMap, IOUtils, Message, MultiTypeSymbolTable, MultiTypeSymEntry;",
         "use BigInteger;",
-        watermarkConfig(config),
     ]
 
     stamps += extract_enum_imports(config)
-
-    stamps.append(
-        """proc getRegistrationConfig(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
-        return new MsgTuple(getRegConfig(), MsgType.NORMAL);
-    }"""
-    )
-
-    stamps.append(
-        "proc getRegConfig(): string throws do return try! regConfig;"
-        "\nregisterFunction('getRegistrationConfig', getRegistrationConfig, 'Commands', 68);"
-    )
 
     count = 0
 
@@ -1357,9 +1345,29 @@ def register_commands(config, source_files):
         if found_annotation:
             stamps.extend(file_stamps)
 
-    stamps.append("}")
+    stamps.append("}  // module Commands")
 
     return ("\n\n".join(stamps) + "\n", count)
+
+
+def make_reg_config_module(config):
+    arr_dims = config["parameter_classes"]["array"]["nd"]
+    arr_elts = config["parameter_classes"]["array"]["dtype"]
+    dims_str = ",".join(str(dim) for dim in arr_dims)
+    dims_ty = " ".join(f"{dim}*nothing," for dim in arr_dims)
+    elts_ty = " ".join(f"{dim}," for dim in arr_elts)
+
+    stamps = [
+        "module RegistrationConfig {",
+        "use BigInteger;",
+        watermarkConfig(config),
+        f"param arrayDimensionsStr = '{dims_str}';\n"
+        f"type arrayDimensionsTy = ({dims_ty});\n"
+        f"type arrayElementsTy   = ({elts_ty});",
+        "}  // module RegistrationConfig",
+        "",  # for an empty line between this and the other module
+    ]
+    return "\n\n".join(stamps)
 
 
 def getModuleFiles(config, src_dir):
@@ -1373,15 +1381,17 @@ def getModuleFiles(config, src_dir):
 
 
 def watermarkConfig(config):
-    return 'param regConfig = """\n' + json.dumps(config, indent=2) + '\n""";'
+    return 'param registrationConfigSpec = """\n' + json.dumps(config, indent=2) + '\n""";'
 
 
 def main():
     config = json.load(open(sys.argv[1]))
     source_files = getModuleFiles(sys.argv[2], sys.argv[3])
     (chpl_src, n) = register_commands(config, source_files)
+    reg_config = make_reg_config_module(config)
 
     with open(sys.argv[3] + "/registry/Commands.chpl", "w") as f:
+        f.write(reg_config)
         f.write(chpl_src.replace("\t", "  "))
 
     print("registered ", n, " commands from ", len(source_files), " modules")
