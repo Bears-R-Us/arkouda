@@ -143,15 +143,15 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
     >>> import arkouda.array_api as xp
     >>> x = xp.asarray(ak.array([1, 2, 4, 7, 0]))
     >>> xp.diff(x)
-    [ 1,  2,  3, -7]
+    Arkouda Array ((4,), int64)[1 2 3 -7]
     >>> xp.diff(x, n=2)
-    [  1,   1, -10]
+    Arkouda Array ((3,), int64)[1 1 -10]
 
     >>> x = xp.asarray(ak.array([[1, 3, 6, 10], [0, 5, 6, 8]]))
     >>> xp.diff(x)
-    [[2, 3, 4], [5, 1, 2]]
+    Arkouda Array ((2, 3), int64)[[2 3 4] [5 1 2]]
     >>> xp.diff(x, axis=0)
-    array([[-1,  2,  0, -2]])
+    Arkouda Array ((1, 4), int64)[[-1 2 0 -2]]
 
     """
     from arkouda.numpy.pdarrayclass import diff
@@ -216,27 +216,27 @@ def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: 
 
     Examples
     --------
-    >>> import arkouda as ak
+    >>> from arkouda import array_api as xp
     >>> y = xp.asarray(ak.array([1, 2, 3]))
 
     Use the trapezoidal rule on evenly spaced points:
     >>> xp.trapz(y)
-    4.0
+    Arkouda Array ((), float64)4.0
 
     The spacing between sample points can be selected by either the
     ``x`` or ``dx`` arguments:
 
     >>> x = xp.asarray(ak.array([4, 6, 8]))
     >>> xp.trapz(y, x)
-    8.0
+    Arkouda Array ((), float64)8.0
     >>> xp.trapz(y, dx=2.0)
-    8.0
+    Arkouda Array ((), float64)8.0
 
     Using a decreasing ``x`` corresponds to integrating in reverse:
 
     >>> x = xp.asarray(ak.array([8, 6, 4]))
     >>> xp.trapz(y, x)
-    -8.0
+    Arkouda Array ((), float64)-8.0
 
     More generally ``x`` is used to integrate along a parametric curve. We can
     estimate the integral :math:`\int_0^1 x^2 = 1/3` using:
@@ -244,25 +244,25 @@ def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: 
     >>> x = xp.linspace(0, 1, num=50)
     >>> y = x**2
     >>> xp.trapz(y, x)
-    0.3334027488546439...
+    Arkouda Array ((), float64)0.333402748854643...
 
     Or estimate the area of a circle, noting we repeat the sample which closes
     the curve:
 
     >>> theta = xp.linspace(0, 2 * xp.pi, num=1000, endpoint=True)
     >>> xp.trapz(xp.cos(theta), x=xp.sin(theta))
-    3.14157194137584...
+    Arkouda Array ((), float64)3.14157194137584...
 
     ``np.trapz`` can be applied along a specified axis to do multiple
     computations in one call:
 
     >>> a = xp.asarray(ak.arange(6).reshape(2, 3))
     >>> a
-    [[0, 1, 2], [3, 4, 5]]
+    Arkouda Array ((2, 3), int64)[[0 1 2] [3 4 5]]
     >>> xp.trapz(a, axis=0)
-    [1.5, 2.5, 3.5]
+    Arkouda Array ((3,), float64)[1.5 2.5 3.5]
     >>> xp.trapz(a, axis=1)
-    [2.0,  8.0]
+    Arkouda Array ((2,), float64)[2.0 8.0]
 
     """
     # Implementation is the same as Numpy's implementation of trapezoid
