@@ -12,13 +12,14 @@ from pandas import to_datetime, to_timedelta
 
 from arkouda.numpy.dtypes import int64, int_scalars, intTypes, isSupportedInt
 from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import from_series
 
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarraycreation import from_series
 else:
     generic_msg = TypeVar("generic_msg")
+    from_series = TypeVar("from_series")
 
 __all__ = [
     "Datetime",
@@ -99,6 +100,7 @@ class _AbstractBaseTime(pdarray):
 
     def __init__(self, pda, unit: str = _BASE_UNIT):
         from arkouda.numpy import cast as akcast
+        from arkouda.numpy.pdarraycreation import from_series
 
         if isinstance(pda, Datetime) or isinstance(pda, Timedelta):
             self.unit: str = pda.unit

@@ -55,6 +55,20 @@ from arkouda.numpy.imports import (
 from arkouda.numpy.lib import add_docstring, add_newdoc, emath
 from arkouda.numpy.char import bool_, character, int_, integer, object_, str_
 from arkouda.numpy.ctypeslib import integer
+from arkouda.numpy.alignment import (
+    NonUniqueError,
+    align,
+    find,
+    in1d_intervals,
+    interval_lookup,
+    is_cosorted,
+    left_align,
+    lookup,
+    right_align,
+    search_intervals,
+    unsqueeze,
+    zero_up,
+)
 from arkouda.numpy.dtypes import (
     ARKOUDA_SUPPORTED_DTYPES,
     ARKOUDA_SUPPORTED_INTS,
