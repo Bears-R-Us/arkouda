@@ -7,15 +7,20 @@ from typeguard import check_type, typechecked
 
 from arkouda.numpy.dtypes import bigint, dtype, float64, int64, int_scalars, uint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import array, zeros
-from arkouda.numpy.strings import Strings
 
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarraycreation import array, zeros
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
+    
+    
 else:
     generic_msg = TypeVar("generic_msg")
+    array = TypeVar("array")
+    zeros = TypeVar("zeros")
+    Strings = TypeVar("Strings")
     Categorical = TypeVar("Categorical")
 
 

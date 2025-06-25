@@ -59,17 +59,22 @@ from typeguard import typechecked
 from arkouda.numpy.dtypes import bitType, intTypes, isSupportedInt
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
-from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, zeros
-from arkouda.numpy.strings import Strings
+from arkouda.numpy.pdarraycreation import create_pdarray
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
 
 
 if TYPE_CHECKING:
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import where as akwhere
+    from arkouda.numpy.pdarraycreation import arange, array, zeros
+    from arkouda.numpy.strings import Strings
 else:
     akcast = TypeVar("akcast")
     akwhere = TypeVar("akwhere")
+    arange = TypeVar("arange")
+    array = TypeVar("array")
+    zeros = TypeVar("zeros")
+    Strings = TypeVar("Strings")
 
 __all__ = [
     "BitVector",

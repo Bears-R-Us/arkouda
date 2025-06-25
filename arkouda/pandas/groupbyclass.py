@@ -69,18 +69,26 @@ from arkouda.numpy.dtypes import float_scalars
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
-from arkouda.numpy.pdarraycreation import arange, full
+from arkouda.numpy.pdarrayclass import (
+    RegistrationError,
+    create_pdarray,
+    is_sorted,
+    pdarray,
+)
 from arkouda.numpy.random import default_rng
 from arkouda.numpy.sorting import argsort, sort
-from arkouda.numpy.strings import Strings
-
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
     from arkouda.pandas.categorical import Categorical
+    from arkouda.numpy.pdarraycreation import arange, full
+    from arkouda.numpy.strings import Strings
 else:
     generic_msg = TypeVar("generic_msg")
+    Categorical = TypeVar("Categorical")
+    arange = TypeVar("arange")
+    full = TypeVar("full")
+    Strings = TypeVar("Strings")
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES", "groupable"]
 
