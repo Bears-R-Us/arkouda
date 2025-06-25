@@ -207,7 +207,7 @@ def in1d(
 
     ak.in1d is not supported for bool or float64 pdarrays
     """
-    from arkouda.alignment import NonUniqueError
+    from arkouda.numpy.alignment import NonUniqueError
     from arkouda.pandas.categorical import Categorical as Categorical_
 
     ua: groupable
@@ -333,7 +333,7 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
         elif isinstance(query, pdarray) and not isinstance(space, pdarray):
             raise TypeError("If query is pdarray, space must also be pdarray")
 
-    from arkouda.alignment import find as akfind
+    from arkouda.numpy.alignment import find as akfind
 
     found = akfind(query, space, all_occurrences=True, remove_missing=True)
     return found if isinstance(found, pdarray) else found.values

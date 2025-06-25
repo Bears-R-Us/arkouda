@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Callable, Optional, Sequence, Tuple, TypeVar, 
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.alignment import right_align
+from arkouda.numpy.alignment import right_align
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import resolve_scalar_dtype
