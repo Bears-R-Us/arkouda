@@ -410,20 +410,6 @@ from arkouda.dataframe import (
     merge,
 )
 from arkouda.index import Index, MultiIndex
-from arkouda.alignment import (
-    NonUniqueError,
-    align,
-    find,
-    in1d_intervals,
-    interval_lookup,
-    is_cosorted,
-    left_align,
-    lookup,
-    right_align,
-    search_intervals,
-    unsqueeze,
-    zero_up,
-)
 from arkouda.plotting import hist_all, plot_dist
 from arkouda.accessor import (
     CachedAccessor,

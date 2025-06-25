@@ -24,7 +24,9 @@ def make_ak_arrays(size, dtype, minimum=-(2**32), maximum=2**32):
 
 def assert_cosorted(arr_list, perm):
     arrays = [arr[perm] for arr in arr_list]
-    assert ak.is_cosorted(arrays)
+    # Here
+    # HELP, i have to force the import here???
+    assert ak.numpy.alignment.is_cosorted(arrays)
 
 
 class TestCoargsort:
@@ -138,7 +140,7 @@ class TestCoargsort:
     @pytest.mark.parametrize("dtype1", NUMERIC_TYPES)
     @pytest.mark.parametrize("dtype2", NUMERIC_TYPES)
     def test_coargsort_numeric(self, ascending, dtype1, dtype2):
-        from arkouda.alignment import is_cosorted
+        from arkouda.numpy.alignment import is_cosorted
         from arkouda.numpy.manipulation_functions import flip
 
         size = 100

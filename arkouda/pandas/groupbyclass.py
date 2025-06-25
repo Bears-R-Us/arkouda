@@ -70,17 +70,21 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
-from arkouda.numpy.pdarraycreation import arange, full
 from arkouda.numpy.random import default_rng
 from arkouda.numpy.sorting import argsort, sort
-from arkouda.numpy.strings import Strings
 
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarraycreation import arange, full
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
 else:
     generic_msg = TypeVar("generic_msg")
+    Categorical = TypeVar("Categorical")
+    arange = TypeVar("arange")
+    full = TypeVar("full")
+    Strings = TypeVar("Strings")
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES", "groupable"]
 
@@ -444,6 +448,7 @@ class GroupBy:
             If an unsupported or unknown data type is encountered during reconstruction.
 
         """
+        from arkouda.numpy.strings import Strings
         from arkouda.pandas.categorical import Categorical as Categorical_
 
         data = json.loads(rep_msg)
@@ -1367,6 +1372,8 @@ class GroupBy:
         return k, cast(pdarray, v)
 
     def _nested_grouping_helper(self, values: groupable) -> groupable:
+        from arkouda.numpy.pdarraycreation import arange
+
         unique_key_idx = self.broadcast(arange(self.ngroups), permute=True)
         if hasattr(values, "_get_grouping_keys"):
             # All single-array groupable types must have a _get_grouping_keys method
@@ -1852,6 +1859,8 @@ class GroupBy:
                 The most common value of each group
 
         """
+        from arkouda.numpy.pdarraycreation import arange
+
         togroup = self._nested_grouping_helper(values)
         # Get value counts for each key group
         g = GroupBy(togroup)
@@ -1940,6 +1949,7 @@ class GroupBy:
         from arkouda.client import generic_msg
         from arkouda.numpy import cast as akcast
         from arkouda.numpy import round as akround
+        from arkouda.numpy.pdarraycreation import full
 
         if frac is not None and n is not None:
             raise ValueError("Please enter a value for `frac` OR `n`, not both")
@@ -2064,7 +2074,9 @@ class GroupBy:
 
         """
         from arkouda import Categorical
+        from arkouda.numpy.pdarraycreation import arange
         from arkouda.numpy.segarray import SegArray
+        from arkouda.numpy.strings import Strings
 
         if isinstance(values, (Strings, Categorical)) or (
             isinstance(values, Sequence) and any([isinstance(v, (Strings, Categorical)) for v in values])
@@ -2163,7 +2175,11 @@ class GroupBy:
 
         """
         from arkouda.client import generic_msg
+        from arkouda.numpy.pdarraycreation import arange
+        from arkouda.numpy.strings import Strings
 
+        if not isinstance(values, (pdarray, Strings)):
+            raise TypeError("values must be a pdarray or Strings")
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
         is_str = isinstance(values, Strings)
@@ -2281,6 +2297,7 @@ class GroupBy:
         """
         from arkouda import Categorical
         from arkouda.client import generic_msg
+        from arkouda.numpy.strings import Strings
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -2471,6 +2488,8 @@ def broadcast(
 
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarraycreation import arange
+    from arkouda.numpy.strings import Strings
 
     if segments.size != values.size:
         raise ValueError("segments and values arrays must be same size")
