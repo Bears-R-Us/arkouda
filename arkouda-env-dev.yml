@@ -60,3 +60,4 @@ dependencies:
     - pydoclint[flake8]==0.6.6
     - docstr-coverage
     - numba
+    - pytest-html

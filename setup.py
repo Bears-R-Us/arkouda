@@ -210,6 +210,7 @@ setup(
             "pytest-subtests",
             "numba",
             "pytest-timeout",
+            "pytest-html",
         ],
     },
     # replace original install command with version that also builds
