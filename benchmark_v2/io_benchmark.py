@@ -1,4 +1,5 @@
 import os
+import shutil
 from glob import glob
 
 import pytest
@@ -13,12 +14,13 @@ COMPRESSIONS = (None, "snappy", "gzip", "brotli", "zstd", "lz4")
 
 def _write_files(a, ftype, dtype, compression=None):
     for i in range(pytest.io_files):
+        fname = f"{_build_prefix(ftype, dtype, compression)}_{i:04}"
         (
-            a.to_hdf(f"{pytest.io_path}_hdf_{dtype}_{i:04}")
+            a.to_hdf(fname)
             if ftype == "HDF5"
             else to_parquet(
                 [a],
-                f"{pytest.io_path}_par_{compression}_{dtype}_{i:04}",
+                fname,
                 compression=compression,
             )
         )
@@ -68,6 +70,18 @@ def _generate_df(N, dtype, returnDict=False):
         "c_5": _generate_array(N, dtype),
     }
     return df_dict if returnDict else ak.DataFrame(df_dict)
+
+
+def _build_prefix(ftype: str, dtype: str, compression=None, multi=False, append=False):
+    base = f"{pytest.io_path}_"
+    if ftype == "HDF5":
+        return base + f"hdf_{dtype}"
+    if multi:
+        path = base + f"par_multi_{compression}_{dtype}"
+        if append:
+            path += "_app"
+        return path
+    return base + f"par_{compression}_{dtype}"
 
 
 @pytest.mark.skip_correctness_only(True)
@@ -302,7 +316,13 @@ def bench_delete(benchmark):
 
 def _remove_files():
     for f in glob(pytest.io_path + "*"):
-        os.remove(f)
+        try:
+            if os.path.isdir(f):
+                shutil.rmtree(f)
+            else:
+                os.remove(f)
+        except Exception as e:
+            print(f"Warning: Could not delete {f}: {e}")
 
 
 def _remove_append_test_files(compression, dtype):
