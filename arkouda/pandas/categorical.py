@@ -68,11 +68,9 @@ from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_, str_sc
 from arkouda.numpy.pdarrayclass import RegistrationError
 from arkouda.numpy.pdarrayclass import all as akall
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import arange, array, ones, zeros, zeros_like
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort
 from arkouda.numpy.sorting import sort as pda_sort
-from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, unique
 
 
@@ -80,15 +78,19 @@ if TYPE_CHECKING:
     from arkouda.client import generic_msg
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import where
-    from arkouda.numpy.sorting import SortingAlgorithm
+    from arkouda.numpy.pdarraycreation import arange, array, ones, zeros, zeros_like
+    from arkouda.numpy.strings import Strings
+
 else:
     generic_msg = TypeVar("generic_msg")
     akcast = TypeVar("akcast")
     where = TypeVar("where")
-    from enum import Enum
-
-    class SortingAlgorithm(Enum):
-        RadixSortLSD = "RadixSortLSD"
+    arange = TypeVar("arange")
+    array = TypeVar("array")
+    ones = TypeVar("ones")
+    zeros = TypeVar("zeros")
+    zeros_like = TypeVar("zeros_like")
+    Strings = TypeVar("Strings")
 
 
 __all__ = ["Categorical"]

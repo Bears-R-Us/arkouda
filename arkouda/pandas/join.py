@@ -8,7 +8,7 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import resolve_scalar_dtype
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraysetops import concatenate, in1d
-from arkouda.numpy.strings import Strings
+from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
 
 
@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from arkouda.numpy import cumsum
     from arkouda.numpy.alignment import right_align
     from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
+    from arkouda.numpy.strings import Strings
 else:
     generic_msg = TypeVar("generic_msg")
     cumsum = TypeVar("cumsum")
@@ -25,6 +26,7 @@ else:
     array = TypeVar("array")
     ones = TypeVar("ones")
     zeros = TypeVar("zeros")
+    Strings = TypeVar("Strings")
 
 __all__ = ["join_on_eq_with_dt", "gen_ranges", "compute_join_size"]
 
