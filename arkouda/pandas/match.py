@@ -62,6 +62,44 @@ MatchType = Enum("MatchType", ["SEARCH", "MATCH", "FULLMATCH"])
 
 
 class Match:
+    """
+    Encapsulates regular expression match results on Arkouda segmented string arrays.
+
+    Created by calling `search()`, `match()`, or `fullmatch()` on a `Strings` object. Provides access
+    to match booleans, span information, capture groups, and origin indices of matches.
+
+    Attributes
+    ----------
+    re : str
+        Regex pattern used.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+    >>> m = strings.search('_+')
+    >>> m
+    <ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4);
+    matched=False; matched=True, span=(0, 2); matched=False>
+    >>> type(m)
+    <class 'arkouda.pandas.match.Match'>
+    >>> m.matched()
+    array([True True False True False])
+    >>> m.start()
+    array([1 0 0])
+    >>> m.end()
+    array([2 4 2])
+    >>> m.match_type()
+    'SEARCH'
+    >>> m.re
+    '_+'
+    >>> m[1]
+    'matched=True, span=(0, 4)'
+
+    """
+
+    re: str
+
     def __init__(
         self,
         matched: pdarray,
@@ -84,6 +122,15 @@ class Match:
         self.re = pattern
 
     def __str__(self):
+        """
+        Return a string representation of the match object, previewing match status and spans.
+
+        Returns
+        -------
+        str
+            Human-readable summary of match objects and spans.
+
+        """
         from arkouda.client import pdarrayIterThresh
 
         if self._matched.size <= pdarrayIterThresh:
@@ -95,6 +142,20 @@ class Match:
         return f"<ak.{self._objtype} object: {'; '.join(vals)}>"
 
     def __getitem__(self, item):
+        """
+        Return a summary string for the match at a given index.
+
+        Parameters
+        ----------
+        item : int
+            Index of the match to describe.
+
+        Returns
+        -------
+        str
+            Description of whether the item matched, and its span if it did.
+
+        """
         return (
             f"matched={self._matched[item]}, span=({self._starts[self._indices[item]]}"
             f", {self._ends[self._indices[item]]})"
@@ -103,6 +164,15 @@ class Match:
         )
 
     def __repr__(self):
+        """
+        Return the formal string representation of the Match object.
+
+        Returns
+        -------
+        str
+            Same as __str__ for now.
+
+        """
         return self.__str__()
 
     def matched(self) -> pdarray:
