@@ -1198,6 +1198,7 @@ def revised_linspace(
 
     """
 
+    from arkouda.client import generic_msg
     from arkouda.numeric import transpose
     from arkouda.numpy.util import broadcast_dims
 
@@ -1206,49 +1207,44 @@ def revised_linspace(
     #   start and stop are also converted to floats, and broadcast to a common shape if
     #   necessary.
 
-    if isinstance(start, pdarray):
-        start = start.astype(float64)
-    if isinstance(stop, pdarray):
-        stop = stop.astype(float64)
+    start_ = start
+    stop_ = stop
 
-    if isinstance(start, pdarray) and isinstance(stop, pdarray):
+    if isinstance(start_, pdarray):
+        start_ = start_.astype(float64)
+    if isinstance(stop_, pdarray):
+        stop_ = stop_.astype(float64)
+
+    if isinstance(start_, pdarray) and isinstance(stop_, pdarray):
         #  they must be broadcast to a matching shape
         cmdstring = f"revised_linspace_vv<{start.ndim}>"
-        if start.shape != stop.shape:
-            #    start_ = start.astype(float64)
-            #    stop_ = stop.astype(float64)
-            # else:
-            newshape = broadcast_dims(start.shape, stop.shape)
-            start = broadcast_to_shape(start, newshape)
-            stop = broadcast_to_shape(stop, newshape)
+        if start_.shape != stop_.shape:
+        #    start_ = start.astype(float64)
+        #    stop_ = stop.astype(float64)
+        #else:
+            newshape = broadcast_dims(start_.shape, stop_.shape)
+            start_ = broadcast_to_shape(start_, newshape)
+            stop_ = broadcast_to_shape(stop_, newshape)
 
     else:
-        # start_ = start
-        # stop_ = stop
 
         if isinstance(start, pdarray) and np.isscalar(stop):
-            #    start_ = start.astype(float64)
-            #    stop_ = float(stop)
-            cmdstring = f"revised_linspace_vs<{start.ndim}>"
+            stop_ = float(stop)
+            cmdstring = f"revised_linspace_vs<{start_.ndim}>"
 
         elif isinstance(stop, pdarray) and np.isscalar(start):
-            #    start_ = float(start)
-            #    stop_ = stop.astype(float64)
-            cmdstring = f"revised_linspace_sv<{stop.ndim}>"
+            start_ = float(start_)
+            cmdstring = f"revised_linspace_sv<{stop_.ndim}>"
 
         elif np.isscalar(start) and np.isscalar(stop):  # both are scalars
-            #    start_ = float(start)
-            #    stop_ = float(stop)
+            start_ = float(start_)
+            stop_ = float(stop_)
             cmdstring = "revised_linspace_ss"
 
         else:
-            raise ValueError("This should be unreachable.")
+            raise TypeError("Invalid inputs to revised_linspace.")
 
-    repMsg = generic_msg(
-        cmd=cmdstring,
-        # args={"start": start_, "stop": stop_, "num": num, "endpoint": endpoint},
-        args={"start": start, "stop": stop, "num": num, "endpoint": endpoint},
-    )
+    repMsg = generic_msg(cmd=cmdstring,args={"start": start_, "stop": stop_, "num": num, "endpoint": endpoint})
 
     # Handle the axis parameter if needed
 
