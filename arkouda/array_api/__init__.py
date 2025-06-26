@@ -31,6 +31,7 @@ from .data_type_functions import (
     iinfo,
     result_type,
 )
+from .diff_functions import gradient
 
 from ._dtypes import (
     int8,
