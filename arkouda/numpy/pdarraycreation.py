@@ -1219,15 +1219,14 @@ def revised_linspace(
         #  they must be broadcast to a matching shape
         cmdstring = f"revised_linspace_vv<{start.ndim}>"
         if start_.shape != stop_.shape:
-        #    start_ = start.astype(float64)
-        #    stop_ = stop.astype(float64)
-        #else:
+            #    start_ = start.astype(float64)
+            #    stop_ = stop.astype(float64)
+            # else:
             newshape = broadcast_dims(start_.shape, stop_.shape)
             start_ = broadcast_to_shape(start_, newshape)
             stop_ = broadcast_to_shape(stop_, newshape)
 
     else:
-
         if isinstance(start, pdarray) and np.isscalar(stop):
             stop_ = float(stop)
             cmdstring = f"revised_linspace_vs<{start_.ndim}>"
@@ -1244,7 +1243,9 @@ def revised_linspace(
         else:
             raise TypeError("Invalid inputs to revised_linspace.")
 
-    repMsg = generic_msg(cmd=cmdstring,args={"start": start_, "stop": stop_, "num": num, "endpoint": endpoint})
+    repMsg = generic_msg(
+        cmd=cmdstring, args={"start": start_, "stop": stop_, "num": num, "endpoint": endpoint}
+    )
 
     # Handle the axis parameter if needed
 

@@ -145,7 +145,7 @@ module SequenceMsg {
         for (del,sta, sto) in zip (delta,start,stop) {
             del = (sto - sta) / divisor;
         }
-        overMemLimit(16*num*start.size);
+        overMemLimit(8*num*start.size);
 
         var result = makeDistArray((...revised_linspace_shape(start.shape,num)),real);
         if d.rank == 1 {
