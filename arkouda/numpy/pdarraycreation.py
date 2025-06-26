@@ -1202,9 +1202,8 @@ def logspace(
     >>> ak.logspace(pstart,pstop,3,4,axis=1)
     array([array([4.00000000000000000 64.00000000000000000 1024.00000000000000000])
            array([16.00000000000000000 256.00000000000000000 4096.00000000000000000])])
-
-    docstring to follow
     """
+
     return base ** linspace(start, stop, num, endpoint=endpoint, dtype=None, axis=axis)
 
 
