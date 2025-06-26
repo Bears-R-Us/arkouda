@@ -24,11 +24,7 @@ from arkouda.numpy.dtypes import (
     bigint,
 )
 from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import (
-    float64,
-    get_byteorder,
-    get_server_byteorder,
-)
+from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import (
     int_scalars,
@@ -63,6 +59,7 @@ __all__ = [
     "full_like",
     "arange",
     "linspace",
+    "logspace",
     "revised_linspace",
     "randint",
     "uniform",
@@ -1118,9 +1115,102 @@ def arange(
 
 
 @typechecked
+def logspace(
+    start: Union[numeric_scalars, pdarray],
+    stop: Union[numeric_scalars, pdarray],
+    num: int_scalars = 50,
+    base: numeric_scalars = 10.0,
+    endpoint: Union[None, bool] = True,
+    dtype: Union[None, float64] = None,
+    axis: Union[None, int_scalars] = 0,
+) -> pdarray:
+    """
+    Create a pdarray of numbers evenly spaced on a log scale.
+
+    Parameters
+    ----------
+    start : Union[float_scalars, pdarray]
+        The starting value of the sequence.
+    stop : Union[float_scalars, pdarray]
+        The end value of the sequence, unless `endpoint` is set to False.
+        In that case, the sequence consists of all but the last of ``num + 1``
+        evenly spaced samples, so that `stop` is excluded.  Note that the step
+        size changes when `endpoint` is False.
+    num : int, optional
+        Number of samples to generate. Default is 50. Must be non-negative.
+    base : numeric_scalars, optional
+        the base of the log space, defaults to 10.0.
+    endpoint : bool, optional
+    dtype : Union[None, float64]
+        allowed for compatibility with numpy, but ignored.  Outputs are always float
+    axis : int, optional
+        The axis in the result to store the samples.  Relevant only if start
+        or stop are array-like.  By default (0), the samples will be along a
+        new axis inserted at the beginning. Use -1 to get an axis at the end.
+
+    Returns
+    -------
+    pdarray
+        There are `num` equally spaced (logarithmically) samples in the closed interval
+        base**``[start, stop]`` or the half-open interval base**``[start, stop)``
+        (depending on whether `endpoint` is True or False).
+
+    Raises
+    ------
+    TypeError
+        Raised if start or stop is not a float or a pdarray, or if num
+        is not an int, or if endpoint is not a bool, or if dtype is anything
+        other than None or float64, or axis is not an integer.
+    ValueError
+        Raised if axis is not a valid axis for the given data.
+
+    See Also
+    --------
+    linspace
+
+    Notes
+    -----
+    If start is greater than stop, the pdarray values are generated
+    in descending order.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.logspace(2,3,3,4)
+    array([16.00000000000000000 32.00000000000000000 64.00000000000000000])
+    >>> ak.logspace(2,3,3,4,endpoint=False)
+    array([16.00000000000000000 25.398416831491197 40.317473596635935])
+    >>> ak.logspace(0,1,3,4)
+    array([1.00000000000000000 2.00000000000000000 4.00000000000000000])
+    >>> ak.logspace(1,0,3,4)
+    array([4.00000000000000000 2.00000000000000000 1.00000000000000000])
+    >>> ak.logspace(0,1,3,endpoint=False)
+    array([1.00000000000000000 2.1544346900318838 4.6415888336127784])
+    >>> pstart = ak.array([1,2])
+    >>> pstop = ak.array([5,6])
+    >>> ak.logspace(0,pstop,5,2)
+    array([array([1.00000000000000000 1.00000000000000000])
+           array([2.3784142300054421 2.8284271247461903])
+           array([5.6568542494923806 8.00000000000000000])
+           array([13.454342644059432 22.627416997969522])
+           array([32.00000000000000000 64.00000000000000000])])
+    >>> ak.logspace(pstart,7,5,2)
+    array([array([2.00000000000000000 4.00000000000000000])
+           array([5.6568542494923806 9.5136569200217682])
+           array([16.00000000000000000 22.627416997969522])
+           array([45.254833995939045 53.817370576237728])
+           array([128.00000000000000000 128.00000000000000000])])
+    >>> ak.logspace(pstart,pstop,3,4,axis=1)
+    array([array([4.00000000000000000 64.00000000000000000 1024.00000000000000000])
+           array([16.00000000000000000 256.00000000000000000 4096.00000000000000000])])
+
+    docstring to follow
+    """
+    return base ** revised_linspace(start, stop, num, endpoint=endpoint, dtype=None, axis=axis)
+
+
+@typechecked
 def revised_linspace(
-    # start: Union[float_scalars, pdarray],
-    # stop: Union[float_scalars, pdarray],
     start: Union[numeric_scalars, pdarray],
     stop: Union[numeric_scalars, pdarray],
     num: int_scalars = 50,
