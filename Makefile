@@ -774,7 +774,7 @@ print-%:
 size=100
 skip_doctest="False"
 test-python:
-	python3 -m pytest -c pytest.ini --size=$(size) $(ARKOUDA_PYTEST_OPTIONS) --skip_doctest=$(skip_doctest)
+	python3 -m pytest -c pytest.ini --size=$(size) $(ARKOUDA_PYTEST_OPTIONS) --skip_doctest=$(skip_doctest) --html=.pytest/report.html --self-contained-html
 	python3 -m pytest -c pytest.opts.ini --size=$(size) $(ARKOUDA_PYTEST_OPTIONS)
 
 CLEAN_TARGETS += test-clean
