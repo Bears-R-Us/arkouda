@@ -801,62 +801,22 @@ class TestPdarrayCreation:
             assert (full_like_arr == 1).all()
             assert full_like_arr.size == ran_arr.size
 
-    def test_linspace(self):
-        pda = ak.linspace(0, 100, 1000)
-        assert 1000 == len(pda)
-        assert float == pda.dtype
-        assert isinstance(pda, ak.pdarray)
-        assert (pda.to_ndarray() == np.linspace(0, 100, 1000)).all()
-
-        pda = ak.linspace(start=5, stop=0, length=6)
-        assert 5.0000 == pda[0]
-        assert 0.0000 == pda[5]
-        assert (pda.to_ndarray() == np.linspace(5, 0, 6)).all()
-
-        pda = ak.linspace(start=5.0, stop=0.0, length=6)
-        assert 5.0000 == pda[0]
-        assert 0.0000 == pda[5]
-        assert (pda.to_ndarray() == np.linspace(5.0, 0.0, 6)).all()
-
-        pda = ak.linspace(start=float(5.0), stop=float(0.0), length=np.int64(6))
-        assert 5.0000 == pda[0]
-        assert 0.0000 == pda[5]
-        assert (pda.to_ndarray() == np.linspace(float(5.0), float(0.0), np.int64(6))).all()
-
-        with pytest.raises(TypeError):
-            ak.linspace(0, "100", 1000)
-
-        with pytest.raises(TypeError):
-            ak.linspace("0", 100, 1000)
-
-        with pytest.raises(TypeError):
-            ak.linspace(0, 100, "1000")
-
-        # Test that int_scalars covers uint8, uint16, uint32
-        int_arr = ak.linspace(0, 100, (1000 % 256))
-        for args in [
-            (np.uint8(0), np.uint16(100), np.uint32(1000 % 256)),
-            (np.uint32(0), np.uint8(100), np.uint16(1000 % 256)),
-            (np.uint16(0), np.uint32(100), np.uint8(1000 % 256)),
-        ]:
-            assert (int_arr == ak.linspace(*args)).all()
-
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_revised_linspace_1D(self, size):
-        pda = ak.revised_linspace(0, 100, size)
+    def test_linspace_1D(self, size):
+        pda = ak.linspace(0, 100, size)
         nda = np.linspace(0, 100, size)
         assert size == len(pda)
         assert float == pda.dtype
         assert isinstance(pda, ak.pdarray)
         assert_almost_equivalent(pda, nda)
 
-        pda = ak.revised_linspace(start=5, stop=0, num=6)
+        pda = ak.linspace(start=5, stop=0, num=6)
         nda = np.linspace(start=5, stop=0, num=6)
         assert 5.0000 == pda[0]
         assert 0.0000 == pda[5]
         assert_almost_equivalent(pda, nda)
 
-        pda = ak.revised_linspace(start=5, stop=0, num=6, endpoint=False)
+        pda = ak.linspace(start=5, stop=0, num=6, endpoint=False)
         nda = np.linspace(5, 0, 6, endpoint=False)
         assert 5.0000 == pda[0]
         assert 0.0000 != pda[5]
@@ -864,16 +824,16 @@ class TestPdarrayCreation:
 
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_revised_linspace_2D(self, size):
+    def test_linspace_2D(self, size):
         pedge = ak.array([4, 5])
-        pda = ak.revised_linspace(0, pedge, size)
+        pda = ak.linspace(0, pedge, size)
         nda = np.linspace(0, pedge.to_ndarray(), size)
         assert 2 * size == pda.size
         assert float == pda.dtype
         assert isinstance(pda, ak.pdarray)
         assert_almost_equivalent(pda, nda)
 
-        pda = ak.revised_linspace(pedge, 10, size)
+        pda = ak.linspace(pedge, 10, size)
         nda = np.linspace(pedge.to_ndarray(), 10, size)
         assert 2 * size == pda.size
         assert float == pda.dtype
@@ -882,12 +842,12 @@ class TestPdarrayCreation:
 
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_revised_linspace_3D(self, size):
+    def test_linspace_3D(self, size):
         # without having to broadcast shapes
 
         p_lo = ak.array([4, 5])
         p_hi = ak.array([7, 20])
-        pda = ak.revised_linspace(p_lo, p_hi, size)
+        pda = ak.linspace(p_lo, p_hi, size)
         nda = np.linspace(p_lo.to_ndarray(), p_hi.to_ndarray(), size)
         assert 2 * size == pda.size
         assert float == pda.dtype
@@ -897,7 +857,7 @@ class TestPdarrayCreation:
         # with broadcasting start and stop to common shape
 
         p_hi = ak.array([[7, 8], [9, 10]])
-        pda = ak.revised_linspace(p_lo, p_hi, size)
+        pda = ak.linspace(p_lo, p_hi, size)
         nda = np.linspace(p_lo.to_ndarray(), p_hi.to_ndarray(), size)
         assert 4 * size == pda.size
         assert float == pda.dtype
@@ -905,17 +865,17 @@ class TestPdarrayCreation:
         assert_almost_equivalent(pda, nda)
 
     # note to reviewers: test_compare_linspace doesn't really cover any ground that's not covered
-    # above, so I'm not repeating it for revised_linspace.
+    # above, so I'm not repeating it for linspace.
 
-    @pytest.mark.parametrize("start", [0, 0.5, 2])
-    @pytest.mark.parametrize("stop", [50, 101])
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_compare_linspace(self, size, start, stop):
-        # create np version
-        a = np.linspace(start, stop, size)
-        # create ak version
-        b = ak.linspace(start, stop, size)
-        assert np.allclose(a, b.to_ndarray())
+    #    at pytest.mark.parametrize("start", [0, 0.5, 2])
+    #    at pytest.mark.parametrize("stop", [50, 101])
+    #    at pytest.mark.parametrize("size", pytest.prob_size)
+    #    def test_compare_linspace(self, size, start, stop):
+    # create np version
+    #        a = np.linspace(start, stop, size)
+    # create ak version
+    #        b = ak.linspace(start, stop, size)
+    #        assert np.allclose(a, b.to_ndarray())
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_logspace_1D(self, size):

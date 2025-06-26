@@ -47,7 +47,7 @@ module SequenceMsg {
     //  ss means both inputs are scalar.
 
     @arkouda.registerCommand()
-    proc revised_linspace_ss(start : real, stop : real, num : int, endpoint: bool) : [] real throws {
+    proc linspace_ss(start : real, stop : real, num : int, endpoint: bool) : [] real throws {
 
         var divisor = if endpoint then num - 1 else num;
         var delta = (stop - start) / divisor;
@@ -63,7 +63,7 @@ module SequenceMsg {
 
     // This proc returns a shape equal to the input shape prepended with the value an_int
 
-    proc revised_linspace_shape(a_shape : ?N*int, an_int : int) : (N + 1) * int {
+    proc linspace_shape(a_shape : ?N*int, an_int : int) : (N + 1) * int {
         var shapeOut : (N+1)*int ;
         shapeOut[0] = an_int;
         for i in 0..<N do shapeOut[i+1] = a_shape[i];
@@ -73,7 +73,7 @@ module SequenceMsg {
     //  sv means start is scalar, and stop is vector.
 
     @arkouda.registerCommand()
-    proc revised_linspace_sv(start : real, stop : [?d] real, num : int, endpoint: bool) : [] real throws {
+    proc linspace_sv(start : real, stop : [?d] real, num : int, endpoint: bool) : [] real throws {
 
         var divisor = if endpoint then num - 1 else num;
         var delta : [d] real;
@@ -82,7 +82,7 @@ module SequenceMsg {
         }
         overMemLimit(8*num*stop.size);
 
-        var result = makeDistArray((...revised_linspace_shape(stop.shape,num)),real);
+        var result = makeDistArray((...linspace_shape(stop.shape,num)),real);
         if d.rank == 1 {
             for idx in d {
                 for j in 0..#num {
@@ -105,7 +105,7 @@ module SequenceMsg {
     //  vs means start is vector, and stop is scalar.
 
     @arkouda.registerCommand()
-    proc revised_linspace_vs(start : [?d] real, stop : real, num : int, endpoint: bool) : [] real throws {
+    proc linspace_vs(start : [?d] real, stop : real, num : int, endpoint: bool) : [] real throws {
 
         var divisor = if endpoint then num - 1 else num;
         var delta : [d] real;
@@ -114,7 +114,7 @@ module SequenceMsg {
         }
         overMemLimit(8*num*start.size);
 
-        var result = makeDistArray((...revised_linspace_shape(start.shape,num)),real);
+        var result = makeDistArray((...linspace_shape(start.shape,num)),real);
         if d.rank == 1 {
             for idx in d {
                 for j in 0..#num {
@@ -138,7 +138,7 @@ module SequenceMsg {
     //  compatible shape before the chapel code is invoked.
 
     @arkouda.registerCommand()
-    proc revised_linspace_vv(start : [?d] real, stop : [d] real, num : int, endpoint: bool) : [] real throws {
+    proc linspace_vv(start : [?d] real, stop : [d] real, num : int, endpoint: bool) : [] real throws {
 
         var divisor = if endpoint then num - 1 else num;
         var delta : [d] real;
@@ -147,7 +147,7 @@ module SequenceMsg {
         }
         overMemLimit(8*num*start.size);
 
-        var result = makeDistArray((...revised_linspace_shape(start.shape,num)),real);
+        var result = makeDistArray((...linspace_shape(start.shape,num)),real);
         if d.rank == 1 {
             for idx in d {
                 for j in 0..#num {

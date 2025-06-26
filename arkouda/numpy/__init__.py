@@ -260,7 +260,6 @@ from arkouda.numpy.pdarraycreation import (
     full_like,
     linspace,
     logspace,
-    revised_linspace,
     ones,
     ones_like,
     promote_to_common_dtype,

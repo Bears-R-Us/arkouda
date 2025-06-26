@@ -223,7 +223,6 @@ from arkouda.numpy import (
     lib,
     linspace,
     logspace,
-    revised_linspace,
     log,
     log10,
     log1p,

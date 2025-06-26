@@ -60,7 +60,6 @@ __all__ = [
     "arange",
     "linspace",
     "logspace",
-    "revised_linspace",
     "randint",
     "uniform",
     "standard_normal",
@@ -1206,11 +1205,11 @@ def logspace(
 
     docstring to follow
     """
-    return base ** revised_linspace(start, stop, num, endpoint=endpoint, dtype=None, axis=axis)
+    return base ** linspace(start, stop, num, endpoint=endpoint, dtype=None, axis=axis)
 
 
 @typechecked
-def revised_linspace(
+def linspace(
     start: Union[numeric_scalars, pdarray],
     stop: Union[numeric_scalars, pdarray],
     num: int_scalars = 50,
@@ -1267,23 +1266,23 @@ def revised_linspace(
     Examples
     --------
     >>> import arkouda as ak
-    >>> ak.revised_linspace(0,1,3)
+    >>> ak.linspace(0,1,3)
     array([0.00000000000000000 0.5 1.00000000000000000])
-    >>> ak.revised_linspace(1,0,3)
+    >>> ak.linspace(1,0,3)
     array([1.00000000000000000 0.5 0.00000000000000000])
-    >>> ak.revised_linspace(0,1,3,endpoint=False)
+    >>> ak.linspace(0,1,3,endpoint=False)
     array([0.00000000000000000 0.33333333333333331 0.66666666666666663])
     >>> pstart = ak.array([1,2])
     >>> pstop = ak.array([5,6])
-    >>> ak.revised_linspace(0,pstop,5)
+    >>> ak.linspace(0,pstop,5)
     array([array([0.00000000000000000 0.00000000000000000]) array([1.25 1.5])
         array([2.5 3.00000000000000000]) array([3.75 4.5])
         array([5.00000000000000000 6.00000000000000000])])
-    >>> ak.revised_linspace(pstart,7,5)
+    >>> ak.linspace(pstart,7,5)
     array([array([1.00000000000000000 2.00000000000000000]) array([2.5 3.25])
          array([4.00000000000000000 4.5]) array([5.5 5.75])
          array([7.00000000000000000 7.00000000000000000])])
-    >>> ak.revised_linspace(pstart,pstop,3,axis=1)
+    >>> ak.linspace(pstart,pstop,3,axis=1)
          array([array([1.00000000000000000 3.00000000000000000 5.00000000000000000])
                 array([2.00000000000000000 4.00000000000000000 6.00000000000000000])])
 
@@ -1293,8 +1292,8 @@ def revised_linspace(
     from arkouda.numeric import transpose
     from arkouda.numpy.util import broadcast_dims
 
-    #   The code below creates a command string for revised_linspace_vv, revised_linspace_vs,
-    #   revised_linspace_sv or revised_linspace_ss, based on start and stop.
+    #   The code below creates a command string for linspace_vv, linspace_vs,
+    #   linspace_sv or linspace_ss, based on start and stop.
     #   start and stop are also converted to floats, and broadcast to a common shape if
     #   necessary.
 
@@ -1317,25 +1316,24 @@ def revised_linspace(
     #   we're dealing with.
 
     if isinstance(start_, pdarray) and isinstance(stop_, pdarray):
-        # cmdstring = f"revised_linspace_vv<{start_.ndim}>"
         #  they must be broadcast to a matching shape
         if start_.shape != stop_.shape:
             newshape = broadcast_dims(start_.shape, stop_.shape)
             start_ = broadcast_to_shape(start_, newshape)
             stop_ = broadcast_to_shape(stop_, newshape)
-            cmdstring = f"revised_linspace_vv<{len(newshape)}>"
+            cmdstring = f"linspace_vv<{len(newshape)}>"
         else:
-            cmdstring = f"revised_linspace_vv<{start_.ndim}>"
+            cmdstring = f"linspace_vv<{start_.ndim}>"
 
     else:
         if isinstance(start_, pdarray) and np.isscalar(stop_):
-            cmdstring = f"revised_linspace_vs<{start_.ndim}>"
+            cmdstring = f"linspace_vs<{start_.ndim}>"
 
         elif isinstance(stop_, pdarray) and np.isscalar(start_):
-            cmdstring = f"revised_linspace_sv<{stop_.ndim}>"
+            cmdstring = f"linspace_sv<{stop_.ndim}>"
 
         else:  # both are scalars
-            cmdstring = "revised_linspace_ss"
+            cmdstring = "linspace_ss"
 
     repMsg = generic_msg(
         cmd=cmdstring, args={"start": start_, "stop": stop_, "num": num, "endpoint": endpoint}
@@ -1347,68 +1345,13 @@ def revised_linspace(
     if axis != 0:
         Good, axis_ = _axis_validation(axis, result.ndim)
         if not Good:
-            raise ValueError(f"{axis} is not a valid axis for the result of revised_linspace.")
+            raise ValueError(f"{axis} is not a valid axis for the result of linspace.")
         axes = list(range(result.ndim))
         axes[axis_] = 0
         axes[0] = axis_
         result = transpose(result, tuple(axes))
 
     return result
-
-
-@typechecked
-def linspace(start: numeric_scalars, stop: numeric_scalars, length: int_scalars) -> pdarray:
-    """
-    Create a pdarray of linearly-spaced floats in a closed interval.
-
-    Parameters
-    ----------
-    start : numeric_scalars
-        Start of interval (inclusive)
-    stop : numeric_scalars
-        End of interval (inclusive)
-    length : int_scalars
-        Number of points
-
-    Returns
-    -------
-    pdarray
-        Array of evenly spaced float values along the interval
-
-    Raises
-    ------
-    TypeError
-        Raised if start or stop is not a float or int or if length is not an int
-
-    See Also
-    --------
-    arange
-
-    Notes
-    -----
-    If that start is greater than stop, the pdarray values are generated
-    in descending order.
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.linspace(0, 1, 5)
-    array([0.00000000000000000 0.25 0.5 0.75 1.00000000000000000])
-
-    >>> ak.linspace(start=1, stop=0, length=5)
-    array([1.00000000000000000 0.75 0.5 0.25 0.00000000000000000])
-
-    >>> ak.linspace(start=-5, stop=0, length=5)
-    array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000])
-    """
-    from arkouda.client import generic_msg
-
-    if not isSupportedNumber(start) or not isSupportedNumber(stop):
-        raise TypeError("both start and stop must be an int, np.int64, float, or np.float64")
-    if not isSupportedNumber(length):
-        raise TypeError("length must be an int or int64")
-    repMsg = generic_msg(cmd="linspace", args={"start": start, "stop": stop, "len": length})
-    return create_pdarray(repMsg)
 
 
 @typechecked
