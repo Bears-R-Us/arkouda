@@ -883,11 +883,23 @@ class TestPdarrayCreation:
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_revised_linspace_3D(self, size):
+        # without having to broadcast shapes
+
         p_lo = ak.array([4, 5])
         p_hi = ak.array([7, 20])
         pda = ak.revised_linspace(p_lo, p_hi, size)
         nda = np.linspace(p_lo.to_ndarray(), p_hi.to_ndarray(), size)
         assert 2 * size == pda.size
+        assert float == pda.dtype
+        assert isinstance(pda, ak.pdarray)
+        assert_almost_equivalent(pda, nda)
+
+        # with broadcasting start and stop to common shape
+
+        p_hi = ak.array([[7, 8], [9, 10]])
+        pda = ak.revised_linspace(p_lo, p_hi, size)
+        nda = np.linspace(p_lo.to_ndarray(), p_hi.to_ndarray(), size)
+        assert 4 * size == pda.size
         assert float == pda.dtype
         assert isinstance(pda, ak.pdarray)
         assert_almost_equivalent(pda, nda)

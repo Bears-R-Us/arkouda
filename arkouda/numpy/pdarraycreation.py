@@ -26,7 +26,6 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import (
     float64,
-    float_scalars,
     get_byteorder,
     get_server_byteorder,
 )
@@ -1120,8 +1119,10 @@ def arange(
 
 @typechecked
 def revised_linspace(
-    start: Union[float_scalars, pdarray],
-    stop: Union[float_scalars, pdarray],
+    # start: Union[float_scalars, pdarray],
+    # stop: Union[float_scalars, pdarray],
+    start: Union[numeric_scalars, pdarray],
+    stop: Union[numeric_scalars, pdarray],
     num: int_scalars = 50,
     endpoint: Union[None, bool] = True,
     dtype: Union[None, float64] = None,
@@ -1210,38 +1211,41 @@ def revised_linspace(
     start_ = start
     stop_ = stop
 
+    #   Make sure everything's a float.
+
     if isinstance(start_, pdarray):
         start_ = start_.astype(float64)
+    elif isinstance(start_, int):
+        start_ = float(start_)
+
     if isinstance(stop_, pdarray):
         stop_ = stop_.astype(float64)
+    elif isinstance(stop_, int):
+        stop_ = float(stop_)
+
+    #   Determine which of vector-vector, vector-scalar, scalar-vector or scalar-scalar
+    #   we're dealing with.
 
     if isinstance(start_, pdarray) and isinstance(stop_, pdarray):
+        # cmdstring = f"revised_linspace_vv<{start_.ndim}>"
         #  they must be broadcast to a matching shape
-        cmdstring = f"revised_linspace_vv<{start.ndim}>"
         if start_.shape != stop_.shape:
-            #    start_ = start.astype(float64)
-            #    stop_ = stop.astype(float64)
-            # else:
             newshape = broadcast_dims(start_.shape, stop_.shape)
             start_ = broadcast_to_shape(start_, newshape)
             stop_ = broadcast_to_shape(stop_, newshape)
+            cmdstring = f"revised_linspace_vv<{len(newshape)}>"
+        else:
+            cmdstring = f"revised_linspace_vv<{start_.ndim}>"
 
     else:
-        if isinstance(start, pdarray) and np.isscalar(stop):
-            stop_ = float(stop)
+        if isinstance(start_, pdarray) and np.isscalar(stop_):
             cmdstring = f"revised_linspace_vs<{start_.ndim}>"
 
-        elif isinstance(stop, pdarray) and np.isscalar(start):
-            start_ = float(start_)
+        elif isinstance(stop_, pdarray) and np.isscalar(start_):
             cmdstring = f"revised_linspace_sv<{stop_.ndim}>"
 
-        elif np.isscalar(start) and np.isscalar(stop):  # both are scalars
-            start_ = float(start_)
-            stop_ = float(stop_)
+        else:  # both are scalars
             cmdstring = "revised_linspace_ss"
-
-        else:
-            raise TypeError("Invalid inputs to revised_linspace.")
 
     repMsg = generic_msg(
         cmd=cmdstring, args={"start": start_, "stop": stop_, "num": num, "endpoint": endpoint}
