@@ -11,24 +11,30 @@ SEARCHES = {
 
 
 @pytest.mark.skip_correctness_only(True)
-@pytest.mark.parametrize("s", SEARCHES)
-def bench_substring_search(benchmark, s):
-    cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
+@pytest.mark.skip_numpy(True)
+@pytest.mark.benchmark(group="Arkouda_Strings_SubstringSearch")
+@pytest.mark.parametrize("arg", SEARCHES)
+def bench_strings_contains(benchmark, arg):
+    N = pytest.prob_size * ak.get_config()["numLocales"]
+    seed = pytest.seed
 
-    start = ak.random_strings_uniform(minlen=1, maxlen=8, size=N, seed=pytest.seed)
-    end = ak.random_strings_uniform(minlen=1, maxlen=8, size=N, seed=pytest.seed)
+    search_string = arg[0]
+    use_regex = bool(arg[1])
+
+    start = ak.random_strings_uniform(minlen=1, maxlen=8, size=N, seed=seed)
+    end = ak.random_strings_uniform(minlen=1, maxlen=8, size=N, seed=seed)
 
     # each string in test_substring contains '1 string 1' with random strings before and after
-    test_substring = start.stick(end, delimiter="1 string 1")
-    nbytes = test_substring.nbytes * test_substring.entry.itemsize
+    a = start.stick(end, delimiter="1 string 1")
 
-    benchmark.pedantic(test_substring.contains, args=SEARCHES[s], rounds=pytest.trials)
+    def run():
+        a.contains(search_string, regex=bool(use_regex))
+        return a.nbytes
 
-    benchmark.extra_info["description"] = (
-        "Measure the performance of regex and non-regex substring searches."
-    )
-    benchmark.extra_info["problem_size"] = pytest.prob_size
+    num_bytes = benchmark.pedantic(run, rounds=pytest.trials)
+    benchmark.extra_info["description"] = f"Measures substring search performance (regex={use_regex})"
+    benchmark.extra_info["problem_size"] = N
+    benchmark.extra_info["backend"] = "Arkouda"
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (nbytes / benchmark.stats["mean"]) / 2**30
+        (num_bytes / benchmark.stats["mean"]) / 2**30
     )
