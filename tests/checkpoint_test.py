@@ -33,11 +33,19 @@ def cp_test_base_tmp(request):
 
 
 class TestCheckpoint:
+    @pytest.mark.skipif(
+        os.environ.get("CHPL_HOST_PLATFORM") == "hpe-apollo",
+        reason="skipped on CHPL_HOST_PLATFORM=hpe-apollo - login/compute file system access unreliable"
+    )
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", ["int64", "float64", "bool"])
     def test_checkpoint(self, prob_size, dtype):
+        rmtree(".akdata", ignore_errors=True)  # start from clean
+        val2 = 2 if dtype != "bool" else True
+        val3 = 3 if dtype != "bool" else False
+
         arr = ak.zeros(prob_size, dtype)
-        arr[2] = 2 if dtype != "bool" else True
+        arr[2] = val2
 
         cp_name = ak.save_checkpoint()
 
@@ -48,13 +56,13 @@ class TestCheckpoint:
             assert path.isdir(expected_dir)
             assert path.isfile(path.join(expected_dir, "server.md"))
 
-            arr[3] = 3 if dtype != "bool" else False
+            arr[3] = val3
 
             # should overwrite the value
             ak.load_checkpoint(cp_name)
 
             assert arr[3] == 0
-            assert arr[2] == (2 if dtype != "bool" else True)
+            assert arr[2] == val2
             assert arr.dtype == dtype
 
         finally:
