@@ -1,3 +1,44 @@
+"""
+Matching utilities for Arkouda arrays.
+
+The `arkouda.matcher` module provides functions for efficiently aligning,
+matching, and comparing Arkouda arrays. These tools are used internally to
+support operations such as joins, merges, and reindexing across arrays,
+particularly when working with categorical or structured data.
+
+Functions in this module generally operate on one or more `pdarray` or
+`Categorical` inputs and return index mappings or boolean masks indicating
+matches or relationships between datasets.
+
+Features
+--------
+- Index resolution for join operations
+- Efficient value-matching across large arrays
+- Support for type-aware and multi-column matching
+- Underpins DataFrame merge, Series alignment, and MultiIndex comparisons
+
+Typical Use Cases
+-----------------
+- Determining where values from one array appear in another
+- Generating permutation indices for aligning arrays
+- Supporting categorical equivalence testing
+
+Notes
+-----
+- Functions in this module are primarily intended for internal use in
+  `arkouda.pandas`-style functionality.
+- Most functions assume inputs are distributed `pdarray`, `Strings`, or
+  `Categorical` types with compatible shapes and data types.
+
+See Also
+--------
+- arkouda.join
+- arkouda.groupbyclass
+- arkouda.pandas.merge
+- arkouda.categorical.Categorical
+
+"""
+
 import json
 import re
 from typing import TYPE_CHECKING, TypeVar, cast
