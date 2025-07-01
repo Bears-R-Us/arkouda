@@ -296,7 +296,7 @@ module SortMsg
 
       if x2Sorted && x1.size >= numLocales {
         // If x2 is already sorted, we can use the fast version
-        writeln("Fast searchSorted path taken");
+        sortLogger.info("Fast searchSorted path taken");
         return searchSortedFast(x1, x2, side);
       }
       return searchSortedSlow(x1, x2, side);
