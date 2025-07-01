@@ -53,6 +53,15 @@ class TestArkoudaArray:
         na = arr.isna()
         assert ak.all(na == False)
 
+    def test_isna_with_nan(self):
+        from arkouda.testing import assert_equal
+
+        ak_data = ak.array([1, np.nan, 2])
+        arr = ArkoudaArray(ak_data)
+        na = arr.isna()
+        expected = ak.array([False, True, False])
+        assert_equal(na, expected)
+
     def test_copy(self):
         ak_data = ak.arange(10)
         arr = ArkoudaArray(ak_data)
@@ -76,6 +85,7 @@ class TestArkoudaArray:
         ak_data = ak.arange(5)
         arr = ArkoudaArray(ak_data)
         np_arr = arr.to_numpy()
+        # assert isinstance(np_arr, ak.pdarray)
         assert isinstance(np_arr, np.ndarray)
         assert np_arr.tolist() == [0, 1, 2, 3, 4]
 
@@ -83,7 +93,8 @@ class TestArkoudaArray:
         ak_data = ak.arange(10)
         arr = ArkoudaArray(ak_data)
         casted = arr.astype(np.float64)
-        assert isinstance(casted, np.ndarray)
+        assert isinstance(casted, ak.pdarray)
+        # assert isinstance(casted, np.ndarray)
         assert casted.dtype == np.float64
 
     def test_equals_true(self):
@@ -139,7 +150,7 @@ class TestArkoudaArray:
     def test_factorize(self):
         arr = ArkoudaArray(ak.array([1, 2, 1, 3]))
         codes, uniques = arr.factorize()
-        assert set(codes) == {0, 1, 2}
+        assert set(codes.tolist()) == {0, 1, 2}
         assert sorted(uniques.tolist()) == [1, 2, 3]
 
     def test_from_factorized(self):

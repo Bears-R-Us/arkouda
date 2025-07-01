@@ -4,7 +4,6 @@ from pandas.api.extensions import ExtensionArray, ExtensionDtype
 from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.numpy.pdarraycreation import full as ak_full
 from arkouda.numpy.pdarraycreation import pdarray
-from arkouda.numpy.pdarraycreation import zeros as ak_zeros
 from arkouda.numpy.pdarraysetops import concatenate as ak_concat
 from arkouda.pdarraycreation import array
 
@@ -78,8 +77,7 @@ class ArkoudaArray(ArkoudaBaseArray, ExtensionArray):
         elif isinstance(value, pdarray):
             pass
         elif isinstance(value, (int, float, bool)):  # Add scalar check
-            value = ak_full(1, value, dtype=self._data.dtype)
-            self._data[key] = value[0]  # assign scalar to scalar position
+            self._data[key] = value  # assign scalar to scalar position
             return
         else:
             value = ak_array(value)
@@ -87,11 +85,16 @@ class ArkoudaArray(ArkoudaBaseArray, ExtensionArray):
         self._data[key] = value
 
     def __len__(self):
-        return self._data.size
+        return self._data.__len__()
 
-    #   TODO:  Fix isna
-    def isna(self):
-        return ak_zeros(self._data.size, dtype=bool)
+    def isna(self) -> pdarray:
+        from arkouda.numpy import isnan
+        from arkouda.numpy.util import is_float
+
+        if not is_float(self._data):
+            return ak_full(self._data.size, False, dtype=bool)
+
+        return isnan(self._data)
 
     #   TODO:  use pdarray.copy()
     def copy(self):
@@ -107,12 +110,14 @@ class ArkoudaArray(ArkoudaBaseArray, ExtensionArray):
 
     def to_numpy(self, dtype=None, copy=False, na_value=np.nan):
         return self._data.to_ndarray()
+        # return ak_array(self._data)
 
     #   TODO:  fix this
     def astype(self, dtype, copy=True):
         if isinstance(dtype, ArkoudaDtype):
             return self if not copy else self.copy()
-        return self.to_numpy().astype(dtype)
+        return ak_array(self, dtype=dtype)
+        # return self.to_numpy().astype(dtype)
 
     def equals(self, other):
         if not isinstance(other, ArkoudaArray):
@@ -167,7 +172,9 @@ class ArkoudaArray(ArkoudaBaseArray, ExtensionArray):
 
         codes, uniques = pd.factorize(
             np.asarray(self.to_numpy()),
+            # np.asarray(self._data.to_ndarray()),
             sort=sort,
             use_na_sentinel=use_na_sentinel,
         )
+        # return ak_array(codes), ak_array(uniques)
         return codes, uniques

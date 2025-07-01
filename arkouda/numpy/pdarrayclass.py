@@ -2628,6 +2628,9 @@ class pdarray:
         else:
             return x.reshape(self.shape)
 
+    def tolist(self):
+        return self.to_list()
+
     def to_list(self) -> List[numeric_scalars]:
         """
         Convert the array to a list, transferring array data from the

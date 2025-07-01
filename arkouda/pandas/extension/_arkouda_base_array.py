@@ -20,7 +20,7 @@ class ArkoudaBaseArray(ExtensionArray):
     def __len__(self):
         return self._data.sizes
 
-    def take(self, indexer, fill_value=None, allow_fill=False):
+    def take(self, indexer, fill_value=None, allow_fill=False, axis=None):
         indexer = indexer.to_ndarray() if hasattr(indexer, "to_ndarray") else np.asarray(indexer)
 
         if allow_fill:

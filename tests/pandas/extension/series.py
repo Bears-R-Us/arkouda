@@ -73,7 +73,7 @@ class TestSeriesExtension:
         a = ArkoudaArray(ak.arange(10))
         s = pd.Series(a)
         sliced = s[2:5]
-        assert list(sliced.values.to_numpy()) == [2, 3, 4]
+        assert list(sliced.values._data.to_ndarray()) == [2, 3, 4]
 
     def test_series_sum_and_reductions(self):
         a = ArkoudaArray(ak.array([1, 2, 3]))
@@ -95,7 +95,7 @@ class TestSeriesExtension:
         a = ArkoudaArray(ak.array([10, 20, 30]))
         s = pd.Series(a)
         taken = s.take([2, 0])
-        assert list(taken.values.to_numpy()) == [30, 10]
+        assert list(taken.values._data.to_ndarray()) == [30, 10]
 
     def test_series_copy(self):
         a = ArkoudaArray(ak.array([5, 6]))
@@ -110,4 +110,4 @@ class TestSeriesExtension:
         s = pd.Series(arr)
         mask = np.array([False, True, True])
         result = s[mask]
-        assert list(result.to_numpy()) == [2, 3]
+        assert list(result.values.to_ndarray()) == [2, 3]
