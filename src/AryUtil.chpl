@@ -1027,12 +1027,22 @@ module AryUtil
         const ord = new orderer(d.shape);
         const lowOrd = ord.indexToOrder(low);
 
+        const high = ld.high;
+        var diff: [0..#a.rank] int;
+        diff[a.rank - 1] = 1;
+        forall i in 0..#(a.rank - 1) by -1 {
+          diff[i] = (high[i + 1] - low[i + 1]) * diff[i + 1];
+        }
+
         forall idx in ld with (
             in flatLocRanges
         ) {
 
           var ind = ord.indexToOrder(idx);
-          var i = ind - lowOrd;
+          var i = 0;
+          for j in 0..#a.rank by -1 {
+            i += diff[j] * (idx[j] - low[j]);
+          }
           var destLoc = 0;
           for (flr, locID) in zip(flatLocRanges, 0..<numLocales) {
             if flr.contains(ind) {
