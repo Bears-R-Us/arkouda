@@ -225,7 +225,7 @@ class TestOperator:
         # reproducer for issue #2802
         concatenated = ak.concatenate([ak.arange(5, max_bits=3), ak.arange(2**200 - 1, 2**200 + 4)])
         assert concatenated.max_bits == 3
-        assert [0, 1, 2, 3, 4, 7, 0, 1, 2, 3] == concatenated.to_list()
+        assert [0, 1, 2, 3, 4, 7, 0, 1, 2, 3] == concatenated.tolist()
 
     def test_fixed_concatenate(self):
         for pda1, pda2 in zip(
@@ -233,13 +233,13 @@ class TestOperator:
             (ak.arange(4, 7), ak.linspace(4, 6, 3)),
         ):
             ans = list(range(7))
-            assert ak.concatenate([pda1, pda2]).to_list() == ans
-            assert ak.concatenate([pda2, pda1]).to_list() == (ans[4:] + ans[:4])
+            assert ak.concatenate([pda1, pda2]).tolist() == ans
+            assert ak.concatenate([pda2, pda1]).tolist() == (ans[4:] + ans[:4])
 
     def test_invert(self):
         ak_invert = ~ak.arange(10, dtype=ak.uint64)
         np_invert = ~np.arange(10, dtype=np.uint)
-        assert ak_invert.to_list() == np_invert.tolist()
+        assert ak_invert.tolist() == np_invert.tolist()
 
     def test_bool_bool_addition_binop(self):
         np_x = np.array([True, True, False, False])
@@ -247,13 +247,13 @@ class TestOperator:
         ak_x = ak.array(np_x)
         ak_y = ak.array(np_y)
         # Vector-Vector Case
-        assert (np_x + np_y).tolist() == (ak_x + ak_y).to_list()
+        assert (np_x + np_y).tolist() == (ak_x + ak_y).tolist()
         # Scalar-Vector Case
-        assert (np_x[0] + np_y).tolist() == (ak_x[0] + ak_y).to_list()
-        assert (np_x[-1] + np_y).tolist() == (ak_x[-1] + ak_y).to_list()
+        assert (np_x[0] + np_y).tolist() == (ak_x[0] + ak_y).tolist()
+        assert (np_x[-1] + np_y).tolist() == (ak_x[-1] + ak_y).tolist()
         # Vector-Scalar Case
-        assert (np_x + np_y[0]).tolist() == (ak_x + ak_y[0]).to_list()
-        assert (np_x + np_y[-1]).tolist() == (ak_x + ak_y[-1]).to_list()
+        assert (np_x + np_y[0]).tolist() == (ak_x + ak_y[0]).tolist()
+        assert (np_x + np_y[-1]).tolist() == (ak_x + ak_y[-1]).tolist()
 
     def test_bool_bool_addition_opeq(self):
         np_x = np.array([True, True, False, False])
@@ -263,27 +263,27 @@ class TestOperator:
         np_x += np_y
         ak_x += ak_y
         # Vector-Vector Case
-        assert np_x.tolist() == ak_x.to_list()
+        assert np_x.tolist() == ak_x.tolist()
         # Scalar-Vector Case
         # True
         np_true = np_x[0]
         ak_true = ak_x[0]
         np_true += np_y
         ak_true += ak_y
-        assert np_x.tolist() == ak_x.to_list()
+        assert np_x.tolist() == ak_x.tolist()
         # False
         np_false = np_x[-1]
         ak_false = ak_x[-1]
         np_false += np_y
         ak_false += ak_y
-        assert np_x.tolist() == ak_x.to_list()
+        assert np_x.tolist() == ak_x.tolist()
 
     def test_uint_bool_binops(self):
         # Test fix for issue #1932
         # Adding support to binopvv to correctly handle uint and bool types
         ak_uint = ak.arange(10, dtype=ak.uint64)
         ak_bool = ak_uint % 2 == 0
-        assert (ak_uint + ak_bool).to_list() == (ak.arange(10) + ak_bool).to_list()
+        assert (ak_uint + ak_bool).tolist() == (ak.arange(10) + ak_bool).tolist()
 
     def test_int_uint_binops(self):
         np_int = np.arange(-5, 5)
@@ -382,12 +382,12 @@ class TestOperator:
                 assert np.allclose((ak_arr >> i).to_ndarray(), np_arr >> i)
 
             # Binopsv case
-            assert (max_bits << ak_shift).to_list() == (max_bits << np_shift).tolist()
-            assert (max_bits >> ak_shift).to_list() == (max_bits >> np_shift).tolist()
+            assert (max_bits << ak_shift).tolist() == (max_bits << np_shift).tolist()
+            assert (max_bits >> ak_shift).tolist() == (max_bits >> np_shift).tolist()
 
             # Binopvv case, Same type
-            assert (ak_arr << ak_shift).to_list() == (np_arr << np_shift).tolist()
-            assert (ak_arr >> ak_shift).to_list() == (np_arr >> np_shift).tolist()
+            assert (ak_arr << ak_shift).tolist() == (np_arr << np_shift).tolist()
+            assert (ak_arr >> ak_shift).tolist() == (np_arr >> np_shift).tolist()
 
     def test_shift_bool_int64_binop(self):
         # This tests for a missing implementation of bit shifting booleans and ints, Issue #2945
@@ -428,15 +428,15 @@ class TestOperator:
         ]
 
         for x in shift_scalars:
-            assert ak_vector.to_list() == np_vector.tolist()
+            assert ak_vector.tolist() == np_vector.tolist()
 
             ak_vector <<= x
             np_vector <<= x
-            assert ak_vector.to_list() == np_vector.tolist()
+            assert ak_vector.tolist() == np_vector.tolist()
 
             ak_vector >>= x
             np_vector >>= x
-            assert ak_vector.to_list() == np_vector.tolist()
+            assert ak_vector.tolist() == np_vector.tolist()
 
     def test_shift_equals_vector_binops(self):
         vector_pairs = [
@@ -457,15 +457,15 @@ class TestOperator:
                 if (v[0].dtype.kind != "b") and (ak_vector[0].dtype.kind != v[0].dtype.kind):
                     continue
 
-                assert ak_vector.to_list() == np_vector.tolist()
+                assert ak_vector.tolist() == np_vector.tolist()
 
                 ak_vector <<= v
                 np_vector <<= v.to_ndarray()
-                assert ak_vector.to_list() == np_vector.tolist()
+                assert ak_vector.tolist() == np_vector.tolist()
 
                 ak_vector >>= v
                 np_vector >>= v.to_ndarray()
-                assert ak_vector.to_list() == np_vector.tolist()
+                assert ak_vector.tolist() == np_vector.tolist()
 
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
@@ -478,11 +478,11 @@ class TestOperator:
             special_one, special_two = special_type(pda_one), special_type(pda_two)
             special_concat = ak.concatenate([special_one, special_two])
             assert isinstance(special_concat, special_type)
-            assert special_type(pda_concat).to_list() == special_concat.to_list()
+            assert special_type(pda_concat).tolist() == special_concat.tolist()
 
             # test single and empty
             assert isinstance(ak.concatenate([special_one]), special_type)
-            assert special_one.to_list() == ak.concatenate([special_one]).to_list()
+            assert special_one.tolist() == ak.concatenate([special_one]).tolist()
             assert isinstance(
                 ak.concatenate([special_type(ak.array([], dtype=ak.int64))]),
                 special_type,
@@ -491,7 +491,7 @@ class TestOperator:
             # verify ak.util.concatenate still works
             special_aku_concat = akuconcat([special_one, special_two])
             assert isinstance(special_aku_concat, special_type)
-            assert special_type(pda_concat).to_list() == special_aku_concat.to_list()
+            assert special_type(pda_concat).tolist() == special_aku_concat.tolist()
 
         # Test failure with mixed types
         with pytest.raises(TypeError):
@@ -524,22 +524,22 @@ class TestOperator:
         n = np.array([10, 5, 2])
         a = ak.array(n)
 
-        assert ak.power(a, 2).to_list() == np.power(n, 2).tolist()
-        assert ak.power(a, ak.array([2, 3, 4])).to_list() == np.power(n, [2, 3, 4]).tolist()
+        assert ak.power(a, 2).tolist() == np.power(n, 2).tolist()
+        assert ak.power(a, ak.array([2, 3, 4])).tolist() == np.power(n, [2, 3, 4]).tolist()
 
         # Test a singleton with and without a Boolean argument
         a = ak.array([7])
-        assert ak.power(a, 3, True).to_list() == ak.power(a, 3).to_list()
-        assert ak.power(a, 3, False).to_list() == a.to_list()
+        assert ak.power(a, 3, True).tolist() == ak.power(a, 3).tolist()
+        assert ak.power(a, 3, False).tolist() == a.tolist()
 
         # Test an with and without a Boolean argument, all the same
         a = ak.array([0, 0.0, 1, 7.0, 10])
-        assert ak.power(a, 3, ak.ones(5, bool)).to_list() == ak.power(a, 3).to_list()
-        assert ak.power(a, 3, ak.zeros(5, bool)).to_list() == a.to_list()
+        assert ak.power(a, 3, ak.ones(5, bool)).tolist() == ak.power(a, 3).tolist()
+        assert ak.power(a, 3, ak.zeros(5, bool)).tolist() == a.tolist()
 
         # Test a singleton with a mixed Boolean argument
         a = ak.arange(10)
-        assert [i if i % 2 else i**2 for i in range(10)] == ak.power(a, 2, a % 2 == 0).to_list()
+        assert [i if i % 2 else i**2 for i in range(10)] == ak.power(a, 2, a % 2 == 0).tolist()
 
         # Test invalid input, negative
         n = np.array([-1.0, -3.0])
@@ -557,7 +557,7 @@ class TestOperator:
 
         # Test with a mixed Boolean array
         a = ak.arange(5)
-        assert [i if i % 2 else i**0.5 for i in range(5)] == ak.sqrt(a, a % 2 == 0).to_list()
+        assert [i if i % 2 else i**0.5 for i in range(5)] == ak.sqrt(a, a % 2 == 0).tolist()
 
     def test_uint_and_bigint_operation_equals(self):
         def declare_arrays():
@@ -585,64 +585,64 @@ class TestOperator:
         # test uint opequals uint functionality against numpy
         for arr in u_arr, bi_arr, np_arr:
             arr += u
-        assert u_arr.to_list() == np_arr.tolist()
-        assert bi_arr.to_list() == np_arr.tolist()
+        assert u_arr.tolist() == np_arr.tolist()
+        assert bi_arr.tolist() == np_arr.tolist()
 
         for arr in u_arr, bi_arr, np_arr:
             arr += arr
-        assert u_arr.to_list() == np_arr.tolist()
-        assert bi_arr.to_list() == np_arr.tolist()
+        assert u_arr.tolist() == np_arr.tolist()
+        assert bi_arr.tolist() == np_arr.tolist()
 
         for arr in u_arr, bi_arr, np_arr:
             arr -= u
-        assert u_arr.to_list() == np_arr.tolist()
-        assert bi_arr.to_list() == np_arr.tolist()
+        assert u_arr.tolist() == np_arr.tolist()
+        assert bi_arr.tolist() == np_arr.tolist()
 
         for arr in u_arr, bi_arr, np_arr:
             arr -= arr
-        assert u_arr.to_list() == np_arr.tolist()
-        assert bi_arr.to_list() == np_arr.tolist()
+        assert u_arr.tolist() == np_arr.tolist()
+        assert bi_arr.tolist() == np_arr.tolist()
 
         # redeclare because subtract by self zeroed out
         u_arr, bi_arr, np_arr = declare_arrays()
 
         for arr in u_arr, bi_arr, np_arr:
             arr *= u
-        assert u_arr.to_list() == np_arr.tolist()
-        assert bi_arr.to_list() == np_arr.tolist()
+        assert u_arr.tolist() == np_arr.tolist()
+        assert bi_arr.tolist() == np_arr.tolist()
 
         for arr in u_arr, bi_arr, np_arr:
             arr *= arr
-        assert u_arr.to_list() == np_arr.tolist()
-        assert bi_arr.to_list() == np_arr.tolist()
+        assert u_arr.tolist() == np_arr.tolist()
+        assert bi_arr.tolist() == np_arr.tolist()
 
         for arr in u_arr, bi_arr, np_arr:
             arr **= u
-        assert u_arr.to_list() == np_arr.tolist()
-        assert bi_arr.to_list() == np_arr.tolist()
+        assert u_arr.tolist() == np_arr.tolist()
+        assert bi_arr.tolist() == np_arr.tolist()
 
         for arr in u_arr, bi_arr, np_arr:
             arr **= arr
-        assert u_arr.to_list() == np_arr.tolist()
-        assert bi_arr.to_list() == np_arr.tolist()
+        assert u_arr.tolist() == np_arr.tolist()
+        assert bi_arr.tolist() == np_arr.tolist()
 
         for arr in u_arr, bi_arr, np_arr:
             arr %= u
-        assert u_arr.to_list() == np_arr.tolist()
-        assert bi_arr.to_list() == np_arr.tolist()
+        assert u_arr.tolist() == np_arr.tolist()
+        assert bi_arr.tolist() == np_arr.tolist()
 
         for arr in u_arr, bi_arr, np_arr:
             arr //= u
-        assert u_arr.to_list() == np_arr.tolist()
-        assert bi_arr.to_list() == np_arr.tolist()
+        assert u_arr.tolist() == np_arr.tolist()
+        assert bi_arr.tolist() == np_arr.tolist()
 
         # redeclare because divide zeroed out
         u_arr, bi_arr, np_arr = declare_arrays()
 
         for arr in u_arr, bi_arr, np_arr:
             arr //= arr
-        assert u_arr.to_list() == np_arr.tolist()
-        assert bi_arr.to_list() == np_arr.tolist()
+        assert u_arr.tolist() == np_arr.tolist()
+        assert bi_arr.tolist() == np_arr.tolist()
 
         # the only arrays that can be added in place are uint and bool
         # scalars are cast to same type if possible
@@ -655,8 +655,8 @@ class TestOperator:
             u_tmp += v
             bi_tmp += v
             i_tmp += v
-            assert u_tmp.to_list() == i_tmp.to_list()
-            assert u_tmp.to_list() == bi_tmp.to_list()
+            assert u_tmp.tolist() == i_tmp.tolist()
+            assert u_tmp.tolist() == bi_tmp.tolist()
 
         # adding a float or int inplace could have a result which is not a uint
         for e in [i_arr, f_arr]:
@@ -745,82 +745,82 @@ class TestOperator:
         u_scalar = 10
 
         # logical bit ops: only work if both arguments are bigint
-        assert (u & u_range).to_list() == (bi & bi_range).to_list()
-        assert [(bi[i] & bi_scalar) % mod_by for i in range(bi.size)] == (bi & bi_scalar).to_list()
-        assert [(bi_scalar & bi[i]) % mod_by for i in range(bi.size)] == (bi_scalar & bi).to_list()
+        assert (u & u_range).tolist() == (bi & bi_range).tolist()
+        assert [(bi[i] & bi_scalar) % mod_by for i in range(bi.size)] == (bi & bi_scalar).tolist()
+        assert [(bi_scalar & bi[i]) % mod_by for i in range(bi.size)] == (bi_scalar & bi).tolist()
 
-        assert (u | u_range).to_list() == (bi | bi_range).to_list()
-        assert [(bi[i] | bi_scalar) % mod_by for i in range(bi.size)] == (bi | bi_scalar).to_list()
-        assert [(bi_scalar | bi[i]) % mod_by for i in range(bi.size)] == (bi_scalar | bi).to_list()
+        assert (u | u_range).tolist() == (bi | bi_range).tolist()
+        assert [(bi[i] | bi_scalar) % mod_by for i in range(bi.size)] == (bi | bi_scalar).tolist()
+        assert [(bi_scalar | bi[i]) % mod_by for i in range(bi.size)] == (bi_scalar | bi).tolist()
 
-        assert (u ^ u_range).to_list() == (bi ^ bi_range).to_list()
-        assert [(bi[i] ^ bi_scalar) % mod_by for i in range(bi.size)] == (bi ^ bi_scalar).to_list()
-        assert [(bi_scalar ^ bi[i]) % mod_by for i in range(bi.size)] == (bi_scalar ^ bi).to_list()
+        assert (u ^ u_range).tolist() == (bi ^ bi_range).tolist()
+        assert [(bi[i] ^ bi_scalar) % mod_by for i in range(bi.size)] == (bi ^ bi_scalar).tolist()
+        assert [(bi_scalar ^ bi[i]) % mod_by for i in range(bi.size)] == (bi_scalar ^ bi).tolist()
 
         # bit shifts: left side must be bigint, right side must be int/uint
         ans = u << u_range
-        assert ans.to_list() == (bi << u_range).to_list()
-        assert ans.to_list() == (bi << i_range).to_list()
+        assert ans.tolist() == (bi << u_range).tolist()
+        assert ans.tolist() == (bi << i_range).tolist()
 
         ans = u >> u_range
-        assert ans.to_list() == (bi >> u_range).to_list()
-        assert ans.to_list() == (bi >> i_range).to_list()
+        assert ans.tolist() == (bi >> u_range).tolist()
+        assert ans.tolist() == (bi >> i_range).tolist()
 
         ans = u.rotl(u_range)
-        assert ans.to_list() == bi.rotl(u_range).to_list()
-        assert ans.to_list() == bi.rotl(i_range).to_list()
+        assert ans.tolist() == bi.rotl(u_range).tolist()
+        assert ans.tolist() == bi.rotl(i_range).tolist()
         ans = u.rotr(u_range)
-        assert ans.to_list() == bi.rotr(u_range).to_list()
-        assert ans.to_list() == bi.rotr(i_range).to_list()
+        assert ans.tolist() == bi.rotr(u_range).tolist()
+        assert ans.tolist() == bi.rotr(i_range).tolist()
 
         # ops where left side has to bigint
         ans = u // u_range
         for ran in bi_range, u_range, i_range:
-            assert ans.to_list() == (bi // ran).to_list()
+            assert ans.tolist() == (bi // ran).tolist()
 
         ans = u % u_range
         for ran in bi_range, u_range, i_range:
-            assert ans.to_list() == (bi % ran).to_list()
+            assert ans.tolist() == (bi % ran).tolist()
 
         ans = u**u_range
         for ran in bi_range, u_range, i_range:
-            assert ans.to_list() == (bi**ran).to_list()
+            assert ans.tolist() == (bi**ran).tolist()
 
         # ops where either side can any of bigint, int, uint, bool
         ans = u + u_range
         for ran in bi_range, u_range, i_range:
-            assert ans.to_list() == (bi + ran).to_list()
-            assert ans.to_list() == (ran + bi).to_list()
+            assert ans.tolist() == (bi + ran).tolist()
+            assert ans.tolist() == (ran + bi).tolist()
 
         ans = u + b
-        assert ans.to_list() == (bi + b).to_list()
-        assert ans.to_list() == (b + bi).to_list()
+        assert ans.tolist() == (bi + b).tolist()
+        assert ans.tolist() == (b + bi).tolist()
         for s in [i_scalar, u_scalar, bi_scalar]:
-            assert [(bi[i] + s) % mod_by for i in range(bi.size)] == (bi + s).to_list()
-            assert [(s + bi[i]) % mod_by for i in range(bi.size)] == (s + bi).to_list()
+            assert [(bi[i] + s) % mod_by for i in range(bi.size)] == (bi + s).tolist()
+            assert [(s + bi[i]) % mod_by for i in range(bi.size)] == (s + bi).tolist()
 
         ans = u - u_range
         for ran in bi_range, u_range, i_range:
-            assert ans.to_list() == (bi - ran).to_list()
-        assert (u - b).to_list() == (bi - b).to_list()
-        assert (b - u).to_list() == (b - bi).to_list()
+            assert ans.tolist() == (bi - ran).tolist()
+        assert (u - b).tolist() == (bi - b).tolist()
+        assert (b - u).tolist() == (b - bi).tolist()
 
         for s in [i_scalar, u_scalar, bi_scalar]:
-            assert [(bi[i] - s) % mod_by for i in range(bi.size)] == (bi - s).to_list()
-            assert [(s - bi[i]) % mod_by for i in range(bi.size)] == (s - bi).to_list()
+            assert [(bi[i] - s) % mod_by for i in range(bi.size)] == (bi - s).tolist()
+            assert [(s - bi[i]) % mod_by for i in range(bi.size)] == (s - bi).tolist()
 
-        assert (bi - neg_range).to_list() == (bi + u_range).to_list()
+        assert (bi - neg_range).tolist() == (bi + u_range).tolist()
 
         ans = u * u_range
         for ran in bi_range, u_range, i_range:
-            assert ans.to_list() == (bi * ran).to_list()
+            assert ans.tolist() == (bi * ran).tolist()
         ans = u * b
-        assert ans.to_list() == (bi * b).to_list()
-        assert ans.to_list() == (b * bi).to_list()
+        assert ans.tolist() == (bi * b).tolist()
+        assert ans.tolist() == (b * bi).tolist()
 
         for s in [i_scalar, u_scalar, bi_scalar]:
-            assert [(bi[i] * s) % mod_by for i in range(bi.size)] == (bi * s).to_list()
-            assert [(s * bi[i]) % mod_by for i in range(bi.size)] == (s * bi).to_list()
+            assert [(bi[i] * s) % mod_by for i in range(bi.size)] == (bi * s).tolist()
+            assert [(s * bi[i]) % mod_by for i in range(bi.size)] == (s * bi).tolist()
 
     def test_bigint_rotate(self):
         # see issue #2214
@@ -841,8 +841,8 @@ class TestOperator:
             ak.arange(10)
         )
         ans = [10 if i % 2 == 0 else 5 for i in range(10)]
-        assert left_rot.to_list() == ans
-        assert right_rot.to_list() == ans
+        assert left_rot.tolist() == ans
+        assert right_rot.tolist() == ans
 
     def test_float_mods(self):
         edge_cases = [

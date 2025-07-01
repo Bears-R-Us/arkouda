@@ -335,13 +335,13 @@ class TestDataFrame:
 
         df_dict = {"fields": f, "ip": ip, "date": d, "bitvector": bv}
         df = ak.DataFrame(df_dict)
-        pd_d = [pd.to_datetime(x, unit="ns") for x in d.to_list()]
+        pd_d = [pd.to_datetime(x, unit="ns") for x in d.tolist()]
         pddf = pd.DataFrame(
             {
-                "fields": f.to_list(),
-                "ip": ip.to_list(),
+                "fields": f.tolist(),
+                "ip": ip.tolist(),
                 "date": pd_d,
-                "bitvector": bv.to_list(),
+                "bitvector": bv.tolist(),
             }
         )
         assert_frame_equal(pddf, df.to_pandas())
@@ -378,14 +378,14 @@ class TestDataFrame:
 
         # index validation
         assert isinstance(df.index, ak.Index)
-        assert df.index.to_list() == ref_df.index.to_list()
+        assert df.index.tolist() == ref_df.index.tolist()
 
         for cname in df.columns.values:
             col, ref_col = getattr(df, cname), getattr(ref_df, cname)
             assert isinstance(col, ak.Series)
-            assert col.to_list() == ref_col.to_list()
+            assert col.tolist() == ref_col.tolist()
             assert isinstance(df[cname], (ak.pdarray, ak.Strings, ak.Categorical))
-            assert df[cname].to_list() == ref_df[cname].to_list()
+            assert df[cname].tolist() == ref_df[cname].tolist()
 
         # check mult-column list
         col_list = ["userName", "amount", "bi"]
@@ -483,18 +483,18 @@ class TestDataFrame:
         df = self.build_ak_df()
 
         slice_df = df[ak.array([1, 3, 5])]
-        assert slice_df.index.to_list() == [1, 3, 5]
+        assert slice_df.index.tolist() == [1, 3, 5]
 
         df_reset = slice_df.reset_index()
-        assert df_reset.index.to_list() == [0, 1, 2]
-        assert slice_df.index.to_list(), [1, 3, 5]
+        assert df_reset.index.tolist() == [0, 1, 2]
+        assert slice_df.index.tolist(), [1, 3, 5]
 
         df_reset2 = slice_df.reset_index(size=3)
-        assert df_reset2.index.to_list() == [0, 1, 2]
-        assert slice_df.index.to_list() == [1, 3, 5]
+        assert df_reset2.index.tolist() == [0, 1, 2]
+        assert slice_df.index.tolist() == [1, 3, 5]
 
         slice_df.reset_index(inplace=True)
-        assert slice_df.index.to_list(), [0, 1, 2]
+        assert slice_df.index.tolist(), [0, 1, 2]
 
     def test_rename(self):
         df = self.build_ak_df()
@@ -528,12 +528,12 @@ class TestDataFrame:
 
         # Test out of Place - index
         df_rename = df.rename(rename_idx)
-        assert df_rename.index.values.to_list() == conf
-        assert df.index.values.to_list() == list(range(6))
+        assert df_rename.index.values.tolist() == conf
+        assert df.index.values.tolist() == list(range(6))
 
         # Test in place - index
         df.rename(index=rename_idx, inplace=True)
-        assert df.index.values.to_list() == conf
+        assert df.index.values.tolist() == conf
 
     def test_append(self):
         df = self.build_ak_df()
@@ -546,7 +546,7 @@ class TestDataFrame:
         assert_frame_equal(ref_df, df.to_pandas())
 
         idx = np.arange(8)
-        assert idx.tolist() == df.index.index.to_list()
+        assert idx.tolist() == df.index.index.tolist()
 
         df_keyerror = self.build_ak_keyerror()
         with pytest.raises(KeyError):
@@ -594,16 +594,16 @@ class TestDataFrame:
         df = self.build_ak_df()
         gb = df.GroupBy("userName")
         keys, count = gb.size()
-        assert keys.to_list() == ["Bob", "Alice", "Carol"]
-        assert count.to_list() == [2, 3, 1]
-        assert gb.permutation.to_list() == [1, 4, 0, 2, 5, 3]
+        assert keys.tolist() == ["Bob", "Alice", "Carol"]
+        assert count.tolist() == [2, 3, 1]
+        assert gb.permutation.tolist() == [1, 4, 0, 2, 5, 3]
 
         gb = df.GroupBy(["userName", "userID"])
         keys, count = gb.size()
         assert len(keys) == 2
-        assert keys[0].to_list() == ["Bob", "Alice", "Carol"]
-        assert keys[1].to_list() == [222, 111, 333]
-        assert count.to_list() == [2, 3, 1]
+        assert keys[0].tolist() == ["Bob", "Alice", "Carol"]
+        assert keys[1].tolist() == [222, 111, 333]
+        assert count.tolist() == [2, 3, 1]
 
         # testing counts with IPv4 column
         s = ak.DataFrame({"a": ak.IPv4(ak.arange(1, 5))}).groupby("a").size()
@@ -631,8 +631,8 @@ class TestDataFrame:
 
         c = gb.size(as_series=True)
         assert isinstance(c, ak.Series)
-        assert c.index.to_list() == ["Alice", "Bob", "Carol"]
-        assert c.values.to_list() == [3, 2, 1]
+        assert c.index.tolist() == ["Alice", "Bob", "Carol"]
+        assert c.values.tolist() == [3, 2, 1]
 
     @pytest.mark.parametrize("agg", ["sum", "first", "count"])
     def test_gb_aggregations(self, agg):
@@ -849,19 +849,19 @@ class TestDataFrame:
         df = self.build_ak_df()
 
         p = df.argsort(key="userName")
-        assert p.to_list() == [0, 2, 5, 1, 4, 3]
+        assert p.tolist() == [0, 2, 5, 1, 4, 3]
 
         p = df.argsort(key="userName", ascending=False)
-        assert p.to_list() == [3, 4, 1, 5, 2, 0]
+        assert p.tolist() == [3, 4, 1, 5, 2, 0]
 
     def test_coargsort(self):
         df = self.build_ak_df()
 
         p = df.coargsort(keys=["userID", "amount"])
-        assert p.to_list() == [0, 5, 2, 1, 4, 3]
+        assert p.tolist() == [0, 5, 2, 1, 4, 3]
 
         p = df.coargsort(keys=["userID", "amount"], ascending=False)
-        assert p.to_list() == [3, 4, 1, 2, 5, 0]
+        assert p.tolist() == [3, 4, 1, 2, 5, 0]
 
     def test_sort_values(self):
         userid = [111, 222, 111, 333, 222, 111]
@@ -949,7 +949,7 @@ class TestDataFrame:
         df_2 = ak.DataFrame({"user_name": username, "user_id": userid})
 
         rows = ak.intx(df_1, df_2)
-        assert rows.to_list() == [False, True, False, False, True, False]
+        assert rows.tolist() == [False, True, False, False, True, False]
 
         df_3 = ak.DataFrame({"user_name": username, "user_number": userid})
         with pytest.raises(ValueError):
@@ -974,7 +974,7 @@ class TestDataFrame:
         df = ak.DataFrame({"userID": userid, "amount": amount})
 
         filtered = df.filter_by_range(keys=["userID"], low=1, high=2)
-        assert filtered.to_list() == [False, True, False, True, True, False]
+        assert filtered.tolist() == [False, True, False, True, True, False]
 
     def test_copy(self):
         username = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
@@ -985,7 +985,7 @@ class TestDataFrame:
         assert_frame_equal(df.to_pandas(), df_copy.to_pandas())
 
         df_copy.__setitem__("userID", ak.array([1, 2, 1, 3, 2, 1]))
-        assert df["userID"].to_list() != df_copy["userID"].to_list()
+        assert df["userID"].tolist() != df_copy["userID"].tolist()
 
         df_copy = df.copy(deep=False)
         df_copy.__setitem__("userID", ak.array([1, 2, 1, 3, 2, 1]))
@@ -996,26 +996,26 @@ class TestDataFrame:
 
         # test against pdarray
         test_df = df.isin(ak.array([0, 1]))
-        assert test_df["col_A"].to_list() == [False, False]
-        assert test_df["col_B"].to_list() == [True, False]
+        assert test_df["col_A"].tolist() == [False, False]
+        assert test_df["col_B"].tolist() == [True, False]
 
         # Test against dict
         test_df = df.isin({"col_A": ak.array([0, 3])})
-        assert test_df["col_A"].to_list() == [False, True]
-        assert test_df["col_B"].to_list() == [False, False]
+        assert test_df["col_A"].tolist() == [False, True]
+        assert test_df["col_B"].tolist() == [False, False]
 
         # test against series
         i = ak.Index(ak.arange(2))
         s = ak.Series(data=ak.array([3, 9]), index=i.index)
         test_df = df.isin(s)
-        assert test_df["col_A"].to_list() == [False, False]
-        assert test_df["col_B"].to_list() == [False, True]
+        assert test_df["col_A"].tolist() == [False, False]
+        assert test_df["col_B"].tolist() == [False, True]
 
         # test against another dataframe
         other_df = ak.DataFrame({"col_A": ak.array([7, 3], dtype=ak.bigint), "col_C": ak.array([0, 9])})
         test_df = df.isin(other_df)
-        assert test_df["col_A"].to_list() == [True, True]
-        assert test_df["col_B"].to_list() == [False, False]
+        assert test_df["col_A"].tolist() == [True, True]
+        assert test_df["col_B"].tolist() == [False, False]
 
     def test_count(self):
         akdf = self.build_ak_df_with_nans()
@@ -1066,11 +1066,11 @@ class TestDataFrame:
 
         bool_idx = df[df["cnt"] > 3]
         bool_idx.__repr__()
-        assert bool_idx.index.index.to_list() == list(range(4, 65))
+        assert bool_idx.index.index.tolist() == list(range(4, 65))
 
         slice_idx = df[:]
         slice_idx.__repr__()
-        assert slice_idx.index.index.to_list() == list(range(65))
+        assert slice_idx.index.index.tolist() == list(range(65))
 
         # verify it persists non-int Index
         idx = ak.concatenate([ak.zeros(5, bool), ak.ones(60, bool)])
@@ -1080,11 +1080,11 @@ class TestDataFrame:
         bool_idx.__repr__()
         # the new index is first False and rest True (because we lose first 4),
         # so equivalent to arange(61, bool)
-        assert bool_idx.index.index.to_list() == ak.arange(61, dtype=bool).to_list()
+        assert bool_idx.index.index.tolist() == ak.arange(61, dtype=bool).tolist()
 
         slice_idx = df[:]
         slice_idx.__repr__()
-        assert slice_idx.index.index.to_list() == idx.to_list()
+        assert slice_idx.index.index.tolist() == idx.tolist()
 
     def test_subset(self):
         df = ak.DataFrame(
@@ -1097,9 +1097,9 @@ class TestDataFrame:
         )
         df2 = df[["a", "b"]]
         assert ["a", "b"] == df2.columns.values
-        assert df.index.to_list() == df2.index.to_list()
-        assert df["a"].to_list() == df2["a"].to_list()
-        assert df["b"].to_list() == df2["b"].to_list()
+        assert df.index.tolist() == df2.index.tolist()
+        assert df["a"].tolist() == df2["a"].tolist()
+        assert df["b"].tolist() == df2["b"].tolist()
 
     def test_multi_col_merge(self):
         size = 1000
@@ -1573,9 +1573,9 @@ class TestDataFrame:
                             random_state=rng,
                         )
 
-                        res = (
-                            np.allclose(previous1["vals"].to_list(), current1["vals"].to_list())
-                        ) and (np.allclose(previous2["vals"].to_list(), current2["vals"].to_list()))
+                        res = (np.allclose(previous1["vals"].tolist(), current1["vals"].tolist())) and (
+                            np.allclose(previous2["vals"].tolist(), current2["vals"].tolist())
+                        )
                         if not res:
                             print(f"\nnum locales: {cfg['numLocales']}")
                             print(f"Failure with seed:\n{seed}")
@@ -1680,4 +1680,4 @@ class TestDataFrame:
 
 
 def pda_to_str_helper(pda):
-    return ak.array([f"str {i}" for i in pda.to_list()])
+    return ak.array([f"str {i}" for i in pda.tolist()])

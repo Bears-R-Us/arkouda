@@ -227,12 +227,12 @@ class TestGroupBy:
         x = ak.array([True, True, False, True, False, False])
         g = ak.GroupBy(x)
         keys, locs = g.argmin(b)
-        assert keys.to_list() == [False, True]
-        assert locs.to_list() == [4, 1]
+        assert keys.tolist() == [False, True]
+        assert locs.tolist() == [4, 1]
 
         keys, locs = g.argmax(b)
-        assert keys.to_list() == [False, True]
-        assert locs.to_list() == [2, 0]
+        assert keys.tolist() == [False, True]
+        assert locs.tolist() == [2, 0]
 
     def test_boolean_arrays(self):
         a = ak.array([True, False, True, True, False])
@@ -241,26 +241,26 @@ class TestGroupBy:
         k, ct = g.size()
 
         assert ct[1] == true_ct
-        assert k.to_list() == [False, True]
+        assert k.tolist() == [False, True]
 
         # This test was added since we added the size method for issue #1353
         k, ct = g.size()
 
         assert ct[1] == true_ct
-        assert k.to_list() == [False, True]
+        assert k.tolist() == [False, True]
 
         b = ak.array([False, False, True, False, False])
         g = ak.GroupBy([a, b])
         k, ct = g.size()
-        assert ct.to_list() == [2, 2, 1]
-        assert k[0].to_list() == [False, True, True]
-        assert k[1].to_list() == [False, False, True]
+        assert ct.tolist() == [2, 2, 1]
+        assert k[0].tolist() == [False, True, True]
+        assert k[1].tolist() == [False, False, True]
 
     def test_bitwise_aggregations(self):
         revs = ak.arange(self.igb.length) % 2
-        assert self.igb.OR(revs)[1].to_list() == self.igb.max(revs)[1].to_list()
-        assert self.igb.AND(revs)[1].to_list() == self.igb.min(revs)[1].to_list()
-        assert self.igb.XOR(revs)[1].to_list() == (self.igb.sum(revs)[1] % 2).to_list()
+        assert self.igb.OR(revs)[1].tolist() == self.igb.max(revs)[1].tolist()
+        assert self.igb.AND(revs)[1].tolist() == self.igb.min(revs)[1].tolist()
+        assert self.igb.XOR(revs)[1].tolist() == (self.igb.sum(revs)[1] % 2).tolist()
 
     def test_standalone_broadcast(self):
         segs = ak.arange(10) ** 2
@@ -289,12 +289,12 @@ class TestGroupBy:
             compressed_vals = vals[non_empty_segs]
 
             assert (
-                ak.broadcast(segs, vals, size).to_list()
-                == ak.broadcast(compressed_segs, compressed_vals, size).to_list()
+                ak.broadcast(segs, vals, size).tolist()
+                == ak.broadcast(compressed_segs, compressed_vals, size).tolist()
             )
             assert (
-                ak.broadcast(segs, vals, size, perm).to_list()
-                == ak.broadcast(compressed_segs, compressed_vals, size, perm).to_list()
+                ak.broadcast(segs, vals, size, perm).tolist()
+                == ak.broadcast(compressed_segs, compressed_vals, size, perm).tolist()
             )
 
     def test_nan_broadcast(self):
@@ -310,84 +310,84 @@ class TestGroupBy:
     def test_count(self):
         keys, counts = self.igb.size()
 
-        assert [1, 2, 3, 4, 5] == keys.to_list()
-        assert [1, 4, 2, 1, 2] == counts.to_list()
+        assert [1, 2, 3, 4, 5] == keys.tolist()
+        assert [1, 4, 2, 1, 2] == counts.tolist()
 
     def test_broadcast_ints(self):
         keys, counts = self.igb.size()
 
         results = self.igb.broadcast(1 * (counts > 2), permute=False)
-        assert [0, 1, 1, 1, 1, 0, 0, 0, 0, 0] == results.to_list()
+        assert [0, 1, 1, 1, 1, 0, 0, 0, 0, 0] == results.tolist()
 
         results = self.igb.broadcast(1 * (counts == 2), permute=False)
-        assert [0, 0, 0, 0, 0, 1, 1, 0, 1, 1] == results.to_list()
+        assert [0, 0, 0, 0, 0, 1, 1, 0, 1, 1] == results.tolist()
 
         results = self.igb.broadcast(1 * (counts < 4), permute=False)
-        assert [1, 0, 0, 0, 0, 1, 1, 1, 1, 1] == results.to_list()
+        assert [1, 0, 0, 0, 0, 1, 1, 1, 1, 1] == results.tolist()
 
         results = self.igb.broadcast(1 * (counts > 2))
-        assert [0, 0, 0, 1, 1, 1, 0, 0, 1, 0] == results.to_list()
+        assert [0, 0, 0, 1, 1, 1, 0, 0, 1, 0] == results.tolist()
 
         results = self.igb.broadcast(1 * (counts == 2))
-        assert [0, 0, 1, 0, 0, 0, 1, 1, 0, 1] == results.to_list()
+        assert [0, 0, 1, 0, 0, 0, 1, 1, 0, 1] == results.tolist()
 
         results = self.igb.broadcast(1 * (counts < 4))
-        assert [1, 1, 1, 0, 0, 0, 1, 1, 0, 1] == results.to_list()
+        assert [1, 1, 1, 0, 0, 0, 1, 1, 0, 1] == results.tolist()
 
     def test_broadcast_uints(self):
         keys, counts = self.ugb.size()
-        assert [1, 4, 2, 1, 2] == counts.to_list()
-        assert [1, 2, 3, 4, 5] == keys.to_list()
+        assert [1, 4, 2, 1, 2] == counts.tolist()
+        assert [1, 2, 3, 4, 5] == keys.tolist()
 
         u_results = self.ugb.broadcast(1 * (counts > 2))
         i_results = self.igb.broadcast(1 * (counts > 2))
-        assert i_results.to_list() == u_results.to_list()
+        assert i_results.tolist() == u_results.tolist()
 
         u_results = self.ugb.broadcast(1 * (counts == 2))
         i_results = self.igb.broadcast(1 * (counts == 2))
-        assert i_results.to_list() == u_results.to_list()
+        assert i_results.tolist() == u_results.tolist()
 
         u_results = self.ugb.broadcast(1 * (counts < 4))
         i_results = self.igb.broadcast(1 * (counts < 4))
-        assert i_results.to_list() == u_results.to_list()
+        assert i_results.tolist() == u_results.tolist()
 
         # test uint Groupby.broadcast with and without permute
         u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False)
         i_results = self.igb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False)
-        assert i_results.to_list() == u_results.to_list()
+        assert i_results.tolist() == u_results.tolist()
         u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64))
         i_results = self.igb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64))
-        assert i_results.to_list() == u_results.to_list()
+        assert i_results.tolist() == u_results.tolist()
 
         # test uint broadcast
         u_results = ak.broadcast(ak.array([0]), ak.array([1], dtype=ak.uint64), 1)
         i_results = ak.broadcast(ak.array([0]), ak.array([1]), 1)
-        assert i_results.to_list() == u_results.to_list()
+        assert i_results.tolist() == u_results.tolist()
 
     def test_broadcast_strings(self):
         keys, counts = self.sgb.size()
-        assert [1, 4, 2, 1, 2] == counts.to_list()
-        assert ["1", "2", "3", "4", "5"] == keys.to_list()
+        assert [1, 4, 2, 1, 2] == counts.tolist()
+        assert ["1", "2", "3", "4", "5"] == keys.tolist()
 
         s_results = self.sgb.broadcast(1 * (counts > 2))
         i_results = self.igb.broadcast(1 * (counts > 2))
-        assert i_results.to_list() == s_results.to_list()
+        assert i_results.tolist() == s_results.tolist()
 
         s_results = self.sgb.broadcast(1 * (counts == 2))
         i_results = self.igb.broadcast(1 * (counts == 2))
-        assert i_results.to_list() == s_results.to_list()
+        assert i_results.tolist() == s_results.tolist()
 
         s_results = self.sgb.broadcast(1 * (counts < 4))
         i_results = self.igb.broadcast(1 * (counts < 4))
-        assert i_results.to_list() == s_results.to_list()
+        assert i_results.tolist() == s_results.tolist()
 
         # test str Groupby.broadcast with and without permute
         s_results = self.sgb.broadcast(ak.array(["1", "2", "6", "8", "9"]), permute=False)
         i_results = self.igb.broadcast(ak.array(["1", "2", "6", "8", "9"]), permute=False)
-        assert i_results.to_list() == s_results.to_list()
+        assert i_results.tolist() == s_results.tolist()
         s_results = self.sgb.broadcast(ak.array(["1", "2", "6", "8", "9"]))
         i_results = self.igb.broadcast(ak.array(["1", "2", "6", "8", "9"]))
-        assert i_results.to_list() == s_results.to_list()
+        assert i_results.tolist() == s_results.tolist()
 
     def test_broadcast_bigints(self):
         # use reproducer to verify >64 bits work
@@ -396,67 +396,67 @@ class TestGroupBy:
         segs = ak.array([0, 2, 5])
         bi_broad = ak.groupbyclass.broadcast(segs, a, 8)
         indices = ak.broadcast(segs, ak.arange(3), 8)
-        assert bi_broad.to_list() == a[indices].to_list()
+        assert bi_broad.tolist() == a[indices].tolist()
         assert bi_broad.max_bits == a.max_bits
 
         # verify max_bits is preserved by broadcast
         a.max_bits = 201
         bi_broad = ak.broadcast(segs, a, 8)
-        assert bi_broad.to_list() == a[indices].to_list()
+        assert bi_broad.tolist() == a[indices].tolist()
         assert bi_broad.max_bits == a.max_bits
 
         # do the same tests as uint and compare the results
         keys, counts = self.bigb.size()
-        assert [1, 4, 2, 1, 2] == counts.to_list()
-        assert [1, 2, 3, 4, 5] == keys.to_list()
+        assert [1, 4, 2, 1, 2] == counts.tolist()
+        assert [1, 2, 3, 4, 5] == keys.tolist()
 
         u_results = self.ugb.broadcast(1 * (counts > 2))
         bi_results = self.bigb.broadcast(1 * (counts > 2))
-        assert bi_results.to_list() == u_results.to_list()
+        assert bi_results.tolist() == u_results.tolist()
 
         u_results = self.ugb.broadcast(1 * (counts == 2))
         bi_results = self.bigb.broadcast(1 * (counts == 2))
-        assert bi_results.to_list() == u_results.to_list()
+        assert bi_results.tolist() == u_results.tolist()
 
         u_results = self.ugb.broadcast(1 * (counts < 4))
         bi_results = self.bigb.broadcast(1 * (counts < 4))
-        assert bi_results.to_list() == u_results.to_list()
+        assert bi_results.tolist() == u_results.tolist()
 
         # test bigint Groupby.broadcast with and without permute with > 64 bit values
         u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False)
         bi_results = self.bigb.broadcast(
             ak.array([1, 2, 6, 8, 9], dtype=ak.bigint) + 2**200, permute=False
         )
-        assert (bi_results - 2**200).to_list() == u_results.to_list()
+        assert (bi_results - 2**200).tolist() == u_results.tolist()
         u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64))
         bi_results = self.bigb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.bigint) + 2**200)
-        assert (bi_results - 2**200).to_list() == u_results.to_list()
+        assert (bi_results - 2**200).tolist() == u_results.tolist()
 
         # test bigint broadcast
         u_results = ak.broadcast(ak.array([0]), ak.array([1], dtype=ak.uint64), 1)
         bi_results = ak.broadcast(ak.array([0]), ak.array([1], dtype=ak.bigint), 1)
-        assert bi_results.to_list() == u_results.to_list()
+        assert bi_results.tolist() == u_results.tolist()
 
     def test_broadcast_booleans(self):
         keys, counts = self.igb.size()
 
         results = self.igb.broadcast(counts > 2, permute=False)
-        assert [0, 1, 1, 1, 1, 0, 0, 0, 0, 0] == results.to_list()
+        assert [0, 1, 1, 1, 1, 0, 0, 0, 0, 0] == results.tolist()
 
         results = self.igb.broadcast(counts == 2, permute=False)
-        assert [0, 0, 0, 0, 0, 1, 1, 0, 1, 1] == results.to_list()
+        assert [0, 0, 0, 0, 0, 1, 1, 0, 1, 1] == results.tolist()
 
         results = self.igb.broadcast(counts < 4, permute=False)
-        assert [1, 0, 0, 0, 0, 1, 1, 1, 1, 1] == results.to_list()
+        assert [1, 0, 0, 0, 0, 1, 1, 1, 1, 1] == results.tolist()
 
         results = self.igb.broadcast(counts > 2)
-        assert [0, 0, 0, 1, 1, 1, 0, 0, 1, 0] == results.to_list()
+        assert [0, 0, 0, 1, 1, 1, 0, 0, 1, 0] == results.tolist()
 
         results = self.igb.broadcast(counts == 2)
-        assert [0, 0, 1, 0, 0, 0, 1, 1, 0, 1] == results.to_list()
+        assert [0, 0, 1, 0, 0, 0, 1, 1, 0, 1] == results.tolist()
 
         results = self.igb.broadcast(counts < 4)
-        assert [1, 1, 1, 0, 0, 0, 1, 1, 0, 1] == results.to_list()
+        assert [1, 1, 1, 0, 0, 0, 1, 1, 0, 1] == results.tolist()
 
     def test_groupby_reduction_type(self):
         assert "any" == str(GroupByReductionType.ANY)
@@ -548,7 +548,7 @@ class TestGroupBy:
             g = ak.GroupBy(key)
             for val in keys:
                 k, n = g.nunique(val)
-                assert n.to_list() == [1, 1, 1]
+                assert n.tolist() == [1, 1, 1]
 
     def test_type_failure_multilevel_groupby_aggregate(self):
         # just checking no error occurs with hotfix for Issue 858
@@ -565,8 +565,8 @@ class TestGroupBy:
         u_keys, u_group_sums = gu.sum(u)
         i_keys, i_group_sums = gi.sum(i)
 
-        assert u_keys.to_list() == i_keys.to_list()
-        assert u_group_sums.to_list() == i_group_sums.to_list()
+        assert u_keys.tolist() == i_keys.tolist()
+        assert u_group_sums.tolist() == i_group_sums.tolist()
 
         # verify the multidim unsigned version doesnt break
         ak.GroupBy([u, u])
@@ -577,8 +577,8 @@ class TestGroupBy:
         g = ak.GroupBy(labels)
         u_unique_keys, u_group_nunique = g.nunique(u_data)
         i_unique_keys, i_group_nunique = g.nunique(i_data)
-        assert u_unique_keys.to_list() == i_unique_keys.to_list()
-        assert u_group_nunique.to_list() == i_group_nunique.to_list()
+        assert u_unique_keys.tolist() == i_unique_keys.tolist()
+        assert u_group_nunique.tolist() == i_group_nunique.tolist()
 
     def test_groupby_count(self):
         a = ak.array([1, 0, -1, 1, -1, -1])
@@ -621,8 +621,8 @@ class TestGroupBy:
             # order isn't guaranteed so argsort and permute
             i_perm = ak.argsort(i_unique)
             bi_perm = ak.argsort(shift_down)
-            assert i_counts[i_perm].to_list() == bi_counts[bi_perm].to_list()
-            assert i_unique[i_perm].to_list() == shift_down[bi_perm].to_list()
+            assert i_counts[i_perm].tolist() == bi_counts[bi_perm].tolist()
+            assert i_unique[i_perm].tolist() == shift_down[bi_perm].tolist()
 
         # multilevel groupby
         (i1_unique, i2_unique), i_counts = ak.GroupBy(int_arrays).size()
@@ -632,9 +632,9 @@ class TestGroupBy:
         # order isn't guaranteed so argsort and permute
         i_perm = ak.coargsort((i1_unique, i2_unique))
         bi_perm = ak.coargsort((shift_down1, shift_down2))
-        assert i_counts[i_perm].to_list() == bi_counts[bi_perm].to_list()
-        assert i1_unique[i_perm].to_list() == shift_down1[bi_perm].to_list()
-        assert i2_unique[i_perm].to_list() == shift_down2[bi_perm].to_list()
+        assert i_counts[i_perm].tolist() == bi_counts[bi_perm].tolist()
+        assert i1_unique[i_perm].tolist() == shift_down1[bi_perm].tolist()
+        assert i2_unique[i_perm].tolist() == shift_down2[bi_perm].tolist()
 
         # verify we can groupby bigint with other typed arrays
         mixted_types_arrays = [[bi_a, b], [a, bi_b], [bi_b, a], [b, bi_a]]
@@ -665,13 +665,13 @@ class TestGroupBy:
         for agg in aggregations:
             u_res = u_gb.aggregate(vals, agg)
             bi_res = bi_gb.aggregate(vals, agg)
-            assert u_res[0].to_list() == bi_res[0].to_list()
-            assert u_res[1].to_list() == bi_res[1].to_list()
+            assert u_res[0].tolist() == bi_res[0].tolist()
+            assert u_res[1].tolist() == bi_res[1].tolist()
 
             u_res = u_gb.aggregate(bi, agg)
             bi_res = bi_gb.aggregate(bi, agg)
-            assert u_res[0].to_list() == bi_res[0].to_list()
-            assert u_res[1].to_list() == bi_res[1].to_list()
+            assert u_res[0].tolist() == bi_res[0].tolist()
+            assert u_res[1].tolist() == bi_res[1].tolist()
 
         # test aggregations with > 64 bits and scale back down
         i = ak.arange(10)
@@ -682,8 +682,8 @@ class TestGroupBy:
         for agg in other_aggs:
             i_res = gb.aggregate(i, agg)
             bi_res = gb.aggregate(bi, agg)
-            assert i_res[0].to_list() == bi_res[0].to_list()
-            assert i_res[1].to_list() == (bi_res[1] - 2**200).to_list()
+            assert i_res[0].tolist() == bi_res[0].tolist()
+            assert i_res[1].tolist() == (bi_res[1] - 2**200).tolist()
 
     def test_zero_length_groupby(self):
         """
@@ -739,7 +739,7 @@ class TestGroupBy:
         if dtype == ak.bool_:
             assert aksum(values) == aksum(expected_values)
         else:
-            assert set(values.to_list()) == set(expected_values.to_list())
+            assert set(values.tolist()) == set(expected_values.tolist())
 
     @pytest.mark.parametrize("dtype", ["bool", "str_", "int64", "float64"])
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -788,7 +788,7 @@ class TestGroupBy:
         if dtype == ak.bool_:
             assert aksum(values) == aksum(expected_values)
         else:
-            assert set(values.to_list()) == set(expected_values.to_list())
+            assert set(values.tolist()) == set(expected_values.tolist())
 
     def test_first_aggregation(self):
         keys = ak.array([0, 1, 0, 1, 0, 1])
@@ -796,7 +796,7 @@ class TestGroupBy:
         ans = [9, 8]
         g = ak.GroupBy(keys)
         _, res = g.first(vals)
-        assert ans == res.to_list()
+        assert ans == res.tolist()
 
     def test_mode_aggregation(self):
         keys = ak.array([0, 1, 0, 1, 0, 1, 0, 1])
@@ -804,11 +804,11 @@ class TestGroupBy:
         ans = [5, 3]
         g = ak.GroupBy(keys)
         _, res = g.mode(vals)
-        assert ans == res.to_list()
+        assert ans == res.tolist()
         # Test with multi-array values
         _, res2 = g.mode([vals, vals])
-        assert ans == res2[0].to_list()
-        assert ans == res2[1].to_list()
+        assert ans == res2[0].tolist()
+        assert ans == res2[1].tolist()
 
     def test_large_mean_aggregation(self):
         # reproducer for integer overflow in groupby.mean
@@ -816,7 +816,7 @@ class TestGroupBy:
 
         # since all values of a are the same, all means should be 2**63 - 1
         _, means = ak.GroupBy(ak.arange(10) % 3).mean(a)
-        for m in means.to_list():
+        for m in means.tolist():
             assert np.isclose(float(a[0]), m)
 
     #   ak.unique takes 1 pda argument and 3 booleans
@@ -894,13 +894,13 @@ class TestGroupBy:
         ans = [[4, 5, 6], [2, 3]]
         g = ak.GroupBy(keys)
         _, res = g.unique(vals)
-        for a, r in zip(ans, res.to_list()):
+        for a, r in zip(ans, res.tolist()):
             assert a == r
         # Test with multi-array values
         _, res2 = g.unique([vals, vals])
-        for a, r in zip(ans, res2[0].to_list()):
+        for a, r in zip(ans, res2[0].tolist()):
             assert a == r
-        for a, r in zip(ans, res2[1].to_list()):
+        for a, r in zip(ans, res2[1].tolist()):
             assert a == r
 
     def test_sample_hypothesis_testing(self):
@@ -992,8 +992,8 @@ class TestGroupBy:
                             random_state=rng,
                         )
 
-                        res = np.allclose(previous1.to_list(), current1.to_list()) and np.allclose(
-                            previous2.to_list(), current2.to_list()
+                        res = np.allclose(previous1.tolist(), current1.tolist()) and np.allclose(
+                            previous2.tolist(), current2.tolist()
                         )
                         if not res:
                             print(f"\nnum locales: {cfg['numLocales']}")
@@ -1007,5 +1007,5 @@ class TestGroupBy:
         unique_keys, nuniq = g.nunique(vals)
         expected_unique_keys = ["1", "2"]
         expected_nuniq = [8, 3]
-        assert expected_unique_keys == unique_keys.to_list()
-        assert expected_nuniq == nuniq.to_list()
+        assert expected_unique_keys == unique_keys.tolist()
+        assert expected_nuniq == nuniq.tolist()

@@ -502,11 +502,11 @@ class Categorical:
     def to_pandas(self) -> pd_Categorical:
         """Return the equivalent Pandas Categorical."""
         return pd_Categorical.from_codes(
-            codes=type_cast(List[int], self.codes.to_list()),
+            codes=type_cast(List[int], self.codes.tolist()),
             categories=pd_Index(self.categories.to_ndarray()),
         )
 
-    def to_list(self) -> List[str]:
+    def tolist(self) -> List[str]:
         """
         Convert the Categorical to a list.
 

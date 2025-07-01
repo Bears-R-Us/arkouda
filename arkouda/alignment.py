@@ -232,7 +232,7 @@ def find(query, space, all_occurrences=False, remove_missing=False):
     Set both remove_missing and all_occurrences to True, missing values
     will be empty segments
 
-    >>> ak.find(arr1, arr2, remove_missing=True, all_occurrences=True).to_list()
+    >>> ak.find(arr1, arr2, remove_missing=True, all_occurrences=True).tolist()
     [[],
      [],
      [],

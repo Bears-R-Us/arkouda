@@ -167,7 +167,7 @@ class TestSetOps:
         lb = list(zip(b, d))
         lr = [x in lb for x in la]
 
-        assert ak_result.to_list() == lr
+        assert ak_result.tolist() == lr
 
     @pytest.mark.parametrize("dtype1", INTEGRAL_TYPES)
     @pytest.mark.parametrize("dtype2", INTEGRAL_TYPES)
@@ -182,7 +182,7 @@ class TestSetOps:
         lb = list(zip(c, d))
         lr = [x in lb for x in la]
 
-        assert ak_result.to_list() == lr
+        assert ak_result.tolist() == lr
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_in1d_multiarray_str(self, size):
@@ -200,14 +200,14 @@ class TestSetOps:
 
         ak_result = ak.in1d(l1, l2)
 
-        la = list(zip(a.to_list(), b.to_list()))
-        lb = list(zip(c.to_list(), d.to_list()))
+        la = list(zip(a.tolist(), b.tolist()))
+        lb = list(zip(c.tolist(), d.tolist()))
         lr = [x in lb for x in la]
-        assert ak_result.to_list() == lr
+        assert ak_result.tolist() == lr
 
         stringsOne = ak.array(["String {}".format(i % 3) for i in range(10)])
         stringsTwo = ak.array(["String {}".format(i % 2) for i in range(10)])
-        assert [(x % 3) < 2 for x in range(10)] == ak.in1d(stringsOne, stringsTwo).to_list()
+        assert [(x % 3) < 2 for x in range(10)] == ak.in1d(stringsOne, stringsTwo).tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_in1d_multiarray_categorical(self, size):
@@ -225,14 +225,14 @@ class TestSetOps:
 
         ak_result = ak.in1d(l1, l2)
 
-        la = list(zip(a.to_list(), b.to_list()))
-        lb = list(zip(c.to_list(), d.to_list()))
+        la = list(zip(a.tolist(), b.tolist()))
+        lb = list(zip(c.tolist(), d.tolist()))
         lr = [x in lb for x in la]
-        assert ak_result.to_list() == lr
+        assert ak_result.tolist() == lr
 
         stringsOne = ak.Categorical(ak.array(["String {}".format(i % 3) for i in range(10)]))
         stringsTwo = ak.Categorical(ak.array(["String {}".format(i % 2) for i in range(10)]))
-        assert [(x % 3) < 2 for x in range(10)] == ak.in1d(stringsOne, stringsTwo).to_list()
+        assert [(x % 3) < 2 for x in range(10)] == ak.in1d(stringsOne, stringsTwo).tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
@@ -248,7 +248,7 @@ class TestSetOps:
         la = set(zip(a, c))
         lb = set(zip(b, d))
         lr = sorted(la.intersection(lb))
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         ak_result = list(zip(*ak_result))
         assert ak_result == lr
 
@@ -265,7 +265,7 @@ class TestSetOps:
         lb = set(zip(c, d))
         lr = sorted(la.intersection(lb))
 
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         # sorting applied for bigint case. Numbers are right, but not ordering properly
         ak_result = sorted(list(zip(*ak_result)))
         assert ak_result == lr
@@ -286,10 +286,10 @@ class TestSetOps:
 
         ak_result = ak.intersect1d(l1, l2)
 
-        la = set(zip(a.to_list(), b.to_list()))
-        lb = set(zip(c.to_list(), d.to_list()))
+        la = set(zip(a.tolist(), b.tolist()))
+        lb = set(zip(c.tolist(), d.tolist()))
         lr = sorted(la.intersection(lb))
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         ak_result = sorted(list(zip(*ak_result)))
         assert ak_result == lr
 
@@ -303,8 +303,8 @@ class TestSetOps:
         b1 = ak.array(c)
         b2 = ak.array(d)
         t = ak.intersect1d([a1, a2], [b1, b2])
-        assert ["def"] == t[0].to_list()
-        assert ["456"] == t[1].to_list()
+        assert ["def"] == t[0].tolist()
+        assert ["456"] == t[1].tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_intersect1d_multiarray_categorical(self, size):
@@ -322,10 +322,10 @@ class TestSetOps:
 
         ak_result = ak.intersect1d(l1, l2)
 
-        la = set(zip(a.to_list(), b.to_list()))
-        lb = set(zip(c.to_list(), d.to_list()))
+        la = set(zip(a.tolist(), b.tolist()))
+        lb = set(zip(c.tolist(), d.tolist()))
         lr = sorted(la.intersection(lb))
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         ak_result = list(zip(*ak_result))
         assert ak_result == lr
 
@@ -339,8 +339,8 @@ class TestSetOps:
         b1 = ak.Categorical(ak.array(c))
         b2 = ak.Categorical(ak.array(d))
         t = ak.intersect1d([a1, a2], [b1, b2])
-        assert ["def"] == t[0].to_list()
-        assert ["456"] == t[1].to_list()
+        assert ["def"] == t[0].tolist()
+        assert ["456"] == t[1].tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
@@ -356,7 +356,7 @@ class TestSetOps:
         la = set(zip(a, c))
         lb = set(zip(b, d))
         lr = sorted(la.union(lb))
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         ak_result = list(zip(*ak_result))
         assert ak_result == lr
 
@@ -373,7 +373,7 @@ class TestSetOps:
         lb = set(zip(c, d))
         lr = sorted(la.union(lb))
 
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         # sorting applied for bigint case. Numbers are right, but not ordering properly
         ak_result = sorted(list(zip(*ak_result)))
         assert ak_result == lr
@@ -392,10 +392,10 @@ class TestSetOps:
 
         ak_result = ak.union1d(l1, l2)
 
-        la = set(zip(a.to_list(), b.to_list()))
-        lb = set(zip(c.to_list(), d.to_list()))
+        la = set(zip(a.tolist(), b.tolist()))
+        lb = set(zip(c.tolist(), d.tolist()))
         lr = sorted(la.union(lb))
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         ak_result = list(zip(*ak_result))
         # because strings are grouped not sorted we are verifying the tuple exists
         for x in ak_result:
@@ -411,8 +411,8 @@ class TestSetOps:
         b1 = ak.array(c)
         b2 = ak.array(d)
         t = ak.union1d([a1, a2], [b1, b2])
-        assert len({"xyz", "def", "abc"}.symmetric_difference(t[0].to_list())) == 0
-        assert len({"0", "456", "123"}.symmetric_difference(t[1].to_list())) == 0
+        assert len({"xyz", "def", "abc"}.symmetric_difference(t[0].tolist())) == 0
+        assert len({"0", "456", "123"}.symmetric_difference(t[1].tolist())) == 0
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_union1d_many_strings(self, size):
@@ -456,10 +456,10 @@ class TestSetOps:
 
         ak_result = ak.union1d(l1, l2)
 
-        la = set(zip(a.to_list(), b.to_list()))
-        lb = set(zip(c.to_list(), d.to_list()))
+        la = set(zip(a.tolist(), b.tolist()))
+        lb = set(zip(c.tolist(), d.tolist()))
         lr = sorted(la.union(lb))
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         ak_result = list(zip(*ak_result))
         # because strings are grouped not sorted we are verifying the tuple exists
         for x in ak_result:
@@ -478,8 +478,8 @@ class TestSetOps:
         cat_b1 = ak.Categorical(b1)
         cat_b2 = ak.Categorical(b2)
         t = ak.union1d([cat_a1, cat_a2], [cat_b1, cat_b2])
-        assert ["abc", "def", "xyz"] == t[0].to_list()
-        assert ["123", "456", "0"] == t[1].to_list()
+        assert ["abc", "def", "xyz"] == t[0].tolist()
+        assert ["123", "456", "0"] == t[1].tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
@@ -496,7 +496,7 @@ class TestSetOps:
         lb = set(zip(b, d))
         lr = sorted(la.symmetric_difference(lb))
 
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         ak_result = list(zip(*ak_result))
         assert ak_result == lr
 
@@ -513,7 +513,7 @@ class TestSetOps:
         lb = set(zip(c, d))
         lr = sorted(la.symmetric_difference(lb))
 
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         # sorting applied for bigint case. Numbers are right, but not ordering properly
         ak_result = sorted(list(zip(*ak_result)))
         assert ak_result == lr
@@ -532,10 +532,10 @@ class TestSetOps:
 
         ak_result = ak.setxor1d(l1, l2)
 
-        la = set(zip(a.to_list(), b.to_list()))
-        lb = set(zip(c.to_list(), d.to_list()))
+        la = set(zip(a.tolist(), b.tolist()))
+        lb = set(zip(c.tolist(), d.tolist()))
         lr = sorted(la.symmetric_difference(lb))
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         ak_result = list(zip(*ak_result))
         # because strings are grouped not sorted we are verifying the tuple exists
         for x in ak_result:
@@ -551,8 +551,8 @@ class TestSetOps:
         b1 = ak.array(c)
         b2 = ak.array(d)
         t = ak.setxor1d([a1, a2], [b1, b2])
-        assert ["abc", "abc"] == t[0].to_list()
-        assert ["000", "123"] == t[1].to_list()
+        assert ["abc", "abc"] == t[0].tolist()
+        assert ["000", "123"] == t[1].tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_setxor1d_multiarray_categorical(self, size):
@@ -568,10 +568,10 @@ class TestSetOps:
 
         ak_result = ak.setxor1d(l1, l2)
 
-        la = set(zip(a.to_list(), b.to_list()))
-        lb = set(zip(c.to_list(), d.to_list()))
+        la = set(zip(a.tolist(), b.tolist()))
+        lb = set(zip(c.tolist(), d.tolist()))
         lr = sorted(la.symmetric_difference(lb))
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         ak_result = list(zip(*ak_result))
         # because strings are grouped not sorted we are verifying the tuple exists
         for x in ak_result:
@@ -587,8 +587,8 @@ class TestSetOps:
         b1 = ak.Categorical(ak.array(c))
         b2 = ak.Categorical(ak.array(d))
         t = ak.setxor1d([a1, a2], [b1, b2])
-        assert ["abc", "abc"] == t[0].to_list()
-        assert ["000", "123"] == t[1].to_list()
+        assert ["abc", "abc"] == t[0].tolist()
+        assert ["000", "123"] == t[1].tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
@@ -605,7 +605,7 @@ class TestSetOps:
         lb = set(zip(b, d))
         lr = sorted(la.difference(lb))
 
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         ak_result = list(zip(*ak_result))
         assert ak_result == lr
 
@@ -622,7 +622,7 @@ class TestSetOps:
         lb = set(zip(c, d))
         lr = sorted(la.difference(lb))
 
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         # sorting applied for bigint case. Numbers are right, but not ordering properly
         ak_result = sorted(list(zip(*ak_result)))
         assert ak_result == lr
@@ -641,10 +641,10 @@ class TestSetOps:
 
         ak_result = ak.setdiff1d(l1, l2)
 
-        la = set(zip(a.to_list(), b.to_list()))
-        lb = set(zip(c.to_list(), d.to_list()))
+        la = set(zip(a.tolist(), b.tolist()))
+        lb = set(zip(c.tolist(), d.tolist()))
         lr = sorted(la.difference(lb))
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         ak_result = list(zip(*ak_result))
         # because strings are grouped not sorted we are verifying the tuple exists
         for x in ak_result:
@@ -660,8 +660,8 @@ class TestSetOps:
         b1 = ak.array(c)
         b2 = ak.array(d)
         t = ak.setdiff1d([a1, a2], [b1, b2])
-        assert ["abc"] == t[0].to_list()
-        assert ["123"] == t[1].to_list()
+        assert ["abc"] == t[0].tolist()
+        assert ["123"] == t[1].tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_setdiff1d_multiarray_categorical(self, size):
@@ -677,10 +677,10 @@ class TestSetOps:
 
         ak_result = ak.setdiff1d(l1, l2)
 
-        la = set(zip(a.to_list(), b.to_list()))
-        lb = set(zip(c.to_list(), d.to_list()))
+        la = set(zip(a.tolist(), b.tolist()))
+        lb = set(zip(c.tolist(), d.tolist()))
         lr = sorted(la.difference(lb))
-        ak_result = [x.to_list() for x in ak_result]
+        ak_result = [x.tolist() for x in ak_result]
         ak_result = list(zip(*ak_result))
         # because strings are grouped not sorted we are verifying the tuple exists
         for x in ak_result:
@@ -696,8 +696,8 @@ class TestSetOps:
         b1 = ak.Categorical(ak.array(c))
         b2 = ak.Categorical(ak.array(d))
         t = ak.setdiff1d([a1, a2], [b1, b2])
-        assert ["abc"] == t[0].to_list()
-        assert ["123"] == t[1].to_list()
+        assert ["abc"] == t[0].tolist()
+        assert ["123"] == t[1].tolist()
 
     def test_multiarray_validation(self):
         x = [ak.arange(3), ak.arange(3), ak.arange(3)]
@@ -719,7 +719,7 @@ class TestSetOps:
     def test_index_of(self):
         # index of nan (reproducer from #3009)
         s = ak.Series(ak.array([1, 2, 3]), index=ak.array([1, 2, np.nan]))
-        assert ak.indexof1d(ak.array([np.nan]), s.index.values).to_list() == [2]
+        assert ak.indexof1d(ak.array([np.nan]), s.index.values).tolist() == [2]
         rng = np.random.default_rng()
         seeds = [
             rng.choice(2**63),
@@ -781,11 +781,11 @@ class TestSetOps:
             arr2_keys = ak.GroupBy(arr2).unique_keys
             in_both = ak.intersect1d(arr1_keys, arr2_keys)
 
-            for i in in_both.to_list():
+            for i in in_both.tolist():
                 pd_i = pd_s[i]
                 ak_i = ak_s[i]
                 if isinstance(pd_i, pd.Series):
                     assert isinstance(ak_i, ak.Series)
-                    assert pd_i.values.tolist() == ak_i.values.to_list()
+                    assert pd_i.values.tolist() == ak_i.values.tolist()
                 else:
                     assert pd_i == ak_i

@@ -271,12 +271,10 @@ class TestPdarrayCreation:
             assert pda[-1] == bi + 10 - 1
 
         # test array and arange infer dtype
-        assert (
-            ak.array([bi, bi + 1, bi + 2, bi + 3, bi + 4]).to_list() == ak.arange(bi, bi + 5).to_list()
-        )
+        assert ak.array([bi, bi + 1, bi + 2, bi + 3, bi + 4]).tolist() == ak.arange(bi, bi + 5).tolist()
 
         # test that max_bits being set results in a mod
-        assert ak.arange(bi, bi + 5, max_bits=200).to_list() == ak.arange(5).to_list()
+        assert ak.arange(bi, bi + 5, max_bits=200).tolist() == ak.arange(5).tolist()
 
         # test ak.bigint_from_uint_arrays
         # top bits are all 1 which should be 2**64
@@ -284,26 +282,26 @@ class TestPdarrayCreation:
         bot_bits = ak.arange(5, dtype=ak.uint64)
         two_arrays = ak.bigint_from_uint_arrays([top_bits, bot_bits])
         assert ak.bigint == two_arrays.dtype
-        assert two_arrays.to_list() == [2**64 + i for i in range(5)]
+        assert two_arrays.tolist() == [2**64 + i for i in range(5)]
         # top bits should represent 2**128
         mid_bits = ak.zeros(5, ak.uint64)
         three_arrays = ak.bigint_from_uint_arrays([top_bits, mid_bits, bot_bits])
-        assert three_arrays.to_list() == [2**128 + i for i in range(5)]
+        assert three_arrays.tolist() == [2**128 + i for i in range(5)]
 
         # test round_trip of ak.bigint_to/from_uint_arrays
         t = ak.arange(bi - 1, bi + 9)
         t_dup = ak.bigint_from_uint_arrays(t.bigint_to_uint_arrays())
-        assert t.to_list() == t_dup.to_list()
+        assert t.tolist() == t_dup.tolist()
         assert t_dup.max_bits == -1
 
         # test setting max_bits after creation still mods
         t_dup.max_bits = 200
-        assert t_dup.to_list() == [bi - 1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+        assert t_dup.tolist() == [bi - 1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
         # test slice_bits along 64 bit boundaries matches return from bigint_to_uint_arrays
         for i, uint_bits in enumerate(t.bigint_to_uint_arrays()):
             slice_bits = t.slice_bits(64 * (4 - (i + 1)), 64 * (4 - i) - 1)
-            assert uint_bits.to_list() == slice_bits.to_list()
+            assert uint_bits.tolist() == slice_bits.tolist()
 
     @pytest.mark.skip_if_max_rank_less_than(2)
     def test_bigint_creation_multi_dim(self):
@@ -337,37 +335,37 @@ class TestPdarrayCreation:
         assert_arkouda_array_equal(a, c[0, :])
 
     def test_arange(self):
-        assert np.arange(0, 10, 1).tolist() == ak.arange(0, 10, 1).to_list()
-        assert np.arange(10, 0, -1).tolist() == ak.arange(10, 0, -1).to_list()
-        assert np.arange(-5, -10, -1).tolist() == ak.arange(-5, -10, -1).to_list()
-        assert np.arange(0, 10, 2).tolist() == ak.arange(0, 10, 2).to_list()
+        assert np.arange(0, 10, 1).tolist() == ak.arange(0, 10, 1).tolist()
+        assert np.arange(10, 0, -1).tolist() == ak.arange(10, 0, -1).tolist()
+        assert np.arange(-5, -10, -1).tolist() == ak.arange(-5, -10, -1).tolist()
+        assert np.arange(0, 10, 2).tolist() == ak.arange(0, 10, 2).tolist()
 
     @pytest.mark.parametrize("dtype", ak.intTypes)
     def test_arange_dtype(self, dtype):
         # test dtype works with optional start/step
         stop = ak.arange(100, dtype=dtype)
-        assert np.arange(100, dtype=dtype).tolist() == stop.to_list()
+        assert np.arange(100, dtype=dtype).tolist() == stop.tolist()
         assert dtype == stop.dtype
 
         start_stop = ak.arange(100, 105, dtype=dtype)
-        assert np.arange(100, 105, dtype=dtype).tolist() == start_stop.to_list()
+        assert np.arange(100, 105, dtype=dtype).tolist() == start_stop.tolist()
         assert dtype == start_stop.dtype
 
         start_stop_step = ak.arange(100, 105, 2, dtype=dtype)
-        assert np.arange(100, 105, 2, dtype=dtype).tolist() == start_stop_step.to_list()
+        assert np.arange(100, 105, 2, dtype=dtype).tolist() == start_stop_step.tolist()
         assert dtype == start_stop_step.dtype
 
         # also test for start/stop/step that cause empty ranges
         start_stop_step = ak.arange(100, 10, 2, dtype=dtype)
-        assert np.arange(100, 10, 2, dtype=dtype).tolist() == start_stop_step.to_list()
+        assert np.arange(100, 10, 2, dtype=dtype).tolist() == start_stop_step.tolist()
         assert dtype == start_stop_step.dtype
 
         start_stop_step = ak.arange(10, 15, -2, dtype=dtype)
-        assert np.arange(10, 15, -2, dtype=dtype).tolist() == start_stop_step.to_list()
+        assert np.arange(10, 15, -2, dtype=dtype).tolist() == start_stop_step.tolist()
         assert dtype == start_stop_step.dtype
 
         start_stop_step = ak.arange(10, 10, -2, dtype=dtype)
-        assert np.arange(10, 10, 2, dtype=dtype).tolist() == start_stop_step.to_list()
+        assert np.arange(10, 10, 2, dtype=dtype).tolist() == start_stop_step.tolist()
         assert dtype == start_stop_step.dtype
 
     def test_arange_misc(self):
@@ -376,25 +374,25 @@ class TestPdarrayCreation:
         ak_arange_uint = ak.arange(-5, -10, -1, dtype=ak.uint64)
         # np_arange_uint = array([18446744073709551611, 18446744073709551610, 18446744073709551609,
         #        18446744073709551608, 18446744073709551607], dtype=uint64)
-        assert np_arange_uint.tolist() == ak_arange_uint.to_list()
+        assert np_arange_uint.tolist() == ak_arange_uint.tolist()
         assert ak.uint64 == ak_arange_uint.dtype
 
         uint_start_stop = ak.arange(2**63 + 3, 2**63 + 7)
         ans = ak.arange(3, 7, dtype=ak.uint64) + 2**63
-        assert ans.to_list() == uint_start_stop.to_list()
+        assert ans.tolist() == uint_start_stop.tolist()
         assert ak.uint64 == uint_start_stop.dtype
 
         # test correct conversion to float64
         np_arange_float = np.arange(-5, -10, -1, dtype=np.float64)
         ak_arange_float = ak.arange(-5, -10, -1, dtype=ak.float64)
         # array([-5., -6., -7., -8., -9.])
-        assert np_arange_float.tolist() == ak_arange_float.to_list()
+        assert np_arange_float.tolist() == ak_arange_float.tolist()
         assert ak.float64 == ak_arange_float.dtype
 
         # test correct conversion to bool
         expected_bool = [False, True, True, True, True]
         ak_arange_bool = ak.arange(0, 10, 2, dtype=ak.bool_)
-        assert expected_bool == ak_arange_bool.to_list()
+        assert expected_bool == ak_arange_bool.tolist()
         assert ak.bool_ == ak_arange_bool.dtype
 
         # test int_scalars covers uint8, uint16, uint32
@@ -496,7 +494,7 @@ class TestPdarrayCreation:
     def test_randint_with_seed(self):
         values = ak.randint(1, 5, 10, seed=2)
 
-        assert [4, 3, 1, 3, 2, 4, 4, 2, 3, 4] == values.to_list()
+        assert [4, 3, 1, 3, 2, 4, 4, 2, 3, 4] == values.tolist()
 
         values = ak.randint(1, 5, 10, dtype=ak.float64, seed=2)
 
@@ -513,14 +511,14 @@ class TestPdarrayCreation:
             4.0337935981006172,
         ]
 
-        assert ans == values.to_list()
+        assert ans == values.tolist()
 
         bools = [False, True, True, True, True, False, True, True, True, True]
         values = ak.randint(1, 5, 10, dtype=ak.bool_, seed=2)
-        assert values.to_list() == bools
+        assert values.tolist() == bools
 
         values = ak.randint(1, 5, 10, dtype=bool, seed=2)
-        assert values.to_list() == bools
+        assert values.tolist() == bools
 
         # Test that int_scalars covers uint8, uint16, uint32
         uint_arr = ak.randint(np.uint8(1), np.uint32(5), np.uint16(10), seed=np.uint8(2))
@@ -539,14 +537,14 @@ class TestPdarrayCreation:
             0.30013431967121934,
             0.47383036230759112,
             1.0441791878997098,
-        ] == u_array.to_list()
+        ] == u_array.tolist()
 
         u_array = ak.uniform(size=np.int64(3), low=np.int64(0), high=np.int64(5), seed=np.int64(0))
         assert [
             0.30013431967121934,
             0.47383036230759112,
             1.0441791878997098,
-        ] == u_array.to_list()
+        ] == u_array.tolist()
 
         with pytest.raises(TypeError):
             ak.uniform(low="0", high=5, size=size)
@@ -760,7 +758,7 @@ class TestPdarrayCreation:
         strings_full = ak.full(5, "test")
         assert isinstance(strings_full, ak.Strings)
         assert 5 == len(strings_full)
-        assert strings_full.to_list() == ["test"] * 5
+        assert strings_full.tolist() == ["test"] * 5
 
         with pytest.raises(TypeError):
             ak.full(5, 1, dtype=ak.uint8)
@@ -867,7 +865,7 @@ class TestPdarrayCreation:
 
         npda = pda.to_ndarray()
         pda = ak.standard_normal(dtype(100), dtype(1))
-        assert npda.tolist() == pda.to_list()
+        assert npda.tolist() == pda.tolist()
 
     def test_standard_normal_errors(self):
         with pytest.raises(TypeError):
@@ -949,7 +947,7 @@ class TestPdarrayCreation:
             "WL",
             "JCSD",
             "DSN",
-        ] == pda.to_list()
+        ] == pda.tolist()
 
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10, characters="printable")
         assert [
@@ -963,7 +961,7 @@ class TestPdarrayCreation:
             "}.",
             "b3Yc",
             "Kw,",
-        ] == pda.to_list()
+        ] == pda.tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("num_dtype", NUMERIC_SCALARS)
@@ -1006,10 +1004,10 @@ class TestPdarrayCreation:
         ]
 
         pda = ak.random_strings_lognormal(2, 0.25, 10, seed=1)
-        assert randoms == pda.to_list()
+        assert randoms == pda.tolist()
 
         pda = ak.random_strings_lognormal(float(2), np.float64(0.25), np.int64(10), seed=1)
-        assert randoms == pda.to_list()
+        assert randoms == pda.tolist()
 
         printable_randoms = [
             "eL96<O",
@@ -1025,12 +1023,12 @@ class TestPdarrayCreation:
         ]
 
         pda = ak.random_strings_lognormal(2, 0.25, 10, seed=1, characters="printable")
-        assert printable_randoms == pda.to_list()
+        assert printable_randoms == pda.tolist()
 
         pda = ak.random_strings_lognormal(
             np.int64(2), np.float64(0.25), np.int64(10), seed=1, characters="printable"
         )
-        assert printable_randoms == pda.to_list()
+        assert printable_randoms == pda.tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [bool, np.float64, np.int64, str])
@@ -1194,7 +1192,7 @@ class TestPdarrayCreation:
         ):
             greedy_pda = ak.array(greedy_list)
             assert greedy_pda.dtype == ak.uint64
-            assert greedy_list == greedy_pda.to_list()
+            assert greedy_list == greedy_pda.tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def randint_randomness(self, size):
@@ -1256,12 +1254,12 @@ class TestPdarrayCreation:
         ones = ak.ones(10)
         n_ones = ones.to_ndarray()
         new_ones = ak.array(n_ones)
-        assert ones.to_list() == new_ones.to_list()
+        assert ones.tolist() == new_ones.tolist()
 
         empty_ones = ak.ones(0)
         n_empty_ones = empty_ones.to_ndarray()
         new_empty_ones = ak.array(n_empty_ones)
-        assert empty_ones.to_list() == new_empty_ones.to_list()
+        assert empty_ones.tolist() == new_empty_ones.tolist()
 
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -1271,7 +1269,7 @@ class TestPdarrayCreation:
             ones = ak.ones(shape)
             n_ones = ones.to_ndarray()
             new_ones = ak.array(n_ones)
-            assert ones.to_list() == new_ones.to_list()
+            assert ones.tolist() == new_ones.tolist()
 
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)

@@ -108,7 +108,7 @@ class Array:
     def tolist(self):
         """
         Convert the array to a Python list or nested lists, using the pdarray
-        method to_list.
+        method tolist.
 
         This involves copying the data from the server to the client, and thus
         will fail if the array is too large (see:
@@ -116,10 +116,10 @@ class Array:
 
         See Also
         --------
-        pdarray.to_list()
+        pdarray.tolist()
 
         """
-        x = self._array.to_list()
+        x = self._array.tolist()
         if self.shape == ():
             # to match numpy, return a scalar for a 0-dimensional array
             return x[0]

@@ -150,7 +150,7 @@ def _trig_and_hyp_test_helper(np_func, na, ak_func, pda):
     assert np.allclose(na, ak_func(pda, where=False).to_ndarray(), equal_nan=True)
     assert np.allclose(
         [np_func(na[i]) if truth_np[i] else na[i] for i in range(len(na))],
-        ak_func(pda, where=truth_ak).to_list(),
+        ak_func(pda, where=truth_ak).tolist(),
         equal_nan=True,
     )
     np.seterr(**old_settings)  # restore original settings
@@ -299,7 +299,7 @@ class TestNumeric:
         res = ak.cast(strarr, num_type, errors=ak.ErrorMode.ignore)
         assert np.allclose(ans, res.to_ndarray(), equal_nan=True)
         res, valid = ak.cast(strarr, num_type, errors=ak.ErrorMode.return_validity)
-        assert valid.to_list() == validans.to_list()
+        assert valid.tolist() == validans.tolist()
         assert np.allclose(ans, res.to_ndarray(), equal_nan=True)
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
@@ -324,9 +324,9 @@ class TestNumeric:
 
         # add 'range'
         ak_result, ak_bins = ak.histogram(pda, bins=20, range=(15, 20))
-        np_result, np_bins = np.histogram(np.array(pda.to_list()), bins=20, range=(15, 20))
-        assert np.allclose(ak_result.to_list(), np_result.tolist())
-        assert np.allclose(ak_bins.to_list(), np_bins.tolist())
+        np_result, np_bins = np.histogram(np.array(pda.tolist()), bins=20, range=(15, 20))
+        assert np.allclose(ak_result.tolist(), np_result.tolist())
+        assert np.allclose(ak_bins.tolist(), np_bins.tolist())
 
     #   log and exp tests were identical, and so have been combined.
 
@@ -344,22 +344,22 @@ class TestNumeric:
 
         np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y)
         ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y)
-        assert np.allclose(np_hist.tolist(), ak_hist.to_list())
-        assert np.allclose(np_x_edges.tolist(), ak_x_edges.to_list())
-        assert np.allclose(np_y_edges.tolist(), ak_y_edges.to_list())
+        assert np.allclose(np_hist.tolist(), ak_hist.tolist())
+        assert np.allclose(np_x_edges.tolist(), ak_x_edges.tolist())
+        assert np.allclose(np_y_edges.tolist(), ak_y_edges.tolist())
 
         np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y, bins=(10, 20))
         ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y, bins=(10, 20))
-        assert np.allclose(np_hist.tolist(), ak_hist.to_list())
-        assert np.allclose(np_x_edges.tolist(), ak_x_edges.to_list())
-        assert np.allclose(np_y_edges.tolist(), ak_y_edges.to_list())
+        assert np.allclose(np_hist.tolist(), ak_hist.tolist())
+        assert np.allclose(np_x_edges.tolist(), ak_x_edges.tolist())
+        assert np.allclose(np_y_edges.tolist(), ak_y_edges.tolist())
 
         # add 'range'
         np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y, range=((25, 92), (15, 86)))
         ak_hist, ak_x_edges, ak_y_edges = ak.histogram2d(ak_x, ak_y, range=((25, 92), (15, 86)))
-        assert np.allclose(np_hist.tolist(), ak_hist.to_list())
-        assert np.allclose(np_x_edges.tolist(), ak_x_edges.to_list())
-        assert np.allclose(np_y_edges.tolist(), ak_y_edges.to_list())
+        assert np.allclose(np_hist.tolist(), ak_hist.tolist())
+        assert np.allclose(np_x_edges.tolist(), ak_x_edges.tolist())
+        assert np.allclose(np_y_edges.tolist(), ak_y_edges.tolist())
 
         # test arbitrary dimensional histogram
         dim_list = [3, 4, 5]
@@ -371,17 +371,17 @@ class TestNumeric:
 
                 np_hist, np_bin_edges = np.histogramdd(np_arrs, bins=bins)
                 ak_hist, ak_bin_edges = ak.histogramdd(ak_arrs, bins=bins)
-                assert np.allclose(np_hist.tolist(), ak_hist.to_list())
+                assert np.allclose(np_hist.tolist(), ak_hist.tolist())
                 for np_edge, ak_edge in zip(np_bin_edges, ak_bin_edges):
-                    assert np.allclose(np_edge.tolist(), ak_edge.to_list())
+                    assert np.allclose(np_edge.tolist(), ak_edge.tolist())
 
                 # add 'range'
                 range_arg = [(10, 80) for _ in range(dim)]
                 np_hist, np_bin_edges = np.histogramdd(np_arrs, bins=bins, range=range_arg)
                 ak_hist, ak_bin_edges = ak.histogramdd(ak_arrs, bins=bins, range=range_arg)
-                assert np.allclose(np_hist.tolist(), ak_hist.to_list())
+                assert np.allclose(np_hist.tolist(), ak_hist.tolist())
                 for np_edge, ak_edge in zip(np_bin_edges, ak_bin_edges):
-                    assert np.allclose(np_edge.tolist(), ak_edge.to_list())
+                    assert np.allclose(np_edge.tolist(), ak_edge.tolist())
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     @pytest.mark.parametrize("op", ["exp", "log", "expm1", "log2", "log10", "log1p"])
@@ -405,8 +405,8 @@ class TestNumeric:
         assert np.allclose(np.abs(na), ak.abs(pda).to_ndarray())
 
         assert (
-            ak.arange(5, 0, -1, dtype=num_type).to_list()
-            == ak.abs(ak.arange(-5, 0, dtype=num_type)).to_list()
+            ak.arange(5, 0, -1, dtype=num_type).tolist()
+            == ak.abs(ak.arange(-5, 0, dtype=num_type)).tolist()
         )
 
         with pytest.raises(TypeError):
@@ -491,7 +491,7 @@ class TestNumeric:
 
         assert np.allclose(
             na_num / na_denom,
-            ak.arctan2(pda_num, pda_denom, where=False).to_list(),
+            ak.arctan2(pda_num, pda_denom, where=False).tolist(),
             equal_nan=True,
         )
         assert np.allclose(
@@ -606,7 +606,7 @@ class TestNumeric:
         assert np.array_equal(np.isnan(npa), actual)
 
         ark_s_int64 = ak.array(np.array([1, 2, 3, 4], dtype="int64"))
-        assert ak.isnan(ark_s_int64).to_list() == [False, False, False, False]
+        assert ak.isnan(ark_s_int64).tolist() == [False, False, False, False]
 
         ark_s_string = ak.array(["a", "b", "c"])
         with pytest.raises(TypeError):
@@ -660,12 +660,12 @@ class TestNumeric:
         h1, h2 = ak.hash(ak.arange(10))
         rev = ak.arange(9, -1, -1)
         h3, h4 = ak.hash(rev)
-        assert h1.to_list() == h3[rev].to_list()
-        assert h2.to_list() == h4[rev].to_list()
+        assert h1.tolist() == h3[rev].tolist()
+        assert h2.tolist() == h4[rev].tolist()
 
         h1 = ak.hash(ak.arange(10), full=False)
         h3 = ak.hash(rev, full=False)
-        assert h1.to_list() == h3[rev].to_list()
+        assert h1.tolist() == h3[rev].tolist()
 
         h = ak.hash(ak.linspace(0, 10, 10))
         assert h[0].dtype == ak.uint64
@@ -675,27 +675,27 @@ class TestNumeric:
         s = ak.random_strings_uniform(4, 8, 10)
         h1, h2 = ak.hash(s)
         rh1, rh2 = ak.hash(s[rev])
-        assert h1.to_list() == rh1[rev].to_list()
-        assert h2.to_list() == rh2[rev].to_list()
+        assert h1.tolist() == rh1[rev].tolist()
+        assert h2.tolist() == rh2[rev].tolist()
 
         # verify all the ways to hash strings match
         h3, h4 = ak.hash([s])
-        assert h1.to_list() == h3.to_list()
-        assert h2.to_list() == h4.to_list()
+        assert h1.tolist() == h3.tolist()
+        assert h2.tolist() == h4.tolist()
         h5, h6 = s.hash()
-        assert h1.to_list() == h5.to_list()
-        assert h2.to_list() == h6.to_list()
+        assert h1.tolist() == h5.tolist()
+        assert h2.tolist() == h6.tolist()
 
         # test segarray hash with int and string values
         # along with strings, categorical, and pdarrays
         segs = ak.array([0, 3, 6, 9])
         vals = ak.array([0, 1, 2, 3, 4, 5, 0, 1, 2, 5, 5, 5, 5])
         sa = ak.SegArray(segs, vals)
-        str_vals = ak.array([f"str {i}" for i in vals.to_list()])
+        str_vals = ak.array([f"str {i}" for i in vals.tolist()])
         str_sa = ak.SegArray(segs, str_vals)
         a = ak.array([-10, 4, -10, 17])
         bi = a + 2**200
-        s = ak.array([f"str {i}" for i in a.to_list()])
+        s = ak.array([f"str {i}" for i in a.tolist()])
         c = ak.Categorical(s)
         for h in [
             sa,
@@ -715,11 +715,11 @@ class TestNumeric:
             if isinstance(h, ak.SegArray):
                 # verify all the ways to hash segarrays match
                 h3, h4 = ak.hash([h])
-                assert h1.to_list() == h3.to_list()
-                assert h2.to_list() == h4.to_list()
+                assert h1.tolist() == h3.tolist()
+                assert h2.tolist() == h4.tolist()
                 h5, h6 = h.hash()
-                assert h1.to_list() == h5.to_list()
-                assert h2.to_list() == h6.to_list()
+                assert h1.tolist() == h5.tolist()
+                assert h2.tolist() == h6.tolist()
             # the first and third position are identical and should hash to the same thing
             assert h1[0] == h1[2]
             assert h2[0] == h2[2]
@@ -739,28 +739,28 @@ class TestNumeric:
         h1, h2 = ak.hash(my_cat)
         rev = ak.arange(10**5)[::-1]
         rh1, rh2 = ak.hash(my_cat[rev])
-        assert h1.to_list() == rh1[rev].to_list()
-        assert h2.to_list() == rh2[rev].to_list()
+        assert h1.tolist() == rh1[rev].tolist()
+        assert h2.tolist() == rh2[rev].tolist()
 
         # verify all the ways to hash Categoricals match
         h3, h4 = ak.hash([my_cat])
-        assert h1.to_list() == h3.to_list()
-        assert h2.to_list() == h4.to_list()
+        assert h1.tolist() == h3.tolist()
+        assert h2.tolist() == h4.tolist()
         h5, h6 = my_cat.hash()
-        assert h1.to_list() == h5.to_list()
-        assert h2.to_list() == h6.to_list()
+        assert h1.tolist() == h5.tolist()
+        assert h2.tolist() == h6.tolist()
 
         # verify it matches hashing the categories and then indexing with codes
         sh1, sh2 = my_cat.categories.hash()
         h7, h8 = sh1[my_cat.codes], sh2[my_cat.codes]
-        assert h1.to_list() == h7.to_list()
-        assert h2.to_list() == h8.to_list()
+        assert h1.tolist() == h7.tolist()
+        assert h2.tolist() == h8.tolist()
 
         # verify all the ways to hash bigint pdarrays match
         h1, h2 = ak.hash(bi)
         h3, h4 = ak.hash([bi])
-        assert h1.to_list() == h3.to_list()
-        assert h2.to_list() == h4.to_list()
+        assert h1.tolist() == h3.tolist()
+        assert h2.tolist() == h4.tolist()
 
     # Notes about median:
     #  prob_size is either even or odd, so one of sample_e, sample_o will have an even

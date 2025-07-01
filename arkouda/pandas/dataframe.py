@@ -2987,7 +2987,7 @@ class DataFrame(UserDict):
                 # in order for proper pandas functionality, SegArrays must be seen as 1d
                 # and therefore need to be converted to list
                 if isinstance(val, SegArray):
-                    pandas_data[key] = val.to_list()
+                    pandas_data[key] = val.tolist()
                 elif isinstance(val, Categorical):
                     pandas_data[key] = val.to_pandas()
                 else:
@@ -5127,7 +5127,7 @@ class DataFrame(UserDict):
             elif (isinstance(axis, int) and axis == 1) or (isinstance(axis, str) and axis == "columns"):
                 result = DataFrame()
                 if isinstance(mask, Series):
-                    for col, truth in zip(mask.index.values.to_list(), mask.values.to_list()):
+                    for col, truth in zip(mask.index.values.tolist(), mask.values.tolist()):
                         if truth is True:
                             result[col] = self[col][:]
 

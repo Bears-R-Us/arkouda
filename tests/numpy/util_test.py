@@ -99,37 +99,35 @@ class TestUtil:
         d = ak.Categorical(a)
 
         result = map(a, {"4": 25, "5": 30, "1": 7})
-        assert result.to_list() == [7, 7, 25, 25, 25]
+        assert result.tolist() == [7, 7, 25, 25, 25]
 
         result = map(a, {"1": 7})
-        assert (
-            result.to_list() == ak.cast(ak.array([7, 7, np.nan, np.nan, np.nan]), dt=ak.int64).to_list()
-        )
+        assert result.tolist() == ak.cast(ak.array([7, 7, np.nan, np.nan, np.nan]), dt=ak.int64).tolist()
 
         result = map(a, {"1": 7.0})
-        assert np.allclose(result.to_list(), [7.0, 7.0, np.nan, np.nan, np.nan], equal_nan=True)
+        assert np.allclose(result.tolist(), [7.0, 7.0, np.nan, np.nan, np.nan], equal_nan=True)
 
         result = map(b, {4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
-        assert result.to_list() == [30.0, 5.0, 30.0, 5.0, 25.0]
+        assert result.tolist() == [30.0, 5.0, 30.0, 5.0, 25.0]
 
         result = map(c, {1.0: "a", 2.2: "b", 4.4: "c", 5.0: "d"})
-        assert result.to_list() == ["a", "a", "b", "b", "c"]
+        assert result.tolist() == ["a", "a", "b", "b", "c"]
 
         result = map(c, {1.0: "a"})
-        assert result.to_list() == ["a", "a", "null", "null", "null"]
+        assert result.tolist() == ["a", "a", "null", "null", "null"]
 
         result = map(c, {1.0: "a", 2.2: "b", 4.4: "c", 5.0: "d", 6.0: "e"})
-        assert result.to_list() == ["a", "a", "b", "b", "c"]
+        assert result.tolist() == ["a", "a", "b", "b", "c"]
 
         result = map(d, {"4": 25, "5": 30, "1": 7})
-        assert result.to_list() == [7, 7, 25, 25, 25]
+        assert result.tolist() == [7, 7, 25, 25, 25]
 
         result = map(d, {"1": 7})
         assert np.allclose(
-            result.to_list(),
-            ak.cast(ak.array([7, 7, np.nan, np.nan, np.nan]), dt=ak.int64).to_list(),
+            result.tolist(),
+            ak.cast(ak.array([7, 7, np.nan, np.nan, np.nan]), dt=ak.int64).tolist(),
             equal_nan=True,
         )
 
         result = map(d, {"1": 7.0})
-        assert np.allclose(result.to_list(), [7.0, 7.0, np.nan, np.nan, np.nan], equal_nan=True)
+        assert np.allclose(result.tolist(), [7.0, 7.0, np.nan, np.nan, np.nan], equal_nan=True)

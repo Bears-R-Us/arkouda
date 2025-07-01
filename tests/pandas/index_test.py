@@ -48,7 +48,7 @@ class TestIndex:
 
         assert isinstance(idx, ak.Index)
         assert idx.size == size
-        assert idx.to_list() == list(range(size))
+        assert idx.tolist() == list(range(size))
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_index_creation_strings(self, size):
@@ -57,7 +57,7 @@ class TestIndex:
 
         assert isinstance(idx, ak.Index)
         assert idx.size == size
-        assert idx.to_list() == strings1.to_list()
+        assert idx.tolist() == strings1.tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_index_creation_from_index(self, size):
@@ -437,16 +437,16 @@ class TestIndex:
     def test_argsort(self):
         idx = ak.Index.factory(ak.arange(5))
         i = idx.argsort(False)
-        assert i.to_list() == [4, 3, 2, 1, 0]
+        assert i.tolist() == [4, 3, 2, 1, 0]
 
         idx = ak.Index(ak.array([1, 0, 4, 2, 5, 3]))
         i = idx.argsort()
         # values should be the indexes in the array of idx
-        assert i.to_list() == [1, 0, 3, 5, 2, 4]
+        assert i.tolist() == [1, 0, 3, 5, 2, 4]
 
         i = ak.Index([1, 2, 3])
-        assert i.argsort(ascending=True).to_list() == [0, 1, 2]
-        assert i.argsort(ascending=False).to_list() == [2, 1, 0]
+        assert i.argsort(ascending=True).tolist() == [0, 1, 2]
+        assert i.argsort(ascending=False).tolist() == [2, 1, 0]
 
         i2 = ak.Index([1, 2, 3], allow_list=True)
         assert i2.argsort(ascending=True) == [0, 1, 2]
@@ -457,14 +457,14 @@ class TestIndex:
         assert i3.argsort(ascending=False) == [2, 1, 0]
 
         i4 = ak.Index(ak.array(["a", "b", "c"]))
-        assert i4.argsort(ascending=True).to_list() == [0, 1, 2]
-        assert i4.argsort(ascending=False).to_list() == [2, 1, 0]
+        assert i4.argsort(ascending=True).tolist() == [0, 1, 2]
+        assert i4.argsort(ascending=False).tolist() == [2, 1, 0]
 
     def test_map(self):
         idx = ak.Index(ak.array([2, 3, 2, 3, 4]))
 
         result = idx.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
-        assert result.values.to_list() == [30.0, 5.0, 30.0, 5.0, 25.0]
+        assert result.values.tolist() == [30.0, 5.0, 30.0, 5.0, 25.0]
 
     def test_concat(self):
         idx_1 = ak.Index.factory(ak.arange(5))
@@ -472,27 +472,27 @@ class TestIndex:
         idx_2 = ak.Index(ak.array([2, 4, 1, 3, 0]))
 
         idx_full = idx_1.concat(idx_2)
-        assert idx_full.to_list() == [0, 1, 2, 3, 4, 2, 4, 1, 3, 0]
+        assert idx_full.tolist() == [0, 1, 2, 3, 4, 2, 4, 1, 3, 0]
 
         i = ak.Index([1, 2, 3], allow_list=True)
         i2 = ak.Index(["a", "b", "c"], allow_list=True)
-        assert i.concat(i2).to_list() == ["1", "2", "3", "a", "b", "c"]
+        assert i.concat(i2).tolist() == ["1", "2", "3", "a", "b", "c"]
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_lookup(self, size):
         idx = ak.Index.factory(ak.arange(size))
         lk = idx.lookup(ak.array([0, size - 1]))
 
-        assert lk.to_list() == [i in [0, size - 1] for i in range(size)]
+        assert lk.tolist() == [i in [0, size - 1] for i in range(size)]
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_multi_argsort(self, size):
         idx = ak.Index.factory([ak.arange(size), ak.arange(size)])
         s = idx.argsort(False)
-        assert s.to_list() == list(reversed(range(size)))
+        assert s.tolist() == list(reversed(range(size)))
 
         s = idx.argsort()
-        assert s.to_list() == list(range(size))
+        assert s.tolist() == list(range(size))
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_multi_concat(self, size):
@@ -512,7 +512,7 @@ class TestIndex:
         lk = ak.array(truth)
         result = idx.lookup([lk, lk])
 
-        assert result.to_list() == [i in truth for i in range(size)]
+        assert result.tolist() == [i in truth for i in range(size)]
 
     def test_save(self, df_test_base_tmp):
         locale_count = ak.get_config()["numLocales"]
@@ -577,18 +577,18 @@ class TestIndex:
         i4 = ak.Index(ak.array(["a", "b", "c"]))
         assert array_equal(i4.to_ndarray(), ndarray(["a", "b", "c"]))
 
-    def test_to_list(self):
+    def test_tolist(self):
         i = ak.Index([1, 2, 3])
-        assert i.to_list() == [1, 2, 3]
+        assert i.tolist() == [1, 2, 3]
 
         i2 = ak.Index([1, 2, 3], allow_list=True)
-        assert i2.to_list() == [1, 2, 3]
+        assert i2.tolist() == [1, 2, 3]
 
         i3 = ak.Index(["a", "b", "c"], allow_list=True)
-        assert i3.to_list() == ["a", "b", "c"]
+        assert i3.tolist() == ["a", "b", "c"]
 
         i4 = ak.Index(ak.array(["a", "b", "c"]))
-        assert i4.to_list() == ["a", "b", "c"]
+        assert i4.tolist() == ["a", "b", "c"]
 
     def test_register_list_values(self):
         i = ak.Index([1, 2, 3], allow_list=True)

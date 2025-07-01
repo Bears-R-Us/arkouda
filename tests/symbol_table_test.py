@@ -59,7 +59,7 @@ class TestRegistration:
         attach_pda = ak.attach(reg_name)
         assert attach_pda.is_registered()
         assert pda.registered_name == attach_pda.registered_name
-        assert pda.to_list() == attach_pda.to_list()
+        assert pda.tolist() == attach_pda.tolist()
         if dtype == ak.str_:
             assert isinstance(attach_pda, ak.Strings)
         else:
@@ -100,7 +100,7 @@ class TestRegistration:
         attach_ip = ak.attach(reg_name)
         assert attach_ip.is_registered()
         assert ip.registered_name == attach_ip.registered_name
-        assert ip.to_list() == attach_ip.to_list()
+        assert ip.tolist() == attach_ip.tolist()
         assert isinstance(attach_ip, ak.IPv4)
 
         # validate error handling for double registration
@@ -138,7 +138,7 @@ class TestRegistration:
         attach_dt = ak.attach(reg_name)
         assert attach_dt.is_registered()
         assert dt.registered_name == attach_dt.registered_name
-        assert dt.to_list() == attach_dt.to_list()
+        assert dt.tolist() == attach_dt.tolist()
         assert isinstance(attach_dt, ak.Datetime)
 
         # validate error handling for double registration
@@ -176,7 +176,7 @@ class TestRegistration:
         attach_td = ak.attach(reg_name)
         assert attach_td.is_registered()
         assert td.registered_name == attach_td.registered_name
-        assert td.to_list() == attach_td.to_list()
+        assert td.tolist() == attach_td.tolist()
         assert isinstance(attach_td, ak.Timedelta)
 
         # validate error handling for double registration
@@ -218,7 +218,7 @@ class TestRegistration:
         attach_sa = ak.attach(reg_name)
         assert attach_sa.is_registered()
         assert sa.registered_name == attach_sa.registered_name
-        assert sa.to_list() == attach_sa.to_list()
+        assert sa.tolist() == attach_sa.tolist()
         assert isinstance(attach_sa, ak.SegArray)
 
         # validate error handling for double registration
@@ -343,11 +343,11 @@ class TestRegistration:
         assert attach_g.is_registered()
         assert g.registered_name == attach_g.registered_name
         # need to index the attached to ensure same columns order
-        assert g.segments.to_list() == attach_g.segments.to_list()
-        assert g.permutation.to_list() == attach_g.permutation.to_list()
-        assert g._uki.to_list() == attach_g._uki.to_list()
+        assert g.segments.tolist() == attach_g.segments.tolist()
+        assert g.permutation.tolist() == attach_g.permutation.tolist()
+        assert g._uki.tolist() == attach_g._uki.tolist()
         for k, attach_k in zip(g.keys, attach_g.keys):
-            assert k.to_list() == attach_k.to_list()
+            assert k.tolist() == attach_k.tolist()
         assert isinstance(attach_g, ak.GroupBy)
 
         # validate error handling for double registration
@@ -391,12 +391,12 @@ class TestRegistration:
         assert attach_cat.is_registered()
         assert cat.registered_name == attach_cat.registered_name
         # need to index the attached to ensure same columns order
-        assert cat.codes.to_list() == attach_cat.codes.to_list()
-        assert cat.categories.to_list() == attach_cat.categories.to_list()
-        assert cat._akNAcode.to_list() == attach_cat._akNAcode.to_list()
+        assert cat.codes.tolist() == attach_cat.codes.tolist()
+        assert cat.categories.tolist() == attach_cat.categories.tolist()
+        assert cat._akNAcode.tolist() == attach_cat._akNAcode.tolist()
         if cat.segments is not None and cat.permutation is not None:
-            assert cat.segments.to_list() == attach_cat.segments.to_list()
-            assert cat.permutation.to_list() == attach_cat.permutation.to_list()
+            assert cat.segments.tolist() == attach_cat.segments.tolist()
+            assert cat.permutation.tolist() == attach_cat.permutation.tolist()
         assert isinstance(attach_cat, ak.Categorical)
 
         # validate error handling for double registration
@@ -436,7 +436,7 @@ class TestRegistration:
         attach_i = ak.attach(reg_name)
         assert attach_i.is_registered()
         assert i.registered_name == attach_i.registered_name
-        assert i.to_list() == attach_i.to_list()
+        assert i.tolist() == attach_i.tolist()
         assert isinstance(attach_i, ak.Index)
 
         # validate error handling for double registration
@@ -490,7 +490,7 @@ class TestRegistration:
         attach_i = ak.attach(reg_name)
         assert attach_i.is_registered()
         assert i.registered_name == attach_i.registered_name
-        assert i.to_list() == attach_i.to_list()
+        assert i.tolist() == attach_i.tolist()
         assert isinstance(attach_i, ak.MultiIndex)
 
         # validate error handling for double registration
@@ -531,7 +531,7 @@ class TestRegistration:
         attach_s = ak.attach(reg_name)
         assert attach_s.is_registered()
         assert s.registered_name == attach_s.registered_name
-        assert s.to_list() == attach_s.to_list()
+        assert s.tolist() == attach_s.tolist()
         assert isinstance(attach_s, ak.Series)
 
         # validate error handling for double registration
@@ -570,7 +570,7 @@ class TestRegistration:
         attach_b = ak.attach(reg_name)
         assert attach_b.is_registered()
         assert b.registered_name, attach_b.registered_name
-        assert b.to_list() == attach_b.to_list()
+        assert b.tolist() == attach_b.tolist()
         assert isinstance(attach_b, ak.BitVector)
 
         # validate error handling for double registration
@@ -695,8 +695,8 @@ class TestRegistration:
         assert "MyCat" in att
         assert isinstance(att["MyArray"], ak.pdarray)
         assert isinstance(att["MyCat"], ak.Categorical)
-        assert att["MyArray"].to_list() == a.to_list()
-        assert att["MyCat"].to_list() == c.to_list()
+        assert att["MyArray"].tolist() == a.tolist()
+        assert att["MyCat"].tolist() == c.tolist()
 
         # validate all objects are unregistered
         ak.unregister_all(["MyStrings", "MyArray"])

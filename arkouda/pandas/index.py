@@ -456,7 +456,7 @@ class Index:
             val = convert_if_categorical(self.values)
             return val.to_ndarray()
 
-    def to_list(self):
+    def tolist(self):
         if isinstance(self.values, list):
             return self.values
         else:
@@ -1260,7 +1260,7 @@ class MultiIndex(Index):
     def to_ndarray(self):
         return ndarray([convert_if_categorical(val).to_ndarray() for val in self.levels])
 
-    def to_list(self):
+    def tolist(self):
         return self.to_ndarray().tolist()
 
     def register(self, user_defined_name):

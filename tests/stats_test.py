@@ -69,7 +69,7 @@ class TestStats:
 
         # is there a better way to compare to pandas dataframe when the index doesn't match
         for c in ak_df.columns:
-            assert np.allclose(ak_df[c].to_list(), pd_df[c].to_list())
+            assert np.allclose(ak_df[c].tolist(), pd_df[c].tolist())
 
         # verify this doesn't have scoping issues with numeric conversion
         ak.DataFrame(
@@ -142,16 +142,16 @@ class TestStats:
         for ak_args, np_args in all_args:
             ak_div, ak_mod = ak.divmod(*ak_args)
             np_div, np_mod = np.divmod(*np_args)
-            assert ak_div.to_list() == np_div.tolist()
-            assert ak_mod.to_list() == np_mod.tolist()
+            assert ak_div.tolist() == np_div.tolist()
+            assert ak_mod.tolist() == np_mod.tolist()
 
         # Boolean where argument
         truth = ak.arange(10) % 2 == 0
         ak_div_truth, ak_mod_truth = ak.divmod(self.x, self.y, where=truth)
         div_ans = [(self.x[i] // self.y[i]) if truth[i] else self.x[i] for i in range(10)]
         mod_ans = [(self.x[i] % self.y[i]) if truth[i] else self.x[i] for i in range(10)]
-        assert ak_div_truth.to_list() == div_ans
-        assert ak_mod_truth.to_list() == mod_ans
+        assert ak_div_truth.tolist() == div_ans
+        assert ak_mod_truth.tolist() == mod_ans
 
         # Edge cases in the numerator
         edge_case = [-np.inf, -7.0, -0.0, np.nan, 0.0, 7.0, np.inf]

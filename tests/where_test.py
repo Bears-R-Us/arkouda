@@ -56,7 +56,7 @@ class TestWhere:
 
         cond = a1 < 5
         result = ak.where(cond, a1, a2)
-        assert np_result.tolist() == result.to_list()
+        assert np_result.tolist() == result.tolist()
 
     def test_greater_than_where_clause(self):
         n1 = np.arange(1, 10)
@@ -69,7 +69,7 @@ class TestWhere:
 
         cond = a1 > 5
         result = ak.where(cond, a1, a2)
-        assert np_result.tolist() == result.to_list()
+        assert np_result.tolist() == result.tolist()
 
     def test_greater_than_where_clause_with_scalars(self):
         n1 = np.arange(1, 10)
@@ -80,12 +80,12 @@ class TestWhere:
 
         condA = a1 > 5
         result = ak.where(condA, a1, 1)
-        assert np_result.tolist() == result.to_list()
+        assert np_result.tolist() == result.tolist()
 
         np_result = np.where(condN, 1, n1)
 
         result = ak.where(condA, 1, a1)
-        assert np_result.tolist() == result.to_list()
+        assert np_result.tolist() == result.tolist()
 
     def test_not_equal_where_clause(self):
         n1 = np.arange(1, 10)
@@ -98,7 +98,7 @@ class TestWhere:
 
         cond = a1 != 5
         result = ak.where(cond, a1, a2)
-        assert np_result.tolist() == result.to_list()
+        assert np_result.tolist() == result.tolist()
 
     def test_equals_where_clause(self):
         n1 = np.arange(1, 10)
@@ -111,7 +111,7 @@ class TestWhere:
 
         cond = a1 == 5
         result = ak.where(cond, a1, a2)
-        assert np_result.tolist() == result.to_list()
+        assert np_result.tolist() == result.tolist()
 
     def test_where_filter(self):
         n1 = np.arange(1, 10)
@@ -120,8 +120,8 @@ class TestWhere:
         a2 = ak.array(n2)
 
         assert n2.tolist() == n1[n1 > 5].tolist()
-        assert a2.to_list() == a1[a1 > 5].to_list()
-        assert n1[n1 > 5].tolist() == a1[a1 > 5].to_list()
+        assert a2.tolist() == a1[a1 > 5].tolist()
+        assert n1[n1 > 5].tolist() == a1[a1 > 5].tolist()
 
     def test_multiple_where_clauses(self):
         n1 = np.arange(1, 10)
@@ -145,6 +145,6 @@ class TestWhere:
         for dt in (ak.int64, ak.uint64, ak.float64, ak.bool_):
             a = ak.ones(10, dtype=dt)
             b = ak.ones(10, dtype=dt)
-            assert ak.where(cond, a, b).to_list() == a.to_list()
-            assert ak.where(cond, 1, b).to_list() == a.to_list()
-            assert ak.where(cond, a, 1).to_list() == a.to_list()
+            assert ak.where(cond, a, b).tolist() == a.tolist()
+            assert ak.where(cond, 1, b).tolist() == a.tolist()
+            assert ak.where(cond, a, 1).tolist() == a.tolist()

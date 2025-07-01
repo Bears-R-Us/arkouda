@@ -78,7 +78,7 @@ class TestSort:
             pda_bigint = pda + 2**200
             sorted_pda = ak.sort(pda, algo)
             sorted_bi = ak.sort(pda_bigint, algo)
-            assert (sorted_bi - 2**200).to_list() == sorted_pda.to_list()
+            assert (sorted_bi - 2**200).tolist() == sorted_pda.tolist()
 
     @pytest.mark.parametrize("algo", SortingAlgorithm)
     def test_bit_boundary_hardcode(self, algo):

@@ -27,7 +27,7 @@ class TestSeries:
     def test_series_creation(self, dtype):
         idx = ak.arange(3, dtype=dtype)
         for val in idx, ak.array(["A", "B", "C"]):
-            ans = ak.Series(data=val, index=idx).to_list()
+            ans = ak.Series(data=val, index=idx).tolist()
             for series in (
                 ak.Series(data=val, index=idx),
                 ak.Series(data=val),
@@ -37,7 +37,7 @@ class TestSeries:
             ):
                 assert isinstance(series, ak.Series)
                 assert isinstance(series.index, ak.Index)
-                assert series.to_list() == ans
+                assert series.tolist() == ans
 
         with pytest.raises(TypeError):
             ak.Series(index=idx)
@@ -132,7 +132,7 @@ class TestSeries:
         )
         assert (added.index == ak.arange(size)).all()
         if dtype != ak.bool_:
-            assert all(i in added.values.to_list() for i in range(size))
+            assert all(i in added.values.tolist() for i in range(size))
         else:
             # we have exactly one False
             assert added.values.sum() == 99
@@ -140,8 +140,8 @@ class TestSeries:
     @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
     def test_topn(self, dtype):
         top = ak.Series(ak.arange(100, dtype=dtype)).topn(50)
-        assert top.values.to_list() == list(range(99, 49, -1))
-        assert top.index.to_list() == list(range(99, 49, -1))
+        assert top.values.tolist() == list(range(99, 49, -1))
+        assert top.index.tolist() == list(range(99, 49, -1))
 
     @pytest.mark.parametrize("dtype", NUMERICAL_TYPES)
     @pytest.mark.parametrize("dtype_index", NUMERICAL_TYPES)
@@ -162,12 +162,12 @@ class TestSeries:
         perm = ak.array(gen_perm(100), dtype=dtype_index)
 
         idx_sort = ak.Series(data=ordered, index=perm).sort_index()
-        assert idx_sort.index.to_list() == ordered.to_list()
-        assert idx_sort.values.to_list() == perm.to_list()
+        assert idx_sort.index.tolist() == ordered.tolist()
+        assert idx_sort.values.tolist() == perm.tolist()
 
         val_sort = ak.Series(data=perm, index=ordered).sort_values()
-        assert val_sort.index.to_pandas().tolist() == perm.to_list()
-        assert val_sort.values.to_list() == ordered.to_list()
+        assert val_sort.index.to_pandas().tolist() == perm.tolist()
+        assert val_sort.values.tolist() == ordered.tolist()
 
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_head_tail(self, dtype):
@@ -175,23 +175,23 @@ class TestSeries:
         s = ak.Series(ak.arange(n, dtype=dtype))
         for i in range(n):
             head = s.head(i)
-            assert head.index.to_list() == list(range(i))
-            assert head.values.to_list() == ak.arange(i, dtype=dtype).to_list()
+            assert head.index.tolist() == list(range(i))
+            assert head.values.tolist() == ak.arange(i, dtype=dtype).tolist()
 
             tail = s.tail(i)
-            assert tail.index.to_list() == ak.arange(n)[-i:n].to_list()
-            assert tail.values.to_list() == ak.arange(n, dtype=dtype)[-i:n].to_list()
+            assert tail.index.tolist() == ak.arange(n)[-i:n].tolist()
+            assert tail.values.tolist() == ak.arange(n, dtype=dtype)[-i:n].tolist()
 
     def test_value_counts(self):
         s = ak.Series(ak.array([1, 2, 0, 2, 0]))
 
         c = s.value_counts()
-        assert c.index.to_list() == [0, 2, 1]
-        assert c.values.to_list() == [2, 2, 1]
+        assert c.index.tolist() == [0, 2, 1]
+        assert c.values.tolist() == [2, 2, 1]
 
         c = s.value_counts(sort=False)
-        assert c.index.to_list() == list(range(3))
-        assert c.values.to_list() == [2, 1, 2]
+        assert c.index.tolist() == list(range(3))
+        assert c.values.tolist() == [2, 1, 2]
 
     def test_concat(self):
         s = ak.Series(ak.arange(5))
@@ -213,7 +213,7 @@ class TestSeries:
         pd_assert_frame_equal(ref_df, df.to_pandas())
 
         def list_helper(arr):
-            return arr.to_list() if isinstance(arr, (ak.pdarray, ak.Index)) else arr.tolist()
+            return arr.tolist() if isinstance(arr, (ak.pdarray, ak.Index)) else arr.tolist()
 
         for fname in "concat", "pdconcat":
             func = getattr(ak.Series, fname)
@@ -265,35 +265,35 @@ class TestSeries:
         c = ak.Series(ak.array([1.0, 1.0, 2.2, 2.2, 4.4]), index=ak.array([5, 4, 2, 3, 1]))
 
         result = a.map({"4": 25, "5": 30, "1": 7})
-        assert result.index.values.to_list() == [0, 1, 2, 3, 4]
-        assert result.values.to_list() == [7, 7, 25, 25, 25]
+        assert result.index.values.tolist() == [0, 1, 2, 3, 4]
+        assert result.values.tolist() == [7, 7, 25, 25, 25]
 
         result = a.map({"1": 7})
-        assert result.index.values.to_list() == [0, 1, 2, 3, 4]
+        assert result.index.values.tolist() == [0, 1, 2, 3, 4]
         assert (
-            result.values.to_list()
-            == ak.cast(ak.array([7, 7, np.nan, np.nan, np.nan]), dt=ak.int64).to_list()
+            result.values.tolist()
+            == ak.cast(ak.array([7, 7, np.nan, np.nan, np.nan]), dt=ak.int64).tolist()
         )
 
         result = a.map({"1": 7.0})
-        assert result.index.values.to_list() == [0, 1, 2, 3, 4]
-        assert np.allclose(result.values.to_list(), [7.0, 7.0, np.nan, np.nan, np.nan], equal_nan=True)
+        assert result.index.values.tolist() == [0, 1, 2, 3, 4]
+        assert np.allclose(result.values.tolist(), [7.0, 7.0, np.nan, np.nan, np.nan], equal_nan=True)
 
         result = b.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
-        assert result.index.values.to_list() == [0, 1, 2, 3, 4]
-        assert result.values.to_list() == [30.0, 5.0, 30.0, 5.0, 25.0]
+        assert result.index.values.tolist() == [0, 1, 2, 3, 4]
+        assert result.values.tolist() == [30.0, 5.0, 30.0, 5.0, 25.0]
 
         result = c.map({1.0: "a", 2.2: "b", 4.4: "c", 5.0: "d"})
-        assert result.index.values.to_list() == [5, 4, 2, 3, 1]
-        assert result.values.to_list() == ["a", "a", "b", "b", "c"]
+        assert result.index.values.tolist() == [5, 4, 2, 3, 1]
+        assert result.values.tolist() == ["a", "a", "b", "b", "c"]
 
         result = c.map({1.0: "a"})
-        assert result.index.values.to_list() == [5, 4, 2, 3, 1]
-        assert result.values.to_list() == ["a", "a", "null", "null", "null"]
+        assert result.index.values.tolist() == [5, 4, 2, 3, 1]
+        assert result.values.tolist() == ["a", "a", "null", "null", "null"]
 
         result = c.map({1.0: "a", 2.2: "b", 4.4: "c", 5.0: "d", 6.0: "e"})
-        assert result.index.values.to_list() == [5, 4, 2, 3, 1]
-        assert result.values.to_list() == ["a", "a", "b", "b", "c"]
+        assert result.index.values.tolist() == [5, 4, 2, 3, 1]
+        assert result.values.tolist() == ["a", "a", "b", "b", "c"]
 
     def test_to_markdown(self):
         s = ak.Series(["elk", "pig", "dog", "quetzal"], name="animal")
@@ -402,19 +402,19 @@ class TestSeries:
         data = ak.Series([1, np.nan, 3, np.nan, 5])
 
         fill_values1 = ak.ones(5)
-        assert data.fillna(fill_values1).to_list() == [1.0, 1.0, 3.0, 1.0, 5.0]
+        assert data.fillna(fill_values1).tolist() == [1.0, 1.0, 3.0, 1.0, 5.0]
 
         fill_values2 = Series(2 * ak.ones(5))
-        assert data.fillna(fill_values2).to_list() == [1.0, 2.0, 3.0, 2.0, 5.0]
+        assert data.fillna(fill_values2).tolist() == [1.0, 2.0, 3.0, 2.0, 5.0]
 
         fill_values3 = 100.0
-        assert data.fillna(fill_values3).to_list() == [1.0, 100.0, 3.0, 100.0, 5.0]
+        assert data.fillna(fill_values3).tolist() == [1.0, 100.0, 3.0, 100.0, 5.0]
 
     def test_series_segarray_to_pandas(self):
         # reproducer for issue #3222
         sa = ak.SegArray(ak.arange(0, 30, 3), ak.arange(30))
         akdf = ak.DataFrame({"test": sa})
-        pddf = pd.DataFrame({"test": sa.to_list()})
+        pddf = pd.DataFrame({"test": sa.tolist()})
 
         pd_assert_frame_equal(akdf.to_pandas(), pddf)
         pd_assert_series_equal(akdf.to_pandas()["test"], pddf["test"], check_names=False)
@@ -440,8 +440,8 @@ class TestSeries:
         s1_a2 = s1["C"]
         assert isinstance(_s1_a2, pd.Series)
         assert isinstance(s1_a2, ak.Series)
-        assert s1_a2.index.to_list() == _s1_a2.index.tolist()
-        assert s1_a2.values.to_list() == _s1_a2.values.tolist()
+        assert s1_a2.index.tolist() == _s1_a2.index.tolist()
+        assert s1_a2.values.tolist() == _s1_a2.values.tolist()
 
         _s2 = pd.Series(index=np.array(ints), data=np.array(strings))
         s2 = ak.Series(index=ak.array(ints), data=ak.array(strings))
@@ -459,8 +459,8 @@ class TestSeries:
         s2_a2 = s2[3]
         assert isinstance(_s2_a2, pd.Series)
         assert isinstance(s2_a2, ak.Series)
-        assert s2_a2.index.to_list() == _s2_a2.index.tolist()
-        assert s2_a2.values.to_list() == _s2_a2.values.tolist()
+        assert s2_a2.index.tolist() == _s2_a2.index.tolist()
+        assert s2_a2.values.tolist() == _s2_a2.values.tolist()
 
         _s3 = pd.Series(index=np.array(floats), data=np.array(ints))
         s3 = ak.Series(index=ak.array(floats), data=ak.array(ints))
@@ -477,8 +477,8 @@ class TestSeries:
         s3_a2 = s3[1.5]
         assert isinstance(_s3_a2, pd.Series)
         assert isinstance(s3_a2, ak.Series)
-        assert s3_a2.index.to_list() == _s3_a2.index.tolist()
-        assert s3_a2.values.to_list() == _s3_a2.values.tolist()
+        assert s3_a2.index.tolist() == _s3_a2.index.tolist()
+        assert s3_a2.values.tolist() == _s3_a2.values.tolist()
 
     def test_getitem_vectors(self):
         ints = [0, 1, 3, 7, 3]
@@ -501,20 +501,20 @@ class TestSeries:
         _s1_a1 = _s1[np.array(["A", "Z"])]
         s1_a1 = s1[ak.array(["A", "Z"])]
         assert isinstance(s1_a1, ak.Series)
-        assert s1_a1.index.to_list() == _s1_a1.index.tolist()
-        assert s1_a1.values.to_list() == _s1_a1.values.tolist()
+        assert s1_a1.index.tolist() == _s1_a1.index.tolist()
+        assert s1_a1.values.tolist() == _s1_a1.values.tolist()
 
         _s1_a2 = _s1[["C", "DE"]]
         s1_a2 = s1[["C", "DE"]]
         assert isinstance(s1_a2, ak.Series)
-        assert s1_a2.index.to_list() == _s1_a2.index.tolist()
-        assert s1_a2.values.to_list() == _s1_a2.values.tolist()
+        assert s1_a2.index.tolist() == _s1_a2.index.tolist()
+        assert s1_a2.values.tolist() == _s1_a2.values.tolist()
 
         _s1_a3 = _s1[[True, False, True, False, False]]
         s1_a3 = s1[[True, False, True, False, False]]
         assert isinstance(s1_a3, ak.Series)
-        assert s1_a3.index.to_list() == _s1_a3.index.tolist()
-        assert s1_a3.values.to_list() == _s1_a3.values.tolist()
+        assert s1_a3.index.tolist() == _s1_a3.index.tolist()
+        assert s1_a3.values.tolist() == _s1_a3.values.tolist()
 
         with pytest.raises(IndexError):
             _s1[[True, False, True]]
@@ -539,14 +539,14 @@ class TestSeries:
         _s2_a1 = _s2[[0.5, 0.0]]
         s2_a1 = s2[[0.5, 0.0]]
         assert isinstance(s1_a2, ak.Series)
-        assert s2_a1.index.to_list() == _s2_a1.index.tolist()
-        assert s2_a1.values.to_list() == _s2_a1.values.tolist()
+        assert s2_a1.index.tolist() == _s2_a1.index.tolist()
+        assert s2_a1.values.tolist() == _s2_a1.values.tolist()
 
         _s2_a2 = _s2[np.array([0.5, 0.0])]
         s2_a2 = s2[ak.array([0.5, 0.0])]
         assert isinstance(s1_a2, ak.Series)
-        assert s2_a2.index.to_list() == _s2_a2.index.tolist()
-        assert s2_a2.values.to_list() == _s2_a2.values.tolist()
+        assert s2_a2.index.tolist() == _s2_a2.index.tolist()
+        assert s2_a2.values.tolist() == _s2_a2.values.tolist()
 
         with pytest.raises(KeyError):
             _s2_a3 = _s2[[1.5, 1.2]]
@@ -556,8 +556,8 @@ class TestSeries:
         _s2_a3 = _s2[[1.5, 0.0]]
         s2_a3 = s2[[1.5, 0.0]]
         assert isinstance(s2_a2, ak.Series)
-        assert s2_a3.index.to_list() == _s2_a3.index.tolist()
-        assert s2_a3.values.to_list() == _s2_a3.values.tolist()
+        assert s2_a3.index.tolist() == _s2_a3.index.tolist()
+        assert s2_a3.values.tolist() == _s2_a3.values.tolist()
 
     def test_setitem_scalars(self):
         ints = [0, 1, 3, 7, 3]
@@ -578,17 +578,17 @@ class TestSeries:
 
         s1["A"] = 0.2
         _s1["A"] = 0.2
-        assert s1.values.to_list() == _s1.values.tolist()
+        assert s1.values.tolist() == _s1.values.tolist()
         s1["C"] = 1.2
         _s1["C"] = 1.2
-        assert s1.values.to_list() == _s1.values.tolist()
+        assert s1.values.tolist() == _s1.values.tolist()
         s1["X"] = 0.0
         _s1["X"] = 0.0
-        assert s1.index.to_list() == _s1.index.tolist()
-        assert s1.values.to_list() == _s1.values.tolist()
+        assert s1.index.tolist() == _s1.index.tolist()
+        assert s1.values.tolist() == _s1.values.tolist()
         s1["C"] = [0.3, 0.4]
         _s1["C"] = [0.3, 0.4]
-        assert s1.values.to_list() == _s1.values.tolist()
+        assert s1.values.tolist() == _s1.values.tolist()
 
         with pytest.raises(ValueError):
             s1["C"] = [0.4, 0.3, 0.2]
@@ -610,32 +610,32 @@ class TestSeries:
 
         s3 = ak.Series(index=ak.array(floats), data=ak.array(ints))
         _s3 = pd.Series(index=np.array(floats), data=np.array(ints))
-        assert s3.values.to_list() == [0, 1, 3, 7, 3]
-        assert s3.index.to_list() == [0.0, 1.5, 0.5, 1.5, -1.0]
-        assert s3.values.to_list() == _s3.values.tolist()
-        assert s3.index.to_list() == _s3.index.tolist()
+        assert s3.values.tolist() == [0, 1, 3, 7, 3]
+        assert s3.index.tolist() == [0.0, 1.5, 0.5, 1.5, -1.0]
+        assert s3.values.tolist() == _s3.values.tolist()
+        assert s3.index.tolist() == _s3.index.tolist()
         s3[0.0] = 2
         _s3[0.0] = 2
-        assert s3.values.to_list() == _s3.values.tolist()
+        assert s3.values.tolist() == _s3.values.tolist()
         _s3[1.5] = 8
         s3[1.5] = 8
-        assert s3.values.to_list() == _s3.values.tolist()
+        assert s3.values.tolist() == _s3.values.tolist()
         _s3[2.0] = 9
         s3[2.0] = 9
-        assert s3.index.to_list() == _s3.index.tolist()
-        assert s3.values.to_list() == _s3.values.tolist()
+        assert s3.index.tolist() == _s3.index.tolist()
+        assert s3.values.tolist() == _s3.values.tolist()
         _s3[1.5] = [4, 5]
         s3[1.5] = [4, 5]
-        assert s3.values.to_list() == _s3.values.tolist()
+        assert s3.values.tolist() == _s3.values.tolist()
         _s3[1.5] = np.array([6, 7])
         s3[1.5] = ak.array([6, 7])
-        assert s3.values.to_list() == _s3.values.tolist()
+        assert s3.values.tolist() == _s3.values.tolist()
         _s3[1.5] = [8]
         s3[1.5] = [8]
-        assert s3.values.to_list() == _s3.values.tolist()
+        assert s3.values.tolist() == _s3.values.tolist()
         _s3[1.5] = np.array([2])
         s3[1.5] = ak.array([2])
-        assert s3.values.to_list() == _s3.values.tolist()
+        assert s3.values.tolist() == _s3.values.tolist()
         with pytest.raises(ValueError):
             s3[1.5] = [9, 10, 11]
         with pytest.raises(ValueError):
@@ -644,8 +644,8 @@ class TestSeries:
         # adding new entries
         _s3[-1.0] = 14
         s3[-1.0] = 14
-        assert s3.values.to_list() == _s3.values.tolist()
-        assert s3.index.to_list() == _s3.index.tolist()
+        assert s3.values.tolist() == _s3.values.tolist()
+        assert s3.index.tolist() == _s3.index.tolist()
 
         # pandas makes the entry a list, which is not what we want.
         with pytest.raises(ValueError):
@@ -684,10 +684,10 @@ class TestSeries:
         _s2 = pd.Series(index=pd.array(["A", "C", "DE", "F", "Z"]), data=pd.array(ints))
         s2[["A", "Z"]] = 2
         _s2[["A", "Z"]] = 2
-        assert s2.values.to_list() == _s2.values.tolist()
+        assert s2.values.tolist() == _s2.values.tolist()
         s2[ak.array(["A", "Z"])] = 3
         _s2[np.array(["A", "Z"])] = 3
-        assert s2.values.to_list() == _s2.values.tolist()
+        assert s2.values.tolist() == _s2.values.tolist()
         with pytest.raises(ValueError):
             _s2[np.array(["A", "Z"])] = [3]
         with pytest.raises(ValueError):
@@ -705,12 +705,12 @@ class TestSeries:
             _s2[["B"]] = 0
         with pytest.raises(KeyError):
             s2[["B"]] = 0
-        assert s2.values.to_list() == _s2.values.tolist()
-        assert s2.index.to_list() == _s2.index.tolist()
+        assert s2.values.tolist() == _s2.values.tolist()
+        assert s2.index.tolist() == _s2.index.tolist()
 
         _s2[np.array(["A", "C", "F"])] = [10, 11, 12]
         s2[ak.array(["A", "C", "F"])] = [10, 11, 12]
-        assert s2.values.to_list() == _s2.values.tolist()
+        assert s2.values.tolist() == _s2.values.tolist()
 
     def test_iloc(self):
         floats = [0.0, 1.5, 0.5, 1.5, -1.0]
@@ -727,11 +727,11 @@ class TestSeries:
 
         s1_a1 = s1.iloc[0]
         assert isinstance(s1_a1, ak.Series)
-        assert s1_a1.index.to_list() == ["A"]
-        assert s1_a1.values.to_list() == [0.0]
+        assert s1_a1.index.tolist() == ["A"]
+        assert s1_a1.values.tolist() == [0.0]
         _s1.iloc[0] = 1.0
         s1.iloc[0] = 1.0
-        assert s1.values.to_list() == _s1.values.tolist()
+        assert s1.values.tolist() == _s1.values.tolist()
 
         with pytest.raises(pd.errors.IndexingError):
             _s1_a2 = _s1.iloc[1, 3]
@@ -744,11 +744,11 @@ class TestSeries:
 
         _s1_a2 = _s1.iloc[[1, 2]]
         s1_a2 = s1.iloc[[1, 2]]
-        assert s1_a2.index.to_list() == _s1_a2.index.tolist()
-        assert s1_a2.values.to_list() == _s1_a2.values.tolist()
+        assert s1_a2.index.tolist() == _s1_a2.index.tolist()
+        assert s1_a2.values.tolist() == _s1_a2.values.tolist()
         _s1.iloc[[1, 2]] = 0.2
         s1.iloc[[1, 2]] = 0.2
-        assert s1.values.to_list() == _s1.values.tolist()
+        assert s1.values.tolist() == _s1.values.tolist()
 
         with pytest.raises(ValueError):
             _s1.iloc[[3, 4]] = [0.3]
@@ -757,7 +757,7 @@ class TestSeries:
 
         _s1.iloc[[3, 4]] = [0.4, 0.5]
         s1.iloc[[3, 4]] = [0.4, 0.5]
-        assert s1.values.to_list() == _s1.values.tolist()
+        assert s1.values.tolist() == _s1.values.tolist()
 
         with pytest.raises(TypeError):
             # in pandas this hits a NotImplementedError
@@ -783,11 +783,11 @@ class TestSeries:
         # can also take boolean array
         _b = _s1.iloc[[True, False, True, True, False]]
         b = s1.iloc[[True, False, True, True, False]]
-        assert b.values.to_list() == _b.values.tolist()
+        assert b.values.tolist() == _b.values.tolist()
 
         _s1.iloc[[True, False, False, True, False]] = [0.5, 0.6]
         s1.iloc[[True, False, False, True, False]] = [0.5, 0.6]
-        assert b.values.to_list() == _b.values.tolist()
+        assert b.values.tolist() == _b.values.tolist()
 
         with pytest.raises(IndexError):
             _s1.iloc[[True, False, True]]
