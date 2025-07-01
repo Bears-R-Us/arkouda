@@ -87,7 +87,11 @@ def argsort(
     if axis == -1:
         axis = int(ndim) - 1
 
-    check_type(argname="argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
+    check_type(
+        argname="argsort",
+        value=pda,
+        expected_type=Union[pdarray, Strings, Categorical],
+    )
 
     if isinstance(pda, Categorical):
         return cast(Categorical, pda).argsort()
@@ -161,7 +165,9 @@ def coargsort(
     from arkouda.pandas.categorical import Categorical
 
     check_type(
-        argname="coargsort", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]]
+        argname="coargsort",
+        value=arrays,
+        expected_type=Sequence[Union[pdarray, Strings, Categorical]],
     )
     size: int_scalars = -1
     anames, atypes, expanded_arrays = [], [], []
@@ -227,7 +233,9 @@ def coargsort(
 
 @typechecked
 def sort(
-    pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: int_scalars = -1
+    pda: pdarray,
+    algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+    axis: int_scalars = -1,
 ) -> pdarray:
     """
     Return a sorted copy of the array. Only sorts numeric arrays;
@@ -291,7 +299,10 @@ def sort(
 
 @typechecked
 def searchsorted(
-    a: pdarray, v: Union[int_scalars, float64, bigint, pdarray], side: Literal["left", "right"] = "left", x2_sorted: bool = False
+    a: pdarray,
+    v: Union[int_scalars, float64, bigint, pdarray],
+    side: Literal["left", "right"] = "left",
+    x2_sorted: bool = False,
 ) -> Union[int, pdarray]:
     """
     Find indices where elements should be inserted to maintain order.

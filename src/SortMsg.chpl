@@ -99,7 +99,7 @@ module SortMsg
 
 
   proc searchSortedFast(x1: [?d1] ?t, x2: [?d2] t, side: string): [d2] int throws
-    where ((d1.rank == 1) &&
+    where (((d1.rank == 1) && (d2.rank == 1)) &&
             (t == int || t == real || t == uint || t == uint(8) ||
             t == bigint))
   {
@@ -294,7 +294,7 @@ module SortMsg
           throw new Error("searchSorted side must be a string with value 'left' or 'right'.");
       }
 
-      if x2Sorted && x1.size >= numLocales {
+      if x2Sorted && x1.size >= numLocales && d2.rank == 1{
         // If x2 is already sorted, we can use the fast version
         param msg = "Fast searchSorted path taken";
         sortLogger.info(getModuleName(),getRoutineName(),getLineNumber(), msg);
