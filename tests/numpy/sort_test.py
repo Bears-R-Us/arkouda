@@ -170,7 +170,7 @@ class TestSort:
         else:
             assert_arkouda_array_equivalent(ak_output, np_output)
 
-    @pytest.mark.parametrize("dtype", [ak.float64, ak.int64, ak.bigint, ak.uint64])
+    @pytest.mark.parametrize("dtype", [ak.float64, ak.int64, ak.uint64, ak.bigint])
     @pytest.mark.parametrize("side", ["left", "right"])
     def test_searchsorted_fast_edge_cases(self, dtype, side):
         # Test edge cases for searchsorted with fast path enabled
@@ -290,11 +290,17 @@ class TestSort:
             ([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17], [1,8,16,17]),
         ]
         for x1, x2 in edge_cases:
-            np_x1 = np.array(x1, dtype=dtype)
-            np_x2 = np.array(x2, dtype=dtype)
-            ak_x1 = ak.array(np_x1)
-            ak_x2 = ak.array(np_x2)
+            ak_x1 = ak.array(x1, dtype=dtype)
+            ak_x2 = ak.array(x2, dtype=dtype)
+            if dtype == ak.bigint:
+                ak_x1 = ak_x1 + 2**200
+                ak_x2 = ak_x2 + 2**200
+            np_x1 = ak_x1.to_ndarray()
+            if isinstance(ak_x2, ak.pdarray):
+                np_x2 = ak_x2.to_ndarray()
+            else:
+                np_x2 = x2
             np_output = np.searchsorted(np_x1, np_x2, side)
-            ak_output = ak.searchsorted(ak_x1, ak_x2, side, x2_sorted=True)
+            ak_output = ak.searchsorted(ak_x1, ak_x2, side, x2_sorted=True) # x2_sorted=True for fast path
             assert_arkouda_array_equivalent(ak_output, np_output)
 
