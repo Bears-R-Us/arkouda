@@ -294,7 +294,7 @@ module SortMsg
           throw new Error("searchSorted side must be a string with value 'left' or 'right'.");
       }
 
-      if x2Sorted && x1.size >= numLocales && d2.rank == 1{
+      if (x2.rank == 1) && x2Sorted && x1.size >= numLocales {
         // If x2 is already sorted, we can use the fast version
         param msg = "Fast searchSorted path taken";
         sortLogger.info(getModuleName(),getRoutineName(),getLineNumber(), msg);
