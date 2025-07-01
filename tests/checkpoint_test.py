@@ -35,7 +35,7 @@ def cp_test_base_tmp(request):
 class TestCheckpoint:
     @pytest.mark.skipif(
         os.environ.get("CHPL_HOST_PLATFORM") == "hpe-apollo",
-        reason="skipped on CHPL_HOST_PLATFORM=hpe-apollo - login/compute file system access unreliable"
+        reason="skipped on CHPL_HOST_PLATFORM=hpe-apollo - login/compute file system access unreliable",
     )
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", ["int64", "float64", "bool"])
