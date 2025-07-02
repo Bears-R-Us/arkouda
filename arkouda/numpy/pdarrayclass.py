@@ -558,9 +558,9 @@ class pdarray:
 
     def __del__(self):
         try:
+            logger.debug(f"deleting pdarray with name {self.name}")
             from arkouda.client import generic_msg
 
-            logger.debug(f"deleting pdarray with name {self.name}")
             generic_msg(cmd="delete", args={"name": self.name})
         except (RuntimeError, AttributeError):
             pass
