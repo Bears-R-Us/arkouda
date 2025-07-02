@@ -281,6 +281,10 @@ module SegmentedMsg {
             truth.a = strings.isDecimal();
             repMsg = "created "+st.attrib(rname);
           }
+          when "isNumeric" {
+            truth.a = strings.isNumeric();
+            repMsg = "created "+st.attrib(rname);
+          }
           when "isLower" {
             truth.a = strings.isLower();
             repMsg = "created "+st.attrib(rname);
