@@ -1031,7 +1031,7 @@ module AryUtil
         var diff: [0..#a.rank] int;
         diff[a.rank - 1] = 1;
         forall i in 0..#(a.rank - 1) by -1 {
-          diff[i] = (high[i + 1] - low[i + 1]) * diff[i + 1];
+          diff[i] = (high[i + 1] + 1 - low[i + 1]) * diff[i + 1];
         }
 
         forall idx in ld with (
