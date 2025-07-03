@@ -681,7 +681,7 @@ class SegArray:
         See Also
         --------
         array()
-        to_list()
+        tolist()
 
         Examples
         --------
@@ -700,7 +700,7 @@ class SegArray:
             arr.append(ndvals[ndsegs[-1] :])
         return np.array(arr, dtype=object)
 
-    def to_list(self):
+    def tolist(self):
         """
         Convert the segarray into a list containing sub-arrays
 
@@ -717,9 +717,9 @@ class SegArray:
         --------
         >>> import arkouda as ak
         >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
-        >>> segarr.to_list()
+        >>> segarr.tolist()
         [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
-        >>> type(segarr.to_list())
+        >>> type(segarr.tolist())
         <class 'list'>
         """
         return [arr.tolist() for arr in self.to_ndarray()]

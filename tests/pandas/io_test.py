@@ -367,7 +367,7 @@ class TestParquet:
             ak_vals = ak.read_parquet(f"{file_name}*")
 
             for key in ak_dict:
-                assert ak_vals[key].to_list() == ak_dict[key].to_list()
+                assert ak_vals[key].tolist() == ak_dict[key].tolist()
 
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
     def test_append_empty(self, par_test_base_tmp, dtype):
@@ -377,7 +377,7 @@ class TestParquet:
             ak_arr.to_parquet(f"{tmp_dirname}/pq_test_correct", "my-dset", mode="append")
             pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_test_correct*", "my-dset")["my-dset"]
 
-            assert ak_arr.to_list() == pq_arr.to_list()
+            assert ak_arr.tolist() == pq_arr.tolist()
 
     @pytest.mark.parametrize("comp", COMPRESSIONS)
     def test_null_strings(self, par_test_base_tmp, comp):
@@ -391,7 +391,7 @@ class TestParquet:
 
             # datasets must be specified for get_null_indices
             res = ak.get_null_indices(f"{file_name}*", datasets="strings_array").popitem()[1]
-            assert [0, 1, 0, 1, 0, 1, 1] == res.to_list()
+            assert [0, 1, 0, 1, 0, 1, 1] == res.tolist()
 
     def test_null_indices(self):
         datadir = "resources/parquet-testing"
@@ -400,7 +400,7 @@ class TestParquet:
         filename = os.path.join(datadir, basename)
         res = ak.get_null_indices(filename, datasets="col1")["col1"]
 
-        assert [0, 1, 0, 1, 0, 1, 1] == res.to_list()
+        assert [0, 1, 0, 1, 0, 1, 1] == res.tolist()
 
     @pytest.mark.parametrize("comp", COMPRESSIONS)
     def test_compression(self, par_test_base_tmp, comp):
@@ -414,7 +414,7 @@ class TestParquet:
             rd_arr = ak.read_parquet(f"{tmp_dirname}/compress_test*", "array")["array"]
 
             # validate the list read out matches the array used to write
-            assert rd_arr.to_list() == a.to_list()
+            assert rd_arr.tolist() == a.tolist()
 
         b = ak.randint(0, 2, 150, dtype=ak.bool_)
 
@@ -426,7 +426,7 @@ class TestParquet:
             rd_arr = ak.read_parquet(f"{tmp_dirname}/compress_test*", "array")["array"]
 
             # validate the list read out matches the array used to write
-            assert rd_arr.to_list() == b.to_list()
+            assert rd_arr.tolist() == b.tolist()
 
     @pytest.mark.parametrize("comp", COMPRESSIONS)
     def test_nan_compressions(self, par_test_base_tmp, comp):
@@ -500,7 +500,7 @@ class TestParquet:
             ak_data = ak.read_parquet(f"{file_name}*")
             for k, v in ak_data.items():
                 assert isinstance(v, ak.SegArray)
-                for x, y in zip(df[k].tolist(), v.to_list()):
+                for x, y in zip(df[k].tolist(), v.tolist()):
                     if isinstance(x, np.ndarray):
                         x = x.tolist()
                     assert x == y if k != "FloatList" else np.allclose(x, y, equal_nan=True)
@@ -509,7 +509,7 @@ class TestParquet:
             for k, v in df.items():
                 ak_data = ak.read_parquet(f"{file_name}*", datasets=k)[k]
                 assert isinstance(ak_data, ak.SegArray)
-                for x, y in zip(v.tolist(), ak_data.to_list()):
+                for x, y in zip(v.tolist(), ak_data.tolist()):
                     if isinstance(x, np.ndarray):
                         x = x.tolist()
                     assert x == y if k != "FloatList" else np.allclose(x, y, equal_nan=True)
@@ -524,7 +524,7 @@ class TestParquet:
             assert isinstance(ak_data, ak.SegArray)
             assert ak_data.size == 5
             for i in range(5):
-                assert df["ListCol"][i] == ak_data[i].to_list()
+                assert df["ListCol"][i] == ak_data[i].tolist()
 
         df = pd.DataFrame(
             {
@@ -540,15 +540,15 @@ class TestParquet:
             # read full file
             ak_data = ak.read_parquet(f"{file_name}*")
             for k, v in ak_data.items():
-                assert df[k].tolist() == v.to_list()
+                assert df[k].tolist() == v.tolist()
 
             # read individual datasets
             ak_data = ak.read_parquet(f"{file_name}*", datasets="IntCol")["IntCol"]
             assert isinstance(ak_data, ak.pdarray)
-            assert df["IntCol"].to_list() == ak_data.to_list()
+            assert df["IntCol"].tolist() == ak_data.tolist()
             ak_data = ak.read_parquet(f"{file_name}*", datasets="ListCol")["ListCol"]
             assert isinstance(ak_data, ak.SegArray)
-            assert df["ListCol"].to_list() == ak_data.to_list()
+            assert df["ListCol"].tolist() == ak_data.tolist()
 
         # test for multi-file with and without empty segs
         is_multi_loc = pytest.nl != 1
@@ -592,7 +592,7 @@ class TestParquet:
                 assert isinstance(ak_data, ak.SegArray)
                 assert ak_data.size == len(lists[0]) * NUM_FILES
                 for i in range(ak_data.size):
-                    assert combo["ListCol"][i] == ak_data[i].to_list()
+                    assert combo["ListCol"][i] == ak_data[i].tolist()
 
     def test_segarray_string(self, par_test_base_tmp):
         words = ak.array(["one,two,three", "uno,dos,tres"])
@@ -604,9 +604,9 @@ class TestParquet:
 
             rd = ak.read_parquet(f"{tmp_dirname}/segarr_str_*").popitem()[1]
             assert isinstance(rd, ak.SegArray)
-            assert x.segments.to_list() == rd.segments.to_list()
-            assert x.values.to_list() == rd.values.to_list()
-            assert x.to_list() == rd.to_list()
+            assert x.segments.tolist() == rd.segments.tolist()
+            assert x.values.tolist() == rd.values.tolist()
+            assert x.tolist() == rd.tolist()
 
         # additional testing for empty segments. See Issue #2560
         a, c = (
@@ -617,7 +617,7 @@ class TestParquet:
         with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             s.to_parquet(f"{tmp_dirname}/segarray_test_empty")
             rd_data = ak.read_parquet(f"{tmp_dirname}/segarray_test_empty_*").popitem()[1]
-            assert s.to_list() == rd_data.to_list()
+            assert s.tolist() == rd_data.tolist()
 
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
     @pytest.mark.parametrize("segarray_create", [segarray_setup, edge_case_segarray_setup])
@@ -629,7 +629,7 @@ class TestParquet:
 
             rd_data = ak.read_parquet(f"{tmp_dirname}/segarray_test*").popitem()[1]
             for i in range(3):
-                x, y = s[i].to_list(), rd_data[i].to_list()
+                x, y = s[i].tolist(), rd_data[i].tolist()
                 assert x == y if dtype != "float64" else np.allclose(x, y, equal_nan=True)
 
         s = ak.SegArray(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c))
@@ -638,7 +638,7 @@ class TestParquet:
 
             rd_data = ak.read_parquet(f"{tmp_dirname}/segarray_test_empty*").popitem()[1]
             for i in range(6):
-                x, y = s[i].to_list(), rd_data[i].to_list()
+                x, y = s[i].tolist(), rd_data[i].tolist()
                 assert x == y if dtype != "float64" else np.allclose(x, y, equal_nan=True)
 
     @pytest.mark.parametrize("comp", COMPRESSIONS)
@@ -673,7 +673,7 @@ class TestParquet:
             df_pd.to_parquet(file_name)
             df_ak = ak.DataFrame(ak.read_parquet(f"{file_name}*"))
             for c in df_ak.columns.values:
-                assert df_ak[c].to_list() == df_pd[c].to_list()
+                assert df_ak[c].tolist() == df_pd[c].tolist()
 
     def test_read_nested(self, par_test_base_tmp):
         df = ak.DataFrame(
@@ -690,20 +690,20 @@ class TestParquet:
             data = ak.read_parquet(f"{file_name}*")
             assert "idx" in data
             assert "seg" in data
-            assert df["idx"].to_list() == data["idx"].to_list()
-            assert df["seg"].to_list() == data["seg"].to_list()
+            assert df["idx"].tolist() == data["idx"].tolist()
+            assert df["seg"].tolist() == data["seg"].tolist()
 
             # test read with read_nested=false and no supplied datasets
             data = ak.read_parquet(f"{file_name}*", read_nested=False)["idx"]
             assert isinstance(data, ak.pdarray)
-            assert df["idx"].to_list() == data.to_list()
+            assert df["idx"].tolist() == data.tolist()
 
             # test read with read_nested=false and user supplied datasets. Should ignore read_nested
             data = ak.read_parquet(f"{file_name}*", datasets=["idx", "seg"], read_nested=False)
             assert "idx" in data
             assert "seg" in data
-            assert df["idx"].to_list() == data["idx"].to_list()
-            assert df["seg"].to_list() == data["seg"].to_list()
+            assert df["idx"].tolist() == data["idx"].tolist()
+            assert df["seg"].tolist() == data["seg"].tolist()
 
     @pytest.mark.parametrize("comp", COMPRESSIONS)
     def test_ipv4_columns(self, par_test_base_tmp, comp):
@@ -733,7 +733,7 @@ class TestParquet:
         # test replacement of IPv4 with uint representation
         df = ak.DataFrame({"a": ak.IPv4(ak.arange(10))})
         df["a"] = df["a"].export_uint()
-        assert ak.arange(10).to_list() == df["a"].to_list()
+        assert ak.arange(10).tolist() == df["a"].tolist()
 
     def test_decimal_reads(self, par_test_base_tmp):
         cols = []
@@ -784,7 +784,7 @@ class TestParquet:
                     ak.sort(ak.randint(0, val_size, val_size - 1, seed=seed)),
                 ]
             )
-            df_dict["rand"] = ak.SegArray(segs, vals).to_list()
+            df_dict["rand"] = ak.SegArray(segs, vals).tolist()
 
             pddf = pd.DataFrame(df_dict)
             with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
@@ -792,9 +792,9 @@ class TestParquet:
                 pddf.to_parquet(file_path)
                 akdf = ak.DataFrame(ak.read_parquet(file_path))
 
-                to_pd = pd.Series(akdf["rand"].to_list())
+                to_pd = pd.Series(akdf["rand"].tolist())
                 # raises an error if the two series aren't equal
-                # we can't use np.allclose(pddf['rand'].to_list, akdf['rand'].to_list) since these
+                # we can't use np.allclose(pddf['rand'].tolist, akdf['rand'].tolist) since these
                 # are lists of lists. assert_series_equal handles this and properly handles nans.
                 # we pass the same absolute and relative tolerances as the numpy default in allclose
                 # to ensure float point differences don't cause errors
@@ -806,7 +806,7 @@ class TestParquet:
                 vals.to_parquet(file_path, dataset="my_vals")
                 read = ak.read_parquet(file_path + "*")["my_vals"]
                 if isinstance(vals, ak.pdarray) and vals.dtype == ak.float64:
-                    assert np.allclose(read.to_list(), vals.to_list(), equal_nan=True)
+                    assert np.allclose(read.tolist(), vals.tolist(), equal_nan=True)
                 else:
                     assert (read == vals).all()
 
@@ -1362,7 +1362,7 @@ class TestHDF5:
             for col_name in akdf.columns.values:
                 gen_arr = ak.read_hdf(f"{file_name}*", datasets=[col_name])[col_name]
                 if akdf[col_name].dtype != ak.float64:
-                    assert akdf[col_name].to_list() == gen_arr.to_list()
+                    assert akdf[col_name].tolist() == gen_arr.tolist()
                 else:
                     a = akdf[col_name].to_ndarray()
                     b = gen_arr.to_ndarray()
@@ -1402,7 +1402,7 @@ class TestHDF5:
                 # verify generic load works
                 gen_arr = ak.load(path_prefix=file_name, dataset=col_name)[col_name]
                 if akdf[col_name].dtype != ak.float64:
-                    assert akdf[col_name].to_list() == gen_arr.to_list()
+                    assert akdf[col_name].tolist() == gen_arr.tolist()
                 else:
                     a = akdf[col_name].to_ndarray()
                     b = gen_arr.to_ndarray()
@@ -1414,7 +1414,7 @@ class TestHDF5:
                 # verify generic load works with file_format parameter
                 gen_arr = ak.load(path_prefix=file_name, dataset=col_name, file_format="HDF5")[col_name]
                 if akdf[col_name].dtype != ak.float64:
-                    assert akdf[col_name].to_list() == gen_arr.to_list()
+                    assert akdf[col_name].tolist() == gen_arr.tolist()
                 else:
                     a = akdf[col_name].to_ndarray()
                     b = gen_arr.to_ndarray()
@@ -1623,12 +1623,12 @@ class TestHDF5:
         r_floats = ak.sort(
             ak.load("{}/multi-type-test".format(hdf_test_base_tmp), dataset="m_floats")["m_floats"]
         )
-        assert m_floats.to_list() == r_floats.to_list()
+        assert m_floats.tolist() == r_floats.tolist()
 
         r_ints = ak.sort(
             ak.load("{}/multi-type-test".format(hdf_test_base_tmp), dataset="m_ints")["m_ints"]
         )
-        assert m_ints.to_list() == r_ints.to_list()
+        assert m_ints.tolist() == r_ints.tolist()
 
         strings = strings_array.to_ndarray()
         strings.sort()
@@ -1654,7 +1654,7 @@ class TestHDF5:
         r_strings_dupe = ak.load(
             "{}/append-strings-test".format(hdf_test_base_tmp), dataset="strings-dupe"
         )["strings-dupe"]
-        assert r_strings.to_list() == r_strings_dupe.to_list()
+        assert r_strings.tolist() == r_strings_dupe.tolist()
 
     def testAppendMixedStringsDataset(self, hdf_test_base_tmp):
         strings_array = ak.array(["string {}".format(num) for num in list(range(0, 25))])
@@ -1680,8 +1680,8 @@ class TestHDF5:
         r_ints = ak.sort(
             ak.load("{}/append-multi-type-test".format(hdf_test_base_tmp), dataset="m_ints")["m_ints"]
         )
-        assert m_floats.to_list() == r_floats.to_list()
-        assert m_ints.to_list() == r_ints.to_list()
+        assert m_floats.tolist() == r_floats.tolist()
+        assert m_ints.tolist() == r_ints.tolist()
 
         strings = strings_array.to_ndarray()
         strings.sort()
@@ -1709,7 +1709,7 @@ class TestHDF5:
                 loaded = ak.load(file_name, dataset=col_name)[col_name]
                 for arr in [loaded, r_mixed[col_name]]:
                     if df_dict[col_name].dtype != ak.float64:
-                        assert df_dict[col_name].to_list() == arr.to_list()
+                        assert df_dict[col_name].tolist() == arr.tolist()
                     else:
                         a = df_dict[col_name].to_ndarray()
                         b = arr.to_ndarray()
@@ -1733,7 +1733,7 @@ class TestHDF5:
                 loaded = ak.load(file_name, dataset=col_name)[col_name]
                 for arr in [loaded, r_mixed[col_name]]:
                     if df_dict[col_name].dtype != ak.float64:
-                        assert df_dict[col_name].to_list() == arr.to_list()
+                        assert df_dict[col_name].tolist() == arr.tolist()
                     else:
                         a = df_dict[col_name].to_ndarray()
                         b = arr.to_ndarray()
@@ -1760,7 +1760,7 @@ class TestHDF5:
                 ak.read_hdf(f"{prefix}*")
 
             a = ak.read_hdf(f"{prefix}*", strict_types=False)
-            assert a["integers"].to_list() == np.arange(len(int_types) * N).tolist()
+            assert a["integers"].tolist() == np.arange(len(int_types) * N).tolist()
             assert np.allclose(
                 a["floats"].to_ndarray(),
                 np.arange(len(float_types) * N, dtype=np.float64),
@@ -1788,7 +1788,7 @@ class TestHDF5:
             pda2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="pda1")["pda1"]
             assert str(pda1) == str(pda2)
             assert 18446744073709551500 == pda2[0]
-            assert pda2.to_list() == npa1.tolist()
+            assert pda2.tolist() == npa1.tolist()
 
     def test_uint64_to_from_array(self, hdf_test_base_tmp):
         """
@@ -1800,7 +1800,7 @@ class TestHDF5:
         )
         pda1 = ak.array(npa1)
         assert 18446744073709551500 == pda1[0]
-        assert pda1.to_list() == npa1.tolist()
+        assert pda1.tolist() == npa1.tolist()
 
     def test_bigint(self, hdf_test_base_tmp):
         df_dict = {
@@ -1817,24 +1817,24 @@ class TestHDF5:
             a = df_dict["pdarray"]
             for rd_a in [ret_dict["pdarray"], pda_loaded]:
                 assert isinstance(rd_a, ak.pdarray)
-                assert a.to_list() == rd_a.to_list()
+                assert a.tolist() == rd_a.tolist()
                 assert a.max_bits == rd_a.max_bits
 
             g_loaded = ak.read_hdf(f"{tmp_dirname}/bigint_test*", datasets="groupby")["groupby"]
             g = df_dict["groupby"]
             for rd_g in [ret_dict["groupby"], g_loaded]:
                 assert isinstance(rd_g, ak.GroupBy)
-                assert g.keys.to_list() == rd_g.keys.to_list()
-                assert g.unique_keys.to_list() == rd_g.unique_keys.to_list()
-                assert g.permutation.to_list() == rd_g.permutation.to_list()
-                assert g.segments.to_list() == rd_g.segments.to_list()
+                assert g.keys.tolist() == rd_g.keys.tolist()
+                assert g.unique_keys.tolist() == rd_g.unique_keys.tolist()
+                assert g.permutation.tolist() == rd_g.permutation.tolist()
+                assert g.segments.tolist() == rd_g.segments.tolist()
 
             sa_loaded = ak.read_hdf(f"{tmp_dirname}/bigint_test*", datasets="segarray")["segarray"]
             sa = df_dict["segarray"]
             for rd_sa in [ret_dict["segarray"], sa_loaded]:
                 assert isinstance(rd_sa, ak.SegArray)
-                assert sa.values.to_list() == rd_sa.values.to_list()
-                assert sa.segments.to_list() == rd_sa.segments.to_list()
+                assert sa.values.tolist() == rd_sa.values.tolist()
+                assert sa.segments.tolist() == rd_sa.segments.tolist()
 
     def test_unsanitized_dataset_names(self, hdf_test_base_tmp):
         # Test when quotes are part of the dataset name
@@ -1861,14 +1861,14 @@ class TestHDF5:
                 g.to_hdf(f"{tmp_dirname}/groupby_test")
                 g_load = ak.read(f"{tmp_dirname}/groupby_test*").popitem()[1]
                 assert len(g_load.keys) == len(g.keys)
-                assert g_load.permutation.to_list() == g.permutation.to_list()
-                assert g_load.segments.to_list() == g.segments.to_list()
-                assert g_load._uki.to_list() == g._uki.to_list()
+                assert g_load.permutation.tolist() == g.permutation.tolist()
+                assert g_load.segments.tolist() == g.segments.tolist()
+                assert g_load._uki.tolist() == g._uki.tolist()
                 if isinstance(g.keys[0], ak.Categorical):
                     for k, kload in zip(g.keys, g_load.keys):
-                        assert k.to_list() == kload.to_list()
+                        assert k.tolist() == kload.tolist()
                 else:
-                    assert g_load.keys.to_list() == g.keys.to_list()
+                    assert g_load.keys.tolist() == g.keys.tolist()
 
     def test_hdf_categorical(self, hdf_test_base_tmp):
         cat = ak.Categorical(ak.array(["a", "b", "a", "b", "c"]))
@@ -1880,10 +1880,10 @@ class TestHDF5:
                 c.to_hdf(f"{tmp_dirname}/categorical_test")
                 c_load = ak.read(f"{tmp_dirname}/categorical_test*").popitem()[1]
 
-                assert c_load.categories.to_list() == (["a", "b", "c", "N/A"])
+                assert c_load.categories.tolist() == (["a", "b", "c", "N/A"])
                 if c.segments is not None:
-                    assert c.segments.to_list() == c_load.segments.to_list()
-                    assert c.permutation.to_list() == c_load.permutation.to_list()
+                    assert c.segments.tolist() == c_load.segments.tolist()
+                    assert c.permutation.tolist() == c_load.permutation.tolist()
 
     def test_segarray_hdf(self, hdf_test_base_tmp):
         a = [0, 1, 2, 3]
@@ -1901,8 +1901,8 @@ class TestHDF5:
             segarr.to_hdf(f"{tmp_dirname}/segarray_int")
             # Now load it back in
             seg2 = ak.load(f"{tmp_dirname}/segarray_int", dataset="segarray")["segarray"]
-            assert segarr.segments.to_list() == seg2.segments.to_list()
-            assert segarr.values.to_list() == seg2.values.to_list()
+            assert segarr.segments.tolist() == seg2.segments.tolist()
+            assert segarr.values.tolist() == seg2.values.tolist()
 
         # uint64 test
         dtype = ak.numpy.dtypes.uint64
@@ -1913,8 +1913,8 @@ class TestHDF5:
             segarr.to_hdf(f"{tmp_dirname}/segarray_uint")
             # Now load it back in
             seg2 = ak.load(f"{tmp_dirname}/segarray_uint", dataset="segarray")["segarray"]
-            assert segarr.segments.to_list() == seg2.segments.to_list()
-            assert segarr.values.to_list() == seg2.values.to_list()
+            assert segarr.segments.tolist() == seg2.segments.tolist()
+            assert segarr.values.tolist() == seg2.values.tolist()
 
         # float64 test
         dtype = ak.numpy.dtypes.float64
@@ -1925,8 +1925,8 @@ class TestHDF5:
             segarr.to_hdf(f"{tmp_dirname}/segarray_float")
             # Now load it back in
             seg2 = ak.load(f"{tmp_dirname}/segarray_float", dataset="segarray")["segarray"]
-            assert segarr.segments.to_list() == seg2.segments.to_list()
-            assert segarr.values.to_list() == seg2.values.to_list()
+            assert segarr.segments.tolist() == seg2.segments.tolist()
+            assert segarr.values.tolist() == seg2.values.tolist()
 
         # bool test
         dtype = ak.numpy.dtypes.bool_
@@ -1937,8 +1937,8 @@ class TestHDF5:
             segarr.to_hdf(f"{tmp_dirname}/segarray_bool")
             # Now load it back in
             seg2 = ak.load(f"{tmp_dirname}/segarray_bool", dataset="segarray")["segarray"]
-            assert segarr.segments.to_list() == seg2.segments.to_list()
-            assert segarr.values.to_list() == seg2.values.to_list()
+            assert segarr.segments.tolist() == seg2.segments.tolist()
+            assert segarr.values.tolist() == seg2.values.tolist()
 
     def test_dataframe_segarr(self, hdf_test_base_tmp):
         a = [0, 1, 2, 3]
@@ -1968,8 +1968,8 @@ class TestHDF5:
             x.to_hdf(f"{tmp_dirname}/test_file")
             rd = ak.read_hdf(f"{tmp_dirname}/test_file*").popitem()[1]
             assert isinstance(rd, ak.SegArray)
-            assert x.segments.to_list() == rd.segments.to_list()
-            assert x.values.to_list() == rd.values.to_list()
+            assert x.segments.tolist() == rd.segments.tolist()
+            assert x.values.tolist() == rd.values.tolist()
 
     def test_hdf_overwrite_pdarray(self, hdf_test_base_tmp):
         # test repack with a single object
@@ -1992,7 +1992,7 @@ class TestHDF5:
                 # test that repack on/off the file gets smaller/larger respectively
                 assert new_size < orig_size if repack else new_size >= orig_size
                 data = ak.read_hdf(f"{file_name}*")
-                assert data["array"].to_list() == c.to_list()
+                assert data["array"].tolist() == c.tolist()
 
         # test overwrites with different types
         with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
@@ -2002,7 +2002,7 @@ class TestHDF5:
                 b = ak.arange(size, dtype=dtype)
                 b.update_hdf(file_name)
                 data = ak.read_hdf(f"{file_name}*").popitem()[1]
-                assert data.to_list() == b.to_list()
+                assert data.tolist() == b.tolist()
 
     def test_hdf_overwrite_strings(self, hdf_test_base_tmp):
         # test repack with a single object
@@ -2025,7 +2025,7 @@ class TestHDF5:
                 # test that repack on/off the file gets smaller/larger respectively
                 assert new_size < orig_size if repack else new_size >= orig_size
                 data = ak.read_hdf(f"{file_name}*")
-                assert data["test_str"].to_list() == c.to_list()
+                assert data["test_str"].tolist() == c.tolist()
 
     def test_overwrite_categorical(self, hdf_test_base_tmp):
         a = ak.Categorical(ak.array([f"cat_{i % 3}" for i in range(100)]))
@@ -2061,7 +2061,7 @@ class TestHDF5:
             assert all(name in data for name in (dset_name, dset_name2, dset_name3))
             d = data[dset_name2]
             for attr in "categories", "codes", "permutation", "segments", "_akNAcode":
-                assert getattr(d, attr).to_list() == getattr(a, attr).to_list()
+                assert getattr(d, attr).tolist() == getattr(a, attr).tolist()
 
     def test_hdf_overwrite_dataframe(self, hdf_test_base_tmp):
         df = ak.DataFrame(
@@ -2158,8 +2158,8 @@ class TestHDF5:
             # ensure that the column was actually overwritten
             assert new_size < orig_size
             data = ak.read_hdf(f"{tmp_dirname}/overwrite_test_*")
-            assert data["b"].to_list() == replace["b"].to_list()
-            assert data["c"].to_list() == replace["c"].to_list()
+            assert data["b"].tolist() == replace["b"].tolist()
+            assert data["c"].tolist() == replace["c"].tolist()
 
         with tempfile.TemporaryDirectory(dir=hdf_test_base_tmp) as tmp_dirname:
             df.to_hdf(f"{tmp_dirname}/overwrite_test")
@@ -2172,8 +2172,8 @@ class TestHDF5:
             # ensure that the column was actually overwritten
             assert new_size >= orig_size
             data = ak.read_hdf(f"{tmp_dirname}/overwrite_test_*")
-            assert data["b"].to_list() == replace["b"].to_list()
-            assert data["c"].to_list() == replace["c"].to_list()
+            assert data["b"].tolist() == replace["b"].tolist()
+            assert data["c"].tolist() == replace["c"].tolist()
 
     def test_snapshot(self, hdf_test_base_tmp):
         df = ak.DataFrame(make_multi_dtype_dict())
@@ -2228,7 +2228,7 @@ class TestHDF5:
 
             assert isinstance(rd_idx, ak.Index)
             assert type(rd_idx.values) is type(idx.values)
-            assert idx.to_list() == rd_idx.to_list()
+            assert idx.tolist() == rd_idx.tolist()
 
         if dtype == ak.str_:
             # if strings we need to also test Categorical
@@ -2239,7 +2239,7 @@ class TestHDF5:
 
                 assert isinstance(rd_idx, ak.Index)
                 assert type(rd_idx.values) is type(idx.values)
-                assert idx.to_list() == rd_idx.to_list()
+                assert idx.tolist() == rd_idx.tolist()
 
     @pytest.mark.parametrize("dtype1", NUMERIC_AND_STR_TYPES)
     @pytest.mark.parametrize("dtype2", NUMERIC_AND_STR_TYPES)
@@ -2253,7 +2253,7 @@ class TestHDF5:
             rd_idx = ak.read_hdf(f"{tmp_dirname}/idx_test*").popitem()[1]
 
             assert isinstance(rd_idx, ak.MultiIndex)
-            assert idx.to_list() == rd_idx.to_list()
+            assert idx.tolist() == rd_idx.tolist()
 
         # handle categorical cases as well
         if ak.str_ in [dtype1, dtype2]:
@@ -2267,7 +2267,7 @@ class TestHDF5:
                 rd_idx = ak.read_hdf(f"{tmp_dirname}/idx_test*").popitem()[1]
 
                 assert isinstance(rd_idx, ak.MultiIndex)
-                assert idx.to_list() == rd_idx.to_list()
+                assert idx.tolist() == rd_idx.tolist()
 
     def test_hdf_overwrite_index(self, hdf_test_base_tmp):
         # test repack with a single object
@@ -2291,7 +2291,7 @@ class TestHDF5:
                 assert new_size < orig_size if repack else new_size >= orig_size
                 data = ak.read_hdf(f"{file_name}*")
                 assert isinstance(data["index"], ak.Index)
-                assert data["index"].to_list() == c.to_list()
+                assert data["index"].tolist() == c.tolist()
 
     def test_special_objtype(self, hdf_test_base_tmp):
         """
@@ -2308,17 +2308,17 @@ class TestHDF5:
             ip.to_hdf(f"{tmp_dirname}/ip_test")
             rd_ip = ak.read_hdf(f"{tmp_dirname}/ip_test*").popitem()[1]
             assert isinstance(rd_ip, ak.IPv4)
-            assert ip.to_list() == rd_ip.to_list()
+            assert ip.tolist() == rd_ip.tolist()
 
             dt.to_hdf(f"{tmp_dirname}/dt_test")
             rd_dt = ak.read_hdf(f"{tmp_dirname}/dt_test*").popitem()[1]
             assert isinstance(rd_dt, ak.Datetime)
-            assert dt.to_list() == rd_dt.to_list()
+            assert dt.tolist() == rd_dt.tolist()
 
             td.to_hdf(f"{tmp_dirname}/td_test")
             rd_td = ak.read_hdf(f"{tmp_dirname}/td_test*").popitem()[1]
             assert isinstance(rd_td, ak.Timedelta)
-            assert td.to_list() == rd_td.to_list()
+            assert td.tolist() == rd_td.tolist()
 
             df.to_hdf(f"{tmp_dirname}/df_test")
             rd_df = ak.read_hdf(f"{tmp_dirname}/df_test*")
@@ -2326,9 +2326,9 @@ class TestHDF5:
             assert isinstance(rd_df["ip"], ak.IPv4)
             assert isinstance(rd_df["datetime"], ak.Datetime)
             assert isinstance(rd_df["timedelta"], ak.Timedelta)
-            assert df["ip"].to_list() == rd_df["ip"].to_list()
-            assert df["datetime"].to_list() == rd_df["datetime"].to_list()
-            assert df["timedelta"].to_list() == rd_df["timedelta"].to_list()
+            assert df["ip"].tolist() == rd_df["ip"].tolist()
+            assert df["datetime"].tolist() == rd_df["datetime"].tolist()
+            assert df["timedelta"].tolist() == rd_df["timedelta"].tolist()
 
 
 class TestCSV:
@@ -2347,13 +2347,13 @@ class TestCSV:
 
             data = ak.read_csv(file_name)
             assert list(data.keys()) == cols
-            assert data["ColA"].to_list() == a
-            assert data["ColB"].to_list() == b
-            assert data["ColC"].to_list() == c
+            assert data["ColA"].tolist() == a
+            assert data["ColB"].tolist() == b
+            assert data["ColC"].tolist() == c
 
             data = ak.read_csv(file_name, datasets="ColB")["ColB"]
             assert isinstance(data, ak.Strings)
-            assert data.to_list() == b
+            assert data.tolist() == b
 
         d = {
             cols[0]: ak.array(a),
@@ -2381,14 +2381,14 @@ class TestCSV:
             ]:
                 data = ak.read_csv(file_name, column_delim=delim)
                 assert list(data.keys()) == cols
-                assert data["ColA"].to_list() == a
-                assert data["ColB"].to_list() == [int(x) for x in b]
-                assert data["ColC"].to_list() == [round(float(x), 2) for x in c]
+                assert data["ColA"].tolist() == a
+                assert data["ColB"].tolist() == [int(x) for x in b]
+                assert data["ColC"].tolist() == [round(float(x), 2) for x in c]
 
                 # test reading subset of columns
                 data = ak.read_csv(file_name, datasets="ColB", column_delim=delim)["ColB"]
                 assert isinstance(data, ak.pdarray)
-                assert data.to_list() == [int(x) for x in b]
+                assert data.tolist() == [int(x) for x in b]
 
         # larger data set testing
         d = {
@@ -2399,9 +2399,9 @@ class TestCSV:
         with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
             ak.to_csv(d, f"{tmp_dirname}/non_equal_set.csv")
             data = ak.read_csv(f"{tmp_dirname}/non_equal_set*")
-            assert data["ColA"].to_list() == d["ColA"].to_list()
-            assert data["ColB"].to_list() == d["ColB"].to_list()
-            assert data["ColC"].to_list() == d["ColC"].to_list()
+            assert data["ColA"].tolist() == d["ColA"].tolist()
+            assert data["ColB"].tolist() == d["ColB"].tolist()
+            assert data["ColC"].tolist() == d["ColC"].tolist()
 
 
 class TestImportExport:

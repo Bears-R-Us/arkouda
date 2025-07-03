@@ -2288,7 +2288,7 @@ class Strings:
         See Also
         --------
         array()
-        to_list()
+        tolist()
 
         Examples
         --------
@@ -2313,7 +2313,7 @@ class Strings:
             res[i] = np.str_(codecs.decode(b"".join(npvalues[o : o + ln])))
         return res
 
-    def to_list(self) -> List[str]:
+    def tolist(self) -> List[str]:
         """
         Convert the SegString to a list, transferring data from the
         arkouda server to Python. If the SegString exceeds a built-in size limit,
@@ -2342,9 +2342,9 @@ class Strings:
         --------
         >>> import arkouda as ak
         >>> a = ak.array(["hello", "my", "world"])
-        >>> a.to_list()
+        >>> a.tolist()
         ['hello', 'my', 'world']
-        >>> type(a.to_list())
+        >>> type(a.tolist())
         <class 'list'>
         """
         return cast(List[str], self.to_ndarray().tolist())

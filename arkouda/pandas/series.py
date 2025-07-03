@@ -805,7 +805,7 @@ class Series:
         elif isinstance(self.values, SegArray):
             # pandas errors when ndarray formatted like a segarray is
             # passed into Series but works when it's just a list of lists
-            val = self.values.to_list()
+            val = self.values.tolist()
         else:
             val = self.values.to_ndarray()
 
@@ -882,9 +882,9 @@ class Series:
         )
 
     @typechecked()
-    def to_list(self) -> list:
+    def tolist(self) -> list:
         p = self.to_pandas()
-        return p.to_list()
+        return p.tolist()
 
     @typechecked
     def value_counts(self, sort: bool = True) -> Series:

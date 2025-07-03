@@ -136,7 +136,7 @@ class TestString:
         # Unique keys should be same result as ak.unique
         assert akset == set(g.unique_keys.to_ndarray())
         assert akset == set(gc.unique_keys.to_ndarray())
-        assert gc.permutation.to_list() == g.permutation.to_list()
+        assert gc.permutation.tolist() == g.permutation.tolist()
         permStrings = strings[g.permutation].to_ndarray()
         # Check each group individually
         lengths = np.diff(np.hstack((g.segments.to_ndarray(), np.array([g.length]))))
@@ -405,8 +405,8 @@ class TestString:
         # Convert Pandas series of strings into a byte array where each string is terminated
         # by a null byte.
         # This mimics what should be stored server-side in the strings.bytes pdarray
-        expected_series_dec = self.convert_to_ord(series.to_list())
-        actual_dec = pda._comp_to_ndarray("values").tolist()  # pda.bytes.to_list()
+        expected_series_dec = self.convert_to_ord(series.tolist())
+        actual_dec = pda._comp_to_ndarray("values").tolist()  # pda.bytes.tolist()
         assert expected_series_dec == actual_dec
 
         # Now perform the peel and verify
@@ -422,15 +422,15 @@ class TestString:
         series = pd.Series([f"abc{d}xyz", f"small{d}dog", f"blue{d}hat", "last"])
         pda = ak.from_series(series)
         a, b = pda.peel(d)
-        assert ["abc", "small", "blue", ""] == a.to_list()
-        assert ["xyz", "dog", "hat", "last"] == b.to_list()
+        assert ["abc", "small", "blue", ""] == a.tolist()
+        assert ["xyz", "dog", "hat", "last"] == b.tolist()
 
         # Try a slight permutation since we were able to get both versions to fail at one point
         series = pd.Series([f"abc{d}xyz", f"small{d}dog", "last"])
         pda = ak.from_series(series)
         a, b = pda.peel(d)
-        assert ["abc", "small", ""] == a.to_list()
-        assert ["xyz", "dog", "last"] == b.to_list()
+        assert ["abc", "small", ""] == a.tolist()
+        assert ["xyz", "dog", "last"] == b.tolist()
 
     @staticmethod
     def _stick_help(strings, test_strings, base_words, delim, size):
@@ -477,51 +477,51 @@ class TestString:
     def test_split(self):
         orig = ak.array(["one|two", "three|four|five", "six"])
         flat, mapping = orig.split("|", return_segments=True)
-        assert flat.to_list() == ["one", "two", "three", "four", "five", "six"]
-        assert mapping.to_list() == [0, 2, 5]
+        assert flat.tolist() == ["one", "two", "three", "four", "five", "six"]
+        assert mapping.tolist() == [0, 2, 5]
         thirds = [ak.cast(ak.arange(i, 99, 3), "str") for i in range(3)]
         thickrange = thirds[0].stick(thirds[1], delimiter=", ").stick(thirds[2], delimiter=", ")
         flatrange = thickrange.split(", ")
-        assert ak.cast(flatrange, "int64").to_list(), np.arange(99).tolist()
+        assert ak.cast(flatrange, "int64").tolist(), np.arange(99).tolist()
 
     def test_get_lengths(self):
         base = ["one", "two", "three", "four", "five"]
         s1 = ak.array(base)
         lengths = s1.get_lengths()
-        assert [len(x) for x in base] == lengths.to_list()
+        assert [len(x) for x in base] == lengths.tolist()
 
     def test_strip(self):
         s = ak.array([" Jim1", "John1   ", "Steve1 2"])
-        assert s.strip(" 12").to_list() == ["Jim", "John", "Steve"]
-        assert s.strip("12 ").to_list() == ["Jim", "John", "Steve"]
-        assert s.strip("1 2").to_list() == ["Jim", "John", "Steve"]
+        assert s.strip(" 12").tolist() == ["Jim", "John", "Steve"]
+        assert s.strip("12 ").tolist() == ["Jim", "John", "Steve"]
+        assert s.strip("1 2").tolist() == ["Jim", "John", "Steve"]
 
         s = ak.array([" Jim", "John 1", "Steve1 2  "])
-        assert s.strip().to_list() == ["Jim", "John 1", "Steve1 2"]
+        assert s.strip().tolist() == ["Jim", "John 1", "Steve1 2"]
 
         s = ak.array(["\nStrings ", " \n StringS \r", "bbabStringS \r\t "])
-        assert s.strip().to_list() == ["Strings", "StringS", "bbabStringS"]
+        assert s.strip().tolist() == ["Strings", "StringS", "bbabStringS"]
 
         s = ak.array(["abcStringsbac", "cabStringScc", "bbabStringS abc"])
-        assert s.strip("abc").to_list() == ["Strings", "StringS", "StringS "]
+        assert s.strip("abc").tolist() == ["Strings", "StringS", "StringS "]
 
         s = ak.array(["\nStrings ", " \n StringS \r", " \t   StringS \r\t "])
-        assert s.strip().to_list() == ["Strings", "StringS", "StringS"]
+        assert s.strip().tolist() == ["Strings", "StringS", "StringS"]
 
     def test_case_change(self):
         mixed = ak.array([f"StrINgS hErE {i}" for i in range(10)])
 
         lower = mixed.lower()
-        assert lower.to_list() == [f"strings here {i}" for i in range(10)]
+        assert lower.tolist() == [f"strings here {i}" for i in range(10)]
 
         upper = mixed.upper()
-        assert upper.to_list() == [f"STRINGS HERE {i}" for i in range(10)]
+        assert upper.tolist() == [f"STRINGS HERE {i}" for i in range(10)]
 
         title = mixed.title()
-        assert title.to_list() == [f"Strings Here {i}" for i in range(10)]
+        assert title.tolist() == [f"Strings Here {i}" for i in range(10)]
 
         capital = mixed.capitalize()
-        assert capital.to_list() == [f"Strings here {i}" for i in range(10)]
+        assert capital.tolist() == [f"Strings here {i}" for i in range(10)]
 
         # first 10 all lower, second 10 mixed case (not lower, upper, or title), third 10 all upper,
         # last 10 all title
@@ -529,27 +529,27 @@ class TestString:
 
         islower = lmut.islower()
         expected = 10 > ak.arange(40)
-        assert islower.to_list() == expected.to_list()
+        assert islower.tolist() == expected.tolist()
 
         isupper = lmut.isupper()
         expected = (30 > ak.arange(40)) & (ak.arange(40) >= 20)
-        assert isupper.to_list() == expected.to_list()
+        assert isupper.tolist() == expected.tolist()
 
         istitle = lmut.istitle()
         expected = ak.arange(40) >= 30
-        assert istitle.to_list() == expected.to_list()
+        assert istitle.tolist() == expected.tolist()
 
     def test_string_isalnum(self):
         not_alnum = ak.array([f"%Strings {i}" for i in range(3)])
         alnum = ak.array([f"Strings{i}" for i in range(3)])
         example = ak.concatenate([not_alnum, alnum])
-        assert example.isalnum().to_list() == [False, False, False, True, True, True]
+        assert example.isalnum().tolist() == [False, False, False, True, True, True]
 
     def test_string_isalpha(self):
         not_alpha = ak.array([f"%Strings {i}" for i in range(3)])
         alpha = ak.array(["StringA", "StringB", "StringC"])
         example = ak.concatenate([not_alpha, alpha])
-        assert example.isalpha().to_list() == [False, False, False, True, True, True]
+        assert example.isalpha().tolist() == [False, False, False, True, True, True]
 
         example2 = ak.array(
             [
@@ -581,13 +581,13 @@ class TestString:
             False,
         ]
 
-        assert example2.isalpha().to_list() == expected
+        assert example2.isalpha().tolist() == expected
 
     def test_string_isdecimal(self):
         not_decimal = ak.array([f"Strings {i}" for i in range(3)])
         decimal = ak.array([f"12{i}" for i in range(3)])
         example = ak.concatenate([not_decimal, decimal])
-        assert example.isdecimal().to_list() == [False, False, False, True, True, True]
+        assert example.isdecimal().tolist() == [False, False, False, True, True, True]
 
         example2 = ak.array(
             [
@@ -623,13 +623,13 @@ class TestString:
             False,
         ]
 
-        assert example2.isdecimal().to_list() == expected
+        assert example2.isdecimal().tolist() == expected
 
     def test_string_isdigit(self):
         not_digit = ak.array([f"Strings {i}" for i in range(3)])
         digit = ak.array([f"12{i}" for i in range(3)])
         example = ak.concatenate([not_digit, digit])
-        assert example.isdigit().to_list() == [False, False, False, True, True, True]
+        assert example.isdigit().tolist() == [False, False, False, True, True, True]
 
         example2 = ak.array(
             [
@@ -665,14 +665,14 @@ class TestString:
             False,
         ]
 
-        assert example2.isdigit().to_list() == expected
+        assert example2.isdigit().tolist() == expected
 
     def test_string_empty(self):
         not_empty = ak.array([f"Strings {i}" for i in range(3)])
         empty = ak.array(["" for i in range(3)])
         example = ak.concatenate([not_empty, empty])
 
-        assert example.isempty().to_list() == [False, False, False, True, True, True]
+        assert example.isempty().tolist() == [False, False, False, True, True, True]
 
         example2 = ak.array(
             [
@@ -704,13 +704,13 @@ class TestString:
             False,
         ]
 
-        assert example2.isempty().to_list() == expected
+        assert example2.isempty().tolist() == expected
 
     def test_string_isspace(self):
         not_space = ak.array([f"Strings {i}" for i in range(3)])
         space = ak.array([" ", "\t", "\n", "\v", "\f", "\r", " \t\n\v\f\r"])
         example = ak.concatenate([not_space, space])
-        assert example.isspace().to_list() == [
+        assert example.isspace().tolist() == [
             False,
             False,
             False,
@@ -753,7 +753,7 @@ class TestString:
             False,
         ]
 
-        assert example2.isspace().to_list() == expected
+        assert example2.isspace().tolist() == expected
 
     def test_where(self):
         revs = ak.arange(10) % 2 == 0
@@ -762,21 +762,21 @@ class TestString:
         # SegString and str literal
         str_lit = "str 1222222"
         ans = ak.where(revs, s1, str_lit)
-        assert s1[revs].to_list() == ans[revs].to_list()
-        for s in ans[~revs].to_list():
+        assert s1[revs].tolist() == ans[revs].tolist()
+        for s in ans[~revs].tolist():
             assert s == str_lit
 
         # str literal first
         ans = ak.where(revs, str_lit, s1)
-        assert s1[~revs].to_list() == ans[~revs].to_list()
-        for s in ans[revs].to_list():
+        assert s1[~revs].tolist() == ans[~revs].tolist()
+        for s in ans[revs].tolist():
             assert s == str_lit
 
         # 2 SegStr
         s2 = ak.array([f"str {i * 2}" for i in range(10)])
         ans = ak.where(revs, s1, s2)
-        assert s1[revs].to_list() == ans[revs].to_list()
-        assert s2[~revs].to_list() == ans[~revs].to_list()
+        assert s1[revs].tolist() == ans[revs].tolist()
+        assert s2[~revs].tolist() == ans[~revs].tolist()
 
     @staticmethod
     def _get_strings(prefix: str = "string", size: int = 11) -> ak.Strings:
@@ -811,7 +811,7 @@ class TestString:
 
         # Ordered concatenation
         s12ord = ak.concatenate([s1, s2], ordered=True)
-        assert expected_result == s12ord.to_list()
+        assert expected_result == s12ord.tolist()
         # Unordered (but still deterministic) concatenation
         # TODO: the unordered concatenation test is disabled per #710 #721
         # s12unord = ak.concatenate([s1, s2], ordered=False)
@@ -821,26 +821,26 @@ class TestString:
         strings = ak.array(a)
         for n in 1, 3:  # test multiple sizes of suffix and prefix
             prefix, origin = strings.get_prefixes(n, return_origins=True, proper=True)
-            assert [x[0:n] for x in a if len(x) > n] == prefix.to_list()
+            assert [x[0:n] for x in a if len(x) > n] == prefix.tolist()
             assert [True if len(x) > n else False for x in a]
 
             prefix, origin = strings.get_prefixes(n, return_origins=True, proper=False)
-            assert [x[0:n] for x in a if len(x) >= n] == prefix.to_list()
+            assert [x[0:n] for x in a if len(x) >= n] == prefix.tolist()
             assert [True if len(x) >= n else False for x in a]
 
             prefix = strings.get_prefixes(n, return_origins=False, proper=False)
-            assert [x[0:n] for x in a if len(x) >= n] == prefix.to_list()
+            assert [x[0:n] for x in a if len(x) >= n] == prefix.tolist()
 
             suffix, origin = strings.get_suffixes(n, return_origins=True, proper=True)
-            assert [x[len(x) - n :] for x in a if len(x) > n] == suffix.to_list()
+            assert [x[len(x) - n :] for x in a if len(x) > n] == suffix.tolist()
             assert [True if len(x) >= n else False for x in a]
 
             suffix, origin = strings.get_suffixes(n, return_origins=True, proper=False)
-            assert [x[len(x) - n :] for x in a if len(x) >= n] == suffix.to_list()
+            assert [x[len(x) - n :] for x in a if len(x) >= n] == suffix.tolist()
             assert [True if len(x) >= n else False for x in a]
 
             suffix = strings.get_suffixes(n, return_origins=False, proper=False)
-            assert [x[len(x) - n :] for x in a if len(x) >= n] == suffix.to_list()
+            assert [x[len(x) - n :] for x in a if len(x) >= n] == suffix.tolist()
 
     def test_encoding(self):
         idna_strings = ak.array(
@@ -860,13 +860,13 @@ class TestString:
         a1 = ["münchen", "zürich"]
         s1 = ak.array(a1)
         result = s1.encode("idna")
-        assert [i.encode("idna").decode("ascii") for i in a1] == result.to_list()
+        assert [i.encode("idna").decode("ascii") for i in a1] == result.tolist()
 
         # validate encoding with empty string
         e = ["", "abc", "", "123"]
         ak_e = ak.array(e)
         result = ak_e.encode("idna")
-        assert [i.encode("idna").decode("ascii") for i in e] == result.to_list()
+        assert [i.encode("idna").decode("ascii") for i in e] == result.tolist()
 
         a2 = [
             "xn--mnchen-3ya",
@@ -878,7 +878,7 @@ class TestString:
         s2 = ak.array(a2)
         result = s2.decode("idna")
         # using the below assertion due to a bug in `Strings.to_ndarray`. See issue #1828
-        assert ["münchen", "zürich", "", "", "example.com"] == result.to_list()
+        assert ["münchen", "zürich", "", "", "example.com"] == result.tolist()
 
         a3 = ak.random_strings_uniform(1, 10, 100 // 4, characters="printable")
         assert (a3 == a3.encode("ascii").decode("ascii")).all()
@@ -892,7 +892,7 @@ class TestString:
 
         # roundtrip to return back to decoded values in UTF-8
         decoded = result.decode(fromEncoding="utf-16", toEncoding="utf-8")
-        assert ["münchen", "zürich", "example.com"] == decoded.to_list()
+        assert ["münchen", "zürich", "example.com"] == decoded.tolist()
 
     def test_tondarray(self):
         v1 = ["münchen", "zürich", "abc", "123", ""]

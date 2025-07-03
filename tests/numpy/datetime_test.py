@@ -317,10 +317,10 @@ class TestDatetime:
             "dayofyear",
             "is_leap_year",
         ):
-            assert getattr(pd_dt, attr_name).to_list() == getattr(ak_dt, attr_name).to_list()
+            assert getattr(pd_dt, attr_name).tolist() == getattr(ak_dt, attr_name).tolist()
 
-        assert pd_dt.isocalendar().week.to_list() == ak_dt.week.to_list()
-        assert pd_dt.isocalendar().week.to_list() == ak_dt.weekofyear.to_list()
+        assert pd_dt.isocalendar().week.tolist() == ak_dt.week.tolist()
+        assert pd_dt.isocalendar().week.tolist() == ak_dt.weekofyear.tolist()
         assert ((pd_dt.isocalendar() == ak_dt.isocalendar().to_pandas()).all()).all()
 
     def test_date_time_accessors(self):
@@ -341,7 +341,7 @@ class TestDatetime:
         assert ((pd_td.components == ak_td.components.to_pandas()).all()).all()
         assert np.allclose(pd_td.total_seconds(), ak_td.total_seconds().to_ndarray())
         for attr_name in "nanoseconds", "microseconds", "seconds", "days":
-            assert getattr(pd_td, attr_name).to_list() == getattr(ak_td, attr_name).to_list()
+            assert getattr(pd_td, attr_name).tolist() == getattr(ak_td, attr_name).tolist()
 
     def test_time_delta_accessors(self):
         self.time_delta_attribute_helper(
@@ -367,15 +367,11 @@ class TestDatetime:
             "2010-01-01",
             "2010-01-03",
         ):
-            ak_week = ak.Datetime(ak.date_range(date, periods=10, freq="W")).week.to_list()
-            pd_week = (
-                pd.Series(pd.date_range(date, periods=10, freq="W")).dt.isocalendar().week.to_list()
-            )
+            ak_week = ak.Datetime(ak.date_range(date, periods=10, freq="W")).week.tolist()
+            pd_week = pd.Series(pd.date_range(date, periods=10, freq="W")).dt.isocalendar().week.tolist()
             assert ak_week == pd_week
 
         for date in "2000-01-01", "2005-01-01":
-            ak_week = ak.Datetime(ak.date_range(date, periods=10, freq="d")).week.to_list()
-            pd_week = (
-                pd.Series(pd.date_range(date, periods=10, freq="d")).dt.isocalendar().week.to_list()
-            )
+            ak_week = ak.Datetime(ak.date_range(date, periods=10, freq="d")).week.tolist()
+            pd_week = pd.Series(pd.date_range(date, periods=10, freq="d")).dt.isocalendar().week.tolist()
             assert ak_week == pd_week

@@ -65,8 +65,8 @@ class TestJoin:
         end = ak.array([10, 20, 30])
 
         segs, ranges = ak.join.gen_ranges(start, end)
-        assert segs.to_list() == [0, 10, 20]
-        assert ranges.to_list() == list(range(30))
+        assert segs.tolist() == [0, 10, 20]
+        assert ranges.tolist() == list(range(30))
 
         with pytest.raises(ValueError):
             segs, ranges = ak.join.gen_ranges(ak.array([11, 12, 41]), end)
@@ -76,10 +76,10 @@ class TestJoin:
         right = ak.array([0, 5, 3, 3, 4, 6, 7, 9, 8, 1])
 
         l, r = ak.join.inner_join(left, right)
-        assert left[l].to_list() == right[r].to_list()
+        assert left[l].tolist() == right[r].tolist()
 
         l, r = ak.join.inner_join(left, right, wherefunc=join_where, whereargs=(left, right))
-        assert left[l].to_list() == right[r].to_list()
+        assert left[l].tolist() == right[r].tolist()
 
         for where_func in ak.unique, ak.intersect1d:
             with pytest.raises(ValueError):
@@ -133,25 +133,25 @@ class TestJoin:
     def test_str_inner_join(self):
         int_left = ak.arange(50)
         int_right = ak.randint(0, 50, 50)
-        str_left = ak.array([f"str {i}" for i in int_left.to_list()])
-        str_right = ak.array([f"str {i}" for i in int_right.to_list()])
+        str_left = ak.array([f"str {i}" for i in int_left.tolist()])
+        str_right = ak.array([f"str {i}" for i in int_right.tolist()])
 
         str_l, str_r = ak.join.inner_join(str_left, str_right)
-        assert str_left[str_l].to_list() == str_right[str_r].to_list()
+        assert str_left[str_l].tolist() == str_right[str_r].tolist()
 
         str_l_where, str_r_where = ak.join.inner_join(
             str_left, str_right, wherefunc=join_where, whereargs=(str_left, str_right)
         )
-        assert str_left[str_l_where].to_list() == str_right[str_r_where].to_list()
+        assert str_left[str_l_where].tolist() == str_right[str_r_where].tolist()
 
         # reproducer from PR
         int_left = ak.arange(10)
         int_right = ak.array([0, 5, 3, 3, 4, 6, 7, 9, 8, 1])
-        str_left = ak.array([f"str {i}" for i in int_left.to_list()])
-        str_right = ak.array([f"str {i}" for i in int_right.to_list()])
+        str_left = ak.array([f"str {i}" for i in int_left.tolist()])
+        str_right = ak.array([f"str {i}" for i in int_right.tolist()])
 
         sl, sr = ak.join.inner_join(str_left, str_right)
-        assert str_left[sl].to_list() == str_right[sr].to_list()
+        assert str_left[sl].tolist() == str_right[sr].tolist()
 
         def where_func(x, y):
             return x % 2 == 0
@@ -162,48 +162,48 @@ class TestJoin:
         sl, sr = ak.join.inner_join(
             str_left, str_right, wherefunc=where_func, whereargs=(int_left, int_right)
         )
-        assert sl.to_list() == il.to_list()
-        assert sr.to_list() == ir.to_list()
+        assert sl.tolist() == il.tolist()
+        assert sr.tolist() == ir.tolist()
 
     def test_cat_inner_join(self):
         int_left = ak.arange(50)
         int_right = ak.randint(0, 50, 50)
-        str_left = ak.array([f"str {i}" for i in int_left.to_list()])
-        str_right = ak.array([f"str {i}" for i in int_right.to_list()])
+        str_left = ak.array([f"str {i}" for i in int_left.tolist()])
+        str_right = ak.array([f"str {i}" for i in int_right.tolist()])
         cat_left = ak.Categorical(str_left)
         cat_right = ak.Categorical(str_right)
 
         # Base Case
         cat_l, cat_r = ak.join.inner_join(cat_left, cat_right)
-        assert cat_left[cat_l].to_list() == cat_right[cat_r].to_list()
+        assert cat_left[cat_l].tolist() == cat_right[cat_r].tolist()
 
         cat_l_where, cat_r_where = ak.join.inner_join(
             cat_left, cat_right, wherefunc=join_where, whereargs=(cat_left, cat_right)
         )
-        assert cat_left[cat_l_where].to_list() == cat_right[cat_r_where].to_list()
+        assert cat_left[cat_l_where].tolist() == cat_right[cat_r_where].tolist()
 
     def test_mixed_inner_join_where(self):
         int_left = ak.arange(50)
         int_right = ak.randint(0, 50, 50)
-        str_left = ak.array([f"str {i}" for i in int_left.to_list()])
-        str_right = ak.array([f"str {i}" for i in int_right.to_list()])
+        str_left = ak.array([f"str {i}" for i in int_left.tolist()])
+        str_right = ak.array([f"str {i}" for i in int_right.tolist()])
         cat_left = ak.Categorical(str_left)
         cat_right = ak.Categorical(str_right)
 
         left, right = ak.join.inner_join(
             int_left, int_right, wherefunc=join_where, whereargs=(cat_left, str_right)
         )
-        assert cat_left[left].to_list() == cat_right[right].to_list()
+        assert cat_left[left].tolist() == cat_right[right].tolist()
 
         left, right = ak.join.inner_join(
             str_left, str_right, wherefunc=join_where, whereargs=(cat_left, int_right)
         )
-        assert cat_left[left].to_list() == cat_right[right].to_list()
+        assert cat_left[left].tolist() == cat_right[right].tolist()
 
         left, right = ak.join.inner_join(
             cat_left, cat_right, wherefunc=join_where, whereargs=(str_left, int_right)
         )
-        assert cat_left[left].to_list() == cat_right[right].to_list()
+        assert cat_left[left].tolist() == cat_right[right].tolist()
 
     def test_lookup(self):
         keys = ak.arange(5)
@@ -213,7 +213,7 @@ class TestJoin:
         # Simple lookup with int keys
         # Also test shortcut for unique-ordered keys
         res = ak.lookup(keys, values, args, fillvalue=-1)
-        assert res.to_list() == ans
+        assert res.tolist() == ans
         # Compound lookup with (str, int) keys
         res2 = ak.lookup(
             (ak.cast(keys, ak.str_), keys),
@@ -221,10 +221,10 @@ class TestJoin:
             (ak.cast(args, ak.str_), args),
             fillvalue=-1,
         )
-        assert res2.to_list() == ans
+        assert res2.tolist() == ans
         # Keys not in uniqued order
         res3 = ak.lookup(keys[::-1], values[::-1], args, fillvalue=-1)
-        assert res3.to_list() == ans
+        assert res3.tolist() == ans
         # Non-unique keys should raise error
         with pytest.warns(UserWarning):
             keys = ak.arange(10) % 5
@@ -256,4 +256,4 @@ def join_where(left, right):
 
 
 def pda_to_str_helper(pda):
-    return ak.array([f"str {i}" for i in pda.to_list()])
+    return ak.array([f"str {i}" for i in pda.tolist()])

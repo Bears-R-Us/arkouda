@@ -201,13 +201,13 @@ class TestSegArray:
         sa = ak.SegArray(ak.array(segs_np), ak.array(vals_np))
 
         assert isinstance(sa, ak.SegArray)
-        assert segs_np.tolist() == sa.segments.to_list()
-        assert vals_np.tolist() == sa.values.to_list()
+        assert segs_np.tolist() == sa.segments.tolist()
+        assert vals_np.tolist() == sa.values.tolist()
         assert sa.size == len(segs_np)
         assert sa.dtype == dtype
 
         expected_lens = np.concatenate((segs_np[1:], np.array([size]))) - segs_np
-        assert expected_lens.tolist() == sa.lengths.to_list()
+        assert expected_lens.tolist() == sa.lengths.tolist()
 
         with pytest.raises(TypeError):
             ak.SegArray(segs_np, ak.array(vals_np))
@@ -225,28 +225,28 @@ class TestSegArray:
         segs = ak.array([0, 0, len(b)])
         segarr = ak.SegArray(segs, flat)
         assert isinstance(segarr, ak.SegArray)
-        assert segarr.lengths.to_list() == [0, 3, 1]
+        assert segarr.lengths.tolist() == [0, 3, 1]
 
         # test empty as middle element
         flat = ak.array(a + c)
         segs = ak.array([0, len(a), len(a)])
         segarr = ak.SegArray(segs, flat)
         assert isinstance(segarr, ak.SegArray)
-        assert segarr.lengths.to_list() == [2, 0, 1]
+        assert segarr.lengths.tolist() == [2, 0, 1]
 
         # test empty as last
         flat = ak.array(a + b + c)
         segs = ak.array([0, len(a), len(a) + len(b), len(a) + len(b) + len(c)])
         segarr = ak.SegArray(segs, flat)
         assert isinstance(segarr, ak.SegArray)
-        assert segarr.lengths.to_list() == [2, 3, 1, 0]
+        assert segarr.lengths.tolist() == [2, 3, 1, 0]
 
     def test_empty_creation(self):
         sa = ak.SegArray(ak.array([], dtype=ak.int64), ak.array([]))
 
         assert isinstance(sa, ak.SegArray)
         assert sa.size == 0
-        assert [] == sa.lengths.to_list()
+        assert [] == sa.lengths.tolist()
 
     def test_generic_error_handling(self):
         with pytest.raises(TypeError):
@@ -270,13 +270,13 @@ class TestSegArray:
         sa = ak.SegArray(ak.array(segs_np), ak.array(vals_np))
 
         assert isinstance(sa, ak.SegArray)
-        assert segs_np.tolist() == sa.segments.to_list()
-        assert vals_np.tolist() == sa.values.to_list()
+        assert segs_np.tolist() == sa.segments.tolist()
+        assert vals_np.tolist() == sa.values.tolist()
         assert sa.size == len(segs_np)
         assert sa.dtype == dtype
 
         expected_lens = np.concatenate((segs_np[1:], np.array([10]))) - segs_np
-        assert expected_lens.tolist() == sa.lengths.to_list()
+        assert expected_lens.tolist() == sa.lengths.tolist()
 
         with pytest.raises(TypeError):
             ak.SegArray(segs_np, ak.array(vals_np))
@@ -294,12 +294,12 @@ class TestSegArray:
         sa = ak.SegArray.from_multi_array(ma)
 
         assert isinstance(sa, ak.SegArray)
-        assert [0, 4, 4, 6] == sa.segments.to_list()
-        assert list(range(6)) == sa.values.to_list()
+        assert [0, 4, 4, 6] == sa.segments.tolist()
+        assert list(range(6)) == sa.values.tolist()
         assert sa.size == 4
 
         expected_lens = [4, 0, 2, 0]
-        assert expected_lens == sa.lengths.to_list()
+        assert expected_lens == sa.lengths.tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", DTYPES)
@@ -313,10 +313,10 @@ class TestSegArray:
         result = ak.SegArray.concat([sa, c_sa])
         assert isinstance(result, ak.SegArray)
         assert result.size == (sa.size + c_sa.size)
-        assert result.lengths.to_list() == (sa.lengths.to_list() + c_sa.lengths.to_list())
-        assert result.segments.to_list() == np.concatenate([seg_np, c_seg + val_np.size]).tolist()
-        assert result.values.to_list() == sa.values.to_list() + c_sa.values.to_list()
-        assert result.to_list() == (sa.to_list() + c_sa.to_list())
+        assert result.lengths.tolist() == (sa.lengths.tolist() + c_sa.lengths.tolist())
+        assert result.segments.tolist() == np.concatenate([seg_np, c_seg + val_np.size]).tolist()
+        assert result.values.tolist() == sa.values.tolist() + c_sa.values.tolist()
+        assert result.tolist() == (sa.tolist() + c_sa.tolist())
 
         # test concat with empty segments
         seg_np, val_np = self.make_segarray_edge(dtype)
@@ -326,10 +326,10 @@ class TestSegArray:
         result = ak.SegArray.concat([sa, c_sa])
         assert isinstance(result, ak.SegArray)
         assert result.size == (sa.size + c_sa.size)
-        assert result.lengths.to_list() == (sa.lengths.to_list() + c_sa.lengths.to_list())
-        assert result.segments.to_list() == np.concatenate([seg_np, c_seg + val_np.size]).tolist()
-        assert result.values.to_list() == sa.values.to_list() + c_sa.values.to_list()
-        assert result.to_list() == (sa.to_list() + c_sa.to_list())
+        assert result.lengths.tolist() == (sa.lengths.tolist() + c_sa.lengths.tolist())
+        assert result.segments.tolist() == np.concatenate([seg_np, c_seg + val_np.size]).tolist()
+        assert result.values.tolist() == sa.values.tolist() + c_sa.values.tolist()
+        assert result.tolist() == (sa.tolist() + c_sa.tolist())
 
         # test axis=1
         if dtype != ak.str_:  # TODO - updated to run on strings once #2646 is complete
@@ -340,8 +340,8 @@ class TestSegArray:
             result = ak.SegArray.concat([sa, c_sa], axis=1)
             assert isinstance(result, ak.SegArray)
             assert result.size == sa.size
-            assert result.lengths.to_list() == (sa.lengths + c_sa.lengths).to_list()
-            assert result.to_list() == [x + y for (x, y) in zip(sa.to_list(), c_sa.to_list())]
+            assert result.lengths.tolist() == (sa.lengths + c_sa.lengths).tolist()
+            assert result.tolist() == [x + y for (x, y) in zip(sa.tolist(), c_sa.tolist())]
 
     def test_concat_error_handling(self):
         sa_1 = ak.SegArray(ak.arange(0, 10, 2), ak.arange(10))
@@ -370,19 +370,19 @@ class TestSegArray:
 
         suffix, origin = sa.get_suffixes(1)
         assert origin.all()
-        assert suffix[0].to_list() == [x[-1] for x in sa.to_list()]
+        assert suffix[0].tolist() == [x[-1] for x in sa.tolist()]
 
         seg_np, val_np = self.make_segarray_edge(dtype)
         sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
         suffix, origin = sa.get_suffixes(2)
-        assert origin.to_list() == [False, True, False, False, True, False, False]
-        expected = [[s[(-2 + i)] for s in sa.to_list() if len(s) > 2] for i in range(2)]
-        assert [x.to_list() for x in suffix] == expected
+        assert origin.tolist() == [False, True, False, False, True, False, False]
+        expected = [[s[(-2 + i)] for s in sa.tolist() if len(s) > 2] for i in range(2)]
+        assert [x.tolist() for x in suffix] == expected
 
         suffix, origin = sa.get_suffixes(2, proper=False)
-        assert origin.to_list() == [False, True, True, False, True, False, False]
-        expected = [[s[(-2 + i)] for s in sa.to_list() if len(s) > 1] for i in range(2)]
-        assert [x.to_list() for x in suffix] == expected
+        assert origin.tolist() == [False, True, True, False, True, False, False]
+        expected = [[s[(-2 + i)] for s in sa.tolist() if len(s) > 1] for i in range(2)]
+        assert [x.tolist() for x in suffix] == expected
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", DTYPES)
@@ -392,20 +392,20 @@ class TestSegArray:
 
         prefix, origin = sa.get_prefixes(1)
         assert origin.all()
-        assert prefix[0].to_list() == [x[0] for x in sa.to_list()]
+        assert prefix[0].tolist() == [x[0] for x in sa.tolist()]
 
         seg_np, val_np = self.make_segarray_edge(dtype)
         sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
 
         prefix, origin = sa.get_prefixes(2)
-        assert origin.to_list() == [False, True, False, False, True, False, False]
-        expected = [[s[(i)] for s in sa.to_list() if len(s) > 2] for i in range(2)]
-        assert [x.to_list() for x in prefix] == expected
+        assert origin.tolist() == [False, True, False, False, True, False, False]
+        expected = [[s[(i)] for s in sa.tolist() if len(s) > 2] for i in range(2)]
+        assert [x.tolist() for x in prefix] == expected
 
         prefix, origin = sa.get_prefixes(2, proper=False)
-        assert origin.to_list() == [False, True, True, False, True, False, False]
-        expected = [[s[(i)] for s in sa.to_list() if len(s) > 1] for i in range(2)]
-        assert [x.to_list() for x in prefix] == expected
+        assert origin.tolist() == [False, True, True, False, True, False, False]
+        expected = [[s[(i)] for s in sa.tolist() if len(s) > 1] for i in range(2)]
+        assert [x.tolist() for x in prefix] == expected
 
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_ngram(self, dtype):
@@ -413,7 +413,7 @@ class TestSegArray:
         sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
 
         ngram, origin = sa.get_ngrams(2)
-        ng_list = [x.to_list() for x in ngram]
+        ng_list = [x.tolist() for x in ngram]
         ng_tuple = list(zip(ng_list[0], ng_list[1]))
         exp_list = []
         exp_origin = []
@@ -424,7 +424,7 @@ class TestSegArray:
                     exp_list.append((seg[j], seg[j + 1]))
                     exp_origin.append(i)
         assert ng_tuple == exp_list
-        assert origin.to_list() == exp_origin
+        assert origin.tolist() == exp_origin
 
         with pytest.raises(ValueError):
             sa.get_ngrams(7)
@@ -436,26 +436,26 @@ class TestSegArray:
         sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
 
         res, origins = sa.get_jth(1)
-        assert res.to_list() == [x[1] for x in sa.to_list() if 1 < len(x)]
-        assert origins.to_list() == [4 < len(x) for x in sa.to_list()]
+        assert res.tolist() == [x[1] for x in sa.tolist() if 1 < len(x)]
+        assert origins.tolist() == [4 < len(x) for x in sa.tolist()]
 
         res, origins = sa.get_jth(4)
         if dtype != ak.str_:
-            assert res.to_list() == [x[4] if 4 < len(x) else 0 for x in sa.to_list()]
+            assert res.tolist() == [x[4] if 4 < len(x) else 0 for x in sa.tolist()]
         else:
-            assert res.to_list() == [x[4] for x in sa.to_list() if 4 < len(x)]
+            assert res.tolist() == [x[4] for x in sa.tolist() if 4 < len(x)]
 
         res, origins = sa.get_jth(4, compressed=True)
-        assert res.to_list() == [x[4] for x in sa.to_list() if 4 < len(x)]
+        assert res.tolist() == [x[4] for x in sa.tolist() if 4 < len(x)]
 
         seg_np, val_np = self.make_segarray_edge(dtype)
         sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
 
         res, origins = sa.get_jth(2)
         if dtype != ak.str_:
-            assert res.to_list() == [x[2] if 2 < len(x) else 0 for x in sa.to_list()]
+            assert res.tolist() == [x[2] if 2 < len(x) else 0 for x in sa.tolist()]
         else:
-            assert res.to_list() == [x[2] for x in sa.to_list() if 2 < len(x)]
+            assert res.tolist() == [x[2] for x in sa.tolist() if 2 < len(x)]
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NO_STR)  # Strings arrays are immutable
@@ -466,16 +466,16 @@ class TestSegArray:
         sa.set_jth(0, 1, 99)
         val_np[seg_np[0] + 1] = 99
         test_sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
-        assert val_np.tolist() == sa.values.to_list()
-        assert test_sa.to_list() == sa.to_list()
+        assert val_np.tolist() == sa.values.tolist()
+        assert test_sa.tolist() == sa.tolist()
 
         sa.set_jth(ak.array([0, 1, 2]), 3, 17)
         val_np[seg_np[0] + 3] = 17
         val_np[seg_np[1] + 3] = 17
         val_np[seg_np[2] + 3] = 17
         test_sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
-        assert val_np.tolist() == sa.values.to_list()
-        assert test_sa.to_list() == sa.to_list()
+        assert val_np.tolist() == sa.values.tolist()
+        assert test_sa.tolist() == sa.tolist()
 
         seg_np, val_np = self.make_segarray_edge(dtype)
         sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
@@ -483,15 +483,15 @@ class TestSegArray:
         sa.set_jth(1, 1, 5)
         val_np[seg_np[1] + 1] = 5
         test_sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
-        assert val_np.tolist() == sa.values.to_list()
-        assert test_sa.to_list() == sa.to_list()
+        assert val_np.tolist() == sa.values.tolist()
+        assert test_sa.tolist() == sa.tolist()
 
         sa.set_jth(ak.array([1, 4]), 1, 11)
         val_np[seg_np[1] + 1] = 11
         val_np[seg_np[4] + 1] = 11
         test_sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
-        assert val_np.tolist() == sa.values.to_list()
-        assert test_sa.to_list() == sa.to_list()
+        assert val_np.tolist() == sa.values.tolist()
+        assert test_sa.tolist() == sa.tolist()
 
         with pytest.raises(ValueError):
             sa.set_jth(4, 4, 999)
@@ -502,8 +502,8 @@ class TestSegArray:
         sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
 
         elem, origin = sa.get_length_n(2)
-        assert [x.to_list() for x in elem] == [[sa[2][i]] for i in range(2)]
-        assert origin.to_list() == [True if sa[i].size == 2 else False for i in range(sa.size)]
+        assert [x.tolist() for x in elem] == [[sa[2][i]] for i in range(2)]
+        assert origin.tolist() == [True if sa[i].size == 2 else False for i in range(sa.size)]
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", DTYPES)
@@ -524,18 +524,18 @@ class TestSegArray:
 
         assert isinstance(result, ak.SegArray)
         assert result.size == (sa.size + edge_sa.size)
-        assert result.lengths.to_list() == (sa.lengths.to_list() + edge_sa.lengths.to_list())
-        assert result.segments.to_list() == np.concatenate([seg_np, edge_seg + val_np.size]).tolist()
-        assert result.values.to_list() == sa.values.to_list() + edge_sa.values.to_list()
-        assert result.to_list() == (sa.to_list() + edge_sa.to_list())
+        assert result.lengths.tolist() == (sa.lengths.tolist() + edge_sa.lengths.tolist())
+        assert result.segments.tolist() == np.concatenate([seg_np, edge_seg + val_np.size]).tolist()
+        assert result.values.tolist() == sa.values.tolist() + edge_sa.values.tolist()
+        assert result.tolist() == (sa.tolist() + edge_sa.tolist())
 
         result = edge_sa.append(sa)
         assert isinstance(result, ak.SegArray)
         assert result.size == (edge_sa.size + sa.size)
-        assert result.lengths.to_list() == (edge_sa.lengths.to_list() + sa.lengths.to_list())
-        assert result.segments.to_list() == np.concatenate([edge_seg, seg_np + edge_val.size]).tolist()
-        assert result.values.to_list() == edge_sa.values.to_list() + sa.values.to_list()
-        assert result.to_list() == (edge_sa.to_list() + sa.to_list())
+        assert result.lengths.tolist() == (edge_sa.lengths.tolist() + sa.lengths.tolist())
+        assert result.segments.tolist() == np.concatenate([edge_seg, seg_np + edge_val.size]).tolist()
+        assert result.values.tolist() == edge_sa.values.tolist() + sa.values.tolist()
+        assert result.tolist() == (edge_sa.tolist() + sa.tolist())
 
         # test axis=1
         if dtype != ak.str_:  # TODO - updated to run on strings once #2646 is complete
@@ -545,8 +545,8 @@ class TestSegArray:
             result = sa.append(sa2, axis=1)
             assert isinstance(result, ak.SegArray)
             assert result.size == sa.size
-            assert result.lengths.to_list() == (sa.lengths + sa2.lengths).to_list()
-            assert result.to_list() == [x + y for (x, y) in zip(sa.to_list(), sa2.to_list())]
+            assert result.lengths.tolist() == (sa.lengths + sa2.lengths).tolist()
+            assert result.tolist() == [x + y for (x, y) in zip(sa.tolist(), sa2.tolist())]
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NO_STR)
@@ -559,21 +559,21 @@ class TestSegArray:
 
         assert isinstance(result, ak.SegArray)
         assert result.size == sa.size
-        assert result.lengths.to_list() == (sa.lengths + 1).to_list()
-        sa_list = sa.to_list()
+        assert result.lengths.tolist() == (sa.lengths + 1).tolist()
+        sa_list = sa.tolist()
         for i, s in enumerate(sa_list):
             s.append(to_append[i])
-        assert result.to_list() == sa_list
+        assert result.tolist() == sa_list
 
         # test single value
         to_append = self.get_append_scalar(dtype)
         result = sa.append_single(to_append)
         assert result.size == sa.size
-        assert result.lengths.to_list() == (sa.lengths + 1).to_list()
-        sa_list = sa.to_list()
+        assert result.lengths.tolist() == (sa.lengths + 1).tolist()
+        sa_list = sa.tolist()
         for s in sa_list:
             s.append(to_append)
-        assert result.to_list() == sa_list
+        assert result.tolist() == sa_list
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NO_STR)
@@ -587,21 +587,21 @@ class TestSegArray:
 
         assert isinstance(result, ak.SegArray)
         assert result.size == sa.size
-        assert result.lengths.to_list() == (sa.lengths + 1).to_list()
-        sa_list = sa.to_list()
+        assert result.lengths.tolist() == (sa.lengths + 1).tolist()
+        sa_list = sa.tolist()
         for i, s in enumerate(sa_list):
             s.insert(0, to_prepend[i])
-        assert result.to_list() == sa_list
+        assert result.tolist() == sa_list
 
         # test single value
         to_prepend = self.get_append_scalar(dtype)
         result = sa.prepend_single(to_prepend)
         assert result.size == sa.size
-        assert result.lengths.to_list() == (sa.lengths + 1).to_list()
-        sa_list = sa.to_list()
+        assert result.lengths.tolist() == (sa.lengths + 1).tolist()
+        sa_list = sa.tolist()
         for s in sa_list:
             s.insert(0, to_prepend)
-        assert result.to_list() == sa_list
+        assert result.tolist() == sa_list
 
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_remove_repeats(self, dtype):
@@ -618,8 +618,8 @@ class TestSegArray:
         flat = ak.array(a + b)
         sa = ak.SegArray(segments, flat)
         result = sa.remove_repeats()
-        assert [0, len(exp_a)] == result.segments.to_list()
-        assert np.concatenate([exp_a, exp_b]).tolist() == result.values.to_list()
+        assert [0, len(exp_a)] == result.segments.tolist()
+        assert np.concatenate([exp_a, exp_b]).tolist() == result.values.tolist()
 
         # test empty segments
         # TODO - update line below to segments = ak.array([0, 0, len(a), len(a), len(a), len(a)+len(b)])
@@ -634,8 +634,8 @@ class TestSegArray:
             len(exp_a),
             len(exp_a),
             len(exp_a) + len(exp_b),
-        ] == result.segments.to_list()
-        assert np.concatenate([exp_a, exp_b]).tolist() == result.values.to_list()
+        ] == result.segments.tolist()
+        assert np.concatenate([exp_a, exp_b]).tolist() == result.values.tolist()
 
     @pytest.mark.parametrize("dtype", NO_FLOAT_STR)
     @pytest.mark.parametrize("op", SETOPS)
@@ -653,10 +653,10 @@ class TestSegArray:
         np_func = getattr(np, f"{op}1d")
         exp_1 = np_func(np.array(a), np.array(c))
         exp_2 = np_func(np.array(b), np.array(d))
-        assert result.segments.to_list() == [0, len(exp_1)]
-        assert result.values.to_list() == np.concatenate([exp_1, exp_2]).tolist()
+        assert result.segments.tolist() == [0, len(exp_1)]
+        assert result.values.tolist() == np.concatenate([exp_1, exp_2]).tolist()
         exp_sa = ak.SegArray(ak.array([0, len(exp_1)]), ak.array(np.concatenate([exp_1, exp_2])))
-        assert result.to_list() == exp_sa.to_list()
+        assert result.tolist() == exp_sa.tolist()
 
         # TODO - empty segments testing
 
@@ -679,11 +679,11 @@ class TestSegArray:
         segarr = ak.SegArray(segments, akflat)
 
         assert isinstance(segarr, ak.SegArray)
-        assert segarr.lengths.to_list() == [2, 2, 1]
-        assert segarr[0].to_list() == a
-        assert segarr[1].to_list() == b
-        assert segarr[2].to_list() == c
-        assert segarr[ak.array([1, 2])].values.to_list() == b + c
+        assert segarr.lengths.tolist() == [2, 2, 1]
+        assert segarr[0].tolist() == a
+        assert segarr[1].tolist() == b
+        assert segarr[2].tolist() == c
+        assert segarr[ak.array([1, 2])].values.tolist() == b + c
         assert segarr.__eq__(ak.array([1])) == NotImplemented
         assert segarr.__eq__(segarr).all()
         assert segarr._non_empty_count == 3
@@ -728,7 +728,7 @@ class TestSegArray:
         # ensure 2 does not exist in return values
         assert (filter_result.values != f).all()
         for i in range(sa.size):
-            assert sa[i][(sa[i] != f)].to_list() == filter_result[i].to_list()
+            assert sa[i][(sa[i] != f)].tolist() == filter_result[i].tolist()
 
         # test list filter
         fl = self.get_filter_list(dtype)
@@ -740,7 +740,7 @@ class TestSegArray:
         for i in range(sa.size):
             x = ak.in1d(ak.array(sa[i]), ak.array(fl), invert=True)
             v = ak.array(sa[i])[x]
-            assert v.to_list() == filter_result[i].to_list()
+            assert v.tolist() == filter_result[i].tolist()
 
         # test pdarray filter
         filter_result = sa.filter(ak.array(fl), discard_empty=False)
@@ -751,7 +751,7 @@ class TestSegArray:
         for i in range(sa.size):
             x = ak.in1d(ak.array(sa[i]), ak.array(fl), invert=True)
             v = ak.array(sa[i])[x]
-            assert v.to_list() == filter_result[i].to_list()
+            assert v.tolist() == filter_result[i].tolist()
 
         # test dropping empty segments
         fl = list(set(a))
@@ -764,7 +764,7 @@ class TestSegArray:
             x = ak.in1d(ak.array(sa[i]), ak.array(fl), invert=True)
             v = ak.array(sa[i])[x]
             if v.size != 0:
-                assert v.to_list() == filter_result[i - offset].to_list()
+                assert v.tolist() == filter_result[i - offset].tolist()
             else:
                 offset += 1
 
@@ -781,7 +781,7 @@ class TestSegArray:
 
         s1 = ak.SegArray(ak.array([0, 4, 14, 14]), ak.arange(-10, 10))
         s2 = ak.SegArray(ak.array([0, 9, 14, 14]), ak.arange(-10, 10))
-        assert (s1 == s2).to_list() == [False, False, True, True]
+        assert (s1 == s2).tolist() == [False, False, True, True]
 
         # test segarrays with empty segments, multiple types, and edge cases
         df = ak.DataFrame(

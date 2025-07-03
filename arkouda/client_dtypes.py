@@ -189,7 +189,7 @@ class BitVector(pdarray):
         """Export data to a numpy array of string-formatted bit vectors."""
         return np.array([self.format(x) for x in self.values.to_ndarray()])
 
-    def to_list(self):
+    def tolist(self):
         """Export data to a list of string-formatted bit vectors."""
         return self.to_ndarray().tolist()
 
@@ -637,7 +637,7 @@ class IPv4(pdarray):
         """Export array as a numpy array of integers."""
         return np.array([self.format(x) for x in self.values.to_ndarray()])
 
-    def to_list(self):
+    def tolist(self):
         """Export array as a list of integers."""
         return self.to_ndarray().tolist()
 

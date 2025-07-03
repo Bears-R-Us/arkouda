@@ -91,19 +91,19 @@ class TestCoargsort:
             *permutations([cat_from_codes, string, cat]),
         ]:
             ans = cat_ans if isinstance(cat_list[0], ak.Categorical) else str_ans
-            assert ans == cat_list[0][ak.coargsort(cat_list, algo)].to_list()
+            assert ans == cat_list[0][ak.coargsort(cat_list, algo)].tolist()
 
     @pytest.mark.parametrize("algo", SortingAlgorithm)
     def test_coargsort_empty_categorical_and_strings(self, algo):
         empty_str = ak.random_strings_uniform(1, 16, 0)
         for empty in [empty_str, ak.Categorical(empty_str)]:
-            assert ak.coargsort([empty], algo).to_list() == []
+            assert ak.coargsort([empty], algo).tolist() == []
 
     def test_coargsort_bool(self):
         args = [ak.arange(5) % 2 == 0, ak.arange(5, 0, -1)]
         perm = ak.coargsort(args)
-        assert args[0][perm].to_list() == [False, False, True, True, True]
-        assert args[1][perm].to_list() == [2, 4, 1, 3, 5]
+        assert args[0][perm].tolist() == [False, False, True, True, True]
+        assert args[1][perm].tolist() == [2, 4, 1, 3, 5]
 
     @pytest.mark.parametrize("algo", SortingAlgorithm)
     def test_error_handling(self, algo):
@@ -154,5 +154,5 @@ class TestCoargsort:
     def test_coargsort_empty_and_singleton(self):
         empty = ak.array([])
         singleton = ak.array([42])
-        assert ak.coargsort([empty]).to_list() == []
-        assert ak.coargsort([singleton]).to_list() == [0]
+        assert ak.coargsort([empty]).tolist() == []
+        assert ak.coargsort([singleton]).tolist() == [0]

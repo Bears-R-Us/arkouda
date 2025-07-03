@@ -2549,7 +2549,7 @@ class pdarray:
         See Also
         --------
         array()
-        to_list()
+        tolist()
 
         Examples
         --------
@@ -2610,7 +2610,7 @@ class pdarray:
         else:
             return x.reshape(self.shape)
 
-    def to_list(self) -> List[numeric_scalars]:
+    def tolist(self) -> List[numeric_scalars]:
         """
         Convert the array to a list, transferring array data from the
         Arkouda server to client-side Python. Note: if the pdarray size exceeds
@@ -2645,9 +2645,9 @@ class pdarray:
         --------
         >>> import arkouda as ak
         >>> a = ak.arange(0, 5, 1)
-        >>> a.to_list()
+        >>> a.tolist()
         [0, 1, 2, 3, 4]
-        >>> type(a.to_list())
+        >>> type(a.tolist())
         <class 'list'>
         """
         return cast(List[numeric_scalars], self.to_ndarray().tolist())

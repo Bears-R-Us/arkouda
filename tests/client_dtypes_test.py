@@ -34,14 +34,14 @@ class TestClientDTypes:
         arr = ak.arange(4, dtype=dtype)
         bv = ak.BitVector(arr, width=3)
         assert isinstance(bv, ak.BitVector)
-        assert bv.to_list() == bv_answer
+        assert bv.tolist() == bv_answer
         assert bv.dtype == ak.bitType
 
         # Test reversed
         arr = ak.arange(4, dtype=dtype)
         bv = ak.BitVector(arr, width=3, reverse=True)
         assert isinstance(bv, ak.BitVector)
-        assert bv.to_list() == bv_rev_answer
+        assert bv.tolist() == bv_rev_answer
         assert bv.dtype == ak.bitType
 
         # test use of vectorizer function
@@ -49,7 +49,7 @@ class TestClientDTypes:
         bvectorizer = ak.BitVectorizer(3)
         bv = bvectorizer(arr)
         assert isinstance(bv, ak.BitVector)
-        assert bv.to_list() == bv_answer
+        assert bv.tolist() == bv_answer
         assert bv.dtype == ak.bitType
 
     def test_bit_vector_error_handling(self):
@@ -71,7 +71,7 @@ class TestClientDTypes:
         arr = ak.arange(2**64 - 4, 2**64 - 1, dtype=dtype)
         bv = ak.BitVector(arr, width=64)
         assert isinstance(bv, ak.BitVector)
-        assert bv.to_list() == bv_answer
+        assert bv.tolist() == bv_answer
         assert bv.dtype == ak.bitType
 
     def test_field_creation(self):
@@ -79,7 +79,7 @@ class TestClientDTypes:
         names = ["8", "4", "2", "1"]
         f = ak.Fields(values, names)
         assert isinstance(f, ak.Fields)
-        assert f.to_list() == ["---- (0)", "---1 (1)", "--2- (2)", "--21 (3)"]
+        assert f.tolist() == ["---- (0)", "---1 (1)", "--2- (2)", "--21 (3)"]
         assert f.dtype == ak.bitType
 
         # Named fields with reversed bit order
@@ -93,7 +93,7 @@ class TestClientDTypes:
             "----//----//----//Bit4// (8)",
             "----//----//Bit3//Bit4// (12)",
         ]
-        assert f.to_list() == expected
+        assert f.tolist() == expected
 
         values = ak.arange(8, dtype=ak.uint64)
         names = [f"Bit{x}" for x in range(65)]
@@ -124,10 +124,10 @@ class TestClientDTypes:
         ips = ak.randint(1, 2**32, prob_size)
         ip_list = ak.array(ips, dtype=dtype)
         ipv4 = ak.IPv4(ip_list)
-        py_ips = [ipaddress.IPv4Address(ip).compressed for ip in ips.to_list()]
+        py_ips = [ipaddress.IPv4Address(ip).compressed for ip in ips.tolist()]
 
         assert isinstance(ipv4, ak.IPv4)
-        assert ipv4.to_list() == py_ips
+        assert ipv4.tolist() == py_ips
         assert ipv4.dtype == ak.bitType
 
         with pytest.raises(TypeError):
@@ -138,7 +138,7 @@ class TestClientDTypes:
         # Test handling of python dotted-quad input
         ipv4 = ak.ip_address(py_ips)
         assert isinstance(ipv4, ak.IPv4)
-        assert ipv4.to_list() == py_ips
+        assert ipv4.tolist() == py_ips
         assert ipv4.dtype == ak.bitType
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
@@ -146,26 +146,26 @@ class TestClientDTypes:
         ips = ak.randint(1, 2**32, prob_size)
         ip_list = ak.array(ips)
         ipv4 = ak.IPv4(ip_list)
-        ip_as_dot = [ipaddress.IPv4Address(ip) for ip in ips.to_list()]
+        ip_as_dot = [ipaddress.IPv4Address(ip) for ip in ips.tolist()]
         ip_as_int = [ipv4.normalize(ipd) for ipd in ip_as_dot]
-        assert ips.to_list() == ip_as_int
+        assert ips.tolist() == ip_as_int
 
     def test_is_ipv4(self):
         prob_size = 100
         x = [random.getrandbits(32) for _ in range(prob_size)]
 
         ans = ak.is_ipv4(ak.array(x, dtype=ak.uint64))
-        assert ans.to_list() == [True] * prob_size
+        assert ans.tolist() == [True] * prob_size
 
         ipv4 = ak.IPv4(ak.array(x))
-        assert ak.is_ipv4(ipv4).to_list() == [True] * prob_size
+        assert ak.is_ipv4(ipv4).tolist() == [True] * prob_size
 
         x = [
             random.getrandbits(64) if i < prob_size / 2 else random.getrandbits(32)
             for i in range(prob_size)
         ]
         ans = ak.is_ipv4(ak.array(x, ak.uint64))
-        assert ans.to_list() == [i >= prob_size / 2 for i in range(prob_size)]
+        assert ans.tolist() == [i >= prob_size / 2 for i in range(prob_size)]
 
         with pytest.raises(TypeError):
             ak.is_ipv4(ak.array(x, ak.float64))
@@ -179,14 +179,14 @@ class TestClientDTypes:
         low = ak.array([i & (2**64 - 1) for i in x], dtype=ak.uint64)
         high = ak.array([i >> 64 for i in x], dtype=ak.uint64)
 
-        assert ak.is_ipv6(high, low).to_list() == [True] * prob_size
+        assert ak.is_ipv6(high, low).tolist() == [True] * prob_size
 
         x = [
             random.getrandbits(64) if i < prob_size / 2 else random.getrandbits(32)
             for i in range(prob_size)
         ]
         ans = ak.is_ipv6(ak.array(x, ak.uint64))
-        assert ans.to_list() == [i < prob_size / 2 for i in range(prob_size)]
+        assert ans.tolist() == [i < prob_size / 2 for i in range(prob_size)]
 
         with pytest.raises(TypeError):
             ak.is_ipv6(ak.array(x, ak.float64))

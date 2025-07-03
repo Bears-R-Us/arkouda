@@ -339,11 +339,11 @@ class TestManipulationFunctions:
                 a_delete = ak.delete(a, delete_inds, axis=i)
                 assert_arkouda_array_equivalent(n_delete, a_delete)
 
-                n_delete = np.delete(n, delete_inds.to_list(), axis=i)
-                a_delete = ak.delete(a, delete_inds.to_list(), axis=i)
+                n_delete = np.delete(n, delete_inds.tolist(), axis=i)
+                a_delete = ak.delete(a, delete_inds.tolist(), axis=i)
                 assert_arkouda_array_equivalent(n_delete, a_delete)
 
-                delete_bounds = sorted(ak.randint(-axis_dim_size, axis_dim_size, 2).to_list())
+                delete_bounds = sorted(ak.randint(-axis_dim_size, axis_dim_size, 2).tolist())
                 if delete_bounds[0] < 0 <= delete_bounds[1] < delete_bounds[0] + a_size:
                     delete_bounds = delete_bounds[::-1]
                 low, high = delete_bounds
