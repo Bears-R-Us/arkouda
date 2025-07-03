@@ -494,6 +494,12 @@ jobs:
     container:
       image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
     steps:
+    - name: Show memory available
+      run: |
+        echo "Memory info:"
+        free -h
+        echo "CPU info:"
+        nproc
     - name: Checkout Repository
       uses: actions/checkout@v4
     - name: Set Python version to 3.13
@@ -514,6 +520,7 @@ jobs:
         retry_wait_seconds: 60
         retry_on: error
         command: |
+          apt-get update && apt-get install -y time
           python3 -m ensurepip --default-pip
           echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
           echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/arrow-install/))" >> Makefile.paths
@@ -527,9 +534,11 @@ jobs:
     - name: Use MultiDim Configs
       run: |
         cp .configs/registration-config-multi-dim.json registration-config.json
-    - name: Build/Install Arkouda
+    - name: Build Arkouda
       run: |
-        make
+        /usr/bin/time -v make
+    - name: Install Arkouda
+      run: |
         python3 -m pip install .[dev]
     - name: Arkouda unit tests
       run: |
