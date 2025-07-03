@@ -1,4 +1,5 @@
 from typing import Literal, Optional, Sequence, Tuple, Union, cast
+from warnings import warn
 
 import numpy as np
 from typeguard import typechecked
@@ -34,12 +35,19 @@ def _max_bits_list(pda_list: Sequence[pdarray]) -> Tuple[bool, int]:
     """
     has_bigint = False
     m_bits = -1
+    do_warn = False
     for a in pda_list:
         if a.dtype == bigint:
-            has_bigint = True
+            if has_bigint:
+                if a.max_bits != m_bits:
+                    do_warn = True
+            else:
+                has_bigint = True
             curr_bits = a.max_bits
             if curr_bits > 0 and (m_bits == -1 or curr_bits < m_bits):
                 m_bits = curr_bits
+    if do_warn:
+        warn("Because two arrays with different max_bits were used, truncating to smaller max_bits")
     return has_bigint, m_bits
 
 
