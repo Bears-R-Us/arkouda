@@ -4,6 +4,10 @@ on: [pull_request, merge_group, workflow_dispatch]
 
 env:
   ARKOUDA_QUICK_COMPILE: true
+  
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lint:
