@@ -543,31 +543,6 @@ Package Contents
 
 
 
-   .. py:method:: to_list() -> List[str]
-
-      Convert the Categorical to a list.
-
-      Convert the Categorical to a list, transferring data from
-      the arkouda server to Python. This conversion discards category
-      information and produces a list of strings. If the arrays
-      exceeds a built-in size limit, a RuntimeError is raised.
-
-      :returns: A list of strings corresponding to the values in
-                this Categorical
-      :rtype: List[str]
-
-      .. rubric:: Notes
-
-      The number of bytes in the Categorical cannot exceed ``ak.client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting ak.client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-
-
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the array to a np.ndarray.
@@ -668,6 +643,31 @@ Package Contents
 
       >>> isinstance(c.to_strings(), ak.Strings)
       True
+
+
+
+   .. py:method:: tolist() -> List[str]
+
+      Convert the Categorical to a list.
+
+      Convert the Categorical to a list, transferring data from
+      the arkouda server to Python. This conversion discards category
+      information and produces a list of strings. If the arrays
+      exceeds a built-in size limit, a RuntimeError is raised.
+
+      :returns: A list of strings corresponding to the values in
+                this Categorical
+      :rtype: List[str]
+
+      .. rubric:: Notes
+
+      The number of bytes in the Categorical cannot exceed ``ak.client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting ak.client.maxTransferBytes to a larger
+      value, but proceed with caution.
 
 
 

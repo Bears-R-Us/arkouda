@@ -834,11 +834,6 @@ determine the file format.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.pandas.index.Index.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/index.html#Index.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.index.Index.to_list" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.index.Index.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/index.html#Index.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.index.Index.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -893,6 +888,11 @@ dataset with the same name already exists, a <code class="docutils literal notra
 - Any file extension can be used.The file I/O does not rely on the extension to
 determine the file format.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.index.Index.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/index.html#Index.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.index.Index.tolist" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.index.Index.unregister">
@@ -1249,11 +1249,6 @@ determine the file format.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.pandas.index.MultiIndex.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/index.html#MultiIndex.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.index.MultiIndex.to_list" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.index.MultiIndex.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/index.html#MultiIndex.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.index.MultiIndex.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1263,6 +1258,11 @@ determine the file format.</p>
 <span class="sig-name descname"><span class="pre">to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/index.html#MultiIndex.to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.index.MultiIndex.to_pandas" title="Link to this definition">¶</a></dt>
 <dd><p>Return the equivalent Pandas Index.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.index.MultiIndex.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/index.html#MultiIndex.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.index.MultiIndex.tolist" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.index.MultiIndex.unregister">
@@ -1407,10 +1407,10 @@ file with the new data</p></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.to_csv"><code class="docutils literal notranslate"><span class="pre">Index.to_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.to_dict"><code class="docutils literal notranslate"><span class="pre">Index.to_dict()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.to_hdf"><code class="docutils literal notranslate"><span class="pre">Index.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pandas.index.Index.to_list"><code class="docutils literal notranslate"><span class="pre">Index.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.to_ndarray"><code class="docutils literal notranslate"><span class="pre">Index.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.to_pandas"><code class="docutils literal notranslate"><span class="pre">Index.to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.to_parquet"><code class="docutils literal notranslate"><span class="pre">Index.to_parquet()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.index.Index.tolist"><code class="docutils literal notranslate"><span class="pre">Index.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.unregister"><code class="docutils literal notranslate"><span class="pre">Index.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.update_hdf"><code class="docutils literal notranslate"><span class="pre">Index.update_hdf()</span></code></a></li>
 </ul>
@@ -1437,9 +1437,9 @@ file with the new data</p></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.MultiIndex.set_dtype"><code class="docutils literal notranslate"><span class="pre">MultiIndex.set_dtype()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.MultiIndex.to_dict"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_dict()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.MultiIndex.to_hdf"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pandas.index.MultiIndex.to_list"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.MultiIndex.to_ndarray"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.MultiIndex.to_pandas"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_pandas()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.index.MultiIndex.tolist"><code class="docutils literal notranslate"><span class="pre">MultiIndex.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.MultiIndex.unregister"><code class="docutils literal notranslate"><span class="pre">MultiIndex.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.MultiIndex.update_hdf"><code class="docutils literal notranslate"><span class="pre">MultiIndex.update_hdf()</span></code></a></li>
 </ul>

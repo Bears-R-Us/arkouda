@@ -1806,26 +1806,6 @@ Package Contents
 
 
 
-   .. py:method:: to_list()
-
-      Convert the segarray into a list containing sub-arrays
-
-      :returns: A list with the same sub-arrays (also list) as this segarray
-      :rtype: list
-
-      .. seealso:: :py:obj:`to_ndarray`
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
-      >>> segarr.to_list()
-      [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
-      >>> type(segarr.to_list())
-      <class 'list'>
-
-
-
    .. py:method:: to_ndarray()
 
       Convert the array into a numpy.ndarray containing sub-arrays
@@ -1833,7 +1813,7 @@ Package Contents
       :returns: A numpy ndarray with the same sub-arrays (also numpy.ndarray) as this array
       :rtype: np.ndarray
 
-      .. seealso:: :py:obj:`array`, :py:obj:`to_list`
+      .. seealso:: :py:obj:`array`, :py:obj:`tolist`
 
       .. rubric:: Examples
 
@@ -1885,6 +1865,26 @@ Package Contents
       dataset with the same name already exists, a ``RuntimeError`` will result.
       - Any file extension can be used.The file I/O does not rely on the extension to
       determine the file format.
+
+
+
+   .. py:method:: tolist()
+
+      Convert the segarray into a list containing sub-arrays
+
+      :returns: A list with the same sub-arrays (also list) as this segarray
+      :rtype: list
+
+      .. seealso:: :py:obj:`to_ndarray`
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
+      >>> segarr.tolist()
+      [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
+      >>> type(segarr.tolist())
+      <class 'list'>
 
 
 
@@ -3607,38 +3607,6 @@ Package Contents
 
 
 
-   .. py:method:: to_list() -> List[str]
-
-      Convert the SegString to a list, transferring data from the
-      arkouda server to Python. If the SegString exceeds a built-in size limit,
-      a RuntimeError is raised.
-
-      :returns: A list with the same strings as this SegString
-      :rtype: List[str]
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting ak.client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-      .. seealso:: :py:obj:`to_ndarray`
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> a = ak.array(["hello", "my", "world"])
-      >>> a.to_list()
-      ['hello', 'my', 'world']
-      >>> type(a.to_list())
-      <class 'list'>
-
-
-
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from the
@@ -3658,7 +3626,7 @@ Package Contents
       may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
-      .. seealso:: :py:obj:`array`, :py:obj:`to_list`
+      .. seealso:: :py:obj:`array`, :py:obj:`tolist`
 
       .. rubric:: Examples
 
@@ -3705,6 +3673,38 @@ Package Contents
       dataset with the same name already exists, a ``RuntimeError`` will result.
       - Any file extension can be used.The file I/O does not rely on the extension to
       determine the file format.
+
+
+
+   .. py:method:: tolist() -> List[str]
+
+      Convert the SegString to a list, transferring data from the
+      arkouda server to Python. If the SegString exceeds a built-in size limit,
+      a RuntimeError is raised.
+
+      :returns: A list with the same strings as this SegString
+      :rtype: List[str]
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting ak.client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :py:obj:`to_ndarray`
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> a = ak.array(["hello", "my", "world"])
+      >>> a.tolist()
+      ['hello', 'my', 'world']
+      >>> type(a.tolist())
+      <class 'list'>
 
 
 
@@ -10007,42 +10007,6 @@ Package Contents
 
 
 
-   .. py:method:: to_list() -> List[arkouda.numpy.dtypes.numeric_scalars]
-
-      Convert the array to a list, transferring array data from the
-      Arkouda server to client-side Python. Note: if the pdarray size exceeds
-      client.maxTransferBytes, a RuntimeError is raised.
-
-      :returns: A list with the same data as the pdarray
-      :rtype: List[numeric_scalars]
-
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-      .. seealso:: :py:obj:`to_ndarray`
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> a = ak.arange(0, 5, 1)
-      >>> a.to_list()
-      [0, 1, 2, 3, 4]
-      >>> type(a.to_list())
-      <class 'list'>
-
-
-
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from the
@@ -10066,7 +10030,7 @@ Package Contents
       may override this limit by setting client.maxTransferBytes to a larger
       value, but proceed with caution.
 
-      .. seealso:: :py:obj:`array`, :py:obj:`to_list`
+      .. seealso:: :py:obj:`array`, :py:obj:`tolist`
 
       .. rubric:: Examples
 
@@ -10128,6 +10092,42 @@ Package Contents
       >>> a.to_parqet('path/prefix.parquet', dataset='array') # doctest: +SKIP
       Saves the array to numLocales HDF5 files with the name
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
+
+
+
+   .. py:method:: tolist() -> List[arkouda.numpy.dtypes.numeric_scalars]
+
+      Convert the array to a list, transferring array data from the
+      Arkouda server to client-side Python. Note: if the pdarray size exceeds
+      client.maxTransferBytes, a RuntimeError is raised.
+
+      :returns: A list with the same data as the pdarray
+      :rtype: List[numeric_scalars]
+
+      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
+          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+          received does not match expected number of bytes
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :py:obj:`to_ndarray`
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> a = ak.arange(0, 5, 1)
+      >>> a.tolist()
+      [0, 1, 2, 3, 4]
+      >>> type(a.tolist())
+      <class 'list'>
 
 
 

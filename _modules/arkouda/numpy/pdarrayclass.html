@@ -3057,7 +3057,7 @@
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        array()</span>
-<span class="sd">        to_list()</span>
+<span class="sd">        tolist()</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -3119,9 +3119,9 @@
             <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="pdarray.to_list">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.to_list">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">]:</span>
+<div class="viewcode-block" id="pdarray.tolist">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.tolist">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a list, transferring array data from the</span>
 <span class="sd">        Arkouda server to client-side Python. Note: if the pdarray size exceeds</span>
@@ -3156,9 +3156,9 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; a = ak.arange(0, 5, 1)</span>
-<span class="sd">        &gt;&gt;&gt; a.to_list()</span>
+<span class="sd">        &gt;&gt;&gt; a.tolist()</span>
 <span class="sd">        [0, 1, 2, 3, 4]</span>
-<span class="sd">        &gt;&gt;&gt; type(a.to_list())</span>
+<span class="sd">        &gt;&gt;&gt; type(a.tolist())</span>
 <span class="sd">        &lt;class &#39;list&#39;&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span></div>

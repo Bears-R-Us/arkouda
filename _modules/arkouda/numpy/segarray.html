@@ -1114,7 +1114,7 @@
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        array()</span>
-<span class="sd">        to_list()</span>
+<span class="sd">        tolist()</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -1134,9 +1134,9 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SegArray.to_list">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.to_list">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SegArray.tolist">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/segarray/index.html#arkouda.SegArray.tolist">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the segarray into a list containing sub-arrays</span>
 
@@ -1153,9 +1153,9 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))</span>
-<span class="sd">        &gt;&gt;&gt; segarr.to_list()</span>
+<span class="sd">        &gt;&gt;&gt; segarr.tolist()</span>
 <span class="sd">        [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]</span>
-<span class="sd">        &gt;&gt;&gt; type(segarr.to_list())</span>
+<span class="sd">        &gt;&gt;&gt; type(segarr.tolist())</span>
 <span class="sd">        &lt;class &#39;list&#39;&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">arr</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()]</span></div>

@@ -2324,48 +2324,6 @@ Saves the array in to single hdf5 file on the root node.
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.to_list" title="Link to this definition">¶</a></dt>
-<dd><p>Convert the array to a list, transferring array data from the
-Arkouda server to client-side Python. Note: if the pdarray size exceeds
-client.maxTransferBytes, a RuntimeError is raised.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list with the same data as the pdarray</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[<a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars">numeric_scalars</a>]</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown, if the pdarray size
-exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-received does not match expected number of bytes</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">client.maxTransferBytes</span></code>,
-otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
-from overflowing the memory of the system on which the Python client
-is running, under the assumption that the server is running on a
-distributed system with much more memory than the client. The user
-may override this limit by setting client.maxTransferBytes to a larger
-value, but proceed with caution.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.to_ndarray" title="arkouda.numpy.pdarrayclass.pdarray.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ndarray</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
-<span class="go">[0, 1, 2, 3, 4]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">to_list</span><span class="p">())</span>
-<span class="go">&lt;class &#39;list&#39;&gt;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the array to a np.ndarray, transferring array data from the
@@ -2394,7 +2352,7 @@ may override this limit by setting client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.to_list" title="arkouda.numpy.pdarrayclass.pdarray.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.tolist" title="arkouda.numpy.pdarrayclass.pdarray.tolist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tolist</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -2458,6 +2416,48 @@ Saves the array to numLocales HDF5 files with the name <code class="docutils lit
 &gt;&gt;&gt; a.to_parqet(‘path/prefix.parquet’, dataset=’array’) # doctest: +SKIP
 Saves the array to numLocales HDF5 files with the name
 <code class="docutils literal notranslate"><span class="pre">cwd/path/name_prefix_LOCALE####.parquet</span></code> where #### is replaced by each locale number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.tolist" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the array to a list, transferring array data from the
+Arkouda server to client-side Python. Note: if the pdarray size exceeds
+client.maxTransferBytes, a RuntimeError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list with the same data as the pdarray</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[<a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars">numeric_scalars</a>]</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown, if the pdarray size
+exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+received does not match expected number of bytes</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">client.maxTransferBytes</span></code>,
+otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
+from overflowing the memory of the system on which the Python client
+is running, under the assumption that the server is running on a
+distributed system with much more memory than the client. The user
+may override this limit by setting client.maxTransferBytes to a larger
+value, but proceed with caution.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.to_ndarray" title="arkouda.numpy.pdarrayclass.pdarray.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ndarray</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">[0, 1, 2, 3, 4]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="go">&lt;class &#39;list&#39;&gt;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -2961,9 +2961,9 @@ subject to the boolean where condition.</p>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.to_csv"><code class="docutils literal notranslate"><span class="pre">pdarray.to_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.to_cuda"><code class="docutils literal notranslate"><span class="pre">pdarray.to_cuda()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.to_hdf"><code class="docutils literal notranslate"><span class="pre">pdarray.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.to_list"><code class="docutils literal notranslate"><span class="pre">pdarray.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.to_ndarray"><code class="docutils literal notranslate"><span class="pre">pdarray.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.to_parquet"><code class="docutils literal notranslate"><span class="pre">pdarray.to_parquet()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.tolist"><code class="docutils literal notranslate"><span class="pre">pdarray.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.transfer"><code class="docutils literal notranslate"><span class="pre">pdarray.transfer()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.unregister"><code class="docutils literal notranslate"><span class="pre">pdarray.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray.update_hdf"><code class="docutils literal notranslate"><span class="pre">pdarray.update_hdf()</span></code></a></li>

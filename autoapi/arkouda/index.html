@@ -1720,15 +1720,15 @@ they are unregistered.</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.BitVector.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/client_dtypes.html#BitVector.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.BitVector.to_list" title="Link to this definition">¶</a></dt>
-<dd><p>Export data to a list of string-formatted bit vectors.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.BitVector.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/client_dtypes.html#BitVector.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.BitVector.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd><p>Export data to a numpy array of string-formatted bit vectors.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.BitVector.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/client_dtypes.html#BitVector.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.BitVector.tolist" title="Link to this definition">¶</a></dt>
+<dd><p>Export data to a list of string-formatted bit vectors.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -2501,33 +2501,6 @@ When distribute, dataset is written on a file per locale.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Categorical.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/categorical.html#Categorical.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Categorical.to_list" title="Link to this definition">¶</a></dt>
-<dd><p>Convert the Categorical to a list.</p>
-<p>Convert the Categorical to a list, transferring data from
-the arkouda server to Python. This conversion discards category
-information and produces a list of strings. If the arrays
-exceeds a built-in size limit, a RuntimeError is raised.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of strings corresponding to the values in
-this Categorical</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[str]</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The number of bytes in the Categorical cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
-otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
-from overflowing the memory of the system on which the Python client
-is running, under the assumption that the server is running on a
-distributed system with much more memory than the client. The user
-may override this limit by setting ak.client.maxTransferBytes to a larger
-value, but proceed with caution.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Categorical.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/categorical.html#Categorical.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Categorical.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the array to a np.ndarray.</p>
@@ -2641,6 +2614,33 @@ this Categorical.</p>
 <span class="go">True</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.Categorical.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/categorical.html#Categorical.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Categorical.tolist" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the Categorical to a list.</p>
+<p>Convert the Categorical to a list, transferring data from
+the arkouda server to Python. This conversion discards category
+information and produces a list of strings. If the arrays
+exceeds a built-in size limit, a RuntimeError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of strings corresponding to the values in
+this Categorical</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[str]</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The number of bytes in the Categorical cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
+otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
+from overflowing the memory of the system on which the Python client
+is running, under the assumption that the server is running on a
+distributed system with much more memory than the client. The user
+may override this limit by setting ak.client.maxTransferBytes to a larger
+value, but proceed with caution.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -5097,15 +5097,15 @@ they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.IPv4.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/client_dtypes.html#IPv4.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.IPv4.to_list" title="Link to this definition">¶</a></dt>
-<dd><p>Export array as a list of integers.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.IPv4.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/client_dtypes.html#IPv4.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.IPv4.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd><p>Export array as a numpy array of integers.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.IPv4.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/client_dtypes.html#IPv4.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.IPv4.tolist" title="Link to this definition">¶</a></dt>
+<dd><p>Export array as a list of integers.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -5545,11 +5545,6 @@ determine the file format.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Index.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#Index.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index.to_list" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#Index.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -5604,6 +5599,11 @@ dataset with the same name already exists, a <code class="docutils literal notra
 - Any file extension can be used.The file I/O does not rely on the extension to
 determine the file format.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.Index.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#Index.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index.tolist" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.unregister">
@@ -6111,11 +6111,6 @@ determine the file format.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.MultiIndex.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.to_list" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -6125,6 +6120,11 @@ determine the file format.</p>
 <span class="sig-name descname"><span class="pre">to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.to_pandas" title="Link to this definition">¶</a></dt>
 <dd><p>Return the equivalent Pandas Index.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.MultiIndex.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.tolist" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.unregister">
@@ -7165,33 +7165,6 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.SegArray.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/numpy/segarray.html#SegArray.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.SegArray.to_list" title="Link to this definition">¶</a></dt>
-<dd><p>Convert the segarray into a list containing sub-arrays</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list with the same sub-arrays (also list) as this segarray</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.SegArray.to_ndarray" title="arkouda.SegArray.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ndarray</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">segarr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">SegArray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">segarr</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
-<span class="go">[[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">segarr</span><span class="o">.</span><span class="n">to_list</span><span class="p">())</span>
-<span class="go">&lt;class &#39;list&#39;&gt;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.SegArray.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/numpy/segarray.html#SegArray.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.SegArray.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the array into a numpy.ndarray containing sub-arrays</p>
@@ -7205,7 +7178,7 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../../usage/IO.html#arkouda.array" title="arkouda.array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, <a class="reference internal" href="#arkouda.SegArray.to_list" title="arkouda.SegArray.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
+<p><a class="reference internal" href="../../usage/IO.html#arkouda.array" title="arkouda.array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, <a class="reference internal" href="#arkouda.SegArray.tolist" title="arkouda.SegArray.tolist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tolist</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -7266,6 +7239,33 @@ and the number of output files is less than the number of locales or a
 dataset with the same name already exists, a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will result.
 - Any file extension can be used.The file I/O does not rely on the extension to
 determine the file format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.SegArray.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/numpy/segarray.html#SegArray.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.SegArray.tolist" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the segarray into a list containing sub-arrays</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list with the same sub-arrays (also list) as this segarray</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.SegArray.to_ndarray" title="arkouda.SegArray.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ndarray</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">segarr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">SegArray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">segarr</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">[[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">segarr</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="go">&lt;class &#39;list&#39;&gt;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -8393,11 +8393,6 @@ they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Series.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/series.html#Series.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Series.to_list" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Series.to_markdown">
 <span class="sig-name descname"><span class="pre">to_markdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tablefmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/series.html#Series.to_markdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Series.to_markdown" title="Link to this definition">¶</a></dt>
 <dd><p>Print Series in Markdown-friendly format.</p>
@@ -8463,6 +8458,11 @@ of allowed keys and values.</p></li>
 <span class="sig-name descname"><span class="pre">to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pandas/index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/series.html#Series.to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Series.to_pandas" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the series to a local PANDAS series</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.Series.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/series.html#Series.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Series.tolist" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Series.topn">
@@ -10599,43 +10599,6 @@ determine the file format.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Strings.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/strings.html#Strings.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Strings.to_list" title="Link to this definition">¶</a></dt>
-<dd><p>Convert the SegString to a list, transferring data from the
-arkouda server to Python. If the SegString exceeds a built-in size limit,
-a RuntimeError is raised.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list with the same strings as this SegString</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[str]</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
-otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
-from overflowing the memory of the system on which the Python client
-is running, under the assumption that the server is running on a
-distributed system with much more memory than the client. The user
-may override this limit by setting ak.client.maxTransferBytes to a larger
-value, but proceed with caution.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.Strings.to_ndarray" title="arkouda.Strings.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ndarray</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="s2">&quot;my&quot;</span><span class="p">,</span> <span class="s2">&quot;world&quot;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
-<span class="go">[&#39;hello&#39;, &#39;my&#39;, &#39;world&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">to_list</span><span class="p">())</span>
-<span class="go">&lt;class &#39;list&#39;&gt;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/strings.html#Strings.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Strings.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the array to a np.ndarray, transferring array data from the
@@ -10659,7 +10622,7 @@ may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../../usage/IO.html#arkouda.array" title="arkouda.array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, <a class="reference internal" href="#arkouda.Strings.to_list" title="arkouda.Strings.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
+<p><a class="reference internal" href="../../usage/IO.html#arkouda.array" title="arkouda.array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, <a class="reference internal" href="#arkouda.Strings.tolist" title="arkouda.Strings.tolist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tolist</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -10715,6 +10678,43 @@ and the number of output files is less than the number of locales or a
 dataset with the same name already exists, a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will result.
 - Any file extension can be used.The file I/O does not rely on the extension to
 determine the file format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.Strings.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/strings.html#Strings.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Strings.tolist" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the SegString to a list, transferring data from the
+arkouda server to Python. If the SegString exceeds a built-in size limit,
+a RuntimeError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list with the same strings as this SegString</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[str]</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
+otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
+from overflowing the memory of the system on which the Python client
+is running, under the assumption that the server is running on a
+distributed system with much more memory than the client. The user
+may override this limit by setting ak.client.maxTransferBytes to a larger
+value, but proceed with caution.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.to_ndarray" title="arkouda.Strings.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ndarray</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="s2">&quot;my&quot;</span><span class="p">,</span> <span class="s2">&quot;world&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">[&#39;hello&#39;, &#39;my&#39;, &#39;world&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="go">&lt;class &#39;list&#39;&gt;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -15051,7 +15051,7 @@ is missing values are excluded</p>
 </div>
 <p>Set both remove_missing and all_occurrences to True, missing values
 will be empty segments</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_occurrences</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_occurrences</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 <span class="go">[[],</span>
 <span class="go"> [],</span>
 <span class="go"> [],</span>
@@ -20038,48 +20038,6 @@ Saves the array in to single hdf5 file on the root node.
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.pdarray.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarray.to_list" title="Link to this definition">¶</a></dt>
-<dd><p>Convert the array to a list, transferring array data from the
-Arkouda server to client-side Python. Note: if the pdarray size exceeds
-client.maxTransferBytes, a RuntimeError is raised.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list with the same data as the pdarray</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[<a class="reference internal" href="#arkouda.numeric_scalars" title="arkouda.numeric_scalars">numeric_scalars</a>]</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown, if the pdarray size
-exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-received does not match expected number of bytes</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">client.maxTransferBytes</span></code>,
-otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
-from overflowing the memory of the system on which the Python client
-is running, under the assumption that the server is running on a
-distributed system with much more memory than the client. The user
-may override this limit by setting client.maxTransferBytes to a larger
-value, but proceed with caution.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray.to_ndarray" title="arkouda.pdarray.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ndarray</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
-<span class="go">[0, 1, 2, 3, 4]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">to_list</span><span class="p">())</span>
-<span class="go">&lt;class &#39;list&#39;&gt;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarray.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the array to a np.ndarray, transferring array data from the
@@ -20108,7 +20066,7 @@ may override this limit by setting client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../../usage/IO.html#arkouda.array" title="arkouda.array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, <a class="reference internal" href="#arkouda.pdarray.to_list" title="arkouda.pdarray.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
+<p><a class="reference internal" href="../../usage/IO.html#arkouda.array" title="arkouda.array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>, <a class="reference internal" href="#arkouda.pdarray.tolist" title="arkouda.pdarray.tolist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tolist</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -20172,6 +20130,48 @@ Saves the array to numLocales HDF5 files with the name <code class="docutils lit
 &gt;&gt;&gt; a.to_parqet(‘path/prefix.parquet’, dataset=’array’) # doctest: +SKIP
 Saves the array to numLocales HDF5 files with the name
 <code class="docutils literal notranslate"><span class="pre">cwd/path/name_prefix_LOCALE####.parquet</span></code> where #### is replaced by each locale number</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pdarray.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarray.tolist" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the array to a list, transferring array data from the
+Arkouda server to client-side Python. Note: if the pdarray size exceeds
+client.maxTransferBytes, a RuntimeError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list with the same data as the pdarray</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[<a class="reference internal" href="#arkouda.numeric_scalars" title="arkouda.numeric_scalars">numeric_scalars</a>]</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown, if the pdarray size
+exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+received does not match expected number of bytes</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">client.maxTransferBytes</span></code>,
+otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
+from overflowing the memory of the system on which the Python client
+is running, under the assumption that the server is running on a
+distributed system with much more memory than the client. The user
+may override this limit by setting client.maxTransferBytes to a larger
+value, but proceed with caution.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray.to_ndarray" title="arkouda.pdarray.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ndarray</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">[0, 1, 2, 3, 4]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="go">&lt;class &#39;list&#39;&gt;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -24716,8 +24716,8 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.BitVector.registered_name"><code class="docutils literal notranslate"><span class="pre">BitVector.registered_name</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.BitVector.reverse"><code class="docutils literal notranslate"><span class="pre">BitVector.reverse</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.BitVector.special_objType"><code class="docutils literal notranslate"><span class="pre">BitVector.special_objType</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.BitVector.to_list"><code class="docutils literal notranslate"><span class="pre">BitVector.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.BitVector.to_ndarray"><code class="docutils literal notranslate"><span class="pre">BitVector.to_ndarray()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.BitVector.tolist"><code class="docutils literal notranslate"><span class="pre">BitVector.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.BitVector.values"><code class="docutils literal notranslate"><span class="pre">BitVector.values</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.BitVector.width"><code class="docutils literal notranslate"><span class="pre">BitVector.width</span></code></a></li>
 </ul>
@@ -24775,11 +24775,11 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.Categorical.standardize_categories"><code class="docutils literal notranslate"><span class="pre">Categorical.standardize_categories()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.startswith"><code class="docutils literal notranslate"><span class="pre">Categorical.startswith()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.to_hdf"><code class="docutils literal notranslate"><span class="pre">Categorical.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.Categorical.to_list"><code class="docutils literal notranslate"><span class="pre">Categorical.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.to_ndarray"><code class="docutils literal notranslate"><span class="pre">Categorical.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.to_pandas"><code class="docutils literal notranslate"><span class="pre">Categorical.to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.to_parquet"><code class="docutils literal notranslate"><span class="pre">Categorical.to_parquet()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.to_strings"><code class="docutils literal notranslate"><span class="pre">Categorical.to_strings()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Categorical.tolist"><code class="docutils literal notranslate"><span class="pre">Categorical.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.transfer"><code class="docutils literal notranslate"><span class="pre">Categorical.transfer()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.unique"><code class="docutils literal notranslate"><span class="pre">Categorical.unique()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.unregister"><code class="docutils literal notranslate"><span class="pre">Categorical.unregister()</span></code></a></li>
@@ -24960,8 +24960,8 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.IPv4.register"><code class="docutils literal notranslate"><span class="pre">IPv4.register()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.IPv4.special_objType"><code class="docutils literal notranslate"><span class="pre">IPv4.special_objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.IPv4.to_hdf"><code class="docutils literal notranslate"><span class="pre">IPv4.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.IPv4.to_list"><code class="docutils literal notranslate"><span class="pre">IPv4.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.IPv4.to_ndarray"><code class="docutils literal notranslate"><span class="pre">IPv4.to_ndarray()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.IPv4.tolist"><code class="docutils literal notranslate"><span class="pre">IPv4.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.IPv4.update_hdf"><code class="docutils literal notranslate"><span class="pre">IPv4.update_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.IPv4.values"><code class="docutils literal notranslate"><span class="pre">IPv4.values</span></code></a></li>
 </ul>
@@ -24991,10 +24991,10 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.Index.to_csv"><code class="docutils literal notranslate"><span class="pre">Index.to_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Index.to_dict"><code class="docutils literal notranslate"><span class="pre">Index.to_dict()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Index.to_hdf"><code class="docutils literal notranslate"><span class="pre">Index.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.Index.to_list"><code class="docutils literal notranslate"><span class="pre">Index.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Index.to_ndarray"><code class="docutils literal notranslate"><span class="pre">Index.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Index.to_pandas"><code class="docutils literal notranslate"><span class="pre">Index.to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Index.to_parquet"><code class="docutils literal notranslate"><span class="pre">Index.to_parquet()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Index.tolist"><code class="docutils literal notranslate"><span class="pre">Index.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Index.unregister"><code class="docutils literal notranslate"><span class="pre">Index.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Index.update_hdf"><code class="docutils literal notranslate"><span class="pre">Index.update_hdf()</span></code></a></li>
 </ul>
@@ -25037,9 +25037,9 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.MultiIndex.set_dtype"><code class="docutils literal notranslate"><span class="pre">MultiIndex.set_dtype()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.MultiIndex.to_dict"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_dict()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.MultiIndex.to_hdf"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.MultiIndex.to_list"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.MultiIndex.to_ndarray"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.MultiIndex.to_pandas"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_pandas()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.MultiIndex.tolist"><code class="docutils literal notranslate"><span class="pre">MultiIndex.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.MultiIndex.unregister"><code class="docutils literal notranslate"><span class="pre">MultiIndex.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.MultiIndex.update_hdf"><code class="docutils literal notranslate"><span class="pre">MultiIndex.update_hdf()</span></code></a></li>
 </ul>
@@ -25143,9 +25143,9 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.SegArray.size"><code class="docutils literal notranslate"><span class="pre">SegArray.size</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.sum"><code class="docutils literal notranslate"><span class="pre">SegArray.sum()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.to_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.SegArray.to_list"><code class="docutils literal notranslate"><span class="pre">SegArray.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.to_ndarray"><code class="docutils literal notranslate"><span class="pre">SegArray.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.to_parquet"><code class="docutils literal notranslate"><span class="pre">SegArray.to_parquet()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.SegArray.tolist"><code class="docutils literal notranslate"><span class="pre">SegArray.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.transfer"><code class="docutils literal notranslate"><span class="pre">SegArray.transfer()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.union"><code class="docutils literal notranslate"><span class="pre">SegArray.union()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.SegArray.unique"><code class="docutils literal notranslate"><span class="pre">SegArray.unique()</span></code></a></li>
@@ -25191,10 +25191,10 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.Series.str"><code class="docutils literal notranslate"><span class="pre">Series.str</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Series.tail"><code class="docutils literal notranslate"><span class="pre">Series.tail()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Series.to_dataframe"><code class="docutils literal notranslate"><span class="pre">Series.to_dataframe()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.Series.to_list"><code class="docutils literal notranslate"><span class="pre">Series.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Series.to_markdown"><code class="docutils literal notranslate"><span class="pre">Series.to_markdown()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Series.to_ndarray"><code class="docutils literal notranslate"><span class="pre">Series.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Series.to_pandas"><code class="docutils literal notranslate"><span class="pre">Series.to_pandas()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Series.tolist"><code class="docutils literal notranslate"><span class="pre">Series.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Series.topn"><code class="docutils literal notranslate"><span class="pre">Series.topn()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Series.unregister"><code class="docutils literal notranslate"><span class="pre">Series.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Series.validate_key"><code class="docutils literal notranslate"><span class="pre">Series.validate_key()</span></code></a></li>
@@ -25294,9 +25294,9 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.Strings.title"><code class="docutils literal notranslate"><span class="pre">Strings.title()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Strings.to_csv"><code class="docutils literal notranslate"><span class="pre">Strings.to_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Strings.to_hdf"><code class="docutils literal notranslate"><span class="pre">Strings.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.Strings.to_list"><code class="docutils literal notranslate"><span class="pre">Strings.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Strings.to_ndarray"><code class="docutils literal notranslate"><span class="pre">Strings.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Strings.to_parquet"><code class="docutils literal notranslate"><span class="pre">Strings.to_parquet()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Strings.tolist"><code class="docutils literal notranslate"><span class="pre">Strings.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Strings.transfer"><code class="docutils literal notranslate"><span class="pre">Strings.transfer()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Strings.unregister"><code class="docutils literal notranslate"><span class="pre">Strings.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Strings.update_hdf"><code class="docutils literal notranslate"><span class="pre">Strings.update_hdf()</span></code></a></li>
@@ -25784,9 +25784,9 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.pdarray.to_csv"><code class="docutils literal notranslate"><span class="pre">pdarray.to_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarray.to_cuda"><code class="docutils literal notranslate"><span class="pre">pdarray.to_cuda()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarray.to_hdf"><code class="docutils literal notranslate"><span class="pre">pdarray.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pdarray.to_list"><code class="docutils literal notranslate"><span class="pre">pdarray.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarray.to_ndarray"><code class="docutils literal notranslate"><span class="pre">pdarray.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarray.to_parquet"><code class="docutils literal notranslate"><span class="pre">pdarray.to_parquet()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.tolist"><code class="docutils literal notranslate"><span class="pre">pdarray.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarray.transfer"><code class="docutils literal notranslate"><span class="pre">pdarray.transfer()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarray.unregister"><code class="docutils literal notranslate"><span class="pre">pdarray.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarray.update_hdf"><code class="docutils literal notranslate"><span class="pre">pdarray.update_hdf()</span></code></a></li>

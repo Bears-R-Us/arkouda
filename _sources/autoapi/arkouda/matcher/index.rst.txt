@@ -1313,42 +1313,6 @@ Package Contents
 
 
 
-   .. py:method:: to_list() -> List[arkouda.numpy.dtypes.numeric_scalars]
-
-      Convert the array to a list, transferring array data from the
-      Arkouda server to client-side Python. Note: if the pdarray size exceeds
-      client.maxTransferBytes, a RuntimeError is raised.
-
-      :returns: A list with the same data as the pdarray
-      :rtype: List[numeric_scalars]
-
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-      .. seealso:: :py:obj:`to_ndarray`
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> a = ak.arange(0, 5, 1)
-      >>> a.to_list()
-      [0, 1, 2, 3, 4]
-      >>> type(a.to_list())
-      <class 'list'>
-
-
-
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from the
@@ -1372,7 +1336,7 @@ Package Contents
       may override this limit by setting client.maxTransferBytes to a larger
       value, but proceed with caution.
 
-      .. seealso:: :py:obj:`array`, :py:obj:`to_list`
+      .. seealso:: :py:obj:`array`, :py:obj:`tolist`
 
       .. rubric:: Examples
 
@@ -1434,6 +1398,42 @@ Package Contents
       >>> a.to_parqet('path/prefix.parquet', dataset='array') # doctest: +SKIP
       Saves the array to numLocales HDF5 files with the name
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
+
+
+
+   .. py:method:: tolist() -> List[arkouda.numpy.dtypes.numeric_scalars]
+
+      Convert the array to a list, transferring array data from the
+      Arkouda server to client-side Python. Note: if the pdarray size exceeds
+      client.maxTransferBytes, a RuntimeError is raised.
+
+      :returns: A list with the same data as the pdarray
+      :rtype: List[numeric_scalars]
+
+      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
+          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+          received does not match expected number of bytes
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :py:obj:`to_ndarray`
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> a = ak.arange(0, 5, 1)
+      >>> a.tolist()
+      [0, 1, 2, 3, 4]
+      >>> type(a.tolist())
+      <class 'list'>
 
 
 

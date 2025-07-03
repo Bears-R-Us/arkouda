@@ -2282,43 +2282,6 @@ determine the file format.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.to_list" title="Link to this definition">¶</a></dt>
-<dd><p>Convert the SegString to a list, transferring data from the
-arkouda server to Python. If the SegString exceeds a built-in size limit,
-a RuntimeError is raised.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list with the same strings as this SegString</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[str]</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
-otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
-from overflowing the memory of the system on which the Python client
-is running, under the assumption that the server is running on a
-distributed system with much more memory than the client. The user
-may override this limit by setting ak.client.maxTransferBytes to a larger
-value, but proceed with caution.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.numpy.strings.Strings.to_ndarray" title="arkouda.numpy.strings.Strings.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ndarray</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="s2">&quot;my&quot;</span><span class="p">,</span> <span class="s2">&quot;world&quot;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
-<span class="go">[&#39;hello&#39;, &#39;my&#39;, &#39;world&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">to_list</span><span class="p">())</span>
-<span class="go">&lt;class &#39;list&#39;&gt;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the array to a np.ndarray, transferring array data from the
@@ -2342,7 +2305,7 @@ may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="#arkouda.numpy.strings.Strings.to_list" title="arkouda.numpy.strings.Strings.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="#arkouda.numpy.strings.Strings.tolist" title="arkouda.numpy.strings.Strings.tolist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tolist</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -2398,6 +2361,43 @@ and the number of output files is less than the number of locales or a
 dataset with the same name already exists, a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will result.
 - Any file extension can be used.The file I/O does not rely on the extension to
 determine the file format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.tolist" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the SegString to a list, transferring data from the
+arkouda server to Python. If the SegString exceeds a built-in size limit,
+a RuntimeError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list with the same strings as this SegString</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[str]</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
+otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
+from overflowing the memory of the system on which the Python client
+is running, under the assumption that the server is running on a
+distributed system with much more memory than the client. The user
+may override this limit by setting ak.client.maxTransferBytes to a larger
+value, but proceed with caution.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.numpy.strings.Strings.to_ndarray" title="arkouda.numpy.strings.Strings.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ndarray</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="s2">&quot;my&quot;</span><span class="p">,</span> <span class="s2">&quot;world&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">[&#39;hello&#39;, &#39;my&#39;, &#39;world&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="go">&lt;class &#39;list&#39;&gt;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -2660,9 +2660,9 @@ their uppercase equivalent</p>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.title"><code class="docutils literal notranslate"><span class="pre">Strings.title()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.to_csv"><code class="docutils literal notranslate"><span class="pre">Strings.to_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.to_hdf"><code class="docutils literal notranslate"><span class="pre">Strings.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.strings.Strings.to_list"><code class="docutils literal notranslate"><span class="pre">Strings.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.to_ndarray"><code class="docutils literal notranslate"><span class="pre">Strings.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.to_parquet"><code class="docutils literal notranslate"><span class="pre">Strings.to_parquet()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.strings.Strings.tolist"><code class="docutils literal notranslate"><span class="pre">Strings.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.transfer"><code class="docutils literal notranslate"><span class="pre">Strings.transfer()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.unregister"><code class="docutils literal notranslate"><span class="pre">Strings.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.update_hdf"><code class="docutils literal notranslate"><span class="pre">Strings.update_hdf()</span></code></a></li>

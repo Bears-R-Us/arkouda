@@ -911,14 +911,14 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd_Categorical</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the equivalent Pandas Categorical.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">pd_Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span>
-            <span class="n">codes</span><span class="o">=</span><span class="n">type_cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">to_list</span><span class="p">()),</span>
+            <span class="n">codes</span><span class="o">=</span><span class="n">type_cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">tolist</span><span class="p">()),</span>
             <span class="n">categories</span><span class="o">=</span><span class="n">pd_Index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()),</span>
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Categorical.to_list">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.to_list">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="Categorical.tolist">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.tolist">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the Categorical to a list.</span>
 

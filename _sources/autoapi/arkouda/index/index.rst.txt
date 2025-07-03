@@ -364,9 +364,6 @@ Package Contents
 
 
 
-   .. py:method:: to_list()
-
-
    .. py:method:: to_ndarray()
 
 
@@ -415,6 +412,9 @@ Package Contents
       - Any file extension can be used.The file I/O does not rely on the extension to
       determine the file format.
 
+
+
+   .. py:method:: tolist()
 
 
    .. py:method:: unregister()
@@ -713,9 +713,6 @@ Package Contents
 
 
 
-   .. py:method:: to_list()
-
-
    .. py:method:: to_ndarray()
 
 
@@ -723,6 +720,9 @@ Package Contents
 
       Return the equivalent Pandas Index.
 
+
+
+   .. py:method:: tolist()
 
 
    .. py:method:: unregister()

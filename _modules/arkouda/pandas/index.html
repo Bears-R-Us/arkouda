@@ -863,9 +863,9 @@
             <span class="k">return</span> <span class="n">val</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Index.to_list">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/index/index.html#arkouda.Index.to_list">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Index.tolist">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/index/index.html#arkouda.Index.tolist">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1730,9 +1730,9 @@
         <span class="k">return</span> <span class="n">ndarray</span><span class="p">([</span><span class="n">convert_if_categorical</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="MultiIndex.to_list">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/index/index.html#arkouda.MultiIndex.to_list">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiIndex.tolist">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/index/index.html#arkouda.MultiIndex.tolist">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
 
 

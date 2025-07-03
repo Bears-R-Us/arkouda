@@ -1126,33 +1126,6 @@ When distribute, dataset is written on a file per locale.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.to_list" title="Link to this definition">¶</a></dt>
-<dd><p>Convert the Categorical to a list.</p>
-<p>Convert the Categorical to a list, transferring data from
-the arkouda server to Python. This conversion discards category
-information and produces a list of strings. If the arrays
-exceeds a built-in size limit, a RuntimeError is raised.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of strings corresponding to the values in
-this Categorical</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[str]</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The number of bytes in the Categorical cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
-otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
-from overflowing the memory of the system on which the Python client
-is running, under the assumption that the server is running on a
-distributed system with much more memory than the client. The user
-may override this limit by setting ak.client.maxTransferBytes to a larger
-value, but proceed with caution.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.to_ndarray" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the array to a np.ndarray.</p>
@@ -1266,6 +1239,33 @@ this Categorical.</p>
 <span class="go">True</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.tolist" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the Categorical to a list.</p>
+<p>Convert the Categorical to a list, transferring data from
+the arkouda server to Python. This conversion discards category
+information and produces a list of strings. If the arrays
+exceeds a built-in size limit, a RuntimeError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of strings corresponding to the values in
+this Categorical</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List">List</a>[str]</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The number of bytes in the Categorical cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
+otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
+from overflowing the memory of the system on which the Python client
+is running, under the assumption that the server is running on a
+distributed system with much more memory than the client. The user
+may override this limit by setting ak.client.maxTransferBytes to a larger
+value, but proceed with caution.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1471,11 +1471,11 @@ automatic creation of a file without the inaccessible data.</p></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.standardize_categories"><code class="docutils literal notranslate"><span class="pre">Categorical.standardize_categories()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.startswith"><code class="docutils literal notranslate"><span class="pre">Categorical.startswith()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.to_hdf"><code class="docutils literal notranslate"><span class="pre">Categorical.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.to_list"><code class="docutils literal notranslate"><span class="pre">Categorical.to_list()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.to_ndarray"><code class="docutils literal notranslate"><span class="pre">Categorical.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.to_pandas"><code class="docutils literal notranslate"><span class="pre">Categorical.to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.to_parquet"><code class="docutils literal notranslate"><span class="pre">Categorical.to_parquet()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.to_strings"><code class="docutils literal notranslate"><span class="pre">Categorical.to_strings()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.tolist"><code class="docutils literal notranslate"><span class="pre">Categorical.tolist()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.transfer"><code class="docutils literal notranslate"><span class="pre">Categorical.transfer()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.unique"><code class="docutils literal notranslate"><span class="pre">Categorical.unique()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.unregister"><code class="docutils literal notranslate"><span class="pre">Categorical.unregister()</span></code></a></li>

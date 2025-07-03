@@ -153,13 +153,13 @@ Module Contents
    .. py:method:: tolist()
 
       Convert the array to a Python list or nested lists, using the pdarray
-      method to_list.
+      method tolist.
 
       This involves copying the data from the server to the client, and thus
       will fail if the array is too large (see:
       :func:`~arkouda.client.maxTransferBytes`)
 
-      .. seealso:: :py:obj:`pdarray.to_list`
+      .. seealso:: :py:obj:`pdarray.tolist`
 
 
 

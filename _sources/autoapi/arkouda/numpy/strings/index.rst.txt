@@ -1498,38 +1498,6 @@ Module Contents
 
 
 
-   .. py:method:: to_list() -> List[str]
-
-      Convert the SegString to a list, transferring data from the
-      arkouda server to Python. If the SegString exceeds a built-in size limit,
-      a RuntimeError is raised.
-
-      :returns: A list with the same strings as this SegString
-      :rtype: List[str]
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting ak.client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-      .. seealso:: :py:obj:`to_ndarray`
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> a = ak.array(["hello", "my", "world"])
-      >>> a.to_list()
-      ['hello', 'my', 'world']
-      >>> type(a.to_list())
-      <class 'list'>
-
-
-
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from the
@@ -1549,7 +1517,7 @@ Module Contents
       may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
-      .. seealso:: :py:obj:`array`, :py:obj:`to_list`
+      .. seealso:: :py:obj:`array`, :py:obj:`tolist`
 
       .. rubric:: Examples
 
@@ -1596,6 +1564,38 @@ Module Contents
       dataset with the same name already exists, a ``RuntimeError`` will result.
       - Any file extension can be used.The file I/O does not rely on the extension to
       determine the file format.
+
+
+
+   .. py:method:: tolist() -> List[str]
+
+      Convert the SegString to a list, transferring data from the
+      arkouda server to Python. If the SegString exceeds a built-in size limit,
+      a RuntimeError is raised.
+
+      :returns: A list with the same strings as this SegString
+      :rtype: List[str]
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting ak.client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :py:obj:`to_ndarray`
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> a = ak.array(["hello", "my", "world"])
+      >>> a.tolist()
+      ['hello', 'my', 'world']
+      >>> type(a.tolist())
+      <class 'list'>
 
 
 

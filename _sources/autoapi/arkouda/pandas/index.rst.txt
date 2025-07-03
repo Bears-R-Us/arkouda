@@ -782,9 +782,6 @@ Package Contents
 
 
 
-   .. py:method:: to_list() -> list
-
-
    .. py:method:: to_markdown(mode='wt', index=True, tablefmt='grid', storage_options=None, **kwargs)
 
       Print Series in Markdown-friendly format.
@@ -847,6 +844,9 @@ Package Contents
 
       Convert the series to a local PANDAS series
 
+
+
+   .. py:method:: tolist() -> list
 
 
    .. py:method:: topn(n: int = 10) -> Series
