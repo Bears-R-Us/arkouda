@@ -39,6 +39,41 @@ Package Contents
 
 .. py:class:: Match(matched: arkouda.numpy.pdarrayclass.pdarray, starts: arkouda.numpy.pdarrayclass.pdarray, lengths: arkouda.numpy.pdarrayclass.pdarray, indices: arkouda.numpy.pdarrayclass.pdarray, parent_entry_name: str, match_type: MatchType, pattern: str)
 
+   Encapsulates regular expression match results on Arkouda segmented string arrays.
+
+   Created by calling `search()`, `match()`, or `fullmatch()` on a `Strings` object. Provides access
+   to match booleans, span information, capture groups, and origin indices of matches.
+
+   .. attribute:: re
+
+      Regex pattern used.
+
+      :type: str
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+   >>> m = strings.search('_+')
+   >>> m
+   <ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4);
+   matched=False; matched=True, span=(0, 2); matched=False>
+   >>> type(m)
+   <class 'arkouda.pandas.match.Match'>
+   >>> m.matched()
+   array([True True False True False])
+   >>> m.start()
+   array([1 0 0])
+   >>> m.end()
+   array([2 4 2])
+   >>> m.match_type()
+   'SEARCH'
+   >>> m.re
+   '_+'
+   >>> m[1]
+   'matched=True, span=(0, 4)'
+
+
    .. py:method:: end() -> arkouda.numpy.pdarrayclass.pdarray
 
       Return the ends of matches.
@@ -139,6 +174,7 @@ Package Contents
 
 
    .. py:attribute:: re
+      :type:  str
 
 
    .. py:method:: start() -> arkouda.numpy.pdarrayclass.pdarray

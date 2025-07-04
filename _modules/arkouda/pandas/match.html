@@ -451,6 +451,44 @@
 <div class="viewcode-block" id="Match">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/match/index.html#arkouda.match.Match">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Match</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encapsulates regular expression match results on Arkouda segmented string arrays.</span>
+
+<span class="sd">    Created by calling `search()`, `match()`, or `fullmatch()` on a `Strings` object. Provides access</span>
+<span class="sd">    to match booleans, span information, capture groups, and origin indices of matches.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    re : str</span>
+<span class="sd">        Regex pattern used.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; strings = ak.array([&#39;1_2___&#39;, &#39;____&#39;, &#39;3&#39;, &#39;__4___5____6___7&#39;, &#39;&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; m = strings.search(&#39;_+&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; m</span>
+<span class="sd">    &lt;ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4);</span>
+<span class="sd">    matched=False; matched=True, span=(0, 2); matched=False&gt;</span>
+<span class="sd">    &gt;&gt;&gt; type(m)</span>
+<span class="sd">    &lt;class &#39;arkouda.pandas.match.Match&#39;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; m.matched()</span>
+<span class="sd">    array([True True False True False])</span>
+<span class="sd">    &gt;&gt;&gt; m.start()</span>
+<span class="sd">    array([1 0 0])</span>
+<span class="sd">    &gt;&gt;&gt; m.end()</span>
+<span class="sd">    array([2 4 2])</span>
+<span class="sd">    &gt;&gt;&gt; m.match_type()</span>
+<span class="sd">    &#39;SEARCH&#39;</span>
+<span class="sd">    &gt;&gt;&gt; m.re</span>
+<span class="sd">    &#39;_+&#39;</span>
+<span class="sd">    &gt;&gt;&gt; m[1]</span>
+<span class="sd">    &#39;matched=True, span=(0, 4)&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">re</span><span class="p">:</span> <span class="nb">str</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">matched</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
@@ -473,6 +511,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">re</span> <span class="o">=</span> <span class="n">pattern</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string representation of the match object, previewing match status and spans.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            Human-readable summary of match objects and spans.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarrayIterThresh</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matched</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">pdarrayIterThresh</span><span class="p">:</span>
@@ -484,6 +531,20 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;ak.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_objtype</span><span class="si">}</span><span class="s2"> object: </span><span class="si">{</span><span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a summary string for the match at a given index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        item : int</span>
+<span class="sd">            Index of the match to describe.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            Description of whether the item matched, and its span if it did.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;matched=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_matched</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="si">}</span><span class="s2">, span=(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_starts</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">[</span><span class="n">item</span><span class="p">]]</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ends</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">[</span><span class="n">item</span><span class="p">]]</span><span class="si">}</span><span class="s2">)&quot;</span>
@@ -492,6 +553,15 @@
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the formal string representation of the Match object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            Same as __str__ for now.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Match.matched">

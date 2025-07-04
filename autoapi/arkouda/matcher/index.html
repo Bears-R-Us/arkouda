@@ -414,7 +414,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.matcher.Match" title="arkouda.matcher.Match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Match</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Encapsulates regular expression match results on Arkouda segmented string arrays.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.matcher.Matcher" title="arkouda.matcher.Matcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Matcher</span></code></a></p></td>
 <td><p></p></td>
@@ -452,7 +452,44 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.matcher.Match">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.matcher.</span></span><span class="sig-name descname"><span class="pre">Match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matched</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">starts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lengths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_entry_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MatchType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/pandas/match.html#Match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.matcher.Match" title="Link to this definition">¶</a></dt>
-<dd><dl class="py method">
+<dd><p>Encapsulates regular expression match results on Arkouda segmented string arrays.</p>
+<p>Created by calling <cite>search()</cite>, <cite>match()</cite>, or <cite>fullmatch()</cite> on a <cite>Strings</cite> object. Provides access
+to match booleans, span information, capture groups, and origin indices of matches.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Match.re">
+<span class="sig-name descname"><span class="pre">re</span></span><a class="headerlink" href="#arkouda.matcher.Match.re" title="Link to this definition">¶</a></dt>
+<dd><p>Regex pattern used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;1_2___&#39;</span><span class="p">,</span> <span class="s1">&#39;____&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;__4___5____6___7&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">strings</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;_+&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span>
+<span class="go">&lt;ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4);</span>
+<span class="go">matched=False; matched=True, span=(0, 2); matched=False&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="go">&lt;class &#39;arkouda.pandas.match.Match&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">matched</span><span class="p">()</span>
+<span class="go">array([True True False True False])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="go">array([1 0 0])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+<span class="go">array([2 4 2])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">match_type</span><span class="p">()</span>
+<span class="go">&#39;SEARCH&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">re</span>
+<span class="go">&#39;_+&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">&#39;matched=True, span=(0, 4)&#39;</span>
+</pre></div>
+</div>
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.matcher.Match.end">
 <span class="sig-name descname"><span class="pre">end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/pandas/match.html#Match.end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.matcher.Match.end" title="Link to this definition">¶</a></dt>
 <dd><p>Return the ends of matches.</p>
@@ -580,8 +617,8 @@ capture group is from</p></li>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.matcher.Match.re">
-<span class="sig-name descname"><span class="pre">re</span></span><a class="headerlink" href="#arkouda.matcher.Match.re" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">re</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1198,8 +1235,8 @@ See <code class="docutils literal notranslate"><span class="pre">arkouda.corr</s
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.dtype</span></em><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.dtype</span></em><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1365,8 +1402,8 @@ standalone function (e.g. ak.is_sorted(a))</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">itemsize</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">itemsize</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1513,8 +1550,8 @@ pdarray if axis is supplied, in which case the operation is done along that axis
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -1532,8 +1569,8 @@ pdarray if axis is supplied, in which case the operation is done along that axis
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">ndim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">ndim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1702,8 +1739,8 @@ a.reshape(compatibleShape) is valid, but ak.reshape(a,compatibleShape) is not.</
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id4">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id5">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
 <dd><p>Return the shape of an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1716,8 +1753,8 @@ a.reshape(compatibleShape) is valid, but ak.reshape(a,compatibleShape) is not.</
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2425,12 +2462,13 @@ is treated specially.</p>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#package-contents">Package Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.matcher.Match"><code class="docutils literal notranslate"><span class="pre">Match</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.matcher.Match.re"><code class="docutils literal notranslate"><span class="pre">Match.re</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Match.end"><code class="docutils literal notranslate"><span class="pre">Match.end()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Match.find_matches"><code class="docutils literal notranslate"><span class="pre">Match.find_matches()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Match.group"><code class="docutils literal notranslate"><span class="pre">Match.group()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Match.match_type"><code class="docutils literal notranslate"><span class="pre">Match.match_type()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Match.matched"><code class="docutils literal notranslate"><span class="pre">Match.matched()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.matcher.Match.re"><code class="docutils literal notranslate"><span class="pre">Match.re</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Match.re</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Match.start"><code class="docutils literal notranslate"><span class="pre">Match.start()</span></code></a></li>
 </ul>
 </li>
@@ -2484,7 +2522,7 @@ is treated specially.</p>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.corr"><code class="docutils literal notranslate"><span class="pre">pdarray.corr()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.cov"><code class="docutils literal notranslate"><span class="pre">pdarray.cov()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.ctz"><code class="docutils literal notranslate"><span class="pre">pdarray.ctz()</span></code></a></li>
-<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">pdarray.dtype</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">pdarray.dtype</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.equals"><code class="docutils literal notranslate"><span class="pre">pdarray.equals()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.fill"><code class="docutils literal notranslate"><span class="pre">pdarray.fill()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.flatten"><code class="docutils literal notranslate"><span class="pre">pdarray.flatten()</span></code></a></li>
@@ -2493,16 +2531,16 @@ is treated specially.</p>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.info"><code class="docutils literal notranslate"><span class="pre">pdarray.info()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.is_registered"><code class="docutils literal notranslate"><span class="pre">pdarray.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.is_sorted"><code class="docutils literal notranslate"><span class="pre">pdarray.is_sorted()</span></code></a></li>
-<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">pdarray.itemsize</span></code></a></li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">pdarray.itemsize</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.max"><code class="docutils literal notranslate"><span class="pre">pdarray.max()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.max_bits"><code class="docutils literal notranslate"><span class="pre">pdarray.max_bits</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.maxk"><code class="docutils literal notranslate"><span class="pre">pdarray.maxk()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.mean"><code class="docutils literal notranslate"><span class="pre">pdarray.mean()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.min"><code class="docutils literal notranslate"><span class="pre">pdarray.min()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.mink"><code class="docutils literal notranslate"><span class="pre">pdarray.mink()</span></code></a></li>
-<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">pdarray.name</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">pdarray.name</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.nbytes"><code class="docutils literal notranslate"><span class="pre">pdarray.nbytes</span></code></a></li>
-<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">pdarray.ndim</span></code></a></li>
+<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">pdarray.ndim</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.objType"><code class="docutils literal notranslate"><span class="pre">pdarray.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.opeq"><code class="docutils literal notranslate"><span class="pre">pdarray.opeq()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.parity"><code class="docutils literal notranslate"><span class="pre">pdarray.parity()</span></code></a></li>
@@ -2514,8 +2552,8 @@ is treated specially.</p>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.reshape"><code class="docutils literal notranslate"><span class="pre">pdarray.reshape()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.rotl"><code class="docutils literal notranslate"><span class="pre">pdarray.rotl()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.rotr"><code class="docutils literal notranslate"><span class="pre">pdarray.rotr()</span></code></a></li>
-<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">pdarray.shape</span></code></a></li>
-<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">pdarray.size</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">pdarray.shape</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">pdarray.size</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.slice_bits"><code class="docutils literal notranslate"><span class="pre">pdarray.slice_bits()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.std"><code class="docutils literal notranslate"><span class="pre">pdarray.std()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.pdarray.sum"><code class="docutils literal notranslate"><span class="pre">pdarray.sum()</span></code></a></li>
