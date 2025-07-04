@@ -15,6 +15,30 @@ else:
 
 
 class Matcher:
+    """
+    Utility class for storing and standardizing information about pattern matches.
+
+    The `Matcher` class defines a standard set of location-related fields that can be
+    used to represent the results of search or match operations, typically involving
+    string or pattern matching over Arkouda arrays.
+
+    Attributes
+    ----------
+    frozenset
+        LocationsInfo : A set of standardized string keys that describe match-related metadata.
+        These include:
+            - 'num_matches': total number of matches found.
+            - 'starts': start positions of matches.
+            - 'lengths': lengths of matches.
+            - 'search_bool': boolean array indicating matches in search space.
+            - 'search_ind': indices of matches in search space.
+            - 'match_bool': boolean array indicating actual matches.
+            - 'match_ind': indices of actual matches.
+            - 'full_match_bool': boolean array for full string matches.
+            - 'full_match_ind': indices of full matches.
+
+    """
+
     LocationsInfo = frozenset(
         [
             "num_matches",
