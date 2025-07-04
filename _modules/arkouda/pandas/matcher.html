@@ -404,6 +404,30 @@
 <div class="viewcode-block" id="Matcher">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/matcher/index.html#arkouda.matcher.Matcher">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Matcher</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility class for storing and standardizing information about pattern matches.</span>
+
+<span class="sd">    The `Matcher` class defines a standard set of location-related fields that can be</span>
+<span class="sd">    used to represent the results of search or match operations, typically involving</span>
+<span class="sd">    string or pattern matching over Arkouda arrays.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frozenset</span>
+<span class="sd">        LocationsInfo : A set of standardized string keys that describe match-related metadata.</span>
+<span class="sd">        These include:</span>
+<span class="sd">            - &#39;num_matches&#39;: total number of matches found.</span>
+<span class="sd">            - &#39;starts&#39;: start positions of matches.</span>
+<span class="sd">            - &#39;lengths&#39;: lengths of matches.</span>
+<span class="sd">            - &#39;search_bool&#39;: boolean array indicating matches in search space.</span>
+<span class="sd">            - &#39;search_ind&#39;: indices of matches in search space.</span>
+<span class="sd">            - &#39;match_bool&#39;: boolean array indicating actual matches.</span>
+<span class="sd">            - &#39;match_ind&#39;: indices of actual matches.</span>
+<span class="sd">            - &#39;full_match_bool&#39;: boolean array for full string matches.</span>
+<span class="sd">            - &#39;full_match_ind&#39;: indices of full matches.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">LocationsInfo</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
         <span class="p">[</span>
             <span class="s2">&quot;num_matches&quot;</span><span class="p">,</span>

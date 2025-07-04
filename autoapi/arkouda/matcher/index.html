@@ -417,7 +417,7 @@
 <td><p>Encapsulates regular expression match results on Arkouda segmented string arrays.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.matcher.Matcher" title="arkouda.matcher.Matcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Matcher</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Utility class for storing and standardizing information about pattern matches.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.matcher.pdarray" title="arkouda.matcher.pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray</span></code></a></p></td>
 <td><p>The basic arkouda array class. This class contains only the</p></td>
@@ -652,7 +652,31 @@ capture group is from</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.matcher.Matcher">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.matcher.</span></span><span class="sig-name descname"><span class="pre">Matcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_entry_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/pandas/matcher.html#Matcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.matcher.Matcher" title="Link to this definition">¶</a></dt>
-<dd><dl class="py attribute">
+<dd><p>Utility class for storing and standardizing information about pattern matches.</p>
+<p>The <cite>Matcher</cite> class defines a standard set of location-related fields that can be
+used to represent the results of search or match operations, typically involving
+string or pattern matching over Arkouda arrays.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.matcher.Matcher.frozenset">
+<span class="sig-name descname"><span class="pre">frozenset</span></span><a class="headerlink" href="#arkouda.matcher.Matcher.frozenset" title="Link to this definition">¶</a></dt>
+<dd><p>LocationsInfo : A set of standardized string keys that describe match-related metadata.
+These include:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘num_matches’: total number of matches found.</p></li>
+<li><p>‘starts’: start positions of matches.</p></li>
+<li><p>‘lengths’: lengths of matches.</p></li>
+<li><p>‘search_bool’: boolean array indicating matches in search space.</p></li>
+<li><p>‘search_ind’: indices of matches in search space.</p></li>
+<li><p>‘match_bool’: boolean array indicating actual matches.</p></li>
+<li><p>‘match_ind’: indices of actual matches.</p></li>
+<li><p>‘full_match_bool’: boolean array for full string matches.</p></li>
+<li><p>‘full_match_ind’: indices of full matches.</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.matcher.Matcher.LocationsInfo">
 <span class="sig-name descname"><span class="pre">LocationsInfo</span></span><a class="headerlink" href="#arkouda.matcher.Matcher.LocationsInfo" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2474,6 +2498,7 @@ is treated specially.</p>
 </li>
 <li><a class="reference internal" href="#arkouda.matcher.MatchType"><code class="docutils literal notranslate"><span class="pre">MatchType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Matcher"><code class="docutils literal notranslate"><span class="pre">Matcher</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.matcher.Matcher.frozenset"><code class="docutils literal notranslate"><span class="pre">Matcher.frozenset</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Matcher.LocationsInfo"><code class="docutils literal notranslate"><span class="pre">Matcher.LocationsInfo</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Matcher.find_locations"><code class="docutils literal notranslate"><span class="pre">Matcher.find_locations()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.matcher.Matcher.findall"><code class="docutils literal notranslate"><span class="pre">Matcher.findall()</span></code></a></li>
