@@ -272,7 +272,7 @@ from arkouda.numpy.pdarraycreation import (
     zeros_like,
 )
 from arkouda.numpy.pdarraymanipulation import append, delete, hstack, vstack
-from arkouda.numpy.strings import Strings
+from arkouda.numpy.strings import Strings, isnumeric
 from arkouda.numpy.timeclass import (
     Datetime,
     Timedelta,
