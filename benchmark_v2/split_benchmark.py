@@ -2,52 +2,34 @@ import pytest
 
 import arkouda as ak
 
+SPLIT_MODES = [
+    ("nonregex", "_", False),
+    ("regex_literal", "_", True),
+    ("regex_pattern", "_+", True),
+]
 
-def _generate_test_data():
+
+@pytest.mark.skip_correctness_only(True)
+@pytest.mark.skip_numpy(True)
+@pytest.mark.benchmark(group="Arkouda_Strings_Split")
+@pytest.mark.parametrize("label, delim, use_regex", SPLIT_MODES)
+def bench_strings_split(benchmark, label, delim, use_regex):
     cfg = ak.get_config()
     N = pytest.prob_size * cfg["numLocales"]
 
     thirds = [ak.cast(ak.arange(i, N * 3, 3), "str") for i in range(3)]
     thickrange = thirds[0].stick(thirds[1], delimiter="_").stick(thirds[2], delimiter="_")
-    nbytes = thickrange.nbytes * thickrange.entry.itemsize
+    nbytes = thickrange.nbytes
 
-    return thickrange, nbytes
+    def run():
+        thickrange.split(delim, regex=use_regex)
+        return nbytes
 
+    num_bytes = benchmark.pedantic(run, rounds=pytest.trials)
 
-@pytest.mark.skip_correctness_only(True)
-@pytest.mark.benchmark(group="AK_Flatten")
-def bench_split_nonregex(benchmark):
-    thickrange, nbytes = _generate_test_data()
-
-    benchmark.pedantic(thickrange.split, args=["_"], rounds=pytest.trials)
-    benchmark.extra_info["description"] = "Measures the performance of Strings.split"
-    benchmark.extra_info["problem_size"] = pytest.prob_size
+    benchmark.extra_info["description"] = f"Performance of Strings.split (mode: {label})"
+    benchmark.extra_info["problem_size"] = N
+    benchmark.extra_info["backend"] = "Arkouda"
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (nbytes / benchmark.stats["mean"]) / 2**30
-    )
-
-
-@pytest.mark.skip_correctness_only(True)
-@pytest.mark.benchmark(group="AK_Flatten")
-def bench_split_regexliteral(benchmark):
-    thickrange, nbytes = _generate_test_data()
-
-    benchmark.pedantic(thickrange.split, args=["_"], kwargs={"regex": True}, rounds=pytest.trials)
-    benchmark.extra_info["description"] = "Measures the performance of Strings.split"
-    benchmark.extra_info["problem_size"] = pytest.prob_size
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (nbytes / benchmark.stats["mean"]) / 2**30
-    )
-
-
-@pytest.mark.skip_correctness_only(True)
-@pytest.mark.benchmark(group="AK_Flatten")
-def bench_split_regexpattern(benchmark):
-    thickrange, nbytes = _generate_test_data()
-
-    benchmark.pedantic(thickrange.split, args=["_+"], kwargs={"regex": True}, rounds=pytest.trials)
-    benchmark.extra_info["description"] = "Measures the performance of Strings.split"
-    benchmark.extra_info["problem_size"] = pytest.prob_size
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (nbytes / benchmark.stats["mean"]) / 2**30
+        (num_bytes / benchmark.stats["mean"]) / 2**30
     )
