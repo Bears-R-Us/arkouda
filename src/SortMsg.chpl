@@ -104,7 +104,7 @@ module SortMsg
             t == bigint))
   {
     if side != "left" && side != "right" {
-        throw new Error("searchSortedNew side must be a string with value \
+        throw new Error("searchSortedFast side must be a string with value \
                         'left' or 'right'.");
     }
     // This is a distributed version of searchSorted
@@ -112,7 +112,10 @@ module SortMsg
     // and then do a binary search on the local subdomain of x1 for each value
     // in x2 that lies in that locale
 
-    // This version assumes both x1 and x2 are sorted arrays
+    // This version warrants that both x1 and x2 are sorted arrays
+    // we assume that x1 is sorted, but we can check x2 if boundsChecking is enabled
+    if boundsChecking && !x2.isSorted() then
+      throw new Error("x2 must be a sorted array for searchSortedFast");
 
     // Find the locale boundaries for x1
     var locBoundariesX1 = blockDist.createArray(0..Locales.size-1, (t, t));
@@ -140,9 +143,9 @@ module SortMsg
       const isLastLocale = here.id == Locales.size - 1;
 
       const prevLocId = if isFirstLocale then 0 else here.id - 1; // previous locale id, won't be used for locale 0
-      const (_, prevHigh) = if isFirstLocale then (0:t, myLow) else locBoundariesX1[prevLocId];
+      const prevHigh = if isFirstLocale then myLow else locBoundariesX1[prevLocId][1];
       const nextLocId = if isLastLocale then Locales.size - 1 else here.id + 1 ; // next locale id, won't be used for last locale
-      const (nextLow, _) = if isLastLocale then (myHigh, 0:t) else locBoundariesX1[nextLocId];
+      const nextLow = if isLastLocale then myHigh else locBoundariesX1[nextLocId][0];
 
       // Use binary search to find boundaries efficiently
       var myFirst = -1;
@@ -261,7 +264,7 @@ module SortMsg
       // This seems risky. What if this slice is too big to fit on a single node?
       // Ex: all the elements in x2 are smaller than x1[0], so the entirety of x2
       // is assigned to locale 0? I guess this is also a load balancing issue...
-      myLocX2[myFirst..myLast] = x2[myFirst..myLast];
+      myLocX2 = x2[myFirst..myLast];
 
       select side {
         when "left" do doSearch(myLocX1, myLocX2, new leftCmp());
@@ -274,7 +277,6 @@ module SortMsg
       var localret : [d] int;
       forall idx in d {
         const (_, i) = Search.binarySearch(a1, a2[idx], cmp);
-        // ret[idx] = i;
         localret[idx] = i;
       }
       ret[d] = localret[d];
