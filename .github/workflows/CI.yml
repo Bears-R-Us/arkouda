@@ -489,6 +489,7 @@ jobs:
     strategy:
       matrix:
         chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0','2.4.0']
+      max-parallel: 3
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
