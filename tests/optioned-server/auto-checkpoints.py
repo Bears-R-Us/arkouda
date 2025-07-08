@@ -97,8 +97,8 @@ class TestIdleAndInterval:
         assert not directory_exists(autockptPrevDir)
         sleep(1)
         assert directory_exists_delayed(autockptPrevDir, 10)
-        assert directory_exists(autockptDir)
         ak.client.wait_for_async_activity()
+        assert directory_exists(autockptDir)
         # verify that these checkpoints were created successfully
         ak.load_checkpoint(autockptName)
         ak.load_checkpoint(autockptPrevName)
