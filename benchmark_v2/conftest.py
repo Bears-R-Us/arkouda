@@ -1,11 +1,12 @@
 import importlib
 import importlib.util
 import os
-from typing import Iterator
+from typing import Iterable, Iterator
 
 import pytest
 
 import arkouda as ak
+from arkouda.client import get_array_ranks
 from server_util.test.server_test_util import (
     TestRunningMode,
     get_arkouda_numlocales,
@@ -336,3 +337,22 @@ def skip_numpy(request):
     marker = request.node.get_closest_marker("skip_numpy")
     if marker and marker.args and marker.args[0] == pytest.numpy:
         pytest.skip(f"{request.node.name} skipped: requires --numpy != {pytest.numpy}")
+
+
+@pytest.fixture(autouse=True)
+def skip_by_rank(request):
+    if request.node.get_closest_marker("skip_if_rank_not_compiled"):
+        ranks_requested = request.node.get_closest_marker("skip_if_rank_not_compiled").args[0]
+        array_ranks = get_array_ranks()
+        if isinstance(ranks_requested, int):
+            if ranks_requested not in array_ranks:
+                pytest.skip("this test requires server compiled with rank {}".format(ranks_requested))
+        elif isinstance(ranks_requested, Iterable):
+            for i in ranks_requested:
+                if isinstance(i, int):
+                    if i not in array_ranks:
+                        pytest.skip("this test requires server compiled with rank(s) {}".format(i))
+                else:
+                    raise TypeError("skip_if_rank_not_compiled only accepts type int or list of int.")
+        else:
+            raise TypeError("skip_if_rank_not_compiled only accepts type int or list of int.")
