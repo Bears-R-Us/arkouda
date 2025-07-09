@@ -1,9 +1,15 @@
+import os
 from time import sleep
 
 import pytest
 
 import arkouda as ak
 from arkouda.pandas.io_util import delete_directory, directory_exists
+
+pytestmark = pytest.mark.skipif(
+    os.environ.get("CHPL_HOST_PLATFORM") == "hpe-apollo",
+    reason="skipped on CHPL_HOST_PLATFORM=hpe-apollo - login/compute file system access unreliable",
+)
 
 autockptPath = ".akdata"
 autockptName = "auto_checkpoint"
