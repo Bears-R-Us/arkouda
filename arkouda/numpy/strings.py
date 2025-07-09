@@ -23,13 +23,9 @@ from typeguard import typechecked
 import arkouda.numpy.dtypes
 from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import ArkoudaLogger, getArkoudaLogger
-from arkouda.numpy.dtypes import (
-    NUMBER_FORMAT_STRINGS,
-    bool_scalars,
-    int_scalars,
-    resolve_scalar_dtype,
-    str_scalars,
-)
+from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, bool_scalars
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_scalars
 from arkouda.numpy.pdarrayclass import RegistrationError
 from arkouda.numpy.pdarrayclass import all as akall
 from arkouda.numpy.pdarrayclass import create_pdarray, parse_single_value, pdarray
@@ -39,6 +35,15 @@ if TYPE_CHECKING:
     from arkouda.client import generic_msg
 else:
     generic_msg = TypeVar("generic_msg")
+
+if TYPE_CHECKING:
+    from arkouda.numpy.sorting import SortingAlgorithm
+else:
+    from enum import Enum
+
+    class SortingAlgorithm(Enum):
+        RadixSortLSD = "RadixSortLSD"
+
 
 __all__ = ["Strings"]
 
@@ -421,7 +426,6 @@ class Strings:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
         >>> s = ak.array(["a", "b", "c"])
         >>> s_cpy = ak.array(["a", "b", "c"])
         >>> s.equals(s_cpy)
@@ -2937,3 +2941,42 @@ class Strings:
         )
 
         return Strings.from_return_msg(cast(str, rep_msg))
+
+    def argsort(
+        self,
+        algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+        ascending: bool = True,
+    ) -> pdarray:
+        """
+        Return the permutation that sorts the Strings.
+
+        Parameters
+        ----------
+        algorithm : SortingAlgorithm, default SortingAlgorithm.RadixSortLSD
+            The algorithm to use for sorting.
+        ascending : bool, default True
+            Whether to sort in ascending order.
+
+        Returns
+        -------
+        pdarray
+            The indices that sort the Strings.
+
+        """
+        from arkouda.client import generic_msg
+        from arkouda.numpy.manipulation_functions import flip
+        from arkouda.numpy.pdarraycreation import zeros
+
+        if self.size == 0:
+            return zeros(0, dtype=akint64)  # Strings always maps to int64 indices
+
+        repMsg = generic_msg(
+            cmd="argsortStrings",
+            args={
+                "name": self.entry.name,
+                "algoName": algorithm.name,
+            },
+        )
+
+        sorted_array = create_pdarray(cast(str, repMsg))
+        return sorted_array if ascending else flip(sorted_array)
