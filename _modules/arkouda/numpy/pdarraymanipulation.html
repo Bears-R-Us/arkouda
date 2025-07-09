@@ -385,7 +385,8 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.numpy.pdarraymanipulation</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
@@ -397,6 +398,44 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hstack&quot;</span><span class="p">,</span> <span class="s2">&quot;vstack&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_max_bits_list</span><span class="p">(</span><span class="n">pda_list</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">pdarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds the minimum `max_bits` when there are bigint arrays in the input.</span>
+
+<span class="sd">    Determines whether any arrays in the input list use the `bigint` dtype</span>
+<span class="sd">    and returns the minimum bit width among those that do.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        pda_list : Sequence[pdarray]</span>
+<span class="sd">            A sequence of `pdarray` objects to examine.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            A boolean indicating whether any array uses the `bigint` dtype.</span>
+<span class="sd">        int</span>
+<span class="sd">            An integer representing the smallest `max_bits` value among the</span>
+<span class="sd">            `bigint` arrays. Returns -1 if no `bigint` arrays are present.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">has_bigint</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">m_bits</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">do_warn</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">pda_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">has_bigint</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">max_bits</span> <span class="o">!=</span> <span class="n">m_bits</span><span class="p">:</span>
+                    <span class="n">do_warn</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">has_bigint</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">curr_bits</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">max_bits</span>
+            <span class="k">if</span> <span class="n">curr_bits</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">m_bits</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">curr_bits</span> <span class="o">&lt;</span> <span class="n">m_bits</span><span class="p">):</span>
+                <span class="n">m_bits</span> <span class="o">=</span> <span class="n">curr_bits</span>
+    <span class="k">if</span> <span class="n">do_warn</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Because two arrays with different max_bits were used, truncating to smaller max_bits&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">has_bigint</span><span class="p">,</span> <span class="n">m_bits</span>
 
 
 <div class="viewcode-block" id="hstack">
@@ -462,18 +501,7 @@
         <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">ndim</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;all input arrays must have the same number of dimensions&quot;</span><span class="p">)</span>
 
-    <span class="n">has_bigint</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">m_bits</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-
-    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">tup</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
-            <span class="n">has_bigint</span> <span class="o">=</span> <span class="kc">True</span>
-
-            <span class="c1"># I think a.max_bits creates a call to Chapel, so maybe this cuts down</span>
-            <span class="c1"># on how many times we bother the server.</span>
-            <span class="n">curr_bits</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">max_bits</span>
-            <span class="k">if</span> <span class="n">curr_bits</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">m_bits</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">curr_bits</span> <span class="o">&lt;</span> <span class="n">m_bits</span><span class="p">):</span>
-                <span class="n">m_bits</span> <span class="o">=</span> <span class="n">curr_bits</span>
+    <span class="n">has_bigint</span><span class="p">,</span> <span class="n">m_bits</span> <span class="o">=</span> <span class="n">_max_bits_list</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
 
     <span class="c1"># establish the dtype of the output array</span>
     <span class="k">if</span> <span class="n">has_bigint</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -594,18 +622,7 @@
         <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">ndim</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;all input arrays must have the same number of dimensions&quot;</span><span class="p">)</span>
 
-    <span class="n">has_bigint</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">m_bits</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-
-    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">tup</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
-            <span class="n">has_bigint</span> <span class="o">=</span> <span class="kc">True</span>
-
-            <span class="c1"># I think a.max_bits creates a call to Chapel, so maybe this cuts down</span>
-            <span class="c1"># on how many times we bother the server.</span>
-            <span class="n">curr_bits</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">max_bits</span>
-            <span class="k">if</span> <span class="n">curr_bits</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">m_bits</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">curr_bits</span> <span class="o">&lt;</span> <span class="n">m_bits</span><span class="p">):</span>
-                <span class="n">m_bits</span> <span class="o">=</span> <span class="n">curr_bits</span>
+    <span class="n">has_bigint</span><span class="p">,</span> <span class="n">m_bits</span> <span class="o">=</span> <span class="n">_max_bits_list</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
 
     <span class="c1"># establish the dtype of the output array</span>
     <span class="k">if</span> <span class="n">has_bigint</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -791,15 +808,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis </span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> out of bounds for </span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimensions&quot;</span><span class="p">)</span>
         <span class="n">axis</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="p">(</span><span class="n">axis</span> <span class="o">+</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="o">%</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
 
-    <span class="n">m_bits</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="n">has_bigint</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">:</span>
-            <span class="n">has_bigint</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">curr_bits</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">max_bits</span>
-            <span class="k">if</span> <span class="n">curr_bits</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">m_bits</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">curr_bits</span> <span class="o">&lt;</span> <span class="n">m_bits</span><span class="p">):</span>
-                <span class="n">m_bits</span> <span class="o">=</span> <span class="n">curr_bits</span>
+    <span class="n">has_bigint</span><span class="p">,</span> <span class="n">m_bits</span> <span class="o">=</span> <span class="n">_max_bits_list</span><span class="p">([</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">])</span>
 
     <span class="c1"># establish the dtype of the output array</span>
     <span class="n">dtype_</span> <span class="o">=</span> <span class="n">ak_result_type</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
