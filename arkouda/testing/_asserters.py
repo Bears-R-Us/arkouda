@@ -279,8 +279,8 @@ def assert_index_equal(
             try:
                 # try comparison on levels/codes to avoid densifying MultiIndex
                 assert_index_equal(
-                    left.levels[level],
-                    right.levels[level],
+                    Index(left.levels[level]),
+                    Index(right.levels[level]),
                     exact=exact,
                     check_names=check_names,
                     check_exact=check_exact,

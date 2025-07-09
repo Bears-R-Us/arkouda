@@ -37,7 +37,6 @@ else:
 
 
 class Index:
-    objType = "Index"
     """
     Sequence used for indexing and alignment.
 
@@ -77,7 +76,16 @@ class Index:
 
     """
 
+    objType = "Index"
+
     def _set_dtype(self):
+        """
+        Infer and set the dtype of the Index based on its values.
+
+        This method examines the type of `self.values` and assigns an appropriate
+        dtype to `self.dtype`. If the type is not recognized, `self.dtype` is set to None.
+
+        """
         from arkouda.numpy.dtypes import dtype as ak_dtype
 
         if isinstance(self.values, List):
@@ -146,6 +154,20 @@ class Index:
             raise TypeError(f"Unable to create Index from type {type(values)}")
 
     def __getitem__(self, key):
+        """
+        Retrieve item(s) from the Index.
+
+        Parameters
+        ----------
+        key : int, list, slice, or Series
+            The location(s) of the element(s) to retrieve.
+
+        Returns
+        -------
+        Index or scalar
+            Subset of the Index or a single value, depending on the key.
+
+        """
         from arkouda.pandas.series import Series
 
         allow_list = False
@@ -170,10 +192,27 @@ class Index:
         return Index(self.values[key], allow_list=allow_list)
 
     def __repr__(self):
-        # Configured to match pandas
+        """
+        Return a string representation of the Index.
+
+        Returns
+        -------
+        str
+            Printable representation of the Index object.
+
+        """
         return f"Index({repr(self.index)}, dtype='{self.dtype}')"
 
     def __len__(self):
+        """
+        Return the number of elements in the Index.
+
+        Returns
+        -------
+        int
+            Number of elements in the Index.
+
+        """
         return len(self.index)
 
     def _get_arrays_for_comparison(
@@ -194,13 +233,39 @@ class Index:
         return values, other_values
 
     def __eq__(self, other):
-        values, other_values = self._get_arrays_for_comparison(other)
+        """
+        Compare Index with another Index or array-like object for equality.
 
+        Parameters
+        ----------
+        other : Index or array-like
+            The object to compare against.
+
+        Returns
+        -------
+        pdarray or bool
+            Boolean array indicating element-wise equality.
+
+        """
+        values, other_values = self._get_arrays_for_comparison(other)
         return values == other_values
 
     def __ne__(self, other):
-        values, other_values = self._get_arrays_for_comparison(other)
+        """
+        Compare Index with another Index or array-like object for inequality.
 
+        Parameters
+        ----------
+        other : Index or array-like
+            The object to compare against.
+
+        Returns
+        -------
+        pdarray or bool
+            Boolean array indicating element-wise inequality.
+
+        """
+        values, other_values = self._get_arrays_for_comparison(other)
         return values != other_values
 
     def _dtype_of_list_values(self, lst):
@@ -293,6 +358,15 @@ class Index:
 
     @property
     def shape(self):
+        """
+        Return the shape of the Index.
+
+        Returns
+        -------
+        tuple
+            A tuple representing the shape of the Index (size,).
+
+        """
         return (self.size,)
 
     @property
@@ -314,6 +388,21 @@ class Index:
 
     @staticmethod
     def factory(index):
+        """
+        Construct an Index or MultiIndex based on the input.
+
+        Parameters
+        ----------
+        index : array-like or tuple of array-like
+            If a single array-like, returns an Index.
+            If a tuple of array-like objects, returns a MultiIndex.
+
+        Returns
+        -------
+        Index or MultiIndex
+            An Index if input is a single array-like, or a MultiIndex otherwise.
+
+        """
         if isinstance(index, Index):
             return index
         elif not isinstance(index, List) and not isinstance(index, Tuple):
@@ -323,6 +412,20 @@ class Index:
 
     @classmethod
     def from_return_msg(cls, rep_msg):
+        """
+        Reconstruct an Index or MultiIndex from a return message.
+
+        Parameters
+        ----------
+        rep_msg : str
+            A string return message containing encoded index information.
+
+        Returns
+        -------
+        Index or MultiIndex
+            The reconstructed Index or MultiIndex instance.
+
+        """
         data = json.loads(rep_msg)
 
         idx = []
@@ -450,6 +553,15 @@ class Index:
         return pd.Index(data=val, dtype=val.dtype, name=self.name)
 
     def to_ndarray(self):
+        """
+        Convert the Index values to a NumPy ndarray.
+
+        Returns
+        -------
+        numpy.ndarray
+            A NumPy array representation of the Index values.
+
+        """
         if isinstance(self.values, list):
             return ndarray(self.values)
         else:
@@ -457,6 +569,15 @@ class Index:
             return val.to_ndarray()
 
     def tolist(self):
+        """
+        Convert the Index values to a Python list.
+
+        Returns
+        -------
+        list
+            A list containing the Index values.
+
+        """
         if isinstance(self.values, list):
             return self.values
         else:
@@ -467,6 +588,7 @@ class Index:
         Change the data type of the index.
 
         Currently only aku.ip_address and ak.array are supported.
+
         """
         new_idx = dtype(self.values)
         self.values = new_idx
@@ -625,6 +747,21 @@ class Index:
             return is_registered(self.registered_name)
 
     def to_dict(self, label):
+        """
+        Convert the Index to a dictionary with a specified label.
+
+        Parameters
+        ----------
+        label : str or list of str
+            The key to use in the resulting dictionary. If a list is provided,
+            only the first element is used. If None, defaults to "idx".
+
+        Returns
+        -------
+        dict
+            A dictionary with the label as the key and the Index as the value.
+
+        """
         data = {}
         if label is None:
             label = "idx"
@@ -634,10 +771,43 @@ class Index:
         return data
 
     def _check_types(self, other):
+        """
+        Ensure that the type of the other object matches this Index.
+
+        Parameters
+        ----------
+        other : Index
+            The object to compare against.
+
+        Raises
+        ------
+        TypeError
+            If the types of the two objects do not match.
+
+        """
         if type(self) is not type(other):
             raise TypeError("Index Types must match")
 
     def _merge(self, other):
+        """
+        Merge this Index with another, removing duplicates.
+
+        Parameters
+        ----------
+        other : Index
+            The Index to merge with this one.
+
+        Returns
+        -------
+        Index
+            A new Index containing the unique values from both indices.
+
+        Raises
+        ------
+        TypeError
+            If the types of the two Index objects do not match.
+
+        """
         self._check_types(other)
 
         callback = get_callback(self.values)
@@ -645,6 +815,25 @@ class Index:
         return Index(callback(unique(idx)))
 
     def _merge_all(self, idx_list):
+        """
+        Merge this Index with a list of other Index objects, removing duplicates.
+
+        Parameters
+        ----------
+        idx_list : list of Index
+            A list of Index objects to merge with this one.
+
+        Returns
+        -------
+        Index
+            A new Index containing the unique values from all merged indices.
+
+        Raises
+        ------
+        TypeError
+            If any object in the list is not the same type as this Index.
+
+        """
         idx = self.values
         callback = get_callback(idx)
 
@@ -655,11 +844,48 @@ class Index:
         return Index(callback(unique(idx)))
 
     def _check_aligned(self, other):
+        """
+        Check whether this Index is aligned with another.
+
+        Two indices are considered aligned if they have the same length and all corresponding
+        elements are equal.
+
+        Parameters
+        ----------
+        other : Index
+            The Index to compare against.
+
+        Returns
+        -------
+        bool
+            True if the indices are aligned, False otherwise.
+
+        Raises
+        ------
+        TypeError
+            If the types of the two Index objects do not match.
+
+        """
         self._check_types(other)
         length = len(self)
         return len(other) == length and (self == other.values).sum() == length
 
     def argsort(self, ascending=True):
+        """
+        Return the indices that would sort the Index.
+
+        Parameters
+        ----------
+        ascending : bool, optional
+            If True (default), sort in ascending order.
+            If False, sort in descending order.
+
+        Returns
+        -------
+        array-like
+            The indices that would sort the Index.
+
+        """
         if isinstance(self.values, list):
             reverse = not ascending
             return sorted(range(self.size), key=self.values.__getitem__, reverse=reverse)
@@ -713,12 +939,51 @@ class Index:
         return Index(map(self.values, arg))
 
     def concat(self, other):
+        """
+        Concatenate this Index with another Index.
+
+        Parameters
+        ----------
+        other : Index
+            The Index to concatenate with this one.
+
+        Returns
+        -------
+        Index
+            A new Index with values from both indices.
+
+        Raises
+        ------
+        TypeError
+            If the types of the two Index objects do not match.
+
+        """
         self._check_types(other)
 
         idx = generic_concat([self.values, other.values], ordered=True)
         return Index(idx)
 
     def lookup(self, key):
+        """
+        Check for presence of key(s) in the Index.
+
+        Parameters
+        ----------
+        key : pdarray or scalar
+            The value(s) to look up in the Index. If a scalar is provided, it will
+            be converted to a one-element array.
+
+        Returns
+        -------
+        pdarray
+            A boolean array indicating which elements of `key` are present in the Index.
+
+        Raises
+        ------
+        TypeError
+            If `key` is not a scalar or a pdarray.
+
+        """
         if not isinstance(key, pdarray):
             # try to handle single value
             try:
@@ -1044,10 +1309,36 @@ class Index:
 
 
 class MultiIndex(Index):
+    """
+    A multi-level, or hierarchical, index object for Arkouda DataFrames and Series.
+
+    A MultiIndex allows you to represent multiple dimensions of indexing using
+    a single object, enabling advanced indexing and grouping operations.
+
+    This class mirrors the behavior of pandas' MultiIndex while leveraging Arkouda's
+    distributed data structures. Internally, it stores a list of Index objects,
+    each representing one level of the hierarchy.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> from arkouda.index import MultiIndex
+    >>> a = ak.array([1, 2, 3])
+    >>> b = ak.array(['a', 'b', 'c'])
+    >>> mi = MultiIndex([a, b])
+    >>> mi[1]
+    MultiIndex([2, 'b'])
+
+    """
+
+    from arkouda.numpy.dtypes import int_scalars
+
     objType = "MultiIndex"
-    levels: list
     _name: str | None
     _names: list[str] | list[None]
+    levels: list[Union[pdarray, Strings, Categorical]]
+    size: int_scalars
+    registered_name: Union[str, None]
 
     def __init__(
         self,
@@ -1099,6 +1390,21 @@ class MultiIndex(Index):
             self._names = [None for _i in range(len(self.levels))]
 
     def __getitem__(self, key):
+        """
+        Retrieve item(s) from the MultiIndex.
+
+        Parameters
+        ----------
+        key : int, slice, list, or Series
+            The position(s) or boolean mask used to index each component Index.
+            If a Series is provided, its levels are used for indexing.
+
+        Returns
+        -------
+        MultiIndex
+            A new MultiIndex with components indexed by `key`.
+
+        """
         from arkouda.pandas.series import Series
 
         if isinstance(key, Series):
@@ -1106,12 +1412,50 @@ class MultiIndex(Index):
         return MultiIndex([i[key] for i in self.index])
 
     def __repr__(self):
+        """
+        Return a string representation of the MultiIndex.
+
+        Returns
+        -------
+        str
+            A printable representation of the MultiIndex object.
+
+        """
         return f"MultiIndex({repr(self.index)})"
 
     def __len__(self):
-        return len(self.index[0])
+        """
+        Return the number of elements in the MultiIndex.
+
+        Returns
+        -------
+        int
+            Number of elements in the Index.
+
+        """
+        return len(self.index)
 
     def __eq__(self, v):
+        """
+        Check element-wise equality between this MultiIndex and another.
+
+        Parameters
+        ----------
+        v : MultiIndex, list, or tuple
+            The object to compare with. Must be another MultiIndex or a list/tuple
+            of Index components.
+
+        Returns
+        -------
+        pdarray
+            A boolean array indicating where the two MultiIndex objects are equal.
+
+        Raises
+        ------
+        TypeError
+            If the input is not a MultiIndex, list, or tuple.
+
+        """
         if not isinstance(v, (list, tuple, MultiIndex)):
             raise TypeError("Cannot compare MultiIndex to a scalar")
         retval = ones(len(self), dtype=akbool)
@@ -1134,6 +1478,15 @@ class MultiIndex(Index):
 
     @property
     def index(self):
+        """
+        Return the levels of the MultiIndex.
+
+        Returns
+        -------
+        list
+            A list of Index objects representing the levels of the MultiIndex.
+
+        """
         return self.levels
 
     @property
@@ -1162,6 +1515,15 @@ class MultiIndex(Index):
 
     @property
     def inferred_type(self) -> str:
+        """
+        Return the inferred type of the MultiIndex.
+
+        Returns
+        -------
+        str
+            The string "mixed", indicating the MultiIndex may contain multiple types.
+
+        """
         return "mixed"
 
     @property
@@ -1170,6 +1532,29 @@ class MultiIndex(Index):
         return npdtype("O")
 
     def get_level_values(self, level: Union[str, int]):
+        """
+        Return the values at a particular level of the MultiIndex.
+
+        Parameters
+        ----------
+        level : int or str
+            The level number or name. If a string is provided, it must match an entry
+            in `self.names`.
+
+        Returns
+        -------
+        Index
+            An Index object corresponding to the requested level.
+
+        Raises
+        ------
+        RuntimeError
+            If `self.names` is None and a string level is provided.
+
+        ValueError
+            If the provided string is not in `self.names`, or if the level index is out of bounds.
+
+        """
         if isinstance(level, str):
             if self.names is None:
                 raise RuntimeError("Cannot get level values because Index.names is None.")
@@ -1177,12 +1562,12 @@ class MultiIndex(Index):
                 raise ValueError(
                     f'Cannot get level values because level "{level}" is not in Index.names.'
                 )
-            elif isinstance(self.names, list) and level in self.names:
+            elif isinstance(self.names, list):
                 level = self.names.index(level)
 
         if isinstance(level, int) and abs(level) < self.nlevels:
             name = None
-            if isinstance(self.names, list) and level in self.names:
+            if isinstance(self.names, list):
                 name = self.names[level]
             return Index(self.levels[level], name=name)
         else:
@@ -1240,6 +1625,20 @@ class MultiIndex(Index):
         return convert_bytes(nbytes, unit=unit)
 
     def to_pandas(self):
+        """
+        Convert the MultiIndex to a pandas.MultiIndex object.
+
+        Returns
+        -------
+        pandas.MultiIndex
+            A pandas MultiIndex with the same levels and names.
+
+        Notes
+        -----
+        Categorical levels are converted to pandas categorical arrays,
+        while others are converted to NumPy arrays.
+
+        """
         mi = pd.MultiIndex.from_arrays(
             [i.to_pandas() if isinstance(i, Categorical) else i.to_ndarray() for i in self.index],
             names=self.names,
@@ -1252,15 +1651,36 @@ class MultiIndex(Index):
         Change the data type of the index.
 
         Currently only aku.ip_address and ak.array are supported.
+
         """
         new_idx = [dtype(i) for i in self.index]
         self.index = new_idx
         return self
 
     def to_ndarray(self):
+        """
+        Convert the MultiIndex to a NumPy ndarray of arrays.
+
+        Returns
+        -------
+        numpy.ndarray
+            A NumPy array where each element is an array corresponding to one level
+            of the MultiIndex. Categorical levels are converted to their underlying arrays.
+
+        """
         return ndarray([convert_if_categorical(val).to_ndarray() for val in self.levels])
 
     def tolist(self):
+        """
+        Convert the MultiIndex to a list of lists.
+
+        Returns
+        -------
+        list
+            A list of Python lists, where each inner list corresponds to one level
+            of the MultiIndex.
+
+        """
         return self.to_ndarray().tolist()
 
     def register(self, user_defined_name):
@@ -1336,6 +1756,15 @@ class MultiIndex(Index):
         return self
 
     def unregister(self):
+        """
+        Unregister this MultiIndex from the Arkouda server.
+
+        Raises
+        ------
+        RegistrationError
+            If the MultiIndex is not currently registered.
+
+        """
         from arkouda.numpy.util import unregister
 
         if not self.registered_name:
@@ -1344,6 +1773,16 @@ class MultiIndex(Index):
         self.registered_name = None
 
     def is_registered(self):
+        """
+        Check if the MultiIndex is registered with the Arkouda server.
+
+        Returns
+        -------
+        bool
+            True if the MultiIndex has a registered name and is recognized by the server,
+            False otherwise.
+
+        """
         from arkouda.numpy.util import is_registered
 
         if self.registered_name is None:
@@ -1351,6 +1790,21 @@ class MultiIndex(Index):
         return is_registered(self.registered_name)
 
     def to_dict(self, labels=None):
+        """
+        Convert the MultiIndex to a dictionary representation.
+
+        Parameters
+        ----------
+        labels : list of str, optional
+            A list of column names for the index levels. If not provided,
+            defaults to ['idx_0', 'idx_1', ..., 'idx_n'].
+
+        Returns
+        -------
+        dict
+            A dictionary mapping each label to the corresponding Index object.
+
+        """
         data = {}
         if labels is None:
             labels = [f"idx_{i}" for i in range(len(self.index))]
@@ -1359,11 +1813,49 @@ class MultiIndex(Index):
         return data
 
     def _merge(self, other):
+        """
+        Merge this MultiIndex with another MultiIndex, removing duplicates.
+
+        Parameters
+        ----------
+        other : MultiIndex
+            The other MultiIndex to merge with.
+
+        Returns
+        -------
+        MultiIndex
+            A new MultiIndex containing the unique values from both inputs.
+
+        Raises
+        ------
+        TypeError
+            If the type of `other` does not match.
+
+        """
         self._check_types(other)
         idx = [generic_concat([ix1, ix2], ordered=False) for ix1, ix2 in zip(self.index, other.index)]
         return MultiIndex(GroupBy(idx).unique_keys)
 
     def _merge_all(self, array):
+        """
+        Merge this MultiIndex with a list of MultiIndex objects, removing duplicates.
+
+        Parameters
+        ----------
+        array : list of MultiIndex
+            A list of MultiIndex objects to merge with.
+
+        Returns
+        -------
+        MultiIndex
+            A new MultiIndex containing the unique values from all inputs.
+
+        Raises
+        ------
+        TypeError
+            If any element in `array` is not a MultiIndex or has a different type.
+
+        """
         idx = self.index
 
         for other in array:
@@ -1373,17 +1865,70 @@ class MultiIndex(Index):
         return MultiIndex(GroupBy(idx).unique_keys)
 
     def argsort(self, ascending=True):
+        """
+        Return the indices that would sort the MultiIndex.
+
+        Parameters
+        ----------
+        ascending : bool, default True
+            If False, the result is in descending order.
+
+        Returns
+        -------
+        pdarray
+            An array of indices that would sort the MultiIndex.
+
+        """
         i = coargsort(self.index)
         if not ascending:
             i = i[arange(self.size - 1, -1, -1)]
         return i
 
     def concat(self, other):
+        """
+        Concatenate this MultiIndex with another, preserving duplicates and order.
+
+        Parameters
+        ----------
+        other : MultiIndex
+            The other MultiIndex to concatenate with.
+
+        Returns
+        -------
+        MultiIndex
+            A new MultiIndex containing values from both inputs, preserving order.
+
+        Raises
+        ------
+        TypeError
+            If the type of `other` does not match.
+
+        """
         self._check_types(other)
         idx = [generic_concat([ix1, ix2], ordered=True) for ix1, ix2 in zip(self.index, other.index)]
         return MultiIndex(idx)
 
     def lookup(self, key):
+        """
+        Perform element-wise lookup on the MultiIndex.
+
+        Parameters
+        ----------
+        key : list or tuple
+            A sequence of values, one for each level of the MultiIndex. Values may be scalars
+            or pdarrays. If scalars, they are cast to the appropriate Arkouda array type.
+
+        Returns
+        -------
+        pdarray
+            A boolean array indicating which rows in the MultiIndex match the key.
+
+        Raises
+        ------
+        TypeError
+            If `key` is not a list or tuple, or if its elements cannot be converted to pdarrays.
+
+        """
         from arkouda.numpy import cast as akcast
 
         if not isinstance(key, list) and not isinstance(key, tuple):
