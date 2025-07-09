@@ -76,6 +76,20 @@ Module Contents
    .. py:attribute:: BinOps
 
 
+   .. py:method:: argsort(algorithm: arkouda.numpy.sorting.SortingAlgorithm = SortingAlgorithm.RadixSortLSD, ascending: bool = True) -> arkouda.numpy.pdarrayclass.pdarray
+
+      Return the permutation that sorts the Strings.
+
+      :param algorithm: The algorithm to use for sorting.
+      :type algorithm: SortingAlgorithm, default SortingAlgorithm.RadixSortLSD
+      :param ascending: Whether to sort in ascending order.
+      :type ascending: bool, default True
+
+      :returns: The indices that sort the Strings.
+      :rtype: pdarray
+
+
+
    .. py:method:: astype(dtype: Union[numpy.dtype, str]) -> arkouda.numpy.pdarrayclass.pdarray
 
       Cast values of Strings object to provided dtype
@@ -265,7 +279,6 @@ Module Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
       >>> s = ak.array(["a", "b", "c"])
       >>> s_cpy = ak.array(["a", "b", "c"])
       >>> s.equals(s_cpy)
