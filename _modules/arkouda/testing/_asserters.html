@@ -674,8 +674,8 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># try comparison on levels/codes to avoid densifying MultiIndex</span>
                 <span class="n">assert_index_equal</span><span class="p">(</span>
-                    <span class="n">left</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">level</span><span class="p">],</span>
-                    <span class="n">right</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">level</span><span class="p">],</span>
+                    <span class="n">Index</span><span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">level</span><span class="p">]),</span>
+                    <span class="n">Index</span><span class="p">(</span><span class="n">right</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">level</span><span class="p">]),</span>
                     <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">,</span>
                     <span class="n">check_names</span><span class="o">=</span><span class="n">check_names</span><span class="p">,</span>
                     <span class="n">check_exact</span><span class="o">=</span><span class="n">check_exact</span><span class="p">,</span>

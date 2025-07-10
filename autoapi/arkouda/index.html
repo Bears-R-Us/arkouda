@@ -594,7 +594,7 @@ to Python users.</p>
 <td><p>Represent integers as IPv4 addresses.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Index</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Sequence used for indexing and alignment.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.Int16DType" title="arkouda.Int16DType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Int16DType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
@@ -624,7 +624,7 @@ to Python users.</p>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.MultiIndex" title="arkouda.MultiIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiIndex</span></code></a></p></td>
-<td><p></p></td>
+<td><p>A multi-level, or hierarchical, index object for Arkouda DataFrames and Series.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.NUMBER_FORMAT_STRINGS" title="arkouda.NUMBER_FORMAT_STRINGS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NUMBER_FORMAT_STRINGS</span></code></a></p></td>
 <td><p>dict() -&gt; new empty dictionary</p></td>
@@ -5124,15 +5124,85 @@ they are unregistered.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.Index">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pandas.Index</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index"><span class="pre">Index</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pandas.Categorical</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_list_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#Index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index" title="Link to this definition">¶</a></dt>
-<dd><dl class="py method">
+<dd><p>Sequence used for indexing and alignment.</p>
+<p>The basic object storing axis labels for all DataFrame objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, </em><em>pandas.Categorical</em><em>, </em><em>pandas.Index</em><em>, or </em><a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>default=None</em>) – Name to be stored in the index.</p></li>
+<li><p><strong>False</strong> (<em>allow_list =</em>) – If False, list values will be converted to a pdarray.
+If True, list values will remain as a list, provided the data length is less than max_list_size.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>:param<span class="classifier">If False, list values will be converted to a pdarray.</span></dt><dd><p>If True, list values will remain as a list, provided the data length is less than max_list_size.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>1000</strong> (<em>max_list_size =</em>) – This is the maximum allowed data length for the values to be stored as a list object.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if allow_list=True and the size of values is &gt; max_list_size.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.MultiIndex" title="arkouda.MultiIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiIndex</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="go">Index(array([1 2 3]), dtype=&#39;int64&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">))</span>
+<span class="go">Index(array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]), dtype=&#39;&lt;U0&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">allow_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">Index([1, 2, 3], dtype=&#39;int64&#39;)</span>
+</pre></div>
+</div>
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.argsort">
 <span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#Index.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index.argsort" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return the indices that would sort the Index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ascending</strong> (<a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If True (default), sort in ascending order.
+If False, sort in descending order.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices that would sort the Index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array-like</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.concat">
 <span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#Index.concat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index.concat" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Concatenate this Index with another Index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>) – The Index to concatenate with this one.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Index with values from both indices.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index">Index</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If the types of the two Index objects do not match.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.equals">
@@ -5177,12 +5247,37 @@ they are unregistered.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.factory">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#Index.factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index.factory" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Construct an Index or MultiIndex based on the input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>array-like</em><em> or </em><em>tuple</em><em> of </em><em>array-like</em>) – If a single array-like, returns an Index.
+If a tuple of array-like objects, returns a MultiIndex.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An Index if input is a single array-like, or a MultiIndex otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index">Index</a> or <a class="reference internal" href="#arkouda.MultiIndex" title="arkouda.MultiIndex">MultiIndex</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.from_return_msg">
 <em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#Index.from_return_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index.from_return_msg" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reconstruct an Index or MultiIndex from a return message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rep_msg</strong> (<em>str</em>) – A string return message containing encoded index information.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The reconstructed Index or MultiIndex instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index">Index</a> or <a class="reference internal" href="#arkouda.MultiIndex" title="arkouda.MultiIndex">MultiIndex</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.Index.index">
@@ -5257,7 +5352,23 @@ they are unregistered.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.lookup">
 <span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#Index.lookup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index.lookup" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Check for presence of key(s) in the Index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><em>scalar</em>) – The value(s) to look up in the Index. If a scalar is provided, it will
+be converted to a one-element array.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A boolean array indicating which elements of <cite>key</cite> are present in the Index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If <cite>key</cite> is not a scalar or a pdarray.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.map">
@@ -5358,49 +5469,7 @@ Raised if index values not of type pdarray, Categorical, or Strings.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.Index.objType">
 <span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Index'</span></em><a class="headerlink" href="#arkouda.Index.objType" title="Link to this definition">¶</a></dt>
-<dd><p>Sequence used for indexing and alignment.</p>
-<p>The basic object storing axis labels for all DataFrame objects.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, </em><em>pandas.Categorical</em><em>, </em><em>pandas.Index</em><em>, or </em><a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>)</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>default=None</em>) – Name to be stored in the index.</p></li>
-<li><p><strong>False</strong> (<em>allow_list =</em>) – If False, list values will be converted to a pdarray.
-If True, list values will remain as a list, provided the data length is less than max_list_size.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="simple">
-<dt>:param<span class="classifier">If False, list values will be converted to a pdarray.</span></dt><dd><p>If True, list values will remain as a list, provided the data length is less than max_list_size.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>1000</strong> (<em>max_list_size =</em>) – This is the maximum allowed data length for the values to be stored as a list object.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – Raised if allow_list=True and the size of values is &gt; max_list_size.</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.MultiIndex" title="arkouda.MultiIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiIndex</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-<span class="go">Index(array([1 2 3]), dtype=&#39;int64&#39;)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">))</span>
-<span class="go">Index(array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]), dtype=&#39;&lt;U0&#39;)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">allow_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">Index([1, 2, 3], dtype=&#39;int64&#39;)</span>
-</pre></div>
-</div>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.register">
@@ -5451,7 +5520,16 @@ they are unregistered.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.Index.shape">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.Index.shape" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return the shape of the Index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple representing the shape of the Index (size,).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.to_csv">
@@ -5498,7 +5576,20 @@ Raised if the Index values are a list.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.to_dict">
 <span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#Index.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index.to_dict" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convert the Index to a dictionary with a specified label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>label</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em>) – The key to use in the resulting dictionary. If a list is provided,
+only the first element is used. If None, defaults to “idx”.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary with the label as the key and the Index as the value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.to_hdf">
@@ -5547,7 +5638,16 @@ determine the file format.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#Index.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index.to_ndarray" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convert the Index values to a NumPy ndarray.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A NumPy array representation of the Index values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.to_pandas">
@@ -5603,7 +5703,16 @@ determine the file format.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.tolist">
 <span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#Index.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index.tolist" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convert the Index values to a Python list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list containing the Index values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.unregister">
@@ -5814,15 +5923,58 @@ information.</p>
 <dt class="sig sig-object py" id="arkouda.MultiIndex">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">MultiIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pandas.MultiIndex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.MultiIndex" title="arkouda.MultiIndex"><span class="pre">MultiIndex</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Index</span></code></a></p>
+<p>A multi-level, or hierarchical, index object for Arkouda DataFrames and Series.</p>
+<p>A MultiIndex allows you to represent multiple dimensions of indexing using
+a single object, enabling advanced indexing and grouping operations.</p>
+<p>This class mirrors the behavior of pandas’ MultiIndex while leveraging Arkouda’s
+distributed data structures. Internally, it stores a list of Index objects,
+each representing one level of the hierarchy.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiIndex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mi</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mi</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">MultiIndex([2, &#39;b&#39;])</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.argsort">
 <span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.argsort" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return the indices that would sort the MultiIndex.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ascending</strong> (<a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – If False, the result is in descending order.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An array of indices that would sort the MultiIndex.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.concat">
 <span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.concat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.concat" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Concatenate this MultiIndex with another, preserving duplicates and order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#arkouda.MultiIndex" title="arkouda.MultiIndex"><em>MultiIndex</em></a>) – The other MultiIndex to concatenate with.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new MultiIndex containing values from both inputs, preserving order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.MultiIndex" title="arkouda.MultiIndex">MultiIndex</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If the type of <cite>other</cite> does not match.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.dtype">
@@ -5839,76 +5991,95 @@ information.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.get_level_values">
 <span class="sig-name descname"><span class="pre">get_level_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.get_level_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.get_level_values" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return the values at a particular level of the MultiIndex.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>level</strong> (<em>int</em><em> or </em><em>str</em>) – The level number or name. If a string is provided, it must match an entry
+in <cite>self.names</cite>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An Index object corresponding to the requested level.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index">Index</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – If <cite>self.names</cite> is None and a string level is provided.</p></li>
+<li><p><strong>ValueError</strong> – If the provided string is not in <cite>self.names</cite>, or if the level index is out of bounds.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.index">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.MultiIndex.index" title="Link to this definition">¶</a></dt>
-<dd><p>Deprecated alias for <cite>values</cite>.</p>
-<p>This property is maintained for backward compatibility and returns the same
-array as the <cite>values</cite> attribute. It will be removed in a future release;
-use <cite>values</cite> directly instead.</p>
+<dd><p>Return the levels of the MultiIndex.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p><em>arkouda.numpy.pdarray</em> – The underlying values of this object (same as <cite>values</cite>).</p></li>
-<li><p><em>Deprecated</em></p></li>
-<li><p><em>———-</em></p></li>
-<li><p>Use the <cite>values</cite> attribute directly. This alias will be removed in a future release.</p></li>
-</ul>
-</p>
+<dd class="field-odd"><p>A list of Index objects representing the levels of the MultiIndex.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span><span class="o">.</span><span class="n">index</span>
-<span class="go">array([1 2 3])</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.inferred_type">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inferred_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#arkouda.MultiIndex.inferred_type" title="Link to this definition">¶</a></dt>
-<dd><p>Return a string of the type inferred from the values.</p>
+<dd><p>Return the inferred type of the MultiIndex.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The string “mixed”, indicating the MultiIndex may contain multiple types.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.is_registered">
 <span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.is_registered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.is_registered" title="Link to this definition">¶</a></dt>
-<dd><p>Return whether the object is registered.</p>
-<p>Return True iff the object is contained in the registry or is a component of a
-registered object.</p>
+<dd><p>Check if the MultiIndex is registered with the Arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Indicates if the object is contained in the registry</p>
+<dd class="field-odd"><p>True if the MultiIndex has a registered name and is recognized by the server,
+False otherwise.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="numpy/index.html#arkouda.numpy.bool" title="arkouda.numpy.bool">numpy.bool</a></p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
+<dd class="field-even"><p><a class="reference internal" href="#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.MultiIndex.register" title="arkouda.MultiIndex.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.attach" title="arkouda.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.unregister" title="arkouda.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
-</div>
-<p class="rubric">Notes</p>
-<p>Objects registered with the server are immune to deletion until
-they are unregistered.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.levels">
-<span class="sig-name descname"><span class="pre">levels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></em><a class="headerlink" href="#arkouda.MultiIndex.levels" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">levels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">arkouda.pandas.categorical.Categorical</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#arkouda.MultiIndex.levels" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.lookup">
 <span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.lookup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.lookup" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Perform element-wise lookup on the MultiIndex.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>list</em><em> or </em><em>tuple</em>) – A sequence of values, one for each level of the MultiIndex. Values may be scalars
+or pdarrays. If scalars, they are cast to the appropriate Arkouda array type.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A boolean array indicating which rows in the MultiIndex match the key.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If <cite>key</cite> is not a list or tuple, or if its elements cannot be converted to pdarrays.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.memory_usage">
@@ -5974,49 +6145,7 @@ they are unregistered.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.objType">
 <span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MultiIndex'</span></em><a class="headerlink" href="#arkouda.MultiIndex.objType" title="Link to this definition">¶</a></dt>
-<dd><p>Sequence used for indexing and alignment.</p>
-<p>The basic object storing axis labels for all DataFrame objects.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><em>List</em></a><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, </em><em>pandas.Categorical</em><em>, </em><em>pandas.Index</em><em>, or </em><a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>)</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>default=None</em>) – Name to be stored in the index.</p></li>
-<li><p><strong>False</strong> (<em>allow_list =</em>) – If False, list values will be converted to a pdarray.
-If True, list values will remain as a list, provided the data length is less than max_list_size.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="simple">
-<dt>:param<span class="classifier">If False, list values will be converted to a pdarray.</span></dt><dd><p>If True, list values will remain as a list, provided the data length is less than max_list_size.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>1000</strong> (<em>max_list_size =</em>) – This is the maximum allowed data length for the values to be stored as a list object.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – Raised if allow_list=True and the size of values is &gt; max_list_size.</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.MultiIndex" title="arkouda.MultiIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiIndex</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-<span class="go">Index(array([1 2 3]), dtype=&#39;int64&#39;)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">))</span>
-<span class="go">Index(array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]), dtype=&#39;&lt;U0&#39;)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">allow_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">Index([1, 2, 3], dtype=&#39;int64&#39;)</span>
-</pre></div>
-</div>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.register">
@@ -6054,7 +6183,7 @@ they are unregistered.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.registered_name">
-<span class="sig-name descname"><span class="pre">registered_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#arkouda.MultiIndex.registered_name" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">registered_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#arkouda.MultiIndex.registered_name" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -6064,10 +6193,28 @@ they are unregistered.</p>
 <p>Currently only aku.ip_address and ak.array are supported.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.MultiIndex.size">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#arkouda.MultiIndex.size" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.to_dict">
 <span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.to_dict" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convert the MultiIndex to a dictionary representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>labels</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – A list of column names for the index levels. If not provided,
+defaults to [‘idx_0’, ‘idx_1’, …, ‘idx_n’].</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary mapping each label to the corresponding Index object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.to_hdf">
@@ -6113,38 +6260,59 @@ determine the file format.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.to_ndarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.to_ndarray" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convert the MultiIndex to a NumPy ndarray of arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A NumPy array where each element is an array corresponding to one level
+of the MultiIndex. Categorical levels are converted to their underlying arrays.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.to_pandas">
 <span class="sig-name descname"><span class="pre">to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>Return the equivalent Pandas Index.</p>
+<dd><p>Convert the MultiIndex to a pandas.MultiIndex object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A pandas MultiIndex with the same levels and names.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.MultiIndex</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Categorical levels are converted to pandas categorical arrays,
+while others are converted to NumPy arrays.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.tolist">
 <span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.tolist" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convert the MultiIndex to a list of lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of Python lists, where each inner list corresponds to one level
+of the MultiIndex.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.unregister">
 <span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/index.html#MultiIndex.unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.MultiIndex.unregister" title="Link to this definition">¶</a></dt>
-<dd><p>Unregister this Index object in the arkouda server.</p>
-<p>Unregister this Index object in the arkouda server, which was previously
-registered using register() and/or attached to using attach()</p>
+<dd><p>Unregister this MultiIndex from the Arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
-when attempting to unregister</p>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the MultiIndex is not currently registered.</p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.MultiIndex.register" title="arkouda.MultiIndex.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.attach" title="arkouda.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.is_registered" title="arkouda.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
-</div>
-<p class="rubric">Notes</p>
-<p>Objects registered with the server are immune to deletion until
-they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -25054,6 +25222,7 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.MultiIndex.register"><code class="docutils literal notranslate"><span class="pre">MultiIndex.register()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.MultiIndex.registered_name"><code class="docutils literal notranslate"><span class="pre">MultiIndex.registered_name</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.MultiIndex.set_dtype"><code class="docutils literal notranslate"><span class="pre">MultiIndex.set_dtype()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.MultiIndex.size"><code class="docutils literal notranslate"><span class="pre">MultiIndex.size</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.MultiIndex.to_dict"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_dict()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.MultiIndex.to_hdf"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.MultiIndex.to_ndarray"><code class="docutils literal notranslate"><span class="pre">MultiIndex.to_ndarray()</span></code></a></li>

@@ -18,10 +18,62 @@ Module Contents
 
 .. py:class:: Index(values: Union[List, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, pandas.Index, Index, pandas.Categorical], name: Optional[str] = None, allow_list=False, max_list_size=1000)
 
+   Sequence used for indexing and alignment.
+
+   The basic object storing axis labels for all DataFrame objects.
+
+   :param values:
+   :type values: List, pdarray, Strings, Categorical, pandas.Categorical, pandas.Index, or Index
+   :param name: Name to be stored in the index.
+   :type name: str, default=None
+   :param allow_list = False: If False, list values will be converted to a pdarray.
+                              If True, list values will remain as a list, provided the data length is less than max_list_size.
+   :param : If False, list values will be converted to a pdarray.
+            If True, list values will remain as a list, provided the data length is less than max_list_size.
+   :param max_list_size = 1000: This is the maximum allowed data length for the values to be stored as a list object.
+
+   :raises ValueError: Raised if allow_list=True and the size of values is > max_list_size.
+
+   .. seealso:: :py:obj:`MultiIndex`
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.Index([1, 2, 3])
+   Index(array([1 2 3]), dtype='int64')
+
+   >>> ak.Index(list('abc'))
+   Index(array(['a', 'b', 'c']), dtype='<U0')
+
+   >>> ak.Index([1, 2, 3], allow_list=True)
+   Index([1, 2, 3], dtype='int64')
+
+
    .. py:method:: argsort(ascending=True)
+
+      Return the indices that would sort the Index.
+
+      :param ascending: If True (default), sort in ascending order.
+                        If False, sort in descending order.
+      :type ascending: bool, optional
+
+      :returns: The indices that would sort the Index.
+      :rtype: array-like
+
 
 
    .. py:method:: concat(other)
+
+      Concatenate this Index with another Index.
+
+      :param other: The Index to concatenate with this one.
+      :type other: Index
+
+      :returns: A new Index with values from both indices.
+      :rtype: Index
+
+      :raises TypeError: If the types of the two Index objects do not match.
+
 
 
    .. py:method:: equals(other: Index) -> arkouda.numpy.dtypes.bool_scalars
@@ -63,9 +115,28 @@ Module Contents
       :staticmethod:
 
 
+      Construct an Index or MultiIndex based on the input.
+
+      :param index: If a single array-like, returns an Index.
+                    If a tuple of array-like objects, returns a MultiIndex.
+      :type index: array-like or tuple of array-like
+
+      :returns: An Index if input is a single array-like, or a MultiIndex otherwise.
+      :rtype: Index or MultiIndex
+
+
 
    .. py:method:: from_return_msg(rep_msg)
       :classmethod:
+
+
+      Reconstruct an Index or MultiIndex from a return message.
+
+      :param rep_msg: A string return message containing encoded index information.
+      :type rep_msg: str
+
+      :returns: The reconstructed Index or MultiIndex instance.
+      :rtype: Index or MultiIndex
 
 
 
@@ -126,6 +197,18 @@ Module Contents
 
 
    .. py:method:: lookup(key)
+
+      Check for presence of key(s) in the Index.
+
+      :param key: The value(s) to look up in the Index. If a scalar is provided, it will
+                  be converted to a one-element array.
+      :type key: pdarray or scalar
+
+      :returns: A boolean array indicating which elements of `key` are present in the Index.
+      :rtype: pdarray
+
+      :raises TypeError: If `key` is not a scalar or a pdarray.
+
 
 
    .. py:method:: map(arg: Union[dict, arkouda.pandas.series.Series]) -> Index
@@ -209,36 +292,6 @@ Module Contents
       :value: 'Index'
 
 
-      Sequence used for indexing and alignment.
-
-      The basic object storing axis labels for all DataFrame objects.
-
-      :param values:
-      :type values: List, pdarray, Strings, Categorical, pandas.Categorical, pandas.Index, or Index
-      :param name: Name to be stored in the index.
-      :type name: str, default=None
-      :param allow_list = False: If False, list values will be converted to a pdarray.
-                                 If True, list values will remain as a list, provided the data length is less than max_list_size.
-      :param : If False, list values will be converted to a pdarray.
-               If True, list values will remain as a list, provided the data length is less than max_list_size.
-      :param max_list_size = 1000: This is the maximum allowed data length for the values to be stored as a list object.
-
-      :raises ValueError: Raised if allow_list=True and the size of values is > max_list_size.
-
-      .. seealso:: :py:obj:`MultiIndex`
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.Index([1, 2, 3])
-      Index(array([1 2 3]), dtype='int64')
-
-      >>> ak.Index(list('abc'))
-      Index(array(['a', 'b', 'c']), dtype='<U0')
-
-      >>> ak.Index([1, 2, 3], allow_list=True)
-      Index([1, 2, 3], dtype='int64')
-
 
    .. py:method:: register(user_defined_name)
 
@@ -280,7 +333,13 @@ Module Contents
 
 
 
+
    .. py:property:: shape
+
+      Return the shape of the Index.
+
+      :returns: A tuple representing the shape of the Index (size,).
+      :rtype: tuple
 
 
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'index', col_delim: str = ',', overwrite: bool = False)
@@ -322,6 +381,16 @@ Module Contents
 
 
    .. py:method:: to_dict(label)
+
+      Convert the Index to a dictionary with a specified label.
+
+      :param label: The key to use in the resulting dictionary. If a list is provided,
+                    only the first element is used. If None, defaults to "idx".
+      :type label: str or list of str
+
+      :returns: A dictionary with the label as the key and the Index as the value.
+      :rtype: dict
+
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
@@ -365,6 +434,12 @@ Module Contents
 
 
    .. py:method:: to_ndarray()
+
+      Convert the Index values to a NumPy ndarray.
+
+      :returns: A NumPy array representation of the Index values.
+      :rtype: numpy.ndarray
+
 
 
    .. py:method:: to_pandas()
@@ -415,6 +490,12 @@ Module Contents
 
 
    .. py:method:: tolist()
+
+      Convert the Index values to a Python list.
+
+      :returns: A list containing the Index values.
+      :rtype: list
+
 
 
    .. py:method:: unregister()
@@ -470,10 +551,50 @@ Module Contents
    Bases: :py:obj:`Index`
 
 
+   A multi-level, or hierarchical, index object for Arkouda DataFrames and Series.
+
+   A MultiIndex allows you to represent multiple dimensions of indexing using
+   a single object, enabling advanced indexing and grouping operations.
+
+   This class mirrors the behavior of pandas' MultiIndex while leveraging Arkouda's
+   distributed data structures. Internally, it stores a list of Index objects,
+   each representing one level of the hierarchy.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> from arkouda.index import MultiIndex
+   >>> a = ak.array([1, 2, 3])
+   >>> b = ak.array(['a', 'b', 'c'])
+   >>> mi = MultiIndex([a, b])
+   >>> mi[1]
+   MultiIndex([2, 'b'])
+
+
    .. py:method:: argsort(ascending=True)
+
+      Return the indices that would sort the MultiIndex.
+
+      :param ascending: If False, the result is in descending order.
+      :type ascending: bool, default True
+
+      :returns: An array of indices that would sort the MultiIndex.
+      :rtype: pdarray
+
 
 
    .. py:method:: concat(other)
+
+      Concatenate this MultiIndex with another, preserving duplicates and order.
+
+      :param other: The other MultiIndex to concatenate with.
+      :type other: MultiIndex
+
+      :returns: A new MultiIndex containing values from both inputs, preserving order.
+      :rtype: MultiIndex
+
+      :raises TypeError: If the type of `other` does not match.
+
 
 
    .. py:property:: dtype
@@ -491,61 +612,65 @@ Module Contents
 
    .. py:method:: get_level_values(level: Union[str, int])
 
+      Return the values at a particular level of the MultiIndex.
+
+      :param level: The level number or name. If a string is provided, it must match an entry
+                    in `self.names`.
+      :type level: int or str
+
+      :returns: An Index object corresponding to the requested level.
+      :rtype: Index
+
+      :raises RuntimeError: If `self.names` is None and a string level is provided.
+      :raises ValueError: If the provided string is not in `self.names`, or if the level index is out of bounds.
+
+
 
    .. py:property:: index
 
-      Deprecated alias for `values`.
+      Return the levels of the MultiIndex.
 
-      This property is maintained for backward compatibility and returns the same
-      array as the `values` attribute. It will be removed in a future release;
-      use `values` directly instead.
-
-      :returns: * *arkouda.numpy.pdarray* -- The underlying values of this object (same as `values`).
-                * *Deprecated*
-                * *----------*
-                * Use the `values` attribute directly. This alias will be removed in a future release.
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> idx = ak.Index(ak.array([1, 2, 3]))
-      >>> idx.index
-      array([1 2 3])
+      :returns: A list of Index objects representing the levels of the MultiIndex.
+      :rtype: list
 
 
    .. py:property:: inferred_type
       :type: str
 
 
-      Return a string of the type inferred from the values.
+      Return the inferred type of the MultiIndex.
+
+      :returns: The string "mixed", indicating the MultiIndex may contain multiple types.
+      :rtype: str
 
 
    .. py:method:: is_registered()
 
-      Return whether the object is registered.
+      Check if the MultiIndex is registered with the Arkouda server.
 
-      Return True iff the object is contained in the registry or is a component of a
-      registered object.
-
-      :returns: Indicates if the object is contained in the registry
-      :rtype: numpy.bool
-
-      :raises RegistrationError: Raised if there's a server-side error or a mis-match of registered components
-
-      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`unregister`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
+      :returns: True if the MultiIndex has a registered name and is recognized by the server,
+                False otherwise.
+      :rtype: bool
 
 
 
    .. py:attribute:: levels
-      :type:  list
+      :type:  list[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]]
 
 
    .. py:method:: lookup(key)
+
+      Perform element-wise lookup on the MultiIndex.
+
+      :param key: A sequence of values, one for each level of the MultiIndex. Values may be scalars
+                  or pdarrays. If scalars, they are cast to the appropriate Arkouda array type.
+      :type key: list or tuple
+
+      :returns: A boolean array indicating which rows in the MultiIndex match the key.
+      :rtype: pdarray
+
+      :raises TypeError: If `key` is not a list or tuple, or if its elements cannot be converted to pdarrays.
+
 
 
    .. py:method:: memory_usage(unit='B')
@@ -600,36 +725,6 @@ Module Contents
       :value: 'MultiIndex'
 
 
-      Sequence used for indexing and alignment.
-
-      The basic object storing axis labels for all DataFrame objects.
-
-      :param values:
-      :type values: List, pdarray, Strings, Categorical, pandas.Categorical, pandas.Index, or Index
-      :param name: Name to be stored in the index.
-      :type name: str, default=None
-      :param allow_list = False: If False, list values will be converted to a pdarray.
-                                 If True, list values will remain as a list, provided the data length is less than max_list_size.
-      :param : If False, list values will be converted to a pdarray.
-               If True, list values will remain as a list, provided the data length is less than max_list_size.
-      :param max_list_size = 1000: This is the maximum allowed data length for the values to be stored as a list object.
-
-      :raises ValueError: Raised if allow_list=True and the size of values is > max_list_size.
-
-      .. seealso:: :py:obj:`MultiIndex`
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> ak.Index([1, 2, 3])
-      Index(array([1 2 3]), dtype='int64')
-
-      >>> ak.Index(list('abc'))
-      Index(array(['a', 'b', 'c']), dtype='<U0')
-
-      >>> ak.Index([1, 2, 3], allow_list=True)
-      Index([1, 2, 3], dtype='int64')
-
 
    .. py:method:: register(user_defined_name)
 
@@ -658,9 +753,7 @@ Module Contents
 
 
    .. py:attribute:: registered_name
-      :type:  Optional[str]
-      :value: None
-
+      :type:  Union[str, None]
 
 
    .. py:method:: set_dtype(dtype)
@@ -671,7 +764,22 @@ Module Contents
 
 
 
+
+   .. py:attribute:: size
+      :type:  arkouda.numpy.dtypes.int_scalars
+
+
    .. py:method:: to_dict(labels=None)
+
+      Convert the MultiIndex to a dictionary representation.
+
+      :param labels: A list of column names for the index levels. If not provided,
+                     defaults to ['idx_0', 'idx_1', ..., 'idx_n'].
+      :type labels: list of str, optional
+
+      :returns: A dictionary mapping each label to the corresponding Index object.
+      :rtype: dict
+
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
@@ -715,32 +823,43 @@ Module Contents
 
    .. py:method:: to_ndarray()
 
+      Convert the MultiIndex to a NumPy ndarray of arrays.
+
+      :returns: A NumPy array where each element is an array corresponding to one level
+                of the MultiIndex. Categorical levels are converted to their underlying arrays.
+      :rtype: numpy.ndarray
+
+
 
    .. py:method:: to_pandas()
 
-      Return the equivalent Pandas Index.
+      Convert the MultiIndex to a pandas.MultiIndex object.
+
+      :returns: A pandas MultiIndex with the same levels and names.
+      :rtype: pandas.MultiIndex
+
+      .. rubric:: Notes
+
+      Categorical levels are converted to pandas categorical arrays,
+      while others are converted to NumPy arrays.
 
 
 
    .. py:method:: tolist()
 
+      Convert the MultiIndex to a list of lists.
+
+      :returns: A list of Python lists, where each inner list corresponds to one level
+                of the MultiIndex.
+      :rtype: list
+
+
 
    .. py:method:: unregister()
 
-      Unregister this Index object in the arkouda server.
+      Unregister this MultiIndex from the Arkouda server.
 
-      Unregister this Index object in the arkouda server, which was previously
-      registered using register() and/or attached to using attach()
-
-      :raises RegistrationError: If the object is already unregistered or if there is a server error
-          when attempting to unregister
-
-      .. seealso:: :py:obj:`register`, :py:obj:`attach`, :py:obj:`is_registered`
-
-      .. rubric:: Notes
-
-      Objects registered with the server are immune to deletion until
-      they are unregistered.
+      :raises RegistrationError: If the MultiIndex is not currently registered.
 
 
 
