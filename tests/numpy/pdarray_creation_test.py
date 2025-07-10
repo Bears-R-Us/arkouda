@@ -10,7 +10,9 @@ import pytest
 import arkouda as ak
 from arkouda.numpy import newaxis, pdarraycreation
 from arkouda.numpy.util import _generate_test_shape, _infer_shape_from_size
-from arkouda.testing import assert_arkouda_array_equal, assert_equivalent
+from arkouda.testing import assert_arkouda_array_equal
+from arkouda.testing import assert_equal as ak_assert_equal
+from arkouda.testing import assert_equivalent
 
 INT_SCALARS = list(ak.numpy.dtypes.int_scalars.__args__)
 NUMERIC_SCALARS = list(ak.numpy.dtypes.numeric_scalars.__args__)
@@ -148,6 +150,18 @@ class TestPdarrayCreation:
                 expected_type = ak.Strings if pda.dtype == str else ak.pdarray
                 assert isinstance(pda, expected_type), f"{name}: Type mismatch"
                 assert len(pda) == size, f"{name}: Size mismatch: {len(pda)} != {size}"
+
+    @pytest.mark.parametrize("dtype", [ak.int64, ak.float64, ak.bool_, ak.bigint])
+    def test_array_copy(self, dtype):
+        a = ak.arange(100, dtype=dtype)
+
+        b = ak.array(a, copy=True)
+        assert a is not b
+        ak_assert_equal(a, b)
+
+        c = ak.array(a, copy=False)
+        assert a is c
+        ak_assert_equal(a, c)
 
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
