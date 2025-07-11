@@ -203,7 +203,7 @@ def dtype(dtype):
     return np.dtype(dtype)
 
 
-_dtype_for_chapel = dict()  # will populate this lazily
+_dtype_for_chapel = dict()  # type: ignore
 
 _dtype_name_for_chapel = {  # see DType
     "real": "float64",

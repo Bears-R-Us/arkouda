@@ -685,7 +685,8 @@ def connect(
     with an existing connection, the socket will be re-initialized.
 
     """
-    global connected, serverConfig, regexMaxCaptures, channel, registrationConfig
+    global channel
+    global connected, serverConfig, regexMaxCaptures, registrationConfig
 
     # send the connect message
     cmd = "connect"
@@ -835,7 +836,7 @@ def disconnect() -> None:
         Raised if there's an error disconnecting from the Arkouda server
 
     """
-    global connected, serverConfig
+    global connected, serverConfig, regexMaxCaptures, registrationConfig
 
     if connected:
         # send disconnect message to server
@@ -849,6 +850,8 @@ def disconnect() -> None:
             raise ConnectionError(e)
         connected = False
         serverConfig = None
+        regexMaxCaptures = -1
+        registrationConfig = None
         clientLogger.info(return_message)
     else:
         clientLogger.info("not connected; cannot disconnect")
@@ -872,7 +875,7 @@ def shutdown() -> None:
         there is an error in disconnecting from the server
 
     """
-    global connected, serverConfig
+    global connected, serverConfig, regexMaxCaptures, registrationConfig
 
     if not connected:
         raise RuntimeError("not connected, cannot shutdown server")
@@ -889,6 +892,8 @@ def shutdown() -> None:
         raise RuntimeError(e)
     connected = False
     serverConfig = None
+    regexMaxCaptures = -1
+    registrationConfig = None
 
 
 def _json_args_to_str(json_obj: Optional[Dict] = None) -> Tuple[int, str]:
@@ -1031,8 +1036,10 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
 
 def get_registration_config():
     """
-    Get the registration settings that the server was built with,
-    as defined in the file `registration-config.json` at build time.
+    Get the registration settings that the server was built with.
+
+    These registration settings are defined in the file `registration-config.json`
+    and snapshot at server build time.
 
     Returns
     -------
@@ -1067,7 +1074,7 @@ def get_max_array_rank() -> int:
 
     """
     if serverConfig is None:
-        raise RuntimeError("client is not connected to a server")
+        raise RuntimeError("client is not connected to a server, no 'serverConfig'")
 
     return max(get_array_ranks())
 
@@ -1087,10 +1094,7 @@ def get_array_ranks() -> list[int]:
 
     """
     if registrationConfig is None:
-        raise RuntimeError(
-            "There was a problem loading registrationConfig."
-            "Make sure the client is connected to a server."
-        )
+        raise RuntimeError("client is not connected to a server, no 'registrationConfig'")
 
     return registrationConfig["parameter_classes"]["array"]["nd"]
 

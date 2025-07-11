@@ -923,7 +923,7 @@ def default_rng(seed=None):
 
     name_dict = dict()
     for chapel_dt in get_registration_config()["parameter_classes"]["array"]["dtype"]:
-        if not chapel_dt in _supported_chapel_types:
+        if chapel_dt not in _supported_chapel_types:
             continue
         dt = dtype_for_chapel(chapel_dt)
         name_dict[dt] = generic_msg(
