@@ -119,10 +119,10 @@ class TestCheckpoint:
 
             ak.load_checkpoint(path=tmp_dirname, name=cp_name)
             # expect generators unwound back to the starting points for i1np, i2np
-            ## Currently does not work because g1,g2._state are not unwound,
-            ## see https://github.com/Bears-R-Us/arkouda/issues/4709
-            ##assert np.array_equal(i1np, rand(g1))
-            ##assert np.array_equal(i2np, rand(g2))
+            # These currently fail because g1,g2._state are not unwound, see:
+            #   https://github.com/Bears-R-Us/arkouda/issues/4709
+            # assert np.array_equal(i1np, rand(g1))
+            # assert np.array_equal(i2np, rand(g2))
 
     def test_incorrect_nl(self):
         cp_name = "test_incorrect_nl_cp"
