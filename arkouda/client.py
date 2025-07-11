@@ -721,7 +721,7 @@ def connect(
             RuntimeWarning,
         )
     regexMaxCaptures = serverConfig["regexMaxCaptures"]  # type: ignore
-    registrationConfig = _get_registration_config_msg()
+    registrationConfig = _get_registration_config_msg()  # type: ignore
     clientLogger.info(return_message)
 
 
@@ -1051,8 +1051,6 @@ def get_registration_config():
         Raised if the client is not connected to a server
 
     """
-    global registrationConfig
-
     if registrationConfig is None:
         raise RuntimeError("client is not connected to a server, no 'registrationConfig'")
 
