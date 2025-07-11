@@ -1,9 +1,11 @@
 import numpy as np
 import numpy.random as np_random
 
+from arkouda.client import get_registration_config
 from arkouda.numpy.dtypes import _val_isinstance_of_union
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import dtype as to_numpy_dtype
+from arkouda.numpy.dtypes import dtype_for_chapel
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import float_scalars
 from arkouda.numpy.dtypes import int64 as akint64
@@ -286,7 +288,7 @@ class Generator:
             high = high - 1
 
         shape, ndim, full_size = _infer_shape_from_size(size)
-        if full_size < 0:
+        if full_size <= 0:
             raise ValueError("The size parameter must be > 0")
 
         rep_msg = generic_msg(
@@ -881,6 +883,9 @@ class Generator:
         return create_pdarray(rep_msg)
 
 
+_supported_chapel_types = frozenset(("int", "int(64)", "uint", "uint(64)", "real", "real(64)", "bool"))
+
+
 def default_rng(seed=None):
     """
     Construct a new Generator.
@@ -917,7 +922,10 @@ def default_rng(seed=None):
     # we declare a generator for each type and fast-forward the state
 
     name_dict = dict()
-    for dt in akdtype("int64"), akdtype("uint64"), akdtype("float64"), akdtype("bool"):
+    for chapel_dt in get_registration_config()["parameter_classes"]["array"]["dtype"]:
+        if chapel_dt not in _supported_chapel_types:
+            continue
+        dt = dtype_for_chapel(chapel_dt)
         name_dict[dt] = generic_msg(
             cmd=f"createGenerator<{dt.name}>",
             args={"has_seed": has_seed, "seed": seed, "state": state},
