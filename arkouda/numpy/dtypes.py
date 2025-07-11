@@ -84,6 +84,7 @@ __all__ = [
     "complex128",
     "complex64",
     "dtype",
+    "dtype_for_chapel",
     "float16",
     "float32",
     "float64",
@@ -202,6 +203,63 @@ def dtype(dtype):
     return np.dtype(dtype)
 
 
+_dtype_for_chapel = dict()  # type: ignore
+
+_dtype_name_for_chapel = {  # see DType
+    "real": "float64",
+    "real(32)": "float32",
+    "real(64)": "float64",
+    "complex": "complex128",
+    "complex(64)": "complex64",
+    "complex(128)": "complex128",
+    "int": "int64",
+    "int(8)": "int8",
+    "int(16)": "int16",
+    "int(32)": "int32",
+    "int(64)": "int64",
+    "uint": "uint64",
+    "uint(8)": "uint8",
+    "uint(16)": "uint16",
+    "uint(32)": "uint32",
+    "uint(64)": "uint64",
+    "bool": "bool",
+    "bigint": "bigint",
+    "string": "str",
+}
+
+
+def dtype_for_chapel(type_name: str):
+    """
+    Returns dtype() for the given Chapel type.
+
+    Parameters
+    ----------
+    type_name : str
+        The name of the Chapel type, with or without the bit width
+
+    Returns
+    -------
+    dtype
+        The corresponding Arkouda dtype object
+
+    Raises
+    ------
+    TypeError
+        Raised if Arkouda does not have a type that corresponds to `type_name`
+
+    """
+    try:
+        return _dtype_for_chapel[type_name]
+    except KeyError:
+        try:
+            dtype_name = _dtype_name_for_chapel[type_name]
+        except KeyError:
+            raise TypeError(f"Arkouda does not have a dtype that corresponds to '{type_name}' in Chapel")
+        result = dtype(dtype_name)
+        _dtype_for_chapel[type_name] = result
+        return result
+
+
 def can_cast(from_, to) -> builtins.bool:
     """
     Returns True if cast between data types can occur according to the casting rule.
@@ -213,8 +271,8 @@ def can_cast(from_, to) -> builtins.bool:
     to: dtype or dtype specifier
         Data type to cast to.
 
-    Return
-    ------
+    Returns
+    -------
     builtins.bool
         True if cast can occur according to the casting rule.
 
