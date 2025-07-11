@@ -20,6 +20,7 @@ __all__ = [
     "disconnect",
     "shutdown",
     "get_config",
+    "get_registration_config",
     "get_max_array_rank",
     "get_mem_used",
     "get_mem_avail",
@@ -1023,9 +1024,32 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
 
     """
     if serverConfig is None:
-        raise RuntimeError("client is not connected to a server")
+        raise RuntimeError("client is not connected to a server, no 'serverConfig'")
 
     return serverConfig
+
+
+def get_registration_config():
+    """
+    Get the registration settings that the server was built with,
+    as defined in the file `registration-config.json` at build time.
+
+    Returns
+    -------
+    A mapping from parameter name to nested mappings, matching the json structure.
+
+    Raises
+    ------
+    RuntimeError
+        Raised if the client is not connected to a server
+
+    """
+    global registrationConfig
+
+    if registrationConfig is None:
+        raise RuntimeError("client is not connected to a server, no 'registrationConfig'")
+
+    return registrationConfig
 
 
 def get_max_array_rank() -> int:
