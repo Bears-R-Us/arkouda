@@ -236,6 +236,34 @@ class TestDTypes:
         assert "{:d}" == dtypes.NUMBER_FORMAT_STRINGS["uint64"]
         assert "{:d}" == dtypes.NUMBER_FORMAT_STRINGS["bigint"]
 
+    def test_dtype_for_chapel(self):
+        dtypes_for_chapel = {  # see DType
+            "real": "float64",
+            "real(32)": "float32",
+            "real(64)": "float64",
+            "complex": "complex128",
+            "complex(64)": "complex64",
+            "complex(128)": "complex128",
+            "int": "int64",
+            "int(8)": "int8",
+            "int(16)": "int16",
+            "int(32)": "int32",
+            "int(64)": "int64",
+            "uint": "uint64",
+            "uint(8)": "uint8",
+            "uint(16)": "uint16",
+            "uint(32)": "uint32",
+            "uint(64)": "uint64",
+            "bool": "bool",
+            "bigint": "bigint",
+            "string": "str",
+        }
+        for chapel_name, dtype_name in dtypes_for_chapel.items():
+            assert dtypes.dtype_for_chapel(chapel_name) == dtypes.dtype(dtype_name)
+        # check caching in the implementation of dtype_for_chapel()
+        for chapel_name, dtype_name in dtypes_for_chapel.items():
+            assert dtypes.dtype_for_chapel(chapel_name) == dtypes.dtype(dtype_name)
+
     @pytest.mark.parametrize("dtype1", [ak.bool_, ak.uint8, ak.uint64, ak.bigint, ak.int64, ak.float64])
     @pytest.mark.parametrize("dtype2", [ak.bool_, ak.uint8, ak.uint64, ak.bigint, ak.int64, ak.float64])
     def test_result_type(self, dtype1, dtype2):
