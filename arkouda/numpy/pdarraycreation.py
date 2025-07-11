@@ -1315,7 +1315,7 @@ def linspace(
         else:
             cmdstring = f"linspace_vv<{start_.ndim}>"
 
-    #   If one is a scalar and other a vector, we use ak.full to "promote" the scalar one,
+    #   If one is a scalar and other a vector, we use full_like to "promote" the scalar one,
     #   and use the chapel-side vector-vector proc.
 
     else:

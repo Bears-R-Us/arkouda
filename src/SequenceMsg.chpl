@@ -64,16 +64,6 @@ module SequenceMsg {
         return result;
     }
 
-    // This proc returns a shape that is an_int prepended to a_shape.
-    // e.g., if a_shape is (2,3) and an_int is 4, it will return (4,2,3).
-
-    proc linspace_shape(a_shape : ?N*int, an_int : int) : (N + 1) * int {
-        var shapeOut : (N+1)*int ;
-        shapeOut[0] = an_int;
-        for i in 0..<N do shapeOut[i+1] = a_shape[i];
-        return shapeOut;
-    }
-
     //  in the vv (vector-vector) case, both start and stop will have already been broadcast to a
     //  compatible shape before the chapel code is invoked.
 
@@ -87,7 +77,14 @@ module SequenceMsg {
         }
         overMemLimit(8*num*start.size);
 
-        var result = makeDistArray((...linspace_shape(start.shape,num)),real);
+        // The line below is chapel-speak for making a new tuple from existing ones.
+        // In this case, resultShape is num followed by the elements of start.shape,
+        // effectively prepending num to start.shape.
+        // The same thing is done below with rdx. 
+
+        var resultShape = ((num),(...start.shape));
+        var result = makeDistArray((...resultShape),real);
+
         if d.rank == 1 {    // if rank of start and stop is 1, then
             for idx in d {  // idx is an integer.
                 for j in 0..#num {
@@ -102,6 +99,7 @@ module SequenceMsg {
                 }
             }
         }
+
         return result;
     }
 
