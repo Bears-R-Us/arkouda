@@ -208,6 +208,7 @@ from arkouda.numpy import (
     integer,
     intersect1d,
     intp,
+    isnumeric,
     isSupportedBool,
     isSupportedDType,
     isSupportedFloat,

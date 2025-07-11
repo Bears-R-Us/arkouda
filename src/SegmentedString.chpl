@@ -17,6 +17,7 @@ module SegmentedString {
   use ServerErrors;
   use SegmentedComputation;
   use Regex;
+  use NumericUnicodes;
 
   use Subprocess;
   use Path;
@@ -473,6 +474,14 @@ module SegmentedString {
       return computeOnSegments(offsets.a, values.a, SegFunction.StringIsDecimal, bool);
     }
     
+    /*
+      Returns list of bools where index i indicates whether the string i of the SegString is numeric 
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is numeric
+    */
+    proc isNumeric() throws {
+      return computeOnSegments(offsets.a, values.a, SegFunction.StringIsNumeric, bool);
+    }
+
     /*
       Given a SegString, return a new SegString with first character of each original element replaced with its uppercase equivalent
       and the remaining characters replaced with their lowercase equivalent
@@ -1532,6 +1541,15 @@ module SegmentedString {
   }
 
   /*
+    The SegFunction called by computeOnSegments for isnumeric
+   */
+
+  inline proc stringIsNumeric(ref values, rng) throws {
+    const myString = interpretAsString(values, rng, borrow=true);
+    return isNumericString(myString);
+  }
+
+  /*
     The SegFunction called by computeOnSegments for isdigit
   */
   inline proc stringIsDigit(ref values, rng) throws {
@@ -1751,6 +1769,20 @@ module SegmentedString {
     } catch {
       return b"<error interpreting uint(8) as bytes>";
     }
+  }
+
+  inline proc isNumericString (s: string) {
+      var good = true;
+      for letter in s {
+        good = isNumericChar(letter);
+        if !good then break;
+      }
+      return good;
+  }
+
+  inline proc isNumericChar (c: string) {
+      var code : int(32) = c.toCodepoint();
+      return allNumericUnicodes.contains(code) ;
   }
 
 }
