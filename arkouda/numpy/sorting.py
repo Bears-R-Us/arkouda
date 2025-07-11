@@ -319,6 +319,9 @@ def searchsorted(
     side : {'left', 'right'}, default='left'
         If 'left', the index of the first suitable location found is given.
         If 'right', return the last such index.
+    x2_sorted : bool, default=False
+        If True, assumes that `v` (x2) is already sorted in ascending order. This can improve performance
+        for large, sorted search arrays. If False, no assumption is made about the order of `v`.
 
     Returns
     -------
@@ -346,6 +349,9 @@ def searchsorted(
     >>> v = ak.array([-10, 20, 12, 13])
     >>> ak.searchsorted(a, v)
     array([0 5 1 2])
+    >>> v_sorted = ak.array([-10, 12, 13, 20])
+    >>> ak.searchsorted(a, v_sorted, x2_sorted=True)
+    array([0 1 2 5])
     """
     from arkouda.client import generic_msg
 

@@ -185,8 +185,8 @@ module SortMsg
             // If this value is > myHigh, we can skip the rest since it's not in our range (except for last locale)
             // Or if gtElem is same as eqOrGtElem, then we don't own this either
             if (isLastLocale || gtElem <= myHigh) && gtElem != eqOrGtElem {
-            // We own this value, so we can set myFirst to gtMyLow
-            myFirst = gtMyLow;
+              // We own this value, so we can set myFirst to gtMyLow
+              myFirst = gtMyLow;
             }
           }
         } else {
