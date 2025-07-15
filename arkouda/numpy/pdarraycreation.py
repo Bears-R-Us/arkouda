@@ -1,4 +1,5 @@
 import itertools
+
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -60,6 +61,7 @@ __all__ = [
     "arange",
     "linspace",
     "logspace",
+    "rand",
     "randint",
     "uniform",
     "standard_normal",
@@ -1348,6 +1350,44 @@ def linspace(
         result = full(num, start_) + arange(num).astype(float64) * delta
 
     return result
+
+
+@typechecked
+def rand(*size: int_scalars, seed: Union[None, int_scalars] = None) -> pdarray:
+    """
+    Generate a pdarray of float values in the range (0,1).
+
+    Parameters
+    ----------
+    size : one or more int_scalars giving the size or shape of the resulting pdarray
+    seed : int_scalars, optional, the seed for the random number generator
+
+
+    Returns
+    -------
+    pdarray
+        Values drawn uniformly from the range (0,1).
+
+    Raises
+    ------
+    TypeError
+        Raised if size is not an int or a sequence of ints, or if seed is not an int
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.rand(3,2,seed=1701)
+    array([array([0.011410423448327005 0.73618171558685619])
+        array([0.12367222192448891 0.95616789699591898])
+        array([0.36427886480971333 0.71482330432026153])])
+    """
+    from arkouda.numpy.util import _infer_shape_from_size
+
+    shape, ndim, full_size = _infer_shape_from_size(size)
+    if ndim == 1:
+        return uniform(full_size, seed=seed)
+    else:
+        return uniform(full_size, seed=seed).reshape(shape)
 
 
 @typechecked

@@ -267,6 +267,7 @@ from arkouda.numpy import (
     putmask,
     quantile,
     rad2deg,
+    rand,
     randint,
     random,
     random_strings_lognormal,

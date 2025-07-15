@@ -417,6 +417,39 @@ class TestPdarrayCreation:
         assert np.allclose(nArange, aArange.to_ndarray())
 
     @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_rand(self, size):
+        known = ak.array([0.011410423448327005, 0.73618171558685619])
+        given = ak.rand(2, seed=1701)
+        assert_almost_equivalent(known, given)
+
+    @pytest.mark.skip_if_rank_not_compiled(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_rand2D(self, size):
+        known = ak.array(
+            [[0.011410423448327005, 0.73618171558685619], [0.12367222192448891, 0.95616789699591898]]
+        )
+        given = ak.rand(2, 2, seed=1701)
+        assert_almost_equivalent(known, given)
+
+    @pytest.mark.skip_if_rank_not_compiled(3)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_rand3D(self, size):
+        known = ak.array(
+            [
+                [
+                    [0.011410423448327005, 0.73618171558685619],
+                    [0.12367222192448891, 0.95616789699591898],
+                ],
+                [
+                    [0.36427886480971333, 0.71482330432026153],
+                    [0.66334928222218692, 0.071647713917930858],
+                ],
+            ]
+        )
+        given = ak.rand(2, 2, 2, seed=1701)
+        assert_almost_equivalent(known, given)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("array_type", [ak.int64, ak.float64, bool])
     def test_randint_array_dtype(self, size, array_type):
         test_array = ak.randint(0, size, size, array_type)
