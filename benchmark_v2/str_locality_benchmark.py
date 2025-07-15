@@ -17,15 +17,20 @@ def _generate_data(loc):
     prefix = ak.random_strings_uniform(
         minlen=1, maxlen=16, size=N, seed=pytest.seed, characters="numeric"
     )
-    if pytest.seed is not None:
-        pytest.seed += 1
     suffix = ak.random_strings_uniform(
-        minlen=1, maxlen=16, size=N, seed=pytest.seed, characters="numeric"
+        minlen=1,
+        maxlen=16,
+        size=N,
+        seed=None if pytest.seed is None else pytest.seed + 1,
+        characters="numeric",
     )
     random_strings = prefix.stick(suffix, delimiter=".")
-    perm = ak.argsort(random_strings.get_lengths())
-    sorted_strings = random_strings[perm]
-    return random_strings if loc == "Good" else sorted_strings
+
+    if loc == "Good":
+        return random_strings
+    else:
+        #   To simulate poor locality, sort by string lengths.
+        return random_strings[ak.argsort(random_strings.get_lengths())]
 
 
 @pytest.mark.skip_correctness_only(True)
