@@ -1006,57 +1006,75 @@ module AryUtil
       where t!=bigint {
       if a.rank == 1 then return a;
 
+      use Repartition;
+
       var flat = makeDistArray(d.size, t);
 
       // ranges of flat indices owned by each locale
       const flatLocRanges = [loc in Locales] flat.domain.localSubdomain(loc).dim(0);
 
-      coforall loc in Locales with (ref flat) do on loc {
-        const ld = d.localSubdomain(),
-              lastRank = ld.dim(d.rank-1);
+      var destLocales: [PrivateSpace] list(int);
+      var vals: [PrivateSpace] list(t);
+      var indices: [PrivateSpace] list(int);
 
-        // iterate over each slice of contiguous memory in the local subdomain
-        forall idx in domOffAxis(ld, d.rank-1) with (
-            const ord = new orderer(d.shape),
-            const dc = d,
+      coforall loc in Locales with (ref flat) do on loc {
+        const ld = d.localSubdomain();
+
+        var myDestLocales: [0..#ld.size] int;
+        var myVals: [0..#ld.size] t;
+        var myIndices: [0..#ld.size] int;
+        const low = ld.low;
+        const ord = new orderer(d.shape);
+        const lowOrd = ord.indexToOrder(low);
+
+        const high = ld.high;
+        var diff: [0..#a.rank] int;
+        diff[a.rank - 1] = 1;
+        for i in 0..#(a.rank - 1) by -1 {
+          diff[i] = (high[i + 1] + 1 - low[i + 1]) * diff[i + 1];
+        }
+
+        forall idx in ld with (
             in flatLocRanges
         ) {
-          var idxTup: (d.rank-1)*int;
-          for i in 0..<(d.rank-1) do idxTup[i] = idx[i];
 
-          const low = ((...idxTup), lastRank.low),
-                high = ((...idxTup), lastRank.high),
-                flatSlice = ord.indexToOrder(low)..ord.indexToOrder(high);
-
-          // compute which locales in the output array this slice corresponds to
-          var locOutStart, locOutStop = 0;
-          for (flr, locID) in zip(flatLocRanges, 0..<numLocales) {
-            if flr.contains(flatSlice.low) then locOutStart = locID;
-            if flr.contains(flatSlice.high) then locOutStop = locID;
+          var ind = ord.indexToOrder(idx);
+          var i = 0;
+          for j in 0..#a.rank by -1 {
+            i += diff[j] * (idx[j] - low[j]);
           }
-
-          if locOutStart == locOutStop {
-            // flat region sits within a single locale, do a single put
-            put(
-                getAddr(flat[flatSlice.low]),
-                c_ptrToConst(a[low]):c_ptr(t),
-                locOutStart,
-                c_sizeof(t) * flatSlice.size
-            );
-          } else {
-            // flat region is spread across multiple locales, do a put for each destination locale
-            for locOutID in locOutStart..locOutStop {
-              const flatSubSlice = flatSlice[flatLocRanges[locOutID]];
-
-              put(
-                getAddr(flat[flatSubSlice.low]),
-                c_ptrToConst(a[dc.orderToIndex(flatSubSlice.low)]):c_ptr(t),
-                locOutID,
-                c_sizeof(t) * flatSubSlice.size
-              );
+          var destLoc = 0;
+          for (flr, locID) in zip(flatLocRanges, 0..<numLocales) {
+            if flr.contains(ind) {
+              destLoc = locID;
+              break;
             }
           }
+
+          myDestLocales[i] = destLoc;
+          myIndices[i] = ind;
+          myVals[i] = a[idx];
+
         }
+
+        destLocales[here.id] = new list(myDestLocales);
+        vals[here.id] = new list(myVals);
+        indices[here.id] = new list(myIndices);
+
+      }
+
+      var recvVals = repartitionByLocale(t, destLocales, vals);
+      var recvIndices = repartitionByLocale(int, destLocales, indices);
+
+      coforall loc in Locales with (ref flat) do on loc {
+
+        var myVals = recvVals[here.id];
+        var myIndices = recvIndices[here.id];
+
+        forall (val, idx) in zip(myVals, myIndices) {
+          flat[idx] = val;
+        }
+
       }
 
       return flat;
