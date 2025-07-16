@@ -3117,25 +3117,29 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">can_cast</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_numeric</span>
 
     <span class="c1">#  Handle different data types.</span>
 
     <span class="k">if</span> <span class="n">is_numeric</span><span class="p">(</span><span class="n">pda</span><span class="p">):</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">can_cast</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;summing the pdarray did not generate a scalar&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span>
     <span class="k">elif</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">can_cast</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;summing the pdarray did not generate a scalar&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span>
     <span class="k">elif</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">pda</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">can_cast</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;summing the pdarray did not generate a scalar&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span>
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;pda must be numeric, bool, or str pdarray&quot;</span><span class="p">)</span></div>
 
 
