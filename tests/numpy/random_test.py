@@ -9,6 +9,7 @@ from scipy import stats as sp_stats
 import arkouda as ak
 from arkouda.numpy import random
 from arkouda.scipy import chisquare as akchisquare
+from arkouda.testing import assert_almost_equivalent
 
 INT_FLOAT = [ak.int64, ak.float64]
 
@@ -484,6 +485,39 @@ class TestRandom:
             sp_stats.logistic, sample_list, known_params={"loc": mu, "scale": scale}
         )
         assert good_fit_res.pvalue > 0.05
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_legacy_rand(self, size):
+        known = ak.array([0.011410423448327005, 0.73618171558685619])
+        given = ak.random.rand(2, seed=1701)
+        assert_almost_equivalent(known, given)
+
+    @pytest.mark.skip_if_rank_not_compiled(2)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_legacy_rand2D(self, size):
+        known = ak.array(
+            [[0.011410423448327005, 0.73618171558685619], [0.12367222192448891, 0.95616789699591898]]
+        )
+        given = ak.random.rand(2, 2, seed=1701)
+        assert_almost_equivalent(known, given)
+
+    @pytest.mark.skip_if_rank_not_compiled(3)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_legacy_rand3D(self, size):
+        known = ak.array(
+            [
+                [
+                    [0.011410423448327005, 0.73618171558685619],
+                    [0.12367222192448891, 0.95616789699591898],
+                ],
+                [
+                    [0.36427886480971333, 0.71482330432026153],
+                    [0.66334928222218692, 0.071647713917930858],
+                ],
+            ]
+        )
+        given = ak.random.rand(2, 2, 2, seed=1701)
+        assert_almost_equivalent(known, given)
 
     def test_legacy_randint(self):
         testArray = ak.random.randint(0, 10, 5)
