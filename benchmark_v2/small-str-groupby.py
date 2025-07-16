@@ -6,11 +6,10 @@ SIZES = {"small": 6, "medium": 12, "big": 24}
 
 
 @pytest.mark.skip_numpy(True)
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="GroupBySmallStrings")
 @pytest.mark.parametrize("strlen_label", SIZES)
 def bench_groupby_small_str(benchmark, strlen_label):
-    N = 10**4 if pytest.correctness_only else pytest.prob_size * ak.get_config()["numLocales"]
+    N = pytest.prob_size * ak.get_config()["numLocales"]
     strlen = SIZES[strlen_label]
 
     a = ak.random_strings_uniform(1, strlen, N, seed=pytest.seed)

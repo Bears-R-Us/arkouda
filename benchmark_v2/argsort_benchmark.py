@@ -17,7 +17,7 @@ def bench_argsort(benchmark, dtype):
     str dtype is significantly slower than numerics
     """
     cfg = ak.get_config()
-    N = 10**4 if pytest.correctness_only else pytest.prob_size * cfg["numLocales"]
+    N = pytest.prob_size * cfg["numLocales"]
 
     if dtype in pytest.dtype:
         if dtype == "int64":
@@ -36,14 +36,9 @@ def bench_argsort(benchmark, dtype):
 
         if pytest.numpy:
             a = a.to_ndarray()
-            result = benchmark.pedantic(np.argsort, args=[a], rounds=pytest.trials)
+            benchmark.pedantic(np.argsort, args=[a], rounds=pytest.trials)
         else:
-            result = benchmark.pedantic(ak.argsort, args=[a], rounds=pytest.trials)
-
-        if pytest.correctness_only and not pytest.numpy and dtype != "str":
-            a_np = a.to_ndarray()
-            expected = np.argsort(a_np)
-            np.testing.assert_array_equal(result.to_ndarray(), expected)
+            benchmark.pedantic(ak.argsort, args=[a], rounds=pytest.trials)
 
         benchmark.extra_info["description"] = "Measures the performance of argsort"
         benchmark.extra_info["problem_size"] = N

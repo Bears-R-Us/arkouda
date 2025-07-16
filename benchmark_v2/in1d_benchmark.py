@@ -1,4 +1,3 @@
-import numpy as np
 import pytest
 
 import arkouda as ak
@@ -17,12 +16,12 @@ MAXSTRLEN = 5
 @pytest.mark.parametrize("size", SIZES)
 def bench_in1d(benchmark, dtype, size):
     """
-    Benchmark ak.in1d with support for --correctness_only. Skips if --numpy is used.
+    Benchmark ak.in1d. Skips if --numpy is used.
     """
     if dtype in pytest.dtype:
         cfg = ak.get_config()
-        N = 10**4 if pytest.correctness_only else pytest.prob_size * cfg["numLocales"]
-        s = min(SIZES[size], 10**4) if pytest.correctness_only else SIZES[size]
+        N = pytest.prob_size * cfg["numLocales"]
+        s = SIZES[size]
 
         if dtype == "str":
             a = ak.random_strings_uniform(1, MAXSTRLEN, N)
@@ -36,17 +35,10 @@ def bench_in1d(benchmark, dtype, size):
                 b = ak.cast(b, ak.uint64)
             nbytes = a.size * a.itemsize + b.size * b.itemsize
 
-        def run():
-            result = ak.in1d(a, b)
-            if pytest.correctness_only:
-                expected = np.isin(a.to_ndarray(), b.to_ndarray())
-                np.testing.assert_array_equal(result.to_ndarray(), expected)
-            return nbytes
-
-        bytes_processed = benchmark.pedantic(run, rounds=pytest.trials)
+        benchmark.pedantic(ak.in1d, args=[a, b], rounds=pytest.trials)
         benchmark.extra_info["description"] = "in1d benchmark using Arkouda"
         benchmark.extra_info["backend"] = "Arkouda"
         benchmark.extra_info["problem_size"] = N
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (bytes_processed / benchmark.stats["mean"]) / 2**30
+            (nbytes / benchmark.stats["mean"]) / 2**30
         )

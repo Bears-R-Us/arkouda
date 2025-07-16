@@ -4,7 +4,6 @@ import arkouda as ak
 
 
 @pytest.mark.skip_numpy(True)
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Parquet_Fixed_Strings")
 @pytest.mark.parametrize("scaling", [False, True])
 @pytest.mark.parametrize("fixed_len", [1, 8])

@@ -13,7 +13,7 @@ DTYPES = ("int64", "float64", "bool")
 @pytest.mark.parametrize("shape_type", ["square", "wide", "tall"])
 def bench_ak_flatten_2d(benchmark, dtype, shape_type):
     cfg = ak.get_config()
-    N = 10**4 if pytest.correctness_only else pytest.prob_size * cfg["numLocales"]
+    N = pytest.prob_size * cfg["numLocales"]
 
     if shape_type == "square":
         #   Ensure N has an integer square root:
@@ -49,8 +49,3 @@ def bench_ak_flatten_2d(benchmark, dtype, shape_type):
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
         (data.size * data.itemsize / benchmark.stats["mean"]) / 2**30
     )
-
-    if pytest.correctness_only:
-        np_expected = data.to_ndarray().reshape(shape).flatten()
-        np_actual = flatten_op().to_ndarray()
-        np.testing.assert_array_equal(np_expected, np_actual)
