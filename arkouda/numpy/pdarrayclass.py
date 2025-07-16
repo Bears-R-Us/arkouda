@@ -619,6 +619,23 @@ class pdarray:
             generic_msg(cmd=cmd, args={"array": self, "max_bits": max_bits})
             self._max_bits = max_bits
 
+    def copy(self) -> pdarray:
+        """
+        Return an array copy of the given object.
+
+        Returns
+        -------
+        pdarray
+            A deep copy of the pdarray.
+        """
+        from arkouda.pdarraycreation import array
+
+        ret = array(self, copy=True)
+        if isinstance(ret, pdarray):
+            return ret
+        else:
+            raise RuntimeError("Could not copy pdarray.")
+
     def equals(self, other) -> bool_scalars:
         """
         Whether pdarrays are the same size and all entries are equal.

@@ -163,77 +163,96 @@ def from_series(series: pd.Series, dtype: Optional[Union[type, str]] = None) -> 
 
 
 def array(
-    a: Union[pdarray, np.ndarray, Iterable],
+    a: Union[pdarray, np.ndarray, Iterable, Strings],
     dtype: Union[np.dtype, type, str, None] = None,
+    copy: bool = False,
     max_bits: int = -1,
 ) -> Union[pdarray, Strings]:
     """
-    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
-    the corresponding data to the arkouda server.
+    Convert a Python, NumPy, or Arkouda array-like into a `pdarray` or `Strings` object,
+    transferring data to the Arkouda server.
 
     Parameters
     ----------
-    a: Union[pdarray, np.ndarray]
-        array of a supported dtype
-    dtype: np.dtype, type, or str
-        The target dtype to cast values to
-    max_bits: int
-        Specifies the maximum number of bits; only used for bigint pdarrays
+    a : Union[pdarray, np.ndarray, Iterable, Strings]
+        The array-like input to convert. Supported types include Arkouda `Strings`, `pdarray`,
+        NumPy `ndarray`, or Python iterables such as list, tuple, range, or deque.
+
+    dtype : Union[np.dtype, type, str], optional
+        The target dtype to cast values to. This may be a NumPy dtype object,
+        a NumPy scalar type (e.g. `np.int64`), or a string (e.g. `'int64'`, `'str'`).
+
+    copy : bool, default=False
+        If True, a deep copy of the array is made. If False, no copy is made if the input
+        is already a `pdarray`. **Note**: Arkouda does not currently support views or shallow copies.
+        This differs from NumPy. Also, the default (`False`) is chosen to reduce performance overhead.
+
+    max_bits : int, optional
+        The maximum number of bits for bigint arrays. Ignored for other dtypes.
 
     Returns
     -------
-    pdarray or Strings
-        A pdarray instance stored on arkouda server or Strings instance, which
-        is composed of two pdarrays stored on arkouda server
+    Union[pdarray, Strings]
+        A `pdarray` stored on the Arkouda server, or a `Strings` object.
 
     Raises
     ------
     TypeError
-        Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
-        list, array, tuple, or deque
+        - If `a` is not a `pdarray`, `np.ndarray`, or Python iterable.
+        - If `a` is of string type and `dtype` is not `ak.str_`.
+
     RuntimeError
-        Raised if nbytes > maxTransferBytes, a.dtype is not supported (not in DTypes),
-        or if the product of a size and a.itemsize > maxTransferBytes
+        - If input size exceeds `ak.client.maxTransferBytes`.
+        - If `a.dtype` is unsupported or incompatible with Arkouda.
+        - If `a.size * a.itemsize > maxTransferBytes`.
+
     ValueError
-        Raised if a has rank is not in get_array_ranks(), or if the returned message is malformed or does
-        not contain the fields required to generate the array.
+        - If `a`'s rank is not supported (see `get_array_ranks()`).
+        - If the server response is malformed or missing required fields.
 
     See Also
     --------
     pdarray.to_ndarray
+        Convert back from Arkouda to NumPy.
 
     Notes
     -----
-    The number of bytes in the input array cannot exceed `ak.client.maxTransferBytes`,
-    otherwise a RuntimeError will be raised. This is to protect the user
-    from overwhelming the connection between the Python client and the arkouda
-    server, under the assumption that it is a low-bandwidth connection. The user
-    may override this limit by setting ak.client.maxTransferBytes to a larger value,
-    but should proceed with caution.
-
-    If the pdrray or ndarray is of type U, this method is called twice recursively
-    to create the Strings object and the two corresponding pdarrays for string
-    bytes and offsets, respectively.
+    - Arkouda does not currently support shallow copies or views; all copies are deep.
+    - The number of bytes transferred to the server is limited by `ak.client.maxTransferBytes`.
+      This prevents saturating the network during large transfers. To increase this limit,
+      set `ak.client.maxTransferBytes` to a larger value manually.
+    - If the input is a Unicode string array (`dtype.kind == 'U'` or `dtype='str'`),
+      this function recursively creates a `Strings` object from two internal `pdarray`s
+      (one for offsets and one for concatenated string bytes).
 
     Examples
     --------
     >>> import arkouda as ak
-    >>> ak.array(np.arange(1,10))
+    >>> ak.array(np.arange(1, 10))
     array([1 2 3 4 5 6 7 8 9])
 
-    >>> ak.array(range(1,10))
+    >>> ak.array(range(1, 10))
     array([1 2 3 4 5 6 7 8 9])
 
-    >>> strings = ak.array([f'string {i}' for i in range(0,5)])
+    >>> strings = ak.array([f'string {i}' for i in range(5)])
     >>> type(strings)
     <class 'arkouda.numpy.strings.Strings'>
     """
     from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy.numeric import cast as akcast
 
+    if copy is False:
+        if isinstance(a, Strings) or (isinstance(a, pdarray) and (a.dtype == dtype or dtype is None)):
+            return a
+
+    if isinstance(a, Strings):
+        if dtype and dtype != "str_":
+            raise TypeError(f"Cannot cast Strings to dtype {dtype} in ak.array")
+        return a[:]
+
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
-        casted = a if dtype is None else akcast(a, dtype)
+        casted = a[:] if dtype is None else akcast(a, dtype)
         if dtype == bigint and max_bits != -1:
             casted.max_bits = max_bits
         return casted

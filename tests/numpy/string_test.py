@@ -1011,3 +1011,11 @@ class TestString:
         result = strings.argsort()
         sorted_values = strings[result].tolist()
         assert sorted_values == sorted(strings.tolist())
+
+    def test_copy(self):
+        fixed_size = 100
+        a = ak.arange(fixed_size, dtype=ak.str_)
+        a_cpy = a.copy()
+
+        assert a_cpy is not a
+        ak_assert_equal(a, a_cpy)

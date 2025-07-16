@@ -5,7 +5,6 @@ import itertools
 import re
 from typing import (
     TYPE_CHECKING,
-    Any,
     Dict,
     List,
     Literal,
@@ -409,7 +408,24 @@ class Strings:
         """
         return "string"
 
-    def equals(self, other: Any) -> bool_scalars:
+    def copy(self) -> Strings:
+        """
+        Return a deep copy of the Strings object.
+
+        Returns
+        -------
+        Strings
+            A deep copy of the Strings.
+        """
+        from arkouda.pdarraycreation import array
+
+        ret = array(self, copy=True)
+        if isinstance(ret, Strings):
+            return ret
+        else:
+            raise RuntimeError("Could not copy Strings object.")
+
+    def equals(self, other) -> bool_scalars:
         """
         Whether Strings are the same size and all entries are equal.
 

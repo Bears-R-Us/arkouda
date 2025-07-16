@@ -292,4 +292,5 @@ from arkouda.numpy.util import (
     register_all,
     is_registered,
     broadcast_dims,
+    copy,
 )
