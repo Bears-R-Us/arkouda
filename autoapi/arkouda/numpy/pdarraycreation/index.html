@@ -402,7 +402,7 @@
 <td><p># noqa: DAR102</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.array" title="arkouda.numpy.pdarraycreation.array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
-<td><p>Convert a Python or Numpy Iterable to a pdarray or Strings object, sending</p></td>
+<td><p>Convert a Python, NumPy, or Arkouda array-like into a <cite>pdarray</cite> or <cite>Strings</cite> object,</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.bigint_from_uint_arrays" title="arkouda.numpy.pdarraycreation.bigint_from_uint_arrays"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bigint_from_uint_arrays</span></code></a>(arrays[, max_bits])</p></td>
 <td><p>Create a bigint pdarray from an iterable of uint pdarrays.</p></td>
@@ -528,60 +528,77 @@ the linspace method.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarraycreation.array">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarraycreation.html#array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarraycreation.array" title="Link to this definition">¶</a></dt>
-<dd><p>Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
-the corresponding data to the arkouda server.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarraycreation.html#array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarraycreation.array" title="Link to this definition">¶</a></dt>
+<dd><p>Convert a Python, NumPy, or Arkouda array-like into a <cite>pdarray</cite> or <cite>Strings</cite> object,
+transferring data to the Arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>np.ndarray</em><em>]</em>) – array of a supported dtype</p></li>
-<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><em>type</em><em>, or </em><em>str</em>) – The target dtype to cast values to</p></li>
-<li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays</p></li>
+<li><p><strong>a</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>np.ndarray</em><em>, </em><em>Iterable</em><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>]</em>) – The array-like input to convert. Supported types include Arkouda <cite>Strings</cite>, <cite>pdarray</cite>,
+NumPy <cite>ndarray</cite>, or Python iterables such as list, tuple, range, or deque.</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>np.dtype</em><em>, </em><em>type</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The target dtype to cast values to. This may be a NumPy dtype object,
+a NumPy scalar type (e.g. <cite>np.int64</cite>), or a string (e.g. <cite>‘int64’</cite>, <cite>‘str’</cite>).</p></li>
+<li><p><strong>copy</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If True, a deep copy of the array is made. If False, no copy is made if the input
+is already a <cite>pdarray</cite>. <strong>Note</strong>: Arkouda does not currently support views or shallow copies.
+This differs from NumPy. Also, the default (<cite>False</cite>) is chosen to reduce performance overhead.</p></li>
+<li><p><strong>max_bits</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum number of bits for bigint arrays. Ignored for other dtypes.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A pdarray instance stored on arkouda server or Strings instance, which
-is composed of two pdarrays stored on arkouda server</p>
+<dd class="field-even"><p>A <cite>pdarray</cite> stored on the Arkouda server, or a <cite>Strings</cite> object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
-list, array, tuple, or deque</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if nbytes &gt; maxTransferBytes, a.dtype is not supported (not in DTypes),
-or if the product of a size and a.itemsize &gt; maxTransferBytes</p></li>
-<li><p><strong>ValueError</strong> – Raised if a has rank is not in get_array_ranks(), or if the returned message is malformed or does
-not contain the fields required to generate the array.</p></li>
+<li><p><strong>TypeError</strong> – <ul>
+<li><p>If <cite>a</cite> is not a <cite>pdarray</cite>, <cite>np.ndarray</cite>, or Python iterable.</p></li>
+<li><p>If <cite>a</cite> is of string type and <cite>dtype</cite> is not <cite>ak.str_</cite>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>RuntimeError</strong> – <ul>
+<li><p>If input size exceeds <cite>ak.client.maxTransferBytes</cite>.</p></li>
+<li><p>If <cite>a.dtype</cite> is unsupported or incompatible with Arkouda.</p></li>
+<li><p>If <cite>a.size * a.itemsize &gt; maxTransferBytes</cite>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>ValueError</strong> – <ul>
+<li><p>If <cite>a</cite>’s rank is not supported (see <cite>get_array_ranks()</cite>).</p></li>
+<li><p>If the server response is malformed or missing required fields.</p></li>
+</ul>
+</p></li>
 </ul>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.to_ndarray</span></code></p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.to_ndarray</span></code></dt><dd><p>Convert back from Arkouda to NumPy.</p>
+</dd>
+</dl>
 </div>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the input array cannot exceed <cite>ak.client.maxTransferBytes</cite>,
-otherwise a RuntimeError will be raised. This is to protect the user
-from overwhelming the connection between the Python client and the arkouda
-server, under the assumption that it is a low-bandwidth connection. The user
-may override this limit by setting ak.client.maxTransferBytes to a larger value,
-but should proceed with caution.</p>
-<p>If the pdrray or ndarray is of type U, this method is called twice recursively
-to create the Strings object and the two corresponding pdarrays for string
-bytes and offsets, respectively.</p>
+<ul class="simple">
+<li><p>Arkouda does not currently support shallow copies or views; all copies are deep.</p></li>
+<li><p>The number of bytes transferred to the server is limited by <cite>ak.client.maxTransferBytes</cite>.
+This prevents saturating the network during large transfers. To increase this limit,
+set <cite>ak.client.maxTransferBytes</cite> to a larger value manually.</p></li>
+<li><p>If the input is a Unicode string array (<cite>dtype.kind == ‘U’</cite> or <cite>dtype=’str’</cite>),
+this function recursively creates a <cite>Strings</cite> object from two internal <a href="#id1"><span class="problematic" id="id2">`</span></a>pdarray`s
+(one for offsets and one for concatenated string bytes).</p></li>
+</ul>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 <span class="go">array([1 2 3 4 5 6 7 8 9])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 <span class="go">array([1 2 3 4 5 6 7 8 9])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
 <span class="go">&lt;class &#39;arkouda.numpy.strings.Strings&#39;&gt;</span>
 </pre></div>

@@ -658,6 +658,15 @@ Package Contents
 
 
 
+   .. py:method:: copy() -> pdarray
+
+      Return an array copy of the given object.
+
+      :returns: A deep copy of the pdarray.
+      :rtype: pdarray
+
+
+
    .. py:method:: corr(y: pdarray) -> numpy.float64
 
       Compute the correlation between self and y using pearson correlation coefficient.

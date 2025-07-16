@@ -14,6 +14,7 @@ Functions
    arkouda.numpy.util.broadcast_dims
    arkouda.numpy.util.convert_bytes
    arkouda.numpy.util.convert_if_categorical
+   arkouda.numpy.util.copy
    arkouda.numpy.util.generic_concat
    arkouda.numpy.util.get_callback
    arkouda.numpy.util.identity
@@ -180,6 +181,19 @@ Module Contents
    >>> result = convert_if_categorical(values)
    >>> print(result)
    [1 2 3]
+
+
+.. py:function:: copy(a: Union[arkouda.numpy.strings.Strings, arkouda.numpy.pdarrayclass.pdarray]) -> Union[arkouda.numpy.strings.Strings, arkouda.numpy.pdarrayclass.pdarray]
+
+   Return a deep copy of the given Arkouda object.
+
+   :param a: The object to copy.
+   :type a: Union[Strings, pdarray]
+
+   :returns: A deep copy of the pdarray or Strings object.
+   :rtype: Union[Strings, pdarray]
+
+   :raises TypeError: If the input is not a Strings or pdarray instance.
 
 
 .. py:function:: generic_concat(items, ordered=True)

@@ -207,6 +207,7 @@ Functions
    arkouda.numpy.clz
    arkouda.numpy.coargsort
    arkouda.numpy.concatenate
+   arkouda.numpy.copy
    arkouda.numpy.corr
    arkouda.numpy.cos
    arkouda.numpy.cosh
@@ -2292,6 +2293,15 @@ Package Contents
 
 
 
+   .. py:method:: copy() -> Strings
+
+      Return a deep copy of the Strings object.
+
+      :returns: A deep copy of the Strings.
+      :rtype: Strings
+
+
+
    .. py:method:: decode(fromEncoding: str, toEncoding: str = 'UTF-8') -> Strings
 
       Return a new strings object in `fromEncoding`, expecting that the
@@ -2375,7 +2385,7 @@ Package Contents
       :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
-   .. py:method:: equals(other: Any) -> arkouda.numpy.dtypes.bool_scalars
+   .. py:method:: equals(other) -> arkouda.numpy.dtypes.bool_scalars
 
       Whether Strings are the same size and all entries are equal.
 
@@ -4595,54 +4605,60 @@ Package Contents
    array([9 3 5 4 2 7 8 0 6 1])
 
 
-.. py:function:: array(a: Union[arkouda.numpy.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str, None] = None, max_bits: int = -1) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
+.. py:function:: array(a: Union[arkouda.numpy.pdarrayclass.pdarray, numpy.ndarray, Iterable, arkouda.numpy.strings.Strings], dtype: Union[numpy.dtype, type, str, None] = None, copy: bool = False, max_bits: int = -1) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
 
-   Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
-   the corresponding data to the arkouda server.
+   Convert a Python, NumPy, or Arkouda array-like into a `pdarray` or `Strings` object,
+   transferring data to the Arkouda server.
 
-   :param a: array of a supported dtype
-   :type a: Union[pdarray, np.ndarray]
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
+   :param a: The array-like input to convert. Supported types include Arkouda `Strings`, `pdarray`,
+             NumPy `ndarray`, or Python iterables such as list, tuple, range, or deque.
+   :type a: Union[pdarray, np.ndarray, Iterable, Strings]
+   :param dtype: The target dtype to cast values to. This may be a NumPy dtype object,
+                 a NumPy scalar type (e.g. `np.int64`), or a string (e.g. `'int64'`, `'str'`).
+   :type dtype: Union[np.dtype, type, str], optional
+   :param copy: If True, a deep copy of the array is made. If False, no copy is made if the input
+                is already a `pdarray`. **Note**: Arkouda does not currently support views or shallow copies.
+                This differs from NumPy. Also, the default (`False`) is chosen to reduce performance overhead.
+   :type copy: bool, default=False
+   :param max_bits: The maximum number of bits for bigint arrays. Ignored for other dtypes.
+   :type max_bits: int, optional
 
-   :returns: A pdarray instance stored on arkouda server or Strings instance, which
-             is composed of two pdarrays stored on arkouda server
-   :rtype: pdarray or Strings
+   :returns: A `pdarray` stored on the Arkouda server, or a `Strings` object.
+   :rtype: Union[pdarray, Strings]
 
-   :raises TypeError: Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
-       list, array, tuple, or deque
-   :raises RuntimeError: Raised if nbytes > maxTransferBytes, a.dtype is not supported (not in DTypes),
-       or if the product of a size and a.itemsize > maxTransferBytes
-   :raises ValueError: Raised if a has rank is not in get_array_ranks(), or if the returned message is malformed or does
-       not contain the fields required to generate the array.
+   :raises TypeError: - If `a` is not a `pdarray`, `np.ndarray`, or Python iterable.
+       - If `a` is of string type and `dtype` is not `ak.str_`.
+   :raises RuntimeError: - If input size exceeds `ak.client.maxTransferBytes`.
+       - If `a.dtype` is unsupported or incompatible with Arkouda.
+       - If `a.size * a.itemsize > maxTransferBytes`.
+   :raises ValueError: - If `a`'s rank is not supported (see `get_array_ranks()`).
+       - If the server response is malformed or missing required fields.
 
-   .. seealso:: :py:obj:`pdarray.to_ndarray`
+   .. seealso::
+
+      :py:obj:`pdarray.to_ndarray`
+          Convert back from Arkouda to NumPy.
 
    .. rubric:: Notes
 
-   The number of bytes in the input array cannot exceed `ak.client.maxTransferBytes`,
-   otherwise a RuntimeError will be raised. This is to protect the user
-   from overwhelming the connection between the Python client and the arkouda
-   server, under the assumption that it is a low-bandwidth connection. The user
-   may override this limit by setting ak.client.maxTransferBytes to a larger value,
-   but should proceed with caution.
-
-   If the pdrray or ndarray is of type U, this method is called twice recursively
-   to create the Strings object and the two corresponding pdarrays for string
-   bytes and offsets, respectively.
+   - Arkouda does not currently support shallow copies or views; all copies are deep.
+   - The number of bytes transferred to the server is limited by `ak.client.maxTransferBytes`.
+     This prevents saturating the network during large transfers. To increase this limit,
+     set `ak.client.maxTransferBytes` to a larger value manually.
+   - If the input is a Unicode string array (`dtype.kind == 'U'` or `dtype='str'`),
+     this function recursively creates a `Strings` object from two internal `pdarray`s
+     (one for offsets and one for concatenated string bytes).
 
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> ak.array(np.arange(1,10))
+   >>> ak.array(np.arange(1, 10))
    array([1 2 3 4 5 6 7 8 9])
 
-   >>> ak.array(range(1,10))
+   >>> ak.array(range(1, 10))
    array([1 2 3 4 5 6 7 8 9])
 
-   >>> strings = ak.array([f'string {i}' for i in range(0,5)])
+   >>> strings = ak.array([f'string {i}' for i in range(5)])
    >>> type(strings)
    <class 'arkouda.numpy.strings.Strings'>
 
@@ -5933,6 +5949,19 @@ Package Contents
 
    >>> ak.concatenate([ak.array(['one','two']),ak.array(['three','four','five'])])
    array(['one', 'two', 'three', 'four', 'five'])
+
+
+.. py:function:: copy(a: Union[arkouda.numpy.strings.Strings, arkouda.numpy.pdarrayclass.pdarray]) -> Union[arkouda.numpy.strings.Strings, arkouda.numpy.pdarrayclass.pdarray]
+
+   Return a deep copy of the given Arkouda object.
+
+   :param a: The object to copy.
+   :type a: Union[Strings, pdarray]
+
+   :returns: A deep copy of the pdarray or Strings object.
+   :rtype: Union[Strings, pdarray]
+
+   :raises TypeError: If the input is not a Strings or pdarray instance.
 
 
 .. py:function:: corr(x: pdarray, y: pdarray) -> numpy.float64
@@ -9305,6 +9334,15 @@ Package Contents
    .. py:method:: clz() -> pdarray
 
       Count the number of leading zeros in each element. See `ak.clz`.
+
+
+
+   .. py:method:: copy() -> pdarray
+
+      Return an array copy of the given object.
+
+      :returns: A deep copy of the pdarray.
+      :rtype: pdarray
 
 
 

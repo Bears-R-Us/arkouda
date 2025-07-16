@@ -183,6 +183,15 @@ Module Contents
 
 
 
+   .. py:method:: copy() -> Strings
+
+      Return a deep copy of the Strings object.
+
+      :returns: A deep copy of the Strings.
+      :rtype: Strings
+
+
+
    .. py:method:: decode(fromEncoding: str, toEncoding: str = 'UTF-8') -> Strings
 
       Return a new strings object in `fromEncoding`, expecting that the
@@ -266,7 +275,7 @@ Module Contents
       :type:  arkouda.numpy.pdarrayclass.pdarray
 
 
-   .. py:method:: equals(other: Any) -> arkouda.numpy.dtypes.bool_scalars
+   .. py:method:: equals(other) -> arkouda.numpy.dtypes.bool_scalars
 
       Whether Strings are the same size and all entries are equal.
 

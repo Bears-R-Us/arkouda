@@ -418,6 +418,7 @@
     <span class="s2">&quot;broadcast_dims&quot;</span><span class="p">,</span>
     <span class="s2">&quot;convert_bytes&quot;</span><span class="p">,</span>
     <span class="s2">&quot;convert_if_categorical&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;copy&quot;</span><span class="p">,</span>
     <span class="s2">&quot;generic_concat&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_callback&quot;</span><span class="p">,</span>
     <span class="s2">&quot;identity&quot;</span><span class="p">,</span>
@@ -1405,6 +1406,33 @@
     <span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># multiple steps because .append doesn&#39;t</span>
     <span class="n">local_size</span> <span class="o">=</span> <span class="n">maprod</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># have a return value</span>
     <span class="k">return</span> <span class="n">shape</span><span class="p">,</span> <span class="n">local_size</span>
+
+
+<div class="viewcode-block" id="copy">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/util/index.html#arkouda.copy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a deep copy of the given Arkouda object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : Union[Strings, pdarray]</span>
+<span class="sd">        The object to copy.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Union[Strings, pdarray]</span>
+<span class="sd">        A deep copy of the pdarray or Strings object.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If the input is not a Strings or pdarray instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type for copy: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
 </pre></div>
         </article>
       </div>
