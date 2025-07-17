@@ -128,6 +128,21 @@ module BinOp
     return res;
   }
 
+
+  proc doBoolBoolBitOp(
+    op:string, ref e: [] bool, l: [] bool, r /*: [] bool OR bool*/
+  ): bool {
+    select op {
+      when "|" { e = l | r; }
+      when "&" { e = l & r; }
+      when "*" { e = l & r; }
+      when "^" { e = l ^ r; }
+      when "+" { e = l | r; }
+      otherwise do return false;
+    }
+    return true;
+  }
+
   /*
   Generic function to execute a binary operation on pdarray entries 
   in the symbol table
@@ -191,13 +206,8 @@ module BinOp
       }
 
       if lType == bool && rType == bool {
-        select op {
-          when "|" { e = l.a | r.a; }
-          when "&" { e = l.a & r.a; }
-          when "*" { e = l.a & r.a; }
-          when "^" { e = l.a ^ r.a; }
-          when "+" { e = l.a | r.a; }
-          otherwise do return MsgTuple.error(nie);
+        if !doBoolBoolBitOp(op, e, l.a, r.a) {
+          return MsgTuple.error(nie);
         }
         return st.insert(new shared SymEntry(e));
       }
@@ -338,13 +348,8 @@ module BinOp
       }
 
       if lType == bool && rType == bool {
-        select op {
-          when "|" { e = l.a | val; }
-          when "&" { e = l.a & val; }
-          when "*" { e = l.a & val; }
-          when "^" { e = l.a ^ val; }
-          when "+" { e = l.a | val; }
-          otherwise do return MsgTuple.error(nie);
+        if !doBoolBoolBitOp(op, e, l.a, val) {
+          return MsgTuple.error(nie);
         }
         return st.insert(new shared SymEntry(e));
       }
@@ -477,13 +482,8 @@ module BinOp
       }
 
       if lType == bool && rType == bool {
-        select op {
-          when "|" { e = val | r.a; }
-          when "&" { e = val & r.a; }
-          when "*" { e = val & r.a; }
-          when "^" { e = val ^ r.a; }
-          when "+" { e = val | r.a; }
-          otherwise do return MsgTuple.error(nie);
+        if !doBoolBoolBitOp(op, e, r.a, val) {
+          return MsgTuple.error(nie);
         }
         return st.insert(new shared SymEntry(e));
       }
