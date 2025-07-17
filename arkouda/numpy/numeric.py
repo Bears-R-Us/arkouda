@@ -2596,25 +2596,29 @@ def count_nonzero(pda: pdarray) -> np.int64:
 
     """
 
+    from arkouda.numpy.dtypes import can_cast
     from arkouda.numpy.util import is_numeric
 
     #  Handle different data types.
 
     if is_numeric(pda):
         value = sum((pda != 0).astype(np.int64))
-        if not isinstance(value, np.int64):
+        if can_cast(value, np.int64):
+            return np.int64(value)
+        else:
             raise ValueError("summing the pdarray did not generate a scalar")
-        return value
     elif pda.dtype == bool:
         value = sum((pda).astype(np.int64))
-        if not isinstance(value, np.int64):
+        if can_cast(value, np.int64):
+            return np.int64(value)
+        else:
             raise ValueError("summing the pdarray did not generate a scalar")
-        return value
     elif pda.dtype == str:
         value = sum((pda != "").astype(np.int64))
-        if not isinstance(value, np.int64):
+        if can_cast(value, np.int64):
+            return np.int64(value)
+        else:
             raise ValueError("summing the pdarray did not generate a scalar")
-        return value
     raise TypeError("pda must be numeric, bool, or str pdarray")
 
 
