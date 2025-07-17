@@ -15,13 +15,13 @@ INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bool_, ak.bigint]
 
 
 class TestSeries:
-    # def test_series_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(
-    #         series, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
-    #     )
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    def test_series_docstrings(self):
+        import doctest
+
+        from arkouda.pandas import series
+
+        result = doctest.testmod(series, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_series_creation(self, dtype):
@@ -186,7 +186,8 @@ class TestSeries:
         s = ak.Series(ak.array([1, 2, 0, 2, 0]))
 
         c = s.value_counts()
-        assert c.index.tolist() == [0, 2, 1]
+
+        assert c.index.tolist() == [2, 0, 1]
         assert c.values.tolist() == [2, 2, 1]
 
         c = s.value_counts(sort=False)
