@@ -827,6 +827,9 @@ module OperatorMsg
       Parse and respond to opeqvs message.
       vector op= scalar
 
+      scalar must be a scalar of the same type as the vector,
+      unless the vector is a bigint
+
       :arg reqMsg: request containing (cmd,op,aname,bname)
       :type reqMsg: string
 
@@ -841,7 +844,8 @@ module OperatorMsg
       type binop_dtype_a,
       type binop_dtype_b,
       param array_nd: int
-    ): MsgTuple throws {
+    ): MsgTuple throws where binop_dtype_a == binop_dtype_b ||
+                             binop_dtype_a == bigint {
         param pn = Reflection.getRoutineName();
 
         var l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd);
@@ -878,30 +882,6 @@ module OperatorMsg
                 otherwise do return MsgTuple.error(nie);
             }
         }
-        else if binop_dtype_a == int && binop_dtype_b == uint  {
-            select op {
-                when ">>=" { l.a >>= val; }
-                when "<<=" { l.a <<= val; }
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == int && binop_dtype_b == bool  {
-            select op {
-                when "+=" {l.a += val:int;}
-                when "-=" {l.a -= val:int;}
-                when "*=" {l.a *= val:int;}
-                when ">>=" {l.a >>= val:int; }
-                when "<<=" {l.a <<= val:int; }
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == uint && binop_dtype_b == int  {
-            select op {
-                when ">>=" { l.a >>= val; }
-                when "<<=" { l.a <<= val; }
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
         else if binop_dtype_a == uint && binop_dtype_b == uint  {
             select op {
                 when "+=" { l.a += val; }
@@ -923,56 +903,9 @@ module OperatorMsg
                 otherwise do return MsgTuple.error(nie);
             }
         }
-        else if binop_dtype_a == uint && binop_dtype_b == bool  {
-            select op {
-                when "+=" {l.a += val:uint;}
-                when "-=" {l.a -= val:uint;}
-                when "*=" {l.a *= val:uint;}
-                when ">>=" { l.a >>= val:uint;}
-                when "<<=" { l.a <<= val:uint;}
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
         else if binop_dtype_a == bool && binop_dtype_b == bool  {
             select op {
                 when "+=" {l.a |= val;}
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == real && binop_dtype_b == int  {
-            select op {
-                when "+=" {l.a += val;}
-                when "-=" {l.a -= val;}
-                when "*=" {l.a *= val;}
-                when "/=" {l.a /= val:real;} //truediv
-                when "//=" { //floordiv
-                    ref la = l.a;
-                    [li in la] li = floorDivisionHelper(li, val);
-                }
-                when "**=" { l.a **= val; }
-                when "%=" {
-                    ref la = l.a;
-                    [li in la] li = modHelper(li, val);
-                }
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == real && binop_dtype_b == uint  {
-            select op {
-                when "+=" { l.a += val; }
-                when "-=" { l.a -= val; }
-                when "*=" { l.a *= val; }
-                when "//=" {
-                    ref la = l.a;
-                    [li in la] li = floorDivisionHelper(li, val);
-                }//floordiv
-                when "**=" {
-                    l.a **= val;
-                }
-                when "%=" {
-                    ref la = l.a;
-                    [li in la] li = modHelper(li, val);
-                }
                 otherwise do return MsgTuple.error(nie);
             }
         }
@@ -991,14 +924,6 @@ module OperatorMsg
                     ref la = l.a;
                     [li in la] li = modHelper(li, val);
                 }
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == real && binop_dtype_b == bool  {
-            select op {
-                when "+=" {l.a += val:real;}
-                when "-=" {l.a -= val:real;}
-                when "*=" {l.a *= val:real;}
                 otherwise do return MsgTuple.error(nie);
             }
         }
