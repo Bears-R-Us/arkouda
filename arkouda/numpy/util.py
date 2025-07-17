@@ -31,6 +31,7 @@ __all__ = [
     "broadcast_dims",
     "convert_bytes",
     "convert_if_categorical",
+    "copy",
     "generic_concat",
     "get_callback",
     "identity",
@@ -958,3 +959,27 @@ def _generate_test_shape(rank, size):
     shape = tuple(shape)  # multiple steps because .append doesn't
     local_size = maprod(shape)  # have a return value
     return shape, local_size
+
+
+def copy(a: Union[Strings, pdarray]) -> Union[Strings, pdarray]:
+    """
+    Return a deep copy of the given Arkouda object.
+
+    Parameters
+    ----------
+    a : Union[Strings, pdarray]
+        The object to copy.
+
+    Returns
+    -------
+    Union[Strings, pdarray]
+        A deep copy of the pdarray or Strings object.
+
+    Raises
+    ------
+    TypeError
+        If the input is not a Strings or pdarray instance.
+    """
+    if isinstance(a, (Strings, pdarray)):
+        return a.copy()
+    raise TypeError(f"Unsupported type for copy: {type(a)}")

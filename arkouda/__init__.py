@@ -140,6 +140,7 @@ from arkouda.numpy import (
     complex128,
     complex64,
     concatenate,
+    copy,
     corr,
     cos,
     cosh,
