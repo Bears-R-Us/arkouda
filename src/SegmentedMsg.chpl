@@ -13,7 +13,7 @@ module SegmentedMsg {
   use GenSymIO;
   use BigInteger;
   use Math;
-  use SegmentedArray;
+  use HashUtils;
   use Map;
   use CTypes;
   use IOUtils;
