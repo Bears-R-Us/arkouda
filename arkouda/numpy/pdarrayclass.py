@@ -1047,8 +1047,7 @@ class pdarray:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
 
         generic_msg(
-            # TODO: does opeqvs really need to select over pairs of dtypes?
-            cmd=f"opeqvs<{self.dtype},{self.dtype},{self.ndim}>",
+            cmd=f"opeqvs<{self.dtype},{self.ndim}>",
             args={"op": op, "a": self, "value": self.format_other(other)},
         )
         return self
