@@ -30,9 +30,9 @@ module UniqueMsg
     use Unique;
     use SipHash;
     use CommAggregation;
-    use SegmentedArray;
     use HashMsg;
-    
+    use HashUtils;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const umLogger = new Logger(logLevel, logChannel);
@@ -256,93 +256,6 @@ module UniqueMsg
         cleanup(strNames, st);
       }
       return (perm, segments);
-    }
-
-    proc hashArrays(size, names, types, st): [] 2*uint throws {
-      overMemLimit(numBytes(uint) * size * 2);
-      var dom = makeDistDom(size);
-      var hashes = makeDistArray(dom, 2*uint);
-      /* Hashes of subsequent arrays cannot be simply XORed
-       * because equivalent values will cancel each other out.
-       * Thus, a non-linear function must be applied to each array,
-       * hence we do a rotation by the ordinal of the array. This
-       * will only handle up to 128 arrays before rolling back around.
-       */
-      proc rotl(h:2*uint(64), n:int):2*uint(64) {
-        use BitOps;
-        // no rotation
-        if (n == 0) { return h; }
-        // Rotate each 64-bit word independently, then swap tails
-        const (h1, h2) = h;
-        // Mask for tail (right-hand portion)
-        const rmask = (1 << n) - 1;
-        // Mask for head (left-hand portion)
-        const lmask = 2**64 - 1 - rmask;
-        // Rotate each word
-        var r1 = rotl(h1, n);
-        var r2 = rotl(h2, n);
-        // Swap tails
-        r1 = (r1 & lmask) | (r2 & rmask);
-        r2 = (r2 & lmask) | (r1 & rmask);
-        return (r1, r2);
-      }
-      for (name, objtype, i) in zip(names, types, 0..) {
-        select objtype.toUpper(): ObjType {
-          when ObjType.PDARRAY {
-            var g = getGenericTypedArrayEntry(name, st);
-            select g.dtype {
-              when DType.Int64 {
-                var e = toSymEntry(g, int);
-                ref ea = e.a;
-                forall (h, x) in zip(hashes, ea) {
-                  h ^= rotl(sipHash128(x), i);
-                }
-              }
-              when DType.UInt64 {
-                var e = toSymEntry(g, uint);
-                ref ea = e.a;
-                forall (h, x) in zip(hashes, ea) {
-                  h ^= rotl(sipHash128(x), i);
-                }
-              }
-              when DType.Float64 {
-                var e = toSymEntry(g, real);
-                ref ea = e.a;
-                forall (h, x) in zip(hashes, ea) {
-                  h ^= rotl(sipHash128(x), i);
-                }
-              }
-              when DType.Bool {
-                var e = toSymEntry(g, bool);
-                ref ea = e.a;
-                forall (h, x) in zip(hashes, ea) {
-                  h ^= rotl((0:uint, x:uint), i);
-                }
-              }
-            }
-          }
-          when ObjType.STRINGS {
-            var (myNames, _) = name.splitMsgToTuple('+', 2);
-            var g = getSegString(myNames, st);
-            hashes ^= rotl(g.siphash(), i);
-          }
-          when ObjType.SEGARRAY {
-            var segComps = jsonToMap(name);
-            var (upper, lower) = segarrayHash(segComps["segments"], segComps["values"], segComps["valObjType"], st);
-            forall (h, u, l) in zip(hashes, upper, lower) {
-              h ^= rotl((u,l), i);
-            }
-          }
-          when ObjType.CATEGORICAL {
-            var catComps = jsonToMap(name);
-            var (upper, lower) = categoricalHash(catComps["categories"], catComps["codes"], st);
-            forall (h, u, l) in zip(hashes, upper, lower) {
-              h ^= rotl((u,l), i);
-            }
-          }
-        }
-      }
-      return hashes;
     }
 
     use CommandMap;

@@ -6,21 +6,16 @@ module SipHash {
   use Reflection;
   use Logging;
   use OS.POSIX;
+  use BitOps;
 
   param cROUNDS = 2;
   param dROUNDS = 4;
 
   private config param DEBUG = false;
 
-  const defaultSipHashKey: [0..#16] uint(8) = for i in 0..#16 do i: uint(8);
-
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
   const shLogger = new Logger(logLevel, logChannel);
-
-  inline proc ROTL(x, b) {
-    return (((x) << (b)) | ((x) >> (64 - (b))));
-  }
 
   private inline proc U32TO8_LE(p: [?D] uint(8), v: uint(32)) {
     p[D.low] = v: uint(8);
@@ -144,19 +139,19 @@ module SipHash {
     
     inline proc SIPROUND() {
         v0 += v1;
-        v1 = ROTL(v1, 13);
+        v1 = rotl(v1, 13);
         v1 ^= v0;
-        v0 = ROTL(v0, 32);
+        v0 = rotl(v0, 32);
         v2 += v3;
-        v3 = ROTL(v3, 16);
+        v3 = rotl(v3, 16);
         v3 ^= v2;
         v0 += v3;
-        v3 = ROTL(v3, 21);
+        v3 = rotl(v3, 21);
         v3 ^= v0;
         v2 += v1;
-        v1 = ROTL(v1, 17);
+        v1 = rotl(v1, 17);
         v1 ^= v2;
-        v2 = ROTL(v2, 32);
+        v2 = rotl(v2, 32);
     }
 
     inline proc TRACE() {

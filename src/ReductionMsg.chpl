@@ -21,6 +21,7 @@ module ReductionMsg
     use AryUtil;
     use PrivateDist;
     use RadixSortLSD;
+    use HashUtils;
 
     private config const lBins = 2**25 * numLocales;
     private config const logLevel = ServerConfig.logLevel;
@@ -1524,29 +1525,6 @@ module ReductionMsg
       proc clone() {
         return new unmanaged ResettingAndScanOp(eltType=eltType);
       }
-    }
-
-    proc segXor(values:[] ?t, segments:[?D] int) throws {
-      // Because XOR has an inverse (itself), this can be
-      // done with a scan like segSum
-      var res = makeDistArray(D, t);
-      if (D.size == 0) { return res; }
-      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-      overMemLimit(numBytes(t) * values.size);
-      var cumxor = ^ scan values;
-      // Iterate over segments
-      var rightvals = makeDistArray(D, t);
-      forall (i, r) in zip(D, rightvals) with (var agg = newSrcAggregator(t)) {
-        // Find the segment boundaries
-        if (i == D.high) {
-          agg.copy(r, cumxor[values.domain.high]);
-        } else {
-          agg.copy(r, cumxor[segments[i+1] - 1]);
-        }
-      }
-      res[D.low] = rightvals[D.low];
-      res[D.low+1..] = rightvals[D.low+1..] ^ rightvals[..D.high-1];
-      return res;
     }
 
     proc expandKeys(kD, segments: [?sD] int): [kD] int throws {

@@ -14,29 +14,11 @@ module HashMsg {
   use UniqueMsg;
   use Map;
   use IOUtils;
+  use HashUtils;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
   const hmLogger = new Logger(logLevel, logChannel);
-
-  proc categoricalHash(categoriesName: string, codesName: string, st: borrowed SymTab) throws {
-    var categories = getSegString(categoriesName, st);
-    var codes = toSymEntry(getGenericTypedArrayEntry(codesName, st), int);
-    // hash categories first
-    var hashes = categories.siphash();
-    // then do expansion indexing at codes
-    ref ca = codes.a;
-    var expandedHashes = makeDistArray(ca.domain, (uint, uint));
-    forall (eh, c) in zip(expandedHashes, ca) with (var agg = newSrcAggregator((uint, uint))) {
-      agg.copy(eh, hashes[c]);
-    }
-    var hash1 = makeDistArray(ca.size, uint);
-    var hash2 = makeDistArray(ca.size, uint);
-    forall (h, h1, h2) in zip(expandedHashes, hash1, hash2) {
-      (h1,h2) = h:(uint,uint);
-    }
-    return (hash1, hash2);
-  }
 
   proc categoricalHashMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
