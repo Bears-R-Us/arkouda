@@ -1101,8 +1101,9 @@ class TestDataFrame:
         assert df["a"].tolist() == df2["a"].tolist()
         assert df["b"].tolist() == df2["b"].tolist()
 
-    def test_multi_col_merge(self):
-        size = 1000
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_multi_col_merge(self, size):
+        size = min(size, 1000)
         seed = 1
         a = ak.randint(-size // 10, size // 10, size, seed=seed)
         b = ak.randint(-size // 10, size // 10, size, seed=seed + 1)
