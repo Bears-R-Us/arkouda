@@ -845,7 +845,7 @@ module OperatorMsg
       type binop_dtype_b,
       param array_nd: int
     ): MsgTuple throws where binop_dtype_a == binop_dtype_b ||
-                             binop_dtype_a == bigint {
+                             (binop_dtype_a == bigint && binop_dtype_b != real) {
         param pn = Reflection.getRoutineName();
 
         var l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd);
