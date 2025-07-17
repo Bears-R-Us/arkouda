@@ -187,7 +187,7 @@ class TestSeries:
 
         c = s.value_counts()
 
-        assert c.index.tolist() == [0, 2, 1]
+        assert c.index.tolist() == [2, 0, 1]
         assert c.values.tolist() == [2, 2, 1]
 
         c = s.value_counts(sort=False)

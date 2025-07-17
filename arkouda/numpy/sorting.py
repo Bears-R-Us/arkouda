@@ -108,6 +108,9 @@ def argsort(
         return zeros(0, dtype=pda.dtype)
 
     if isinstance(pda, Categorical):
+        print(Categorical.argsort)
+        help(Categorical.argsort)
+        print(type(cast(Categorical, pda)))
         return cast(Categorical, pda).argsort(algorithm=algorithm, ascending=ascending)
     elif isinstance(pda, Strings):
         perm = pda.argsort(algorithm=algorithm, ascending=ascending)

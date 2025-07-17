@@ -90,10 +90,15 @@ if TYPE_CHECKING:
     from arkouda.client import generic_msg
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import where
+    from arkouda.numpy.sorting import SortingAlgorithm
 else:
     generic_msg = TypeVar("generic_msg")
     akcast = TypeVar("akcast")
     where = TypeVar("where")
+    from enum import Enum
+
+    class SortingAlgorithm(Enum):
+        RadixSortLSD = "RadixSortLSD"
 
 
 __all__ = ["Categorical"]
@@ -969,7 +974,7 @@ class Categorical:
         """
         return [self.codes]
 
-    def argsort(self, ascending: bool = True) -> pdarray:
+    def argsort(self, algorithm=SortingAlgorithm.RadixSortLSD, ascending: bool = True) -> pdarray:
         """
         Return the permutation that sorts the Categorical.
 
@@ -998,15 +1003,14 @@ class Categorical:
         """
         from arkouda import arange, zeros_like
         from arkouda.numpy import argsort
-        from arkouda.numpy.manipulation_functions import flip
 
-        idxperm = argsort(self.categories)
+        idxperm = argsort(self.categories, algorithm=algorithm)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
         newvals = inverse[self.codes]
-        sorted_array = argsort(newvals)
+        sorted_array = argsort(newvals, algorithm=algorithm, ascending=ascending)
 
-        return sorted_array if ascending else flip(sorted_array)
+        return sorted_array  # if ascending else flip(sorted_array)
 
     def sort_values(self):
         # __doc__ = sort.__doc__

@@ -460,7 +460,7 @@ class TestIndex:
 
         # ints as list
         prob_size = 100  # cannot exceed Index.max_list_size
-        ak_array = ak.randint(0, 10 * prob_size, prob_size, dtype=ak.int64, seed=1).to_list()
+        ak_array = ak.randint(0, 10 * prob_size, prob_size, dtype=ak.int64, seed=1).tolist()
         np_array = np.array(ak_array)
         idx = Index(ak_array, allow_list=True)
         assert np.array_equal(idx.sort_values(ascending=True).values, np_array[np.argsort(np_array)])
