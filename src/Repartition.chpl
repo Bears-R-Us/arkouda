@@ -35,6 +35,39 @@ module Repartition
     return repartitionByLocaleString(destLocales, strOffsets, strBytes);
   }
 
+  // Note, the arrays passed here must have PrivateSpace domains.
+  proc repartitionByHashStringWithDestLocales(const ref strOffsets: [] list(int),
+                                 const ref strBytes: [] list(uint(8))):
+    ([PrivateSpace] list(int), [PrivateSpace] list(uint(8)), [PrivateSpace] list(int))
+  {
+
+    // Same as the function above, but this one also returns the destLocales used.
+    // This is useful if you want to later use this mapping to send along additional information
+    // to the same destination locales.
+
+    var destLocales: [PrivateSpace] list(int);
+
+    coforall loc in Locales do on loc {
+
+      var myStrOffsets = strOffsets[here.id].toArray();
+      var myStrBytes = strBytes[here.id].toArray();
+      var myDestLocales: [0..#myStrOffsets.size] int;
+
+      forall i in myStrOffsets.domain {
+        var start = myStrOffsets[i];
+        var end = if i == myStrOffsets.size - 1 then myStrBytes.size else myStrOffsets[i + 1];
+        var str = interpretAsString(myStrBytes, start..<end);
+        myDestLocales[i] = (str.hash() % numLocales): int;
+      }
+
+      destLocales[here.id] = new list(myDestLocales);
+    }
+
+    var (recvOffsets, recvBytes) = repartitionByLocaleString(destLocales, strOffsets, strBytes);
+
+    return (recvOffsets, recvBytes, destLocales);
+  }
+
   // Note, the arrays passed here must have PrivateSpace domains. With Chapel
   // 2.5, distribution equality with PrivateSpace doesn't work.
   // https://github.com/chapel-lang/chapel/pull/27397 is the upstream PR to
@@ -195,8 +228,8 @@ module Repartition
     var maxValsPerLocale: int;
     var numValsReceivingByLocale: [PrivateSpace] [0..#numLocales] int;
 
-    coforall loc in Locales 
-      with (max reduce maxValsPerLocale) 
+    coforall loc in Locales
+      with (max reduce maxValsPerLocale)
       do on loc
     {
       const ref myDestLocales = destLocales[here.id];
@@ -231,9 +264,9 @@ module Repartition
 
       for i in 0..#numLocales {
         var onCurrLoc = [j in 0..#myDestLocales.size] if myDestLocales[j] == i then 1 else 0;
-        
+
         var idxInCurrLoc = (+ scan onCurrLoc) - onCurrLoc;
-        idxInDestLoc = [j in 0..#myDestLocales.size] if myDestLocales[j] == i then idxInCurrLoc[j] 
+        idxInDestLoc = [j in 0..#myDestLocales.size] if myDestLocales[j] == i then idxInCurrLoc[j]
                                                      else idxInDestLoc[j];
 
         numValsPerLocale[i] = + reduce onCurrLoc;
@@ -245,7 +278,7 @@ module Repartition
 
         var destLoc = myDestLocales[idx];
         var idxInValArr = idxInDestLoc[idx];
-        
+
         sendVals[destLoc][idxInValArr] = myVals[idx];
 
       }
