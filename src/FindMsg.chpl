@@ -21,7 +21,7 @@ module FindMsg
   use CTypes;
   use Set;
   use List;
-  use ArkoudaSortCompat except isSorted;
+  use ArkoudaSortCompat;
   use Map;
 
   use Repartition;
@@ -190,8 +190,8 @@ module FindMsg
 
           } else {
 
-            //@chplcheck.ignore("UnusedLoopIndex")
-            queryRespVals[here.id] = new list([i in 0..#queryN] -1);
+            var fillNegOnes: [0..#queryN] int = -1;
+            queryRespVals[here.id] = new list(fillNegOnes);
             queryRespValLocales[here.id] = new list(queryLocs);
             queryRespOffsets[here.id] = new list([i in 0..#queryN] i);
             queryRespOffsetLocales[here.id] = new list(queryLocs);
