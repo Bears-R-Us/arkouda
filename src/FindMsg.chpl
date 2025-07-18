@@ -215,7 +215,7 @@ module FindMsg
           }
         }
 
-        sort(strIndPairs, comparator=new tupKeyComparator(), stable=true);
+        compatSort(strIndPairs, comparator=new tupKeyComparator());
 
         var sortedInds: [0..<N] int;
         var allStrings: [0..<N] string;
