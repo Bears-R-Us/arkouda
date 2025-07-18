@@ -306,6 +306,38 @@ def find(query, space, all_occurrences=False, remove_missing=False):
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
 
+    if isinstance(query, Strings):
+        if type(query) is not type(space):
+            raise TypeError("Arguments must have the same type")
+        ans = generic_msg(
+            cmd="findStr",
+            args={
+                "query": query,
+                "space": space,
+                "allOccurrences": all_occurrences,
+                "removeMissing": remove_missing,
+            },
+        )
+        vals, offsets, sw = ans.split("+")
+        ak_vals = create_pdarray(vals)
+        ak_offsets = create_pdarray(offsets)
+        send_warning = sw.split(" ")[-1] == "true"
+        if send_warning:
+            warn(
+                "Duplicate terms present in search space. Only first instance of each query term"
+                " will be reported. To return all occurrences, set all_occurrences=True."
+            )
+
+        if all_occurrences:
+            from arkouda.numpy.segarray import SegArray
+
+            # create a segarray which contains all the indices from query
+            sa = SegArray(ak_offsets, ak_vals)
+            return sa
+
+        else:
+            return ak_vals
+
     # Concatenate the space and query in fast (block interleaved) mode
     if isinstance(query, (pdarray, Strings, Categorical)):
         if type(query) is not type(space):
