@@ -4,7 +4,6 @@ import pytest
 import arkouda as ak
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Arkouda_No_Op")
 def bench_noop(benchmark):
     if pytest.numpy:

@@ -1,4 +1,3 @@
-import numpy as np
 import pytest
 
 import arkouda as ak
@@ -15,7 +14,7 @@ def bench_reduce(benchmark, op, dtype):
         pytest.skip(f"{dtype} not in selected dtypes")
 
     cfg = ak.get_config()
-    N = 10**4 if pytest.correctness_only else pytest.prob_size * cfg["numLocales"]
+    N = pytest.prob_size * cfg["numLocales"]
 
     # Create test array
     if pytest.random or pytest.seed is not None:
@@ -37,21 +36,11 @@ def bench_reduce(benchmark, op, dtype):
         fxn = getattr(a, op)
         backend = "Arkouda"
 
-    def run():
-        result = fxn()
-        if pytest.correctness_only:
-            expected = getattr(a.to_ndarray(), op)()
-            if op == "prod":
-                np.testing.assert_allclose(result, expected, rtol=1e-10)
-            else:
-                assert result == expected
-        return a.size * a.itemsize
-
-    bytes_processed = benchmark.pedantic(run, rounds=pytest.trials)
-
+    benchmark.pedantic(fxn, rounds=pytest.trials)
+    nbytes = a.size * a.itemsize
     benchmark.extra_info["description"] = f"Reduce: {op} ({backend})"
     benchmark.extra_info["problem_size"] = N
     benchmark.extra_info["backend"] = backend
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (bytes_processed / benchmark.stats["mean"]) / 2**30
+        (nbytes / benchmark.stats["mean"]) / 2**30
     )

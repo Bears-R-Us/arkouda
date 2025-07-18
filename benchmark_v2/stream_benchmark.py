@@ -20,7 +20,7 @@ def check_numpy_equivalence(a, b, alpha, result):
 @pytest.mark.parametrize("dtype", ["int64", "float64"])
 def bench_stream(benchmark, dtype):
     cfg = ak.get_config()
-    N = 10**4 if pytest.correctness_only else pytest.prob_size * cfg["numLocales"]
+    N = pytest.prob_size * cfg["numLocales"]
     nBytes = N * 8 * 3
 
     if pytest.random or pytest.seed is not None:
@@ -37,10 +37,7 @@ def bench_stream(benchmark, dtype):
     if pytest.numpy:
         a, b = a.to_ndarray(), b.to_ndarray()
 
-    result = benchmark.pedantic(run_test, args=(a, b, pytest.alpha), rounds=pytest.trials)
-
-    if pytest.correctness_only and not pytest.numpy:
-        check_numpy_equivalence(a, b, pytest.alpha, result)
+    benchmark.pedantic(run_test, args=(a, b, pytest.alpha), rounds=pytest.trials)
 
     benchmark.extra_info["description"] = f"Measures performance of stream using {dtype} types."
     benchmark.extra_info["problem_size"] = N
@@ -53,7 +50,7 @@ def bench_stream(benchmark, dtype):
 @pytest.mark.parametrize("dtype", ["bigint"])
 def bench_bigint_stream(benchmark, dtype):
     cfg = ak.get_config()
-    N = 10**4 if pytest.correctness_only else pytest.prob_size * cfg["numLocales"]
+    N = pytest.prob_size * cfg["numLocales"]
     nBytes = N * 8 * 3
 
     if pytest.random or pytest.seed is not None:

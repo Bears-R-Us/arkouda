@@ -9,7 +9,6 @@ SEARCHES = {
 }
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_Strings_SubstringSearch")
 @pytest.mark.parametrize("search_string,use_regex", SEARCHES.values(), ids=list(SEARCHES.keys()))

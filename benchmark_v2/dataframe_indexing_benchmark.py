@@ -7,14 +7,13 @@ import arkouda as ak
 OPS = ["_get_head_tail_server", "_get_head_tail"]
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Dataframe_Indexing")
 @pytest.mark.parametrize("op", OPS)
 def bench_dataframe(benchmark, op):
     """
     Measures the performance of arkouda Dataframe indexing
     """
-    N = 10**4 if pytest.correctness_only else pytest.prob_size * ak.get_config()["numLocales"]
+    N = pytest.prob_size * ak.get_config()["numLocales"]
 
     types = [ak.Categorical, ak.pdarray, ak.Strings, ak.SegArray]
     df_dict = {}

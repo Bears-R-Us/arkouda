@@ -15,7 +15,7 @@ def bench_scan(benchmark, op, dtype):
         pytest.skip(f"{dtype} not in selected dtypes")
 
     cfg = ak.get_config()
-    N = 10**4 if pytest.correctness_only else pytest.prob_size * cfg["numLocales"]
+    N = pytest.prob_size * cfg["numLocales"]
 
     if pytest.numpy:
         if pytest.seed is not None:
@@ -42,14 +42,8 @@ def bench_scan(benchmark, op, dtype):
         fxn = getattr(ak, op)
         backend = "Arkouda"
 
-    def run():
-        result = fxn(a)
-        if pytest.correctness_only:
-            expected = getattr(np, op)(a.to_ndarray() if not pytest.numpy else a)
-            np.testing.assert_allclose(result.to_ndarray() if not pytest.numpy else result, expected)
-        return a.size * a.itemsize * 2  # input + output
-
-    nbytes = benchmark.pedantic(run, rounds=pytest.trials)
+    benchmark.pedantic(fxn, args=[a], rounds=pytest.trials)
+    nbytes = a.size * a.itemsize * 2
 
     benchmark.extra_info["description"] = f"Scan: {op} using {backend}"
     benchmark.extra_info["problem_size"] = N

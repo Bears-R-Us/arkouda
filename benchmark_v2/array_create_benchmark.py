@@ -36,7 +36,6 @@ def _create_np_array(size, op, dtype, seed):
     return a
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Array_Create")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)
@@ -45,7 +44,7 @@ def bench_array_create(benchmark, op, dtype):
     Measures array creation performance (Arkouda or NumPy based on flags)
     """
     cfg = ak.get_config()
-    size = 10**4 if pytest.correctness_only else pytest.prob_size * cfg["numLocales"]
+    size = pytest.prob_size * cfg["numLocales"]
 
     if dtype in pytest.dtype:
         if pytest.numpy:

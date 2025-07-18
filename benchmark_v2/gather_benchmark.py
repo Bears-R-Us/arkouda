@@ -1,4 +1,3 @@
-import numpy as np
 import pytest
 
 import arkouda as ak
@@ -23,7 +22,7 @@ def compute_transfer_bytes(result, dtype):
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_gather(benchmark, dtype):
     cfg = ak.get_config()
-    N = 10**4 if pytest.correctness_only else pytest.prob_size
+    N = pytest.prob_size
     isize = N if pytest.idx_size is None else pytest.idx_size
     vsize = N if pytest.val_size is None else pytest.val_size
     Ni = isize * cfg["numLocales"]
@@ -66,14 +65,6 @@ def bench_gather(benchmark, dtype):
 
         numBytes = benchmark.pedantic(gather_ak_op, rounds=pytest.trials)
         backend = "Arkouda"
-
-        # Correctness check: compare against NumPy if enabled
-        if pytest.correctness_only:
-            i_np = i_ak.to_ndarray()
-            v_np = v_ak.to_ndarray()
-            expected = v_np[i_np]
-            result = _run_gather(v_ak, i_ak).to_ndarray()
-            np.testing.assert_array_equal(result, expected)
 
     benchmark.extra_info["description"] = f"Measures the performance of {backend} gather"
     benchmark.extra_info["backend"] = backend

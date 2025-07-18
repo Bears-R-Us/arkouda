@@ -1,4 +1,3 @@
-import numpy as np
 import pytest
 
 import arkouda as ak
@@ -15,7 +14,7 @@ def _run_scatter(a, i, v):
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_scatter(benchmark, dtype):
     cfg = ak.get_config()
-    N = 10**4 if pytest.correctness_only else pytest.prob_size
+    N = pytest.prob_size
     isize = N if pytest.idx_size is None else pytest.idx_size
     vsize = N if pytest.val_size is None else pytest.val_size
     Ni = isize * cfg["numLocales"]
@@ -55,14 +54,6 @@ def bench_scatter(benchmark, dtype):
 
         numBytes = benchmark.pedantic(scatter_ak_op, rounds=pytest.trials)
         backend = "Arkouda"
-
-        # Correctness check: compare with NumPy reference
-        if pytest.correctness_only:
-            i_np = i_ak.to_ndarray()
-            v_np = v_ak.to_ndarray()
-            c_np = np.zeros(Nv, dtype=v_np.dtype)
-            c_np[i_np] = v_np
-            np.testing.assert_array_equal(c_ak.to_ndarray(), c_np)
 
     benchmark.extra_info["description"] = f"Measures the performance of {backend} scatter"
     benchmark.extra_info["backend"] = backend

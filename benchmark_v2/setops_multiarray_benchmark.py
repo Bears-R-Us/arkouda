@@ -7,13 +7,12 @@ DTYPES = ("int64", "uint64")
 
 
 @pytest.mark.skip_numpy(True)
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="SetOps_MultiArray")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", DTYPES)
 def bench_setops_multiarray(benchmark, op, dtype):
     cfg = ak.get_config()
-    N = 10**4 if pytest.correctness_only else pytest.prob_size * cfg["numLocales"]
+    N = pytest.prob_size * cfg["numLocales"]
 
     seed = pytest.seed or 0
     if dtype == "int64":

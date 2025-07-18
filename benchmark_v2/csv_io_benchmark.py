@@ -29,7 +29,6 @@ def remove_files(path):
         os.remove(f)
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="CSV_IO")
 @pytest.mark.parametrize("dtype", TYPES)

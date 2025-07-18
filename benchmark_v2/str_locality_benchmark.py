@@ -13,7 +13,7 @@ LOCALITY = {"Good", "Poor"}
 
 
 def _generate_data(loc):
-    N = 10**4 if pytest.correctness_only else pytest.prob_size * ak.get_config()["numLocales"]
+    N = pytest.prob_size * ak.get_config()["numLocales"]
     prefix = ak.random_strings_uniform(
         minlen=1, maxlen=16, size=N, seed=pytest.seed, characters="numeric"
     )
@@ -28,7 +28,6 @@ def _generate_data(loc):
     return random_strings if loc == "Good" else sorted_strings
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="String_Locality")
 @pytest.mark.parametrize("op", OPS)

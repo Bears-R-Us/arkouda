@@ -84,7 +84,6 @@ def _build_prefix(ftype: str, dtype: str, compression=None, multi=False, append=
     return base + f"par_{compression}_{dtype}"
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Write_HDF5")
 @pytest.mark.parametrize("dtype", TYPES)
@@ -111,7 +110,6 @@ def bench_write_hdf(benchmark, dtype):
         )
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Write_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
@@ -144,7 +142,6 @@ def bench_write_parquet(benchmark, dtype, comp):
         )
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Write_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
@@ -180,7 +177,6 @@ def bench_write_parquet_multi(benchmark, dtype, comp):
         )
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Write_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
@@ -215,7 +211,6 @@ def bench_write_parquet_append(benchmark, dtype, comp):
         )
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Read_HDF5")
 @pytest.mark.parametrize("dtype", TYPES)
@@ -239,7 +234,6 @@ def bench_read_hdf(benchmark, dtype):
         )
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Read_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
@@ -268,7 +262,6 @@ def bench_read_parquet(benchmark, dtype, comp):
         )
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Read_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
@@ -301,7 +294,6 @@ def bench_read_parquet_multi_column(benchmark, dtype, comp):
         )
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Delete")
 def bench_delete(benchmark):
