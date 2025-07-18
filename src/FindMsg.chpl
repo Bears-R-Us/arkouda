@@ -21,8 +21,7 @@ module FindMsg
   use CTypes;
   use Set;
   use List;
-  use Sort;
-  use Sort only keyComparator;
+  use ArkoudaSortCompat except isSorted;
   use Map;
 
   use Repartition;
@@ -33,6 +32,7 @@ module FindMsg
 
   use CommandMap;
 
+  @chplcheck.ignore("UnusedFormal")
   proc findStrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     var sendWarning = false;
@@ -116,6 +116,7 @@ module FindMsg
     var queryRespNumRecv: [0..<numLocales] [0..<numLocales] int;
     var queryRespSizeRecv: [0..<numLocales] [0..<numLocales] int;
 
+    @chplcheck.ignore("UnusedTaskIntent")
     coforall loc in Locales with (|| reduce sendWarning) do on loc {
 
       const sOffsets = spaceRecvOffsets[here.id];
@@ -189,6 +190,7 @@ module FindMsg
 
           } else {
 
+            //@chplcheck.ignore("UnusedLoopIndex")
             queryRespVals[here.id] = new list([i in 0..#queryN] -1);
             queryRespValLocales[here.id] = new list(queryLocs);
             queryRespOffsets[here.id] = new list([i in 0..#queryN] i);
@@ -207,13 +209,13 @@ module FindMsg
 
       } else { // I do not like this else. Essentially, if the situation is normal, proceed as normal.
 
-        record TupKeyComparator: keyComparator {
+        record tupKeyComparator: keyComparator {
           proc key(a: (string, int)) {
             return a(0);
           }
         }
 
-        sort(strIndPairs, comparator=new TupKeyComparator(), stable=true);
+        sort(strIndPairs, comparator=new tupKeyComparator(), stable=true);
 
         var sortedInds: [0..<N] int;
         var allStrings: [0..<N] string;
