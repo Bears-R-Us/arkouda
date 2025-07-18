@@ -22,6 +22,7 @@ module FindMsg
   use Set;
   use List;
   use Sort;
+  use Sort only keyComparator;
   use Map;
 
   use Repartition;
@@ -176,7 +177,7 @@ module FindMsg
 
             queryRespVals[here.id] = new list(int);
             queryRespValLocales[here.id] = new list(int);
-            queryRespOffsets[here.id] = new list([i in 0..#queryN] 0);
+            queryRespOffsets[here.id] = new list([0..#queryN] 0);
             queryRespOffsetLocales[here.id] = new list(queryLocs);
 
             for i in 0..<numLocales {
