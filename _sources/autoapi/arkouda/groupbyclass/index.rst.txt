@@ -509,6 +509,19 @@ Package Contents
       :staticmethod:
 
 
+      Reconstruct a GroupBy object from a server return message.
+
+      This is used to deserialize a GroupBy object that was previously saved or transferred.
+
+      :param rep_msg: A JSON-formatted string containing GroupBy components returned by the Arkouda server.
+      :type rep_msg: str
+
+      :returns: A reconstructed GroupBy object.
+      :rtype: GroupBy
+
+      :raises ValueError: If an unsupported or unknown data type is encountered during reconstruction.
+
+
 
    .. py:method:: head(values: groupable_element_type, n: int = 5, return_indices: bool = True) -> Tuple[groupable, groupable_element_type]
 
@@ -1225,6 +1238,20 @@ Package Contents
 
 
    .. py:method:: update_hdf(prefix_path: str, dataset: str = 'groupby', repack: bool = True)
+
+      Update an existing HDF5 dataset with new GroupBy data.
+
+      This overwrites the previous GroupBy data stored in HDF5 files and optionally repacks the file.
+
+      :param prefix_path: Path prefix for the HDF5 files to update.
+      :type prefix_path: str
+      :param dataset: Name of the dataset within the HDF5 file.
+      :type dataset: str, default="groupby"
+      :param repack: Whether to repack the HDF5 file after updating.
+      :type repack: bool, default=True
+
+      :raises ValueError: If the file type cannot be determined or required metadata is missing.
+
 
 
    .. py:method:: var(values: arkouda.numpy.pdarrayclass.pdarray, skipna: bool = True, ddof: arkouda.numpy.dtypes.int_scalars = 1) -> Tuple[groupable, arkouda.numpy.pdarrayclass.pdarray]

@@ -9615,7 +9615,23 @@ array([True False False True True False True True False True])</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.from_return_msg">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/groupbyclass.html#GroupBy.from_return_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.from_return_msg" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reconstruct a GroupBy object from a server return message.</p>
+<p>This is used to deserialize a GroupBy object that was previously saved or transferred.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rep_msg</strong> (<em>str</em>) – A JSON-formatted string containing GroupBy components returned by the Arkouda server.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A reconstructed GroupBy object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../usage/groupby.html#arkouda.GroupBy" title="arkouda.GroupBy">GroupBy</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If an unsupported or unknown data type is encountered during reconstruction.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.head">
@@ -10444,7 +10460,21 @@ they are unregistered.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.update_hdf">
 <span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'groupby'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/groupbyclass.html#GroupBy.update_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.update_hdf" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update an existing HDF5 dataset with new GroupBy data.</p>
+<p>This overwrites the previous GroupBy data stored in HDF5 files and optionally repacks the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Path prefix for the HDF5 files to update.</p></li>
+<li><p><strong>dataset</strong> (<em>str</em><em>, </em><em>default=&quot;groupby&quot;</em>) – Name of the dataset within the HDF5 file.</p></li>
+<li><p><strong>repack</strong> (<a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – Whether to repack the HDF5 file after updating.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the file type cannot be determined or required metadata is missing.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.var">

@@ -774,9 +774,30 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ngroups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">size</span>
 
 <div class="viewcode-block" id="GroupBy.from_return_msg">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.groupbyclass.GroupBy.from_return_msg">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.groupbyclass.GroupBy.from_return_msg">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reconstruct a GroupBy object from a server return message.</span>
+
+<span class="sd">        This is used to deserialize a GroupBy object that was previously saved or transferred.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rep_msg : str</span>
+<span class="sd">            A JSON-formatted string containing GroupBy components returned by the Arkouda server.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        GroupBy</span>
+<span class="sd">            A reconstructed GroupBy object.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If an unsupported or unknown data type is encountered during reconstruction.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
@@ -882,13 +903,33 @@
 
 
 <div class="viewcode-block" id="GroupBy.update_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.groupbyclass.GroupBy.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../usage/groupby.html#arkouda.groupbyclass.GroupBy.update_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;groupby&quot;</span><span class="p">,</span>
         <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update an existing HDF5 dataset with new GroupBy data.</span>
+
+<span class="sd">        This overwrites the previous GroupBy data stored in HDF5 files and optionally repacks the file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        prefix_path : str</span>
+<span class="sd">            Path prefix for the HDF5 files to update.</span>
+<span class="sd">        dataset : str, default=&quot;groupby&quot;</span>
+<span class="sd">            Name of the dataset within the HDF5 file.</span>
+<span class="sd">        repack : bool, default=True</span>
+<span class="sd">            Whether to repack the HDF5 file after updating.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the file type cannot be determined or required metadata is missing.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">_file_type_to_int</span><span class="p">,</span>
