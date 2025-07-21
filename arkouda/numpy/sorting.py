@@ -87,7 +87,11 @@ def argsort(
     if axis == -1:
         axis = int(ndim) - 1
 
-    check_type(argname="argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
+    check_type(
+        argname="argsort",
+        value=pda,
+        expected_type=Union[pdarray, Strings, Categorical],
+    )
 
     if isinstance(pda, Categorical):
         return cast(Categorical, pda).argsort()
@@ -161,7 +165,9 @@ def coargsort(
     from arkouda.pandas.categorical import Categorical
 
     check_type(
-        argname="coargsort", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]]
+        argname="coargsort",
+        value=arrays,
+        expected_type=Sequence[Union[pdarray, Strings, Categorical]],
     )
     size: int_scalars = -1
     anames, atypes, expanded_arrays = [], [], []
@@ -227,7 +233,9 @@ def coargsort(
 
 @typechecked
 def sort(
-    pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: int_scalars = -1
+    pda: pdarray,
+    algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+    axis: int_scalars = -1,
 ) -> pdarray:
     """
     Return a sorted copy of the array. Only sorts numeric arrays;
@@ -291,7 +299,10 @@ def sort(
 
 @typechecked
 def searchsorted(
-    a: pdarray, v: Union[int_scalars, float64, bigint, pdarray], side: Literal["left", "right"] = "left"
+    a: pdarray,
+    v: Union[int_scalars, float64, bigint, pdarray],
+    side: Literal["left", "right"] = "left",
+    x2_sorted: bool = False,
 ) -> Union[int, pdarray]:
     """
     Find indices where elements should be inserted to maintain order.
@@ -308,6 +319,9 @@ def searchsorted(
     side : {'left', 'right'}, default='left'
         If 'left', the index of the first suitable location found is given.
         If 'right', return the last such index.
+    x2_sorted : bool, default=False
+        If True, assumes that `v` (x2) is already sorted in ascending order. This can improve performance
+        for large, sorted search arrays. If False, no assumption is made about the order of `v`.
 
     Returns
     -------
@@ -335,6 +349,9 @@ def searchsorted(
     >>> v = ak.array([-10, 20, 12, 13])
     >>> ak.searchsorted(a, v)
     array([0 5 1 2])
+    >>> v_sorted = ak.array([-10, 12, 13, 20])
+    >>> ak.searchsorted(a, v_sorted, x2_sorted=True)
+    array([0 1 2 5])
     """
     from arkouda.client import generic_msg
 
@@ -361,6 +378,7 @@ def searchsorted(
             "x1": a,
             "x2": v_,
             "side": side,
+            "x2Sorted": x2_sorted,
         },
     )
 
