@@ -30,7 +30,8 @@ module ArkoudaSortCompat {
         const kb = cmp.key(b[0]);
         if ka < kb then return -1;
         else if ka > kb then return 1;
-        else return compare(a[1], b[1]); // tie-break on original index
+        else if a[1] < b[1] then return -1; // tie-break on original index
+        else return 1;
       }
     }
 
