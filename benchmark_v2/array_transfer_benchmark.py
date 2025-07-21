@@ -17,12 +17,11 @@ def create_ak_array(N, dtype):
     return a, nb
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="ArrayTransfer_tondarray")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_array_transfer_tondarray(benchmark, dtype):
     if dtype in pytest.dtype:
-        N = 10**4 if pytest.correctness_only else pytest.prob_size * ak.get_config()["numLocales"]
+        N = pytest.prob_size * ak.get_config()["numLocales"]
         a, nb = create_ak_array(N, dtype)
         ak.client.maxTransferBytes = nb
 
@@ -40,12 +39,11 @@ def bench_array_transfer_tondarray(benchmark, dtype):
         benchmark.extra_info["max_bit"] = pytest.max_bits
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="ArrayTransfer_ak.array")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_array_transfer_akarray(benchmark, dtype):
     if dtype in pytest.dtype:
-        N = 10**4 if pytest.correctness_only else pytest.prob_size * ak.get_config()["numLocales"]
+        N = pytest.prob_size * ak.get_config()["numLocales"]
         a, nb = create_ak_array(N, dtype)
         ak.client.maxTransferBytes = nb
         npa = a.to_ndarray()

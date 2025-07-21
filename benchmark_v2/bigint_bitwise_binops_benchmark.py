@@ -17,14 +17,13 @@ def compute_nbytes(N):
     return N * 16
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Bigint Bitwise Binops")
 @pytest.mark.parametrize("op", OPS)
 def bench_bitwise_binops(benchmark, op):
     """
     Measures the performance of bigint bitwise binops
     """
-    N = 10**4 if pytest.correctness_only else pytest.prob_size * ak.get_config()["numLocales"]
+    N = pytest.prob_size * ak.get_config()["numLocales"]
     nbytes = compute_nbytes(N)
 
     a = generate_bigint_pair(N)

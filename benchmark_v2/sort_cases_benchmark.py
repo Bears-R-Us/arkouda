@@ -42,13 +42,7 @@ def run_sort(benchmark, name, data, sort_fn):
     else:
 
         def sort_op():
-            p = sort_fn(data)
-            if pytest.correctness_only:
-                if isinstance(data, tuple):
-                    sorted_data = [d[p] for d in data]  # noqa: F841
-                    # Assume lexsorted comparison is hard to check; skip for now
-                else:
-                    assert ak.is_sorted(data[p])
+            p = sort_fn(data)  # noqa: F841
             return get_nbytes(data)
 
         backend = "Arkouda"

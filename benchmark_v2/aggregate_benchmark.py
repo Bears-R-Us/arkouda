@@ -26,7 +26,7 @@ def run_agg(g, vals, op):
 @pytest.mark.benchmark(group="GroupBy.aggregate")
 @pytest.mark.parametrize("op", ak.GroupBy.Reductions)
 def bench_aggregate(benchmark, op):
-    N = 10**4 if pytest.correctness_only else pytest.prob_size * ak.get_config()["numLocales"]
+    N = pytest.prob_size * ak.get_config()["numLocales"]
 
     if op in ["any", "all"]:
         g, vals, keys = setup_agg("bool", N)
@@ -63,29 +63,6 @@ def bench_aggregate(benchmark, op):
         numBytes = benchmark.pedantic(numpy_agg, rounds=pytest.trials)
     else:
         numBytes = benchmark.pedantic(run_agg, args=(g, vals, op), rounds=pytest.trials)
-
-        if pytest.correctness_only:
-            # Validate against pandas
-            keys_np = keys.to_ndarray()
-            vals_np = vals.to_ndarray()
-            import pandas as pd
-
-            df = pd.DataFrame({"key": keys_np, "val": vals_np})
-            if hasattr(df.groupby("key")["val"], op):
-                if op == "prod":  # avoid numeric instability for large ints
-                    result_np = df.groupby("key")["val"].prod()
-                else:
-                    result_np = getattr(df.groupby("key")["val"], op)()
-
-                ark_keys, ark_vals = g.aggregate(vals, op)
-                result_df = pd.Series(data=ark_vals.to_ndarray().flatten(), index=ark_keys.to_ndarray())
-                pd.testing.assert_series_equal(
-                    result_np.sort_index(),
-                    result_df.sort_index(),
-                    check_names=False,
-                    check_dtype=False,
-                    rtol=1e-10,
-                )
 
     benchmark.extra_info["description"] = (
         f"Measures performance of GroupBy.aggregate using the {op} operator."

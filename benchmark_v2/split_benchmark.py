@@ -9,7 +9,6 @@ SPLIT_MODES = [
 ]
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_Strings_Split")
 @pytest.mark.parametrize("label, delim, use_regex", SPLIT_MODES)

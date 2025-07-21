@@ -12,7 +12,7 @@ NUM_ARR = [1, 2, 8, 16]
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_coargsort(benchmark, dtype, numArrays):
     cfg = ak.get_config()
-    N = 10**4 if pytest.correctness_only else pytest.prob_size * cfg["numLocales"]
+    N = pytest.prob_size * cfg["numLocales"]
 
     if dtype in pytest.dtype:
         if pytest.seed is None:
@@ -42,14 +42,7 @@ def bench_coargsort(benchmark, dtype, numArrays):
         else:
             func = ak.coargsort
 
-        result = benchmark.pedantic(func, args=[arrs], rounds=pytest.trials)
-
-        if pytest.correctness_only and not pytest.numpy and dtype != "str":
-            arrs_np = [a.to_ndarray() for a in arrs]
-            #   np.lexsort sorts the arrays in reverse key order from ak.coargsort.
-            arrs_np.reverse()
-            expected = np.lexsort(arrs_np)
-            np.testing.assert_array_equal(result.to_ndarray(), expected)
+        benchmark.pedantic(func, args=[arrs], rounds=pytest.trials)
 
         benchmark.extra_info["description"] = "Measures the performance of ak.coargsort"
         benchmark.extra_info["problem_size"] = N

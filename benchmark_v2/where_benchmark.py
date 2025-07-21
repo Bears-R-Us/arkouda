@@ -13,7 +13,6 @@ def alternate(L, R, n):
     return v
 
 
-@pytest.mark.skip_correctness_only(True)
 @pytest.mark.benchmark(group="Numpy_Scan")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("v_or_s", STYLES)
