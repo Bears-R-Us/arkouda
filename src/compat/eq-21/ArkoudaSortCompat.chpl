@@ -22,16 +22,15 @@ module ArkoudaSortCompat {
     forall i in x.domain do
       tagged[i] = (x[i], i);
 
-    // Comparator with tie-breaking on index
     record StableComparator {
       var cmp;
 
-      proc key(t: (T, int)) {
-        return cmp.key(t[0]);
-      }
-
-      proc ties(t: (T, int)) {
-        return t[1];
+      proc compare(a: (T, int), b: (T, int)) {
+        const ka = cmp.key(a[0]);
+        const kb = cmp.key(b[0]);
+        if ka < kb then return -1;
+        else if ka > kb then return 1;
+        else return compare(a[1], b[1]); // tie-break on original index
       }
     }
 
