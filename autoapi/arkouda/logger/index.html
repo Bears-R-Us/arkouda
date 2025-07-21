@@ -464,7 +464,7 @@ log formatting, and runtime handler reconfiguration.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.logger.LogLevel" title="arkouda.logger.LogLevel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LogLevel</span></code></a></p></td>
-<td><p>Create a collection of name/value pairs.</p></td>
+<td><p>Enum for defining valid log levels used by ArkoudaLogger.</p></td>
 </tr>
 </tbody>
 </table>
@@ -494,46 +494,24 @@ log formatting, and runtime handler reconfiguration.</p>
 <dt class="sig sig-object py" id="arkouda.logger.LogLevel">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.logger.</span></span><span class="sig-name descname"><span class="pre">LogLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/logger.html#LogLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.logger.LogLevel" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>Create a collection of name/value pairs.</p>
-<p>Example enumeration:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Color</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="n">RED</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="gp">... </span>    <span class="n">BLUE</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="gp">... </span>    <span class="n">GREEN</span> <span class="o">=</span> <span class="mi">3</span>
-</pre></div>
-</div>
-<p>Access them by:</p>
-<ul>
-<li><p>attribute access:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="o">.</span><span class="n">RED</span>
-<span class="go">&lt;Color.RED: 1&gt;</span>
-</pre></div>
-</div>
-</li>
-<li><p>value lookup:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">&lt;Color.RED: 1&gt;</span>
-</pre></div>
-</div>
-</li>
-<li><p>name lookup:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">[</span><span class="s1">&#39;RED&#39;</span><span class="p">]</span>
-<span class="go">&lt;Color.RED: 1&gt;</span>
-</pre></div>
-</div>
-</li>
-</ul>
-<p>Enumerations can be iterated over, and know how many members they have:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">Color</span><span class="p">)</span>
-<span class="go">3</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">Color</span><span class="p">)</span>
-<span class="go">[&lt;Color.RED: 1&gt;, &lt;Color.BLUE: 2&gt;, &lt;Color.GREEN: 3&gt;]</span>
-</pre></div>
-</div>
-<p>Methods can be added to enumerations, and members can have their own
-attributes – see the documentation for details.</p>
+<p>Enum for defining valid log levels used by ArkoudaLogger.</p>
+<section id="members">
+<h3>Members<a class="headerlink" href="#members" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>INFO<span class="classifier">str</span></dt><dd><p>Confirmation that things are working as expected.</p>
+</dd>
+<dt>DEBUG<span class="classifier">str</span></dt><dd><p>Detailed information, typically of interest only when diagnosing problems.</p>
+</dd>
+<dt>WARN<span class="classifier">str</span></dt><dd><p>An indication that something unexpected happened, or indicative of some problem.</p>
+</dd>
+<dt>ERROR<span class="classifier">str</span></dt><dd><p>A more serious problem, the software has not been able to perform some function.</p>
+</dd>
+<dt>CRITICAL<span class="classifier">str</span></dt><dd><p>An extremely serious error, indicating the program itself may be unable to continue.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This enum provides a controlled vocabulary for setting log levels on ArkoudaLogger
+instances. These are mapped internally to the standard Python <cite>logging</cite> levels.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.logger.LogLevel.CRITICAL">
 <span class="sig-name descname"><span class="pre">CRITICAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'CRITICAL'</span></em><a class="headerlink" href="#arkouda.logger.LogLevel.CRITICAL" title="Link to this definition">¶</a></dt>
@@ -559,6 +537,7 @@ attributes – see the documentation for details.</p>
 <span class="sig-name descname"><span class="pre">WARN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'WARN'</span></em><a class="headerlink" href="#arkouda.logger.LogLevel.WARN" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py function">

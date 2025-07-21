@@ -472,17 +472,33 @@
 
 <span class="n">loggers</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">The LogLevel enum class defines the log levels for the ArkoudaLogger, the</span>
-<span class="sd">purpose of which is to provide controlled vocabulary for setting the log</span>
-<span class="sd">levels for ArkoudaLogger.</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-
 
 <div class="viewcode-block" id="LogLevel">
 <a class="viewcode-back" href="../../autoapi/arkouda/logger/index.html#arkouda.LogLevel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LogLevel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enum for defining valid log levels used by ArkoudaLogger.</span>
+
+<span class="sd">    Members</span>
+<span class="sd">    -------</span>
+<span class="sd">    INFO : str</span>
+<span class="sd">        Confirmation that things are working as expected.</span>
+<span class="sd">    DEBUG : str</span>
+<span class="sd">        Detailed information, typically of interest only when diagnosing problems.</span>
+<span class="sd">    WARN : str</span>
+<span class="sd">        An indication that something unexpected happened, or indicative of some problem.</span>
+<span class="sd">    ERROR : str</span>
+<span class="sd">        A more serious problem, the software has not been able to perform some function.</span>
+<span class="sd">    CRITICAL : str</span>
+<span class="sd">        An extremely serious error, indicating the program itself may be unable to continue.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This enum provides a controlled vocabulary for setting log levels on ArkoudaLogger</span>
+<span class="sd">    instances. These are mapped internally to the standard Python `logging` levels.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">DEBUG</span> <span class="o">=</span> <span class="s2">&quot;DEBUG&quot;</span>
     <span class="n">CRITICAL</span> <span class="o">=</span> <span class="s2">&quot;CRITICAL&quot;</span>
     <span class="n">INFO</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span>
