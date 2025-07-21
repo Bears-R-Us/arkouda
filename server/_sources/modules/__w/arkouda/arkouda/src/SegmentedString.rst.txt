@@ -161,6 +161,13 @@ or
       :returns: [domain] bool where index i indicates whether the string i of the SegString is a decimal
       
 
+   .. method:: proc isNumeric() throws
+
+      
+      Returns list of bools where index i indicates whether the string i of the SegString is numeric 
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is numeric
+      
+
    .. method:: proc capitalize() throws
 
       
@@ -429,6 +436,12 @@ or
    The SegFunction called by computeOnSegments for isdecimal, using isDigit
    
 
+.. function:: proc stringIsNumeric(ref values, rng) throws
+
+   
+   The SegFunction called by computeOnSegments for isnumeric
+   
+
 .. function:: proc stringIsDigit(ref values, rng) throws
 
    
@@ -473,4 +486,8 @@ or
    
    Interpret a region of a byte array as bytes. Modeled after interpretAsString
    
+
+.. function:: proc isNumericString(s: string)
+
+.. function:: proc isNumericChar(c: string)
 

@@ -19,7 +19,7 @@ or
 
 .. function:: proc computeSegmentOwnership(segments: [?D] int, vD) throws
 
-.. enum:: enum SegFunction { SipHash128, StringToNumericStrict, StringToNumericIgnore, StringToNumericReturnValidity, StringCompareLiteralEq, StringCompareLiteralNeq, StringSearch, StringIsLower, StringIsUpper, StringIsTitle, StringIsAlphaNumeric, StringIsAlphabetic, StringIsDigit, StringIsDecimal, StringIsEmpty, StringIsSpace }
+.. enum:: enum SegFunction { SipHash128, StringToNumericStrict, StringToNumericIgnore, StringToNumericReturnValidity, StringCompareLiteralEq, StringCompareLiteralNeq, StringSearch, StringIsLower, StringIsUpper, StringIsTitle, StringIsAlphaNumeric, StringIsAlphabetic, StringIsDigit, StringIsNumeric, StringIsDecimal, StringIsEmpty, StringIsSpace }
 
    .. enumconstant:: enum constant SipHash128
 
@@ -46,6 +46,8 @@ or
    .. enumconstant:: enum constant StringIsAlphabetic
 
    .. enumconstant:: enum constant StringIsDigit
+
+   .. enumconstant:: enum constant StringIsNumeric
 
    .. enumconstant:: enum constant StringIsDecimal
 

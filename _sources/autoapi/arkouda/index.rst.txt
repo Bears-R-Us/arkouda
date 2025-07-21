@@ -369,6 +369,7 @@ Functions
    arkouda.isfinite
    arkouda.isinf
    arkouda.isnan
+   arkouda.isnumeric
    arkouda.isscalar
    arkouda.issubdtype
    arkouda.join_on_eq_with_dt
@@ -10588,6 +10589,42 @@ Package Contents
 
 
 
+   .. py:method:: isnumeric() -> arkouda.numpy.pdarrayclass.pdarray
+
+      Return a boolean pdarray where index i indicates whether string i of the
+      Strings has all numeric characters. There are 1922 unicode characters that
+      qualify as numeric, including the digits 0 through 9, superscripts and
+      subscripted digits, special characters with the digits encircled or
+      enclosed in parens, "vulgar fractions," and more.
+
+      :returns: True for elements that are numerics, False otherwise
+      :rtype: pdarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :py:obj:`Strings.isdecimal`
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> not_numeric = ak.array([f'Strings {i}' for i in range(3)])
+      >>> numeric = ak.array([f'12{i}' for i in range(3)])
+      >>> strings = ak.concatenate([not_numeric, numeric])
+      >>> strings
+      array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])
+      >>> strings.isnumeric()
+      array([False False False True True True])
+
+      Special Character Examples
+
+      >>> special_strings = ak.array(["3.14", "0", "²", "2³₇", "2³x₇"])
+      >>> special_strings
+      array(['3.14', '0', '²', '2³₇', '2³x₇'])
+      >>> special_strings.isnumeric()
+      array([False True True True False])
+
+
+
    .. py:method:: isspace() -> arkouda.numpy.pdarrayclass.pdarray
 
       Return a boolean pdarray where index i indicates whether string i has all
@@ -17508,6 +17545,42 @@ Package Contents
    >>> import arkouda as ak
    >>> ak.isnan(ak.array([1.0, 2.0, np.log(-1)]))
    array([False False True])
+
+
+.. py:function:: isnumeric(pda) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Return a boolean pdarray where index i indicates whether string i of the
+   Strings has all numeric characters. There are 1922 unicode characters that
+   qualify as numeric, including the digits 0 through 9, superscripts and
+   subscripted digits, special characters with the digits encircled or
+   enclosed in parens, "vulgar fractions," and more.
+
+   :returns: True for elements that are numerics, False otherwise
+   :rtype: pdarray
+
+   :raises RuntimeError: Raised if there is a server-side error thrown
+   :raises TypeError: Raised if the input is not a Strings type
+
+   .. seealso:: :py:obj:`Strings.isdecimal`
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> not_numeric = ak.array([f'Strings {i}' for i in range(3)])
+   >>> numeric = ak.array([f'12{i}' for i in range(3)])
+   >>> strings = ak.concatenate([not_numeric, numeric])
+   >>> strings
+   array(['Strings 0', 'Strings 1', 'Strings 2', '120', '121', '122'])
+   >>> ak.isnumeric(strings)
+   array([False False False True True True])
+
+   Special Character Examples
+
+   >>> special_strings = ak.array(["3.14", "0", "²", "2³₇", "2³x₇"])
+   >>> special_strings
+   array(['3.14', '0', '²', '2³₇', '2³x₇'])
+   >>> ak.isnumeric(special_strings)
+   array([False True True True False])
 
 
 .. py:function:: isscalar(element)

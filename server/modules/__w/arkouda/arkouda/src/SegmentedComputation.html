@@ -71,6 +71,7 @@
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymEntry.html">MultiTypeSymEntry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
 <li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NumericUnicodes.html">NumericUnicodes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Registry.html">Registry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a></li>
@@ -137,7 +138,7 @@
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SegFunction</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">SipHash128,</span> <span class="pre">StringToNumericStrict,</span> <span class="pre">StringToNumericIgnore,</span> <span class="pre">StringToNumericReturnValidity,</span> <span class="pre">StringCompareLiteralEq,</span> <span class="pre">StringCompareLiteralNeq,</span> <span class="pre">StringSearch,</span> <span class="pre">StringIsLower,</span> <span class="pre">StringIsUpper,</span> <span class="pre">StringIsTitle,</span> <span class="pre">StringIsAlphaNumeric,</span> <span class="pre">StringIsAlphabetic,</span> <span class="pre">StringIsDigit,</span> <span class="pre">StringIsDecimal,</span> <span class="pre">StringIsEmpty,</span> <span class="pre">StringIsSpace</span> <span class="pre">}</span></em><a class="headerlink" href="#SegmentedComputation.SegFunction" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SegFunction</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">SipHash128,</span> <span class="pre">StringToNumericStrict,</span> <span class="pre">StringToNumericIgnore,</span> <span class="pre">StringToNumericReturnValidity,</span> <span class="pre">StringCompareLiteralEq,</span> <span class="pre">StringCompareLiteralNeq,</span> <span class="pre">StringSearch,</span> <span class="pre">StringIsLower,</span> <span class="pre">StringIsUpper,</span> <span class="pre">StringIsTitle,</span> <span class="pre">StringIsAlphaNumeric,</span> <span class="pre">StringIsAlphabetic,</span> <span class="pre">StringIsDigit,</span> <span class="pre">StringIsNumeric,</span> <span class="pre">StringIsDecimal,</span> <span class="pre">StringIsEmpty,</span> <span class="pre">StringIsSpace</span> <span class="pre">}</span></em><a class="headerlink" href="#SegmentedComputation.SegFunction" title="Link to this definition">¶</a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.SipHash128">
 <em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SipHash128</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.SipHash128" title="Link to this definition">¶</a></dt>
@@ -201,6 +202,11 @@
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringIsDigit">
 <em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsDigit</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsDigit" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enumconstant">
+<dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringIsNumeric">
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsNumeric</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsNumeric" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">

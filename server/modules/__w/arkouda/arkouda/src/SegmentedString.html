@@ -71,6 +71,7 @@
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymEntry.html">MultiTypeSymEntry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
 <li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NumericUnicodes.html">NumericUnicodes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Registry.html">Registry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a></li>
@@ -342,6 +343,13 @@ their lowercase equivalent.  The first character following a space character wil
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isDecimal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isDecimal" title="Link to this definition">¶</a></dt>
 <dd><p>Returns list of bools where index i indicates whether the string i of the SegString is a decimal
 :returns: [domain] bool where index i indicates whether the string i of the SegString is a decimal</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="SegmentedString.SegString.isNumeric">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isNumeric</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isNumeric" title="Link to this definition">¶</a></dt>
+<dd><p>Returns list of bools where index i indicates whether the string i of the SegString is numeric
+:returns: [domain] bool where index i indicates whether the string i of the SegString is numeric</p>
 </dd></dl>
 
 <dl class="chpl method">
@@ -670,6 +678,12 @@ target).</p>
 </dd></dl>
 
 <dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedString.stringIsNumeric">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsNumeric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsNumeric" title="Link to this definition">¶</a></dt>
+<dd><p>The SegFunction called by computeOnSegments for isnumeric</p>
+</dd></dl>
+
+<dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringIsDigit">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsDigit" title="Link to this definition">¶</a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isdigit</p>
@@ -727,6 +741,16 @@ new string is returned, otherwise the string borrows memory from the array
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">interpretAsBytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">bytearray:</span> <span class="pre">[?D]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">region:</span> <span class="pre">range(?)</span></em>, <em class="sig-param"><span class="pre">borrow</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span></em><a class="headerlink" href="#SegmentedString.interpretAsBytes" title="Link to this definition">¶</a></dt>
 <dd><p>Interpret a region of a byte array as bytes. Modeled after interpretAsString</p>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedString.isNumericString">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isNumericString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">s:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedString.isNumericString" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedString.isNumericChar">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isNumericChar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">c:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedString.isNumericChar" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 
