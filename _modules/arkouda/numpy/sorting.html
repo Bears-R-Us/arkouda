@@ -475,7 +475,11 @@
     <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
         <span class="n">axis</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
 
-    <span class="n">check_type</span><span class="p">(</span><span class="n">argname</span><span class="o">=</span><span class="s2">&quot;argsort&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">pda</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">])</span>
+    <span class="n">check_type</span><span class="p">(</span>
+        <span class="n">argname</span><span class="o">=</span><span class="s2">&quot;argsort&quot;</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">pda</span><span class="p">,</span>
+        <span class="n">expected_type</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Categorical</span><span class="p">,</span> <span class="n">pda</span><span class="p">)</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
@@ -552,7 +556,9 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
     <span class="n">check_type</span><span class="p">(</span>
-        <span class="n">argname</span><span class="o">=</span><span class="s2">&quot;coargsort&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">arrays</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]]</span>
+        <span class="n">argname</span><span class="o">=</span><span class="s2">&quot;coargsort&quot;</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">arrays</span><span class="p">,</span>
+        <span class="n">expected_type</span><span class="o">=</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]],</span>
     <span class="p">)</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">anames</span><span class="p">,</span> <span class="n">atypes</span><span class="p">,</span> <span class="n">expanded_arrays</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
@@ -621,7 +627,9 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/sorting/index.html#arkouda.sort">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span>
-    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a sorted copy of the array. Only sorts numeric arrays;</span>
@@ -688,7 +696,10 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/sorting/index.html#arkouda.searchsorted">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">searchsorted</span><span class="p">(</span>
-    <span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">bigint</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span> <span class="n">side</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">bigint</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
+    <span class="n">side</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span>
+    <span class="n">x2_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find indices where elements should be inserted to maintain order.</span>
@@ -705,6 +716,9 @@
 <span class="sd">    side : {&#39;left&#39;, &#39;right&#39;}, default=&#39;left&#39;</span>
 <span class="sd">        If &#39;left&#39;, the index of the first suitable location found is given.</span>
 <span class="sd">        If &#39;right&#39;, return the last such index.</span>
+<span class="sd">    x2_sorted : bool, default=False</span>
+<span class="sd">        If True, assumes that `v` (x2) is already sorted in ascending order. This can improve performance</span>
+<span class="sd">        for large, sorted search arrays. If False, no assumption is made about the order of `v`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -732,6 +746,9 @@
 <span class="sd">    &gt;&gt;&gt; v = ak.array([-10, 20, 12, 13])</span>
 <span class="sd">    &gt;&gt;&gt; ak.searchsorted(a, v)</span>
 <span class="sd">    array([0 5 1 2])</span>
+<span class="sd">    &gt;&gt;&gt; v_sorted = ak.array([-10, 12, 13, 20])</span>
+<span class="sd">    &gt;&gt;&gt; ak.searchsorted(a, v_sorted, x2_sorted=True)</span>
+<span class="sd">    array([0 1 2 5])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
@@ -758,6 +775,7 @@
             <span class="s2">&quot;x1&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span>
             <span class="s2">&quot;x2&quot;</span><span class="p">:</span> <span class="n">v_</span><span class="p">,</span>
             <span class="s2">&quot;side&quot;</span><span class="p">:</span> <span class="n">side</span><span class="p">,</span>
+            <span class="s2">&quot;x2Sorted&quot;</span><span class="p">:</span> <span class="n">x2_sorted</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 

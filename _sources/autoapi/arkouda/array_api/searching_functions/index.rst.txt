@@ -50,7 +50,7 @@ Module Contents
    Return a tuple of arrays containing the indices of the non-zero elements of the input array.
 
 
-.. py:function:: searchsorted(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /, *, side: Literal['left', 'right'] = 'left', sorter: Optional[arkouda.array_api.array_object.Array] = None) -> arkouda.array_api.array_object.Array
+.. py:function:: searchsorted(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /, *, side: Literal['left', 'right'] = 'left', x2_sorted: bool = False, sorter: Optional[arkouda.array_api.array_object.Array] = None) -> arkouda.array_api.array_object.Array
 
    Given a sorted array `x1`, find the indices to insert elements from another array `x2` such that
    the sorted order is maintained.
@@ -64,6 +64,9 @@ Module Contents
    :type side: {'left', 'right'}, optional
    :param sorter: The indices that would sort `x1` in ascending order. If None, `x1` is assumed to be sorted.
    :type sorter: Array, optional
+   :param x2_sorted: If True, assumes that `x2` is already sorted in ascending order. This can improve performance
+                     for large, sorted search arrays. If False, no assumption is made about the order of `x2`.
+   :type x2_sorted: bool, default=False
 
 
 .. py:function:: where(condition: arkouda.array_api.array_object.Array, x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array

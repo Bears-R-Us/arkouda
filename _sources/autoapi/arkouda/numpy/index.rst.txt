@@ -11080,7 +11080,7 @@ Package Contents
 
 
 
-.. py:function:: searchsorted(a: arkouda.numpy.pdarrayclass.pdarray, v: Union[arkouda.numpy.dtypes.int_scalars, arkouda.numpy.dtypes.float64, arkouda.numpy.dtypes.bigint, arkouda.numpy.pdarrayclass.pdarray], side: Literal['left', 'right'] = 'left') -> Union[int, arkouda.numpy.pdarrayclass.pdarray]
+.. py:function:: searchsorted(a: arkouda.numpy.pdarrayclass.pdarray, v: Union[arkouda.numpy.dtypes.int_scalars, arkouda.numpy.dtypes.float64, arkouda.numpy.dtypes.bigint, arkouda.numpy.pdarrayclass.pdarray], side: Literal['left', 'right'] = 'left', x2_sorted: bool = False) -> Union[int, arkouda.numpy.pdarrayclass.pdarray]
 
    Find indices where elements should be inserted to maintain order.
 
@@ -11094,6 +11094,9 @@ Package Contents
    :param side: If 'left', the index of the first suitable location found is given.
                 If 'right', return the last such index.
    :type side: {'left', 'right'}, default='left'
+   :param x2_sorted: If True, assumes that `v` (x2) is already sorted in ascending order. This can improve performance
+                     for large, sorted search arrays. If False, no assumption is made about the order of `v`.
+   :type x2_sorted: bool, default=False
 
    :returns: **indices** -- If `v` is an array, returns an array of insertion points with the same shape.
              If `v` is a scalar, returns a single integer index.
@@ -11114,6 +11117,9 @@ Package Contents
    >>> v = ak.array([-10, 20, 12, 13])
    >>> ak.searchsorted(a, v)
    array([0 5 1 2])
+   >>> v_sorted = ak.array([-10, 12, 13, 20])
+   >>> ak.searchsorted(a, v_sorted, x2_sorted=True)
+   array([0 1 2 5])
 
 
 .. py:function:: setdiff1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]

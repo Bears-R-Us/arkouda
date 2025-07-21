@@ -517,6 +517,7 @@
     <span class="o">/</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">side</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span>
+    <span class="n">x2_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">sorter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -534,7 +535,9 @@
 <span class="sd">        last such index. Default is &#39;left&#39;.</span>
 <span class="sd">    sorter : Array, optional</span>
 <span class="sd">        The indices that would sort `x1` in ascending order. If None, `x1` is assumed to be sorted.</span>
-
+<span class="sd">    x2_sorted : bool, default=False</span>
+<span class="sd">        If True, assumes that `x2` is already sorted in ascending order. This can improve performance</span>
+<span class="sd">        for large, sorted search arrays. If False, no assumption is made about the order of `x2`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
@@ -555,6 +558,7 @@
             <span class="s2">&quot;x1&quot;</span><span class="p">:</span> <span class="n">_x1</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
             <span class="s2">&quot;x2&quot;</span><span class="p">:</span> <span class="n">x2</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
             <span class="s2">&quot;side&quot;</span><span class="p">:</span> <span class="n">side</span><span class="p">,</span>
+            <span class="s2">&quot;x2Sorted&quot;</span><span class="p">:</span> <span class="n">x2_sorted</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 
