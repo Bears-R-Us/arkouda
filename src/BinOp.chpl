@@ -130,17 +130,20 @@ module BinOp
 
 
   proc doBoolBoolBitOp(
-    op:string, ref e: [] bool, l: [] bool, r /*: [] bool OR bool*/
+    op: string, ref e: [] bool, l: [] bool, r /*: [] bool OR bool*/
   ): bool {
-    select op {
-      when "|" { e = l | r; }
-      when "&" { e = l & r; }
-      when "*" { e = l & r; }
-      when "^" { e = l ^ r; }
-      when "+" { e = l | r; }
-      otherwise do return false;
+    var handled = false;
+    if op == "|" || op == "+" {
+      e = l | r;
+      handled = true;
+    } else if op == "&" || op == "*" {
+      e = l & r;
+      handled = true;
+    } else if op == "^" {
+      e = l ^ r;
+      handled = true;
     }
-    return true;
+    return handled;
   }
 
   /*
