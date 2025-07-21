@@ -128,6 +128,18 @@ module BinOp
     return res;
   }
 
+  proc isRealOp(op: string): bool {
+    return op == "+" || op == "-" || op == "*" ||
+           op == "//" || op == "%" || op == "**";
+  }
+
+  // All operations that involve one of these operations result in a `bool`
+  // symbol table entry.
+  proc isBoolOp(op: string): bool {
+    return op == "<"  || op == "<=" ||
+           op == ">"  || op == ">=" ||
+           op == "==" || op == "!=";
+  }
 
   proc doBoolBoolBitOp(
     op: string, ref e: [] bool, l: [] bool, r /*: [] bool OR bool*/
@@ -173,15 +185,6 @@ module BinOp
 
     const nie = notImplementedError(pn,l.dtype,op,r.dtype);
 
-    use Set;
-    var boolOps: set(string);
-        boolOps.add("<");
-        boolOps.add("<=");
-        boolOps.add(">");
-        boolOps.add(">=");
-        boolOps.add("==");
-        boolOps.add("!=");
-
     type castType = mySafeCast(lType, rType);
 
     // The compiler complains that maybe etype is bool if it gets down below this
@@ -192,7 +195,7 @@ module BinOp
 
     if etype == bool {
 
-      if boolOps.contains(op) {
+      if isBoolOp(op) {
 
         select op {
 
@@ -315,15 +318,6 @@ module BinOp
 
     const nie = notImplementedError(pn,"%s %s %s".format(type2str(l.a.eltType),op,type2str(val.type)));
 
-    use Set;
-    var boolOps: set(string);
-        boolOps.add("<");
-        boolOps.add("<=");
-        boolOps.add(">");
-        boolOps.add(">=");
-        boolOps.add("==");
-        boolOps.add("!=");
-
     type castType = mySafeCast(lType, rType);
 
     // The compiler complains that maybe etype is bool if it gets down below this
@@ -334,7 +328,7 @@ module BinOp
 
     if etype == bool {
 
-      if boolOps.contains(op) {
+      if isBoolOp(op) {
 
         select op {
 
@@ -449,15 +443,6 @@ module BinOp
     var e = makeDistArray((...r.tupShape), etype);
     const nie = notImplementedError(pn,"%s %s %s".format(type2str(val.type),op,type2str(r.a.eltType)));
 
-    use Set;
-    var boolOps: set(string);
-        boolOps.add("<");
-        boolOps.add("<=");
-        boolOps.add(">");
-        boolOps.add(">=");
-        boolOps.add("==");
-        boolOps.add("!=");
-
     type castType = mySafeCast(lType, rType);
 
     // The compiler complains that maybe etype is bool if it gets down below this
@@ -468,7 +453,7 @@ module BinOp
 
     if etype == bool {
 
-      if boolOps.contains(op) {
+      if isBoolOp(op) {
 
         select op {
 
