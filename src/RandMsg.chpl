@@ -1039,9 +1039,10 @@ module RandMsg
 
             const smallestChunkSize = max(size/(2**maxFisherYatesPower), 
                             min(minSize, size)); //  Hardcoded minimum size
-            const numChunks = (size - 1)/smallestChunkSize + 1;
+            const numChunks = ceil(size:real / smallestChunkSize:real):int;
 
-            assert(localUpper + 1 >= localLower + numChunks * smallestChunkSize - 1);
+            // Ensure that the starting index of the last chunk does not exceed the local array bounds.
+            assert(localLower + (numChunks -1) * smallestChunkSize <= localUpper);
 
             forall i in 0..#numChunks with (ref x, const seed){
                 const taskSeed = seed + i;
