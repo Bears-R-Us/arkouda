@@ -853,7 +853,6 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; ak.connect()</span>
 <span class="sd">        &gt;&gt;&gt; i = ak.Index([1, 2, 3])</span>
 <span class="sd">        &gt;&gt;&gt; i_cpy = ak.Index([1, 2, 3])</span>
 <span class="sd">        &gt;&gt;&gt; i.equals(i_cpy)</span>
@@ -930,7 +929,6 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; ak.connect()</span>
 <span class="sd">        &gt;&gt;&gt; idx = Index(ak.array([1, 2, 3]))</span>
 <span class="sd">        &gt;&gt;&gt; idx.memory_usage()</span>
 <span class="sd">        24</span>
@@ -1353,7 +1351,7 @@
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; ak.connect()</span>
 <span class="sd">        &gt;&gt;&gt; idx = ak.Index(ak.array([2, 3, 2, 3, 4]))</span>
-<span class="sd">        &gt;&gt;&gt; display(idx)</span>
+<span class="sd">        &gt;&gt;&gt; idx</span>
 <span class="sd">        Index(array([2 3 2 3 4]), dtype=&#39;int64&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; idx.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})</span>
 <span class="sd">        Index(array([30.00000000000000000 5.00000000000000000 30.00000000000000000</span>

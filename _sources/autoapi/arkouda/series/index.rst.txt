@@ -125,7 +125,6 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
       >>> from arkouda import Series
 
       >>> data = ak.Series([1, np.nan, 3, np.nan, 5])
@@ -232,7 +231,6 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
       >>> from arkouda import Series
       >>> import numpy as np
 
@@ -330,7 +328,6 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
       >>> from arkouda import Series
       >>> import numpy as np
 
@@ -367,7 +364,6 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
       >>> from arkouda import Series
       >>> import numpy as np
 
@@ -433,7 +429,6 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
       >>> s = ak.Series(ak.array([2, 3, 2, 3, 4]))
       >>> s
 
@@ -546,7 +541,6 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
       >>> from arkouda import Series
       >>> import numpy as np
 
@@ -583,7 +577,6 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
       >>> from arkouda import Series
       >>> import numpy as np
 
