@@ -89,8 +89,7 @@ def _build_prefix(ftype: str, dtype: str, compression=None, multi=False, append=
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_write_hdf(benchmark, dtype):
     if pytest.io_write or (not pytest.io_read and not pytest.io_delete) and dtype in pytest.dtype:
-        cfg = ak.get_config()
-        N = pytest.prob_size * cfg["numLocales"]
+        N = pytest.N
 
         a = _generate_array(N, dtype)
 
@@ -121,8 +120,7 @@ def bench_write_parquet(benchmark, dtype, comp):
         and dtype in pytest.dtype
         and comp in pytest.io_compression
     ):
-        cfg = ak.get_config()
-        N = pytest.prob_size * cfg["numLocales"]
+        N = pytest.N
 
         a = _generate_array(N, dtype)
 
@@ -153,8 +151,7 @@ def bench_write_parquet_multi(benchmark, dtype, comp):
         and dtype in pytest.dtype
         and comp in pytest.io_compression
     ):
-        cfg = ak.get_config()
-        N = pytest.prob_size * cfg["numLocales"]
+        N = pytest.N
 
         a = _generate_df(N, dtype)
 
@@ -188,8 +185,7 @@ def bench_write_parquet_append(benchmark, dtype, comp):
         and dtype in pytest.dtype
         and comp in pytest.io_compression
     ):
-        cfg = ak.get_config()
-        N = pytest.prob_size * cfg["numLocales"]
+        N = pytest.N
 
         a = _generate_df(N, dtype, True)
 
@@ -300,9 +296,8 @@ def bench_delete(benchmark):
     if pytest.io_delete or (not pytest.io_write and not pytest.io_read):
         benchmark.pedantic(_remove_files, rounds=1)
 
-        cfg = ak.get_config()
         benchmark.extra_info["description"] = "Measures the performance of IO delete files from system"
-        benchmark.extra_info["problem_size"] = pytest.io_files * cfg["numLocales"]
+        benchmark.extra_info["problem_size"] = pytest.io_files * pytest.cfg["numLocales"]
         benchmark.extra_info["transfer_rate"] = "N/A"
 
 
