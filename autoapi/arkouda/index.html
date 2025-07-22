@@ -503,7 +503,7 @@ to Python users.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.NonUniqueError" title="arkouda.NonUniqueError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NonUniqueError</span></code></a></p></td>
-<td><p>Inappropriate argument value (of correct type).</p></td>
+<td><p>Exception raised when duplicate values are found in a set of keys that are expected to be unique.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RegistrationError</span></code></a></p></td>
 <td><p>Error/Exception used when the Arkouda Server cannot register an object</p></td>
@@ -1598,7 +1598,7 @@ to Python users.</p>
 <td><p>Unregister all Arkouda objects associated with the provided names.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.unsqueeze" title="arkouda.unsqueeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsqueeze</span></code></a>(p)</p></td>
-<td><p></p></td>
+<td><p>Ensure that the input is returned as a list.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.update_hdf" title="arkouda.update_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_hdf</span></code></a>(columns, prefix_path[, names, repack])</p></td>
 <td><p>Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary.</p></td>
@@ -11959,7 +11959,17 @@ In either case, this is followed by: for k in F:  D[k] = F[k]</p>
 <dt class="sig sig-object py" id="arkouda.NonUniqueError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">NonUniqueError</span></span><a class="reference internal" href="../../_modules/arkouda/alignment.html#NonUniqueError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.NonUniqueError" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></p>
-<p>Inappropriate argument value (of correct type).</p>
+<p>Exception raised when duplicate values are found in a set of keys that are expected to be unique.</p>
+<p>This is typically raised in lookup and alignment operations that assume
+a one-to-one mapping between keys and values.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.alignment</span><span class="w"> </span><span class="kn">import</span> <span class="n">NonUniqueError</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">raise</span> <span class="n">NonUniqueError</span><span class="p">(</span><span class="s2">&quot;Duplicate values found in key array.&quot;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span><span class="o">...</span>
+<span class="gr">arkouda.alignment.NonUniqueError</span>: <span class="n">Duplicate values found in key array.</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py class">
@@ -30740,7 +30750,28 @@ in Arkouda, and can be accessed by their names.
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.unsqueeze">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">unsqueeze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/alignment.html#unsqueeze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.unsqueeze" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Ensure that the input is returned as a list.</p>
+<p>If the input is a single pdarray, Strings, or Categorical object, wrap it in a list.
+Otherwise, return the input unchanged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>p</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, or </em><em>Sequence</em>) – The input object to be wrapped or returned as-is.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list containing the input, or the input itself if it is already a sequence.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Sequence</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">[array([1 2 3])]</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.update_hdf">

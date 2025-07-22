@@ -82,7 +82,18 @@ Module Contents
    Bases: :py:obj:`ValueError`
 
 
-   Inappropriate argument value (of correct type).
+   Exception raised when duplicate values are found in a set of keys that are expected to be unique.
+
+   This is typically raised in lookup and alignment operations that assume
+   a one-to-one mapping between keys and values.
+
+   .. rubric:: Examples
+
+   >>> from arkouda.alignment import NonUniqueError
+   >>> raise NonUniqueError("Duplicate values found in key array.")
+   Traceback (most recent call last):
+       ...
+   arkouda.alignment.NonUniqueError: Duplicate values found in key array.
 
 
 .. py:function:: align(*args)
@@ -380,6 +391,25 @@ Module Contents
 
 
 .. py:function:: unsqueeze(p)
+
+   Ensure that the input is returned as a list.
+
+   If the input is a single pdarray, Strings, or Categorical object, wrap it in a list.
+   Otherwise, return the input unchanged.
+
+   :param p: The input object to be wrapped or returned as-is.
+   :type p: pdarray, Strings, Categorical, or Sequence
+
+   :returns: A list containing the input, or the input itself if it is already a sequence.
+   :rtype: Sequence
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.array([1, 2, 3])
+   >>> unsqueeze(a)
+   [array([1 2 3])]
+
 
 .. py:function:: zero_up(vals)
 

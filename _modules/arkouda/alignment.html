@@ -465,6 +465,30 @@
 <div class="viewcode-block" id="unsqueeze">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.unsqueeze">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unsqueeze</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Ensure that the input is returned as a list.</span>
+
+<span class="sd">    If the input is a single pdarray, Strings, or Categorical object, wrap it in a list.</span>
+<span class="sd">    Otherwise, return the input unchanged.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    p : pdarray, Strings, Categorical, or Sequence</span>
+<span class="sd">        The input object to be wrapped or returned as-is.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Sequence</span>
+<span class="sd">        A list containing the input, or the input itself if it is already a sequence.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; unsqueeze(a)</span>
+<span class="sd">    [array([1 2 3])]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">p</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -575,6 +599,22 @@
 <div class="viewcode-block" id="NonUniqueError">
 <a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.alignment.NonUniqueError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NonUniqueError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exception raised when duplicate values are found in a set of keys that are expected to be unique.</span>
+
+<span class="sd">    This is typically raised in lookup and alignment operations that assume</span>
+<span class="sd">    a one-to-one mapping between keys and values.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from arkouda.alignment import NonUniqueError</span>
+<span class="sd">    &gt;&gt;&gt; raise NonUniqueError(&quot;Duplicate values found in key array.&quot;)</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">    arkouda.alignment.NonUniqueError: Duplicate values found in key array.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">pass</span></div>
 
 

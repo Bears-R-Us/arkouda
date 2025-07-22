@@ -442,7 +442,7 @@ key matching, including hierarchical keys, and interval-based function evaluatio
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.alignment.NonUniqueError" title="arkouda.alignment.NonUniqueError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NonUniqueError</span></code></a></p></td>
-<td><p>Inappropriate argument value (of correct type).</p></td>
+<td><p>Exception raised when duplicate values are found in a set of keys that are expected to be unique.</p></td>
 </tr>
 </tbody>
 </table>
@@ -481,7 +481,7 @@ key matching, including hierarchical keys, and interval-based function evaluatio
 <td><p>Return the index of the best interval containing each query value.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.alignment.unsqueeze" title="arkouda.alignment.unsqueeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsqueeze</span></code></a>(p)</p></td>
-<td><p></p></td>
+<td><p>Ensure that the input is returned as a list.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.alignment.zero_up" title="arkouda.alignment.zero_up"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zero_up</span></code></a>(vals)</p></td>
 <td><p>Map an array of sparse values to 0-up indices.</p></td>
@@ -496,7 +496,17 @@ key matching, including hierarchical keys, and interval-based function evaluatio
 <dt class="sig sig-object py" id="arkouda.alignment.NonUniqueError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">NonUniqueError</span></span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#NonUniqueError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.NonUniqueError" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></p>
-<p>Inappropriate argument value (of correct type).</p>
+<p>Exception raised when duplicate values are found in a set of keys that are expected to be unique.</p>
+<p>This is typically raised in lookup and alignment operations that assume
+a one-to-one mapping between keys and values.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.alignment</span><span class="w"> </span><span class="kn">import</span> <span class="n">NonUniqueError</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">raise</span> <span class="n">NonUniqueError</span><span class="p">(</span><span class="s2">&quot;Duplicate values found in key array.&quot;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span><span class="o">...</span>
+<span class="gr">arkouda.alignment.NonUniqueError</span>: <span class="n">Duplicate values found in key array.</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -841,7 +851,28 @@ When False, sequences of pdarrays will be specifying multi-dimensional intervals
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.unsqueeze">
 <span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">unsqueeze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#unsqueeze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.unsqueeze" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Ensure that the input is returned as a list.</p>
+<p>If the input is a single pdarray, Strings, or Categorical object, wrap it in a list.
+Otherwise, return the input unchanged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>p</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, or </em><em>Sequence</em>) – The input object to be wrapped or returned as-is.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list containing the input, or the input itself if it is already a sequence.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Sequence</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">[array([1 2 3])]</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.zero_up">
