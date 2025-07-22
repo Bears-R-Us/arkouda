@@ -7,7 +7,7 @@
 <p align="center">
 <a href="https://github.com/Bears-R-Us/arkouda/actions/workflows/CI.yml"><img alt="Actions Status" src="https://github.com/Bears-R-Us/arkouda/workflows/CI/badge.svg"></a>
 <a href="https://bears-r-us.github.io/arkouda/"><img alt="Documentation Status" src="https://github.com/Bears-R-Us/arkouda/workflows/docs/badge.svg"></a>
-<a href="https://github.com/Bears-R-Us/arkouda/blob/master/LICENSE"><img alt="License: MIT" src="https://black.readthedocs.io/en/stable/_static/license.svg"></a>
+<a href="https://github.com/Bears-R-Us/arkouda/blob/main/LICENSE"><img alt="License: MIT" src="https://black.readthedocs.io/en/stable/_static/license.svg"></a>
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
@@ -445,7 +445,7 @@ arkouda server version = v2019.12.10+1679.abc2f48a.dirty
 For maintainers, creating a new version is as simple as creating a tag in the repository; i.e.
 
 ```bash
-git checkout master
+git checkout main
 git tag 1.2.3.4
 python -m arkouda |tail -n 2
 >> Client Version: 1.2.3.4
