@@ -94,13 +94,20 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "optional_parquet: mark test as slow to run")
     pytest.port = int(os.getenv("ARKOUDA_SERVER_PORT", 5555))
     pytest.server = os.getenv("ARKOUDA_SERVER_HOST", "localhost")
-    pytest.timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
+    pytest.client_timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
     pytest.verbose = bool(os.getenv("ARKOUDA_VERBOSE", False))
     pytest.nl = _get_test_locales(config)
     pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
     pytest.prob_size = [eval(x) for x in config.getoption("size").split(",")]
     pytest.test_running_mode = TestRunningMode(os.getenv("ARKOUDA_RUNNING_MODE", "CLASS_SERVER"))
     pytest.client_host = subprocess.check_output("hostname").decode("utf-8").strip()
+    chpl_home = subprocess.check_output(["chpl", "--print-chpl-home"]).decode("utf-8").strip()
+    pytest.asan = (
+        subprocess.check_output([f"{chpl_home}/util/chplenv/chpl_sanitizers.py", "--exe"])
+        .decode("utf-8")
+        .strip()
+        != "none"
+    )
 
     pytest.temp_directory = config.getoption("--temp-directory")
 
@@ -175,7 +182,7 @@ def manage_connection(_class_server):
     import arkouda as ak
 
     try:
-        ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.timeout)
+        ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.client_timeout)
         pytest.max_rank = get_max_array_rank()
         pytest.compiled_ranks = get_array_ranks()
 
