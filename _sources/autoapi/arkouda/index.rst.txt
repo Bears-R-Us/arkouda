@@ -573,8 +573,25 @@ Package Contents
       :classmethod:
 
 
+      Reconstruct a BitVector from a server return message.
+
+      :param rep_msg: JSON-encoded response from Arkouda server.
+      :type rep_msg: str
+
+      :returns: Reconstructed BitVector instance.
+      :rtype: BitVector
+
+
 
    .. py:method:: opeq(other, op)
+
+      In-place binary operation on the BitVector.
+
+      :param other: Right-hand operand.
+      :type other: int, BitVector, or pdarray
+      :param op: Binary operator as a string (e.g., '+', '&').
+      :type op: str
+
 
 
    .. py:method:: register(user_defined_name)
@@ -791,6 +808,12 @@ Package Contents
 
 
    .. py:method:: argsort()
+
+      Return the indices that would sort the Categorical.
+
+      :returns: Permutation indices that would sort the values by category label.
+      :rtype: pdarray
+
 
 
    .. py:attribute:: categories
@@ -1179,6 +1202,12 @@ Package Contents
 
    .. py:method:: sort_values()
 
+      Return a sorted Categorical by category labels.
+
+      :returns: A new Categorical with values sorted by category.
+      :rtype: Categorical
+
+
 
    .. py:method:: standardize_categories(arrays, NAvalue='N/A')
       :classmethod:
@@ -1403,6 +1432,12 @@ Package Contents
 
 
    .. py:method:: unique() -> Categorical
+
+      Return the unique category values in the Categorical.
+
+      :returns: A new Categorical containing only the unique category labels in use.
+      :rtype: Categorical
+
 
 
    .. py:method:: unregister() -> None
@@ -5320,6 +5355,14 @@ Package Contents
 
    .. py:method:: opeq(other, op)
 
+      Perform in-place binary operation on the Fields object.
+
+      :param other: Operand to apply the binary operation with.
+      :type other: str or BitVector
+      :param op: Binary operation to apply (e.g., '|', '&').
+      :type op: str
+
+
 
    .. py:attribute:: pad
 
@@ -6674,6 +6717,12 @@ Package Contents
 
    .. py:method:: export_uint()
 
+      Export the internal values as unsigned 64-bit integers.
+
+      :returns: Array of uint64 values representing the data.
+      :rtype: pdarray
+
+
 
    .. py:method:: format(x)
 
@@ -6690,7 +6739,16 @@ Package Contents
 
 
 
+
    .. py:method:: opeq(other, op)
+
+      Perform an in-place binary operation on the IPv4 object.
+
+      :param other: Operand for the operation.
+      :type other: int, str, pdarray, or IPv4
+      :param op: Binary operator as a string.
+      :type op: str
+
 
 
    .. py:method:: register(user_defined_name)

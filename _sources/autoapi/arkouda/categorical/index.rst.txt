@@ -88,6 +88,12 @@ Package Contents
 
    .. py:method:: argsort()
 
+      Return the indices that would sort the Categorical.
+
+      :returns: Permutation indices that would sort the values by category label.
+      :rtype: pdarray
+
+
 
    .. py:attribute:: categories
       :type:  arkouda.numpy.strings.Strings
@@ -475,6 +481,12 @@ Package Contents
 
    .. py:method:: sort_values()
 
+      Return a sorted Categorical by category labels.
+
+      :returns: A new Categorical with values sorted by category.
+      :rtype: Categorical
+
+
 
    .. py:method:: standardize_categories(arrays, NAvalue='N/A')
       :classmethod:
@@ -699,6 +711,12 @@ Package Contents
 
 
    .. py:method:: unique() -> Categorical
+
+      Return the unique category values in the Categorical.
+
+      :returns: A new Categorical containing only the unique category labels in use.
+      :rtype: Categorical
+
 
 
    .. py:method:: unregister() -> None

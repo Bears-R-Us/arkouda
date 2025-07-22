@@ -527,12 +527,33 @@ typically treat this class like a uint64 pdarray.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.from_return_msg">
 <em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/client_dtypes.html#BitVector.from_return_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.client_dtypes.BitVector.from_return_msg" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reconstruct a BitVector from a server return message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rep_msg</strong> (<em>str</em>) – JSON-encoded response from Arkouda server.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reconstructed BitVector instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.client_dtypes.BitVector" title="arkouda.client_dtypes.BitVector">BitVector</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.opeq">
 <span class="sig-name descname"><span class="pre">opeq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/client_dtypes.html#BitVector.opeq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.client_dtypes.BitVector.opeq" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>In-place binary operation on the BitVector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<em>int</em><em>, </em><a class="reference internal" href="#arkouda.client_dtypes.BitVector" title="arkouda.client_dtypes.BitVector"><em>BitVector</em></a><em>, or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Right-hand operand.</p></li>
+<li><p><strong>op</strong> (<em>str</em>) – Binary operator as a string (e.g., ‘+’, ‘&amp;’).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.register">
@@ -695,7 +716,16 @@ typically treat this class like an int64 pdarray.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.Fields.opeq">
 <span class="sig-name descname"><span class="pre">opeq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/client_dtypes.html#Fields.opeq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.client_dtypes.Fields.opeq" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Perform in-place binary operation on the Fields object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<em>str</em><em> or </em><a class="reference internal" href="#arkouda.client_dtypes.BitVector" title="arkouda.client_dtypes.BitVector"><em>BitVector</em></a>) – Operand to apply the binary operation with.</p></li>
+<li><p><strong>op</strong> (<em>str</em>) – Binary operation to apply (e.g., ‘|’, ‘&amp;’).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.Fields.pad">
@@ -742,7 +772,16 @@ typically treat this class like an int64 pdarray.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.export_uint">
 <span class="sig-name descname"><span class="pre">export_uint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/client_dtypes.html#IPv4.export_uint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.client_dtypes.IPv4.export_uint" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Export the internal values as unsigned 64-bit integers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Array of uint64 values representing the data.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.format">
@@ -761,7 +800,16 @@ and convert it to an integer.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.opeq">
 <span class="sig-name descname"><span class="pre">opeq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/client_dtypes.html#IPv4.opeq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.client_dtypes.IPv4.opeq" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Perform an in-place binary operation on the IPv4 object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<em>int</em><em>, </em><em>str</em><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><em>IPv4</em></a>) – Operand for the operation.</p></li>
+<li><p><strong>op</strong> (<em>str</em>) – Binary operator as a string.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.register">
