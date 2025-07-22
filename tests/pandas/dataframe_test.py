@@ -1111,6 +1111,7 @@ class TestDataFrame:
         assert df["a"].tolist() == df2["a"].tolist()
         assert df["b"].tolist() == df2["b"].tolist()
 
+    @pytest.mark.timeout(9000 if pytest.asan else 1800)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_multi_col_merge(self, size):
         size = min(size, 1000)
