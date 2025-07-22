@@ -1,5 +1,6 @@
 import itertools
 import os
+import tempfile
 
 import numpy as np
 import pandas as pd
@@ -37,13 +38,22 @@ def df_test_base_tmp(request):
 
 
 class TestDataFrame:
-    # def test_dataframe_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(
-    #         dataframe, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
-    #     )
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    def test_dataframe_docstrings(self, df_test_base_tmp):
+        import doctest
+
+        from arkouda import dataframe
+
+        with tempfile.TemporaryDirectory(dir=df_test_base_tmp) as tmp_dirname:
+            old_cwd = os.getcwd()
+            try:
+                os.chdir(tmp_dirname)  # Change to temp directory
+                result = doctest.testmod(
+                    dataframe, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+                )
+            finally:
+                os.chdir(old_cwd)  # Always return to original directory
+
+            assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @staticmethod
     def build_pd_df():
