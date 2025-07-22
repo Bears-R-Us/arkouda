@@ -63,7 +63,7 @@ class TestClient:
         ak.shutdown()
         pytest.server, _, _ = start_arkouda_server(numlocales=pytest.nl, port=pytest.port)
         # reconnect to server so subsequent tests will pass
-        ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.timeout)
+        ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.client_timeout)
 
     def test_client_get_config(self):
         """
