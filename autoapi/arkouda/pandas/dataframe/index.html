@@ -392,6 +392,43 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.pandas.dataframe">
 <span id="arkouda-pandas-dataframe"></span><h1>arkouda.pandas.dataframe<a class="headerlink" href="#module-arkouda.pandas.dataframe" title="Link to this heading">¶</a></h1>
+<p>Pandas-like DataFrame module for Arkouda.</p>
+<p>This module provides distributed data frame functionality inspired by pandas,
+enabling scalable manipulation of structured data using Arkouda’s parallel computing
+backend.</p>
+<section id="public-classes">
+<h2>Public Classes<a class="headerlink" href="#public-classes" title="Link to this heading">¶</a></h2>
+<p>DataFrame : Core tabular data structure with labeled columns.
+DataFrameGroupBy : Enables group-by operations on DataFrames.
+DiffAggregate : Utility class for differential aggregation during group-by.</p>
+</section>
+<section id="public-functions">
+<h2>Public Functions<a class="headerlink" href="#public-functions" title="Link to this heading">¶</a></h2>
+<p>intersect(left, right) : Compute the intersection of two arrays.
+invert_permutation(p) : Return the inverse of a permutation array.
+intx(a) : Find all the rows that are in the interesection of two dataframes.
+merge(left, right, …) : Merge two DataFrames using SQL-style join operations.</p>
+<p class="rubric">Notes</p>
+<p>This module implements a subset of pandas-like features and is designed
+for use on large-scale, distributed datasets.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
+<span class="go">   x  y</span>
+<span class="go">0  0  1</span>
+<span class="go">1  1  2</span>
+<span class="go">2  2  3</span>
+<span class="go">3  3  4</span>
+<span class="go">4  4  5 (5 rows x 2 columns)</span>
+</pre></div>
+</div>
+</section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -3630,6 +3667,8 @@ Otherwise, the DataFrame is not sorted.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.pandas.dataframe</a><ul>
+<li><a class="reference internal" href="#public-classes">Public Classes</a></li>
+<li><a class="reference internal" href="#public-functions">Public Functions</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
