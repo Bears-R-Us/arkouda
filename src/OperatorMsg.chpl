@@ -45,7 +45,10 @@ module OperatorMsg
       type binop_dtype_a,
       type binop_dtype_b,
       param array_nd: int
-    ): MsgTuple throws {
+    ): MsgTuple throws
+    where (binop_dtype_a != bigint && binop_dtype_b != bigint) ||
+          (binop_dtype_a == bigint && !isRealType(binop_dtype_b)) ||
+          (!isRealType(binop_dtype_a) && binop_dtype_b == bigint) {
         param pn = Reflection.getRoutineName();
 
         const l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
@@ -156,7 +159,10 @@ module OperatorMsg
       type binop_dtype_a,
       type binop_dtype_b,
       param array_nd: int
-    ): MsgTuple throws {
+    ): MsgTuple throws
+    where (binop_dtype_a != bigint && binop_dtype_b != bigint) ||
+          (binop_dtype_a == bigint && !isRealType(binop_dtype_b)) ||
+          (!isRealType(binop_dtype_a) && binop_dtype_b == bigint) {
         param pn = Reflection.getRoutineName();
 
         const l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
@@ -259,7 +265,7 @@ module OperatorMsg
       :arg st: SymTab to act on
       :type st: borrowed SymTab 
 
-      :returns: (MsgTuple) 
+      :returns: (MsgTuple)
       :throws: `UndefinedSymbolError(name)`
     */
     @arkouda.instantiateAndRegister
@@ -267,7 +273,11 @@ module OperatorMsg
       type binop_dtype_a,
       type binop_dtype_b,
       param array_nd: int
-    ): MsgTuple throws {
+    ): MsgTuple throws
+    where (binop_dtype_a != bigint && binop_dtype_b != bigint) ||
+          (binop_dtype_a == bigint && !isRealType(binop_dtype_b)) ||
+          (!isRealType(binop_dtype_a) && binop_dtype_b == bigint)
+          {
         param pn = Reflection.getRoutineName();
 
         const r = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
