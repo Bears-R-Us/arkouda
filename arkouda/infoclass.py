@@ -55,10 +55,15 @@ Examples
 --------
 >>> import arkouda as ak
 >>> x = ak.arange(5)
->>> ak.information(ak.AllSymbols)
+>>> ak.information(ak.AllSymbols)  # doctest: +SKIP
+'[{"name":"id_o82d7Jt_1", "dtype":"int64", "size":5, "ndim":1, "shape":[5],
+"itemsize":8, "registered":false}]'
 >>> x.register("name1")
->>> ak.list_registry(detailed=True)
->>> ak.list_symbol_table()
+array([0 1 2 3 4])
+>>> ak.list_registry(detailed=True)  # doctest: +SKIP
+ {'Objects': [('name1', 'PDARRAY')], 'Components': ['id_o82d7Jt_1']}
+>>> ak.list_symbol_table()  # doctest: +SKIP
+['id_o82d7Jt_1']
 
 """
 
