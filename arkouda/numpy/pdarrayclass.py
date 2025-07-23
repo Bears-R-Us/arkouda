@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import builtins
+import contextlib
 import json
 from functools import reduce
 from math import ceil
@@ -556,6 +557,7 @@ class pdarray:
 
         self.registered_name: Optional[str] = None
 
+    @contextlib.contextmanager
     def __del__(self):
         try:
             logger.debug(f"deleting pdarray with name {self.name}")
