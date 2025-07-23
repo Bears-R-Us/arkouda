@@ -49,7 +49,6 @@ def bench_bitwise_binops(benchmark, op):
 
     benchmark.extra_info["description"] = "Measures the performance of bigint bitwise binops"
     benchmark.extra_info["problem_size"] = N
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (result / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((result / benchmark.stats["mean"]) / 2**30)
     benchmark.extra_info["max_bit"] = pytest.max_bits

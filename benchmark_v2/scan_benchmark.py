@@ -47,6 +47,5 @@ def bench_scan(benchmark, op, dtype):
     benchmark.extra_info["description"] = f"Scan: {op} using {backend}"
     benchmark.extra_info["problem_size"] = N
     benchmark.extra_info["backend"] = backend
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (nbytes / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)

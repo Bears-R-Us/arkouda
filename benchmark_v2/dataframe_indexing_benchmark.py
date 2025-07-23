@@ -71,6 +71,5 @@ def bench_dataframe(benchmark, op):
 
     benchmark.extra_info["description"] = "Measures the performance of arkouda Dataframe indexing"
     benchmark.extra_info["problem_size"] = N
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (numBytes / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((numBytes / benchmark.stats["mean"]) / 2**30)
