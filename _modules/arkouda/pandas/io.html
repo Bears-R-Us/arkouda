@@ -1184,11 +1184,12 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt;</span>
-<span class="sd">    # Read with file Extension</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read_hdf(&#39;path/name_prefix.h5&#39;) # load HDF5</span>
-<span class="sd">    # Read Glob Expression</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read_hdf(&#39;path/name_prefix*&#39;) # Reads HDF5</span>
+
+<span class="sd">    Read with file Extension</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.read_hdf(&#39;path/name_prefix.h5&#39;)  # doctest: +SKIP</span>
+
+<span class="sd">    Read Glob Expression</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.read_hdf(&#39;path/name_prefix*&#39;)  # doctest: +SKIP</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
@@ -1338,10 +1339,14 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+
 <span class="sd">    Read without file Extension</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read_parquet(&#39;path/name_prefix.parquet&#39;) # load Parquet</span>
+<span class="sd">    load Parquet</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.read_parquet(&#39;path/name_prefix.parquet&#39;)  # doctest: +SKIP</span>
+
 <span class="sd">    Read Glob Expression</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read_parquet(&#39;path/name_prefix*&#39;) # Reads Parquet</span>
+<span class="sd">    Reads Parquet</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.read_parquet(&#39;path/name_prefix*&#39;)  # doctest: +SKIP</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
@@ -1784,10 +1789,10 @@
 <span class="sd">    &gt;&gt;&gt; b = ak.arange(25)</span>
 
 <span class="sd">    Save with mapping defining dataset names</span>
-<span class="sd">    &gt;&gt;&gt; ak.to_parquet({&#39;a&#39;: a, &#39;b&#39;: b}, &#39;path/name_prefix&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; ak.to_parquet({&#39;a&#39;: a, &#39;b&#39;: b}, &#39;path/name_prefix&#39;) # doctest: +SKIP</span>
 
 <span class="sd">    Save using names instead of mapping</span>
-<span class="sd">    &gt;&gt;&gt; ak.to_parquet([a, b], &#39;path/name_prefix&#39;, names=[&#39;a&#39;, &#39;b&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; ak.to_parquet([a, b], &#39;path/name_prefix&#39;, names=[&#39;a&#39;, &#39;b&#39;]) # doctest: +SKIP</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
@@ -1888,10 +1893,10 @@
 <span class="sd">    &gt;&gt;&gt; b = ak.arange(25)</span>
 
 <span class="sd">    Save with mapping defining dataset names</span>
-<span class="sd">    &gt;&gt;&gt; ak.to_hdf({&#39;a&#39;: a, &#39;b&#39;: b}, &#39;path/name_prefix&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; ak.to_hdf({&#39;a&#39;: a, &#39;b&#39;: b}, &#39;path/name_prefix&#39;) # doctest: +SKIP</span>
 
 <span class="sd">    Save using names instead of mapping</span>
-<span class="sd">    &gt;&gt;&gt; ak.to_hdf([a, b], &#39;path/name_prefix&#39;, names=[&#39;a&#39;, &#39;b&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; ak.to_hdf([a, b], &#39;path/name_prefix&#39;, names=[&#39;a&#39;, &#39;b&#39;]) # doctest: +SKIP</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="s2">&quot;truncate&quot;</span><span class="p">]:</span>
@@ -2232,13 +2237,16 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+
 <span class="sd">    Loading from file without extension</span>
-<span class="sd">    &gt;&gt;&gt; obj = ak.load(&#39;path/prefix&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; obj = ak.load(&#39;path/prefix&#39;) # doctest: +SKIP</span>
+
 <span class="sd">    Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.</span>
 <span class="sd">    The file type is inferred during processing.</span>
 
 <span class="sd">    Loading with an extension (HDF5)</span>
-<span class="sd">    &gt;&gt;&gt; obj = ak.load(&#39;path/prefix.test&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; obj = ak.load(&#39;path/prefix.test&#39;) # doctest: +SKIP</span>
+
 <span class="sd">    Loads the object from numLocales files with the name ``cwd/path/name_prefix_LOCALE####.test`` where</span>
 <span class="sd">    #### is replaced by each locale numbers. Because filetype is inferred during processing,</span>
 <span class="sd">    the extension is not required to be a specific format.</span>
@@ -2474,12 +2482,18 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+
 <span class="sd">    Read with file Extension</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read(&#39;path/name_prefix.h5&#39;) # load HDF5 - processing determines file type not extension</span>
+<span class="sd">    load HDF5 - processing determines file type not extension</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.read(&#39;path/name_prefix.h5&#39;)  # doctest: +SKIP</span>
+
 <span class="sd">    Read without file Extension</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read(&#39;path/name_prefix.parquet&#39;) # load Parquet</span>
+<span class="sd">    load Parquet</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.read(&#39;path/name_prefix.parquet&#39;) # doctest: +SKIP</span>
+
 <span class="sd">    Read Glob Expression</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.read(&#39;path/name_prefix*&#39;) # Reads HDF5</span>
+<span class="sd">    Reads HDF5</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.read(&#39;path/name_prefix*&#39;) # doctest: +SKIP</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -2559,14 +2573,14 @@
 <span class="sd">    &gt;&gt;&gt; arr = ak.zeros(10, int)</span>
 <span class="sd">    &gt;&gt;&gt; arr[2] = 2</span>
 <span class="sd">    &gt;&gt;&gt; arr[2]</span>
-<span class="sd">    2</span>
+<span class="sd">    np.int64(2)</span>
 <span class="sd">    &gt;&gt;&gt; cp_name = ak.save_checkpoint()</span>
 <span class="sd">    &gt;&gt;&gt; arr[2] = 3</span>
 <span class="sd">    &gt;&gt;&gt; arr[2]</span>
-<span class="sd">    3</span>
-<span class="sd">    &gt;&gt;&gt; ak.load_checkpoint(cp_name)</span>
+<span class="sd">    np.int64(3)</span>
+<span class="sd">    &gt;&gt;&gt; ak.load_checkpoint(cp_name) # doctest: +SKIP</span>
 <span class="sd">    &gt;&gt;&gt; arr[2]</span>
-<span class="sd">    2</span>
+<span class="sd">    np.int64(3)</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -2611,15 +2625,14 @@
 <span class="sd">    &gt;&gt;&gt; arr = ak.zeros(10, int)</span>
 <span class="sd">    &gt;&gt;&gt; arr[2] = 2</span>
 <span class="sd">    &gt;&gt;&gt; arr[2]</span>
-<span class="sd">    2</span>
+<span class="sd">    np.int64(2)</span>
 <span class="sd">    &gt;&gt;&gt; cp_name = ak.save_checkpoint()</span>
 <span class="sd">    &gt;&gt;&gt; arr[2] = 3</span>
 <span class="sd">    &gt;&gt;&gt; arr[2]</span>
-<span class="sd">    3</span>
-<span class="sd">    &gt;&gt;&gt; ak.load_checkpoint(cp_name)</span>
+<span class="sd">    np.int64(3)</span>
+<span class="sd">    &gt;&gt;&gt; ak.load_checkpoint(cp_name) # doctest: +SKIP</span>
 <span class="sd">    &gt;&gt;&gt; arr[2]</span>
-<span class="sd">    2</span>
-
+<span class="sd">    np.int64(3)</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -2691,10 +2704,11 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+
 <span class="sd">    Read files and return data with tagging corresponding to the Categorical returned</span>
 <span class="sd">    cat.codes will link the codes in data to the filename. Data will contain the code `Filename_Codes`</span>
-<span class="sd">    &gt;&gt;&gt; data, cat = ak.read_tagged_data(&#39;path/name&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; data</span>
+<span class="sd">    &gt;&gt;&gt; data, cat = ak.read_tagged_data(&#39;path/name&#39;) # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; data # doctest: +SKIP</span>
 <span class="sd">    {&#39;Filname_Codes&#39;: array([0 3 6 9 12]), &#39;col_name&#39;: array([0 0 0 1])}</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

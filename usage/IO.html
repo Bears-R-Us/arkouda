@@ -623,14 +623,17 @@ to HDF5/Parquet files.</p>
 <p>CSV files without the Arkouda Header are not supported.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="go">Read with file Extension</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;path/name_prefix.h5&#39;</span><span class="p">)</span> <span class="c1"># load HDF5 - processing determines file type not extension</span>
-<span class="go">Read without file Extension</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;path/name_prefix.parquet&#39;</span><span class="p">)</span> <span class="c1"># load Parquet</span>
-<span class="go">Read Glob Expression</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;path/name_prefix*&#39;</span><span class="p">)</span> <span class="c1"># Reads HDF5</span>
 </pre></div>
 </div>
+<p>Read with file Extension
+load HDF5 - processing determines file type not extension
+&gt;&gt;&gt; x = ak.read(‘path/name_prefix.h5’)  # doctest: +SKIP</p>
+<p>Read without file Extension
+load Parquet
+&gt;&gt;&gt; x = ak.read(‘path/name_prefix.parquet’) # doctest: +SKIP</p>
+<p>Read Glob Expression
+Reads HDF5
+&gt;&gt;&gt; x = ak.read(‘path/name_prefix*’) # doctest: +SKIP</p>
 </dd></dl>
 
 <p>For convenience, multiple datasets can be read in to create a dictionary of pdarrays.</p>

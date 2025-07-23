@@ -723,15 +723,15 @@ For loading single HDF5 files without the _LOCALE#### suffix please use ak.read(
 <p>CSV files without the Arkouda Header are not supported.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="go">Loading from file without extension</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;path/prefix&#39;</span><span class="p">)</span>
-<span class="go">Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.</span>
-<span class="go">The file type is inferred during processing.</span>
 </pre></div>
 </div>
+<p>Loading from file without extension
+&gt;&gt;&gt; obj = ak.load(‘path/prefix’) # doctest: +SKIP</p>
+<p>Loads the array from numLocales files with the name <code class="docutils literal notranslate"><span class="pre">cwd/path/name_prefix_LOCALE####</span></code>.
+The file type is inferred during processing.</p>
 <p>Loading with an extension (HDF5)
-&gt;&gt;&gt; obj = ak.load(‘path/prefix.test’)
-Loads the object from numLocales files with the name <code class="docutils literal notranslate"><span class="pre">cwd/path/name_prefix_LOCALE####.test</span></code> where
+&gt;&gt;&gt; obj = ak.load(‘path/prefix.test’) # doctest: +SKIP</p>
+<p>Loads the object from numLocales files with the name <code class="docutils literal notranslate"><span class="pre">cwd/path/name_prefix_LOCALE####.test</span></code> where
 #### is replaced by each locale numbers. Because filetype is inferred during processing,
 the extension is not required to be a specific format.</p>
 </dd></dl>
@@ -806,14 +806,14 @@ configuration (e.g. same number of locales must be used).</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-<span class="go">2</span>
+<span class="go">np.int64(2)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cp_name</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-<span class="go">3</span>
+<span class="go">np.int64(3)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">load_checkpoint</span><span class="p">(</span><span class="n">cp_name</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-<span class="go">2</span>
+<span class="go">np.int64(3)</span>
 </pre></div>
 </div>
 <div class="admonition seealso">
@@ -954,14 +954,17 @@ to HDF5/Parquet files.</p>
 <p>CSV files without the Arkouda Header are not supported.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="go">Read with file Extension</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;path/name_prefix.h5&#39;</span><span class="p">)</span> <span class="c1"># load HDF5 - processing determines file type not extension</span>
-<span class="go">Read without file Extension</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;path/name_prefix.parquet&#39;</span><span class="p">)</span> <span class="c1"># load Parquet</span>
-<span class="go">Read Glob Expression</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;path/name_prefix*&#39;</span><span class="p">)</span> <span class="c1"># Reads HDF5</span>
 </pre></div>
 </div>
+<p>Read with file Extension
+load HDF5 - processing determines file type not extension
+&gt;&gt;&gt; x = ak.read(‘path/name_prefix.h5’)  # doctest: +SKIP</p>
+<p>Read without file Extension
+load Parquet
+&gt;&gt;&gt; x = ak.read(‘path/name_prefix.parquet’) # doctest: +SKIP</p>
+<p>Read Glob Expression
+Reads HDF5
+&gt;&gt;&gt; x = ak.read(‘path/name_prefix*’) # doctest: +SKIP</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1075,13 +1078,12 @@ to HDF5 files.</p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="go"># Read with file Extension</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="s1">&#39;path/name_prefix.h5&#39;</span><span class="p">)</span> <span class="c1"># load HDF5</span>
-<span class="go"># Read Glob Expression</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="s1">&#39;path/name_prefix*&#39;</span><span class="p">)</span> <span class="c1"># Reads HDF5</span>
 </pre></div>
 </div>
+<p>Read with file Extension
+&gt;&gt;&gt; x = ak.read_hdf(‘path/name_prefix.h5’)  # doctest: +SKIP</p>
+<p>Read Glob Expression
+&gt;&gt;&gt; x = ak.read_hdf(‘path/name_prefix*’)  # doctest: +SKIP</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1151,12 +1153,14 @@ This will need to be updated once parquets workflow is updated</p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="go">Read without file Extension</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s1">&#39;path/name_prefix.parquet&#39;</span><span class="p">)</span> <span class="c1"># load Parquet</span>
-<span class="go">Read Glob Expression</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s1">&#39;path/name_prefix*&#39;</span><span class="p">)</span> <span class="c1"># Reads Parquet</span>
 </pre></div>
 </div>
+<p>Read without file Extension
+load Parquet
+&gt;&gt;&gt; x = ak.read_parquet(‘path/name_prefix.parquet’)  # doctest: +SKIP</p>
+<p>Read Glob Expression
+Reads Parquet
+&gt;&gt;&gt; x = ak.read_parquet(‘path/name_prefix*’)  # doctest: +SKIP</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1194,13 +1198,13 @@ that contain null values.</p></li>
 <p>Not currently supported for Categorical or GroupBy datasets</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="go">Read files and return data with tagging corresponding to the Categorical returned</span>
-<span class="go">cat.codes will link the codes in data to the filename. Data will contain the code `Filename_Codes`</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">cat</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_tagged_data</span><span class="p">(</span><span class="s1">&#39;path/name&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span>
-<span class="go">{&#39;Filname_Codes&#39;: array([0 3 6 9 12]), &#39;col_name&#39;: array([0 0 0 1])}</span>
 </pre></div>
 </div>
+<p>Read files and return data with tagging corresponding to the Categorical returned
+cat.codes will link the codes in data to the filename. Data will contain the code <cite>Filename_Codes</cite>
+&gt;&gt;&gt; data, cat = ak.read_tagged_data(‘path/name’) # doctest: +SKIP
+&gt;&gt;&gt; data # doctest: +SKIP
+{‘Filname_Codes’: array([0 3 6 9 12]), ‘col_name’: array([0 0 0 1])}</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1360,14 +1364,14 @@ it was passed.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-<span class="go">2</span>
+<span class="go">np.int64(2)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cp_name</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-<span class="go">3</span>
+<span class="go">np.int64(3)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">load_checkpoint</span><span class="p">(</span><span class="n">cp_name</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-<span class="go">2</span>
+<span class="go">np.int64(3)</span>
 </pre></div>
 </div>
 <div class="admonition seealso">
@@ -1486,9 +1490,9 @@ is present or dataset names already exist, a RuntimeError is raised.</p>
 </pre></div>
 </div>
 <p>Save with mapping defining dataset names
-&gt;&gt;&gt; ak.to_hdf({‘a’: a, ‘b’: b}, ‘path/name_prefix’)</p>
+&gt;&gt;&gt; ak.to_hdf({‘a’: a, ‘b’: b}, ‘path/name_prefix’) # doctest: +SKIP</p>
 <p>Save using names instead of mapping
-&gt;&gt;&gt; ak.to_hdf([a, b], ‘path/name_prefix’, names=[‘a’, ‘b’])</p>
+&gt;&gt;&gt; ak.to_hdf([a, b], ‘path/name_prefix’, names=[‘a’, ‘b’]) # doctest: +SKIP</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1545,9 +1549,9 @@ is present or dataset names already exist, a RuntimeError is raised.</p>
 </pre></div>
 </div>
 <p>Save with mapping defining dataset names
-&gt;&gt;&gt; ak.to_parquet({‘a’: a, ‘b’: b}, ‘path/name_prefix’)</p>
+&gt;&gt;&gt; ak.to_parquet({‘a’: a, ‘b’: b}, ‘path/name_prefix’) # doctest: +SKIP</p>
 <p>Save using names instead of mapping
-&gt;&gt;&gt; ak.to_parquet([a, b], ‘path/name_prefix’, names=[‘a’, ‘b’])</p>
+&gt;&gt;&gt; ak.to_parquet([a, b], ‘path/name_prefix’, names=[‘a’, ‘b’]) # doctest: +SKIP</p>
 </dd></dl>
 
 <dl class="py function">
