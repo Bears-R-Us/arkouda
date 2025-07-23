@@ -5,7 +5,7 @@ import arkouda as ak
 
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="BigInt_Conversion")
-@pytest.mark.parametrize("direction", ["to_bigint", "from_bigint"])
+@pytest.mark.parametrize("direction", ["bigint_from_uint_arrays", "bigint_to_uint_arrays"])
 def bench_bigint_conversion(benchmark, direction):
     N = pytest.N
     max_bits = pytest.max_bits
@@ -14,7 +14,7 @@ def bench_bigint_conversion(benchmark, direction):
     b = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=pytest.seed)
     tot_bytes = N * 8 if (0 < max_bits <= 64) else N * 16
 
-    if direction == "to_bigint":
+    if direction == "bigint_from_uint_arrays":
 
         def run():
             ak.bigint_from_uint_arrays([a, b], max_bits=max_bits)
@@ -36,6 +36,5 @@ def bench_bigint_conversion(benchmark, direction):
     benchmark.extra_info["problem_size"] = N
     benchmark.extra_info["backend"] = "Arkouda"
     benchmark.extra_info["max_bits"] = max_bits
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (bytes_processed / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((bytes_processed / benchmark.stats["mean"]) / 2**30)

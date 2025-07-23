@@ -52,9 +52,8 @@ def run_sort(benchmark, name, data, sort_fn):
     benchmark.extra_info["description"] = f"{name} via {backend}"
     benchmark.extra_info["problem_size"] = data[0].size if isinstance(data, tuple) else data.size
     benchmark.extra_info["backend"] = backend
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (numBytes / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((numBytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.benchmark(group="AK_Sort_Cases")

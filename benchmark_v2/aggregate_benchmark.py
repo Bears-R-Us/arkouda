@@ -65,6 +65,5 @@ def bench_aggregate(benchmark, op):
         f"Measures performance of GroupBy.aggregate using the {op} operator."
     )
     benchmark.extra_info["problem_size"] = N
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (numBytes / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((numBytes / benchmark.stats["mean"]) / 2**30)
