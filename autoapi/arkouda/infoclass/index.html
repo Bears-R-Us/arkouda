@@ -450,9 +450,14 @@ for debugging, exploratory analysis, and monitoring the state of server-managed 
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">information</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">AllSymbols</span><span class="p">)</span>
+<span class="go">&#39;[{&quot;name&quot;:&quot;id_o82d7Jt_1&quot;, &quot;dtype&quot;:&quot;int64&quot;, &quot;size&quot;:5, &quot;ndim&quot;:1, &quot;shape&quot;:[5],</span>
+<span class="go">&quot;itemsize&quot;:8, &quot;registered&quot;:false}]&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;name1&quot;</span><span class="p">)</span>
+<span class="go">array([0 1 2 3 4])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">list_registry</span><span class="p">(</span><span class="n">detailed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go"> {&#39;Objects&#39;: [(&#39;name1&#39;, &#39;PDARRAY&#39;)], &#39;Components&#39;: [&#39;id_o82d7Jt_1&#39;]}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">list_symbol_table</span><span class="p">()</span>
+<span class="go">[&#39;id_o82d7Jt_1&#39;]</span>
 </pre></div>
 </div>
 </section>

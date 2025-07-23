@@ -441,10 +441,15 @@
 <span class="sd">--------</span>
 <span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">&gt;&gt;&gt; x = ak.arange(5)</span>
-<span class="sd">&gt;&gt;&gt; ak.information(ak.AllSymbols)</span>
+<span class="sd">&gt;&gt;&gt; ak.information(ak.AllSymbols)  # doctest: +SKIP</span>
+<span class="sd">&#39;[{&quot;name&quot;:&quot;id_o82d7Jt_1&quot;, &quot;dtype&quot;:&quot;int64&quot;, &quot;size&quot;:5, &quot;ndim&quot;:1, &quot;shape&quot;:[5],</span>
+<span class="sd">&quot;itemsize&quot;:8, &quot;registered&quot;:false}]&#39;</span>
 <span class="sd">&gt;&gt;&gt; x.register(&quot;name1&quot;)</span>
-<span class="sd">&gt;&gt;&gt; ak.list_registry(detailed=True)</span>
-<span class="sd">&gt;&gt;&gt; ak.list_symbol_table()</span>
+<span class="sd">array([0 1 2 3 4])</span>
+<span class="sd">&gt;&gt;&gt; ak.list_registry(detailed=True)  # doctest: +SKIP</span>
+<span class="sd"> {&#39;Objects&#39;: [(&#39;name1&#39;, &#39;PDARRAY&#39;)], &#39;Components&#39;: [&#39;id_o82d7Jt_1&#39;]}</span>
+<span class="sd">&gt;&gt;&gt; ak.list_symbol_table()  # doctest: +SKIP</span>
+<span class="sd">[&#39;id_o82d7Jt_1&#39;]</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
