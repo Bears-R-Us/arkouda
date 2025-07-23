@@ -8305,10 +8305,10 @@ If False, sort in descending order.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i_cpy</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">i_cpy</span><span class="p">)</span>
-<span class="go">True</span>
+<span class="go">np.True_</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">i2</span><span class="p">)</span>
-<span class="go">False</span>
+<span class="go">np.False_</span>
 </pre></div>
 </div>
 <p>MultiIndex case:</p>
@@ -8480,7 +8480,7 @@ Raised if index values not of type pdarray, Categorical, or Strings.</p>
 <span class="go">5.00000000000000000 25.00000000000000000]), dtype=&#39;float64&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">]),</span> <span class="n">index</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
-<span class="go">Index(array([&#39;b&#39;, &#39;b&#39;, &#39;d&#39;, &#39;d&#39;, &#39;a&#39;]), dtype=&#39;&lt;U0&#39;)</span>
+<span class="go">Index(array([&#39;b&#39;, &#39;d&#39;, &#39;b&#39;, &#39;d&#39;, &#39;a&#39;]), dtype=&#39;&lt;U0&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
