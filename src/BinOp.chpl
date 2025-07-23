@@ -129,6 +129,32 @@ module BinOp
     return res;
   }
 
+  //
+  // TODO: these checks sets are used only to check if a string matches
+  // i.e. realOps.contains(op) or boolOps.contains(op)
+  // however, a faster way to do this is to write a function that checks
+  // the ascii bytes
+  // for example, the boolOps can be written as:
+  //
+  // return (op.numBytes == 1 && (op.byte[0] == 60 ||
+  //                             op.byte[0] == 62)) ||
+  //        (op.numBytes == 2 && ((op.byte[0] == 60 && op.byte[1] == 61) ||
+  //                              (op.byte[0] == 62 && op.byte[1] == 61) ||
+  //                              (op.byte[0] == 61 && op.byte[1] == 61) ||
+  //                              (op.byte[0] == 33 && op.byte[1] == 61)));
+  //
+  // it should also be possible to use the `toByte` method at compile-time to
+  // improve the readability, although this has not been tested to see how it impacts
+  // compile-time and runtime performance:
+  //
+  // return (op.numBytes == 1 && (op.byte[0] == "<".toByte() ||
+  //                             op.byte[0] == ">".toByte())) ||
+  //        (op.numBytes == 2 && ((op.byte[0] == "<".toByte() && op.byte[1] == "=".toByte()) ||
+  //                              (op.byte[0] == ">".toByte() && op.byte[1] == "=".toByte()) ||
+  //                              (op.byte[0] == "=".toByte() && op.byte[1] == "=".toByte()) ||
+  //                              (op.byte[0] == "!".toByte() && op.byte[1] == "=".toByte())));
+  //
+
   const realOps = new set(string, ["+", "-", "*", "//", "%", "**"]);
 
   // All operations that involve one of these operations result in a `bool`
