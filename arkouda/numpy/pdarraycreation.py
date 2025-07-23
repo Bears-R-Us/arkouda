@@ -162,6 +162,16 @@ def from_series(series: pd.Series, dtype: Optional[Union[type, str]] = None) -> 
     return array(n_array)
 
 
+def _deepcopy(a: pdarray) -> pdarray:
+    from arkouda.client import generic_msg
+
+    rep_msg = generic_msg(
+        cmd=f"deepcopy<{a.dtype.name},{a.ndim}>",
+        args={"x": a},
+    )
+    return create_pdarray(rep_msg)
+
+
 def array(
     a: Union[pdarray, np.ndarray, Iterable, Strings],
     dtype: Union[np.dtype, type, str, None] = None,
@@ -241,24 +251,24 @@ def array(
     from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy.numeric import cast as akcast
 
-    if copy is False:
-        if isinstance(a, Strings) or (isinstance(a, pdarray) and (a.dtype == dtype or dtype is None)):
-            return a
+    if isinstance(a, pdarray) and (a.dtype == dtype or dtype is None):
+        return _deepcopy(a) if copy else a
 
     if isinstance(a, Strings):
         if dtype and dtype != "str_":
             raise TypeError(f"Cannot cast Strings to dtype {dtype} in ak.array")
-        return Strings(cast(pdarray, array([], dtype="int64")), 0) if a.size == 0 else a[:]
+        return Strings(cast(pdarray, array([], dtype="int64")), 0) if a.size == 0 else a[:] if copy else a
 
-    # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
-        casted = a[:] if dtype is None else akcast(a, dtype)
+        casted = akcast(a, dtype)  # the "dtype is None" case was covered above
         if dtype == bigint and max_bits != -1:
             casted.max_bits = max_bits
         return casted
+
     from arkouda.client import maxTransferBytes
 
     # If a is not already a numpy.ndarray, convert it
+
     if not isinstance(a, np.ndarray):
         try:
             if dtype is not None and dtype != bigint:
