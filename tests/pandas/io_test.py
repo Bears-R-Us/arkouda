@@ -231,13 +231,20 @@ def make_multi_dtype_dict():
 class TestParquet:
     COMPRESSIONS = [None, "snappy", "gzip", "brotli", "zstd", "lz4"]
 
-    # def test_io_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(
-    #         io, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
-    #     )
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    def test_io_docstrings(self, par_test_base_tmp):
+        import doctest
+
+        from arkouda import io
+
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            old_cwd = os.getcwd()
+            try:
+                os.chdir(tmp_dirname)  # Change to temp directory
+                result = doctest.testmod(io, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+            finally:
+                os.chdir(old_cwd)  # Always return to original directory
+
+            assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_AND_STR_TYPES)
