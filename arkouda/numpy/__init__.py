@@ -275,6 +275,7 @@ from arkouda.numpy.pdarraycreation import (
 from arkouda.numpy.pdarraymanipulation import append, delete, hstack, vstack
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.char import isnumeric
+from arkouda.numpy.random import rand
 from arkouda.numpy.timeclass import (
     Datetime,
     Timedelta,

@@ -4,15 +4,58 @@ from typeguard import typechecked
 
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes
 from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
 __all__ = [
+    "rand",
     "randint",
     "standard_normal",
     "uniform",
 ]
+
+
+@typechecked
+def rand(*size: int_scalars, seed: Union[None, int_scalars] = None) -> Union[pdarray, akfloat64]:
+    """
+    Generate a pdarray of float values in the range (0,1).
+
+    Parameters
+    ----------
+    size : int
+        Dimensions of the returned array. Multiple arguments define a shape tuple.
+
+    seed : int_scalars, optional
+        The seed for the random number generator
+
+    Returns
+    -------
+    pdarray
+        Values drawn uniformly from the range (0,1).
+
+    Raises
+    ------
+    TypeError
+        Raised if size is not an int or a sequence of ints, or if seed is not an int
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.rand(3,seed=1701)
+    array([0.011410423448327005 0.73618171558685619 0.12367222192448891])
+    """
+    from arkouda.numpy.util import _infer_shape_from_size
+
+    if not size:  # meaning the tuple is empty, i.e. we are returning a scalar
+        return uniform(1, seed=seed)[0]
+    else:
+        shape, ndim, full_size = _infer_shape_from_size(size)
+        if ndim == 1:
+            return uniform(full_size, seed=seed)
+        else:
+            return uniform(full_size, seed=seed).reshape(shape)
 
 
 @typechecked
