@@ -160,9 +160,8 @@ module OperatorMsg
       type binop_dtype_b,
       param array_nd: int
     ): MsgTuple throws
-    where (binop_dtype_a != bigint && binop_dtype_b != bigint) ||
-          (binop_dtype_a == bigint && !isRealType(binop_dtype_b)) ||
-          (!isRealType(binop_dtype_a) && binop_dtype_b == bigint) {
+    where (binop_dtype_a == bigint && binop_dtype_b == bigint) ||
+          (binop_dtype_a != bigint && binop_dtype_b != bigint) {
         param pn = Reflection.getRoutineName();
 
         const l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
@@ -274,9 +273,8 @@ module OperatorMsg
       type binop_dtype_b,
       param array_nd: int
     ): MsgTuple throws
-    where (binop_dtype_a != bigint && binop_dtype_b != bigint) ||
-          (binop_dtype_a == bigint && !isRealType(binop_dtype_b)) ||
-          (!isRealType(binop_dtype_a) && binop_dtype_b == bigint)
+    where (binop_dtype_a == bigint && binop_dtype_b == bigint) ||
+          (binop_dtype_a != bigint && binop_dtype_b != bigint)
           {
         param pn = Reflection.getRoutineName();
 

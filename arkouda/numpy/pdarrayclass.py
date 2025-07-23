@@ -770,12 +770,23 @@ class pdarray:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
 
         from arkouda.numpy.dtypes import can_cast as ak_can_cast
+        from arkouda.numpy.util import _is_dtype_in_union
+        from arkouda.numpy.dtypes import float_scalars
 
         if self.dtype != "bigint" and ak_can_cast(other, self.dtype):
             dt = self.dtype.name
 
         if isSupportedBool(other):
             dt = "bool"
+
+        if (
+            self.dtype == "bigint"
+            and dt not in ("float64", "float32")
+            and not _is_dtype_in_union(dt, float_scalars)
+        ):
+            # cast the scalar to bigint
+            dt = "bigint"
+            other = self.dtype.type(other)
 
         repMsg = generic_msg(
             cmd=f"binopvs<{self.dtype},{dt},{self.ndim}>",
@@ -821,12 +832,23 @@ class pdarray:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
 
         from arkouda.numpy.dtypes import can_cast as ak_can_cast
+        from arkouda.numpy.util import _is_dtype_in_union
+        from arkouda.numpy.dtypes import float_scalars
 
         if self.dtype != "bigint" and ak_can_cast(other, self.dtype):
             dt = self.dtype.name
 
         if isSupportedBool(other):
             dt = "bool"
+
+        if (
+            self.dtype == "bigint"
+            and dt not in ("float64", "float32")
+            and not _is_dtype_in_union(dt, float_scalars)
+        ):
+            # cast the scalar to bigint
+            dt = "bigint"
+            other = self.dtype.type(other)
 
         repMsg = generic_msg(
             cmd=f"binopsv<{self.dtype},{dt},{self.ndim}>",
