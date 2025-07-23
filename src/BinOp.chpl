@@ -9,6 +9,7 @@ module BinOp
   use Message;
   use BitOps;
   use BigInteger;
+  use Set;
 
 
   private config const logLevel = ServerConfig.logLevel;
@@ -128,18 +129,11 @@ module BinOp
     return res;
   }
 
-  proc isRealOp(op: string): bool {
-    return op == "+" || op == "-" || op == "*" ||
-           op == "//" || op == "%" || op == "**";
-  }
+  const realOps = new set(string, ["+", "-", "*", "//", "%", "**"]);
 
   // All operations that involve one of these operations result in a `bool`
   // symbol table entry.
-  proc isBoolOp(op: string): bool {
-    return op == "<"  || op == "<=" ||
-           op == ">"  || op == ">=" ||
-           op == "==" || op == "!=";
-  }
+  const boolOps = new set(string, ["<", "<=", ">", ">=", "==", "!="]);
 
   proc doBoolBoolBitOp(
     op: string, ref e: [] bool, l: [] bool, r /*: [] bool OR bool*/
@@ -195,7 +189,7 @@ module BinOp
 
     if etype == bool {
 
-      if isBoolOp(op) {
+      if boolOps.contains(op) {
 
         select op {
 
@@ -328,7 +322,7 @@ module BinOp
 
     if etype == bool {
 
-      if isBoolOp(op) {
+      if boolOps.contains(op) {
 
         select op {
 
@@ -453,7 +447,7 @@ module BinOp
 
     if etype == bool {
 
-      if isBoolOp(op) {
+      if boolOps.contains(op) {
 
         select op {
 

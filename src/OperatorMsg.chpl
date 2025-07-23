@@ -64,7 +64,7 @@ module OperatorMsg
         if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
                 !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
         {
-          if isBoolOp(op) {
+          if boolOps.contains(op) {
             // call bigint specific func which returns distr bool array
             return st.insert(new shared SymEntry(doBigIntBinOpvvBoolReturn(l, r, op)));
           }
@@ -77,7 +77,7 @@ module OperatorMsg
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
-        if isBoolOp(op) {
+        if boolOps.contains(op) {
           return doBinOpvv(l, r, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
         }
 
@@ -93,14 +93,14 @@ module OperatorMsg
 
         type returnType = mySafeCast(binop_dtype_a, binop_dtype_b);
 
-        if (!isRealOp(op)) && (returnType == real(32) || returnType == real(64)) {
+        if (!realOps.contains(op)) && (returnType == real(32) || returnType == real(64)) {
           const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
           omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
         if returnType == bool {
-          if op == "+" || op == "*" || (!isRealOp(op)) {
+          if op == "+" || op == "*" || (!realOps.contains(op)) {
             return doBinOpvv(l, r, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
           }
           if op == "-" {
@@ -153,7 +153,7 @@ module OperatorMsg
         if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
                 !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
         {
-          if isBoolOp(op) {
+          if boolOps.contains(op) {
             // call bigint specific func which returns distr bool array
             return st.insert(new shared SymEntry(doBigIntBinOpvsBoolReturn(l, val, op)));
           }
@@ -166,7 +166,7 @@ module OperatorMsg
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
-        if isBoolOp(op) {
+        if boolOps.contains(op) {
           return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
         }
 
@@ -182,14 +182,14 @@ module OperatorMsg
 
         type returnType = mySafeCast(binop_dtype_a, binop_dtype_b);
 
-        if (!isRealOp(op)) && (returnType == real(32) || returnType == real(64)) {
+        if (!realOps.contains(op)) && (returnType == real(32) || returnType == real(64)) {
           const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
           omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
         if returnType == bool {
-          if op == "+" || op == "*" || (!isRealOp(op)) {
+          if op == "+" || op == "*" || (!realOps.contains(op)) {
             return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
           }
           if op == "-" {
@@ -241,7 +241,7 @@ module OperatorMsg
         if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
                 !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
         {
-          if isBoolOp(op) {
+          if boolOps.contains(op) {
             // call bigint specific func which returns distr bool array
             return st.insert(new shared SymEntry(doBigIntBinOpsvBoolReturn(val, r, op)));
           }
@@ -254,7 +254,7 @@ module OperatorMsg
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
-        if isBoolOp(op) {
+        if boolOps.contains(op) {
           return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
         }
 
@@ -270,14 +270,14 @@ module OperatorMsg
 
         type returnType = mySafeCast(binop_dtype_a, binop_dtype_b);
 
-        if (!isRealOp(op)) && (returnType == real(32) || returnType == real(64)) {
+        if (!realOps.contains(op)) && (returnType == real(32) || returnType == real(64)) {
           const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
           omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
         if returnType == bool {
-          if op == "+" || op == "*" || (!isRealOp(op)) {
+          if op == "+" || op == "*" || (!realOps.contains(op)) {
             return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
           }
           if op == "-" {
