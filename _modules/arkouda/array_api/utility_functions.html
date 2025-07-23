@@ -540,15 +540,15 @@
 <span class="sd">    &gt;&gt;&gt; import arkouda.array_api as xp</span>
 <span class="sd">    &gt;&gt;&gt; x = xp.asarray(ak.array([1, 2, 4, 7, 0]))</span>
 <span class="sd">    &gt;&gt;&gt; xp.diff(x)</span>
-<span class="sd">    [ 1,  2,  3, -7]</span>
+<span class="sd">    Arkouda Array ((4,), int64)[1 2 3 -7]</span>
 <span class="sd">    &gt;&gt;&gt; xp.diff(x, n=2)</span>
-<span class="sd">    [  1,   1, -10]</span>
+<span class="sd">    Arkouda Array ((3,), int64)[1 1 -10]</span>
 
 <span class="sd">    &gt;&gt;&gt; x = xp.asarray(ak.array([[1, 3, 6, 10], [0, 5, 6, 8]]))</span>
 <span class="sd">    &gt;&gt;&gt; xp.diff(x)</span>
-<span class="sd">    [[2, 3, 4], [5, 1, 2]]</span>
+<span class="sd">    Arkouda Array ((2, 3), int64)[[2 3 4] [5 1 2]]</span>
 <span class="sd">    &gt;&gt;&gt; xp.diff(x, axis=0)</span>
-<span class="sd">    array([[-1,  2,  0, -2]])</span>
+<span class="sd">    Arkouda Array ((1, 4), int64)[[-1 2 0 -2]]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">diff</span>
@@ -616,27 +616,27 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; from arkouda import array_api as xp</span>
 <span class="sd">    &gt;&gt;&gt; y = xp.asarray(ak.array([1, 2, 3]))</span>
 
 <span class="sd">    Use the trapezoidal rule on evenly spaced points:</span>
 <span class="sd">    &gt;&gt;&gt; xp.trapz(y)</span>
-<span class="sd">    4.0</span>
+<span class="sd">    Arkouda Array ((), float64)4.0</span>
 
 <span class="sd">    The spacing between sample points can be selected by either the</span>
 <span class="sd">    ``x`` or ``dx`` arguments:</span>
 
 <span class="sd">    &gt;&gt;&gt; x = xp.asarray(ak.array([4, 6, 8]))</span>
 <span class="sd">    &gt;&gt;&gt; xp.trapz(y, x)</span>
-<span class="sd">    8.0</span>
+<span class="sd">    Arkouda Array ((), float64)8.0</span>
 <span class="sd">    &gt;&gt;&gt; xp.trapz(y, dx=2.0)</span>
-<span class="sd">    8.0</span>
+<span class="sd">    Arkouda Array ((), float64)8.0</span>
 
 <span class="sd">    Using a decreasing ``x`` corresponds to integrating in reverse:</span>
 
 <span class="sd">    &gt;&gt;&gt; x = xp.asarray(ak.array([8, 6, 4]))</span>
 <span class="sd">    &gt;&gt;&gt; xp.trapz(y, x)</span>
-<span class="sd">    -8.0</span>
+<span class="sd">    Arkouda Array ((), float64)-8.0</span>
 
 <span class="sd">    More generally ``x`` is used to integrate along a parametric curve. We can</span>
 <span class="sd">    estimate the integral :math:`\int_0^1 x^2 = 1/3` using:</span>
@@ -644,25 +644,25 @@
 <span class="sd">    &gt;&gt;&gt; x = xp.linspace(0, 1, num=50)</span>
 <span class="sd">    &gt;&gt;&gt; y = x**2</span>
 <span class="sd">    &gt;&gt;&gt; xp.trapz(y, x)</span>
-<span class="sd">    0.3334027488546439...</span>
+<span class="sd">    Arkouda Array ((), float64)0.333402748854643...</span>
 
 <span class="sd">    Or estimate the area of a circle, noting we repeat the sample which closes</span>
 <span class="sd">    the curve:</span>
 
 <span class="sd">    &gt;&gt;&gt; theta = xp.linspace(0, 2 * xp.pi, num=1000, endpoint=True)</span>
 <span class="sd">    &gt;&gt;&gt; xp.trapz(xp.cos(theta), x=xp.sin(theta))</span>
-<span class="sd">    3.14157194137584...</span>
+<span class="sd">    Arkouda Array ((), float64)3.14157194137584...</span>
 
 <span class="sd">    ``np.trapz`` can be applied along a specified axis to do multiple</span>
 <span class="sd">    computations in one call:</span>
 
 <span class="sd">    &gt;&gt;&gt; a = xp.asarray(ak.arange(6).reshape(2, 3))</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
-<span class="sd">    [[0, 1, 2], [3, 4, 5]]</span>
+<span class="sd">    Arkouda Array ((2, 3), int64)[[0 1 2] [3 4 5]]</span>
 <span class="sd">    &gt;&gt;&gt; xp.trapz(a, axis=0)</span>
-<span class="sd">    [1.5, 2.5, 3.5]</span>
+<span class="sd">    Arkouda Array ((3,), float64)[1.5 2.5 3.5]</span>
 <span class="sd">    &gt;&gt;&gt; xp.trapz(a, axis=1)</span>
-<span class="sd">    [2.0,  8.0]</span>
+<span class="sd">    Arkouda Array ((2,), float64)[2.0 8.0]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Implementation is the same as Numpy&#39;s implementation of trapezoid</span>
