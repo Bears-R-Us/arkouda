@@ -460,10 +460,10 @@ class Index:
         >>> i = ak.Index([1, 2, 3])
         >>> i_cpy = ak.Index([1, 2, 3])
         >>> i.equals(i_cpy)
-        True
+        np.True_
         >>> i2 = ak.Index([1, 2, 4])
         >>> i.equals(i2)
-        False
+        np.False_
 
         MultiIndex case:
 
@@ -929,7 +929,7 @@ class Index:
         5.00000000000000000 25.00000000000000000]), dtype='float64')
         >>> s2 = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
         >>> idx.map(s2)
-        Index(array(['b', 'b', 'd', 'd', 'a']), dtype='<U0')
+        Index(array(['b', 'd', 'b', 'd', 'a']), dtype='<U0')
 
         """
         from arkouda.numpy.util import map
