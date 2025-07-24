@@ -5,17 +5,6 @@ The `arkouda.infoclass` module provides tools to inspect, query, and display met
 about objects stored in the Arkouda symbol table or registry. These utilities are useful
 for debugging, exploratory analysis, and monitoring the state of server-managed data.
 
-Exports
--------
-__all__ = [
-    "AllSymbols",
-    "RegisteredSymbols",
-    "information",
-    "list_registry",
-    "list_symbol_table",
-    "pretty_print_information",
-]
-
 Constants
 ---------
 AllSymbols : str
@@ -56,14 +45,14 @@ Examples
 >>> import arkouda as ak
 >>> x = ak.arange(5)
 >>> ak.information(ak.AllSymbols)  # doctest: +SKIP
-'[{"name":"id_o82d7Jt_1", "dtype":"int64", "size":5, "ndim":1, "shape":[5],
-"itemsize":8, "registered":false}]'
+'[{"name":"id_i3gP47x_1", "dtype":"int64", "size":5,
+"ndim":1, "shape":[5], "itemsize":8, "registered":false}]'
 >>> x.register("name1")
 array([0 1 2 3 4])
 >>> ak.list_registry(detailed=True)  # doctest: +SKIP
- {'Objects': [('name1', 'PDARRAY')], 'Components': ['id_o82d7Jt_1']}
+'Objects': [('name1', 'PDARRAY')], 'Components': ['id_beYOiDM_1']}
 >>> ak.list_symbol_table()  # doctest: +SKIP
-['id_o82d7Jt_1']
+['id_beYOiDM_1']
 
 """
 
