@@ -57,19 +57,6 @@ module OperatorMsg
                                           cmd,op,st.attrib(msgArgs['a'].val),
                                           st.attrib(msgArgs['b'].val)));
 
-        use Set;
-
-        // This boolOps set is a filter to determine the output type for the operation.
-        // All operations that involve one of these operations result in a `bool` symbol
-        // table entry.
-        var boolOps: set(string);
-        boolOps.add("<");
-        boolOps.add("<=");
-        boolOps.add(">");
-        boolOps.add(">=");
-        boolOps.add("==");
-        boolOps.add("!=");
-
         // This probably doesn't handle all normal bigint cases, but it handles a decent number.
         // This, at least, can be expanded when BinOp.chpl is cleaned up
         // It will be reasonably straightforward to clean up here.
@@ -103,14 +90,6 @@ module OperatorMsg
           }
           return doBinOpvv(l, r, binop_dtype_a, binop_dtype_b, real(64), op, pn, st);
         }
-
-        var realOps: set(string);
-        realOps.add("+");
-        realOps.add("-");
-        realOps.add("*");
-        realOps.add("//");
-        realOps.add("%");
-        realOps.add("**");
 
         type returnType = mySafeCast(binop_dtype_a, binop_dtype_b);
 
@@ -167,19 +146,6 @@ module OperatorMsg
              "cmd: %? op: %? left pdarray: %? scalar: %?".format(
                                           cmd,op,st.attrib(msgArgs['a'].val), val));
 
-        use Set;
-
-        // This boolOps set is a filter to determine the output type for the operation.
-        // All operations that involve one of these operations result in a `bool` symbol
-        // table entry.
-        var boolOps: set(string);
-        boolOps.add("<");
-        boolOps.add("<=");
-        boolOps.add(">");
-        boolOps.add(">=");
-        boolOps.add("==");
-        boolOps.add("!=");
-
         // This probably doesn't handle all normal bigint cases, but it handles a decent number.
         // This, at least, can be expanded when BinOp.chpl is cleaned up
         // It will be reasonably straightforward to clean up here.
@@ -213,14 +179,6 @@ module OperatorMsg
           }
           return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, real(64), op, pn, st);
         }
-
-        var realOps: set(string);
-        realOps.add("+");
-        realOps.add("-");
-        realOps.add("*");
-        realOps.add("//");
-        realOps.add("%");
-        realOps.add("**");
 
         type returnType = mySafeCast(binop_dtype_a, binop_dtype_b);
 
@@ -276,19 +234,6 @@ module OperatorMsg
                  "cmd: %? op = %? scalar dtype = %? scalar = %? pdarray = %?".format(
                                    cmd,op,type2str(binop_dtype_b),msgArgs['value'].val,st.attrib(msgArgs['a'].val)));
 
-        use Set;
-
-        // This boolOps set is a filter to determine the output type for the operation.
-        // All operations that involve one of these operations result in a `bool` symbol
-        // table entry.
-        var boolOps: set(string);
-        boolOps.add("<");
-        boolOps.add("<=");
-        boolOps.add(">");
-        boolOps.add(">=");
-        boolOps.add("==");
-        boolOps.add("!=");
-
         // This probably doesn't handle all normal bigint cases, but it handles a decent number.
         // This, at least, can be expanded when BinOp.chpl is cleaned up
         // It will be reasonably straightforward to clean up here.
@@ -322,14 +267,6 @@ module OperatorMsg
           }
           return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, real(64), op, pn, st);
         }
-
-        var realOps: set(string);
-        realOps.add("+");
-        realOps.add("-");
-        realOps.add("*");
-        realOps.add("//");
-        realOps.add("%");
-        realOps.add("**");
 
         type returnType = mySafeCast(binop_dtype_a, binop_dtype_b);
 
