@@ -1748,15 +1748,25 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; ak.connect()</span>
+<span class="sd">    &gt;&gt;&gt; ak.connect()    # doctest: +SKIP</span>
 <span class="sd">    connected to arkouda server tcp://*:5555</span>
-<span class="sd">    &gt;&gt;&gt; ak.get_config()</span>
+<span class="sd">    &gt;&gt;&gt; ak.get_config()    # doctest: +SKIP</span>
+<span class="sd">    {&#39;arkoudaVersion&#39;: &#39;v2025.01.13+165.g23ccdfd6c&#39;, &#39;chplVersion&#39;: &#39;2.4.0&#39;,</span>
+<span class="sd">        ... &#39;pythonVersion&#39;: &#39;3.13&#39;, &#39;ZMQVersion&#39;: &#39;4.3.5&#39;, &#39;HDF5Version&#39;: &#39;1.14.4&#39;,</span>
+<span class="sd">        ... &#39;serverHostname&#39;: &#39;pop-os&#39;, &#39;ServerPort&#39;: 5555, &#39;numLocales&#39;: 1,</span>
+<span class="sd">        ... &#39;numPUs&#39;: 8, &#39;maxTaskPar&#39;: 8, &#39;physicalMemory&#39;: 67258408960,</span>
+<span class="sd">        ... &#39;distributionType&#39;: &#39;domain(1,int(64),one)&#39;,</span>
+<span class="sd">        ... &#39;LocaleConfigs&#39;: [{&#39;id&#39;: 0, &#39;name&#39;: &#39;pop-os&#39;, &#39;numPUs&#39;: 8,</span>
+<span class="sd">        ... &#39;maxTaskPar&#39;: 8, &#39;physicalMemory&#39;: 67258408960}], &#39;authenticate&#39;: False,</span>
+<span class="sd">        ... &#39;logLevel&#39;: &#39;INFO&#39;, &#39;logChannel&#39;: &#39;FILE&#39;, &#39;regexMaxCaptures&#39;: 20,</span>
+<span class="sd">        ... &#39;byteorder&#39;: &#39;little&#39;, &#39;autoShutdown&#39;: False, &#39;serverInfoNoSplash&#39;: False,</span>
+<span class="sd">        ... &#39;maxArrayDims&#39;: 1, &#39;ARROW_VERSION&#39;: &#39;19.0.0&#39;}</span>
 <span class="sd">    &gt;&gt;&gt; ak.ones(10000, dtype=int)</span>
 <span class="sd">    array([1 1 1 ... 1 1 1])</span>
-<span class="sd">    &gt;&gt;&gt; nums = ak.randint(0,500,10000)</span>
+<span class="sd">    &gt;&gt;&gt; nums = ak.randint(0,500,10000, seed=1)</span>
 <span class="sd">    &gt;&gt;&gt; ak.argsort(nums)</span>
-<span class="sd">    array([105 457 647 ... 9362 9602 9683])</span>
-<span class="sd">    &gt;&gt;&gt; ak.generate_history(num_commands=5, command_filter=&#39;ak.&#39;)</span>
+<span class="sd">    array([1984 2186 3574 ... 9298 9600 9651])</span>
+<span class="sd">    &gt;&gt;&gt; ak.generate_history(num_commands=5, command_filter=&#39;ak.&#39;)    # doctest: +SKIP</span>
 <span class="sd">    [&#39;ak.connect()&#39;, &#39;ak.get_config()&#39;, &#39;ak.ones(10000, dtype=int)&#39;, &#39;nums = ak.randint(0,500,10000)&#39;,</span>
 <span class="sd">    &#39;ak.argsort(nums)&#39;]</span>
 

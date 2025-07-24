@@ -510,11 +510,21 @@ or IPython notebook, with an optional cmd_filter and number of commands to retur
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 <span class="go">connected to arkouda server tcp://*:5555</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+<span class="go">{&#39;arkoudaVersion&#39;: &#39;v2025.01.13+165.g23ccdfd6c&#39;, &#39;chplVersion&#39;: &#39;2.4.0&#39;,</span>
+<span class="go">    ... &#39;pythonVersion&#39;: &#39;3.13&#39;, &#39;ZMQVersion&#39;: &#39;4.3.5&#39;, &#39;HDF5Version&#39;: &#39;1.14.4&#39;,</span>
+<span class="go">    ... &#39;serverHostname&#39;: &#39;pop-os&#39;, &#39;ServerPort&#39;: 5555, &#39;numLocales&#39;: 1,</span>
+<span class="go">    ... &#39;numPUs&#39;: 8, &#39;maxTaskPar&#39;: 8, &#39;physicalMemory&#39;: 67258408960,</span>
+<span class="go">    ... &#39;distributionType&#39;: &#39;domain(1,int(64),one)&#39;,</span>
+<span class="go">    ... &#39;LocaleConfigs&#39;: [{&#39;id&#39;: 0, &#39;name&#39;: &#39;pop-os&#39;, &#39;numPUs&#39;: 8,</span>
+<span class="go">    ... &#39;maxTaskPar&#39;: 8, &#39;physicalMemory&#39;: 67258408960}], &#39;authenticate&#39;: False,</span>
+<span class="go">    ... &#39;logLevel&#39;: &#39;INFO&#39;, &#39;logChannel&#39;: &#39;FILE&#39;, &#39;regexMaxCaptures&#39;: 20,</span>
+<span class="go">    ... &#39;byteorder&#39;: &#39;little&#39;, &#39;autoShutdown&#39;: False, &#39;serverInfoNoSplash&#39;: False,</span>
+<span class="go">    ... &#39;maxArrayDims&#39;: 1, &#39;ARROW_VERSION&#39;: &#39;19.0.0&#39;}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
 <span class="go">array([1 1 1 ... 1 1 1])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">nums</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nums</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">10000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
-<span class="go">array([105 457 647 ... 9362 9602 9683])</span>
+<span class="go">array([1984 2186 3574 ... 9298 9600 9651])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">generate_history</span><span class="p">(</span><span class="n">num_commands</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">command_filter</span><span class="o">=</span><span class="s1">&#39;ak.&#39;</span><span class="p">)</span>
 <span class="go">[&#39;ak.connect()&#39;, &#39;ak.get_config()&#39;, &#39;ak.ones(10000, dtype=int)&#39;, &#39;nums = ak.randint(0,500,10000)&#39;,</span>
 <span class="go">&#39;ak.argsort(nums)&#39;]</span>

@@ -15386,15 +15386,25 @@ Package Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> ak.connect()
+   >>> ak.connect()    # doctest: +SKIP
    connected to arkouda server tcp://*:5555
-   >>> ak.get_config()
+   >>> ak.get_config()    # doctest: +SKIP
+   {'arkoudaVersion': 'v2025.01.13+165.g23ccdfd6c', 'chplVersion': '2.4.0',
+       ... 'pythonVersion': '3.13', 'ZMQVersion': '4.3.5', 'HDF5Version': '1.14.4',
+       ... 'serverHostname': 'pop-os', 'ServerPort': 5555, 'numLocales': 1,
+       ... 'numPUs': 8, 'maxTaskPar': 8, 'physicalMemory': 67258408960,
+       ... 'distributionType': 'domain(1,int(64),one)',
+       ... 'LocaleConfigs': [{'id': 0, 'name': 'pop-os', 'numPUs': 8,
+       ... 'maxTaskPar': 8, 'physicalMemory': 67258408960}], 'authenticate': False,
+       ... 'logLevel': 'INFO', 'logChannel': 'FILE', 'regexMaxCaptures': 20,
+       ... 'byteorder': 'little', 'autoShutdown': False, 'serverInfoNoSplash': False,
+       ... 'maxArrayDims': 1, 'ARROW_VERSION': '19.0.0'}
    >>> ak.ones(10000, dtype=int)
    array([1 1 1 ... 1 1 1])
-   >>> nums = ak.randint(0,500,10000)
+   >>> nums = ak.randint(0,500,10000, seed=1)
    >>> ak.argsort(nums)
-   array([105 457 647 ... 9362 9602 9683])
-   >>> ak.generate_history(num_commands=5, command_filter='ak.')
+   array([1984 2186 3574 ... 9298 9600 9651])
+   >>> ak.generate_history(num_commands=5, command_filter='ak.')    # doctest: +SKIP
    ['ak.connect()', 'ak.get_config()', 'ak.ones(10000, dtype=int)', 'nums = ak.randint(0,500,10000)',
    'ak.argsort(nums)']
 
