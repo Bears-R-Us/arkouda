@@ -33,7 +33,7 @@ class Row(UserDict):
     >>> row = Row({'x': 10, 'y': 'a'})
     >>> print(row)
     keys    values
-    ----    ------
+    ------  --------
     x       10
     y       a
 
@@ -55,7 +55,7 @@ class Row(UserDict):
         >>> row = Row({'a': 1, 'b': 'foo'})
         >>> print(str(row))
         keys    values
-        ----    ------
+        ------  --------
         a       1
         b       foo
 
