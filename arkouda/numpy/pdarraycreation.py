@@ -1205,10 +1205,8 @@ def rand(*size: int_scalars, seed: Union[None, int_scalars] = None) -> pdarray:
     Examples
     --------
     >>> import arkouda as ak
-    >>> ak.rand(3,2,seed=1701)
-    array([array([0.011410423448327005 0.73618171558685619])
-        array([0.12367222192448891 0.95616789699591898])
-        array([0.36427886480971333 0.71482330432026153])])
+    >>> ak.rand(3,seed=1701)
+    array([0.011410423448327005 0.73618171558685619 0.12367222192448891])
     """
     from arkouda.numpy.util import _infer_shape_from_size
 
