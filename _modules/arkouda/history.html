@@ -418,7 +418,7 @@
 <span class="sd">[&#39;ak.array([1,2,3])&#39;, &#39;ak.sum(...)&#39;, ...]</span>
 
 <span class="sd"># Notebook mode</span>
-<span class="sd">&gt;&gt;&gt; h = NotebookHistoryRetriever()</span>
+<span class="sd">&gt;&gt;&gt; h = NotebookHistoryRetriever()  # doctest: +SKIP</span>
 <span class="sd">&gt;&gt;&gt; h.retrieve(num_commands=3)  # doctest: +SKIP</span>
 <span class="sd">[&#39;ak.connect()&#39;, &#39;df = ak.DataFrame(...)&#39;, &#39;ak.argsort(...)&#39;]</span>
 
@@ -524,7 +524,7 @@
 <span class="sd">        &gt;&gt;&gt; readline.clear_history()</span>
 <span class="sd">        &gt;&gt;&gt; 1 + 2</span>
 <span class="sd">        3</span>
-<span class="sd">        &gt;&gt;&gt; h.retrieve()</span>
+<span class="sd">        &gt;&gt;&gt; h.retrieve() # doctest: +SKIP</span>
 <span class="sd">        [&#39; 1 + 2&#39;, &#39;h.retrieve()&#39;]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -577,11 +577,14 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; from arkouda.history import NotebookHistoryRetriever</span>
-<span class="sd">        &gt;&gt;&gt; h = NotebookHistoryRetriever()</span>
+<span class="sd">        &gt;&gt;&gt; h = NotebookHistoryRetriever()  # doctest: +SKIP</span>
 <span class="sd">        &gt;&gt;&gt; 1+2</span>
+<span class="sd">        3</span>
 <span class="sd">        &gt;&gt;&gt; 4*6</span>
+<span class="sd">        24</span>
 <span class="sd">        &gt;&gt;&gt; 2**3</span>
-<span class="sd">        &gt;&gt;&gt; h.retrieve(num_commands=3)</span>
+<span class="sd">        8</span>
+<span class="sd">        &gt;&gt;&gt; h.retrieve(num_commands=3)  # doctest: +SKIP</span>
 <span class="sd">        [&#39;1+2&#39;, &#39;4*6&#39;, &#39;2**3&#39;]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>

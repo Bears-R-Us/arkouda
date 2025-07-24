@@ -421,7 +421,7 @@ for querying and filtering past commands based on optional string filters and co
 &gt;&gt;&gt; h.retrieve(command_filter=”ak.”, num_commands=5)   # doctest: +SKIP
 [‘ak.array([1,2,3])’, ‘ak.sum(…)’, …]</p>
 <p># Notebook mode
-&gt;&gt;&gt; h = NotebookHistoryRetriever()
+&gt;&gt;&gt; h = NotebookHistoryRetriever()  # doctest: +SKIP
 &gt;&gt;&gt; h.retrieve(num_commands=3)  # doctest: +SKIP
 [‘ak.connect()’, ‘df = ak.DataFrame(…)’, ‘ak.argsort(…)’]</p>
 <div class="admonition seealso">
@@ -508,8 +508,11 @@ with an optional command filter and number of commands to return.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.history</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotebookHistoryRetriever</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">NotebookHistoryRetriever</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span>
+<span class="go">3</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="mi">4</span><span class="o">*</span><span class="mi">6</span>
+<span class="go">24</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="mi">2</span><span class="o">**</span><span class="mi">3</span>
+<span class="go">8</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span><span class="n">num_commands</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="go">[&#39;1+2&#39;, &#39;4*6&#39;, &#39;2**3&#39;]</span>
 </pre></div>
