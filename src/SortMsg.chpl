@@ -114,7 +114,7 @@ module SortMsg
 
     // This version warrants that both x1 and x2 are sorted arrays
     // we assume that x1 is sorted, but we can check x2 if boundsChecking is enabled
-    if boundsChecking && !x2.isSorted() then
+    if boundsChecking && !isSorted(x2) then
       throw new Error("x2 must be a sorted array for searchSortedFast");
 
     // Find the locale boundaries for x1
