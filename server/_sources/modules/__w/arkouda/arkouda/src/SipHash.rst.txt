@@ -21,11 +21,7 @@ or
 
 .. data:: param dROUNDS = 4
 
-.. data:: const defaultSipHashKey: [0..#16] uint(8) = for i in 0.. # 16 do i : uint(8)
-
 .. data:: const shLogger = new Logger(logLevel, logChannel)
-
-.. function:: proc ROTL(x, b)
 
 .. function:: proc sipHash64(msg: [] ?t, D): uint(64) where t == uint(8) || t == int(64) || t == real(64)
 
