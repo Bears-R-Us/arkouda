@@ -32,6 +32,155 @@ module FindMsg
 
   use CommandMap;
 
+  proc onLocSort(ref x: [] ?T, comparator) {
+
+    const n = x.size;
+    const t = here.maxTaskPar;
+    const elemsPerThread = (n / t): int;
+    const extraElems = n - elemsPerThread * t;
+    var startingPoints: [0..#t] int;
+    var endingPoints: [0..#t] int;
+    //writeln(here.id, " x starts as: ", x);
+    //writeln(here.id, " t: ", t);
+    //writeln(here.id, " n: ", n);
+
+    forall i in 0..#t {
+      const startIdx = if i < extraElems
+        then i * (elemsPerThread + 1)
+        else i * elemsPerThread + extraElems;
+      const endIdx = if i < extraElems
+        then startIdx + elemsPerThread + 1
+        else startIdx + elemsPerThread;
+
+      startingPoints[i] = startIdx;
+      endingPoints[i] = endIdx;
+
+      var currSize = 1;
+
+      while currSize + startIdx < endIdx {
+        var currInd1 = startIdx;
+        var currInd2 = currInd1 + currSize;
+        var block1End = currInd2;
+        var block2End = if currInd2 + currSize < endIdx
+          then currInd2 + currSize
+          else endIdx;
+        
+        var tempBuffer: [0..#(2*currSize)] T;
+
+        while currInd1 < endIdx {
+
+          var bufferInd = 0;
+          const sliceStart = currInd1;
+          const sliceEnd = block2End;
+          const sliceSize = sliceEnd - sliceStart;
+
+          while currInd1 < block1End && currInd2 < block2End {
+
+            const cmp = comparator.compare(x[currInd1], x[currInd2]);
+            if cmp >= 0 {
+              tempBuffer[bufferInd] = x[currInd1];
+              currInd1 += 1;
+            } else {
+              tempBuffer[bufferInd] = x[currInd2];
+              currInd2 += 1;
+            }
+
+            bufferInd += 1;
+
+          }
+
+          if currInd1 == block1End {
+            const left = block2End - currInd2;
+            for j in 0..#left {
+              tempBuffer[bufferInd + j] = x[currInd2 + j];
+            }
+          } else {
+            const left = block1End - currInd1;
+            for j in 0..#left {
+              ref dest = tempBuffer[bufferInd + j];
+              ref src = x[currInd1 + j];
+              dest = src;
+            }
+          }
+
+          x[sliceStart..#sliceSize] = tempBuffer[0..#sliceSize];
+
+          currInd1 = block2End;
+          currInd2 = currInd1 + currSize;
+          block1End = currInd2;
+          block2End = if currInd2 + currSize < endIdx
+            then currInd2 + currSize
+            else endIdx;
+        }
+
+        currSize *= 2;
+      }
+    }
+
+    //writeln(here.id, " startingPoints: ", startingPoints);
+    //writeln(here.id, " endingPoints: ", endingPoints);
+    //writeln(here.id, " now x is: ", x);
+
+    var threadWidth = 1;
+    
+    while threadWidth < t {
+      
+      const groupSize = 2 * threadWidth;
+
+      forall threadNum in 0..#t {
+        if threadNum % groupSize == 0 && threadNum + threadWidth < t {
+          const g1Start = startingPoints[threadNum];
+          const g1End = endingPoints[threadNum];
+          const g2Start = startingPoints[threadNum + threadWidth];
+          const g2End = endingPoints[threadNum + threadWidth];
+          const currSize = g2End - g1Start;
+
+          //writeln(here.id, " threadNum: ", threadNum, " g1Start: ", g1Start, " g1End: ", g1End, " g2Start: ", g2Start, " g2End: ", g2End);
+
+          var tempBuffer: [0..#currSize] T;
+          var bufferInd = 0;
+
+          var g1Pointer = g1Start;
+          var g2Pointer = g2Start;
+
+          while g1Pointer < g1End && g2Pointer < g2End {
+            const cmp = comparator.compare(x[g1Pointer], x[g2Pointer]);
+            if cmp >= 0 {
+              tempBuffer[bufferInd] = x[g1Pointer];
+              g1Pointer += 1;
+            } else {
+              tempBuffer[bufferInd] = x[g2Pointer];
+              g2Pointer += 1;
+            }
+            bufferInd += 1;
+          }
+
+          if g1Pointer == g1End {
+            const left = g2End - g2Pointer;
+            //writeln(here.id, " ", threadNum, " ", left);
+            for j in 0..#left {
+              tempBuffer[bufferInd + j] = x[g2Pointer + j];
+            }
+          } else {
+            const left = g1End - g1Pointer;
+            //writeln(here.id, " ", threadNum, " ", left);
+            for j in 0..#left {
+              tempBuffer[bufferInd + j] = x[g1Pointer + j];
+            }
+          }
+
+          x[g1Start..#currSize] = tempBuffer[0..#currSize];
+
+          endingPoints[threadNum] = g2End;
+        }
+      }
+
+      threadWidth *= 2;
+    }
+
+    //writeln(here.id, " Ideally x is sorted: ", x);
+  }
+
   @chplcheck.ignore("UnusedFormal")
   proc findStrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     param pn = Reflection.getRoutineName();
@@ -209,13 +358,26 @@ module FindMsg
 
       } else { // I do not like this else. Essentially, if the situation is normal, proceed as normal.
 
-        record tupKeyComparator: keyComparator {
-          proc key(a: (string, int)) {
-            return a(0);
+        record tupComparator {
+          proc compare(a: (string, int), b: (string, int)) {
+            if a[0] < b[0] {
+              return 1;
+            }
+            if a[0] > b[0] {
+              return -1;
+            }
+            if a[1] < b[1] {
+              return 1;
+            }
+            if a[1] > b[1] {
+              return -1;
+            }
+            // Since the 2nd components are original indices, this shouldn't happen.
+            return 0;
           }
         }
 
-        compatSort(strIndPairs, comparator=new tupKeyComparator());
+        sort(strIndPairs, comparator=new tupComparator());
 
         var sortedInds: [0..<N] int;
         var allStrings: [0..<N] string;
