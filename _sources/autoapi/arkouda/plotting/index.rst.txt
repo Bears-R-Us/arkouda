@@ -3,6 +3,52 @@ arkouda.plotting
 
 .. py:module:: arkouda.plotting
 
+.. autoapi-nested-parse::
+
+   Plotting utilities for Arkouda data structures.
+
+   The `arkouda.plotting` module provides lightweight, matplotlib-based visualization
+   functions for Arkouda arrays and DataFrames. These tools are intended for exploratory
+   data analysis, especially for understanding distributions and skew across numeric or
+   categorical data columns.
+
+   Functions
+   ---------
+   plot_dist(b, h, log=True, xlabel=None, newfig=True)
+       Plot the histogram and cumulative distribution for binned data.
+       Useful for visualizing data generated from `ak.histogram`.
+
+   hist_all(ak_df: DataFrame, cols: list = [])
+       Generate histograms for all numeric columns in an Arkouda DataFrame
+       (or a specified subset of columns). Automatically computes the number
+       of bins using Doane’s formula and handles missing values, datetime,
+       and categorical data appropriately.
+
+   .. rubric:: Notes
+
+   - These functions require `matplotlib.pyplot` and are meant for interactive
+     Python sessions or Jupyter notebooks.
+   - `plot_dist` does not call `plt.show()` automatically; you must call it manually
+     to display the plot.
+   - `hist_all` handles categorical grouping via Arkouda's `GroupBy` and supports
+     `Datetime` and `Timedelta` plotting by converting to numeric types.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import numpy as np
+   >>> from arkouda.plotting import hist_all, plot_dist
+   >>> df = ak.DataFrame({'x': ak.array(np.random.randn(100))})
+   >>> hist_all(df)
+
+   >>> b, h = ak.histogram(ak.arange(10), 3)
+   >>> plot_dist(b.to_ndarray(), h[:-1].to_ndarray())
+   >>> import matplotlib.pyplot as plt
+   >>> plt.show()
+
+   .. seealso:: :py:obj:`-`, :py:obj:`-`, :py:obj:`-`
+
+
 
 Functions
 ---------

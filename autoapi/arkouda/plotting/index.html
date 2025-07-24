@@ -392,8 +392,53 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.plotting">
 <span id="arkouda-plotting"></span><h1>arkouda.plotting<a class="headerlink" href="#module-arkouda.plotting" title="Link to this heading">¶</a></h1>
+<p>Plotting utilities for Arkouda data structures.</p>
+<p>The <cite>arkouda.plotting</cite> module provides lightweight, matplotlib-based visualization
+functions for Arkouda arrays and DataFrames. These tools are intended for exploratory
+data analysis, especially for understanding distributions and skew across numeric or
+categorical data columns.</p>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>plot_dist(b, h, log=True, xlabel=None, newfig=True)</dt><dd><p>Plot the histogram and cumulative distribution for binned data.
+Useful for visualizing data generated from <cite>ak.histogram</cite>.</p>
+</dd>
+<dt>hist_all(ak_df: DataFrame, cols: list = [])</dt><dd><p>Generate histograms for all numeric columns in an Arkouda DataFrame
+(or a specified subset of columns). Automatically computes the number
+of bins using Doane’s formula and handles missing values, datetime,
+and categorical data appropriately.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>These functions require <cite>matplotlib.pyplot</cite> and are meant for interactive
+Python sessions or Jupyter notebooks.</p></li>
+<li><p><cite>plot_dist</cite> does not call <cite>plt.show()</cite> automatically; you must call it manually
+to display the plot.</p></li>
+<li><p><cite>hist_all</cite> handles categorical grouping via Arkouda’s <cite>GroupBy</cite> and supports
+<cite>Datetime</cite> and <cite>Timedelta</cite> plotting by converting to numeric types.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">hist_all</span><span class="p">,</span> <span class="n">plot_dist</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">))})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hist_all</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot_dist</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">(),</span> <span class="n">h</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code></p>
+</div>
+</section>
+<section id="id1">
+<h2>Functions<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -533,6 +578,7 @@ See Examples Below.</p>
             <ul>
 <li><a class="reference internal" href="#">arkouda.plotting</a><ul>
 <li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#id1">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.plotting.hist_all"><code class="docutils literal notranslate"><span class="pre">hist_all()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.plotting.plot_dist"><code class="docutils literal notranslate"><span class="pre">plot_dist()</span></code></a></li>

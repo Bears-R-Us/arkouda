@@ -384,7 +384,57 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.plotting</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Plotting utilities for Arkouda data structures.</span>
+
+<span class="sd">The `arkouda.plotting` module provides lightweight, matplotlib-based visualization</span>
+<span class="sd">functions for Arkouda arrays and DataFrames. These tools are intended for exploratory</span>
+<span class="sd">data analysis, especially for understanding distributions and skew across numeric or</span>
+<span class="sd">categorical data columns.</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">plot_dist(b, h, log=True, xlabel=None, newfig=True)</span>
+<span class="sd">    Plot the histogram and cumulative distribution for binned data.</span>
+<span class="sd">    Useful for visualizing data generated from `ak.histogram`.</span>
+
+<span class="sd">hist_all(ak_df: DataFrame, cols: list = [])</span>
+<span class="sd">    Generate histograms for all numeric columns in an Arkouda DataFrame</span>
+<span class="sd">    (or a specified subset of columns). Automatically computes the number</span>
+<span class="sd">    of bins using Doane’s formula and handles missing values, datetime,</span>
+<span class="sd">    and categorical data appropriately.</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">- These functions require `matplotlib.pyplot` and are meant for interactive</span>
+<span class="sd">  Python sessions or Jupyter notebooks.</span>
+<span class="sd">- `plot_dist` does not call `plt.show()` automatically; you must call it manually</span>
+<span class="sd">  to display the plot.</span>
+<span class="sd">- `hist_all` handles categorical grouping via Arkouda&#39;s `GroupBy` and supports</span>
+<span class="sd">  `Datetime` and `Timedelta` plotting by converting to numeric types.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">&gt;&gt;&gt; import numpy as np</span>
+<span class="sd">&gt;&gt;&gt; from arkouda.plotting import hist_all, plot_dist</span>
+<span class="sd">&gt;&gt;&gt; df = ak.DataFrame({&#39;x&#39;: ak.array(np.random.randn(100))})</span>
+<span class="sd">&gt;&gt;&gt; hist_all(df)</span>
+
+<span class="sd">&gt;&gt;&gt; b, h = ak.histogram(ak.arange(10), 3)</span>
+<span class="sd">&gt;&gt;&gt; plot_dist(b.to_ndarray(), h[:-1].to_ndarray())</span>
+<span class="sd">&gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">&gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">- matplotlib.pyplot</span>
+<span class="sd">- arkouda.DataFrame</span>
+<span class="sd">- arkouda.histogram</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
