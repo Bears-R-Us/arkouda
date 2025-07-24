@@ -8,13 +8,13 @@ from server_util.test.server_test_util import TestRunningMode, start_arkouda_ser
     pytest.client_host == "horizon", reason="nightly test failures due to machine busyness"
 )
 class TestClient:
-    # def test_client_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(
-    #         client, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
-    #     )
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    def test_client_docstrings(self):
+        import doctest
+
+        from arkouda import client
+
+        result = doctest.testmod(client, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     def test_client_connected(self):
         """
