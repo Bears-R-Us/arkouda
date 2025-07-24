@@ -45,7 +45,10 @@ module OperatorMsg
       type binop_dtype_a,
       type binop_dtype_b,
       param array_nd: int
-    ): MsgTuple throws {
+    ): MsgTuple throws
+    where (binop_dtype_a != bigint && binop_dtype_b != bigint) ||
+          (binop_dtype_a == bigint && !isRealType(binop_dtype_b)) ||
+          (!isRealType(binop_dtype_a) && binop_dtype_b == bigint) {
         param pn = Reflection.getRoutineName();
 
         const l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
@@ -156,7 +159,9 @@ module OperatorMsg
       type binop_dtype_a,
       type binop_dtype_b,
       param array_nd: int
-    ): MsgTuple throws {
+    ): MsgTuple throws
+    where (binop_dtype_a == bigint && binop_dtype_b == bigint) ||
+          (binop_dtype_a != bigint && binop_dtype_b != bigint) {
         param pn = Reflection.getRoutineName();
 
         const l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
@@ -189,7 +194,9 @@ module OperatorMsg
         {
           if boolOps.contains(op) {
             // call bigint specific func which returns distr bool array
-            return st.insert(new shared SymEntry(doBigIntBinOpvsBoolReturn(l, val, op)));
+            var tmp = makeDistArray((...l.a.shape), bool);
+            doBigIntBinOpvsBoolReturn(tmp, l, val, op);
+            return st.insert(new shared SymEntry(tmp));
           }
           // call bigint specific func which returns dist bigint array
           const (tmp, max_bits) = doBigIntBinOpvs(l, val, op);
@@ -257,7 +264,7 @@ module OperatorMsg
       :arg st: SymTab to act on
       :type st: borrowed SymTab 
 
-      :returns: (MsgTuple) 
+      :returns: (MsgTuple)
       :throws: `UndefinedSymbolError(name)`
     */
     @arkouda.instantiateAndRegister
@@ -265,7 +272,10 @@ module OperatorMsg
       type binop_dtype_a,
       type binop_dtype_b,
       param array_nd: int
-    ): MsgTuple throws {
+    ): MsgTuple throws
+    where (binop_dtype_a == bigint && binop_dtype_b == bigint) ||
+          (binop_dtype_a != bigint && binop_dtype_b != bigint)
+          {
         param pn = Reflection.getRoutineName();
 
         const r = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
@@ -298,7 +308,10 @@ module OperatorMsg
         {
           if boolOps.contains(op) {
             // call bigint specific func which returns distr bool array
-            return st.insert(new shared SymEntry(doBigIntBinOpsvBoolReturn(val, r, op)));
+            const op_ = reverseOpForReversedOperands(op);
+            var tmp = makeDistArray((...r.a.shape), bool);
+            doBigIntBinOpvsBoolReturn(tmp, r, val, op_);
+            return st.insert(new shared SymEntry(tmp));
           }
           // call bigint specific func which returns dist bigint array
           const (tmp, max_bits) = doBigIntBinOpsv(val, r, op);
@@ -550,6 +563,7 @@ module OperatorMsg
               max_size -= 1;
             }
             select op {
+              // TODO: this is identical to doBigintMathOp
               when "+=" {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   li += ri;
