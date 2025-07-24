@@ -9,6 +9,7 @@ module BinOp
   use Message;
   use BitOps;
   use BigInteger;
+  use Set;
 
 
   private config const logLevel = ServerConfig.logLevel;
@@ -128,6 +129,55 @@ module BinOp
     return res;
   }
 
+  //
+  // TODO: these checks sets are used only to check if a string matches
+  // i.e. realOps.contains(op) or boolOps.contains(op)
+  // however, a faster way to do this is to write a function that checks
+  // the ascii bytes
+  // for example, the boolOps can be written as:
+  //
+  // return (op.numBytes == 1 && (op.byte[0] == 60 ||
+  //                             op.byte[0] == 62)) ||
+  //        (op.numBytes == 2 && ((op.byte[0] == 60 && op.byte[1] == 61) ||
+  //                              (op.byte[0] == 62 && op.byte[1] == 61) ||
+  //                              (op.byte[0] == 61 && op.byte[1] == 61) ||
+  //                              (op.byte[0] == 33 && op.byte[1] == 61)));
+  //
+  // it should also be possible to use the `toByte` method at compile-time to
+  // improve the readability, although this has not been tested to see how it impacts
+  // compile-time and runtime performance:
+  //
+  // return (op.numBytes == 1 && (op.byte[0] == "<".toByte() ||
+  //                             op.byte[0] == ">".toByte())) ||
+  //        (op.numBytes == 2 && ((op.byte[0] == "<".toByte() && op.byte[1] == "=".toByte()) ||
+  //                              (op.byte[0] == ">".toByte() && op.byte[1] == "=".toByte()) ||
+  //                              (op.byte[0] == "=".toByte() && op.byte[1] == "=".toByte()) ||
+  //                              (op.byte[0] == "!".toByte() && op.byte[1] == "=".toByte())));
+  //
+
+  const realOps = new set(string, ["+", "-", "*", "//", "%", "**"]);
+
+  // All operations that involve one of these operations result in a `bool`
+  // symbol table entry.
+  const boolOps = new set(string, ["<", "<=", ">", ">=", "==", "!="]);
+
+  proc doBoolBoolBitOp(
+    op: string, ref e: [] bool, l: [] bool, r /*: [] bool OR bool*/
+  ): bool {
+    var handled = false;
+    if op == "|" || op == "+" {
+      e = l | r;
+      handled = true;
+    } else if op == "&" || op == "*" {
+      e = l & r;
+      handled = true;
+    } else if op == "^" {
+      e = l ^ r;
+      handled = true;
+    }
+    return handled;
+  }
+
   /*
   Generic function to execute a binary operation on pdarray entries 
   in the symbol table
@@ -154,15 +204,6 @@ module BinOp
     var e = makeDistArray((...l.tupShape), etype);
 
     const nie = notImplementedError(pn,l.dtype,op,r.dtype);
-
-    use Set;
-    var boolOps: set(string);
-        boolOps.add("<");
-        boolOps.add("<=");
-        boolOps.add(">");
-        boolOps.add(">=");
-        boolOps.add("==");
-        boolOps.add("!=");
 
     type castType = mySafeCast(lType, rType);
 
@@ -191,13 +232,8 @@ module BinOp
       }
 
       if lType == bool && rType == bool {
-        select op {
-          when "|" { e = l.a | r.a; }
-          when "&" { e = l.a & r.a; }
-          when "*" { e = l.a & r.a; }
-          when "^" { e = l.a ^ r.a; }
-          when "+" { e = l.a | r.a; }
-          otherwise do return MsgTuple.error(nie);
+        if !doBoolBoolBitOp(op, e, l.a, r.a) {
+          return MsgTuple.error(nie);
         }
         return st.insert(new shared SymEntry(e));
       }
@@ -302,15 +338,6 @@ module BinOp
 
     const nie = notImplementedError(pn,"%s %s %s".format(type2str(l.a.eltType),op,type2str(val.type)));
 
-    use Set;
-    var boolOps: set(string);
-        boolOps.add("<");
-        boolOps.add("<=");
-        boolOps.add(">");
-        boolOps.add(">=");
-        boolOps.add("==");
-        boolOps.add("!=");
-
     type castType = mySafeCast(lType, rType);
 
     // The compiler complains that maybe etype is bool if it gets down below this
@@ -338,13 +365,8 @@ module BinOp
       }
 
       if lType == bool && rType == bool {
-        select op {
-          when "|" { e = l.a | val; }
-          when "&" { e = l.a & val; }
-          when "*" { e = l.a & val; }
-          when "^" { e = l.a ^ val; }
-          when "+" { e = l.a | val; }
-          otherwise do return MsgTuple.error(nie);
+        if !doBoolBoolBitOp(op, e, l.a, val) {
+          return MsgTuple.error(nie);
         }
         return st.insert(new shared SymEntry(e));
       }
@@ -441,15 +463,6 @@ module BinOp
     var e = makeDistArray((...r.tupShape), etype);
     const nie = notImplementedError(pn,"%s %s %s".format(type2str(val.type),op,type2str(r.a.eltType)));
 
-    use Set;
-    var boolOps: set(string);
-        boolOps.add("<");
-        boolOps.add("<=");
-        boolOps.add(">");
-        boolOps.add(">=");
-        boolOps.add("==");
-        boolOps.add("!=");
-
     type castType = mySafeCast(lType, rType);
 
     // The compiler complains that maybe etype is bool if it gets down below this
@@ -477,13 +490,8 @@ module BinOp
       }
 
       if lType == bool && rType == bool {
-        select op {
-          when "|" { e = val | r.a; }
-          when "&" { e = val & r.a; }
-          when "*" { e = val & r.a; }
-          when "^" { e = val ^ r.a; }
-          when "+" { e = val | r.a; }
-          otherwise do return MsgTuple.error(nie);
+        if !doBoolBoolBitOp(op, e, r.a, val) {
+          return MsgTuple.error(nie);
         }
         return st.insert(new shared SymEntry(e));
       }
