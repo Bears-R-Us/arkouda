@@ -15,4 +15,31 @@ module ArkoudaSortCompat {
     import Sort;
     return Sort.DefaultComparator;
   }
+
+  proc compatSort(ref x: [] ?T, comparator) {
+    // Tag each item with its original index to enforce stable ordering
+    var tagged: [x.domain] (T, int);
+    forall i in x.domain do
+      tagged[i] = (x[i], i);
+
+    record StableComparator {
+      var cmp;
+
+      proc compare(a: (T, int), b: (T, int)) {
+        const ka = cmp.key(a[0]);
+        const kb = cmp.key(b[0]);
+        if ka < kb then return -1;
+        else if ka > kb then return 1;
+        else if a[1] < b[1] then return -1; // tie-break on original index
+        else return 1;
+      }
+    }
+
+    sort(tagged, comparator = new StableComparator(cmp = comparator));
+
+    // Restore to x
+    forall i in x.domain do
+      x[i] = tagged[i][0];
+  }
+
 }
