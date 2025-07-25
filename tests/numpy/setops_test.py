@@ -720,7 +720,7 @@ class TestSetOps:
         # index of nan (reproducer from #3009)
         s = ak.Series(ak.array([1, 2, 3]), index=ak.array([1, 2, np.nan]))
         assert ak.indexof1d(ak.array([np.nan]), s.index.values).tolist() == [2]
-        rng = np.random.default_rng()
+        rng = np.random.default_rng(pytest.seed)
         seeds = [
             rng.choice(2**63),
             rng.choice(2**63),

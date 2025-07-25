@@ -7,7 +7,6 @@ from arkouda.testing import assert_equivalent
 
 # requires the server to be built with 2D array support
 SHAPES = [(1,), (25,), (5, 10), (10, 5)]
-SEED = 12345
 SCALAR_TYPES = list(ak.ScalarDTypes)
 SCALAR_TYPES.remove("bool_")
 
@@ -29,7 +28,7 @@ class TestSortingFunctions:
     @pytest.mark.parametrize("descending", [True, False])
     def test_argsort(self, shape, dtype, descending):
         for axis in range(len(shape)):
-            a = xp.asarray(ak.randint(0, 100, shape, dtype=dtype, seed=SEED))
+            a = xp.asarray(ak.randint(0, 100, shape, dtype=dtype, seed=pytest.seed))
             b = xp.argsort(a, axis=axis, descending=descending)
             np_b = a.to_ndarray().argsort(axis=axis, stable=True)
             np_b = np.flip(np_b, axis=axis) if descending else np_b
@@ -45,7 +44,7 @@ class TestSortingFunctions:
     @pytest.mark.parametrize("shape", SHAPES)
     def test_sort(self, dtype, shape):
         for axis in range(len(shape)):
-            a = xp.asarray(ak.randint(0, 100, shape, dtype=dtype, seed=SEED))
+            a = xp.asarray(ak.randint(0, 100, shape, dtype=dtype, seed=pytest.seed))
             sorted = xp.sort(a, axis=axis)
 
             assert sorted.size == a.size

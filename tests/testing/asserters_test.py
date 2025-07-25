@@ -869,7 +869,7 @@ class TestAsserters:
         # check_exact
         # rtol
         # atol
-        rng = ak.random.default_rng(seed=17)
+        rng = ak.random.default_rng(seed=pytest.seed)
         atol = 0.001
         rtol = 0.001
 
