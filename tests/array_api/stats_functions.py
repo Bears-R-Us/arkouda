@@ -6,7 +6,7 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
-SEED = 314159
+seed = pytest.seed if pytest.seed is not None else 8675309
 
 
 class TestStatsFunction:
@@ -22,7 +22,7 @@ class TestStatsFunction:
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_max(self):
-        a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))
+        a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=seed))
         a[3, 6, 2] = 101
 
         assert xp.max(a) == 101
@@ -41,7 +41,7 @@ class TestStatsFunction:
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_min(self):
-        a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))
+        a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=seed))
         a[3, 6, 2] = -1
 
         assert xp.min(a) == -1
@@ -159,7 +159,7 @@ class TestStatsFunction:
 
     @pytest.mark.skip_if_rank_not_compiled([3])
     def test_cumsum(self):
-        a = xp.asarray(ak.randint(0, 100, (5, 6, 7), seed=SEED))
+        a = xp.asarray(ak.randint(0, 100, (5, 6, 7), seed=seed))
 
         a_sum_0 = xp.cumulative_sum(a, axis=0)
         a_sum_0_np = np.cumsum(a.to_ndarray(), axis=0)
@@ -185,7 +185,7 @@ class TestStatsFunction:
         assert b_sum_1[0, 1, 0] == 1
         assert b_sum_1[0, 6, 0] == 6
 
-        c = xp.asarray(ak.randint(0, 100, 50, dtype=ak.float64, seed=SEED))
+        c = xp.asarray(ak.randint(0, 100, 50, dtype=ak.float64, seed=seed))
         c_sum = xp.cumulative_sum(c)
         c_sum_np = np.cumsum(c.to_ndarray())
 

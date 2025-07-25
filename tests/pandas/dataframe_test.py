@@ -15,6 +15,8 @@ from arkouda.scipy import chisquare as akchisquare
 from arkouda.testing import assert_frame_equal as ak_assert_frame_equal
 from arkouda.testing import assert_frame_equivalent
 
+seed = pytest.seed if pytest.seed is not None else 8675309
+
 
 def alternating_1_0(n):
     a = np.full(n, 0)
@@ -1115,7 +1117,6 @@ class TestDataFrame:
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_multi_col_merge(self, size):
         size = min(size, 1000)
-        seed = 1
         a = ak.randint(-size // 10, size // 10, size, seed=seed)
         b = ak.randint(-size // 10, size // 10, size, seed=seed + 1)
         c = ak.randint(-size // 10, size // 10, size, seed=seed + 2)
@@ -1167,7 +1168,6 @@ class TestDataFrame:
     )
     def test_merge_left_on_right_on(self, how, left_on, right_on):
         size = 1000
-        seed = 42
 
         a = ak.randint(-size // 10, size // 10, size, seed=seed)
         b = ak.randint(-size // 10, size // 10, size, seed=seed + 1)
@@ -1232,7 +1232,6 @@ class TestDataFrame:
     )
     def test_merge_categoricals_left_on_right_on(self, how, left_on, right_on):
         size = 20
-        seed = 42
 
         a = ak.randint(0, 5, size, seed=seed)
         b = ak.randint(0, 5, size, seed=seed + 1)
@@ -1502,7 +1501,8 @@ class TestDataFrame:
 
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05
-        rng = ak.random.default_rng(43)
+
+        rng = ak.random.default_rng(seed)
         num_samples = 10**4
 
         prob_arr = ak.array([0.35, 0.10, 0.55])
@@ -1530,11 +1530,11 @@ class TestDataFrame:
         assert pval > 0.05
 
     def test_sample_flags(self):
-        # use numpy to randomly generate a set seed
-        seed = np.random.default_rng().choice(2**63)
+        # use numpy to randomly generate a set seed, but seed the generator from the default
+        iseed = np.random.default_rng(seed).choice(2**63)
         cfg = ak.get_config()
 
-        rng = ak.random.default_rng(seed)
+        rng = ak.random.default_rng(iseed)
         weights = rng.uniform(size=12)
         a_vals = [
             rng.integers(0, 2**32, size=12, dtype="uint"),
@@ -1547,7 +1547,7 @@ class TestDataFrame:
 
         choice_arrays = []
         # return_indices and permute_samples are tested by the dataframe version
-        rng = ak.random.default_rng(seed)
+        rng = ak.random.default_rng(iseed)
         for a in a_vals:
             for size in 2, 4:
                 for replace in True, False:
@@ -1567,7 +1567,7 @@ class TestDataFrame:
                         )
 
         # reset generator to ensure we get the same arrays
-        rng = ak.random.default_rng(seed)
+        rng = ak.random.default_rng(iseed)
         for a in a_vals:
             for size in 2, 4:
                 for replace in True, False:
@@ -1590,7 +1590,7 @@ class TestDataFrame:
                         )
                         if not res:
                             print(f"\nnum locales: {cfg['numLocales']}")
-                            print(f"Failure with seed:\n{seed}")
+                            print(f"Failure with seed:\n{iseed}")
                         assert res
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -1603,7 +1603,7 @@ class TestDataFrame:
                 "a": ak.arange(size) % 3,
                 "b": ak.arange(size, dtype="int64"),
                 "c": ak.arange(size, dtype="float64"),
-                "d": ak.random_strings_uniform(size=size, minlen=1, maxlen=2, seed=18),
+                "d": ak.random_strings_uniform(size=size, minlen=1, maxlen=2, seed=seed),
                 "e": bool_col,
             }
         )

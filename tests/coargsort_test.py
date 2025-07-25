@@ -8,8 +8,10 @@ from arkouda.numpy.sorting import SortingAlgorithm
 
 NUMERIC_TYPES = ["int64", "float64", "uint64", "bigint", "bool"]
 
+seed = pytest.seed if pytest.seed is not None else 8675309
 
-def make_ak_arrays(size, dtype, minimum=-(2**32), maximum=2**32, seed=1):
+
+def make_ak_arrays(size, dtype, minimum=-(2**32), maximum=2**32):
     if dtype in ["int64", "float64"]:
         return ak.randint(minimum, maximum, size=size, dtype=dtype, seed=seed)
     elif dtype == "uint64":
@@ -63,7 +65,7 @@ class TestCoargsort:
     @pytest.mark.parametrize("algo", SortingAlgorithm)
     @pytest.mark.parametrize("base_dtype", NUMERIC_TYPES)
     def test_coargsort_mixed_types(self, prob_size, algo, base_dtype):
-        np.random.seed(1)
+        np.random.seed(seed)
         dtypes = [base_dtype] + np.random.choice(
             list(set(NUMERIC_TYPES) - {base_dtype}),
             size=len(NUMERIC_TYPES) - 1,
@@ -116,7 +118,7 @@ class TestCoargsort:
     @pytest.mark.parametrize("ascending", [True, False])
     def test_coargsort_wstrings(self, ascending):
         size = 100
-        ak_char_array = ak.random_strings_uniform(1, 2, seed=1, size=size)
+        ak_char_array = ak.random_strings_uniform(1, 2, seed=seed, size=size)
         ak_int_array = ak.randint(0, 10 * size, size, dtype=ak.int64)
 
         perm = ak.coargsort([ak_char_array, ak_int_array], ascending=ascending)

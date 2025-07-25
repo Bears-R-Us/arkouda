@@ -30,6 +30,8 @@ DTYPES = [
     ak.bigint,
 ]
 
+seed = pytest.seed if pytest.seed is not None else 8675309
+
 #   multi_dim_ranks is used in multi_dim_testing
 
 
@@ -221,7 +223,7 @@ class TestPdarrayCreation:
         Reproducer for transpose bug: ensure ak.transpose(ak.array(nda))
         matches ak.array(np.transpose(nda)) for various 2D shapes.
         """
-        np.random.seed(0)
+        np.random.seed(seed)
         nda = np.random.randint(1, 10, (rows, cols))
 
         ak_arr = ak.array(nda)
@@ -504,6 +506,8 @@ class TestPdarrayCreation:
 
         with pytest.raises(TypeError):
             ak.randint(0, "1", 1000)
+
+    #   The tests below retain the non pytest.seed because they assert specific values.
 
     def test_randint_with_seed(self):
         values = ak.randint(1, 5, 10, seed=2)
