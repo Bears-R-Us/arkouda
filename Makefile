@@ -392,6 +392,12 @@ ifeq ($(CHPL_CXX),)
 CHPL_CXX=$(CXX)
 endif
 
+ifdef ARKOUDA_DEVELOPER
+ARROW_FLAGS = -g
+else
+ARROW_FLAGS = -O3
+endif
+
 .PHONY: compile-arrow-cpp
 compile-arrow-cpp:
 	make compile-arrow-write
@@ -400,15 +406,15 @@ compile-arrow-cpp:
 
 .PHONY: compile-arrow-write
 compile-arrow-write:
-	$(CHPL_CXX) -O3 -std=c++17 -c $(ARROW_WRITE_CPP) -o $(ARROW_WRITE_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
+	$(CHPL_CXX) -std=c++17 $(ARROW_FLAGS) -c $(ARROW_WRITE_CPP) -o $(ARROW_WRITE_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
 
 .PHONY: compile-arrow-read
 compile-arrow-read:
-	$(CHPL_CXX) -O3 -std=c++17 -c $(ARROW_READ_CPP) -o $(ARROW_READ_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
+	$(CHPL_CXX) -std=c++17 $(ARROW_FLAGS) -c $(ARROW_READ_CPP) -o $(ARROW_READ_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
 
 .PHONY: compile-arrow-util
 compile-arrow-util:
-	$(CHPL_CXX) -O3 -std=c++17 -c $(ARROW_UTIL_CPP) -o $(ARROW_UTIL_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
+	$(CHPL_CXX) -std=c++17 $(ARROW_FLAGS) -c $(ARROW_UTIL_CPP) -o $(ARROW_UTIL_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
 
 $(ARROW_UTIL_O): $(ARROW_UTIL_CPP) $(ARROW_UTIL_H)
 	make compile-arrow-util
@@ -769,7 +775,7 @@ $(TEST_TARGETS): $(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)%: $(TEST_SOURCE_DIR)/%.
 	$(CHPL) $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR) $(ARKOUDA_COMPAT_MODULES) $< -o $@
 
 print-%:
-	$(info $($*)) @trues
+	$(info $($*)) @true
 
 size=100
 skip_doctest="False"

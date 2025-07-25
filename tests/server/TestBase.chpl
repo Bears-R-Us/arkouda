@@ -31,13 +31,13 @@ record CommDiagSummary {
 }
 
 record Diags {
-  var T: Timer;
+  var T: stopwatch;
   var elapsedTime: real;
   var gatherDiags = dfltGatherDiags;
   var D: [LocaleSpace] commDiagnostics;
 
   proc init() {
-    this.complete();
+    init this;
     resetCommDiagnostics();
     D = getCommDiagnostics();
   }
@@ -47,7 +47,8 @@ record Diags {
     T.start();
   }
 
-  proc stop(param name="", printTime=printTimes, printDiag=printDiags, printDiagSum=printDiagsSum) {
+  proc stop(param name="", printTime=printTimes, printDiag=printDiags,
+            printDiagSum=printDiagsSum) {
     T.stop();
     if gatherDiags then stopCommDiagnostics();
 
@@ -57,7 +58,8 @@ record Diags {
     T.clear();
     if gatherDiags then resetCommDiagnostics();
 
-    if !gatherDiags && (printDiag || printDiagSum) then warning("gatherDiags was not enabled");
+    if !gatherDiags && (printDiag || printDiagSum) then
+      warning("gatherDiags was not enabled");
     param s = if name != "" then name + ": " else "";
     if printTime    then writef("%s%.2drs\n", s, this.elapsed());
     if printDiag    then writef('%s%s\n',     s, this.comm():string);
@@ -86,9 +88,8 @@ record Diags {
 // Message helpers
 
 proc parseName(s: string): string {
-  const low = [1..1].domain.low;
   var fields = s.split();
-  return fields[low+1];
+  return fields[1];
 }
 
 proc parseTwoNames(s: string): (string, string) {
@@ -115,9 +116,11 @@ proc writeSegString(msg: string, ss: SegString) {
 }
 
 
-proc nameForRandintMsg(len: int, dtype:DType, aMin: int, aMax: int, st: borrowed SymTab) {
+proc nameForRandintMsg(len: int, dtype:DType, aMin: int, aMax: int,
+                       st: borrowed SymTab) {
   use RandMsg;
-  const payload = try! "%i %s %i %i None".format(len, dtype2str(dtype), aMin, aMax);
+  const payload = try! "%i %s %i %i None".format(len, dtype2str(dtype), aMin,
+                                                 aMax);
   writeReq(payload);
   const repMsg = randintMsg(cmd='randint', payload=payload, st).msg;
   writeRep(repMsg);

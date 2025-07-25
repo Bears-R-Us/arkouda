@@ -1517,12 +1517,16 @@ module ParquetMsg {
     }
   }
 
-  proc writeMultiColParquet(filename: string, col_names: [] string, 
-                              ncols: int, sym_names: [] string, col_objTypes: [] string, targetLocales: [] locale, 
-                              compression: int, st: borrowed SymTab): bool throws {
+  proc writeMultiColParquet(filename: string, col_names: [] string, ncols: int,
+                            sym_names: [] string, col_objTypes: [] string,
+                            targetLocales: [] locale, compression: int,
+                            st: borrowed SymTab): bool throws {
 
-    extern proc c_writeMultiColToParquet(filename, column_names, ptr_arr, offset_arr, objTypes,
-                                      datatypes, segArr_sizes, colnum, numelems, rowGroupSize, compression, errMsg): int;
+    extern proc c_writeMultiColToParquet(filename, column_names, ptr_arr,
+                                         offset_arr, objTypes, datatypes,
+                                         segArr_sizes, colnum, numelems,
+                                         rowGroupSize, compression,
+                                         errMsg): int;
 
     var prefix: string;
     var extension: string;
@@ -1919,7 +1923,18 @@ module ParquetMsg {
         );
       }
       
-      var result: int = c_writeMultiColToParquet(fname.localize().c_str(), c_ptrTo(c_names), c_ptrTo(ptrList), c_ptrTo(segmentPtr), c_ptrTo(objTypes), c_ptrTo(datatypes), c_ptrTo(segarray_sizes), ncols, numelems, ROWGROUPS, compression, c_ptrTo(pqErr.errMsg));
+      var result: int = c_writeMultiColToParquet(fname.localize().c_str(),
+                                                 c_ptrTo(c_names),
+                                                 c_ptrTo(ptrList),
+                                                 c_ptrTo(segmentPtr),
+                                                 c_ptrTo(objTypes),
+                                                 c_ptrTo(datatypes),
+                                                 c_ptrTo(segarray_sizes),
+                                                 ncols,
+                                                 numelems,
+                                                 ROWGROUPS,
+                                                 compression,
+                                                 c_ptrTo(pqErr.errMsg));
       if result == ARROWERROR {
         pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
       }
