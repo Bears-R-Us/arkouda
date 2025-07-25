@@ -392,8 +392,95 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.client">
 <span id="arkouda-client"></span><h1>arkouda.client<a class="headerlink" href="#module-arkouda.client" title="Link to this heading">¶</a></h1>
+<p>Client interface for connecting to and communicating with the Arkouda server.</p>
+<p>The <cite>arkouda.client</cite> module provides the core logic for managing a client-server
+session in Arkouda. It includes methods to connect, disconnect, send commands,
+check system status, and retrieve configuration details from the server. The client
+communicates with the server via ZMQ by default and handles both string and binary
+message formats.</p>
+<section id="key-responsibilities">
+<h2>Key Responsibilities<a class="headerlink" href="#key-responsibilities" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Establish and manage server connections via different <cite>Channel</cite> types (e.g., ZMQ)</p></li>
+<li><p>Format and send commands using Arkouda’s request-response protocol</p></li>
+<li><p>Retrieve memory and configuration metrics from the server</p></li>
+<li><p>Provide a health check (<cite>ruok</cite>) and shutdown mechanism</p></li>
+<li><p>Maintain client-side logging, verbosity, and session parameters</p></li>
+</ul>
+</section>
+<section id="main-api">
+<h2>Main API<a class="headerlink" href="#main-api" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>__all__ = [</dt><dd><p>“connect”,
+“disconnect”,
+“shutdown”,
+“get_config”,
+“get_max_array_rank”,
+“get_mem_used”,
+“get_mem_avail”,
+“get_mem_status”,
+“get_server_commands”,
+“print_server_commands”,
+“generate_history”,
+“ruok”,</p>
+</dd>
+</dl>
+<p>]</p>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>Channel</dt><dd><p>Abstract base class for communication between the client and the server.</p>
+</dd>
+<dt>ZmqChannel</dt><dd><p>Default implementation of <cite>Channel</cite> using ZeroMQ request-reply pattern.</p>
+</dd>
+<dt>ClientMode, ShellMode, RequestMode, RequestStatus, ChannelType</dt><dd><p>Enum classes defining modes of client interaction, shell type detection, and channel selection.</p>
+</dd>
+</dl>
+</section>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>connect(…)</dt><dd><p>Establish a connection to an Arkouda server.</p>
+</dd>
+<dt>disconnect()</dt><dd><p>Cleanly disconnect from the server and reset session state.</p>
+</dd>
+<dt>shutdown()</dt><dd><p>Shut down the server, delete its symbol table, and disconnect the client.</p>
+</dd>
+<dt>get_config()</dt><dd><p>Return server runtime configuration and environment settings.</p>
+</dd>
+<dt>get_mem_used(), get_mem_avail(), get_mem_status()</dt><dd><p>Retrieve memory usage and availability statistics from the server.</p>
+</dd>
+<dt>get_server_commands()</dt><dd><p>Get a mapping of available server commands and their functions.</p>
+</dd>
+<dt>print_server_commands()</dt><dd><p>Print a list of all supported server-side commands.</p>
+</dd>
+<dt>generate_history(…)</dt><dd><p>Retrieve interactive shell or notebook command history.</p>
+</dd>
+<dt>ruok()</dt><dd><p>Send a health check to the server (“ruok”) and receive status.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>This module is foundational to all Arkouda workflows.</p></li>
+<li><p>The <cite>generic_msg()</cite> function is used internally to handle message transmission.</p></li>
+<li><p>Clients must call <cite>connect()</cite> before performing any server operations.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+<span class="go">{&#39;serverHostname&#39;: &#39;localhost&#39;, &#39;numLocales&#39;: 4, ...}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code></p>
+</div>
+</section>
+<section id="id1">
+<h2>Functions<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -781,7 +868,11 @@ The server will consider itself “idle” despite serving this message.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.client</a><ul>
+<li><a class="reference internal" href="#key-responsibilities">Key Responsibilities</a></li>
+<li><a class="reference internal" href="#main-api">Main API</a></li>
+<li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#id1">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.client.connect"><code class="docutils literal notranslate"><span class="pre">connect()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client.disconnect"><code class="docutils literal notranslate"><span class="pre">disconnect()</span></code></a></li>

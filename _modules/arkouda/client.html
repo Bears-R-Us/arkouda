@@ -384,7 +384,104 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.client</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Client interface for connecting to and communicating with the Arkouda server.</span>
+
+<span class="sd">The `arkouda.client` module provides the core logic for managing a client-server</span>
+<span class="sd">session in Arkouda. It includes methods to connect, disconnect, send commands,</span>
+<span class="sd">check system status, and retrieve configuration details from the server. The client</span>
+<span class="sd">communicates with the server via ZMQ by default and handles both string and binary</span>
+<span class="sd">message formats.</span>
+
+<span class="sd">Key Responsibilities</span>
+<span class="sd">--------------------</span>
+<span class="sd">- Establish and manage server connections via different `Channel` types (e.g., ZMQ)</span>
+<span class="sd">- Format and send commands using Arkouda’s request-response protocol</span>
+<span class="sd">- Retrieve memory and configuration metrics from the server</span>
+<span class="sd">- Provide a health check (`ruok`) and shutdown mechanism</span>
+<span class="sd">- Maintain client-side logging, verbosity, and session parameters</span>
+
+<span class="sd">Main API</span>
+<span class="sd">--------</span>
+<span class="sd">__all__ = [</span>
+<span class="sd">    &quot;connect&quot;,</span>
+<span class="sd">    &quot;disconnect&quot;,</span>
+<span class="sd">    &quot;shutdown&quot;,</span>
+<span class="sd">    &quot;get_config&quot;,</span>
+<span class="sd">    &quot;get_max_array_rank&quot;,</span>
+<span class="sd">    &quot;get_mem_used&quot;,</span>
+<span class="sd">    &quot;get_mem_avail&quot;,</span>
+<span class="sd">    &quot;get_mem_status&quot;,</span>
+<span class="sd">    &quot;get_server_commands&quot;,</span>
+<span class="sd">    &quot;print_server_commands&quot;,</span>
+<span class="sd">    &quot;generate_history&quot;,</span>
+<span class="sd">    &quot;ruok&quot;,</span>
+<span class="sd">]</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">Channel</span>
+<span class="sd">    Abstract base class for communication between the client and the server.</span>
+
+<span class="sd">ZmqChannel</span>
+<span class="sd">    Default implementation of `Channel` using ZeroMQ request-reply pattern.</span>
+
+<span class="sd">ClientMode, ShellMode, RequestMode, RequestStatus, ChannelType</span>
+<span class="sd">    Enum classes defining modes of client interaction, shell type detection, and channel selection.</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">connect(...)</span>
+<span class="sd">    Establish a connection to an Arkouda server.</span>
+
+<span class="sd">disconnect()</span>
+<span class="sd">    Cleanly disconnect from the server and reset session state.</span>
+
+<span class="sd">shutdown()</span>
+<span class="sd">    Shut down the server, delete its symbol table, and disconnect the client.</span>
+
+<span class="sd">get_config()</span>
+<span class="sd">    Return server runtime configuration and environment settings.</span>
+
+<span class="sd">get_mem_used(), get_mem_avail(), get_mem_status()</span>
+<span class="sd">    Retrieve memory usage and availability statistics from the server.</span>
+
+<span class="sd">get_server_commands()</span>
+<span class="sd">    Get a mapping of available server commands and their functions.</span>
+
+<span class="sd">print_server_commands()</span>
+<span class="sd">    Print a list of all supported server-side commands.</span>
+
+<span class="sd">generate_history(...)</span>
+<span class="sd">    Retrieve interactive shell or notebook command history.</span>
+
+<span class="sd">ruok()</span>
+<span class="sd">    Send a health check to the server (&quot;ruok&quot;) and receive status.</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">- This module is foundational to all Arkouda workflows.</span>
+<span class="sd">- The `generic_msg()` function is used internally to handle message transmission.</span>
+<span class="sd">- Clients must call `connect()` before performing any server operations.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">&gt;&gt;&gt; ak.connect() # doctest: +SKIP</span>
+<span class="sd">&gt;&gt;&gt; ak.get_config() # doctest: +SKIP</span>
+<span class="sd">{&#39;serverHostname&#39;: &#39;localhost&#39;, &#39;numLocales&#39;: 4, ...}</span>
+<span class="sd">&gt;&gt;&gt; ak.disconnect() # doctest: +SKIP</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">- arkouda.pdarray</span>
+<span class="sd">- arkouda.dtypes</span>
+<span class="sd">- arkouda.pandas.dataframe</span>
+<span class="sd">- arkouda.security</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
