@@ -392,8 +392,64 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.pandas.index">
 <span id="arkouda-pandas-index"></span><h1>arkouda.pandas.index<a class="headerlink" href="#module-arkouda.pandas.index" title="Link to this heading">¶</a></h1>
+<p>Index and MultiIndex classes for Arkouda Series and DataFrames.</p>
+<p>This module defines the foundational indexing structures used in Arkouda’s
+pandas-like API, supporting labeled indexing, alignment, and grouping operations.
+Indexes provide the mechanism to assign meaningful labels to rows and columns.</p>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>Index<span class="classifier">class</span></dt><dd><p>One-dimensional immutable sequence used to label and align axis data.
+Accepts various types of inputs including <cite>pdarray</cite>, <cite>Strings</cite>, <cite>Categorical</cite>,
+Python lists, or pandas Index/Categorical objects. Supports optional name and
+lightweight list-based indexing for small inputs.</p>
+</dd>
+<dt>MultiIndex<span class="classifier">class</span></dt><dd><p>A multi-level index for complex datasets, composed of multiple Index-like arrays
+(“levels”). Each level may contain categorical, string, or numeric values.
+Supports construction from a list of arrays or a <cite>pandas.MultiIndex</cite>.</p>
+</dd>
+</dl>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Flexible input types for index construction</p></li>
+<li><p>Support for named and multi-level indexing</p></li>
+<li><p>Efficient size and shape inference</p></li>
+<li><p>Alignment and equality comparison logic</p></li>
+<li><p>Integration with Arkouda Series and DataFrames</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p><cite>MultiIndex</cite> currently does <strong>not</strong> support construction from tuples; it must be
+created from lists of values or pandas MultiIndex objects.</p></li>
+<li><p>Only one-dimensional (1D) indexing is supported at this time.</p></li>
+<li><p>All level arrays in a <cite>MultiIndex</cite> must have the same length.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">Index</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span>
+<span class="go">Index(array([10 20 30]), dtype=&#39;int64&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">midx</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">])],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;num&quot;</span><span class="p">,</span> <span class="s2">&quot;char&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">midx</span><span class="o">.</span><span class="n">nlevels</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">midx</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s2">&quot;char&quot;</span><span class="p">)</span>
+<span class="go">Index(array([&#39;a&#39;, &#39;b&#39;]), dtype=&#39;&lt;U0&#39;)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code></p>
+</div>
+</section>
+<section id="id1">
+<h2>Classes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -1546,6 +1602,8 @@ file with the new data</p></li>
             <ul>
 <li><a class="reference internal" href="#">arkouda.pandas.index</a><ul>
 <li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#id1">Classes</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index"><code class="docutils literal notranslate"><span class="pre">Index</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.argsort"><code class="docutils literal notranslate"><span class="pre">Index.argsort()</span></code></a></li>

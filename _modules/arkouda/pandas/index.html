@@ -384,7 +384,64 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.pandas.index</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Index and MultiIndex classes for Arkouda Series and DataFrames.</span>
+
+<span class="sd">This module defines the foundational indexing structures used in Arkouda&#39;s</span>
+<span class="sd">pandas-like API, supporting labeled indexing, alignment, and grouping operations.</span>
+<span class="sd">Indexes provide the mechanism to assign meaningful labels to rows and columns.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">Index : class</span>
+<span class="sd">    One-dimensional immutable sequence used to label and align axis data.</span>
+<span class="sd">    Accepts various types of inputs including `pdarray`, `Strings`, `Categorical`,</span>
+<span class="sd">    Python lists, or pandas Index/Categorical objects. Supports optional name and</span>
+<span class="sd">    lightweight list-based indexing for small inputs.</span>
+
+<span class="sd">MultiIndex : class</span>
+<span class="sd">    A multi-level index for complex datasets, composed of multiple Index-like arrays</span>
+<span class="sd">    (&quot;levels&quot;). Each level may contain categorical, string, or numeric values.</span>
+<span class="sd">    Supports construction from a list of arrays or a `pandas.MultiIndex`.</span>
+
+<span class="sd">Features</span>
+<span class="sd">--------</span>
+<span class="sd">- Flexible input types for index construction</span>
+<span class="sd">- Support for named and multi-level indexing</span>
+<span class="sd">- Efficient size and shape inference</span>
+<span class="sd">- Alignment and equality comparison logic</span>
+<span class="sd">- Integration with Arkouda Series and DataFrames</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">- `MultiIndex` currently does **not** support construction from tuples; it must be</span>
+<span class="sd">  created from lists of values or pandas MultiIndex objects.</span>
+<span class="sd">- Only one-dimensional (1D) indexing is supported at this time.</span>
+<span class="sd">- All level arrays in a `MultiIndex` must have the same length.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">&gt;&gt;&gt; from arkouda.index import Index, MultiIndex</span>
+
+<span class="sd">&gt;&gt;&gt; idx = Index([10, 20, 30], name=&quot;id&quot;)</span>
+<span class="sd">&gt;&gt;&gt; idx</span>
+<span class="sd">Index(array([10 20 30]), dtype=&#39;int64&#39;)</span>
+
+<span class="sd">&gt;&gt;&gt; midx = MultiIndex([ak.array([1, 2]), ak.array([&quot;a&quot;, &quot;b&quot;])], names=[&quot;num&quot;, &quot;char&quot;])</span>
+<span class="sd">&gt;&gt;&gt; midx.nlevels</span>
+<span class="sd">2</span>
+<span class="sd">&gt;&gt;&gt; midx.get_level_values(&quot;char&quot;)</span>
+<span class="sd">Index(array([&#39;a&#39;, &#39;b&#39;]), dtype=&#39;&lt;U0&#39;)</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">- arkouda.pandas.series.Series</span>
+<span class="sd">- arkouda.categorical.Categorical</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
