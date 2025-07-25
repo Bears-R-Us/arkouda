@@ -392,6 +392,46 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.pandas.groupbyclass">
 <span id="arkouda-pandas-groupbyclass"></span><h1>arkouda.pandas.groupbyclass<a class="headerlink" href="#module-arkouda.pandas.groupbyclass" title="Link to this heading">¶</a></h1>
+<p>GroupBy functionality for Arkouda.</p>
+<p>This module implements group-by operations for Arkouda arrays, enabling efficient
+grouping, aggregation, and broadcasting of data using distributed <cite>pdarray</cite> structures.</p>
+<p>It provides the <cite>GroupBy</cite> class and supporting utilities for working with groupable
+data, following a pandas-like interface while scaling to large datasets via Arkouda’s
+parallel backend.</p>
+<section id="components">
+<h2>Components<a class="headerlink" href="#components" title="Link to this heading">¶</a></h2>
+<dl>
+<dt>GroupBy<span class="classifier">class</span></dt><dd><p>Main class for performing group-by operations such as sum, mean, min, max, etc.</p>
+</dd>
+<dt>unique<span class="classifier">function</span></dt><dd><p>Returns the unique values in an array and the permutation that groups them.</p>
+</dd>
+<dt>broadcast<span class="classifier">function</span></dt><dd><p>Broadcasts a per-group aggregate back to the original shape of the input array.</p>
+</dd>
+<dt>GROUPBY_REDUCTION_TYPES<span class="classifier">set</span></dt><dd><p>Set of supported reduction types for <cite>GroupBy.aggregate</cite> (e.g., “sum”, “count”, “mean”).</p>
+</dd>
+<dt>groupable<span class="classifier">type alias</span></dt><dd><p>A type alias representing valid input(s) to the <cite>GroupBy</cite> constructor.
+Acceptable types include:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>a single <cite>pdarray</cite>, <cite>Strings</cite>, or <cite>Categorical</cite> object</p></li>
+<li><p>a sequence (e.g., list or tuple) of any combination of those types</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">keys</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s1">&#39;sum&#39;</span><span class="p">)</span>
+<span class="go">(array([0 1]), array([90 60]))</span>
+</pre></div>
+</div>
+</section>
 <section id="attributes">
 <h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -2124,6 +2164,7 @@ computation. Otherwise, this function will sort <cite>pda</cite>.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.pandas.groupbyclass</a><ul>
+<li><a class="reference internal" href="#components">Components</a></li>
 <li><a class="reference internal" href="#attributes">Attributes</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>

@@ -384,7 +384,50 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.pandas.groupbyclass</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">GroupBy functionality for Arkouda.</span>
+
+<span class="sd">This module implements group-by operations for Arkouda arrays, enabling efficient</span>
+<span class="sd">grouping, aggregation, and broadcasting of data using distributed `pdarray` structures.</span>
+
+<span class="sd">It provides the `GroupBy` class and supporting utilities for working with groupable</span>
+<span class="sd">data, following a pandas-like interface while scaling to large datasets via Arkouda&#39;s</span>
+<span class="sd">parallel backend.</span>
+
+<span class="sd">Components</span>
+<span class="sd">----------</span>
+<span class="sd">GroupBy : class</span>
+<span class="sd">    Main class for performing group-by operations such as sum, mean, min, max, etc.</span>
+
+<span class="sd">unique : function</span>
+<span class="sd">    Returns the unique values in an array and the permutation that groups them.</span>
+
+<span class="sd">broadcast : function</span>
+<span class="sd">    Broadcasts a per-group aggregate back to the original shape of the input array.</span>
+
+<span class="sd">GROUPBY_REDUCTION_TYPES : set</span>
+<span class="sd">    Set of supported reduction types for `GroupBy.aggregate` (e.g., &quot;sum&quot;, &quot;count&quot;, &quot;mean&quot;).</span>
+
+<span class="sd">groupable : type alias</span>
+<span class="sd">    A type alias representing valid input(s) to the `GroupBy` constructor.</span>
+<span class="sd">    Acceptable types include:</span>
+<span class="sd">        - a single `pdarray`, `Strings`, or `Categorical` object</span>
+<span class="sd">        - a sequence (e.g., list or tuple) of any combination of those types</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">&gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">&gt;&gt;&gt; from arkouda.groupbyclass import GroupBy</span>
+
+<span class="sd">&gt;&gt;&gt; keys = ak.array([0, 1, 0, 1, 0])</span>
+<span class="sd">&gt;&gt;&gt; values = ak.array([10, 20, 30, 40, 50])</span>
+<span class="sd">&gt;&gt;&gt; gb = GroupBy(keys)</span>
+<span class="sd">&gt;&gt;&gt; gb.aggregate(values, &#39;sum&#39;)</span>
+<span class="sd">(array([0 1]), array([90 60]))</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
