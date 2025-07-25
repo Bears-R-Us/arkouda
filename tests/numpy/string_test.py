@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+from arkouda import Strings
 from arkouda.numpy import strings
 from arkouda.testing import assert_equal as ak_assert_equal
 from arkouda.testing import assert_equivalent
@@ -1019,3 +1020,12 @@ class TestString:
 
         assert a_cpy is not a
         ak_assert_equal(a, a_cpy)
+
+    def test_copy_empty(self):
+        a = ak.array([], dtype="str_")
+        a_cpy = a.copy()
+
+        assert a_cpy is not a
+
+        assert isinstance(a_cpy, Strings)
+        assert a_cpy.size == 0
