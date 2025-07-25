@@ -38,7 +38,7 @@ Module Contents
    >>> row = Row({'x': 10, 'y': 'a'})
    >>> print(row)
    keys    values
-   ----    ------
+   ------  --------
    x       10
    y       a
 
