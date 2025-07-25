@@ -175,7 +175,7 @@ For the most part, only the core dev team or those assigned should review PRs.
 
 - Only members of the core dev team with quite a bit of experience writing and reviewing PRs should merge pull requests. If you're unsure, ask first.
 - Only merge PRs with 2 or more concurrent approvals from members of the core dev team with limited exceptions.
-- Only merge PRs after the CI has passed and if there are no conflicts. Ideally rebase or merge with master first.
+- Only merge PRs after the CI has passed and if there are no conflicts. Ideally rebase or merge with main first.
 - We prefer to have all feedback resolved before a PR is merged.
 - If you wrote it, don't merge it. It's best practice for someone else to decide it's ready to be merged.
 - To keep the commit history simple and allow for easy manipulation of PRs, we use the `Squash-and-Merge` functionality of GitHub's web interface.
