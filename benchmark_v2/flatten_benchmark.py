@@ -12,8 +12,7 @@ DTYPES = ("int64", "float64", "bool")
 @pytest.mark.parametrize("dtype", DTYPES)
 @pytest.mark.parametrize("shape_type", ["square", "wide", "tall"])
 def bench_ak_flatten_2d(benchmark, dtype, shape_type):
-    cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
+    N = pytest.N
 
     if shape_type == "square":
         #   Ensure N has an integer square root:

@@ -16,8 +16,7 @@ def bench_argsort(benchmark, dtype):
     -----
     str dtype is significantly slower than numerics
     """
-    cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
+    N = pytest.N
 
     if dtype in pytest.dtype:
         if dtype == "int64":

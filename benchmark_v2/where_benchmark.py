@@ -21,8 +21,7 @@ def bench_where(benchmark, dtype, v_or_s):
     Measures the performance of where
     """
     if dtype in pytest.dtype:
-        cfg = ak.get_config()
-        N = pytest.prob_size * cfg["numLocales"]
+        N = pytest.N
         seed = pytest.seed
 
         a = ak.randint(0, 2**32, N, seed=seed, dtype=dtype)

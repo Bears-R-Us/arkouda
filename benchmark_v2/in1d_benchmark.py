@@ -19,8 +19,7 @@ def bench_in1d(benchmark, dtype, size):
     Benchmark ak.in1d. Skips if --numpy is used.
     """
     if dtype in pytest.dtype:
-        cfg = ak.get_config()
-        N = pytest.prob_size * cfg["numLocales"]
+        N = pytest.N
         s = SIZES[size]
 
         if dtype == "str":

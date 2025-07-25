@@ -13,8 +13,7 @@ def bench_reduce(benchmark, op, dtype):
     if dtype not in pytest.dtype:
         pytest.skip(f"{dtype} not in selected dtypes")
 
-    cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
+    N = pytest.N
 
     # Create test array
     if pytest.random or pytest.seed is not None:
