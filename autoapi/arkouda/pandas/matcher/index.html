@@ -392,6 +392,42 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.pandas.matcher">
 <span id="arkouda-pandas-matcher"></span><h1>arkouda.pandas.matcher<a class="headerlink" href="#module-arkouda.pandas.matcher" title="Link to this heading">¶</a></h1>
+<p>Matching utilities for Arkouda arrays.</p>
+<p>The <cite>arkouda.matcher</cite> module provides functions for efficiently aligning,
+matching, and comparing Arkouda arrays. These tools are used internally to
+support operations such as joins, merges, and reindexing across arrays,
+particularly when working with categorical or structured data.</p>
+<p>Functions in this module generally operate on one or more <cite>pdarray</cite> or
+<cite>Categorical</cite> inputs and return index mappings or boolean masks indicating
+matches or relationships between datasets.</p>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Index resolution for join operations</p></li>
+<li><p>Efficient value-matching across large arrays</p></li>
+<li><p>Support for type-aware and multi-column matching</p></li>
+<li><p>Underpins DataFrame merge, Series alignment, and MultiIndex comparisons</p></li>
+</ul>
+</section>
+<section id="typical-use-cases">
+<h2>Typical Use Cases<a class="headerlink" href="#typical-use-cases" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Determining where values from one array appear in another</p></li>
+<li><p>Generating permutation indices for aligning arrays</p></li>
+<li><p>Supporting categorical equivalence testing</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Functions in this module are primarily intended for internal use in
+<cite>arkouda.pandas</cite>-style functionality.</p></li>
+<li><p>Most functions assume inputs are distributed <cite>pdarray</cite>, <cite>Strings</cite>, or
+<cite>Categorical</cite> types with compatible shapes and data types.</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code></p>
+</div>
+</section>
 <section id="attributes">
 <h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -620,6 +656,8 @@ If return_num_subs is True, return the number of substitutions that occurred</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.pandas.matcher</a><ul>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#typical-use-cases">Typical Use Cases</a></li>
 <li><a class="reference internal" href="#attributes">Attributes</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>

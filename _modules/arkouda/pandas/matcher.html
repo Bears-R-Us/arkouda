@@ -384,7 +384,48 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.pandas.matcher</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Matching utilities for Arkouda arrays.</span>
+
+<span class="sd">The `arkouda.matcher` module provides functions for efficiently aligning,</span>
+<span class="sd">matching, and comparing Arkouda arrays. These tools are used internally to</span>
+<span class="sd">support operations such as joins, merges, and reindexing across arrays,</span>
+<span class="sd">particularly when working with categorical or structured data.</span>
+
+<span class="sd">Functions in this module generally operate on one or more `pdarray` or</span>
+<span class="sd">`Categorical` inputs and return index mappings or boolean masks indicating</span>
+<span class="sd">matches or relationships between datasets.</span>
+
+<span class="sd">Features</span>
+<span class="sd">--------</span>
+<span class="sd">- Index resolution for join operations</span>
+<span class="sd">- Efficient value-matching across large arrays</span>
+<span class="sd">- Support for type-aware and multi-column matching</span>
+<span class="sd">- Underpins DataFrame merge, Series alignment, and MultiIndex comparisons</span>
+
+<span class="sd">Typical Use Cases</span>
+<span class="sd">-----------------</span>
+<span class="sd">- Determining where values from one array appear in another</span>
+<span class="sd">- Generating permutation indices for aligning arrays</span>
+<span class="sd">- Supporting categorical equivalence testing</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">- Functions in this module are primarily intended for internal use in</span>
+<span class="sd">  `arkouda.pandas`-style functionality.</span>
+<span class="sd">- Most functions assume inputs are distributed `pdarray`, `Strings`, or</span>
+<span class="sd">  `Categorical` types with compatible shapes and data types.</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">- arkouda.join</span>
+<span class="sd">- arkouda.groupbyclass</span>
+<span class="sd">- arkouda.pandas.merge</span>
+<span class="sd">- arkouda.categorical.Categorical</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">cast</span>
 
