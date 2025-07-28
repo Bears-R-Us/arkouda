@@ -1022,49 +1022,25 @@ module AryUtil
 
         const isContiguous = flatHigh - flatLow + 1 == ld.size;
 
-        var shapeDiffers = false;
-        for i in 0..<(d.rank-1) do
-          if ld.low[i] != ld.high[i] then
-            shapeDiffers = true;
-
-        if isContiguous && shapeDiffers {
-
-          // flatten locally
-          var localFlat: [0..#ld.size] t;
+        if isContiguous {
 
           const flatSlice = flatLow..flatHigh;
-
-          forall idx in domOffAxis(ld, d.rank-1) with (
-              const lastDim = ld.dim(d.rank-1)
-          ) {
-            var idxTup: (d.rank-1)*int;
-            for i in 0..<(d.rank-1) do idxTup[i] = idx[i];
-
-            const writeOffset = ord.indexToOrder(((...idxTup), lastDim.low));
-            const localOffset = writeOffset - flatLow;
-            const lastDimSize = lastDim.size;
-            
-            for (i, lastComponent) in zip(0..#lastDimSize, lastDim.low..lastDim.high) {
-              localFlat[localOffset + i] = a[((...idxTup), lastComponent)];
-            }
-
-          }
 
           // figure out which locale(s) own this slice
           var locOutStart, locOutStop = 0;
           for (flr, locID) in zip(flatLocRanges, 0..<numLocales) {
-            if flr.contains(flatSlice.low) then locOutStart = locID;
-            if flr.contains(flatSlice.high) then locOutStop = locID;
+            if flr.contains(flatLow) then locOutStart = locID;
+            if flr.contains(flatHigh) then locOutStop = locID;
           }
 
           if locOutStart == locOutStop {
-            put(getAddr(flat[flatSlice.low]), c_ptrToConst(localFlat[0]), locOutStart, c_sizeof(t) * flatSlice.size);
+            put(getAddr(flat[flatLow]), c_ptrToConst(a[ld.low]):c_ptr(t), locOutStart, c_sizeof(t) * flatSlice.size);
           } else {
             for locOutID in locOutStart..locOutStop {
               const flatSubSlice = flatSlice[flatLocRanges[locOutID]];
               put(
                 getAddr(flat[flatSubSlice.low]),
-                c_ptrToConst(localFlat[flatSubSlice.low - flatSlice.low]),
+                c_ptrToConst(a[d.orderToIndex(flatSubSlice.low)]):c_ptr(t),
                 locOutID,
                 c_sizeof(t) * flatSubSlice.size
               );
