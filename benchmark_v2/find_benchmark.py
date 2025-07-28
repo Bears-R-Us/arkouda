@@ -19,17 +19,19 @@ def bench_find(benchmark, dtype):
     query_frac = 0.01  # Use 1% of the space as query set
     qN = max(1, int(query_frac * N))
 
+    seed = pytest.seed or 0
+
     if dtype == "int64":
-        space = ak.randint(0, 2**32, N, seed=pytest.seed)
+        space = ak.randint(0, 2**32, N, seed=seed)
     elif dtype == "uint64":
-        space = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=pytest.seed)
+        space = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
     elif dtype == "float64":
-        space = ak.randint(0, 1, N, dtype=ak.float64, seed=pytest.seed)
+        space = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
     elif dtype == "str":
-        space = ak.random_strings_uniform(1, 16, N, seed=pytest.seed)
+        space = ak.random_strings_uniform(1, 16, N, seed=seed)
 
     # Select query values from the space to guarantee matches
-    query = space[ak.randint(0, N, qN, seed=pytest.seed + 1)]
+    query = space[ak.randint(0, N, qN, seed=seed + 1)]
 
     if dtype == "str":
         nbytes = space.nbytes * space.entry.itemsize + query.nbytes * query.entry.itemsize
