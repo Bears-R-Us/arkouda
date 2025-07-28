@@ -222,7 +222,7 @@ def cast(
         if dt is Categorical or dt == "Categorical":
             return Categorical(pda)  # type: ignore
         elif dt is Strings or akdtype(dt) == str_:
-            return pda[:]
+            return Strings(type_cast(pdarray, array([], dtype="int64")), 0) if pda.size == 0 else pda[:]
         else:
             dt = akdtype(dt)
             repMsg = generic_msg(

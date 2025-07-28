@@ -18,6 +18,17 @@ def randArr(shape, dtype):
 
 
 class TestUtilFunctions:
+    @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
+    def test_utility_functions_docstrings(self):
+        import doctest
+
+        from arkouda.array_api import utility_functions
+
+        result = doctest.testmod(
+            utility_functions, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @pytest.mark.skip_if_rank_not_compiled([2])
     def test_all(self):
         a = xp.ones((10, 10), dtype=ak.bool_)

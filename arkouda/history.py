@@ -32,7 +32,7 @@ Examples
 ['ak.array([1,2,3])', 'ak.sum(...)', ...]
 
 # Notebook mode
->>> h = NotebookHistoryRetriever()
+>>> h = NotebookHistoryRetriever()  # doctest: +SKIP
 >>> h.retrieve(num_commands=3)  # doctest: +SKIP
 ['ak.connect()', 'df = ak.DataFrame(...)', 'ak.argsort(...)']
 
@@ -128,7 +128,7 @@ class ShellHistoryRetriever(HistoryRetriever):
         >>> readline.clear_history()
         >>> 1 + 2
         3
-        >>> h.retrieve()
+        >>> h.retrieve() # doctest: +SKIP
         [' 1 + 2', 'h.retrieve()']
 
         """
@@ -175,11 +175,14 @@ class NotebookHistoryRetriever(HistoryAccessor, HistoryRetriever):
         --------
         >>> import arkouda as ak
         >>> from arkouda.history import NotebookHistoryRetriever
-        >>> h = NotebookHistoryRetriever()
+        >>> h = NotebookHistoryRetriever()  # doctest: +SKIP
         >>> 1+2
+        3
         >>> 4*6
+        24
         >>> 2**3
-        >>> h.retrieve(num_commands=3)
+        8
+        >>> h.retrieve(num_commands=3)  # doctest: +SKIP
         ['1+2', '4*6', '2**3']
 
         """

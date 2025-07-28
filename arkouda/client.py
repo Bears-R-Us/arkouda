@@ -1,3 +1,100 @@
+"""
+Client interface for connecting to and communicating with the Arkouda server.
+
+The `arkouda.client` module provides the core logic for managing a client-server
+session in Arkouda. It includes methods to connect, disconnect, send commands,
+check system status, and retrieve configuration details from the server. The client
+communicates with the server via ZMQ by default and handles both string and binary
+message formats.
+
+Key Responsibilities
+--------------------
+- Establish and manage server connections via different `Channel` types (e.g., ZMQ)
+- Format and send commands using Arkouda’s request-response protocol
+- Retrieve memory and configuration metrics from the server
+- Provide a health check (`ruok`) and shutdown mechanism
+- Maintain client-side logging, verbosity, and session parameters
+
+Main API
+--------
+__all__ = [
+    "connect",
+    "disconnect",
+    "shutdown",
+    "get_config",
+    "get_max_array_rank",
+    "get_mem_used",
+    "get_mem_avail",
+    "get_mem_status",
+    "get_server_commands",
+    "print_server_commands",
+    "generate_history",
+    "ruok",
+]
+
+Classes
+-------
+Channel
+    Abstract base class for communication between the client and the server.
+
+ZmqChannel
+    Default implementation of `Channel` using ZeroMQ request-reply pattern.
+
+ClientMode, ShellMode, RequestMode, RequestStatus, ChannelType
+    Enum classes defining modes of client interaction, shell type detection, and channel selection.
+
+Functions
+---------
+connect(...)
+    Establish a connection to an Arkouda server.
+
+disconnect()
+    Cleanly disconnect from the server and reset session state.
+
+shutdown()
+    Shut down the server, delete its symbol table, and disconnect the client.
+
+get_config()
+    Return server runtime configuration and environment settings.
+
+get_mem_used(), get_mem_avail(), get_mem_status()
+    Retrieve memory usage and availability statistics from the server.
+
+get_server_commands()
+    Get a mapping of available server commands and their functions.
+
+print_server_commands()
+    Print a list of all supported server-side commands.
+
+generate_history(...)
+    Retrieve interactive shell or notebook command history.
+
+ruok()
+    Send a health check to the server ("ruok") and receive status.
+
+Notes
+-----
+- This module is foundational to all Arkouda workflows.
+- The `generic_msg()` function is used internally to handle message transmission.
+- Clients must call `connect()` before performing any server operations.
+
+Examples
+--------
+>>> import arkouda as ak
+>>> ak.connect() # doctest: +SKIP
+>>> ak.get_config() # doctest: +SKIP
+{'serverHostname': 'localhost', 'numLocales': 4, ...}
+>>> ak.disconnect() # doctest: +SKIP
+
+See Also
+--------
+- arkouda.pdarray
+- arkouda.dtypes
+- arkouda.pandas.dataframe
+- arkouda.security
+
+"""
+
 import json
 import os
 import warnings
@@ -1324,15 +1421,25 @@ def generate_history(
     Examples
     --------
     >>> import arkouda as ak
-    >>> ak.connect()
+    >>> ak.connect()    # doctest: +SKIP
     connected to arkouda server tcp://*:5555
-    >>> ak.get_config()
+    >>> ak.get_config()    # doctest: +SKIP
+    {'arkoudaVersion': 'v2025.01.13+165.g23ccdfd6c', 'chplVersion': '2.4.0',
+        ... 'pythonVersion': '3.13', 'ZMQVersion': '4.3.5', 'HDF5Version': '1.14.4',
+        ... 'serverHostname': 'pop-os', 'ServerPort': 5555, 'numLocales': 1,
+        ... 'numPUs': 8, 'maxTaskPar': 8, 'physicalMemory': 67258408960,
+        ... 'distributionType': 'domain(1,int(64),one)',
+        ... 'LocaleConfigs': [{'id': 0, 'name': 'pop-os', 'numPUs': 8,
+        ... 'maxTaskPar': 8, 'physicalMemory': 67258408960}], 'authenticate': False,
+        ... 'logLevel': 'INFO', 'logChannel': 'FILE', 'regexMaxCaptures': 20,
+        ... 'byteorder': 'little', 'autoShutdown': False, 'serverInfoNoSplash': False,
+        ... 'maxArrayDims': 1, 'ARROW_VERSION': '19.0.0'}
     >>> ak.ones(10000, dtype=int)
     array([1 1 1 ... 1 1 1])
-    >>> nums = ak.randint(0,500,10000)
+    >>> nums = ak.randint(0,500,10000, seed=1)
     >>> ak.argsort(nums)
-    array([105 457 647 ... 9362 9602 9683])
-    >>> ak.generate_history(num_commands=5, command_filter='ak.')
+    array([1984 2186 3574 ... 9298 9600 9651])
+    >>> ak.generate_history(num_commands=5, command_filter='ak.')    # doctest: +SKIP
     ['ak.connect()', 'ak.get_config()', 'ak.ones(10000, dtype=int)', 'nums = ak.randint(0,500,10000)',
     'ak.argsort(nums)']
 
