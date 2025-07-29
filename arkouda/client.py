@@ -699,7 +699,7 @@ class ZmqChannel(Channel):
 
     def setupHeartbeat(self, timeout) -> None:
         """
-        Turns on/off a server heartbeat with the given timeout (in seconds).
+        Turn on/off a server heartbeat with the given timeout (in seconds).
 
         The timeout is for waiting for a response from the server.
         It also doubles as the heartbeat frequency.
@@ -727,7 +727,7 @@ class ZmqChannel(Channel):
         self.socket.setsockopt(zmq.TCP_KEEPALIVE_CNT, 3)  # probes before dropping
 
         # Attach a monitor socket.
-        self.heartbeatSocket = self.socket.get_monitor_socket(zmq.EVENT_CLOSED|zmq.EVENT_DISCONNECTED)
+        self.heartbeatSocket = self.socket.get_monitor_socket(zmq.EVENT_CLOSED | zmq.EVENT_DISCONNECTED)
 
         if not self.heartbeatIsEnabled():
             raise RuntimeError("heartbeatIsEnabled() returned false unexpectedly")
@@ -745,11 +745,13 @@ class ZmqChannel(Channel):
         ------
         Raises an exception if the server does not respond within the timeouts
         established in setupHeartbeat().
+
         """
         if not self.heartbeatIsEnabled():
             return  # waiting is not available
 
         import zmq
+
         while True:
             if self.socket.poll(self.heartbeatInterval * 1000, zmq.POLLIN):
                 return  # got a response from the server
@@ -1175,6 +1177,47 @@ def generic_msg(
         raise e
 
 
+def wait_for_async_activity() -> None:
+    """
+    Wait for the completion of asynchronous activities on the server.
+
+    Intended to help with testing of automatic checkpointing.
+    The server will consider itself "idle" despite serving this message.
+
+    """
+    generic_msg("wait_for_async_activity")
+
+
+def server_sleep(seconds) -> None:
+    """
+    Have the server "sleep" for the given number of seconds.
+
+    Intended for testing.
+    The server will consider itself "idle" despite serving this message.
+
+    Raises
+    ------
+    ValueError
+        If the argument is not a number or a string with a number.
+
+    """
+    seconds = float(seconds)
+    generic_msg("sleep", {"seconds": seconds})
+
+
+def note_for_server_log(message) -> None:
+    """
+    Add an INFO entry in the server log with the given message.
+
+    Intended for testing.
+    The server will consider itself "idle" despite serving this message.
+
+    Cf. ak.write_log (client) and clientLogMsg (server) allow fine-tuning
+    the message and interrupt server "idle"-ness.
+    """
+    generic_msg("note", {"message": str(message)})
+
+
 def get_config() -> Mapping[str, Union[str, int, float]]:
     """
     Get runtime information about the server.
@@ -1263,17 +1306,6 @@ def _get_config_msg() -> Mapping[str, Union[str, int, float]]:
         raise ValueError(f"Returned config is not valid JSON: {raw_message}")
     except Exception as e:
         raise RuntimeError(f"{e} in retrieving Arkouda server config")
-
-
-def wait_for_async_activity() -> None:
-    """
-    Wait for the completion of asynchronous activities on the server.
-
-    Intended to help with testing of automatic checkpointing.
-    The server will consider itself "idle" despite serving this message.
-
-    """
-    generic_msg("wait_for_async_activity")
 
 
 def _get_registration_config_msg() -> dict:
