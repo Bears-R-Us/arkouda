@@ -7,8 +7,7 @@ import arkouda as ak
 @pytest.mark.benchmark(group="BigInt_Conversion")
 @pytest.mark.parametrize("direction", ["to_bigint", "from_bigint"])
 def bench_bigint_conversion(benchmark, direction):
-    cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
+    N = pytest.N
     max_bits = pytest.max_bits
 
     a = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=pytest.seed)

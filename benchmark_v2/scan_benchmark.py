@@ -14,8 +14,7 @@ def bench_scan(benchmark, op, dtype):
     if dtype not in pytest.dtype:
         pytest.skip(f"{dtype} not in selected dtypes")
 
-    cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
+    N = pytest.N
 
     if pytest.numpy:
         if pytest.seed is not None:

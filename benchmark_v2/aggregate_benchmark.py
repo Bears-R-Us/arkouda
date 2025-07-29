@@ -3,10 +3,7 @@ import pytest
 import arkouda as ak
 
 
-def setup_agg(t="int", N=None):
-    cfg = ak.get_config()
-    N = N or (pytest.prob_size * cfg["numLocales"])
-
+def setup_agg(N, t="int"):
     keys = ak.sort(ak.randint(0, 2**32, N, seed=pytest.seed if pytest.seed is not None else None))
     intvals = ak.randint(0, 2**16, N, seed=(pytest.seed + 1 if pytest.seed is not None else None))
     g = ak.GroupBy(keys, assume_sorted=True)
@@ -26,12 +23,12 @@ def run_agg(g, vals, op):
 @pytest.mark.benchmark(group="GroupBy.aggregate")
 @pytest.mark.parametrize("op", ak.GroupBy.Reductions)
 def bench_aggregate(benchmark, op):
-    N = pytest.prob_size * ak.get_config()["numLocales"]
+    N = pytest.N
 
     if op in ["any", "all"]:
-        g, vals, keys = setup_agg("bool", N)
+        g, vals, keys = setup_agg(N, "bool")
     else:
-        g, vals, keys = setup_agg("int", N)
+        g, vals, keys = setup_agg(N, "int")
 
     if pytest.numpy:
         keys_np = keys.to_ndarray()

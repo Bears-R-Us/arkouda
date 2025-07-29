@@ -13,8 +13,7 @@ SPLIT_MODES = [
 @pytest.mark.benchmark(group="Arkouda_Strings_Split")
 @pytest.mark.parametrize("label, delim, use_regex", SPLIT_MODES)
 def bench_strings_split(benchmark, label, delim, use_regex):
-    cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
+    N = pytest.N
 
     thirds = [ak.cast(ak.arange(i, N * 3, 3), "str") for i in range(3)]
     thickrange = thirds[0].stick(thirds[1], delimiter="_").stick(thirds[2], delimiter="_")

@@ -43,19 +43,18 @@ def bench_array_create(benchmark, op, dtype):
     """
     Measures array creation performance (Arkouda or NumPy based on flags)
     """
-    cfg = ak.get_config()
-    size = pytest.prob_size * cfg["numLocales"]
+    N = pytest.N
 
     if dtype in pytest.dtype:
         if pytest.numpy:
 
             def create_array():
-                a = _create_np_array(size, op, dtype, pytest.seed)
+                a = _create_np_array(N, op, dtype, pytest.seed)
                 return a.size * a.itemsize
         else:
 
             def create_array():
-                a = _create_ak_array(size, op, dtype, pytest.seed)
+                a = _create_ak_array(N, op, dtype, pytest.seed)
                 return a.size * a.itemsize
 
         nbytes = benchmark.pedantic(create_array, rounds=pytest.trials)
@@ -63,7 +62,7 @@ def bench_array_create(benchmark, op, dtype):
         benchmark.extra_info["description"] = (
             f"Measures performance of {'NumPy' if pytest.numpy else 'Arkouda'} array creation"
         )
-        benchmark.extra_info["problem_size"] = size
+        benchmark.extra_info["problem_size"] = N
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
