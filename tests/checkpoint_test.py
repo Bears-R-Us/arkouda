@@ -5,7 +5,6 @@ from datetime import datetime
 from os import path
 from shutil import rmtree
 
-import numpy as np
 import pytest
 
 import arkouda as ak
@@ -94,35 +93,6 @@ class TestCheckpoint:
 
             assert arr[3] == 0
             assert arr[2] == 2
-
-    @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_generators(self, cp_test_base_tmp, prob_size):
-        with tempfile.TemporaryDirectory(dir=cp_test_base_tmp) as tmp_dirname:
-            cp_name = "generators"
-            g1 = ak.numpy.random.default_rng()  # unspecified seed
-            g2 = ak.numpy.random.default_rng(314)  # specified seed
-
-            # We use numpy arrays so they are preserved across checkpointing.
-            # Note that we are testing checkpointing of g1 and g2, not arrays.
-            def rand(g):
-                return g.integers(1, 9, prob_size).to_ndarray()
-
-            rand(g1), rand(g2)  # advance the generators from the initial state
-            ak.save_checkpoint(path=tmp_dirname, name=cp_name)
-
-            i1np = rand(g1)
-            i2np = rand(g2)
-
-            # expect a generator to produce different set of numbers next
-            assert not np.array_equal(i1np, rand(g1))
-            assert not np.array_equal(i2np, rand(g2))
-
-            ak.load_checkpoint(path=tmp_dirname, name=cp_name)
-            # expect generators unwound back to the starting points for i1np, i2np
-            # These currently fail because g1,g2._state are not unwound, see:
-            #   https://github.com/Bears-R-Us/arkouda/issues/4709
-            # assert np.array_equal(i1np, rand(g1))
-            # assert np.array_equal(i2np, rand(g2))
 
     def test_incorrect_nl(self):
         cp_name = "test_incorrect_nl_cp"

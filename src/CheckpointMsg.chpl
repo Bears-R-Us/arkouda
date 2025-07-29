@@ -1,12 +1,11 @@
 module CheckpointMsg {
   use FileSystem;
-  use List, Random;
+  use List;
   use ArkoudaJSONCompat;
   import IO, Path, Time;
   import Reflection.{getModuleName as M,
                      getRoutineName as R,
                      getLineNumber as L};
-  import Reflection.getNumFields;
 
   use ServerErrors, ServerConfig;
   import ServerDaemon.DefaultServerDaemon;
@@ -76,7 +75,6 @@ module CheckpointMsg {
 
 
   private param SymEntryType = SymbolEntryType.PrimitiveTypedArraySymEntry;
-  private param GenEntryType = SymbolEntryType.GeneratorSymEntry;
 
   private proc removeIt(path) throws do
     if isDir(path) then rmTree(path); else remove(path);
@@ -173,8 +171,6 @@ module CheckpointMsg {
       select entryMD.entryType {
         when SymEntryType:string do
           entry = loadSymEntry(mdName, entryMD, mdReader);
-        when GenEntryType:string do
-          entry = loadGenerator(mdName, entryMD, mdReader);
         otherwise do
           // we should be able to load everything we saved
           throw new NotImplementedError(cpNotImplementedMsg("Loading",
@@ -482,93 +478,6 @@ module CheckpointMsg {
 
     cpLogger.debug(M(), R(), L(), "Data loaded %s".format(mdName));
     checkEntryType(entryVal, SymEntryType, "loading");
-    return entryVal;
-  }
-
-  /******************************************************************/
-  /*** GeneratorSymEntry aka GenEntryType ***/
-  /******************************************************************/
-
-  //
-  // This helper record is binary-serializable "out of the box".
-  // Cf. `randomStream` has a serializer so the compiler is "hands off"
-  // and does not create all the needed methods to de/serialize it properly.
-  // See https://github.com/chapel-lang/chapel/issues/27363
-  //
-  /* private */ record generatorSerializer
-  {
-    type rngsType;    // the type of randomStream.PCGRandomStreamPrivate_rngs
-    var state: int;
-    // fields of randomStream
-    var seed: int;
-    var rngs: rngsType;
-    var count: int(64);
-  }
-
-  private proc rngsTypeForEtype(type eltType) type {
-    var rs = new randomStream(eltType);
-    return rs.PCGRandomStreamPrivate_rngs.type;
-  }
-
-  private proc toSerializable(gen: GeneratorSymEntry(?)) {
-    const ref rs = gen.generator;
-
-    // A failure in the following asserts is a signal to update the code
-    // to changes in `randomStream` and/or `GeneratorSymEntry`.
-    // randomStream: eltType, seed, rngs, count
-    compilerAssert(getNumFields(rs.type) == 4);
-    // GeneratorSymEntry: etype, generator, state
-    compilerAssert(getNumFields(gen.type) == 3);
-
-    return new generatorSerializer(
-      rngsType = rngsTypeForEtype(rs.eltType),
-      state    = gen.state,
-      seed     = rs.seed,
-      rngs     = rs.PCGRandomStreamPrivate_rngs,
-      count    = rs.PCGRandomStreamPrivate_count);
-  }
-
-  override proc GeneratorSymEntry.saveEntry(name, path, mdName, mdWriter) throws {
-    const entry = this;
-    checkEntryType(entry, GenEntryType, "saving");
-    mdWriter.writeln(entry.etype:string);
-    const data = toSerializable(entry);
-    mdWriter.withSerializer(binarySerializer).write(data);
-    mdWriter.writeln();
-    cpLogger.debug(M(), R(), L(), "GeneratorSymEntry metadata and data created in", mdName);
-  }
-
-  // Is it OK to create a randomStream of this type?
-  private proc isOkGeneratorType(type etype) param do
-    return isNumericType(etype) || isBoolType(etype);
-
-  private proc loadGenerator(mdName, entryMD, mdReader) : shared AbstractSymEntry throws {
-    const etypeStr = mdReader.read(string);
-    mdReader.readThrough("\n");
-
-    for param eltyIdx in 0..arrayElementsTy.size-1 {
-      type etype = arrayElementsTy[eltyIdx];
-      if isOkGeneratorType(etype) &&
-         etypeStr == etype:string then
-        return loadHelperGen(mdName, entryMD, mdReader, arrayElementsTy[eltyIdx]);
-    }
-
-    throw new NotImplementedError(cpNotImplementedMsg(" ".join(
-      "Loading a generator with elements of type", etypeStr, "from"),
-      entryMD.entryName, entryMD.entryType, mdName), L(), R(), M());
-  }
-
-  private proc loadHelperGen(mdName, entryMD, mdReader, type etype) throws {
-    type deserType = generatorSerializer(rngsType = rngsTypeForEtype(etype));
-    const data = mdReader.withDeserializer(binaryDeserializer).read(deserType);
-    var rs = new randomStream(etype, data.seed);
-    rs.PCGRandomStreamPrivate_rngs = data.rngs;
-    rs.PCGRandomStreamPrivate_count = data.count;
-
-    const entryVal = new shared GeneratorSymEntry(rs, data.state);
-    entryVal.name = entryMD.entryName;
-    cpLogger.debug(M(), R(), L(), "Generator data loaded from ", mdName);
-    checkEntryType(entryVal, GenEntryType, "loading");
     return entryVal;
   }
 
