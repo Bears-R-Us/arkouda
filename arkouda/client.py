@@ -597,7 +597,7 @@ class ZmqChannel(Channel):
         logger.debug(f"sending message {json.dumps(message.asdict())}")
 
         self.socket.send_string(json.dumps(message.asdict()))
-        self.waitWithHeartbeat()
+        self.wait_with_heartbeat()
 
         if recv_binary:
             frame = self.socket.recv(copy=False)
@@ -642,7 +642,7 @@ class ZmqChannel(Channel):
 
         self.socket.send(f"{json.dumps(message.asdict())}BINARY_PAYLOAD".encode(), flags=zmq.SNDMORE)
         self.socket.send(payload, copy=False)
-        self.waitWithHeartbeat()
+        self.wait_with_heartbeat()
 
         if recv_binary:
             frame = self.socket.recv(copy=False)
@@ -673,12 +673,11 @@ class ZmqChannel(Channel):
 
         context = zmq.Context()
         self.socket = context.socket(zmq.REQ)
-        self.setupHeartbeat(timeout)
+        self.setup_heartbeat(timeout)  # enables heartbeat if timeout > 0
 
         logger.debug(f"ZMQ version: {zmq.zmq_version()}")
 
         # if timeout is specified, set send and receive timeout params
-        # and enable the heartbeat to the server
         if timeout > 0:
             self.socket.setsockopt(zmq.SNDTIMEO, timeout * 1000)
             self.socket.setsockopt(zmq.RCVTIMEO, timeout * 1000)
@@ -694,10 +693,11 @@ class ZmqChannel(Channel):
     def disconnect(self) -> None:
         try:
             self.socket.disconnect(self.url)
+            self.setup_heartbeat(0)  # close the socket
         except Exception as e:
             raise RuntimeError(e)
 
-    def setupHeartbeat(self, timeout) -> None:
+    def setup_heartbeat(self, timeout) -> None:
         """
         Turn on/off a server heartbeat with the given timeout (in seconds).
 
@@ -705,6 +705,16 @@ class ZmqChannel(Channel):
         It also doubles as the heartbeat frequency.
 
         If timeout is zero or negative, heartbeat is deactivated.
+
+        NOTE: this funtion must be invoked BEFORE self.socket.connect()
+        in order for 'setsockopt' calls to take effect.
+
+        Parameters
+        ----------
+        timeout : int
+            Timeout in seconds. Also determines the heartbeat frequency.
+            If timeout <= 0, heartbeat monitoring is disabled.
+
         """
         import zmq
 
@@ -720,7 +730,6 @@ class ZmqChannel(Channel):
 
         # Given the settings below, an exception will be raised within
         # (4 * timeout) seconds. We can tune these.
-        # Note that these need to be enabled BEFORE self.socket.connect().
         self.socket.setsockopt(zmq.TCP_KEEPALIVE, 1)  # turn on "keepalive"
         self.socket.setsockopt(zmq.TCP_KEEPALIVE_IDLE, timeout)  # seconds of idle before probing
         self.socket.setsockopt(zmq.TCP_KEEPALIVE_INTVL, timeout)  # interval between probes
@@ -729,13 +738,22 @@ class ZmqChannel(Channel):
         # Attach a monitor socket.
         self.heartbeatSocket = self.socket.get_monitor_socket(zmq.EVENT_CLOSED | zmq.EVENT_DISCONNECTED)
 
-        if not self.heartbeatIsEnabled():
-            raise RuntimeError("heartbeatIsEnabled() returned false unexpectedly")
+        if not self.heartbeat_is_enabled():
+            raise RuntimeError("heartbeat_is_enabled() returned false unexpectedly")
 
-    def heartbeatIsEnabled(self) -> bool:
+    def heartbeat_is_enabled(self) -> bool:
+        """
+        Check if the heartbeat is enabled.
+
+        Returns
+        -------
+        bool
+            True if the heartbeat is enabled, False otherwise
+
+        """
         return self.heartbeatInterval > 0 and self.heartbeatSocket is not None
 
-    def waitWithHeartbeat(self) -> None:
+    def wait_with_heartbeat(self) -> None:
         """
         Wait for a response from the server while checking if the server is alive.
 
@@ -744,10 +762,10 @@ class ZmqChannel(Channel):
         Raises
         ------
         Raises an exception if the server does not respond within the timeouts
-        established in setupHeartbeat().
+        established in setup_heartbeat().
 
         """
-        if not self.heartbeatIsEnabled():
+        if not self.heartbeat_is_enabled():
             return  # waiting is not available
 
         import zmq
@@ -762,7 +780,7 @@ class ZmqChannel(Channel):
                 # so no additional checks are needed here.
                 raise ConnectionError("connection to the server is closed or disconnected")
 
-            continue  # otherwise, keep waiting for a server response
+            # Otherwise, keep waiting for a server response.
 
 
 # Global Channel object reference
@@ -1195,10 +1213,15 @@ def server_sleep(seconds) -> None:
     Intended for testing.
     The server will consider itself "idle" despite serving this message.
 
+    Parameters
+    ----------
+    seconds : int or float
+        The number of seconds for the server to "sleep"
+
     Raises
     ------
     ValueError
-        If the argument is not a number or a string with a number.
+        If the argument is not a number or a string with a number
 
     """
     seconds = float(seconds)
@@ -1214,6 +1237,12 @@ def note_for_server_log(message) -> None:
 
     Cf. ak.write_log (client) and clientLogMsg (server) allow fine-tuning
     the message and interrupt server "idle"-ness.
+
+    Parameters
+    ----------
+    message : str
+        The message to be added to the server log
+
     """
     generic_msg("note", {"message": str(message)})
 

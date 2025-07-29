@@ -20,10 +20,10 @@ class TestHeartbeat:
         ak.connect(server=pytest.server, port=pytest.port, timeout=hb_timeout)
 
         def kill_server():
-            time.sleep(kill_delay)  # let the main thread
+            time.sleep(kill_delay)  # wait for the main thread to issue server_sleep
             get_server_info().process.kill()
             ak.client.connected = False
-            pytest.skip_stop_server_once = True
+            pytest.server_already_stopped = True
 
         kill_thread = threading.Thread(target=kill_server)
         kill_thread.start()
