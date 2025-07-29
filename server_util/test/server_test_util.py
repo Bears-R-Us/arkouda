@@ -336,7 +336,7 @@ def stop_arkouda_server():
 
     :return: None
     """
-    _, _, server_process = get_server_info()
+    server_process = get_server_info().process
     try:
         run_client(os.path.join(util_dir, "shutdown.py"), timeout=60)
         server_process.wait(5)

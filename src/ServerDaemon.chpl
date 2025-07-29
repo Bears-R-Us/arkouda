@@ -667,6 +667,15 @@ module ServerDaemon {
                         when "wait_for_async_activity" {
                             repMsg = MsgTuple.success(waitForActivityMutex());
                         }
+                        when "sleep" {
+                            sleep(msgArgs.get("seconds").toScalar(real));
+                            repMsg = MsgTuple.success("slept");
+                        }
+                        when "note" {
+                            sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                          msgArgs.getValueOf("message"));
+                            repMsg = MsgTuple.success("noted");
+                        }
                         when "" {
                             repMsg = MsgTuple.error("Server received an empty command");
                         }

@@ -20,6 +20,7 @@ from typing import Iterator
 
 import pytest
 
+import arkouda as ak
 from server_util.test.server_test_util import start_arkouda_server, stop_arkouda_server
 
 
@@ -61,6 +62,16 @@ def _my_start_server(server_args, note):
     print(f"Started arkouda_server {note} -nl {pytest.nl} on {host}:{port}")
 
 
+def _my_stop_server():
+    if hasattr(pytest, "skip_stop_server_once"):
+        del pytest.skip_stop_server_once
+        # Without this, the parent fixture manage_connection() invokes
+        # ak.disconnect(), which throws a ZMQ error, which breaks testing.
+        ak.client.connected = False
+    else:
+        stop_arkouda_server()
+
+
 @pytest.fixture(scope="module", autouse=True)
 def _module_server(request) -> Iterator[None]:
     module_server_args = getattr(request.module, "module_server_args", None)
@@ -72,7 +83,7 @@ def _module_server(request) -> Iterator[None]:
 
         yield
 
-        stop_arkouda_server()
+        _my_stop_server()
         pytest.module_server_launched = False
     else:
         # arkouda server will start for each class
@@ -94,7 +105,7 @@ def _class_server(request) -> Iterator[None]:
 
         yield
 
-        stop_arkouda_server()
+        _my_stop_server()
     else:
         if not pytest.module_server_launched:
             raise RuntimeError("neither " + _module_args(r) + "nor " + _class_args(r) + "is given")
