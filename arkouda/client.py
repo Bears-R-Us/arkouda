@@ -673,12 +673,11 @@ class ZmqChannel(Channel):
 
         context = zmq.Context()
         self.socket = context.socket(zmq.REQ)
-        self.setupHeartbeat(timeout)
+        self.setupHeartbeat(timeout)  # enables heartbeat if timeout > 0
 
         logger.debug(f"ZMQ version: {zmq.zmq_version()}")
 
         # if timeout is specified, set send and receive timeout params
-        # and enable the heartbeat to the server
         if timeout > 0:
             self.socket.setsockopt(zmq.SNDTIMEO, timeout * 1000)
             self.socket.setsockopt(zmq.RCVTIMEO, timeout * 1000)
@@ -705,6 +704,9 @@ class ZmqChannel(Channel):
         It also doubles as the heartbeat frequency.
 
         If timeout is zero or negative, heartbeat is deactivated.
+
+        NOTE: this funtion must be invoked BEFORE self.socket.connect()
+        in order for 'setsockopt' calls to take effect.
         """
         import zmq
 
@@ -720,7 +722,6 @@ class ZmqChannel(Channel):
 
         # Given the settings below, an exception will be raised within
         # (4 * timeout) seconds. We can tune these.
-        # Note that these need to be enabled BEFORE self.socket.connect().
         self.socket.setsockopt(zmq.TCP_KEEPALIVE, 1)  # turn on "keepalive"
         self.socket.setsockopt(zmq.TCP_KEEPALIVE_IDLE, timeout)  # seconds of idle before probing
         self.socket.setsockopt(zmq.TCP_KEEPALIVE_INTVL, timeout)  # interval between probes

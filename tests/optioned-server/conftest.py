@@ -63,10 +63,10 @@ def _my_start_server(server_args, note):
 
 
 def _my_stop_server():
-    if hasattr(pytest, "skip_stop_server_once"):
-        del pytest.skip_stop_server_once
-        # Without this, the parent fixture manage_connection() invokes
-        # ak.disconnect(), which throws a ZMQ error, which breaks testing.
+    if hasattr(pytest, "server_already_stopped"):
+        del pytest.server_already_stopped
+        # Without clearing 'connected', the parent fixture manage_connection()
+        # invokes ak.disconnect(), which throws a ZMQ error, which breaks testing.
         ak.client.connected = False
     else:
         stop_arkouda_server()
