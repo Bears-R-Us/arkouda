@@ -19,8 +19,7 @@ def check_numpy_equivalence(a, b, alpha, result):
 @pytest.mark.benchmark(group="stream")
 @pytest.mark.parametrize("dtype", ["int64", "float64"])
 def bench_stream(benchmark, dtype):
-    cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
+    N = pytest.N
     nBytes = N * 8 * 3
 
     if pytest.random or pytest.seed is not None:
@@ -49,8 +48,7 @@ def bench_stream(benchmark, dtype):
 @pytest.mark.benchmark(group="stream")
 @pytest.mark.parametrize("dtype", ["bigint"])
 def bench_bigint_stream(benchmark, dtype):
-    cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
+    N = pytest.N
     nBytes = N * 8 * 3
 
     if pytest.random or pytest.seed is not None:
