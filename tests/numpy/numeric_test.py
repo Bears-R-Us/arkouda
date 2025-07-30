@@ -1649,8 +1649,3 @@ class TestNumeric:
             a = ak.randint(0, 100, a_shape, dtype=dtype, seed=seed)
             b = ak.randint(0, 100, b_shape, dtype=dtype, seed=seed + 1)
             ak.vecdot(a, b)  # causes the ValueError
-
-    def test_empty_str_array(self):
-        arr = ak.array([], dtype="str_")
-        assert isinstance(arr, ak.Strings)
-        assert arr.size == 0

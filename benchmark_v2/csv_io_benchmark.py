@@ -34,7 +34,8 @@ def remove_files(path):
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("op", ["read", "write"])
 def bench_csv_io(benchmark, tmp_path, dtype, op):
-    N = pytest.N
+    cfg = ak.get_config()
+    N = pytest.prob_size * cfg["numLocales"]
     path = tmp_path / f"csv_io_{dtype}"
     trials = pytest.trials
     nfiles = 1

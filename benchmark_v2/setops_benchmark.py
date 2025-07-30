@@ -13,7 +13,8 @@ TYPES = ("int64", "uint64")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_segarr_setops_small(benchmark, op, dtype):
-    full_N = pytest.N
+    cfg = ak.get_config()
+    full_N = pytest.prob_size * cfg["numLocales"]
     N = max(full_N // 100, 10**6)
     seed = pytest.seed
 
@@ -50,7 +51,8 @@ def bench_segarr_setops_small(benchmark, op, dtype):
 @pytest.mark.parametrize("op", OPS1D)
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_setops(benchmark, op, dtype):
-    N = pytest.N
+    cfg = ak.get_config()
+    N = pytest.prob_size * cfg["numLocales"]
 
     # Always create Arkouda arrays
     a_ak = ak.randint(0, 2**32, N, seed=pytest.seed, dtype=dtype)

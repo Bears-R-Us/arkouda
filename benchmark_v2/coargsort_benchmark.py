@@ -11,7 +11,8 @@ NUM_ARR = [1, 2, 8, 16]
 @pytest.mark.parametrize("numArrays", NUM_ARR)
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_coargsort(benchmark, dtype, numArrays):
-    N = pytest.N
+    cfg = ak.get_config()
+    N = pytest.prob_size * cfg["numLocales"]
 
     if dtype in pytest.dtype:
         if pytest.seed is None:

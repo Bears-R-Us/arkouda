@@ -248,7 +248,7 @@ def array(
     if isinstance(a, Strings):
         if dtype and dtype != "str_":
             raise TypeError(f"Cannot cast Strings to dtype {dtype} in ak.array")
-        return Strings(cast(pdarray, array([], dtype="int64")), 0) if a.size == 0 else a[:]
+        return a[:]
 
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):

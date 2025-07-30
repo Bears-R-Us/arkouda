@@ -11,7 +11,8 @@ DTYPES = ("int64", "uint64")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", DTYPES)
 def bench_setops_multiarray(benchmark, op, dtype):
-    N = pytest.N
+    cfg = ak.get_config()
+    N = pytest.prob_size * cfg["numLocales"]
 
     seed = pytest.seed or 0
     if dtype == "int64":

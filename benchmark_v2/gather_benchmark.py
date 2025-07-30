@@ -21,11 +21,12 @@ def compute_transfer_bytes(result, dtype):
 @pytest.mark.benchmark(group="Gather")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_gather(benchmark, dtype):
+    cfg = ak.get_config()
     N = pytest.prob_size
     isize = N if pytest.idx_size is None else pytest.idx_size
     vsize = N if pytest.val_size is None else pytest.val_size
-    Ni = isize * pytest.cfg["numLocales"]
-    Nv = vsize * pytest.cfg["numLocales"]
+    Ni = isize * cfg["numLocales"]
+    Nv = vsize * cfg["numLocales"]
 
     i_ak = ak.randint(0, Nv, Ni, seed=pytest.seed)
     if pytest.seed is not None:

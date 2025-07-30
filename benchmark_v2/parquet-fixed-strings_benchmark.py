@@ -9,7 +9,8 @@ import arkouda as ak
 @pytest.mark.parametrize("fixed_len", [1, 8])
 @pytest.mark.parametrize("nfiles", [1, 5, 10])
 def bench_parquet_fixed_strings(benchmark, tmp_path, scaling, fixed_len, nfiles):
-    N = pytest.N if scaling else pytest.prob_size
+    cfg = ak.get_config()
+    N = pytest.prob_size * cfg["numLocales"] if scaling else pytest.prob_size
     base_path = tmp_path / f"parq_{'scaled' if scaling else 'flat'}_{nfiles}"
     base_path.mkdir(parents=True, exist_ok=True)
 
