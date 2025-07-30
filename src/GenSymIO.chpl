@@ -1,4 +1,4 @@
-module GenSymIO {
+ module GenSymIO {
     use IO;
     use Path;
     use MultiTypeSymbolTable;
@@ -26,6 +26,25 @@ module GenSymIO {
     private config const logChannel = ServerConfig.logChannel;
     const gsLogger = new Logger(logLevel, logChannel);
     config const NULL_STRINGS_VALUE = 0:uint(8);
+
+
+    //  prototype deep copy function
+
+    @arkouda.registerCommand()
+    proc deepcopy(x : [?d] ?t) : [d] t throws
+        where (t==int || t==real || t==uint || t==bigint || t==bool) {
+        var retVal = makeDistArray(d, t);
+        if numLocales == 1 {
+            forall (x_, r_) in zip (x, retVal) { r_ = x_ ; }
+            return retVal;
+        } else {
+            coforall loc in Locales do on loc {
+                var xLD = x.localSubdomain() ;
+                retVal[xLD] = x[xLD];
+            }
+        }
+        return retVal;
+    }
 
     /*
      * Creates a pdarray server-side and returns the SymTab name used to
