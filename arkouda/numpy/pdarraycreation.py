@@ -257,7 +257,9 @@ def array(
     if isinstance(a, Strings):
         if dtype and dtype != "str_":
             raise TypeError(f"Cannot cast Strings to dtype {dtype} in ak.array")
-        return Strings(cast(pdarray, array([], dtype="int64")), 0) if a.size == 0 else a[:] if copy else a
+        return (
+            Strings(cast(pdarray, array([], dtype="int64")), 0) if a.size == 0 else a[:] if copy else a
+        )
 
     if isinstance(a, pdarray):
         casted = akcast(a, dtype)  # the "dtype is None" case was covered above
