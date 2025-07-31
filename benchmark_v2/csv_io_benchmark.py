@@ -65,6 +65,5 @@ def bench_csv_io(benchmark, tmp_path, dtype, op):
     benchmark.extra_info["dtype"] = dtype
     benchmark.extra_info["operation"] = op
     benchmark.extra_info["backend"] = "Arkouda"
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (num_bytes / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)

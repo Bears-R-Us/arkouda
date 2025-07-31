@@ -32,6 +32,5 @@ def bench_parquet_fixed_strings(benchmark, tmp_path, scaling, fixed_len, nfiles)
     benchmark.extra_info["scaling"] = scaling
     benchmark.extra_info["nfiles"] = nfiles
     benchmark.extra_info["backend"] = "Arkouda"
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (numBytes / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((numBytes / benchmark.stats["mean"]) / 2**30)
