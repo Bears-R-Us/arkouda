@@ -210,30 +210,45 @@ module FindMsg
 
     coforall loc in Locales do on loc {
 
+      // QUERY side
       ref queryGlobalOffsets = querySegString.offsets.a;
       const queryOffsetsDom = querySegString.offsets.a.domain.localSubdomain();
       const querySize = queryOffsetsDom.size;
       const queryOffsets = querySegString.offsets.a.localSlice[queryOffsetsDom].reindex(0..#querySize);
       const queryTopEnd = if queryOffsetsDom.high >= querySegString.offsets.a.domain.high
-        then querySegString.values.a.size
-        else queryGlobalOffsets[queryOffsetsDom.high + 1];
-      const queryBytes = querySegString.values.a[queryOffsets[0]..<queryTopEnd];
-      const queryOffsetsRelative = queryOffsets - queryOffsets[0];
+                          then querySegString.values.a.size
+                          else queryGlobalOffsets[queryOffsetsDom.high + 1];
+      const queryStart = queryOffsets[0];
+      const queryEnd = queryTopEnd;
+      const querySlice = querySegString.values.a[queryStart..<queryEnd];
 
+      // Avoid remote slice: copy into local array
+      var queryBytes: [0..#querySlice.size] uint(8);
+      queryBytes = querySlice;
+
+      const queryOffsetsRelative = queryOffsets - queryOffsets[0];
       var myQueryOrigIndices: [0..#queryOffsets.size] int = queryOffsetsDom.low..;
 
+      // SPACE side
       ref spaceGlobalOffsets = spaceSegString.offsets.a;
       const spaceOffsetsDom = spaceSegString.offsets.a.domain.localSubdomain();
       const spaceSize = spaceOffsetsDom.size;
       const spaceOffsets = spaceSegString.offsets.a.localSlice[spaceOffsetsDom].reindex(0..#spaceSize);
       const spaceTopEnd = if spaceOffsetsDom.high >= spaceSegString.offsets.a.domain.high
-        then spaceSegString.values.a.size
-        else spaceGlobalOffsets[spaceOffsetsDom.high + 1];
-      const spaceBytes = spaceSegString.values.a[spaceOffsets[0]..<spaceTopEnd];
-      const spaceOffsetsRelative = spaceOffsets - spaceOffsets[0];
+                          then spaceSegString.values.a.size
+                          else spaceGlobalOffsets[spaceOffsetsDom.high + 1];
+      const spaceStart = spaceOffsets[0];
+      const spaceEnd = spaceTopEnd;
+      const spaceSlice = spaceSegString.values.a[spaceStart..<spaceEnd];
 
+      // Avoid remote slice: copy into local array
+      var spaceBytes: [0..#spaceSlice.size] uint(8);
+      spaceBytes = spaceSlice;
+
+      const spaceOffsetsRelative = spaceOffsets - spaceOffsets[0];
       var mySpaceOrigIndices: [0..#spaceOffsets.size] int = spaceOffsetsDom.low..;
 
+      // Store locally copied values
       queryStrOffsetInLocale[here.id] = new list(queryOffsetsRelative);
       queryStrBytesInLocale[here.id] = new list(queryBytes);
       spaceStrOffsetInLocale[here.id] = new list(spaceOffsetsRelative);
@@ -358,6 +373,9 @@ module FindMsg
 
       } else { // I do not like this else. Essentially, if the situation is normal, proceed as normal.
 
+
+        /*
+
         record tupComparator {
           proc compare(a: (string, int), b: (string, int)) {
             if a[0] < b[0] {
@@ -376,6 +394,206 @@ module FindMsg
             return 0;
           }
         }
+
+        */
+
+        // Instead of sorting, we can assign each tuple to a thread.
+        // I can make a numThreads x numThreads table of how many things each thread has of every other
+        // Then do a + scan thing to do indexing
+        // I think I have to do this for both query and search space
+
+        var numThreads = here.maxTaskPar;
+        var spaceTable: [0..#numThreads] [0..#numThreads] int;
+        var queryTable: [0..#numThreads] [0..#numThreads] int;
+        var spaceThreadDesignators: [0..#N] int; // No need to hash twice
+        var queryThreadDesignators: [0..#queryN] int;
+
+        const spaceGroupSize = max(N / numThreads, 1);
+        const queryGroupSize = max(queryN / numThreads, 1);
+
+        forall i in 0..#numThreads {
+          const spaceStart = i * spaceGroupSize;
+          const spaceEnd = min(spaceStart + spaceGroupSize, N);
+          if spaceStart < spaceEnd {
+            for curr in spaceStart..<spaceEnd {
+              const h = (strIndPairs[curr][0].hash() % numThreads): int;
+              spaceTable[h][i] += 1;
+              spaceThreadDesignators[curr] = h;
+            }
+          }
+          
+          const queryStart = i * queryGroupSize;
+          const queryEnd = min(queryStart + queryGroupSize, queryN);
+          if queryStart < queryEnd {
+            for curr in queryStart..<queryEnd {
+              const h = (queryStrIndPairs[curr][0].hash() % numThreads): int;
+              queryTable[h][i] += 1;
+              queryThreadDesignators[curr] = h;
+            }
+          }
+        }
+
+        var spaceOffsets: [0..#numThreads] [0..#numThreads] int;
+        var queryOffsets: [0..#numThreads] [0..#numThreads] int;
+        var spaceRowSums: [0..#numThreads] int;
+        var queryRowSums: [0..#numThreads] int;
+        var spaceOffsetThread: [0..#numThreads] int;
+        var queryOffsetThread: [0..#numThreads] int;
+
+        for t in 0..#numThreads {
+          spaceOffsets[t] = (+ scan spaceTable[t]) - spaceTable[t];
+          queryOffsets[t] = (+ scan queryTable[t]) - queryTable[t];
+          spaceRowSums[t] = + reduce spaceTable[t];
+          queryRowSums[t] = + reduce queryTable[t];
+        }
+
+        spaceOffsetThread = (+ scan spaceRowSums) - spaceRowSums;
+        queryOffsetThread = (+ scan queryRowSums) - queryRowSums;
+
+        var spaceIndsToVisit: [0..<N] int;
+        var queryIndsToVisit: [0..<queryN] int;
+
+        forall i in 0..#numThreads {
+          const spaceStart = i * spaceGroupSize;
+          const spaceEnd = min(spaceStart + spaceGroupSize, N);
+          var threadCount: [0..#numThreads] int;
+          if spaceStart < spaceEnd {
+            for curr in spaceStart..<spaceEnd {
+              const h = spaceThreadDesignators[curr];
+              spaceIndsToVisit[spaceOffsetThread[h] + spaceOffsets[h][i] + threadCount[h]] = curr;
+              threadCount[h] += 1;
+            }
+          }
+          
+          const queryStart = i * queryGroupSize;
+          const queryEnd = min(queryStart + queryGroupSize, queryN);
+          threadCount = 0;
+          if queryStart < queryEnd {
+            for curr in queryStart..<queryEnd {
+              const h = queryThreadDesignators[curr];
+              queryIndsToVisit[queryOffsetThread[h] + queryOffsets[h][i] + threadCount[h]] = curr;
+              threadCount[h] += 1;
+            }
+          }
+        }
+
+        var allMaps: [0..#numThreads] map(string, list(int));
+        var numQueryResps: [0..#queryN] int;
+
+        forall i in 0..#numThreads with (|| reduce sendWarning) {
+          const spaceStart = spaceOffsetThread[i];
+          const spaceEnd = if i == numThreads - 1 then N else spaceOffsetThread[i + 1];
+          var myMap = new map(string, list(int));
+          if spaceStart < spaceEnd {
+            for curr in spaceStart..<spaceEnd {
+              const ind = spaceIndsToVisit[curr];
+              const s = strIndPairs[ind][0];
+              if myMap.contains(s) {
+                myMap[s].pushBack(strIndPairs[ind][1]);
+              } else {
+                myMap[s] = new list([strIndPairs[ind][1]]);
+              }
+            }
+          }
+          const queryStart = queryOffsetThread[i];
+          const queryEnd = if i == numThreads - 1 then queryN else queryOffsetThread[i + 1] ;
+          if queryStart < queryEnd {
+            for curr in queryStart..<queryEnd {
+              const ind = queryIndsToVisit[curr];
+              const s = queryStrIndPairs[ind][0];
+              if allOccurrences || removeMissing {
+                if myMap.contains(s) {
+                  var myMap_s = myMap[s];
+                  numQueryResps[ind] = if !allOccurrences then 1 else myMap_s.size;
+                  if myMap_s.size > 1 && !allOccurrences {
+                    sendWarning = true;
+                  }
+                }
+              } else {
+                if myMap.contains(s) && myMap[s].size > 1 {
+                  sendWarning = true;
+                }
+                numQueryResps[ind] += 1;
+              }
+            }
+          }
+
+          allMaps[i] = myMap;
+        }
+
+        var queryRespOffsetInd = (+ scan numQueryResps) - numQueryResps;
+        var queryResps: [0..#(+ reduce numQueryResps)] int;
+
+        forall i in 0..#numThreads {
+          var myMap = allMaps[i];
+          const queryStart = queryOffsetThread[i];
+          const queryEnd = if i == numThreads - 1 then queryN else queryOffsetThread[i + 1];
+          if queryStart < queryEnd {
+            for curr in queryStart..<queryEnd {
+              const ind = queryIndsToVisit[curr];
+              const s = queryStrIndPairs[ind][0];
+              if allOccurrences || removeMissing {
+                if myMap.contains(s) {
+                  var myMap_s = myMap[s];
+                  if allOccurrences {
+                    for j in 0..#myMap_s.size {
+                      queryResps[queryRespOffsetInd[ind] + j] = myMap_s[j];
+                    }
+                  } else {
+                    queryResps[queryRespOffsetInd[ind]] = myMap_s[0];
+                  }
+                }
+              } else {
+                if myMap.contains(s) {
+                  queryResps[queryRespOffsetInd[ind]] = myMap[s][0];
+                } else {
+                  queryResps[queryRespOffsetInd[ind]] = -1;
+                }
+              }
+            }
+          }
+        }
+
+        // Step 1: compute which locale each query belongs to
+        var queryLocs: [0..<queryN] int;
+        forall i in 0..<queryN {
+          const queryInd = queryStrIndPairs[i][1];
+          for (qlr, locID) in zip(queryLocRanges, 0..<numLocales) {
+            if qlr.contains(queryInd) {
+              queryLocs[i] = locID;
+              break;
+            }
+          }
+        }
+
+        // Step 2: assign values + offsets by locale
+        var myQueryRespOffsets: [0..<queryN] int;
+        var myQueryRespValLocales: [0..#(+ reduce numQueryResps)] int;
+
+        for i in 0..<numLocales {
+          var onCurrLoc: [0..<queryN] bool = queryLocs == i;
+          var currLocSizes: [0..<queryN] int = (onCurrLoc: int) * numQueryResps;
+
+          myQueryRespOffsets += ((+ scan currLocSizes) - currLocSizes) * (onCurrLoc: int);
+          queryRespNumRecv[i][here.id] = + reduce onCurrLoc;
+          queryRespSizeRecv[i][here.id] = + reduce currLocSizes;
+
+          forall j in 0..<queryN {
+            if onCurrLoc[j] {
+              const start = queryRespOffsetInd[j];
+              const size = numQueryResps[j];
+              myQueryRespValLocales[start..#size] = i;
+            }
+          }
+        }
+
+        // Step 3: commit to queryResp* tables
+        queryRespVals[here.id] = new list(queryResps);
+        queryRespValLocales[here.id] = new list(myQueryRespValLocales);
+        queryRespOffsets[here.id] = new list(myQueryRespOffsets);
+        queryRespOffsetLocales[here.id] = new list(queryLocs);
+
+        /*
 
         sort(strIndPairs, comparator=new tupComparator());
 
@@ -486,6 +704,8 @@ module FindMsg
         queryRespValLocales[here.id] = new list(myQueryRespValLocales);
         queryRespOffsets[here.id] = new list(myQueryRespOffsets);
         queryRespOffsetLocales[here.id] = new list(queryLocs);
+
+        */
 
       }
 
