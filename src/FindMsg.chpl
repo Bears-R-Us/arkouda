@@ -135,8 +135,6 @@ module FindMsg
           const g2End = endingPoints[threadNum + threadWidth];
           const currSize = g2End - g1Start;
 
-          //writeln(here.id, " threadNum: ", threadNum, " g1Start: ", g1Start, " g1End: ", g1End, " g2Start: ", g2Start, " g2End: ", g2End);
-
           var tempBuffer: [0..#currSize] T;
           var bufferInd = 0;
 
