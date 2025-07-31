@@ -322,7 +322,7 @@ def start_arkouda_server(
         host, port, connect_url = read_server_and_port_from_file(
             connection_file, process=process, server_cmd=cmd
         )
-        if port != requested_port:
+        if str(port) != str(requested_port):
             logging.error(f"requested port {requested_port}, got {port}")
 
     server_info = ServerInfo(host, port, process)
@@ -336,7 +336,7 @@ def stop_arkouda_server():
 
     :return: None
     """
-    _, _, server_process = get_server_info()
+    server_process = get_server_info().process
     try:
         run_client(os.path.join(util_dir, "shutdown.py"), timeout=60)
         server_process.wait(5)
