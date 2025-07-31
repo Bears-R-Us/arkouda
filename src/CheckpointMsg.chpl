@@ -1,6 +1,6 @@
 module CheckpointMsg {
   use FileSystem;
-  use Types, List;
+  use List;
   use ArkoudaJSONCompat;
   import IO, Path, Time;
   import Reflection.{getModuleName as M,
@@ -121,7 +121,7 @@ module CheckpointMsg {
       const mdName = Path.joinPath(cpPath, ".".join(name, metadataExt));
       var mdWriter = IO.open(mdName, ioMode.cw).writer(locking=false);
       writeJson(mdWriter, entryMD, "entry metadata", mdName);
-        
+
       // actual work is done here
       entry.saveEntry(name, cpPath, mdName, mdWriter);
     }
@@ -354,16 +354,21 @@ module CheckpointMsg {
                           name, this.entryType:string, mdName));
   }
 
-  private proc checkSymEntryType(entry: SymEntry(?), direction: string) {
-    if entry.entryType != SymEntryType then
-      cpLogger.error(M(), R(), L(), "unexpected SymEntry.entryType=",
-                     entry.entryType:string, ", expected: ", SymEntryType:string,
+  private proc checkEntryType(entry: borrowed AbstractSymEntry,
+                              expected: SymbolEntryType, direction: string) {
+    if entry.entryType != expected then
+      cpLogger.error(M(), R(), L(), "unexpected entry.entryType=",
+                     entry.entryType:string, ", expected: ", expected:string,
                      " when ", direction, " an entry with name:", entry.name);
   }
 
+  /******************************************************************/
+  /*** SymEntry / PrimitiveTypedArraySymEntry aka SymEntryType ***/
+  /******************************************************************/
+
   override proc SymEntry.saveEntry(name, path, mdName, mdWriter) throws {
     const entry = this;
-    checkSymEntryType(entry, "saving");
+    checkEntryType(entry, SymEntryType, "saving");
 
     // SymEntry.saveEntry() will be instantiated by the compiler for each
     // (etype, dimensions) combination that the program can create.
@@ -406,7 +411,7 @@ module CheckpointMsg {
       writeJson(mdWriter, chunkMD, "chunk metadata", mdName);
     }
 
-    cpLogger.debug(M(), R(), L(), "Metadata created: %s".format(mdName));
+    cpLogger.debug(M(), R(), L(), "SymEntry metadata created in", mdName);
   }
 
   // load and return a SymEntry / PrimitiveTypedArraySymEntry
@@ -472,7 +477,7 @@ module CheckpointMsg {
                     ty=0);
 
     cpLogger.debug(M(), R(), L(), "Data loaded %s".format(mdName));
-    checkSymEntryType(entryVal, "loading");
+    checkEntryType(entryVal, SymEntryType, "loading");
     return entryVal;
   }
 
