@@ -149,8 +149,9 @@ def main():
     import arkouda.numpy as aknp
     import arkouda.pandas.dataframe as akDataframe
     import arkouda.pandas.groupbyclass as akGroupbyclass
-    import arkouda.pandas.series as akSeries
     import arkouda.scipy as akscipy
+    import arkouda.scipy.sparrayclass as akscipySparrayclass
+    import arkouda.scipy.sparsematrix as akscipySparsematrix
     import arkouda.scipy.special as akscipySpecial
     import arkouda.scipy.stats as akscipyStats
 
@@ -163,9 +164,10 @@ def main():
     write_stub(akscipy, "arkouda/scipy.pyi", all_only=True, allow_arkouda=True)
     write_stub(akscipyStats, "arkouda/scipy/stats.pyi", all_only=True, allow_arkouda=True)
     write_stub(akscipySpecial, "arkouda/scipy/special.pyi", all_only=True, allow_arkouda=True)
+    write_stub(akscipySparrayclass, "arkouda/scipy/sparrayclass.pyi", all_only=True, allow_arkouda=True)
+    write_stub(akscipySparsematrix, "arkouda/scipy/sparsematrix.pyi", all_only=True, allow_arkouda=True)
     write_stub(akDataframe, "arkouda/pandas/dataframe.pyi", all_only=True, allow_arkouda=True)
     write_stub(akGroupbyclass, "arkouda/pandas/groupbyclass.pyi", all_only=True, allow_arkouda=True)
-    write_stub(akSeries, "arkouda/series.pyi", all_only=True, allow_arkouda=True)
     write_stub(
         aknp.pdarrayclass,
         "arkouda/numpy/pdarrayclass.pyi",
