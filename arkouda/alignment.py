@@ -309,6 +309,7 @@ def find(query, space, all_occurrences=False, remove_missing=False):
     if isinstance(query, Strings):
         if type(query) is not type(space):
             raise TypeError("Arguments must have the same type")
+
         ans = generic_msg(
             cmd="findStr",
             args={
