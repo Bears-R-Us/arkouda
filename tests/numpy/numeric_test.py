@@ -435,7 +435,7 @@ class TestNumeric:
     #   cumsum and cumprod tests were identical, and so have been combined.
 
     @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
-    def test_cumsum_and_cumprod(self, num_type):
+    def test_cumsum_and_cumprod_1D(self, num_type):
         na = np.linspace(1, 10, 10).astype(num_type)
         pda = ak.array(na, dtype=num_type)
 
@@ -443,6 +443,27 @@ class TestNumeric:
             assert np.allclose(npfunc(na), akfunc(pda).to_ndarray())
         with pytest.raises(TypeError):
             ak.cumsum(np.array([range(0, 10)]).astype(num_type))
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
+    def test_cumsum_and_cumprod_2D(self, num_type):
+        na = np.linspace(1, 10, 20).astype(num_type).reshape(4, 5)
+        pda = ak.array(na, dtype=num_type)
+
+        for npfunc, akfunc in ((np.cumsum, ak.cumsum), (np.cumprod, ak.cumprod)):
+            assert np.allclose(npfunc(na, axis=0), akfunc(pda, axis=0).to_ndarray())
+            assert np.allclose(npfunc(na, axis=1), akfunc(pda, axis=1).to_ndarray())
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
+    def test_cumsum_and_cumprod_3D(self, num_type):
+        na = np.linspace(1, 10, 30).astype(num_type).reshape(2, 3, 5)
+        pda = ak.array(na, dtype=num_type)
+
+        for npfunc, akfunc in ((np.cumsum, ak.cumsum), (np.cumprod, ak.cumprod)):
+            assert np.allclose(npfunc(na, axis=0), akfunc(pda, axis=0).to_ndarray())
+            assert np.allclose(npfunc(na, axis=1), akfunc(pda, axis=1).to_ndarray())
+            assert np.allclose(npfunc(na, axis=2), akfunc(pda, axis=2).to_ndarray())
 
     #   test_trig_and_hyp covers the testing for most trigonometric and hyperbolic
     #   functions.  The exception is arctan2.
