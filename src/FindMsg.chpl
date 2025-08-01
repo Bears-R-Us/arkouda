@@ -411,7 +411,7 @@ module FindMsg
 
         forall i in 0..#numThreads {
           const spaceStart = i * spaceGroupSize;
-          const spaceEnd = min(spaceStart + spaceGroupSize, N);
+          const spaceEnd = if i == numThreads - 1 then N else min(spaceStart + spaceGroupSize, N);
           if spaceStart < spaceEnd {
             for curr in spaceStart..<spaceEnd {
               const h = (strIndPairs[curr][0].hash() % numThreads): int;
@@ -421,7 +421,9 @@ module FindMsg
           }
           
           const queryStart = i * queryGroupSize;
-          const queryEnd = min(queryStart + queryGroupSize, queryN);
+          const queryEnd = if i == numThreads - 1
+                             then queryN 
+                             else min(queryStart + queryGroupSize, queryN);
           if queryStart < queryEnd {
             for curr in queryStart..<queryEnd {
               const h = (queryStrIndPairs[curr][0].hash() % numThreads): int;
@@ -453,7 +455,7 @@ module FindMsg
 
         forall i in 0..#numThreads {
           const spaceStart = i * spaceGroupSize;
-          const spaceEnd = min(spaceStart + spaceGroupSize, N);
+          const spaceEnd = if i == numThreads - 1 then N else min(spaceStart + spaceGroupSize, N);
           var threadCount: [0..#numThreads] int;
           if spaceStart < spaceEnd {
             for curr in spaceStart..<spaceEnd {
@@ -464,7 +466,9 @@ module FindMsg
           }
           
           const queryStart = i * queryGroupSize;
-          const queryEnd = min(queryStart + queryGroupSize, queryN);
+          const queryEnd = if i == numThreads - 1
+                             then queryN 
+                             else min(queryStart + queryGroupSize, queryN);
           threadCount = 0;
           if queryStart < queryEnd {
             for curr in queryStart..<queryEnd {
@@ -494,7 +498,7 @@ module FindMsg
             }
           }
           const queryStart = queryOffsetThread[i];
-          const queryEnd = if i == numThreads - 1 then queryN else queryOffsetThread[i + 1] ;
+          const queryEnd = if i == numThreads - 1 then queryN else queryOffsetThread[i + 1];
           if queryStart < queryEnd {
             for curr in queryStart..<queryEnd {
               const ind = queryIndsToVisit[curr];
