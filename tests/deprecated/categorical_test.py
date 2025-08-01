@@ -3,13 +3,13 @@ import os
 import shutil
 import tempfile
 
-from arkouda.pandas import io, io_util
 import numpy as np
 import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
 from arkouda import Strings
+from arkouda.pandas import io, io_util
 from arkouda.pandas.categorical import Categorical
 
 

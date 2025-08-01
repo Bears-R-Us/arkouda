@@ -11,13 +11,13 @@ import scipy
 from arkouda import get_max_array_rank
 from arkouda.client import get_array_ranks
 from server_util.test.server_test_util import (
-    is_multilocale_arkouda,  # TODO probably not needed
-)
-from server_util.test.server_test_util import (
     TestRunningMode,
     get_default_temp_directory,
     start_arkouda_server,
     stop_arkouda_server,
+)
+from server_util.test.server_test_util import (
+    is_multilocale_arkouda,  # TODO probably not needed
 )
 
 os.environ["ARKOUDA_CLIENT_MODE"] = "API"

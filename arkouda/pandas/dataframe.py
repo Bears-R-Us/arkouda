@@ -43,11 +43,11 @@ Examples
 
 from __future__ import annotations
 
+from collections import UserDict
+from functools import reduce
 import json
 import os
 import random
-from collections import UserDict
-from functools import reduce
 from typing import (
     TYPE_CHECKING,
     Callable,
@@ -62,9 +62,9 @@ from typing import (
 from warnings import warn
 
 import numpy as np  # type: ignore
-import pandas as pd  # type: ignore
 from numpy import ndarray
 from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
+import pandas as pd  # type: ignore
 from typeguard import typechecked
 
 from arkouda.client import maxTransferBytes

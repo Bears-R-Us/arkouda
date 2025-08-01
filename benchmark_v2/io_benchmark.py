@@ -1,6 +1,6 @@
+from glob import glob
 import os
 import shutil
-from glob import glob
 
 import pytest
 

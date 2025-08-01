@@ -51,6 +51,7 @@ def flip(
         The shape of the array is preserved, but the elements are reordered.
     axis : int or Tuple[int, ...], optional
         The axis or axes along which to flip the array. If None, flip the array along all axes.
+
     Returns
     -------
     pdarray, Strings, or Categorical
@@ -118,7 +119,7 @@ def repeat(
     axis: Union[None, int] = None,
 ) -> pdarray:
     """
-    Repeat each element of an array after themselves
+    Repeat each element of an array after themselves.
 
     Parameters
     ----------

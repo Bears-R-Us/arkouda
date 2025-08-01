@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
-import time
 from enum import Enum
 from glob import glob
+import os
+import time
 
 import numpy as np
 

@@ -51,13 +51,13 @@ Examples
 
 """
 
+from collections import defaultdict
 import json
 import os
-import platform
-import secrets
-from collections import defaultdict
 from os.path import expanduser
 from pathlib import Path
+import platform
+import secrets
 
 from typeguard import typechecked
 

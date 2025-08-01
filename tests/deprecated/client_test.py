@@ -1,11 +1,12 @@
 from base_test import ArkoudaTest
 from context import arkouda as ak
+
 from arkouda.client import generic_msg
+from server_util.test.server_test_util import start_arkouda_server
 
 """
 Tests basic Arkouda client functionality
 """
-from server_util.test.server_test_util import start_arkouda_server
 
 
 class ClientTest(ArkoudaTest):

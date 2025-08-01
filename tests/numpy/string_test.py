@@ -1,5 +1,5 @@
-import os
 from collections import Counter, namedtuple
+import os
 from typing import List
 
 import numpy as np

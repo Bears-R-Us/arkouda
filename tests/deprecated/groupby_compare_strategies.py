@@ -1,8 +1,10 @@
-from context import arkouda as ak
+from time import time
+
 import numpy as np
 import pandas as pd
-from time import time
 from base_test import ArkoudaTest
+from context import arkouda as ak
+
 
 def compare_strategies(length, ncat, op, dtype):
     keys = ak.randint(0, ncat, length)

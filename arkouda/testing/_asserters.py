@@ -70,6 +70,7 @@ def assert_almost_equal(
     -------
     This function cannot be used on pdarray of size > ak.client.maxTransferBytes
     because it converts pdarrays to numpy arrays and calls np.allclose.
+
     """
     if isinstance(left, Index):
         assert_index_equal(
@@ -130,8 +131,7 @@ def assert_almost_equal(
 
 def _check_isinstance(left, right, cls) -> None:
     """
-    Ensures that the two objects being compared have the right type before
-    proceeding with the comparison.
+    Ensure that both objects are instances of the expected type.
 
     Helper method for our assert_* methods.
 
@@ -144,6 +144,7 @@ def _check_isinstance(left, right, cls) -> None:
     Raises
     ------
     AssertionError : Either `left` or `right` is not an instance of `cls`.
+
     """
     cls_name = cls.__name__
 
@@ -156,7 +157,9 @@ def _check_isinstance(left, right, cls) -> None:
 def assert_dict_equal(left, right, compare_keys: bool = True) -> None:
     """
     Assert that two dictionaries are equal.
+
     Values must be arkouda objects.
+
     Parameters
     ----------
     left, right: dict
@@ -164,6 +167,7 @@ def assert_dict_equal(left, right, compare_keys: bool = True) -> None:
     compare_keys: bool, default = True
         Whether to compare the keys.
         If False, only the values are compared.
+
     """
     _check_isinstance(left, right, dict)
 
@@ -226,6 +230,7 @@ def assert_index_equal(
     >>> a = ak.Index([1, 2, 3])
     >>> b = ak.Index([1, 2, 3])
     >>> tm.assert_index_equal(a, b)
+
     """
     __tracebackhide__ = not DEBUG
 
@@ -372,6 +377,7 @@ def assert_attr_equal(attr: str, left, right, obj: str = "Attributes") -> None:
     obj : str, default 'Attributes'
         Specify object name being compared, internally used to show appropriate
         assertion message
+
     """
     __tracebackhide__ = not DEBUG
 
@@ -429,6 +435,7 @@ def assert_categorical_equal(
     obj : str, default 'Categorical'
         Specify object name being compared, internally used to show appropriate
         assertion message.
+
     """
     _check_isinstance(left, right, Categorical)
 
@@ -537,6 +544,7 @@ def assert_arkouda_pdarray_equal(
         assertion message.
     index_values : Index | arkouda.pdarray, default None
         optional index (shared by both left and right), used in output.
+
     """
     __tracebackhide__ = not DEBUG
 
@@ -632,6 +640,7 @@ def assert_arkouda_segarray_equal(
     obj : str, default 'pdarray'
         Specify object name being compared, internally used to show appropriate
         assertion message.
+
     """
     __tracebackhide__ = not DEBUG
 
@@ -703,6 +712,7 @@ def assert_arkouda_strings_equal(
         assertion message.
     index_values : Index | arkouda.pdarray, default None
         optional index (shared by both left and right), used in output.
+
     """
     __tracebackhide__ = not DEBUG
 
@@ -1123,7 +1133,7 @@ def assert_frame_equal(
 
 def assert_equal(left, right, **kwargs) -> None:
     """
-    Wrapper for tm.assert_*_equal to dispatch to the appropriate test function.
+    Wrap tm.assert_*_equal to dispatch to the appropriate test function.
 
     Parameters
     ----------
@@ -1131,6 +1141,7 @@ def assert_equal(left, right, **kwargs) -> None:
         The two items to be compared.
     **kwargs
         All keyword arguments are passed through to the underlying assert method.
+
     """
     __tracebackhide__ = not DEBUG
 
@@ -1153,10 +1164,12 @@ def assert_equal(left, right, **kwargs) -> None:
 def assert_contains_all(iterable, dic) -> None:
     """
     Assert that a dictionary contains all the elements of an iterable.
+
     Parameters
     ----------
     iterable: iterable
     dic: dict
+
     """
     for k in iterable:
         assert k in dic, f"Did not contain item: {repr(k)}"
@@ -1165,12 +1178,14 @@ def assert_contains_all(iterable, dic) -> None:
 def assert_copy(iter1, iter2, **eql_kwargs) -> None:
     """
     Check that the elements are equal, but not the same object.
-    (Does not check that items in sequences are also not the same object.)
+
+    Does not check that items in sequences are also not the same object.
 
     Parameters
     ----------
     iter1, iter2: iterable
         Iterables that produce elements comparable with assert_almost_equal.
+
     """
     for elem1, elem2 in zip(iter1, iter2):
         assert_almost_equal(elem1, elem2, **eql_kwargs)

@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import arkouda as ak
 
-from ._dtypes import (  # _complex_floating_dtypes,
-    _boolean_dtypes,
+from ._dtypes import (
     _floating_dtypes,
     _integer_dtypes,
     _integer_or_boolean_dtypes,
@@ -12,6 +11,7 @@ from ._dtypes import (  # _complex_floating_dtypes,
     _real_numeric_dtypes,
     _result_type,
 )
+from ._dtypes import _boolean_dtypes  # _complex_floating_dtypes,
 from .array_object import Array
 
 __all__ = [
@@ -440,8 +440,8 @@ def log10(x: Array, /) -> Array:
 
 def logaddexp(x1: Array, x2: Array) -> Array:
     """
-    Compute the element-wise logarithm of the sum of exponentials of two arrays.
-    (i.e., log(exp(x1) + exp(x2)))
+    Compute the element-wise logarithm of the sum of exponentials of two arrays
+    (i.e., log(exp(x1) + exp(x2))).
 
     WARNING: Not yet implemented.
     """
