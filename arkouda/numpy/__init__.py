@@ -262,6 +262,7 @@ from arkouda.numpy.pdarraycreation import (
     ones,
     ones_like,
     promote_to_common_dtype,
+    rand,
     randint,
     random_strings_lognormal,
     random_strings_uniform,
