@@ -9,6 +9,8 @@ OPS = ["in1d", "intersect1d", "union1d", "setxor1d", "setdiff1d"]
 INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bigint]
 NUMERIC_TYPES = [ak.int64, ak.uint64, ak.bigint, ak.bool_]
 
+seed = pytest.seed if pytest.seed is not None else 8675309
+
 
 class TestSetOps:
     def test_pdarraysetops_docstrings(self):
@@ -720,7 +722,7 @@ class TestSetOps:
         # index of nan (reproducer from #3009)
         s = ak.Series(ak.array([1, 2, 3]), index=ak.array([1, 2, np.nan]))
         assert ak.indexof1d(ak.array([np.nan]), s.index.values).tolist() == [2]
-        rng = np.random.default_rng()
+        rng = np.random.default_rng(seed)
         seeds = [
             rng.choice(2**63),
             rng.choice(2**63),

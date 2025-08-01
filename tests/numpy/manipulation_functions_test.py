@@ -7,7 +7,7 @@ import arkouda as ak
 from arkouda.pandas.categorical import Categorical
 from arkouda.testing import assert_arkouda_array_equivalent, assert_equal
 
-seed = pytest.seed
+seed = pytest.seed if pytest.seed is not None else 8675309
 
 DTYPES = ["uint64", "uint8", "int64", "float64", "bigint", "bool"]
 

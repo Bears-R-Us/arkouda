@@ -5,6 +5,8 @@ import arkouda as ak
 from arkouda.numpy import char
 from arkouda.testing import assert_arkouda_array_equivalent
 
+seed = pytest.seed if pytest.seed is not None else 8675309
+
 
 class TestChar:
     def test_char_docstrings(self):
@@ -22,7 +24,6 @@ class TestChar:
         import random
         import string
 
-        seed = pytest.seed if pytest.seed is not None else 8675309
         numerics = [chr(i) for i in range(0x110000) if np.char.isnumeric(chr(i))]  # unicode numerics
         alphanumerics = string.digits + string.ascii_letters
         random.seed(seed)

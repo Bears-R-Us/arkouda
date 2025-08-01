@@ -12,6 +12,8 @@ from arkouda.scipy import chisquare as akchisquare
 
 INT_FLOAT = [ak.int64, ak.float64]
 
+seed = pytest.seed if pytest.seed is not None else 8675309
+
 
 class TestRandom:
     def test_random_docstrings(self):
@@ -22,12 +24,12 @@ class TestRandom:
 
     def test_integers(self):
         # verify same seed gives different but reproducible arrays
-        rng = ak.random.default_rng(18)
+        rng = ak.random.default_rng(seed)
         first = rng.integers(-(2**32), 2**32, 10)
         second = rng.integers(-(2**32), 2**32, 10)
         assert first.tolist() != second.tolist()
 
-        rng = ak.random.default_rng(18)
+        rng = ak.random.default_rng(seed)
         same_seed_first = rng.integers(-(2**32), 2**32, 10)
         same_seed_second = rng.integers(-(2**32), 2**32, 10)
         assert first.tolist() == same_seed_first.tolist()
@@ -42,13 +44,13 @@ class TestRandom:
         assert any(not_all_zero.to_ndarray() != 0)
 
         # verify that switching dtype and function from seed is still reproducible
-        rng = ak.random.default_rng(74)
+        rng = ak.random.default_rng(seed + 1)
         uint_arr = rng.integers(0, 2**32, size=10, dtype="uint")
         float_arr = rng.uniform(-1.0, 1.0, size=5)
         bool_arr = rng.integers(0, 1, size=20, dtype="bool")
         int_arr = rng.integers(-(2**32), 2**32, size=10, dtype="int")
 
-        rng = ak.random.default_rng(74)
+        rng = ak.random.default_rng(seed + 1)
         same_seed_uint_arr = rng.integers(0, 2**32, size=10, dtype="uint")
         same_seed_float_arr = rng.uniform(-1.0, 1.0, size=5)
         same_seed_bool_arr = rng.integers(0, 1, size=20, dtype="bool")
@@ -74,7 +76,7 @@ class TestRandom:
 
         # verify all the same elements are in the shuffle as in the original
 
-        rng = ak.random.default_rng(18)
+        rng = ak.random.default_rng(seed)
         rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
         pda = rnfunc(-(2**32), 2**32, 10)
         pda_copy = pda[:]
@@ -84,7 +86,7 @@ class TestRandom:
 
         # verify same seed gives reproducible arrays
 
-        rng = ak.random.default_rng(18)
+        rng = ak.random.default_rng(seed)
         rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
         pda_prime = rnfunc(-(2**32), 2**32, 10)
         rng.shuffle(pda_prime)
@@ -101,13 +103,13 @@ class TestRandom:
 
         # verify all the same elements are in the permutation as in the original
 
-        rng = ak.random.default_rng(18)
+        rng = ak.random.default_rng(seed)
         range_permute = rng.permutation(20, method=method)
         assert (ak.arange(20) == ak.sort(range_permute)).all()  # range is always int
 
         # verify same seed gives reproducible arrays
 
-        rng = ak.random.default_rng(18)
+        rng = ak.random.default_rng(seed)
         rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
         pda = rnfunc(-(2**32), 2**32, 10)
         permuted = rng.permutation(pda, method=method)
@@ -115,13 +117,13 @@ class TestRandom:
 
         # verify same seed gives reproducible permutations
 
-        rng = ak.random.default_rng(18)
+        rng = ak.random.default_rng(seed)
         same_seed_range_permute = rng.permutation(20, method=method)
         assert check(range_permute, same_seed_range_permute, data_type)
 
         # verify all the same elements are in permutation as in the original
 
-        rng = ak.random.default_rng(18)
+        rng = ak.random.default_rng(seed)
         rnfunc = rng.integers if data_type is ak.int64 else rng.uniform
         pda_p = rnfunc(-(2**32), 2**32, 10)
         permuted_p = rng.permutation(pda_p, method=method)
@@ -129,12 +131,12 @@ class TestRandom:
 
     def test_uniform(self):
         # verify same seed gives different but reproducible arrays
-        rng = ak.random.default_rng(18)
+        rng = ak.random.default_rng(seed)
         first = rng.uniform(-(2**32), 2**32, 10)
         second = rng.uniform(-(2**32), 2**32, 10)
         assert first.tolist() != second.tolist()
 
-        rng = ak.random.default_rng(18)
+        rng = ak.random.default_rng(seed)
         same_seed_first = rng.uniform(-(2**32), 2**32, 10)
         same_seed_second = rng.uniform(-(2**32), 2**32, 10)
         assert np.allclose(first.tolist(), same_seed_first.tolist())
@@ -168,8 +170,8 @@ class TestRandom:
         assert scalar in [0, 1, 2, 3, 4]
 
     def test_choice_flags(self):
-        # use numpy to randomly generate a set seed
-        seed = np.random.default_rng().choice(2**63)
+        # use numpy to randomly generate a set seed      --- maybe.  Or maybe use standard.
+        # seed = np.random.default_rng().choice(2**63)
 
         rng = ak.random.default_rng(seed)
         weights = rng.uniform(size=10)
@@ -204,11 +206,11 @@ class TestRandom:
         arr = ak.arange(5)
 
         for loc, scale in product([scal, arr], [scal, arr]):
-            rng = ak.random.default_rng(17)
+            rng = ak.random.default_rng(seed)
             num_samples = 5
             log_sample = rng.logistic(loc=loc, scale=scale, size=num_samples).tolist()
 
-            rng = ak.random.default_rng(17)
+            rng = ak.random.default_rng(seed)
             assert rng.logistic(loc=loc, scale=scale, size=num_samples).tolist() == log_sample
 
     def test_lognormal(self):
@@ -216,22 +218,22 @@ class TestRandom:
         arr = ak.arange(5)
 
         for mean, sigma in product([scal, arr], [scal, arr]):
-            rng = ak.random.default_rng(17)
+            rng = ak.random.default_rng(seed)
             num_samples = 5
             log_sample = rng.lognormal(mean=mean, sigma=sigma, size=num_samples).tolist()
 
-            rng = ak.random.default_rng(17)
+            rng = ak.random.default_rng(seed)
             assert rng.lognormal(mean=mean, sigma=sigma, size=num_samples).tolist() == log_sample
 
     def test_normal(self):
-        rng = ak.random.default_rng(17)
+        rng = ak.random.default_rng(seed)
         both_scalar = rng.normal(loc=10, scale=2, size=10).tolist()
         scale_scalar = rng.normal(loc=ak.array([0, 10, 20]), scale=1, size=3).tolist()
         loc_scalar = rng.normal(loc=10, scale=ak.array([1, 2, 3]), size=3).tolist()
         both_array = rng.normal(loc=ak.array([0, 10, 20]), scale=ak.array([1, 2, 3]), size=3).tolist()
 
         # redeclare rng with same seed to test reproducibility
-        rng = ak.random.default_rng(17)
+        rng = ak.random.default_rng(seed)
         assert rng.normal(loc=10, scale=2, size=10).tolist() == both_scalar
         assert rng.normal(loc=ak.array([0, 10, 20]), scale=1, size=3).tolist() == scale_scalar
         assert rng.normal(loc=10, scale=ak.array([1, 2, 3]), size=3).tolist() == loc_scalar
@@ -241,7 +243,7 @@ class TestRandom:
         )
 
     def test_standard_gamma(self):
-        rng = ak.random.default_rng(12345)
+        rng = ak.random.default_rng(seed)
         num_samples = 5
         # scalar shape
         scal_sample = rng.standard_gamma(2, size=num_samples).tolist()
@@ -250,7 +252,7 @@ class TestRandom:
         arr_sample = rng.standard_gamma(ak.arange(5), size=num_samples).tolist()
 
         # reset rng with same seed and ensure we get same results
-        rng = ak.random.default_rng(12345)
+        rng = ak.random.default_rng(seed)
         assert rng.standard_gamma(2, size=num_samples).tolist() == scal_sample
         assert rng.standard_gamma(ak.arange(num_samples), size=num_samples).tolist() == arr_sample
 
@@ -268,7 +270,8 @@ class TestRandom:
     def test_standard_gamma_hypothesis_testing(self):
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
-        rng = ak.random.default_rng(123456)
+
+        rng = ak.random.default_rng(seed)
         num_samples = 10**3
 
         k = rng.uniform(0, 10)
@@ -284,26 +287,26 @@ class TestRandom:
 
         num_samples = 10**3
 
-        rng = ak.random.default_rng(17)
+        rng = ak.random.default_rng(seed)
         k = rng.uniform(0, 10)
         sample = rng.standard_gamma(k, size=num_samples).to_ndarray()
         ks = kstest(sample, gamma.cdf, args=(k, 0, 1))
         assert ks.pvalue > 0.05
 
-        rng = ak.random.default_rng(17)
+        rng = ak.random.default_rng(seed)
         k = 0.5
         sample = rng.standard_gamma(k, size=num_samples).to_ndarray()
         ks = kstest(sample, gamma.cdf, args=(k, 0, 1))
         assert ks.pvalue > 0.05
 
-        rng = ak.random.default_rng(17)
+        rng = ak.random.default_rng(seed)
         k = 5
         sample = rng.standard_gamma(k, size=num_samples).to_ndarray()
         ks = kstest(sample, gamma.cdf, args=(k, 0, 1))
         assert ks.pvalue > 0.05
 
     def test_poisson(self):
-        rng = ak.random.default_rng(17)
+        rng = ak.random.default_rng(seed)
         num_samples = 5
         # scalar lambda
         scal_lam = 2
@@ -314,13 +317,13 @@ class TestRandom:
         arr_sample = rng.poisson(lam=arr_lam, size=num_samples).tolist()
 
         # reset rng with same seed and ensure we get same results
-        rng = ak.random.default_rng(17)
+        rng = ak.random.default_rng(seed)
         assert rng.poisson(lam=scal_lam, size=num_samples).tolist() == scal_sample
         assert rng.poisson(lam=arr_lam, size=num_samples).tolist() == arr_sample
 
     def test_poisson_seed_reproducibility(self):
         # test resolution of issue #3322, same seed gives same result across machines / num locales
-        seed = 11
+        iseed = 11  # retains non pytest.seed because it asserts specific values
         # test with many orders of magnitude to ensure we test different remainders and case where
         # all elements are pulled to first locale i.e. total_size < (minimum elemsPerStream = 256)
         saved_seeded_file_patterns = ["second_order*", "third_order*", "fourth_order*"]
@@ -328,12 +331,12 @@ class TestRandom:
         # directory of this file
         file_dir = os.path.dirname(os.path.realpath(__file__))
         for i, f_name in zip(range(2, 5), saved_seeded_file_patterns):
-            generated = ak.random.default_rng(seed=seed).poisson(size=10**i)
+            generated = ak.random.default_rng(seed=iseed).poisson(size=10**i)
             saved = ak.read_parquet(f"{file_dir}/saved_seeded_random/{f_name}")["array"]
             assert (generated == saved).all()
 
     def test_exponential(self):
-        rng = ak.random.default_rng(17)
+        rng = ak.random.default_rng(seed)
         num_samples = 5
         # scalar scale
         scal_scale = 2
@@ -344,7 +347,7 @@ class TestRandom:
         arr_sample = rng.exponential(scale=arr_scale, size=num_samples).tolist()
 
         # reset rng with same seed and ensure we get same results
-        rng = ak.random.default_rng(17)
+        rng = ak.random.default_rng(seed)
         assert rng.exponential(scale=scal_scale, size=num_samples).tolist() == scal_sample
         assert rng.exponential(scale=arr_scale, size=num_samples).tolist() == arr_sample
 
@@ -354,7 +357,8 @@ class TestRandom:
 
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
-        rng = ak.random.default_rng(43)
+
+        rng = ak.random.default_rng(seed)
         num_samples = 10**4
 
         weights = ak.array([0.25, 0.15, 0.20, 0.10, 0.30])
@@ -377,7 +381,8 @@ class TestRandom:
     def test_exponential_hypothesis_testing(self, method):
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
-        rng = ak.random.default_rng(43)
+
+        rng = ak.random.default_rng(seed)
         num_samples = 10**4
 
         scale = rng.uniform(0, 10)
@@ -396,7 +401,8 @@ class TestRandom:
     def test_normal_hypothesis_testing(self, method):
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
-        rng = ak.random.default_rng(73)
+
+        rng = ak.random.default_rng(seed)
         num_samples = 10**4
 
         mean = rng.uniform(-10, 10)
@@ -420,7 +426,8 @@ class TestRandom:
     def test_lognormal_hypothesis_testing(self, method):
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
-        rng = ak.random.default_rng(43)
+
+        rng = ak.random.default_rng(seed)
         num_samples = 10**4
 
         mean = rng.uniform(-10, 10)
@@ -446,7 +453,8 @@ class TestRandom:
     def test_poisson_hypothesis_testing(self):
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
-        rng = ak.random.default_rng(43)
+
+        rng = ak.random.default_rng(seed)
         num_samples = 10**4
         lam = rng.uniform(0, 10)
 
@@ -471,7 +479,8 @@ class TestRandom:
     def test_logistic_hypothesis_testing(self):
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05.
-        rng = np.random.default_rng(34)
+
+        rng = ak.random.default_rng(seed)
         num_samples = 10**4
         mu = rng.uniform(0, 10)
         scale = rng.uniform(0, 10)
@@ -550,6 +559,7 @@ class TestRandom:
         ak.random.randint(low=np.uint8(1), high=np.uint16(100), size=np.uint32(100))
 
     def test_legacy_randint_with_seed(self):
+        #  This test retains the non pytest.seed, because it asserts specific values.
         values = ak.random.randint(1, 5, 10, seed=2)
 
         assert [4, 3, 1, 3, 2, 4, 4, 2, 3, 4] == values.tolist()
@@ -610,6 +620,8 @@ class TestRandom:
         assert isinstance(testArray, ak.pdarray)
         assert 3 == len(testArray)
         assert ak.float64 == testArray.dtype
+
+        #  The next two tests also retain the non pytest.seed, because they assert specific values.
 
         uArray = ak.random.uniform(size=3, low=0, high=5, seed=0)
         assert np.allclose(
