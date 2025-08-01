@@ -6,15 +6,6 @@ needed during data processing, configuration, and metadata management. It includ
 utilities for creating and deleting directories, reading and writing key-value pairs
 from/to delimited text files, and appending lines to files.
 
-Exports
--------
-__all__ = [
-    "delete_directory",
-    "delimited_file_to_dict",
-    "dict_to_delimited_file",
-    "get_directory",
-    "write_line_to_file",
-]
 
 Functions
 ---------

@@ -14,11 +14,6 @@ This class provides methods to retrieve:
 These operations enable powerful pattern recognition and substring extraction
 on large-scale segmented string arrays, implemented efficiently in the Arkouda server.
 
-Exports
--------
-- Match : Object representing a regex match result
-- MatchType : Enum indicating the regex method used (SEARCH, MATCH, FULLMATCH)
-
 Examples
 --------
 >>> import arkouda as ak
