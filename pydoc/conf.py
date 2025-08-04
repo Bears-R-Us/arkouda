@@ -106,6 +106,20 @@ autoapi_ignore = [
     "*arkouda/strings/*",
     "*arkouda/timeclass/*",
     "*arkouda/util/*",
+    #   Prevent faux module from generating duplicate docs
+    "*arkouda/categorical/*",
+    "*arkouda/dataframe/*",
+    "*arkouda/groupbyclass/*",
+    "*arkouda/index/*",
+    "*arkouda/io/*",
+    "*arkouda/io_util/*",
+    "*arkouda/join/*",
+    "*arkouda/match/*",
+    "*arkouda/matcher/*",
+    "*arkouda/row/*",
+    "*arkouda/series/*",
+    "*arkouda/sparrayclass/*",
+    "*arkouda/sparsematrix/*",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
