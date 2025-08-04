@@ -234,15 +234,18 @@ def dtype_for_chapel(type_name: str):
 
     Parameters
     ----------
-    type_name: the name of the Chapel type, with or without the bit width
+    type_name : str
+        The name of the Chapel type, with or without the bit width
 
     Returns
     -------
-    The corresponding type created by dtype()
+    dtype
+        The corresponding Arkouda dtype object
 
     Raises
     ------
-    TypeError, when Arkouda does not have a type that corresponds to `type_name`
+    TypeError
+        Raised if Arkouda does not have a type that corresponds to `type_name`
 
     """
     try:

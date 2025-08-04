@@ -1140,7 +1140,9 @@ def get_registration_config():
 
     Returns
     -------
-    A mapping from parameter name to nested mappings, matching the json structure.
+    dict
+        A mapping from parameter name to nested mappings,
+        reflecting the structure of the original JSON file.
 
     Raises
     ------
