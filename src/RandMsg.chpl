@@ -479,7 +479,7 @@ module RandMsg
             var b = kArg - 1/3.0;
             var c = 1/sqrt(9.0 * b);
             var count = 0;
-            while count < 10000 do{
+            while count < 10000 {
                 var V = -1.0;
                 var X = 0.0;
                 while V <= 0 {
@@ -886,6 +886,7 @@ module RandMsg
         return MsgTuple.success();
     }
 
+    @chplcheck.ignore("UnusedFormal")
     proc mergeShuffleHelp(
         cmd: string, 
         msgArgs: borrowed MessageArgs, 
@@ -1198,7 +1199,10 @@ module RandMsg
 
         bound : int
             The index that sets the upper or lower limit of the swap target range
-            for each `i` in `swapChunk`. It must lie outside the interior of `swapChunk`.
+            for each `i` in `swapChunk`. It must lie outside the interior of `swapChunk`.  
+            If bound is swapChunk.last, then this is forwards Fisher-Yates, 
+            and if bound is swapChunk.first, then this is reverse Fisher-Yates, 
+            although values further outside the range are also allowed.
 
         rng : randomStream(int), `ref`
             The integer-based random stream used to choose swap targets.
@@ -1253,9 +1257,9 @@ module RandMsg
     }
 
     /*
-        Randomly merge two sorted runs in-place over a local chunk of data.
+        Randomly merge two shuffled runs in-place over a local chunk of data.
 
-        This procedure merges two adjacent sorted subarrays of `x`, starting at `start`
+        This procedure merges two adjacent shuffled subarrays of `x`, starting at `start`
         with lengths `len1` and `len2`, using a probabilistic selection mechanism.
         The merge is performed only over the specified `localChunk`, which should
         correspond to the portion of the data owned by a specific locale.
@@ -1327,8 +1331,12 @@ module RandMsg
         // merge: run i from localLo..localHi, 
         // swapping in elements from the second run
         var j = start + len1;
+        var final_i = localChunk.last;
         for i in localChunk {
-            if i == j || j > endIdx then break;
+            if i == j || j > endIdx{
+                final_i = i;
+                break;
+            }
 
             if rng.next() < threshold {
                 // pick from first run → leave x[i] alone
@@ -1338,7 +1346,7 @@ module RandMsg
                 j += 1;
             }
         }
-        fisherYatesOnChunk(x, j..endIdx, start, rngInt);
+        fisherYatesOnChunk(x, final_i..endIdx, start, rngInt);
     }
 
 
@@ -1413,7 +1421,7 @@ module RandMsg
     /*
         Perform a distributed, probabilistic in-place merge of two adjacent runs.
 
-        This function merges two sorted runs within the global array `x` using a
+        This function merges two shuffled runs within the global array `x` using a
         randomized selection process. The merge is performed across multiple locales,
         but each locale only processes its local chunk of data.
 
@@ -1557,6 +1565,7 @@ module RandMsg
         getDomainHighs : Returns the highest index of each locale’s subdomain.
         mergeShuffle : Uses this function to coordinate merge boundaries across locales.
     */
+    @chplcheck.ignore("UnusedFormal")
     proc getDomainLows(ref x: []): [] int {
         var domainLows: [0..#numLocales] int;
         coforall loc in Locales with (ref x) do on loc {
@@ -1595,6 +1604,7 @@ module RandMsg
         getDomainLows : Returns the lowest index of each locale’s subdomain.
         mergeShuffle : Uses both low and high bounds to define merge block sizes.
     */
+    @chplcheck.ignore("UnusedFormal")
     proc getDomainHighs(ref x: []): [] int {
         var domainHighs: [0..#numLocales] int;
         coforall loc in Locales with (ref x) do on loc {
