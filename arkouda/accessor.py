@@ -6,35 +6,24 @@ on Arkouda Series, mimicking the behavior of pandas-style accessors. It supports
 extension methods for string and datetime-like values, enabling operations to be
 performed in a clean, grouped syntax.
 
-Exports
--------
-__all__ = [
-    "CachedAccessor",
-    "DatetimeAccessor",
-    "Properties",
-    "StringAccessor",
-    "date_operators",
-    "string_operators",
-]
-
 Components
 ----------
-CachedAccessor : class
+:class:`.CachedAccessor`
     Descriptor that lazily initializes and caches accessor objects, such as `.str` or `.dt`.
 
-DatetimeAccessor : class
+:class:`.DatetimeAccessor`
     Implements datetime-like operations (e.g., floor, ceil, round) via the `.dt` accessor.
 
-StringAccessor : class
+:class:`.StringAccessor`
     Implements string-like operations (e.g., contains, startswith, endswith) via the `.str` accessor.
 
-Properties : base class
+:class:`.Properties`
     Base class that provides `_make_op` for dynamically attaching operations to accessors.
 
-date_operators : function
+:func:`.date_operators`
     Class decorator that adds datetime operations to `DatetimeAccessor`.
 
-string_operators : function
+:func:`.string_operators`
     Class decorator that adds string operations to `StringAccessor`.
 
 Usage
@@ -77,23 +66,23 @@ __all__ = [
 
 class CachedAccessor:
     """
-    Custom property-like object.
+    Descriptor for caching namespace-based accessors.
 
-    A descriptor for caching accessors.
+    This custom property-like object enables lazy initialization of accessors
+    (e.g., `.str`, `.dt`) on Series-like objects, similar to pandas-style extension
+    accessors.
 
     Parameters
     ----------
     name : str
-        Namespace that will be accessed under, e.g. ``df.foo``.
-    accessor : cls
-        Class with the extension methods.
+        The name of the namespace to be accessed (e.g., ``df.foo``).
+    accessor : type
+        A class implementing the accessor logic.
 
     Notes
     -----
-    For accessor, The class's __init__ method assumes that one of
-    ``Series``, ``DataFrame`` or ``Index`` as the
-    single argument ``data``.
-
+    The `accessor` class's ``__init__`` method must accept a single positional
+    argument, which should be one of ``Series``, ``DataFrame``, or ``Index``.
     """
 
     def __init__(self, name: str, accessor) -> None:
