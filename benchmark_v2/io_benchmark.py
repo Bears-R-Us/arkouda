@@ -104,9 +104,8 @@ def bench_write_hdf(benchmark, dtype):
             f"Measures the performance of IO write {dtype} to HDF5 file"
         )
         benchmark.extra_info["problem_size"] = pytest.prob_size
-        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2**30
-        )
+        #   units are GiB/sec:
+        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -135,9 +134,8 @@ def bench_write_parquet(benchmark, dtype, comp):
             f"Measures the performance of IO write {dtype} to Parquet file using {comp} compression"
         )
         benchmark.extra_info["problem_size"] = pytest.prob_size
-        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2**30
-        )
+        #   units are GiB/sec:
+        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -169,9 +167,8 @@ def bench_write_parquet_multi(benchmark, dtype, comp):
             f"Measures the performance of IO write {dtype} to Parquet file using {comp} compression"
         )
         benchmark.extra_info["problem_size"] = pytest.prob_size
-        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2**30
-        )
+        #   units are GiB/sec:
+        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -202,9 +199,8 @@ def bench_write_parquet_append(benchmark, dtype, comp):
             f"Measures the performance of IO write {dtype} to Parquet file using {comp} compression"
         )
         benchmark.extra_info["problem_size"] = pytest.prob_size
-        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2**30
-        )
+        #   units are GiB/sec:
+        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -225,9 +221,8 @@ def bench_read_hdf(benchmark, dtype):
 
         benchmark.extra_info["description"] = "Measures the performance of IO read from HDF5 files"
         benchmark.extra_info["problem_size"] = pytest.prob_size
-        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2**30
-        )
+        #   units are GiB/sec:
+        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -253,16 +248,15 @@ def bench_read_parquet(benchmark, dtype, comp):
 
         benchmark.extra_info["description"] = "Measures the performance of IO read from Parquet files"
         benchmark.extra_info["problem_size"] = pytest.prob_size
-        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2**30
-        )
+        #   units are GiB/sec:
+        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Read_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
-def bench_read_parquet_multi_column(benchmark, dtype, comp):
+def bench_read_parquet_multi(benchmark, dtype, comp):
     """
     Read files written by parquet multicolumn and parquet append modes
     """
@@ -285,9 +279,8 @@ def bench_read_parquet_multi_column(benchmark, dtype, comp):
 
         benchmark.extra_info["description"] = "Measures the performance of IO read from Parquet files"
         benchmark.extra_info["problem_size"] = pytest.prob_size
-        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2**30
-        )
+        #   units are GiB/sec:
+        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)

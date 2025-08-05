@@ -4,12 +4,12 @@ import arkouda as ak
 
 OPS = {
     "Hashing": lambda x: x.hash(),
-    "Regex_Search": lambda x: x.contains(r"\d{3,5}\.\d{5,8}", regex=True),
+    "Regex": lambda x: x.contains(r"\d{3,5}\.\d{5,8}", regex=True),
     "Casting": lambda x: ak.cast(x, ak.float64),
-    "Scalar_Compare": lambda x: (x == "5.5"),
+    "Comparing": lambda x: (x == "5.5"),
 }
 
-LOCALITY = {"Good", "Poor"}
+LOCALITY = {"good", "poor"}
 
 
 def _generate_data(loc):
@@ -26,7 +26,7 @@ def _generate_data(loc):
     )
     random_strings = prefix.stick(suffix, delimiter=".")
 
-    if loc == "Good":
+    if loc == "good":
         return random_strings
     else:
         #   To simulate poor locality, sort by string lengths.
@@ -51,6 +51,5 @@ def bench_str_locality(benchmark, op, loc):
     )
     benchmark.extra_info["problem_size"] = data.size
     benchmark.extra_info["backend"] = "Arkouda"
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (nbytes / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)

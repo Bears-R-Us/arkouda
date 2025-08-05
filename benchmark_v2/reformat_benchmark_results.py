@@ -31,38 +31,40 @@ BENCHMARKS = [
     "stream",
     "argsort",
     "coargsort",
-    # "groupby",
+    "groupby",
     # "flatten",
     "aggregate",
     "gather",
     "scatter",
-    # "reduce",
-    # "in1d",
-    # "scan",
-    # "noop",
-    # "setops",
-    # "array_create",
-    # "array_transfer",
-    # "IO",
-    # "csvIO",
-    # "small-str-groupby",
-    # "str-argsort",
-    # "str-coargsort",
-    # "str-groupby",
-    # "str-gather",
-    # "str-in1d",
-    # "substring_search",
+    "reduce",
+    "in1d",
+    "scan",
+    "noop",
+    "setops",
+    "array_create",
+    "array_transfer",
+    "IO",
+    "csvIO",
+    "small-str-groupby",
+    "str-argsort",
+    "str-coargsort",
+    "str-groupby",
+    "str-gather",
+    "str-in1d",
+    "substring_search",
     # "split",
-    # "sort-cases",
+    "sort-cases",
     # "multiIO",
-    # "str-locality",
+    "str-locality",
     "dataframe",
-    # "encode",
-    # "bigint_conversion",
+    "encode",
+    "bigint_conversion",
     "bigint_stream",
-    # "bigint_bitwise_binops",
-    # "bigint_groupby",
-    # "bigint_array_transfer",
+    "bigint_bitwise_binops",
+    "bigint_groupby",
+    "bigint_array_transfer",
+    "parquetIO",
+    "parquetMultiIO",
 ]
 
 if os.getenv("ARKOUDA_SERVER_PARQUET_SUPPORT"):
@@ -185,7 +187,7 @@ def get_header_fields_from_directory(directory_path):
                     lines = [line.strip() for line in lines]
 
                     # Add the file name and its contents to the dictionary
-                    key = re.search(r"([\w_]+).perfkeys", filename)[1]
+                    key = re.search(r"([\w\-_]+).perfkeys", filename)[1]
                     file_contents[key] = lines
             except Exception as e:
                 print(f"Error reading file {filename}: {str(e)}")
@@ -227,12 +229,11 @@ def get_value(field: str, benchmark_name: str, field_lookup_map: dict, benchmark
     elif regex_str is not None and regex_str != "":
         return compute_average(regex_str, lookup_path, benchmark_data)
     elif benchmark_name in field_lookup_map.keys() and field in field_lookup_map[benchmark_name].keys():
-        group = field_lookup_map[benchmark_name][field]["group"]
         name = field_lookup_map[benchmark_name][field]["name"]
         lookup_path = field_lookup_map[benchmark_name][field]["lookup_path"]
 
         for benchmark in benchmark_data["benchmarks"]:
-            if (benchmark["group"] == group) and (benchmark["name"] == name):
+            if benchmark["name"] == name:
                 value = get_nested_value(benchmark, lookup_path)
                 return get_float_value(value)
 
@@ -254,7 +255,7 @@ def compute_average(benchmark_name_regex: str, keys: list, benchmark_data):
         if count > 0:
             return total / count
         else:
-            logging.warning(f"Could not compute average over {benchmark_name_regex}.")
+            logging.warning(f"Could not compute average over {benchmark_name_regex}, no matches found.")
             return -1.0
     except Exception as e:
         logging.error(f"Exception in compute_average for {benchmark_name_regex}: {e}")
@@ -271,165 +272,6 @@ def get_float_value(value: Union[float, str]):
         raise TypeError("In get_float_value, value must be a float or string.")
 
 
-def gen_lookup_map(write=False, out_file="field_lookup_map.json"):
-    """Temporarily use a script to generate the lookup dictionary and save to file when write=True."""
-    field_lookup_map = {}
-    for benchmark_name in BENCHMARKS:
-        field_lookup_map[benchmark_name] = {}
-
-        field_lookup_map[benchmark_name]["Average rate ="] = get_lookup_dict(
-            name="bench_" + benchmark_name,
-            benchmark_name=benchmark_name,
-            lookup_path=[
-                "extra_info",
-                "transfer_rate",
-            ],
-            lookup_regex="bench_" + benchmark_name + r"\[[\w\d]*\]",
-        )
-
-        field_lookup_map[benchmark_name]["Average time ="] = get_lookup_dict(
-            name="bench_" + benchmark_name,
-            benchmark_name=benchmark_name,
-            lookup_path=[
-                "stats",
-                "mean",
-            ],
-            lookup_regex="bench_" + benchmark_name + r"\[[\w\d]*\]",
-        )
-
-    for op in [
-        "prod",
-        "sum",
-        "mean",
-        "min",
-        "max",
-        "argmin",
-        "argmax",
-        "any",
-        "all",
-        "xor",
-        "and",
-        "or",
-        "nunique",
-    ]:
-        field_lookup_map["aggregate"][f"Aggregate {op} Average rate ="] = get_lookup_dict(
-            group="GroupBy.aggregate",
-            name=f"bench_aggregate[{op}]",
-            benchmark_name="aggregate",
-            lookup_path=[
-                "extra_info",
-                "transfer_rate",
-            ],
-        )
-
-        field_lookup_map["aggregate"][f"Aggregate {op} Average time ="] = get_lookup_dict(
-            group="GroupBy.aggregate",
-            name=f"bench_aggregate[{op}]",
-            benchmark_name="aggregate",
-            lookup_path=[
-                "stats",
-                "mean",
-            ],
-        )
-
-    for num in [1, 2, 8, 16]:
-        field_lookup_map["coargsort"][f"{num}-array Average rate ="] = get_lookup_dict(
-            group="Arkouda_CoArgSort",
-            benchmark_name="coargsort",
-            lookup_path=["extra_info", "transfer_rate"],
-            lookup_regex=f"bench_coargsort\\[[\\w\\d]*-{num}\\]",
-        )
-
-        field_lookup_map["coargsort"][f"{num}-array Average time ="] = get_lookup_dict(
-            group="Arkouda_CoArgSort",
-            benchmark_name="coargsort",
-            lookup_path=[
-                "stats",
-                "mean",
-            ],
-            lookup_regex=f"bench_coargsort\\[[\\w\\d]*-{num}\\]",
-        )
-
-    field_lookup_map["bigint_stream"]["Average bigint stream time ="] = get_lookup_dict(
-        group="stream",
-        name="bench_bigint_stream",
-        benchmark_name="bigint_stream",
-        lookup_path=[
-            "stats",
-            "mean",
-        ],
-        lookup_regex="bench_bigint_stream\\[[\\w\\d]*\\]",
-    )
-
-    #   Field aliases:
-    #   bigint
-    field_lookup_map["bigint_stream"]["Average bigint stream time ="] = field_lookup_map[
-        "bigint_stream"
-    ]["Average time ="]
-    field_lookup_map["bigint_stream"]["Average bigint stream rate ="] = field_lookup_map[
-        "bigint_stream"
-    ]["Average rate ="]
-
-    #   dataframe
-    field_lookup_map["dataframe"]["_get_head_tail_server Average time ="] = get_lookup_dict(
-        group="Dataframe_Indexing",
-        name="bench_dataframe[_get_head_tail_server]",
-        benchmark_name="dataframe",
-        lookup_path=[
-            "stats",
-            "mean",
-        ],
-    )
-
-    field_lookup_map["dataframe"]["_get_head_tail_server Average rate ="] = get_lookup_dict(
-        group="Dataframe_Indexing",
-        name="bench_dataframe[_get_head_tail_server]",
-        benchmark_name="dataframe",
-        lookup_path=[
-            "extra_info",
-            "transfer_rate",
-        ],
-    )
-
-    field_lookup_map["dataframe"]["_get_head_tail Average time ="] = get_lookup_dict(
-        group="Dataframe_Indexing",
-        name="bench_dataframe[_get_head_tail]",
-        benchmark_name="dataframe",
-        lookup_path=[
-            "stats",
-            "mean",
-        ],
-    )
-
-    field_lookup_map["dataframe"]["_get_head_tail Average rate ="] = get_lookup_dict(
-        group="Dataframe_Indexing",
-        name="bench_dataframe[_get_head_tail]",
-        benchmark_name="dataframe",
-        lookup_path=[
-            "extra_info",
-            "transfer_rate",
-        ],
-    )
-
-    if write:
-        with open(out_file, "w") as fp:
-            json.dump(field_lookup_map, fp)
-
-    return field_lookup_map
-
-
-def get_lookup_dict(group="", name="", benchmark_name="", lookup_path=[], lookup_regex=""):
-    """Populate the lookup dictionary fields and return a dictionary."""
-    ret_dict = {
-        "group": group,
-        "name": name,
-        "benchmark_name": benchmark_name,
-        "lookup_path": lookup_path,
-        "lookup_regex": lookup_regex,
-    }
-    return ret_dict
-
-
 # ./benchmark_v2/reformat_benchmark_results.py
 def main():
     parser = create_parser()
@@ -441,9 +283,6 @@ def main():
     os.makedirs(configs_dir, exist_ok=True)
 
     lookup_map_path = configs_dir + "/field_lookup_map.json"
-
-    #   TODO: remove gen_lookup_map
-    gen_lookup_map(True, lookup_map_path)
 
     with open(lookup_map_path, "r") as file:
         field_lookup_map = json.load(file)

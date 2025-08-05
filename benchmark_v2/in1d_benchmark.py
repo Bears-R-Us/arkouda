@@ -38,6 +38,5 @@ def bench_in1d(benchmark, dtype, size):
         benchmark.extra_info["description"] = "in1d benchmark using Arkouda"
         benchmark.extra_info["backend"] = "Arkouda"
         benchmark.extra_info["problem_size"] = N
-        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2**30
-        )
+        #   units are GiB/sec:
+        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)

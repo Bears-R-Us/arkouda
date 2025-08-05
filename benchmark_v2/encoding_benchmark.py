@@ -29,9 +29,8 @@ def bench_encode(benchmark, encoding):
 
     benchmark.extra_info["description"] = f"Measures the performance of Strings.encode with '{encoding}'"
     benchmark.extra_info["problem_size"] = N
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (numBytes / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((numBytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -51,6 +50,5 @@ def bench_decode(benchmark, encoding):
 
     benchmark.extra_info["description"] = f"Measures the performance of Strings.decode with '{encoding}'"
     benchmark.extra_info["problem_size"] = N
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (numBytes / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((numBytes / benchmark.stats["mean"]) / 2**30)
