@@ -25,6 +25,5 @@ def bench_groupby_small_str(benchmark, strlen_label):
     benchmark.extra_info["problem_size"] = N
     benchmark.extra_info["backend"] = "Arkouda"
     benchmark.extra_info["string_length"] = strlen
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (bytes_processed / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((bytes_processed / benchmark.stats["mean"]) / 2**30)

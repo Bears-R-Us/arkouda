@@ -41,6 +41,5 @@ def bench_argsort(benchmark, dtype):
 
         benchmark.extra_info["description"] = "Measures the performance of argsort"
         benchmark.extra_info["problem_size"] = N
-        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2**30
-        )
+        #   units are GiB/sec:
+        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
