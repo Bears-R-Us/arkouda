@@ -1,0 +1,2 @@
+export ARKOUDA_QUICK_COMPILE=true 
+export ARKOUDA_SKIP_CHECK_DEPS=True
