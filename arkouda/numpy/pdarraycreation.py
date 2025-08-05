@@ -36,7 +36,12 @@ from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import (
+    _axis_validation,
+    broadcast_to_shape,
+    create_pdarray,
+    pdarray,
+)
 from arkouda.numpy.strings import Strings
 
 if TYPE_CHECKING:
@@ -55,6 +60,7 @@ __all__ = [
     "full_like",
     "arange",
     "linspace",
+    "logspace",
     "randint",
     "uniform",
     "standard_normal",
@@ -1140,58 +1146,257 @@ def arange(
 
 
 @typechecked
-def linspace(start: numeric_scalars, stop: numeric_scalars, length: int_scalars) -> pdarray:
+def logspace(
+    start: Union[numeric_scalars, pdarray],
+    stop: Union[numeric_scalars, pdarray],
+    num: int_scalars = 50,
+    base: numeric_scalars = 10.0,
+    endpoint: Union[None, bool] = True,
+    dtype: Optional[type] = float64,
+    axis: Union[None, int_scalars] = 0,
+) -> pdarray:
     """
-    Create a pdarray of linearly-spaced floats in a closed interval.
+    Create a pdarray of numbers evenly spaced on a log scale.
 
     Parameters
     ----------
-    start : numeric_scalars
-        Start of interval (inclusive)
-    stop : numeric_scalars
-        End of interval (inclusive)
-    length : int_scalars
-        Number of points
+    start : Union[numeric_scalars, pdarray]
+        The starting value of the sequence.
+    stop : Union[numeric_scalars, pdarray]
+        The end value of the sequence, unless `endpoint` is set to False.
+        In that case, the sequence consists of all but the last of ``num + 1``
+        evenly spaced samples, so that `stop` is excluded.  Note that the step
+        size changes when `endpoint` is False.
+    num : int, optional
+        Number of samples to generate. Default is 50. Must be non-negative.
+    base : numeric_scalars, optional
+        the base of the log space, defaults to 10.0.
+    endpoint : bool, optional
+        If True, `stop` is the last sample. Otherwise, it is not included.
+        Default is True.
+    dtype : Union[None, float64]
+        allowed for compatibility with numpy, but ignored.  Outputs are always float
+    axis : int, optional
+        The axis in the result to store the samples.  Relevant only if start
+        or stop are array-like.  By default (0), the samples will be along a
+        new axis inserted at the beginning. Use -1 to get an axis at the end.
 
     Returns
     -------
     pdarray
-        Array of evenly spaced float values along the interval
+        There are `num` equally spaced (logarithmically) samples in the closed interval
+        base**``[start, stop]`` or the half-open interval base**``[start, stop)``
+        (depending on whether `endpoint` is True or False).
 
     Raises
     ------
     TypeError
-        Raised if start or stop is not a float or int or if length is not an int
+        Raised if start or stop is not a float or a pdarray, or if num
+        is not an int, or if endpoint is not a bool, or if dtype is anything
+        other than None or float64, or axis is not an integer.
+    ValueError
+        Raised if axis is not a valid axis for the given data, or if base < 0.
 
     See Also
     --------
-    arange
+    linspace
 
     Notes
     -----
-    If that start is greater than stop, the pdarray values are generated
+    If start is greater than stop, the pdarray values are generated
     in descending order.
 
     Examples
     --------
     >>> import arkouda as ak
-    >>> ak.linspace(0, 1, 5)
-    array([0.00000000000000000 0.25 0.5 0.75 1.00000000000000000])
-
-    >>> ak.linspace(start=1, stop=0, length=5)
-    array([1.00000000000000000 0.75 0.5 0.25 0.00000000000000000])
-
-    >>> ak.linspace(start=-5, stop=0, length=5)
-    array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000])
+    >>> ak.logspace(2,3,3,4)
+    array([16.00000000000000000 32.00000000000000000 64.00000000000000000])
+    >>> ak.logspace(2,3,3,4,endpoint=False)
+    array([16.00000000000000000 25.398416831491197 40.317473596635935])
+    >>> ak.logspace(0,1,3,4)
+    array([1.00000000000000000 2.00000000000000000 4.00000000000000000])
+    >>> ak.logspace(1,0,3,4)
+    array([4.00000000000000000 2.00000000000000000 1.00000000000000000])
+    >>> ak.logspace(0,1,3,endpoint=False)
+    array([1.00000000000000000 2.1544346900318838 4.6415888336127784])
+    >>> ak.logspace(0,ak.array([2,3]),3,base=2)
+    array([array([1.00000000000000000 1.00000000000000000])
+        array([2.00000000000000000 2.8284271247461903])
+        array([4.00000000000000000 8.00000000000000000])])
+    >>> ak.logspace(ak.array([0,1]),3,3,base=3)
+    array([array([1.00000000000000000 3.00000000000000000])
+        array([5.196152422706632 9.00000000000000000])
+        array([27.00000000000000000 27.00000000000000000])])
+    >>> ak.logspace(ak.array([0,1]),ak.array([2,3]),3,base=4)
+    array([array([1.00000000000000000 4.00000000000000000])
+        array([4.00000000000000000 16.00000000000000000])
+        array([16.00000000000000000 64.00000000000000000])])
     """
-    from arkouda.client import generic_msg
 
-    if not isSupportedNumber(start) or not isSupportedNumber(stop):
-        raise TypeError("both start and stop must be an int, np.int64, float, or np.float64")
-    if not isSupportedNumber(length):
-        raise TypeError("length must be an int or int64")
-    repMsg = generic_msg(cmd="linspace", args={"start": start, "stop": stop, "len": length})
-    return create_pdarray(repMsg)
+    if dtype not in (None, float64):
+        raise TypeError("dtype must be None or float64")
+    if base <= 0:
+        raise ValueError("base must be positive")
+    if endpoint is None:
+        endpoint = True
+
+    return base ** linspace(start, stop, num, endpoint=endpoint, dtype=float64, axis=axis)
+
+
+@typechecked
+def linspace(
+    start: Union[numeric_scalars, pdarray],
+    stop: Union[numeric_scalars, pdarray],
+    num: int_scalars = 50,
+    endpoint: Union[None, bool] = True,
+    dtype: Optional[type] = float64,
+    axis: int_scalars = 0,
+) -> pdarray:
+    """
+    Return evenly spaced numbers over a specified interval.
+
+    Returns `num` evenly spaced samples, calculated over the
+    interval [`start`, `stop`].
+
+    The endpoint of the interval can optionally be excluded.
+
+    Parameters
+    ----------
+    start : Union[numeric_scalars, pdarray]
+        The starting value of the sequence.
+    stop : Union[numeric_scalars, pdarray]
+        The end value of the sequence, unless `endpoint` is set to False.
+        In that case, the sequence consists of all but the last of ``num + 1``
+        evenly spaced samples, so that `stop` is excluded.  Note that the step
+        size changes when `endpoint` is False.
+    num : int, optional
+        Number of samples to generate. Default is 50. Must be non-negative.
+    endpoint : bool, optional
+        If True, `stop` is the last sample. Otherwise, it is not included.
+        Default is True.
+    dtype : dtype, optional
+        Allowed for compatibility with numpy linspace, but anything entered
+        is ignored.  The output is always ak.float64.
+    axis : int, optional
+        The axis in the result to store the samples.  Relevant only if start
+        or stop are array-like.  By default (0), the samples will be along a
+        new axis inserted at the beginning. Use -1 to get an axis at the end.
+
+    Returns
+    -------
+    pdarray
+        There are `num` equally spaced samples in the closed interval
+        ``[start, stop]`` or the half-open interval ``[start, stop)``
+        (depending on whether `endpoint` is True or False).
+
+    Raises
+    ------
+    TypeError
+        Raised if start or stop is not a float or a pdarray, or if num
+        is not an int, or if endpoint is not a bool, or if dtype is anything
+        other than None or float64, or axis is not an integer.
+    ValueError
+        Raised if axis is not a valid axis for the given data.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.linspace(0,1,3)
+    array([0.00000000000000000 0.5 1.00000000000000000])
+    >>> ak.linspace(1,0,3)
+    array([1.00000000000000000 0.5 0.00000000000000000])
+    >>> ak.linspace(0,1,3,endpoint=False)
+    array([0.00000000000000000 0.33333333333333331 0.66666666666666663])
+    >>> ak.linspace(0,ak.array([2,3]),3)
+    array([array([0.00000000000000000 0.00000000000000000])
+        array([1.00000000000000000 1.5]) array([2.00000000000000000 3.00000000000000000])])
+    >>> ak.linspace(ak.array([0,1]),3,3)
+    array([array([0.00000000000000000 1.00000000000000000])
+        array([1.5 2.00000000000000000]) array([3.00000000000000000 3.00000000000000000])])
+    >>> ak.linspace(ak.array([0,1]),ak.array([2,3]),3)
+    array([array([0.00000000000000000 1.00000000000000000])
+        array([1.00000000000000000 2.00000000000000000])
+        array([2.00000000000000000 3.00000000000000000])])
+    """
+
+    from arkouda import newaxis
+    from arkouda.numeric import transpose
+    from arkouda.numpy.manipulation_functions import tile
+    from arkouda.numpy.util import broadcast_dims
+
+    if dtype not in (None, float64):
+        raise TypeError("dtype must be None or float64")
+    if endpoint is None:
+        endpoint = True
+
+    start_ = start
+    stop_ = stop
+
+    #   First make sure everything's a float.
+
+    if isinstance(start_, pdarray):
+        start_ = start_.astype(float64)
+    elif isinstance(start_, int):
+        start_ = float(start_)
+
+    if isinstance(stop_, pdarray):
+        stop_ = stop_.astype(float64)
+    elif isinstance(stop_, int):
+        stop_ = float(stop_)
+
+    #   Determine whether this is all scalars, or if vectors are involved.
+
+    if isinstance(start_, pdarray) and isinstance(stop_, pdarray):
+        #  they must be broadcast to a matching shape
+        if start_.shape != stop_.shape:
+            newshape = broadcast_dims(start_.shape, stop_.shape)
+            start_ = broadcast_to_shape(start_, newshape)
+            stop_ = broadcast_to_shape(stop_, newshape)
+
+    #   If one is a scalar and other a vector, we use full_like to "promote" the scalar one.
+
+    else:
+        if isinstance(start_, pdarray) and np.isscalar(stop_):
+            stop_ = full_like(start_, stop_)
+
+        elif isinstance(stop_, pdarray) and np.isscalar(start_):
+            start_ = full_like(stop_, start_)
+
+    divisor = num - 1 if endpoint else num
+
+    #   In the vector case, by the time we reach here, start_ and stop_ are the same
+    #   shape.  They are tiled by num (the size of the linspace), the delta is
+    #   computed, and a solution is calculated involving start_ plus arange(num)
+    #   multipled by delta.
+
+    if isinstance(start_, pdarray) and isinstance(stop_, pdarray):
+        pad: Tuple[int, int] = (int(num), int(1))
+        start_ = tile(start_, pad).reshape((num,) + start_.shape)
+        stop_ = tile(stop_, pad).reshape((num,) + stop_.shape)
+        delta_ = (stop_ - start_) / divisor
+        result = start_ + arange(num)[(...,) + (newaxis,) * (delta_.ndim - 1)] * delta_
+
+        # Handle the axis parameter if needed
+
+        if axis != 0:
+            good, axis_ = _axis_validation(axis, result.ndim)
+            if not good:
+                raise ValueError(f"{axis} is not a valid axis for the result of linspace.")
+            axes = list(range(result.ndim))
+            axes[axis_] = 0
+            axes[0] = axis_
+            result = transpose(result, tuple(axes))
+
+    #   Scalar case is pretty straightforward.
+
+    else:
+        if axis == 0:
+            delta = (stop_ - start_) / divisor
+            result = full(num, start_) + arange(num).astype(float64) * delta
+        else:
+            raise ValueError("axis should not be supplied when start and stop are scalars.")
+
+    return result
 
 
 @typechecked
