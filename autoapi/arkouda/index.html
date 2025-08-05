@@ -1322,7 +1322,7 @@ to Python users.</p>
 <td><p>Map two arrays of sparse identifiers to the 0-up index.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.linspace" title="arkouda.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
-<td><p>Create a pdarray of linearly-spaced floats in a closed interval.</p></td>
+<td><p>Return evenly spaced numbers over a specified interval.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.list_registry" title="arkouda.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a>([detailed])</p></td>
 <td><p>Return a list containing the names of all registered objects.</p></td>
@@ -1351,283 +1351,286 @@ to Python users.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.log2" title="arkouda.log2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log2</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise base 2 log of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.lookup" title="arkouda.lookup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lookup</span></code></a>(keys, values, arguments[, fillvalue])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.logspace" title="arkouda.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logspace</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<td><p>Create a pdarray of numbers evenly spaced on a log scale.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.lookup" title="arkouda.lookup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lookup</span></code></a>(keys, values, arguments[, fillvalue])</p></td>
 <td><p>Apply the function defined by the mapping keys --&gt; values to arguments.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.ls" title="arkouda.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>(→ List[str])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.ls" title="arkouda.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>(→ List[str])</p></td>
 <td><p>List the contents of an HDF5 or Parquet file on the Arkouda server.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.ls_csv" title="arkouda.ls_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_csv</span></code></a>(→ List[str])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.ls_csv" title="arkouda.ls_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_csv</span></code></a>(→ List[str])</p></td>
 <td><p>List the datasets within a file when a CSV does not have a header.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.matmul" title="arkouda.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matmul</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.matmul" title="arkouda.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matmul</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Compute the product of two matrices.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.maxk" title="arkouda.maxk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maxk</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.maxk" title="arkouda.maxk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maxk</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the <cite>k</cite> maximum values of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.median" title="arkouda.median"><code class="xref py py-obj docutils literal notranslate"><span class="pre">median</span></code></a>(→ numpy.float64)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.median" title="arkouda.median"><code class="xref py py-obj docutils literal notranslate"><span class="pre">median</span></code></a>(→ numpy.float64)</p></td>
 <td><p>Compute the median of a given array.  1d case only, for now.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.merge" title="arkouda.merge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code></a>(→ DataFrame)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.merge" title="arkouda.merge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code></a>(→ DataFrame)</p></td>
 <td><p>Merge Arkouda DataFrames with a database-style join.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.mink" title="arkouda.mink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mink</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.mink" title="arkouda.mink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mink</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the <cite>k</cite> minimum values of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.mod" title="arkouda.mod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mod</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.mod" title="arkouda.mod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mod</span></code></a>(→ pdarray)</p></td>
 <td><p>Returns the element-wise remainder of division.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.nextafter" title="arkouda.nextafter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nextafter</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.nextafter" title="arkouda.nextafter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nextafter</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Return the next floating-point value after <cite>x1</cite> towards <cite>x2</cite>, element-wise.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.ones" title="arkouda.ones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.ones" title="arkouda.ones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray filled with ones.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.ones_like" title="arkouda.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.ones_like" title="arkouda.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a one-filled pdarray of the same size and dtype as an existing</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.parity" title="arkouda.parity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parity</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.parity" title="arkouda.parity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parity</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the bit parity (XOR of all bits) for each integer in an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.percentile" title="arkouda.percentile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">percentile</span></code></a>(...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.percentile" title="arkouda.percentile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">percentile</span></code></a>(...)</p></td>
 <td><p>Compute the q-th percentile of the data along the specified axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.plot_dist" title="arkouda.plot_dist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_dist</span></code></a>(b, h[, log, xlabel, newfig])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.plot_dist" title="arkouda.plot_dist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_dist</span></code></a>(b, h[, log, xlabel, newfig])</p></td>
 <td><p>Plot the distribution and cumulative distribution of histogram Data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.popcount" title="arkouda.popcount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">popcount</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.popcount" title="arkouda.popcount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">popcount</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the population (number of bits set) for each integer in an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.power" title="arkouda.power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.power" title="arkouda.power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power</span></code></a>(→ pdarray)</p></td>
 <td><p>Raises an array to a power. If where is given, the operation will only take place in the positions</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.power_divergence" title="arkouda.power_divergence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power_divergence</span></code></a>(f_obs[, f_exp, ddof, lambda_])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.power_divergence" title="arkouda.power_divergence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power_divergence</span></code></a>(f_obs[, f_exp, ddof, lambda_])</p></td>
 <td><p>Computes the power divergence statistic and p-value.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pretty_print_information" title="arkouda.pretty_print_information"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pretty_print_information</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pretty_print_information" title="arkouda.pretty_print_information"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pretty_print_information</span></code></a>(→ None)</p></td>
 <td><p>Print verbose information for each object in names in a human readable format.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.print_server_commands" title="arkouda.print_server_commands"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_server_commands</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.print_server_commands" title="arkouda.print_server_commands"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_server_commands</span></code></a>()</p></td>
 <td><p>Print the list of the available Server commands.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.promote_to_common_dtype" title="arkouda.promote_to_common_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">promote_to_common_dtype</span></code></a>(→ Tuple[Any, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.promote_to_common_dtype" title="arkouda.promote_to_common_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">promote_to_common_dtype</span></code></a>(→ Tuple[Any, ...)</p></td>
 <td><p>Promote a list of pdarrays to a common dtype.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.putmask" title="arkouda.putmask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">putmask</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.putmask" title="arkouda.putmask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">putmask</span></code></a>(→ None)</p></td>
 <td><p>Overwrite elements of A with elements from B based upon a mask array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.quantile" title="arkouda.quantile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quantile</span></code></a>(→ Union[arkouda.numpy.dtypes.numeric_scalars, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.quantile" title="arkouda.quantile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quantile</span></code></a>(→ Union[arkouda.numpy.dtypes.numeric_scalars, ...)</p></td>
 <td><p>Compute the q-th quantile of the data along the specified axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.rad2deg" title="arkouda.rad2deg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rad2deg</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.rad2deg" title="arkouda.rad2deg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rad2deg</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Converts angles element-wise from radians to degrees.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.randint" title="arkouda.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.randint" title="arkouda.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Generate a pdarray of randomized int, float, or bool values in a</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.random_strings_lognormal" title="arkouda.random_strings_lognormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_lognormal</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.random_strings_lognormal" title="arkouda.random_strings_lognormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_lognormal</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
 <td><p>Generate random strings with log-normally distributed lengths and</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.random_strings_uniform" title="arkouda.random_strings_uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_uniform</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.random_strings_uniform" title="arkouda.random_strings_uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_uniform</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
 <td><p>Generate random strings with lengths uniformly distributed between</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/IO.html#arkouda.read" title="arkouda.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>(→ Union[Mapping[str, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/IO.html#arkouda.read" title="arkouda.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>(→ Union[Mapping[str, ...)</p></td>
 <td><p>Read datasets from files.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.read_csv" title="arkouda.read_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_csv</span></code></a>(→ Union[Mapping[str, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.read_csv" title="arkouda.read_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_csv</span></code></a>(→ Union[Mapping[str, ...)</p></td>
 <td><p>Read CSV file(s) into Arkouda objects.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>(→ Union[Mapping[str, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>(→ Union[Mapping[str, ...)</p></td>
 <td><p>Read Arkouda objects from HDF5 file/s.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.read_parquet" title="arkouda.read_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_parquet</span></code></a>(→ Union[Mapping[str, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.read_parquet" title="arkouda.read_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_parquet</span></code></a>(→ Union[Mapping[str, ...)</p></td>
 <td><p>Read Arkouda objects from Parquet file/s.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.read_tagged_data" title="arkouda.read_tagged_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_tagged_data</span></code></a>(filenames[, datasets, strictTypes, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.read_tagged_data" title="arkouda.read_tagged_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_tagged_data</span></code></a>(filenames[, datasets, strictTypes, ...])</p></td>
 <td><p>Read datasets from files and tag each record to the file it was read from.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.read_zarr" title="arkouda.read_zarr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_zarr</span></code></a>(store_path, ndim, dtype)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.read_zarr" title="arkouda.read_zarr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_zarr</span></code></a>(store_path, ndim, dtype)</p></td>
 <td><p>Read a Zarr store from disk into a pdarray.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.receive" title="arkouda.receive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive</span></code></a>(hostname, port)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.receive" title="arkouda.receive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive</span></code></a>(hostname, port)</p></td>
 <td><p>Receive a pdarray sent by <cite>pdarray.transfer()</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.receive_dataframe" title="arkouda.receive_dataframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive_dataframe</span></code></a>(hostname, port)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.receive_dataframe" title="arkouda.receive_dataframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">receive_dataframe</span></code></a>(hostname, port)</p></td>
 <td><p>Receive a pdarray sent by <cite>dataframe.transfer()</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.register_all" title="arkouda.register_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_all</span></code></a>(data)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.register_all" title="arkouda.register_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_all</span></code></a>(data)</p></td>
 <td><p>Register all objects in the provided dictionary.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.repeat" title="arkouda.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.repeat" title="arkouda.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Repeat each element of an array after themselves</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.resolve_scalar_dtype" title="arkouda.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.resolve_scalar_dtype" title="arkouda.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
 <td><p>Try to infer what dtype arkouda_server should treat val as.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.restore" title="arkouda.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(filename)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.restore" title="arkouda.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(filename)</p></td>
 <td><p>Return data saved using <cite>ak.snapshot</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.result_type" title="arkouda.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result_type</span></code></a>(→ Union[np.dtype, type])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.result_type" title="arkouda.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result_type</span></code></a>(→ Union[np.dtype, type])</p></td>
 <td><p>Determine the promoted result dtype of inputs, including support for Arkouda's bigint.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.right_align" title="arkouda.right_align"><code class="xref py py-obj docutils literal notranslate"><span class="pre">right_align</span></code></a>(left, right)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.right_align" title="arkouda.right_align"><code class="xref py py-obj docutils literal notranslate"><span class="pre">right_align</span></code></a>(left, right)</p></td>
 <td><p>Map two arrays of sparse values to the 0-up index.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.rotl" title="arkouda.rotl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotl</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.rotl" title="arkouda.rotl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotl</span></code></a>(→ pdarray)</p></td>
 <td><p>Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.rotr" title="arkouda.rotr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotr</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.rotr" title="arkouda.rotr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotr</span></code></a>(→ pdarray)</p></td>
 <td><p>Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.round" title="arkouda.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">round</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.round" title="arkouda.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">round</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise rounding of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.ruok" title="arkouda.ruok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ruok</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.ruok" title="arkouda.ruok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ruok</span></code></a>(→ str)</p></td>
 <td><p>Send a &quot;ruok&quot; message to the arkouda_server.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.save_checkpoint" title="arkouda.save_checkpoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_checkpoint</span></code></a>([name, path, mode])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.save_checkpoint" title="arkouda.save_checkpoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_checkpoint</span></code></a>([name, path, mode])</p></td>
 <td><p>Save the server's state.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.scalar_array" title="arkouda.scalar_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar_array</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.scalar_array" title="arkouda.scalar_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar_array</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray from a single scalar value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.search_intervals" title="arkouda.search_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">search_intervals</span></code></a>(vals, intervals[, tiebreak, hierarchical])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.search_intervals" title="arkouda.search_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">search_intervals</span></code></a>(vals, intervals[, tiebreak, hierarchical])</p></td>
 <td><p>Return the index of the best interval containing each query value.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.searchsorted" title="arkouda.searchsorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">searchsorted</span></code></a>(→ Union[int, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.searchsorted" title="arkouda.searchsorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">searchsorted</span></code></a>(→ Union[int, ...)</p></td>
 <td><p>Find indices where elements should be inserted to maintain order.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.setdiff1d" title="arkouda.setdiff1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdiff1d</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.setdiff1d" title="arkouda.setdiff1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdiff1d</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Find the set difference of two arrays.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.setxor1d" title="arkouda.setxor1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setxor1d</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.setxor1d" title="arkouda.setxor1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setxor1d</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Find the set exclusive-or (symmetric difference) of two arrays.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.shape" title="arkouda.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a>(→ Tuple)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.shape" title="arkouda.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a>(→ Tuple)</p></td>
 <td><p>Return the shape of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.shutdown" title="arkouda.shutdown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shutdown</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.shutdown" title="arkouda.shutdown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shutdown</span></code></a>(→ None)</p></td>
 <td><p>Send a shutdown message.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.sign" title="arkouda.sign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sign</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.sign" title="arkouda.sign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sign</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise sign of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.sin" title="arkouda.sin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sin</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.sin" title="arkouda.sin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sin</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise sine of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.sinh" title="arkouda.sinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sinh</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.sinh" title="arkouda.sinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sinh</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise hyperbolic sine of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.snapshot" title="arkouda.snapshot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">snapshot</span></code></a>(filename)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.snapshot" title="arkouda.snapshot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">snapshot</span></code></a>(filename)</p></td>
 <td><p>Create a snapshot of the current Arkouda namespace.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.sort" title="arkouda.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.sort" title="arkouda.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return a sorted copy of the array. Only sorts numeric arrays;</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.sqrt" title="arkouda.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqrt</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.sqrt" title="arkouda.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqrt</span></code></a>(→ pdarray)</p></td>
 <td><p>Takes the square root of array. If where is given, the operation will only take place in</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.square" title="arkouda.square"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.square" title="arkouda.square"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise square of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.squeeze" title="arkouda.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">squeeze</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.squeeze" title="arkouda.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">squeeze</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Remove degenerate (size one) dimensions from an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.standard_normal" title="arkouda.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.standard_normal" title="arkouda.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Draw real numbers from the standard normal distribution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.string_operators" title="arkouda.string_operators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">string_operators</span></code></a>(cls)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.string_operators" title="arkouda.string_operators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">string_operators</span></code></a>(cls)</p></td>
 <td><p>Add common string operation methods to a StringAccessor class.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.take" title="arkouda.take"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.take" title="arkouda.take"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Take elements from an array along an axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.tan" title="arkouda.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tan</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.tan" title="arkouda.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tan</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise tangent of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.tanh" title="arkouda.tanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tanh</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.tanh" title="arkouda.tanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tanh</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise hyperbolic tangent of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.tile" title="arkouda.tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.tile" title="arkouda.tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Construct an array by repeating A the number of times given by reps.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.timedelta_range" title="arkouda.timedelta_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timedelta_range</span></code></a>([start, end, periods, freq, name, closed])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.timedelta_range" title="arkouda.timedelta_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timedelta_range</span></code></a>([start, end, periods, freq, name, closed])</p></td>
 <td><p>Return a fixed frequency TimedeltaIndex, with day as the default</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.to_csv" title="arkouda.to_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_csv</span></code></a>(columns, prefix_path[, names, col_delim, overwrite])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.to_csv" title="arkouda.to_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_csv</span></code></a>(columns, prefix_path[, names, col_delim, overwrite])</p></td>
 <td><p>Write Arkouda object(s) to CSV file(s).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.to_hdf" title="arkouda.to_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.to_hdf" title="arkouda.to_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf</span></code></a>(→ None)</p></td>
 <td><p>Save multiple named pdarrays to HDF5 files.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.to_parquet" title="arkouda.to_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_parquet</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.to_parquet" title="arkouda.to_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_parquet</span></code></a>(→ None)</p></td>
 <td><p>Save multiple named pdarrays to Parquet files.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.to_zarr" title="arkouda.to_zarr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_zarr</span></code></a>(store_path, arr, chunk_shape)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.to_zarr" title="arkouda.to_zarr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_zarr</span></code></a>(store_path, arr, chunk_shape)</p></td>
 <td><p>Write a pdarray to disk as a Zarr store.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.transpose" title="arkouda.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.transpose" title="arkouda.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Compute the transpose of a matrix.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.tril" title="arkouda.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tril</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.tril" title="arkouda.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tril</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return a copy of the pda with the upper triangle zeroed out</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.triu" title="arkouda.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triu</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.triu" title="arkouda.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triu</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return a copy of the pda with the lower triangle zeroed out</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.trunc" title="arkouda.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.trunc" title="arkouda.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise truncation of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.typename" title="arkouda.typename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typename</span></code></a>(char)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.typename" title="arkouda.typename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typename</span></code></a>(char)</p></td>
 <td><p>Return a description for the given data type code.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.uniform" title="arkouda.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.uniform" title="arkouda.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
 <td><p>Generate a pdarray with uniformly distributed random float values</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.union1d" title="arkouda.union1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union1d</span></code></a>(→ arkouda.pandas.groupbyclass.groupable)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.union1d" title="arkouda.union1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union1d</span></code></a>(→ arkouda.pandas.groupbyclass.groupable)</p></td>
 <td><p>Find the union of two arrays/List of Arrays.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.unique" title="arkouda.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique</span></code></a>(→ Union[groupable, Tuple[groupable, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.unique" title="arkouda.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique</span></code></a>(→ Union[groupable, Tuple[groupable, ...)</p></td>
 <td><p>Find the unique elements of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.unregister" title="arkouda.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.unregister" title="arkouda.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(→ str)</p></td>
 <td><p>Unregister an Arkouda object by its name.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.unregister_all" title="arkouda.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(names)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.unregister_all" title="arkouda.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(names)</p></td>
 <td><p>Unregister all Arkouda objects associated with the provided names.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.unsqueeze" title="arkouda.unsqueeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsqueeze</span></code></a>(p)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.unsqueeze" title="arkouda.unsqueeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsqueeze</span></code></a>(p)</p></td>
 <td><p>Ensure that the input is returned as a list.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.update_hdf" title="arkouda.update_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_hdf</span></code></a>(columns, prefix_path[, names, repack])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.update_hdf" title="arkouda.update_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_hdf</span></code></a>(columns, prefix_path[, names, repack])</p></td>
 <td><p>Overwrite the datasets with name appearing in names or keys in columns if columns is a dictionary.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/histogram.html#arkouda.value_counts" title="arkouda.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ tuple[arkouda.groupbyclass.groupable, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/histogram.html#arkouda.value_counts" title="arkouda.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ tuple[arkouda.groupbyclass.groupable, ...)</p></td>
 <td><p>Count the occurrences of the unique values of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.vecdot" title="arkouda.vecdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vecdot</span></code></a>(→ Union[arkouda.numpy.dtypes.numeric_scalars, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.vecdot" title="arkouda.vecdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vecdot</span></code></a>(→ Union[arkouda.numpy.dtypes.numeric_scalars, ...)</p></td>
 <td><p>Computes the numpy-style vecdot product of two matrices.  This differs from the</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.vstack" title="arkouda.vstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vstack</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.vstack" title="arkouda.vstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vstack</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Stack arrays in sequence vertically (row wise).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.where" title="arkouda.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.where" title="arkouda.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Return an array with elements chosen from A and B based upon a</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.write_log" title="arkouda.write_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_log</span></code></a>(log_msg[, tag, log_lvl])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.write_log" title="arkouda.write_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_log</span></code></a>(log_msg[, tag, log_lvl])</p></td>
 <td><p>Allow the user to write custom logs.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.xlogy" title="arkouda.xlogy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xlogy</span></code></a>(x, y)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.xlogy" title="arkouda.xlogy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xlogy</span></code></a>(x, y)</p></td>
 <td><p>Computes x * log(y).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.zero_up" title="arkouda.zero_up"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zero_up</span></code></a>(vals)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.zero_up" title="arkouda.zero_up"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zero_up</span></code></a>(vals)</p></td>
 <td><p>Map an array of sparse values to 0-up indices.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.zeros" title="arkouda.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.zeros" title="arkouda.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray filled with zeros.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.zeros_like" title="arkouda.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.zeros_like" title="arkouda.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a zero-filled pdarray of the same size and dtype as an existing</p></td>
 </tr>
 </tbody>
@@ -21607,45 +21610,64 @@ discarding values from right that do not appear in left.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.linspace">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">linspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarraycreation.html#linspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.linspace" title="Link to this definition">¶</a></dt>
-<dd><p>Create a pdarray of linearly-spaced floats in a closed interval.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">linspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarraycreation.html#linspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.linspace" title="Link to this definition">¶</a></dt>
+<dd><p>Return evenly spaced numbers over a specified interval.</p>
+<p>Returns <cite>num</cite> evenly spaced samples, calculated over the
+interval [<cite>start</cite>, <cite>stop</cite>].</p>
+<p>The endpoint of the interval can optionally be excluded.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<a class="reference internal" href="#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – Start of interval (inclusive)</p></li>
-<li><p><strong>stop</strong> (<a class="reference internal" href="#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – End of interval (inclusive)</p></li>
-<li><p><strong>length</strong> (<a class="reference internal" href="#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – Number of points</p></li>
+<li><p><strong>start</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>]</em>) – The starting value of the sequence.</p></li>
+<li><p><strong>stop</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>]</em>) – The end value of the sequence, unless <cite>endpoint</cite> is set to False.
+In that case, the sequence consists of all but the last of <code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">+</span> <span class="pre">1</span></code>
+evenly spaced samples, so that <cite>stop</cite> is excluded.  Note that the step
+size changes when <cite>endpoint</cite> is False.</p></li>
+<li><p><strong>num</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of samples to generate. Default is 50. Must be non-negative.</p></li>
+<li><p><strong>endpoint</strong> (<a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If True, <cite>stop</cite> is the last sample. Otherwise, it is not included.
+Default is True.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><em>optional</em>) – Allowed for compatibility with numpy linspace, but anything entered
+is ignored.  The output is always ak.float64.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – The axis in the result to store the samples.  Relevant only if start
+or stop are array-like.  By default (0), the samples will be along a
+new axis inserted at the beginning. Use -1 to get an axis at the end.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Array of evenly spaced float values along the interval</p>
+<dd class="field-even"><p>There are <cite>num</cite> equally spaced samples in the closed interval
+<code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">stop]</span></code> or the half-open interval <code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">stop)</span></code>
+(depending on whether <cite>endpoint</cite> is True or False).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Raised if start or stop is not a float or int or if length is not an int</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if start or stop is not a float or a pdarray, or if num
+is not an int, or if endpoint is not a bool, or if dtype is anything
+other than None or float64, or axis is not an integer.</p></li>
+<li><p><strong>ValueError</strong> – Raised if axis is not a valid axis for the given data.</p></li>
+</ul>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../../usage/creation.html#arkouda.arange" title="arkouda.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arange</span></code></a></p>
-</div>
-<p class="rubric">Notes</p>
-<p>If that start is greater than stop, the pdarray values are generated
-in descending order.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="go">array([0.00000000000000000 0.25 0.5 0.75 1.00000000000000000])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="go">array([1.00000000000000000 0.75 0.5 0.25 0.00000000000000000])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=-</span><span class="mi">5</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="go">array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">array([0.00000000000000000 0.5 1.00000000000000000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">array([1.00000000000000000 0.5 0.00000000000000000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">array([0.00000000000000000 0.33333333333333331 0.66666666666666663])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]),</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">array([array([0.00000000000000000 0.00000000000000000])</span>
+<span class="go">    array([1.00000000000000000 1.5]) array([2.00000000000000000 3.00000000000000000])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">array([array([0.00000000000000000 1.00000000000000000])</span>
+<span class="go">    array([1.5 2.00000000000000000]) array([3.00000000000000000 3.00000000000000000])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]),</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">array([array([0.00000000000000000 1.00000000000000000])</span>
+<span class="go">    array([1.00000000000000000 2.00000000000000000])</span>
+<span class="go">    array([2.00000000000000000 3.00000000000000000])])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -21938,6 +21960,80 @@ adding one before taking the log</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 <span class="go">array([0.00000000... 1.00000000... 1.58496250... 2.00000000...])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.logspace">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">logspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarraycreation.html#logspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.logspace" title="Link to this definition">¶</a></dt>
+<dd><p>Create a pdarray of numbers evenly spaced on a log scale.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>]</em>) – The starting value of the sequence.</p></li>
+<li><p><strong>stop</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>]</em>) – The end value of the sequence, unless <cite>endpoint</cite> is set to False.
+In that case, the sequence consists of all but the last of <code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">+</span> <span class="pre">1</span></code>
+evenly spaced samples, so that <cite>stop</cite> is excluded.  Note that the step
+size changes when <cite>endpoint</cite> is False.</p></li>
+<li><p><strong>num</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of samples to generate. Default is 50. Must be non-negative.</p></li>
+<li><p><strong>base</strong> (<a class="reference internal" href="#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – the base of the log space, defaults to 10.0.</p></li>
+<li><p><strong>endpoint</strong> (<a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If True, <cite>stop</cite> is the last sample. Otherwise, it is not included.
+Default is True.</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>None</em><em>, </em><a class="reference internal" href="#arkouda.float64" title="arkouda.float64"><em>float64</em></a><em>]</em>) – allowed for compatibility with numpy, but ignored.  Outputs are always float</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – The axis in the result to store the samples.  Relevant only if start
+or stop are array-like.  By default (0), the samples will be along a
+new axis inserted at the beginning. Use -1 to get an axis at the end.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>There are <cite>num</cite> equally spaced (logarithmically) samples in the closed interval
+base**``[start, stop]`` or the half-open interval base**``[start, stop)``
+(depending on whether <cite>endpoint</cite> is True or False).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if start or stop is not a float or a pdarray, or if num
+is not an int, or if endpoint is not a bool, or if dtype is anything
+other than None or float64, or axis is not an integer.</p></li>
+<li><p><strong>ValueError</strong> – Raised if axis is not a valid axis for the given data, or if base &lt; 0.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../usage/creation.html#arkouda.linspace" title="arkouda.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>If start is greater than stop, the pdarray values are generated
+in descending order.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">array([16.00000000000000000 32.00000000000000000 64.00000000000000000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">array([16.00000000000000000 25.398416831491197 40.317473596635935])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">array([1.00000000000000000 2.00000000000000000 4.00000000000000000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">array([4.00000000000000000 2.00000000000000000 1.00000000000000000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">array([1.00000000000000000 2.1544346900318838 4.6415888336127784])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]),</span><span class="mi">3</span><span class="p">,</span><span class="n">base</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">array([array([1.00000000000000000 1.00000000000000000])</span>
+<span class="go">    array([2.00000000000000000 2.8284271247461903])</span>
+<span class="go">    array([4.00000000000000000 8.00000000000000000])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">base</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">array([array([1.00000000000000000 3.00000000000000000])</span>
+<span class="go">    array([5.196152422706632 9.00000000000000000])</span>
+<span class="go">    array([27.00000000000000000 27.00000000000000000])])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]),</span><span class="mi">3</span><span class="p">,</span><span class="n">base</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">array([array([1.00000000000000000 4.00000000000000000])</span>
+<span class="go">    array([4.00000000000000000 16.00000000000000000])</span>
+<span class="go">    array([16.00000000000000000 64.00000000000000000])])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -29718,6 +29814,7 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.log10"><code class="docutils literal notranslate"><span class="pre">log10()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.log1p"><code class="docutils literal notranslate"><span class="pre">log1p()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.log2"><code class="docutils literal notranslate"><span class="pre">log2()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.logspace"><code class="docutils literal notranslate"><span class="pre">logspace()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.longdouble"><code class="docutils literal notranslate"><span class="pre">longdouble</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.longdouble.as_integer_ratio"><code class="docutils literal notranslate"><span class="pre">longdouble.as_integer_ratio()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.longdouble.is_integer"><code class="docutils literal notranslate"><span class="pre">longdouble.is_integer()</span></code></a></li>
