@@ -31,9 +31,9 @@ jobs:
   chpl-lint:
     runs-on: ubuntu-latest
     env:
-      CHPL_HOME: /opt/chapel-2.4.0
+      CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -43,7 +43,7 @@ jobs:
     - name: Install dependencies
       run: |
         (cd $CHPL_HOME && make chplcheck)
-        update-alternatives --install /usr/bin/chplcheck chplcheck /opt/chapel-2.4.0/tools/chplcheck/chplcheck 1
+        update-alternatives --install /usr/bin/chplcheck chplcheck /opt/chapel-2.5.0/tools/chplcheck/chplcheck 1
     - name: Ensure ignore file exists
       # .chplcheckignore should live at your repo root
       run: |
@@ -107,9 +107,9 @@ jobs:
   mypy:
     runs-on: ubuntu-latest
     env:
-      CHPL_HOME: /opt/chapel-2.4.0
+      CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -130,9 +130,9 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     env:
-      CHPL_HOME: /opt/chapel-2.4.0
+      CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -140,10 +140,10 @@ jobs:
       run: |
         update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1  
         python3 -m ensurepip --default-pip    
-    - name: Set Chapel version to 2.4.0
+    - name: Set Chapel version to 2.5.0
       run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.4.0/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.4.0/bin/linux64-x86_64/chpldoc 1
+        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.5.0/bin/linux64-x86_64/chpl 1
+        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.5.0/bin/linux64-x86_64/chpldoc 1
     - name: check chpldoc version
       run: |  
         chpldoc --version
@@ -171,7 +171,7 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -188,23 +188,24 @@ jobs:
         command: |
           python3 -m ensurepip --default-pip
           python -m pip install --upgrade pip
-          pip install flake8 pydoclint[flake8]==0.6.6
+          pip install flake8 pydoclint[flake8]==0.6.10
     - name: flake8 version
       run: | 
+        python3 -m ensurepip --default-pip
         flake8 --version
     - name: Arkouda flake8
       run: |
         flake8
 
   arkouda_python_portability:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13']
     env:
-      CHPL_HOME: /opt/chapel-2.4.0
+      CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -212,10 +213,10 @@ jobs:
     - name: Set python version
       run: |    
         update-alternatives --install /usr/bin/python3 python3 /usr/bin/python${{ matrix.python-version }} 1    
-    - name: Set Chapel version to 2.4.0
+    - name: Set Chapel version to 2.5.0
       run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.4.0/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.4.0/bin/linux64-x86_64/chpldoc 1
+        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.5.0/bin/linux64-x86_64/chpl 1
+        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.5.0/bin/linux64-x86_64/chpldoc 1
     - name: Check python version
       run: |
         python3 --version
@@ -240,14 +241,14 @@ jobs:
         make test-python size=100
         
   arkouda_makefile_almalinux:
-    runs-on: ubuntu-24.04    
+    runs-on: ubuntu-latest    
     strategy:
       matrix:
         python-version: ['3.13']
     env:
-      CHPL_HOME: /opt/chapel-2.4.0
+      CHPL_HOME: /chapel-2.5.0
     container:
-      image: ajpotts/almalinux-with-arkouda-deps:1.0.2
+      image: ajpotts/almalinux-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -342,11 +343,11 @@ jobs:
           HDF5_DIR=$(pwd)/dep/hdf5-install/ make install-pytables
 
   arkouda_makefile:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     env:
-      CHPL_HOME: /opt/chapel-2.4.0
+      CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4    
@@ -354,10 +355,10 @@ jobs:
       run: |
         update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1 
         python3 -m ensurepip --default-pip     
-    - name: Set Chapel version to 2.4.0
+    - name: Set Chapel version to 2.5.0
       run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.4.0/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.4.0/bin/linux64-x86_64/chpldoc 1
+        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.5.0/bin/linux64-x86_64/chpl 1
+        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.5.0/bin/linux64-x86_64/chpldoc 1
     - name: Check python version
       run: |
         python3 --version
@@ -440,11 +441,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0','2.4.0']
+        chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0','2.4.0','2.5.0']
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -488,12 +489,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0','2.4.0']
+        chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0','2.4.0','2.5.0']
       max-parallel: 3
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Show memory available
       run: |
@@ -550,19 +551,19 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CHPL_RT_NUM_THREADS_PER_LOCALE: 2
-      CHPL_HOME: /opt/chapel-2.4.0
+      CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
     - name: Set Python version to 3.13
       run: |
         update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1      
-    - name: Set Chapel version to 2.4
+    - name: Set Chapel version to 2.5
       run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.4.0/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.4.0/bin/linux64-x86_64/chpldoc 1
+        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.5.0/bin/linux64-x86_64/chpl 1
+        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.5.0/bin/linux64-x86_64/chpldoc 1
     - name: Check Chapel version
       run: |
         chpl --version
@@ -601,19 +602,19 @@ jobs:
   arkouda_benchmark_linux:
     runs-on: ubuntu-latest
     env:
-      CHPL_HOME: /opt/chapel-2.4.0
+      CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
     - name: Set Python version to 3.13
       run: |
         update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1      
-    - name: Set Chapel version to 2.4
+    - name: Set Chapel version to 2.5
       run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.4.0/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.4.0/bin/linux64-x86_64/chpldoc 1
+        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.5.0/bin/linux64-x86_64/chpl 1
+        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.5.0/bin/linux64-x86_64/chpldoc 1
     - name: Check Chapel version
       run: |
         chpl --version
