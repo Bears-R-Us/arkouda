@@ -119,7 +119,7 @@ class TestDatetimeAccessor:
             values = "not_datetime"
 
         series = MockSeries()
-        with pytest.raises(AttributeError, match="Can only use \.dt accessor with datetimelike values"):
+        with pytest.raises(AttributeError, match="Can only use \\.dt accessor with datetimelike values"):
             DatetimeAccessor(series)
 
     def test_4524_datetime_reproduer(self):
@@ -151,5 +151,5 @@ class TestStringAccessor:
             values = "not_categorical_or_strings"
 
         series = MockSeries()
-        with pytest.raises(AttributeError, match="Can only use \.str accessor with string like values"):
+        with pytest.raises(AttributeError, match="Can only use \\.str accessor with string like values"):
             StringAccessor(series)
