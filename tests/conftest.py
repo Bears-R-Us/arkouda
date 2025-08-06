@@ -8,8 +8,7 @@ from typing import Iterable, Iterator
 import pytest
 import scipy
 
-from arkouda import get_max_array_rank
-from arkouda.client import get_array_ranks
+import arkouda as ak
 from server_util.test.server_test_util import (
     is_multilocale_arkouda,  # TODO probably not needed
 )
@@ -178,16 +177,16 @@ def _module_server() -> Iterator[None]:
 
 
 @pytest.fixture(scope="class", autouse=True)
-def manage_connection(_class_server):
-    import arkouda as ak
-
+def manage_connection(_class_server, request):
     try:
         ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.client_timeout)
-        pytest.max_rank = get_max_array_rank()
-        pytest.compiled_ranks = get_array_ranks()
+        pytest.max_rank = ak.get_max_array_rank()
+        pytest.compiled_ranks = ak.client.get_array_ranks()
 
     except Exception as e:
         raise ConnectionError(e)
+
+    ak.client.note_for_server_log("testing: " + request.node.name)
 
     yield
 
@@ -217,7 +216,7 @@ def skip_by_rank(request):
 
     if request.node.get_closest_marker("skip_if_rank_not_compiled"):
         ranks_requested = request.node.get_closest_marker("skip_if_rank_not_compiled").args[0]
-        array_ranks = get_array_ranks()
+        array_ranks = ak.client.get_array_ranks()
         if isinstance(ranks_requested, int):
             if ranks_requested not in array_ranks:
                 pytest.skip("this test requires server compiled with rank {}".format(ranks_requested))

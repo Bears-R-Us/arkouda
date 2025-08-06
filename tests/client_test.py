@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 import arkouda as ak
@@ -65,6 +67,26 @@ class TestClient:
         # reconnect to server so subsequent tests will pass
         ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.client_timeout)
 
+    def test_server_sleep(self):
+        """
+        Tests ak.client.server_sleep().
+        """
+        seconds = 1
+        start = time.time()
+        ak.client.server_sleep(seconds)
+        end = time.time()
+        assert (end - start) >= seconds
+
+    def test_server_note(self):
+        """
+        Tests ak.client.note_for_server_log().
+
+        We could "tail" the server log, however this may give false negatives
+        or crashes due to file system delays, server options, etc.
+        So simply check that the method is invocable.
+        """
+        ak.client.note_for_server_log("from test_server_note")
+
     def test_client_get_config(self):
         """
         Tests the ak.client.get_config() method
@@ -123,24 +145,6 @@ class TestClient:
 
         assert 100 == ak.get_mem_used(as_percent=True) + ak.get_mem_avail(as_percent=True)
 
-    def test_no_op(self):
-        """
-        Tests the ak.client._no_op method
-
-        :return: None
-        :raise: AssertionError if return message is not 'noop'
-        """
-        assert "noop" == ak.client._no_op()
-
-    def test_ruok(self):
-        """
-        Tests the ak.client.ruok method
-
-        :return: None
-        :raise: AssertionError if return message is not 'imok'
-        """
-        assert "imok" == ak.client.ruok()
-
     def test_client_configuration(self):
         """
         Tests the ak.client.set_defaults() method as well as set/get
@@ -173,3 +177,21 @@ class TestClient:
         assert 1 in availableRanks
         assert ak.client.get_max_array_rank() in availableRanks
         assert ak.client.get_max_array_rank() + 1 not in availableRanks
+
+    def test_no_op(self):
+        """
+        Tests the ak.client._no_op method
+
+        :return: None
+        :raise: AssertionError if return message is not 'noop'
+        """
+        assert "noop" == ak.client._no_op()
+
+    def test_ruok(self):
+        """
+        Tests the ak.client.ruok method
+
+        :return: None
+        :raise: AssertionError if return message is not 'imok'
+        """
+        assert "imok" == ak.client.ruok()

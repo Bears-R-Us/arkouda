@@ -101,6 +101,8 @@ import warnings
 from enum import Enum
 from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 
+import zmq  # for typechecking
+
 from arkouda import __version__, security
 from arkouda.logger import ArkoudaLogger, LogLevel, getArkoudaLogger
 from arkouda.message import (
@@ -121,7 +123,6 @@ __all__ = [
     "get_mem_used",
     "get_mem_avail",
     "get_mem_status",
-    "wait_for_async_activity",
     "get_server_commands",
     "print_server_commands",
     "generate_history",
@@ -574,7 +575,11 @@ class ZmqChannel(Channel):
     ZMQ the Arkouda-Chapel default.
     """
 
-    __slots__ = "socket"
+    socket: zmq.Socket
+    heartbeatSocket: Optional[zmq.Socket]
+    heartbeatInterval: int
+
+    __slots__ = ("socket", "heartbeatSocket", "heartbeatInterval")
 
     def send_string_message(
         self,
@@ -592,6 +597,7 @@ class ZmqChannel(Channel):
         logger.debug(f"sending message {json.dumps(message.asdict())}")
 
         self.socket.send_string(json.dumps(message.asdict()))
+        self.wait_with_heartbeat()
 
         if recv_binary:
             frame = self.socket.recv(copy=False)
@@ -636,6 +642,7 @@ class ZmqChannel(Channel):
 
         self.socket.send(f"{json.dumps(message.asdict())}BINARY_PAYLOAD".encode(), flags=zmq.SNDMORE)
         self.socket.send(payload, copy=False)
+        self.wait_with_heartbeat()
 
         if recv_binary:
             frame = self.socket.recv(copy=False)
@@ -666,6 +673,7 @@ class ZmqChannel(Channel):
 
         context = zmq.Context()
         self.socket = context.socket(zmq.REQ)
+        self.setup_heartbeat(timeout)  # enables heartbeat if timeout > 0
 
         logger.debug(f"ZMQ version: {zmq.zmq_version()}")
 
@@ -677,14 +685,102 @@ class ZmqChannel(Channel):
         # connect to arkouda server
         try:
             self.socket.connect(self.url)
+            # connect() may return right away even if a connection was not
+            # established. This case will be caught by the heartbeat.
         except Exception as e:
             raise ConnectionError(e)
 
     def disconnect(self) -> None:
         try:
             self.socket.disconnect(self.url)
+            self.setup_heartbeat(0)  # close the socket
         except Exception as e:
             raise RuntimeError(e)
+
+    def setup_heartbeat(self, timeout) -> None:
+        """
+        Turn on/off a server heartbeat with the given timeout (in seconds).
+
+        The timeout is for waiting for a response from the server.
+        It also doubles as the heartbeat frequency.
+
+        If timeout is zero or negative, heartbeat is deactivated.
+
+        NOTE: this funtion must be invoked BEFORE self.socket.connect()
+        in order for 'setsockopt' calls to take effect.
+
+        Parameters
+        ----------
+        timeout : int
+            Timeout in seconds. Also determines the heartbeat frequency.
+            If timeout <= 0, heartbeat monitoring is disabled.
+
+        """
+        import zmq
+
+        if timeout <= 0:
+            if hasattr(self, "heartbeatSocket") and self.heartbeatSocket is not None:
+                self.heartbeatSocket.close()
+            self.heartbeatSocket = None
+            self.heartbeatInterval = -1
+            return
+
+        self.heartbeatInterval = timeout
+        timeout = max(int(timeout), 1)  # setsockopt() needs whole seconds
+
+        # Given the settings below, an exception will be raised within
+        # (4 * timeout) seconds. We can tune these.
+        self.socket.setsockopt(zmq.TCP_KEEPALIVE, 1)  # turn on "keepalive"
+        self.socket.setsockopt(zmq.TCP_KEEPALIVE_IDLE, timeout)  # seconds of idle before probing
+        self.socket.setsockopt(zmq.TCP_KEEPALIVE_INTVL, timeout)  # interval between probes
+        self.socket.setsockopt(zmq.TCP_KEEPALIVE_CNT, 3)  # probes before dropping
+
+        # Attach a monitor socket.
+        self.heartbeatSocket = self.socket.get_monitor_socket(zmq.EVENT_CLOSED | zmq.EVENT_DISCONNECTED)
+
+        if not self.heartbeat_is_enabled():
+            raise RuntimeError("heartbeat_is_enabled() returned false unexpectedly")
+
+    def heartbeat_is_enabled(self) -> bool:
+        """
+        Check if the heartbeat is enabled.
+
+        Returns
+        -------
+        bool
+            True if the heartbeat is enabled, False otherwise
+
+        """
+        return self.heartbeatInterval > 0 and self.heartbeatSocket is not None
+
+    def wait_with_heartbeat(self) -> None:
+        """
+        Wait for a response from the server while checking if the server is alive.
+
+        Returns immediately if heartbeat is not active.
+
+        Raises
+        ------
+        Raises an exception if the server does not respond within the timeouts
+        established in setup_heartbeat().
+
+        """
+        if not self.heartbeat_is_enabled():
+            return  # waiting is not available
+
+        import zmq
+
+        while True:
+            if self.socket.poll(self.heartbeatInterval * 1000, zmq.POLLIN):
+                return  # got a response from the server
+
+            # No server response within the timeout. So, check the monitor socket.
+            if cast(zmq.Socket, self.heartbeatSocket).poll(timeout=0):  # non-blocking
+                # We are monitoring only EVENT_CLOSED and EVENT_DISCONNECTED
+                # so no additional checks are needed here.
+                raise ConnectionError("connection to the server is closed or disconnected")
+
+            # Otherwise, keep waiting for a server response.
 
 
 # Global Channel object reference
@@ -756,6 +852,7 @@ def connect(
         The port of the server.
     timeout : int, default=0
         The timeout in seconds for client send and receive operations.
+        A positive number also activates a heartbeat to the server, if using ZMQ.
         Defaults to 0 seconds, which is interpreted as no timeout.
     access_token : str, optional
         The token used to connect to an existing socket to enable access to
@@ -1079,24 +1176,75 @@ def generic_msg(
         raise RuntimeError("client is not connected to a server")
 
     size, msg_args = _json_args_to_str(args)
-    from typing import cast as type_cast
 
     try:
         if send_binary:
             assert payload is not None
-            return type_cast(Channel, channel).send_binary_message(
+            return cast(Channel, channel).send_binary_message(
                 cmd=cmd, payload=payload, recv_binary=recv_binary, args=msg_args, size=size
             )
         else:
             assert payload is None
-            return type_cast(Channel, channel).send_string_message(
+            return cast(Channel, channel).send_string_message(
                 cmd=cmd, args=msg_args, size=size, recv_binary=recv_binary
             )
     except KeyboardInterrupt as e:
         # if the user interrupts during command execution, the socket gets out
         # of sync reset the socket before raising the interrupt exception
-        type_cast(Channel, channel).connect(timeout=0)
+        cast(Channel, channel).connect(timeout=0)
         raise e
+
+
+def wait_for_async_activity() -> None:
+    """
+    Wait for the completion of asynchronous activities on the server.
+
+    Intended to help with testing of automatic checkpointing.
+    The server will consider itself "idle" despite serving this message.
+
+    """
+    generic_msg("wait_for_async_activity")
+
+
+def server_sleep(seconds) -> None:
+    """
+    Have the server "sleep" for the given number of seconds.
+
+    Intended for testing.
+    The server will consider itself "idle" despite serving this message.
+
+    Parameters
+    ----------
+    seconds : int or float
+        The number of seconds for the server to "sleep"
+
+    Raises
+    ------
+    ValueError
+        If the argument is not a number or a string with a number
+
+    """
+    seconds = float(seconds)
+    generic_msg("sleep", {"seconds": seconds})
+
+
+def note_for_server_log(message) -> None:
+    """
+    Add an INFO entry in the server log with the given message.
+
+    Intended for testing.
+    The server will consider itself "idle" despite serving this message.
+
+    Cf. ak.write_log (client) and clientLogMsg (server) allow fine-tuning
+    the message and interrupt server "idle"-ness.
+
+    Parameters
+    ----------
+    message : str
+        The message to be added to the server log
+
+    """
+    generic_msg("note", {"message": str(message)})
 
 
 def get_config() -> Mapping[str, Union[str, int, float]]:
@@ -1187,17 +1335,6 @@ def _get_config_msg() -> Mapping[str, Union[str, int, float]]:
         raise ValueError(f"Returned config is not valid JSON: {raw_message}")
     except Exception as e:
         raise RuntimeError(f"{e} in retrieving Arkouda server config")
-
-
-def wait_for_async_activity() -> None:
-    """
-    Wait for the completion of asynchronous activities on the server.
-
-    Intended to help with testing of automatic checkpointing.
-    The server will consider itself "idle" despite serving this message.
-
-    """
-    generic_msg("wait_for_async_activity")
 
 
 def _get_registration_config_msg() -> dict:
