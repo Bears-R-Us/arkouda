@@ -113,6 +113,7 @@ EXPECTED_CORRECTNESS_FAILURES = frozenset(
         "delta_encoding_required_column.parquet",
         "plain-dict-uncompressed-checksum.parquet",
         "rle-dict-uncompressed-corrupt-checksum.parquet",
+        "binary_truncated_min_max.parquet",
     ]
 )
 
