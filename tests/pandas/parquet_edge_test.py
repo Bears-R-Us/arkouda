@@ -399,9 +399,9 @@ class TestParquetReading:
         print(f"  Read failed (expected): {stats['read_failed_expected']}")
 
         # Calculate read success rate
-        total_attempted_reads = stats['successful_reads'] + stats['read_failed_unexpected']
+        total_attempted_reads = stats["successful_reads"] + stats["read_failed_unexpected"]
         if total_attempted_reads > 0:
-            read_success_rate = stats['successful_reads'] / total_attempted_reads * 100
+            read_success_rate = stats["successful_reads"] / total_attempted_reads * 100
             print(f"Read success rate (excluding expected failures): {read_success_rate:.1f}%")
 
         print()
