@@ -66,7 +66,17 @@ arkouda.categorical.Categorical, arkouda.index.Index, arkouda.index.MultiIndex
 import glob
 import json
 import os
-from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, TypeVar, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    List,
+    Literal,
+    Mapping,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 from warnings import warn
 
 import pandas as pd
@@ -177,11 +187,12 @@ def ls(filename: str, col_delim: str = ",", read_nested: bool = True) -> List[st
     ----------
     filename : str
         Path to the file on the Arkouda server. Must be a non-empty string.
-    col_delim : str, default=","
-        Delimiter to use when interpreting CSV files.
-    read_nested : bool, default=True
+    col_delim : str
+        Delimiter to use when interpreting CSV files. Default is ",".
+    read_nested : bool
         If True, include nested Parquet columns (e.g., `SegArray`). If False,
         nested columns are ignored. Only applies to Parquet files.
+        Default is True.
 
     Returns
     -------
@@ -278,14 +289,14 @@ def get_null_indices(
 
 
 @typechecked
-def _file_type_to_int(file_type: str) -> int:
+def _file_type_to_int(file_type: Literal["single", "distribute"]) -> int:
     """
     Convert a string to integer representing the format to save the file in.
 
     Parameters
     ----------
-    file_type: str (single | distribute)
-        The string representation of the format for saving the file
+    file_type: {"single" | "distribute"}
+        The format for saving the file.
 
     Returns
     -------
@@ -306,14 +317,14 @@ def _file_type_to_int(file_type: str) -> int:
 
 
 @typechecked
-def _mode_str_to_int(mode: str) -> int:
+def _mode_str_to_int(mode: Literal["truncate", "append"]) -> int:
     """
     Convert string to integer representing the mode to write.
 
     Parameters
     ----------
-    mode: str (truncate | append)
-        The string representation of the write mode to be converted to integer
+    mode: {"truncate" | "append"}
+        The string representation of the write mode to be converted to integer.
 
     Returns
     -------
@@ -1096,10 +1107,10 @@ def import_data(
         path to file where pandas data is stored. This can be glob expression for parquet formats.
     write_file: str, optional
         path to file to write arkouda formatted data to. Only write file if provided
-    return_obj: bool, optional
-        Default True. When True return the Arkouda DataFrame object, otherwise return None
-    index: bool, optional
-        Default False. When True, maintain the indexes loaded from the pandas file
+    return_obj: bool
+        If True (default), return the Arkouda DataFrame object. If False, return None.
+    index: bool
+        If True, maintain the indexes loaded from the pandas file. Default is False.
 
     Raises
     ------
@@ -1184,10 +1195,11 @@ def export(
         name to store dataset under
     index: bool
         Default False. When True, maintain the indexes loaded from the pandas file
-    write_file: str, optional
-        path to file to write pandas formatted data to. Only write the file if this is set
-    return_obj: bool, optional
-        Default True. When True return the Pandas DataFrame object, otherwise return None
+    write_file: str
+        path to file to write pandas formatted data to. Only write the file if this is set.
+        Default is None.
+    return_obj: bool
+        When True (default) return the Pandas DataFrame object, otherwise return None.
 
 
     Raises
@@ -1309,7 +1321,7 @@ def to_parquet(
     ],
     prefix_path: str,
     names: Optional[List[str]] = None,
-    mode: str = "truncate",
+    mode: Literal["truncate", "append"] = "truncate",
     compression: Optional[str] = None,
     convert_categoricals: bool = False,
 ) -> None:
@@ -1324,12 +1336,12 @@ def to_parquet(
         Directory and filename prefix for output files
     names : list of str
         Dataset names for the pdarrays
-    mode : {'truncate' | 'append'}
+    mode : {"truncate", "append"}
         By default, truncate (overwrite) the output files if they exist.
         If 'append', attempt to create new dataset in existing files.
-        'append' is deprecated, please use the multi-column write
-    compression : str (Optional)
-            Default None
+        'append' is deprecated, please use the multi-column write.
+    compression : str
+            Default None.
             Provide the compression type to use when writing the file.
             Supported values: snappy, gzip, brotli, zstd, lz4
         convert_categoricals: bool
@@ -1418,8 +1430,8 @@ def to_hdf(
     ],
     prefix_path: str,
     names: Optional[List[str]] = None,
-    mode: str = "truncate",
-    file_type: str = "distribute",
+    mode: Literal["truncate", "append"] = "truncate",
+    file_type: Literal["single", "distribute"] = "distribute",
 ) -> None:
     """
     Save multiple named pdarrays to HDF5 files.
@@ -1432,13 +1444,13 @@ def to_hdf(
         Directory and filename prefix for output files
     names : list of str
         Dataset names for the pdarrays
-    mode : {'truncate' | 'append'}
+    mode : {"truncate", "append"}
         By default, truncate (overwrite) the output files if they exist.
         If 'append', attempt to create new dataset in existing files.
-    file_type : str ("single" | "distribute")
+    file_type : {"single", "distribute"}
             Default: distribute
             Single writes the dataset to a single file
-            Distribute writes the dataset to a file per locale
+            Distribute writes the dataset to a file per locale.
 
     Raises
     ------
@@ -2085,7 +2097,9 @@ def read(
         raise RuntimeError(f"Invalid File Type detected, {ftype}")
 
 
-def save_checkpoint(name="", path=".akdata", mode: str = "overwrite"):
+def save_checkpoint(
+    name="", path=".akdata", mode: Literal["overwrite", "preserve_previous", "error"] = "overwrite"
+):
     """
     Save the server's state.
 
@@ -2102,13 +2116,12 @@ def save_checkpoint(name="", path=".akdata", mode: str = "overwrite"):
         The directory to save the checkpoint. If the directory doesn't exist, it
         will be created. If it exists, a new directory for the checkpoint
         instance will be created inside this directory.
-    mode : {'overwrite' | 'preserve_previous' | 'error'}
-        By default, overwrite the checkpoint files if they exist.
-        If 'preserve_previous', an existing checkpoint with 'name' will be
-        renamed to 'name.prev', overwriting 'name.prev' if it existed,
-        before creating a new checkpoint with 'name'.
-        If 'error', an error will be raised if a checkpoint with the same name
-        exists.
+    mode : {'overwrite', 'preserve_previous', 'error'}
+        How to handle an existing checkpoint with the same name.
+        - ``'overwrite'`` (default): overwrite the checkpoint files.
+        - ``'preserve_previous'``: rename existing checkpoint to ``<name>.prev``,
+          overwriting that if it exists.
+        - ``'error'``: raise an error if the checkpoint exists.
 
     Notes
     -----
@@ -2337,7 +2350,7 @@ def snapshot(filename):
     from arkouda.pandas.dataframe import DataFrame
 
     filename = filename + "_SNAPSHOT"
-    mode = "TRUNCATE"
+    mode = "truncate"
     callers_local_vars = inspect.currentframe().f_back.f_locals.items()
     for name, val in [
         (n, v) for n, v in callers_local_vars if not n.startswith("__") and not isinstance(v, ModuleType)
@@ -2347,7 +2360,7 @@ def snapshot(filename):
                 val._to_hdf_snapshot(filename, dataset=name, mode=mode)
             else:
                 val.to_hdf(filename, dataset=name, mode=mode)
-            mode = "APPEND"
+            mode = "append"
 
 
 def restore(filename):
