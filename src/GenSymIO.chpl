@@ -81,35 +81,24 @@
 
     @arkouda.instantiateAndRegister()
     proc arraySegString(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype): MsgTuple throws {
-        const size = msgArgs["size"].toScalar(int),
-              rname = st.nextName();
+        if array_dtype != uint(8) then
+          throw new Error("arraySegString supports only uint(8) arrays, got "
+                          + array_dtype:string);
+          // the rest of this function is not compiled in this case
+
+        const size = msgArgs["size"].toScalar(int);
 
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                        "dtype: %? size: %?".format(array_dtype:string,size));
 
         const a = makeArrayFromBytes(msgArgs.payload, (size,), array_dtype);
-        st.addEntry(rname, createSymEntry(a));
-        
-        try {
-            st.checkTable(rname, "arrayMsg");
-            var g = st[rname];
-            if g.isAssignableTo(SymbolEntryType.TypedArraySymEntry){
-                var values = toSymEntry( (g:GenSymEntry), uint(8) );
-                var offsets = segmentedCalcOffsets(values.a, values.a.domain);
-                var oname = st.nextName();
-                var offsetsEntry = createSymEntry(offsets);
-                st.addEntry(oname, offsetsEntry);
-                const msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
-                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                return new MsgTuple(msg, MsgType.NORMAL);
-            } else {
-                throw new Error("Unsupported Type %s".format(g.entryType));
-            }
-        } catch e: Error {
-            const msg = "Error creating offsets for SegString";
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-            return new MsgTuple(msg, MsgType.ERROR);
-        }
+        const offsets = segmentedCalcOffsets(a, a.domain);
+        const segString = getSegString(offsets, a, st);
+        // see assembleStringsMsg()
+        var msg = "".join("created ", st.attrib(segString.name),
+                          "+created bytes.size ", segString.nBytes:string);
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
+        return new MsgTuple(msg, MsgType.NORMAL);
     }
 
     /**

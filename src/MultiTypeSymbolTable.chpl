@@ -178,8 +178,9 @@ module MultiTypeSymbolTable
             checkTable(name, "deleteEntry");
             if !registry.contains(name) {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "Deleting unregistered entry: %s".format(name)); 
-                tab.remove(name);
+                                       "Deleting unregistered entry: %s".format(name));
+                const removed = tab.getAndRemove(name);
+                removed.removeDependents(this);
                 return true;
             } else {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
