@@ -35,6 +35,16 @@ import arkouda as ak
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Try to import pyarrow to detect version
+try:
+    import pyarrow as pa
+    ARROW_VERSION = int(pa.__version__.split('.')[0])
+    logger.info(f"Detected PyArrow version: {pa.__version__} (major version: {ARROW_VERSION})")
+except ImportError:
+    ARROW_VERSION = None
+    logger.warning("PyArrow not available - some version-specific categorizations may not apply")
+logger = logging.getLogger(__name__)
+
 # Configuration and constants
 # Get test data directory from environment - no default, must be explicitly set
 TEST_DATA_DIR = os.getenv("ARKOUDA_PARQUET_TEST_DATA_DIR")
@@ -60,8 +70,9 @@ PANDAS_INCOMPATIBLE_FILES = frozenset(
 )
 
 # Files that currently fail to read with Arkouda
-EXPECTED_READ_FAILURES = frozenset(
-    [
+def get_expected_read_failures() -> frozenset:
+    """Get files expected to fail reading, with version-specific adjustments."""
+    base_failures = frozenset([
         "nulls.snappy.parquet",
         "byte_stream_split_extended.gzip.parquet",
         "nested_maps.snappy.parquet",
@@ -88,14 +99,25 @@ EXPECTED_READ_FAILURES = frozenset(
         "alltypes_tiny_pages.parquet",
         "alltypes_tiny_pages_plain.parquet",
         "incorrect_map_schema.parquet",
-    ]
-)
+    ])
+    
+    # Add Arrow v6 specific failures
+    if ARROW_VERSION == 6:
+        arrow_v6_failures = frozenset([
+            "unknown-logical-type.parquet",  # Arrow v6 fails to read
+            "datapage_v2_empty_datapage.snappy.parquet",  # Arrow v6 fails to read
+        ])
+        return base_failures | arrow_v6_failures
+    
+    return base_failures
+
+EXPECTED_READ_FAILURES = get_expected_read_failures()
 
 # Files that read successfully but produce incorrect data
-EXPECTED_CORRECTNESS_FAILURES = frozenset(
-    [
+def get_expected_correctness_failures() -> frozenset:
+    """Get files expected to have correctness issues, with version-specific adjustments."""
+    base_failures = frozenset([
         "binary.parquet",
-        "unknown-logical-type.parquet",
         "non_hadoop_lz4_compressed.parquet",
         "fixed_length_decimal_legacy.parquet",
         "fixed_length_decimal.parquet",
@@ -114,8 +136,22 @@ EXPECTED_CORRECTNESS_FAILURES = frozenset(
         "plain-dict-uncompressed-checksum.parquet",
         "rle-dict-uncompressed-corrupt-checksum.parquet",
         "binary_truncated_min_max.parquet",
-    ]
-)
+    ])
+    
+    # Add version-specific correctness issues
+    if ARROW_VERSION == 6:
+        arrow_v6_correctness_failures = frozenset([
+            "concatenated_gzip_members.parquet",  # Arrow v6 correctness issue
+        ])
+        return base_failures | arrow_v6_correctness_failures
+    else:
+        # For Arrow v20+, unknown-logical-type.parquet has correctness issues (not read failures)
+        arrow_v20_correctness_failures = frozenset([
+            "unknown-logical-type.parquet",  # Arrow v20+ reads but has correctness issues
+        ])
+        return base_failures | arrow_v20_correctness_failures
+
+EXPECTED_CORRECTNESS_FAILURES = get_expected_correctness_failures()
 
 # Known Arkouda string conversion issues
 ARKOUDA_STRING_ERRORS = ("Bad index type or format", "data type '<U-1' not understood")
