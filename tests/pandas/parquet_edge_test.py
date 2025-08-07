@@ -250,7 +250,7 @@ class TestParquetReading:
             )
 
         # Check for parquet files
-        parquet_files = [f for f in data_dir.glob("*.parquet") if f.name not in CRASH_FILES]
+        parquet_files = get_test_parquet_files()
 
         if not parquet_files:
             pytest.skip(f"No parquet files found in {data_dir}")
@@ -337,7 +337,8 @@ class TestParquetReading:
         stats = {
             "total_files": 0,
             "successful_reads": 0,
-            "failed_reads": 0,
+            "read_failed_unexpected": 0,
+            "read_failed_expected": 0,
             "correctness_passed": 0,
             "correctness_failed_unexpected": 0,
             "correctness_failed_expected": 0,
@@ -345,19 +346,23 @@ class TestParquetReading:
             "conversion_errors": 0,
         }
 
-        results = []
         for parquet_file in self.test_files:
             filename = parquet_file.name
             stats["total_files"] += 1
 
             is_pandas_incompatible = filename in PANDAS_INCOMPATIBLE_FILES
+            is_expected_failure = filename in EXPECTED_READ_FAILURES
             is_expected_correctness_failure = filename in EXPECTED_CORRECTNESS_FAILURES
+
+            # Skip expected read failures - they are not tested in the main test
+            if is_expected_failure:
+                stats["read_failed_expected"] += 1
+                continue
 
             try:
                 result = read_parquet_with_arkouda(
                     parquet_file, skip_pandas_check=is_pandas_incompatible
                 )
-                results.append(result)
 
                 if result.read_success:
                     stats["successful_reads"] += 1
@@ -377,10 +382,10 @@ class TestParquetReading:
                     ):
                         stats["conversion_errors"] += 1
                 else:
-                    stats["failed_reads"] += 1
+                    stats["read_failed_unexpected"] += 1
 
             except Exception as e:
-                stats["failed_reads"] += 1
+                stats["read_failed_unexpected"] += 1
                 logger.error(f"Unexpected error testing {filename}: {e}")
 
         # Print comprehensive summary
@@ -388,17 +393,26 @@ class TestParquetReading:
         print("ARKOUDA PARQUET READING SUMMARY")
         print(f"{'=' * 50}")
         print(f"Total files tested: {stats['total_files']}")
-        print(f"Successful reads: {stats['successful_reads']}")
-        print(f"Failed reads: {stats['failed_reads']}")
-        print(f"Success rate: {stats['successful_reads'] / stats['total_files'] * 100:.1f}%")
+        print("READ ANALYSIS:")
+        print(f"  Successful reads: {stats['successful_reads']}")
+        print(f"  Read failed (unexpected): {stats['read_failed_unexpected']}")
+        print(f"  Read failed (expected): {stats['read_failed_expected']}")
+
+        # Calculate read success rate
+        total_attempted_reads = stats['successful_reads'] + stats['read_failed_unexpected']
+        if total_attempted_reads > 0:
+            read_success_rate = stats['successful_reads'] / total_attempted_reads * 100
+            print(f"Read success rate (excluding expected failures): {read_success_rate:.1f}%")
+
         print()
         print("CORRECTNESS ANALYSIS:")
         print(f"  Correctness passed: {stats['correctness_passed']}")
         print(f"  Correctness failed (unexpected): {stats['correctness_failed_unexpected']}")
         print(f"  Correctness failed (expected): {stats['correctness_failed_expected']}")
-        print(f"  Pandas incompatible (skipped): {stats['pandas_skipped']}")
+        print(f"  Pandas incompatible (skipped correctness): {stats['pandas_skipped']}")
         print(f"  String conversion errors: {stats['conversion_errors']}")
 
+        # Calculate overall correctness rates
         total_correctness_checks = (
             stats["correctness_passed"]
             + stats["correctness_failed_unexpected"]
@@ -406,8 +420,8 @@ class TestParquetReading:
         )
 
         if total_correctness_checks > 0:
-            correctness_rate = stats["correctness_passed"] / total_correctness_checks * 100
-            print(f"Overall correctness rate: {correctness_rate:.1f}%")
+            overall_correctness_rate = stats["correctness_passed"] / total_correctness_checks * 100
+            print(f"Overall correctness rate: {overall_correctness_rate:.1f}%")
 
             unexpected_checks = stats["correctness_passed"] + stats["correctness_failed_unexpected"]
             if unexpected_checks > 0:
