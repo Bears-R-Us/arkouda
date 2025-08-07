@@ -536,71 +536,43 @@ module CheckpointMsg {
   /*** saving/loading bigint data ***/
   /******************************************************************/
 
+  /*private*/ type mpz_count_type = uint(32);
+  /*private*/ type mpz_numelems_type = uint;
+
   /* Writes 'count' and 'sgn' (sign) into 'w'.
-     'count' is assumed to be positive or 0.
+     'count' is assumed to be non-negative.
      If 'sgn' is 0 then 'count' is recorded as 0 as well.
-     Otherwise only the single bit for (sgn < 0) is recorded.
   */
   private proc bigintWriteCountSgn(w: fileWriter(?),
                                    count: c_size_t, sgn: c_int) throws {
-    if sgn == 0 {
-      w.writeByte(0);
-      return;
-    }
-    // We will write out 'count' in binary ULEB128 format.
-    var toWrite = count: uint;  // 'uint' should have enough bits
-    // Append "is negative" as the LSB to the count.
-    toWrite = (toWrite << 1) | (if sgn < 0 then 1 else 0);
+    // Use the highest bit for "negative".
+    param sgnBit = (1 << (numBits(mpz_count_type)-1)) : mpz_count_type;
+    param countMask = ~sgnBit;
+    var toWrite = (count: mpz_count_type) & countMask;
 
-    while true {
-      const curr = (toWrite & 0x7f): uint(8);
-      toWrite >>= 7;
-      if toWrite == 0 {
-        w.writeByte(curr);
-        break;
-      } else {
-        w.writeByte(curr | 0x80); // "more bytes to follow"
-      }
-    }
+    if (toWrite: uint(64)) != (count: uint(64)) then
+      throw new NotImplementedError(
+        "checkpointing is not implemented for bigint that need >=2**31 bytes",
+         L(), R(), M());
+
+    if sgn == 0 then toWrite = 0;
+    else if sgn < 0 then toWrite |= sgnBit;
+
+    w.write(toWrite);
   }
 
   /* Reads from 'r' into 'countP' and 'sgnP'. Returns false upon EOF. */
   private proc bigintReadCountSgn(r: fileReader(?),
                         ref countP: c_size_t, ref sgnP: c_int): bool throws {
-    var curr: uint(8);
-    var moreBytes: bool;
+    param sgnBit = (1 << (numBits(mpz_count_type)-1)) : mpz_count_type;
+    param countMask = ~sgnBit;
+    var count: mpz_count_type;
+    if ! r.read(count) then return false;
 
-    if ! r.readByte(curr) {
-      return false;
-    }
-
-    if curr == 0 then {
-      countP = 0; sgnP = 0; return true;
-    }
-
-    // curr -> (curr, moreBytes)
-    proc extract() {
-      moreBytes = (curr & 0x80) != 0;
-      curr = curr & 0x7f;
-    }
-
-    extract();
-    const sgn = if curr & 1 then -1 else 1;
-    curr >>= 1; // shift out the sign bit
-
-    var count: uint = curr;
-    var shift = 6;
-
-    while moreBytes {
-      if ! r.readByte(curr) then
-        throw new BadFormatError("", "bigintReadCountSgn(): expected more bytes");
-
-      extract();
-      count |= (curr: uint) << shift;
-      shift += 7;
-    }
-
-    countP = count: c_size_t; sgnP = sgn: c_int; return true;
+    countP = count & countMask;
+    sgnP = ( if count == 0 then 0 else
+               if (count & sgnBit) == 0 then 1 else -1 ): c_int;
+    return true;
   }
 
   // GMP import, export: https://gmplib.org/manual/Integer-Import-and-Export
@@ -613,8 +585,8 @@ module CheckpointMsg {
     order: c_int, size: c_size_t, endian: c_int, nails: c_size_t,
     const ref op: mpz_t): c_ptr(void);
 
-  /*private*/ type mpz_imex_elt = uint(8);
   // could tweak these
+  /*private*/ type mpz_imex_elt = uint(8);
   private param imex_order = 1,
                 imex_size = numBytes(mpz_imex_elt),
                 imex_endian = 0,
@@ -694,8 +666,9 @@ module CheckpointMsg {
   private proc bigintWriteArray(fname, const vals: [] bigint) throws {
     var mem1: memBuf;
     var ckpt1 = open(fname, ioMode.cw);
-    var writer = ckpt1.writer(locking=false);
-    writer.writeln(vals.size: uint);
+    var writer = ckpt1.writer(serializer=new binarySerializer(),
+                              locking=false);
+    writer.write(vals.sizeAs(mpz_numelems_type));
     // the main loop for writing
     for bi in vals do
       bigintWriteOneNumber(writer, mem1, bi);
@@ -709,10 +682,10 @@ module CheckpointMsg {
   private proc bigintReadArray(fname, ref vals: [] bigint) throws {
     var mem2: memBuf;
     var ckpt2 = open(fname, ioMode.r);
-    var reader = ckpt2.reader(locking=false);
-    const count = reader.read(uint);
-    reader.readLine(string); // consume the newline
-    if count != vals.size then
+    var reader = ckpt2.reader(deserializer=new binaryDeserializer(),
+                              locking=false);
+    const count = reader.read(mpz_numelems_type);
+    if count != vals.sizeAs(mpz_numelems_type) then
       throw new IllegalArgumentError("".join(
         "count mismatch when reading from ", fname, ": expected ",
         vals.size:string, " bigints while the file contains ",
@@ -725,7 +698,7 @@ module CheckpointMsg {
 
     var dummy: uint(8);
     if reader.readByte(dummy) then
-      cpLogger.debug(M(), R(), L(), "unexpected contents after reading ", count:string, " bigints from ", fname);
+      cpLogger.error(M(), R(), L(), "unexpected contents after reading ", count:string, " bigints from ", fname);
 
     reader.close();
     ckpt2.close();
