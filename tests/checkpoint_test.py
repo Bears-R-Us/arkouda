@@ -68,6 +68,29 @@ class TestCheckpoint:
         finally:
             rmtree(expected_dir)
 
+    def test_bigint_checkpoint(self, cp_test_base_tmp):
+        prob_size = 300  # force memBuf resizing in the implementation
+        lst = list()
+        pda = ak.zeros(prob_size, dtype=ak.bigint)
+
+        cur = 37
+        for i in range(prob_size - 1):
+            cur *= 347
+            pda[i] = cur
+            lst.append(cur)
+
+        pda[prob_size - 1] = 3
+        lst.append(3)
+
+        with tempfile.TemporaryDirectory(dir=cp_test_base_tmp) as tmp_dirname:
+            cp_name = ak.save_checkpoint(path=tmp_dirname)
+            for i in range(prob_size):
+                pda[i] = i  # clobber the elements
+            ak.load_checkpoint(path=tmp_dirname, name=cp_name)  # restore 'pda'
+
+            for i in range(prob_size):
+                assert pda[i] == lst[i]
+
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_checkpoint_custom_names(self, cp_test_base_tmp, prob_size):
         arr = ak.zeros(prob_size, int)
