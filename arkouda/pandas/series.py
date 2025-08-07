@@ -232,6 +232,7 @@ class Series:
     ) -> Union[pdarray, Strings, Categorical, supported_scalars, SegArray]:
         """
         Validate type requirements for keys when reading or writing the Series.
+
         Also converts list and tuple arguments into pdarrays.
 
         Parameters
@@ -344,6 +345,7 @@ class Series:
     ) -> Union[pdarray, Strings, supported_scalars]:
         """
         Validate type requirements for values being written into the Series.
+
         Also converts list and tuple arguments into pdarrays.
 
         Parameters
@@ -457,10 +459,11 @@ class Series:
 
         Parameters
         ----------
-        index : bool, default=True
+        index : bool
             Specifies whether to include the memory usage of the Series index.
-        unit : {"B", "KB", "MB", "GB"}, default = "B"
-            Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+            Defaults to True.
+        unit : {"B", "KB", "MB", "GB"}
+            Unit to return. One of {'B', 'KB', 'MB', 'GB'}. Defaults to "B".
 
         Returns
         -------
@@ -702,8 +705,8 @@ class Series:
 
         Parameters
         ----------
-        n : int, default=10
-            Number of values to return. The default of 10 returns the top 10 values.
+        n : int
+            Number of values to return. Defaults to 10.
 
         Returns
         -------
@@ -736,8 +739,9 @@ class Series:
 
         Parameters
         ----------
-        ascending : bool, default=True
+        ascending : bool
             Whether to sort the index in ascending (default) or descending order.
+            Defaults to True.
 
         Returns
         -------
@@ -755,8 +759,9 @@ class Series:
 
         Parameters
         ----------
-        ascending : bool, default=True
+        ascending : bool
             Whether to sort values in ascending (default) or descending order.
+            Defaults to True.
 
         Returns
         -------
@@ -898,9 +903,9 @@ class Series:
 
         Parameters
         ----------
-        sort : bool, default=True
+        sort : bool
             Whether to sort the result by count in descending order. If False,
-            the order of the results is not guaranteed.
+            the order of the results is not guaranteed. Defaults to True.
 
         Returns
         -------
@@ -968,9 +973,9 @@ class Series:
 
         Parameters
         ----------
-        user_defined_name : str
-            user defined name the Series is to be registered under,
-            this will be the root name for underlying components
+        user_defined_name : builtin_str
+            User-defined name the Series is to be registered under.
+            This will be the root name for the underlying components.
 
         Returns
         -------
@@ -1089,7 +1094,7 @@ class Series:
     @typechecked
     def is_registered(self) -> bool:
         """
-         Return True iff the object is contained in the registry or is a component of a
+        Return True iff the object is contained in the registry or is a component of a
          registered object.
 
         Returns
@@ -1124,24 +1129,24 @@ class Series:
     def from_return_msg(cls, repMsg: builtin_str) -> Series:
         """
         Return a Series instance pointing to components created by the arkouda server.
+
         The user should not call this function directly.
 
         Parameters
         ----------
-        repMsg : str
-            + delimited string containing the values and indexes
+        repMsg : builtin_str
+            + delimited string containing the values and indexes.
 
         Returns
         -------
         Series
-            A Series representing a set of pdarray components on the server
+            A Series representing a set of pdarray components on the server.
 
         Raises
         ------
         RuntimeError
             Raised if a server-side error is thrown in the process of creating
-            the Series instance
-
+            the Series instance.
         """
         data = json.loads(repMsg)
         val_comps = data["value"].split("+|+")
@@ -1189,17 +1194,18 @@ class Series:
         ----------
         arrays : List
             A list of Series or groupings (tuples of index and values) to concatenate.
-        axis : int, default=0
+        axis : int
             The axis to concatenate along:
             - 0 = vertical (stack series into one)
             - 1 = horizontal (align by index and produce a DataFrame)
-        index_labels : List of str or None, optional
+            Defaults to 0.
+        index_labels : List[str] or None, optional
             Column name(s) to label the index when axis=1.
-        value_labels : List of str or None, optional
+        value_labels : List[str] or None, optional
             Column names to label the values of each Series.
-        ordered : bool, default=False
+        ordered : bool
             Unused parameter. Reserved for future support of deterministic
-            vs. performance-optimized concatenation.
+            vs. performance-optimized concatenation. Defaults to False.
 
         Returns
         -------
@@ -1573,10 +1579,11 @@ class Series:
         ----------
         arrays : List
             A list of Series or groupings (tuples of index and values) to concatenate.
-        axis : int, default=0
+        axis : int
             The axis along which to concatenate:
             - 0 = vertical (stack into a Series)
             - 1 = horizontal (align by index into a DataFrame)
+            Defaults to 0.
         labels : Strings or None, optional
             Names to assign to the resulting columns in the DataFrame.
 
