@@ -211,21 +211,20 @@ module BinOp
   }
 
   // "/"
-  proc doBigIntDiv(has_max_bits: bool, const ref max_size: bigint,
-                   ref tmp: [] bigint, ra) {
+  // proc doBigIntDiv(has_max_bits: bool, const ref max_size: bigint,
+  //                  ref tmp: [] bigint, ra) {
 
-  }
+  // }
 
   // ">>", "<<"
-  proc doBigIntBitShift(op: string,
-                      has_max_bits: bool, const ref max_size: bigint,
-                      ref tmp: [] bigint, ra): bool {
+  // proc doBigIntBitShift(op: string,
+  //                     has_max_bits: bool, const ref max_size: bigint,
+  //                     ref tmp: [] bigint, ra): bool {
 
-  }
-
-  // ">>>", "<<<"
+  // }
 
   // "//", "%", "**"
+
 
   /*
   Generic function to execute a binary operation on pdarray entries 
@@ -250,6 +249,7 @@ module BinOp
   :throws: `UndefinedSymbolError(name)`
   */
   proc doBinOpvv(l, r, type lType, type rType, type etype, op: string, pn, st): MsgTuple throws {
+    omLogger.emit("doBinOpvv called with op: ", op, " l: " , l.type:string, " r: ", r.type:string, " ltype: ", lType:string, " rtype: ", rType:string, " etype: ", etype:string);
     var e = makeDistArray((...l.tupShape), etype);
 
     const nie = notImplementedError(pn,l.dtype,op,r.dtype);
@@ -397,6 +397,7 @@ module BinOp
   }
 
   proc doBinOpvs(l, val, type lType, type rType, type etype, op: string, pn, st): MsgTuple throws {
+    omLogger.emit("doBinOpvs called with op: ", op, " l: " , l.type:string, " val: ", val.type:string, " ltype: ", lType:string, " rtype: ", rType:string, " etype: ", etype:string);
     var e = makeDistArray((...l.tupShape), etype);
 
     const nie = notImplementedError(pn,"%s %s %s".format(type2str(l.a.eltType),op,type2str(val.type)));
@@ -537,6 +538,7 @@ module BinOp
   }
 
   proc doBinOpsv(val, r, type lType, type rType, type etype, op: string, pn, st) throws {
+    omLogger.emit("doBinOpsv called with op: ", op, " val: " , val.type:string, " r: ", r.type:string, " ltype: ", lType:string, " rtype: ", rType:string, " etype: ", etype:string);
     var e = makeDistArray((...r.tupShape), etype);
     const nie = notImplementedError(pn,"%s %s %s".format(type2str(val.type),op,type2str(r.a.eltType)));
 
@@ -676,6 +678,7 @@ module BinOp
   }
 
   proc doBigIntBinOpvv(l, r, op: string) throws {
+    omLogger.emit("doBigIntBinOpvv called with op: ", op, " l: " , l.type:string, " r: ", r.type:string);
     var max_bits = max(l.max_bits, r.max_bits);
     var max_size = 1:bigint;
     var has_max_bits = max_bits != -1;
@@ -865,6 +868,7 @@ module BinOp
   }
 
   proc doBigIntBinOpvvBoolReturn(l, r, op: string) {
+    omLogger.emit("doBigIntBinOpvvBoolReturn called with op: ", op, " l: " , l.type:string, " r: ", r.type:string);
     select op {
       when "<"  do return l.a < r.a;
       when ">"  do return l.a > r.a;
@@ -882,6 +886,8 @@ module BinOp
   }
 
   proc doBigIntBinOpvs(l, val, op: string) throws {
+    omLogger.emit("doBigIntBinOpvs called with op: ", op, " l: " , l.type:string, " val: ", val.type:string);
+
     var max_bits = l.max_bits;
     var max_size = 1:bigint;
     var has_max_bits = max_bits != -1;
@@ -1125,6 +1131,7 @@ module BinOp
   }
 
   proc doBigIntBinOpvsBoolReturn(ref tmp: [], l, val, op: string) {
+    omLogger.emit("doBigIntBinOpvsBoolReturn called with op: ", op, " l: " , l.type:string, " val: ", val.type:string);
     ref la = l.a;
     select op {
       when "<" {
@@ -1167,6 +1174,7 @@ module BinOp
   }
 
   proc doBigIntBinOpsv(val, r, op: string) throws {
+    omLogger.emit("doBigIntBinOpsv called with op: ", op, " val: " , val.type:string, " r: ", r.type:string);
     var max_bits = r.max_bits;
     var max_size = 1:bigint;
     var has_max_bits = max_bits != -1;
