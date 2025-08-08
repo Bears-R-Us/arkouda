@@ -50,9 +50,15 @@ Users should not instantiate accessors directly — use `.str` and `.dt` instead
 
 """
 
+from typing import TYPE_CHECKING, TypeVar
+
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime
-from arkouda.pandas.categorical import Categorical
+
+if TYPE_CHECKING:
+    from arkouda.categorical import Categorical
+else:
+    Categorical = TypeVar("Categorical")
 
 __all__ = [
     "CachedAccessor",

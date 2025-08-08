@@ -373,7 +373,7 @@ class Array:
 
         """
 
-        return ak.abs(self._array)
+        return Array._new(ak.abs(self._array))
 
     def __add__(self: Array, other: Union[int, float, Array], /) -> Array:
         """

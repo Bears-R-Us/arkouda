@@ -169,6 +169,7 @@ def coargsort(
         value=arrays,
         expected_type=Sequence[Union[pdarray, Strings, Categorical]],
     )
+
     size: int_scalars = -1
     anames, atypes, expanded_arrays = [], [], []
     max_dim = 1
