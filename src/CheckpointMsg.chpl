@@ -14,6 +14,7 @@ module CheckpointMsg {
   use ParquetMsg;
   use IOUtils;
   use Logging;
+  use BigInteger, CTypes, GMP;  // for checkpointing of bigint arrays
 
   config param metadataExt = "md";
   config param dataExt = "data";
@@ -361,6 +362,9 @@ module CheckpointMsg {
                      " when ", direction, " an entry with name:", entry.name);
   }
 
+  private proc hasPrimitiveElements(entry) param do
+    return isIntegral(entry.etype) || isReal(entry.etype) || isBool(entry.etype);
+
   override proc SymEntry.saveEntry(name, path, mdName, mdWriter) throws {
     const entry = this;
     checkSymEntryType(entry, "saving");
@@ -376,14 +380,22 @@ module CheckpointMsg {
           name, entry.entryType:string, mdName));
         return;
     }
-    proc isSupportedEtype(type t) do return isIntegral(t) || isReal(t) || isBool(t);
-    if ! isSupportedEtype(entry.etype) {
+
+    if hasPrimitiveElements(entry) {
+        saveSymEntryPrimitive(entry, name, path, mdName, mdWriter);
+
+    } else if entry.etype == bigint {
+        saveSymEntryBigint(entry, name, path, mdName, mdWriter);
+
+    } else {
         cpLogger.debug(M(), R(), L(), cpNotImplementedMsg(" ".join(
           "Saving an array with", entry.etype:string, "element type into"),
           name, entry.entryType:string, mdName));
         return;
     }
+  }
 
+  private proc saveSymEntryPrimitive(entry, name, path, mdName, mdWriter) throws {
     // write the array
     const dataName = Path.joinPath(path, ".".join(name, dataExt));
     const (warnFlag, filenames, numElems) =
@@ -406,9 +418,30 @@ module CheckpointMsg {
       writeJson(mdWriter, chunkMD, "chunk metadata", mdName);
     }
 
-    cpLogger.debug(M(), R(), L(), "Metadata created: %s".format(mdName));
+    cpLogger.debug(M(), R(), L(), "Metadata created: ", mdName);
   }
 
+  private proc localeName(baseName, locIdx) do
+    return "".join(baseName, ".loc", locIdx:string, ".bin");
+
+  private proc saveSymEntryBigint(entry, name, path, mdName, mdWriter) throws {
+    // Metadata is similar to saveSymEntryPrimitive(), except no "chunks".
+    const arrayMD = new arrayMetadata(dtype=dtype2str(entry.dtype), size=entry.size,
+                                      numTargetLocales=entry.a.targetLocales().size,
+                                      ndim=entry.ndim, numChunks=0);
+    writeJson(mdWriter, arrayMD, "bigint array metadata", mdName);
+    cpLogger.debug(M(), R(), L(), "bigint SymEntry metadata created in ", mdName);
+
+    // Now save each locale's elements.
+    const baseName = Path.joinPath(path, name);
+    mdWriter.writeln(baseName);
+    coforall (loc, locIdx) in zip(entry.a.targetLocales(), 1..) do on loc {
+        bigintWriteArray(localeName(baseName, locIdx),
+                         entry.a.localSlice[entry.a.localSubdomain()]);
+    }
+    cpLogger.debug(M(), R(), L(), "bigint SymEntry elements written to ", baseName, '.*');
+  }
+ 
   // load and return a SymEntry / PrimitiveTypedArraySymEntry
   private proc loadSymEntry(mdName, entryMD, mdReader) : shared GenSymEntry throws {
     cpLogger.debug(M(), R(), L(), "Reading %s".format(mdName));
@@ -450,6 +483,26 @@ module CheckpointMsg {
       "Loading an array with >1 dimensions from"),
       entryMD.entryName, entryMD.entryType, mdName), L(), R(), M());
 
+    const entryVal = new shared SymEntry(arrayMD.size, etype);
+    entryVal.name = entryMD.entryName;
+
+    if hasPrimitiveElements(entryVal) {
+      loadHelperSEPrimitive(entryVal, mdName, arrayMD, mdReader);
+
+    } else if entryVal.etype == bigint {
+      loadHelperSEBigint(entryVal, arrayMD, mdReader);
+
+    } else {
+      compilerError("load_checkpoint is not implemented for elements of type "
+                    + entryVal.etype:string);
+    }
+
+    cpLogger.debug(M(), R(), L(), "Data loaded %s".format(mdName));
+    checkSymEntryType(entryVal, "loading");
+    return entryVal;
+  }
+
+  private proc loadHelperSEPrimitive(entryVal, mdName, arrayMD, mdReader) throws {
     const numTargetLocales = arrayMD.numTargetLocales;
     var filenames: [0..#numTargetLocales] string;
     var numElems: [0..#numTargetLocales] int;
@@ -463,18 +516,197 @@ module CheckpointMsg {
 
     cpLogger.debug(M(), R(), L(), "Filenames loaded %s".format(mdName));
 
-    const entryVal = new shared SymEntry(arrayMD.size, etype);
-    entryVal.name = entryMD.entryName;
     readFilesByName(A=entryVal.a,
                     filenames=filenames,
                     sizes=numElems,
                     dsetname=dsetname,
                     ty=0);
-
-    cpLogger.debug(M(), R(), L(), "Data loaded %s".format(mdName));
-    checkSymEntryType(entryVal, "loading");
-    return entryVal;
   }
+
+  private proc loadHelperSEBigint(entry, arrayMD, mdReader) throws {
+    mdReader.readLine(string); // consume the newline
+    const baseName = mdReader.readLine(string, stripNewline=true);
+    coforall (loc, locIdx) in zip(entry.a.targetLocales(), 1..) do on loc {
+        bigintReadArray(localeName(baseName, locIdx),
+                        entry.a.localSlice[entry.a.localSubdomain()]);
+    }
+  }
+
+  /******************************************************************/
+  /*** saving/loading bigint data ***/
+  /******************************************************************/
+
+  /*private*/ type mpz_count_type = uint(32);
+  /*private*/ type mpz_numelems_type = uint;
+
+  /* Writes 'count' and 'sgn' (sign) into 'w'.
+     'count' is assumed to be non-negative.
+     If 'sgn' is 0 then 'count' is recorded as 0 as well.
+  */
+  private proc bigintWriteCountSgn(w: fileWriter(?),
+                                   count: c_size_t, sgn: c_int) throws {
+    // Use the highest bit for "negative".
+    param sgnBit = (1 << (numBits(mpz_count_type)-1)) : mpz_count_type;
+    param countMask = ~sgnBit;
+    var toWrite = (count: mpz_count_type) & countMask;
+
+    if (toWrite: uint(64)) != (count: uint(64)) then
+      throw new NotImplementedError(
+        "checkpointing is not implemented for bigint that need >=2**31 bytes",
+         L(), R(), M());
+
+    if sgn == 0 then toWrite = 0;
+    else if sgn < 0 then toWrite |= sgnBit;
+
+    w.write(toWrite);
+  }
+
+  /* Reads from 'r' into 'countP' and 'sgnP'. Returns false upon EOF. */
+  private proc bigintReadCountSgn(r: fileReader(?),
+                        ref countP: c_size_t, ref sgnP: c_int): bool throws {
+    param sgnBit = (1 << (numBits(mpz_count_type)-1)) : mpz_count_type;
+    param countMask = ~sgnBit;
+    var count: mpz_count_type;
+    if ! r.read(count) then return false;
+
+    countP = count & countMask;
+    sgnP = ( if count == 0 then 0 else
+               if (count & sgnBit) == 0 then 1 else -1 ): c_int;
+    return true;
+  }
+
+  // GMP import, export: https://gmplib.org/manual/Integer-Import-and-Export
+
+  private extern proc mpz_import(ref rop: mpz_t, count: c_size_t,
+    order: c_int, size: c_size_t, endian: c_int, nails: c_size_t,
+    op: c_ptr(void)): void;
+
+  private extern proc mpz_export(rop: c_ptr(void), ref countp: c_size_t,
+    order: c_int, size: c_size_t, endian: c_int, nails: c_size_t,
+    const ref op: mpz_t): c_ptr(void);
+
+  // could tweak these
+  /*private*/ type mpz_imex_elt = uint(8);
+  private param imex_order = 1,
+                imex_size = numBytes(mpz_imex_elt),
+                imex_endian = 0,
+                imex_nails = 0,
+                imex_capacity_start = 300;  // sufficient for most uses?
+
+  /* 'memBuf' provides resizeable memory for exporting and importing GMP ints.
+     This avoids doing alloc+free for each exported/imported bigint.
+   */
+  /*private*/ record memBuf {
+    var dom = { 1:uint..imex_capacity_start:uint };
+    var arr: [dom] mpz_imex_elt;
+    inline proc ref addr do
+      return c_ptrTo(arr);
+    proc ref this(i: uint) ref do
+      return arr[i];
+    proc ref ensureCapacity(numBytes: uint) {
+      const currentSize = arr.sizeAs(uint);
+      if currentSize >= numBytes then return;
+      else dom = { 1..max(currentSize*2, numBytes) };  //resizes 'arr'
+    }
+  }
+
+  private proc bigintWriteOneNumber(w: fileWriter(?), ref mem: memBuf,
+                                    bi: bigint): void throws {
+    const ref birep = bi.mpz;
+    const sgn = mpz_sgn(birep);
+    if sgn == 0 {
+      bigintWriteCountSgn(w, 0, 0);
+      return;
+    }
+    const numBits = mpz_sizeinbase(birep, 2);
+    const numBytes = (numBits + 7) / 8;
+    mem.ensureCapacity(numBytes);
+
+    // "export" the bigint into 'mem'
+    var count: c_size_t;
+    const edata = mpz_export(mem.addr, count,
+                             imex_order, imex_size, imex_endian, imex_nails,
+                             birep);
+    // now count==numBytes and edata==mem.addr
+
+    // write out the outcome to 'w'
+    bigintWriteCountSgn(w, count, sgn);
+    for i in 1..count do
+      w.writeByte(mem[i]);
+  }
+
+  private proc bigintReadOneNumber(r: fileReader(?), ref mem: memBuf,
+                                   ref result: bigint): bool throws {
+    var count: c_size_t;
+    var sgn: c_int;
+    if ! bigintReadCountSgn(r, count, sgn) then
+      return false;
+    if sgn == 0 {
+      result = 0; return true;
+    }
+
+    mem.ensureCapacity(count);
+    for i in 1..count do
+      if ! r.readByte(mem[i]) then
+        throw new BadFormatError("", "readOneBigint(): expected more bytes");
+
+    ref birep = result.mpz;
+    mpz_import(birep, count,
+               imex_order, imex_size, imex_endian, imex_nails,
+               mem.addr);
+    if sgn < 0 then
+      mpz_neg(birep, birep);
+    return true;
+  }
+
+  /* Writes all bigints from 'vals' out to 'fname' in binary,
+     after the first line containing their count in plain text.
+     Overwrites 'fname' if it exists.
+   */
+  private proc bigintWriteArray(fname, const vals: [] bigint) throws {
+    var mem1: memBuf;
+    var ckpt1 = open(fname, ioMode.cw);
+    var writer = ckpt1.writer(serializer=new binarySerializer(),
+                              locking=false);
+    writer.write(vals.sizeAs(mpz_numelems_type));
+    // the main loop for writing
+    for bi in vals do
+      bigintWriteOneNumber(writer, mem1, bi);
+    writer.close();
+    ckpt1.close();
+  }
+
+  /* Reads all bigints from 'fname' into 'vals',
+     which must contain the correct number of elements.
+   */
+  private proc bigintReadArray(fname, ref vals: [] bigint) throws {
+    var mem2: memBuf;
+    var ckpt2 = open(fname, ioMode.r);
+    var reader = ckpt2.reader(deserializer=new binaryDeserializer(),
+                              locking=false);
+    const count = reader.read(mpz_numelems_type);
+    if count != vals.sizeAs(mpz_numelems_type) then
+      throw new IllegalArgumentError("".join(
+        "count mismatch when reading from ", fname, ": expected ",
+        vals.size:string, " bigints while the file contains ",
+        count:string, " bigints"));
+
+    // the main loop for reading
+    for ci in vals do
+      if ! bigintReadOneNumber(reader, mem2, ci) then
+        throw new BadFormatError("", "unexpected EOF while reading bigints from " + fname);
+
+    var dummy: uint(8);
+    if reader.readByte(dummy) then
+      cpLogger.error(M(), R(), L(), "unexpected contents after reading ", count:string, " bigints from ", fname);
+
+    reader.close();
+    ckpt2.close();
+  }
+
+  /******************************************************************/
+  /*** registration and utilities ***/
+  /******************************************************************/
 
   use CommandMap;
   registerFunction("save_checkpoint", saveCheckpointMsg, M());
