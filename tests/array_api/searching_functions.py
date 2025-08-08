@@ -4,7 +4,7 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
-SEED = 314159
+seed = pytest.seed if pytest.seed is not None else 8675309
 
 
 class TestSearchingFunctions:
@@ -21,7 +21,7 @@ class TestSearchingFunctions:
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_argmax(self):
-        a = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=SEED))
+        a = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=seed))
         a[3, 2, 1] = 101
 
         print(a.tolist())
@@ -42,7 +42,7 @@ class TestSearchingFunctions:
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_argmin(self):
-        a = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=SEED))
+        a = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=seed))
         a[3, 2, 1] = -1
 
         assert xp.argmin(a) == 103
@@ -99,8 +99,8 @@ class TestSearchingFunctions:
         a[3, 2, 1] = 1
         a[2, 2, 2] = 1
 
-        b = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=SEED))
-        c = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=SEED))
+        b = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=seed))
+        c = xp.asarray(ak.randint(0, 100, (4, 5, 6), dtype=ak.int64, seed=seed))
 
         d = xp.where(a, b, c)
 

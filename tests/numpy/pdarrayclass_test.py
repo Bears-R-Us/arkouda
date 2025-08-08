@@ -12,7 +12,8 @@ from arkouda.testing import assert_equal as ak_assert_equal
 from arkouda.testing import assert_equivalent
 from arkouda.testing import assert_equivalent as ak_assert_equivalent
 
-SEED = 314159
+seed = 314159  # this hardcoded seed is retained because the sorted tests
+# require known results
 
 
 REDUCTION_OPS = list(set(ak.pdarrayclass.SUPPORTED_REDUCTION_OPS) - set(["isSorted", "isSortedLocally"]))
@@ -102,14 +103,14 @@ class TestPdarrayClass:
         b = ak.flip(a)
         assert not ak.is_sorted(b, axis=axis)
 
-        c = ak.randint(0, size // 10, size, seed=SEED)
+        c = ak.randint(0, size // 10, size, seed=seed)
         assert not ak.is_sorted(c, axis=axis)
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("dtype", list(set(DTYPES) - set(["bool"])))
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 2), (0, 1, 2)])
     def test_is_sorted_multidim(self, dtype, axis):
-        a = ak.array(ak.randint(0, 100, (5, 7, 4), dtype=dtype, seed=SEED))
+        a = ak.array(ak.randint(0, 100, (5, 7, 4), dtype=dtype, seed=seed))
         sorted = ak.is_sorted(a, axis=axis)
         if isinstance(sorted, np.bool_):
             assert not sorted
@@ -156,7 +157,7 @@ class TestPdarrayClass:
     def test_is_locally_sorted_multidim(self, dtype, axis):
         from arkouda.numpy.pdarrayclass import is_locally_sorted
 
-        a = ak.array(ak.randint(0, 100, (20, 20, 20), dtype=dtype, seed=SEED))
+        a = ak.array(ak.randint(0, 100, (20, 20, 20), dtype=dtype, seed=seed))
         sorted = is_locally_sorted(a, axis=axis)
         if isinstance(sorted, np.bool_):
             assert not sorted
@@ -314,9 +315,9 @@ class TestPdarrayClass:
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_diff_1d(self, dtype, size):
         if dtype == "bool":
-            a = ak.randint(0, 2, size, dtype=dtype, seed=SEED)
+            a = ak.randint(0, 2, size, dtype=dtype, seed=seed)
         else:
-            a = ak.randint(0, 100, size, dtype=dtype, seed=SEED)
+            a = ak.randint(0, 100, size, dtype=dtype, seed=seed)
         anp = a.to_ndarray()
 
         a_d = ak.diff(a, n=1)
@@ -333,9 +334,9 @@ class TestPdarrayClass:
     @pytest.mark.parametrize("n", [1, 2])
     def test_diff_multidim(self, dtype, axis, n):
         if dtype == "bool":
-            a = ak.randint(0, 2, (5, 6, 7), dtype=dtype, seed=SEED)
+            a = ak.randint(0, 2, (5, 6, 7), dtype=dtype, seed=seed)
         else:
-            a = ak.randint(0, 100, (5, 6, 7), dtype=dtype, seed=SEED)
+            a = ak.randint(0, 100, (5, 6, 7), dtype=dtype, seed=seed)
         anp = a.to_ndarray()
 
         if axis is not None:
@@ -522,7 +523,7 @@ class TestPdarrayClass:
     @pytest.mark.parametrize("ascending", [True, False])
     @pytest.mark.parametrize("dtype", [ak.int64, ak.float64, ak.bool_, ak.uint64, ak.bigint])
     def test_argsort_random(self, size, ascending, dtype):
-        a = ak.randint(0, 1_000_000, size, dtype=dtype if dtype != ak.bigint else ak.int64, seed=1)
+        a = ak.randint(0, 1_000_000, size, dtype=dtype if dtype != ak.bigint else ak.int64, seed=seed)
         if dtype == ak.bigint:
             a = a + 2**70
         perm = a.argsort(ascending=ascending)
@@ -539,7 +540,7 @@ class TestPdarrayClass:
     @pytest.mark.parametrize("ascending", [True, False])
     def test_argsort_numpy_alignment(self, shape, dtype, ascending):
         for axis in range(len(shape)):
-            a = ak.randint(0, 100, shape, dtype=dtype, seed=SEED)
+            a = ak.randint(0, 100, shape, dtype=dtype, seed=seed)
             b = a.argsort(axis=axis, ascending=ascending)
             np_b = a.to_ndarray().argsort(axis=axis, stable=True)
             np_b = np.flip(np_b, axis=axis) if not ascending else np_b

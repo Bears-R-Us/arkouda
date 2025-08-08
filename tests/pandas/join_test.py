@@ -8,6 +8,8 @@ from arkouda.pandas import join
 Encapsulates a variety of arkouda join_on_eq_with_dt test cases.
 """
 
+seed = pytest.seed if pytest.seed is not None else 8675309
+
 
 class TestJoin:
     @classmethod
@@ -94,7 +96,6 @@ class TestJoin:
 
     def test_multi_array_inner_join(self):
         size = 1000
-        seed = 1
         a = ak.randint(-size // 10, size // 10, size, seed=seed)
         b = ak.randint(-size // 10, size // 10, size, seed=seed + 1)
         ones = ak.ones(size, int)

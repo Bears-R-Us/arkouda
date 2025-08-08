@@ -26,6 +26,8 @@ from arkouda.testing import (
     assert_series_equivalent,
 )
 
+seed = pytest.seed if pytest.seed is not None else 8675309
+
 
 class TestAsserters:
     def test_asserters_docstrings(self):
@@ -869,7 +871,7 @@ class TestAsserters:
         # check_exact
         # rtol
         # atol
-        rng = ak.random.default_rng(seed=17)
+        rng = ak.random.default_rng(seed=seed)
         atol = 0.001
         rtol = 0.001
 

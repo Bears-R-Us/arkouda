@@ -8,6 +8,8 @@ from arkouda.testing import assert_arkouda_array_equivalent
 
 NUMERIC_AND_BIGINT_TYPES = ["int64", "float64", "uint64", "bigint"]
 
+seed = pytest.seed if pytest.seed is not None else 8675309
+
 
 def make_ak_arrays(dtype):
     if dtype in ["int64", "uint64"]:
@@ -151,7 +153,7 @@ class TestSort:
             shift = 0
             dtype_ = dtype
         if v_shape == ():
-            v = ak.randint(low=low, high=high, size=1, dtype=dtype_, seed=pytest.seed)[0]
+            v = ak.randint(low=low, high=high, size=1, dtype=dtype_, seed=seed)[0]
             if dtype != ak.bigint:
                 v = dtype(v)
             else:
@@ -165,10 +167,10 @@ class TestSort:
                     high=high,
                     size=v_shape,
                     dtype=dtype_,
-                    seed=pytest.seed,
+                    seed=seed,
                 )
                 v = ak.array(v, dtype) + shift
-        a = ak.randint(low=low, high=high, size=size, dtype=dtype_, seed=pytest.seed)
+        a = ak.randint(low=low, high=high, size=size, dtype=dtype_, seed=seed)
         a = ak.sort(a)
         a = ak.array(a, dtype) + shift
         np_a = a.to_ndarray()
@@ -201,11 +203,11 @@ class TestSort:
             high=high,
             size=10,
             dtype=dtype_,
-            seed=pytest.seed,
+            seed=seed,
         )
         v = ak.array(v, dtype) + shift
         v = ak.sort(v)  # sort for fast path
-        a = ak.randint(low=low, high=high, size=size, dtype=dtype_, seed=pytest.seed)
+        a = ak.randint(low=low, high=high, size=size, dtype=dtype_, seed=seed)
         a = ak.sort(a)
         a = ak.array(a, dtype) + shift
         np_a = a.to_ndarray()
