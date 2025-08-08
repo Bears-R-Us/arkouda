@@ -1,4 +1,5 @@
-"""Plotting utilities for Arkouda data structures.
+"""
+Plotting utilities for Arkouda data structures.
 
 The `arkouda.plotting` module provides lightweight, matplotlib-based visualization
 functions for Arkouda arrays and DataFrames. These tools are intended for exploratory
@@ -69,7 +70,8 @@ __all__ = [
 
 
 def plot_dist(b, h, log=True, xlabel=None, newfig=True):
-    """Plot the distribution and cumulative distribution of histogram Data.
+    """
+    Plot the distribution and cumulative distribution of histogram Data.
 
     Parameters
     ----------
@@ -121,7 +123,8 @@ def plot_dist(b, h, log=True, xlabel=None, newfig=True):
 
 
 def hist_all(ak_df: DataFrame, cols: Optional[list[str]] = None):
-    """Create a grid of histograms for numeric columns in an Arkouda DataFrame.
+    """
+    Create a grid of histograms for numeric columns in an Arkouda DataFrame.
 
     Parameters
     ----------

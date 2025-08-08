@@ -532,7 +532,8 @@ class Series:
 
     @property
     def at(self) -> _LocIndexer:
-        """Accesses entries of a Series by label.
+        """
+        Accesses entries of a Series by label.
 
         Returns
         -------
