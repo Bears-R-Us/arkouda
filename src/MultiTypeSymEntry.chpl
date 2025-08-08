@@ -491,10 +491,10 @@ module MultiTypeSymEntry
         }
 
         override proc removeDependents(st: borrowed SymTab) throws {
-            // getSegString([],[],st) creates unnamed SymEntries
-            // and does not store them in the SymTab
-            if offsetsEntry.name != "" then st.deleteEntry(offsetsEntry.name);
-            if bytesEntry.name   != "" then st.deleteEntry(bytesEntry.name);
+            if st.contains(offsetsEntry.name) then
+                st.deleteEntry(offsetsEntry.name);
+            if st.contains(bytesEntry.name) then
+                st.deleteEntry(bytesEntry.name);
         }
 
         /**

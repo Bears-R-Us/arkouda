@@ -194,8 +194,15 @@ module MultiTypeSymbolTable
         */
         proc clear() throws {
             mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "Clearing all unregistered entries"); 
-            for n in tab.keysToArray() { deleteEntry(n); }
+                                           "Clearing all unregistered entries");
+
+            // use keysToArray(): can't iterate over tab.keys() while deleting
+            for n in tab.keysToArray() {
+                // Deleting a SegStringSymEntry may have resulted in deletion
+                // of its offset and value arrays. Check for that.
+                if tab.contains(n) then
+                    deleteEntry(n);
+            }
         }
 
         /*
