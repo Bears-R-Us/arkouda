@@ -38,7 +38,7 @@ Examples
 --------
 >>> import arkouda as ak
 >>> import arkouda.comm_diagnostics as cd
->>> ak.connect()
+
 >>> from arkouda.comm_diagnostics import start_comm_diagnostics, stop_comm_diagnostics, \
 get_comm_diagnostics, print_comm_diagnostics_table
 >>> start_comm_diagnostics()
@@ -59,7 +59,6 @@ Index(['put', 'get', 'put_nb', 'get_nb', 'try_nb', 'amo', 'execute_on', 'execute
 1  170  198
 2  170  198
 3  170  198 (4 rows x 2 columns)
-
 
 >>> print_comm_diagnostics_table()  # doctest: +SKIP
 +----+-------+-------+--------------+-----------------+

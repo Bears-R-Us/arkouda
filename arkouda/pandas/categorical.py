@@ -391,7 +391,7 @@ class Categorical:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
+
         >>> c = Categorical(ak.array(["a", "b", "c"]))
         >>> c_cpy = Categorical(ak.array(["a", "b", "c"]))
         >>> c.equals(c_cpy)
@@ -1094,7 +1094,7 @@ class Categorical:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
+
         >>> cat = ak.Categorical(ak.array(['dog', 'cat', 'dog', 'bird']))
         >>> cat.argsort()
         array([3, 1, 0, 2])  # 'bird' < 'cat' < 'dog'

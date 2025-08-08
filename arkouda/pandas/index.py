@@ -988,7 +988,7 @@ class Index:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
+
         >>> idx = ak.Index(ak.array([2, 3, 2, 3, 4]))
         >>> idx
         Index(array([2 3 2 3 4]), dtype='int64')
@@ -1679,7 +1679,7 @@ class MultiIndex(Index):
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
+
         >>> m = ak.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])
         >>> m.memory_usage()
         48
