@@ -59,6 +59,5 @@ def bench_scatter(benchmark, dtype):
     benchmark.extra_info["problem_size"] = N
     benchmark.extra_info["index_size"] = isize
     benchmark.extra_info["value_size"] = vsize
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (numBytes / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((numBytes / benchmark.stats["mean"]) / 2**30)

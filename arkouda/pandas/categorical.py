@@ -47,9 +47,9 @@ See Also
 
 from __future__ import annotations
 
+from collections import defaultdict
 import itertools
 import json
-from collections import defaultdict
 from typing import (
     TYPE_CHECKING,
     DefaultDict,
@@ -873,7 +873,7 @@ class Categorical:
 
     @typechecked
     def endswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
-        """
+        r"""
         Check whether each element ends with the given substring.
 
         Parameters

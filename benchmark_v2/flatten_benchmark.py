@@ -45,6 +45,7 @@ def bench_ak_flatten_2d(benchmark, dtype, shape_type):
     benchmark.extra_info["description"] = f"Measures ak.flatten (np-style) on dtype={dtype}"
     benchmark.extra_info["problem_size"] = N
     benchmark.extra_info["backend"] = "Arkouda"
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float(
         (data.size * data.itemsize / benchmark.stats["mean"]) / 2**30
     )

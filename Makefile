@@ -684,6 +684,7 @@ check:
 
 ruff-format:
 	ruff format .
+	ruff check $(ARKOUDA_PROJECT_DIR)/arkouda --fix
 	#  Verify if it will pass the CI check:
 	ruff format --check --diff
 
@@ -703,7 +704,7 @@ check-doc-examples:
 	fi
 	
 	
-format: isort ruff-format check-doc-examples
+format: ruff-format isort check-doc-examples
 	#   Run docstring linter
 	pydocstyle
 	#   Run flake8

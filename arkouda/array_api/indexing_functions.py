@@ -15,7 +15,6 @@ def take(x: Array, indices: Array, /, *, axis: Optional[int] = None) -> Array:
 
     Parameters
     ----------
-
     x : Array
         The array from which to take elements
     indices : Array
@@ -23,7 +22,6 @@ def take(x: Array, indices: Array, /, *, axis: Optional[int] = None) -> Array:
     axis : int, optional
         The axis along which to take elements. If None, `x` must be 1D.
     """
-
     from arkouda.numpy.numeric import take
 
     if axis is None and x.ndim != 1:

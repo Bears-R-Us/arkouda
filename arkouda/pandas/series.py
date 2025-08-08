@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from builtins import str as builtin_str
 import json
 import operator
-from builtins import str as builtin_str
 from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, TypeVar, Union, cast
 
 import numpy as np
@@ -10,7 +10,6 @@ import pandas as pd
 from pandas._config import get_option
 from typeguard import typechecked
 
-import arkouda.pandas.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
 from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
@@ -26,6 +25,7 @@ from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import get_callback, is_float
 from arkouda.pandas.categorical import Categorical
+import arkouda.pandas.dataframe
 from arkouda.pandas.groupbyclass import GroupBy, groupable_element_type
 from arkouda.pandas.index import Index, MultiIndex
 
@@ -781,19 +781,19 @@ class Series:
 
     @typechecked
     def tail(self, n: int = 10) -> Series:
-        """Return the last n values of the series"""
+        """Return the last n values of the series."""
         idx_series = self.index[-n:]
         return Series(index=idx_series.index, data=self.values[-n:])
 
     @typechecked
     def head(self, n: int = 10) -> Series:
-        """Return the first n values of the series"""
+        """Return the first n values of the series."""
         idx_series = self.index[0:n]
         return Series(index=idx_series.index, data=self.values[0:n])
 
     @typechecked
     def to_pandas(self) -> pd.Series:
-        """Convert the series to a local PANDAS series"""
+        """Convert the series to a local PANDAS series."""
         import copy
 
         from arkouda.numpy.segarray import SegArray
@@ -850,12 +850,17 @@ class Series:
         >>> ak.connect()
         >>> s = ak.Series(["elk", "pig", "dog", "quetzal"], name="animal")
         >>> print(s.to_markdown())
+        +----+----------+
         |    | animal   |
-        |---:|:---------|
+        +====+==========+
         |  0 | elk      |
+        +----+----------+
         |  1 | pig      |
+        +----+----------+
         |  2 | dog      |
+        +----+----------+
         |  3 | quetzal  |
+        +----+----------+
 
         Output markdown with a tabulate option.
 
@@ -959,7 +964,7 @@ class Series:
     @typechecked
     def register(self, user_defined_name: builtin_str):
         """
-        Register this Series object and underlying components with the Arkouda server
+        Register this Series object and underlying components with the Arkouda server.
 
         Parameters
         ----------
@@ -1056,7 +1061,7 @@ class Series:
     def unregister(self):
         """
         Unregister this Series object in the arkouda server which was previously
-        registered using register() and/or attached to using attach()
+        registered using register() and/or attached to using attach().
 
         Raises
         ------
@@ -1154,7 +1159,7 @@ class Series:
     @staticmethod
     @typechecked
     def _all_aligned(array: List) -> bool:
-        """Is an array of Series indexed aligned?"""
+        """Return whether all Series in the array are index-aligned."""
         itor = iter(array)
         a1 = next(itor).index
         for a2 in itor:
@@ -1276,53 +1281,29 @@ class Series:
         >>> import arkouda as ak
         >>> s = ak.Series(ak.array([2, 3, 2, 3, 4]))
         >>> s
-
-        +----+-----+
-        |    | 0   |
-        +====+=====+
-        |  0 | 2   |
-        +----+-----+
-        |  1 | 3   |
-        +----+-----+
-        |  2 | 2   |
-        +----+-----+
-        |  3 | 3   |
-        +----+-----+
-        |  4 | 4   |
-        +----+-----+
+        0    2
+        1    3
+        2    2
+        3    3
+        4    4
+        dtype: int64
 
         >>> s.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
-
-        +----+-----+
-        |    | 0   |
-        +====+=====+
-        |  0 | 30.0|
-        +----+-----+
-        |  1 | 5.0 |
-        +----+-----+
-        |  2 | 30.0|
-        +----+-----+
-        |  3 | 5.0 |
-        +----+-----+
-        |  4 | 25.0|
-        +----+-----+
+        0    30.0
+        1     5.0
+        2    30.0
+        3     5.0
+        4    25.0
+        dtype: float64
 
         >>> s2 = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
         >>> s.map(s2)
-
-        +----+-----+
-        |    | 0   |
-        +====+=====+
-        |  0 | b   |
-        +----+-----+
-        |  1 | d   |
-        +----+-----+
-        |  2 | b   |
-        +----+-----+
-        |  3 | d   |
-        +----+-----+
-        |  4 | a   |
-        +----+-----+
+        0    b
+        1    d
+        2    b
+        3    d
+        4    a
+        dtype: object
 
         """
         from arkouda import Series
@@ -1353,16 +1334,10 @@ class Series:
 
         >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
         >>> s.isna()
-
-        +----+---------+
-        |    |   0     |
-        +====+=========+
-        |  1 |   False |
-        +----+---------+
-        |  2 |   False |
-        +----+---------+
-        |  4 |   True  |
-        +----+---------+
+        1    False
+        2    False
+        4     True
+        dtype: bool
 
         """
         from arkouda.numpy import isnan
@@ -1397,16 +1372,10 @@ class Series:
 
         >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
         >>> s.isnull()
-
-        +----+---------+
-        |    |   0     |
-        +====+=========+
-        |  1 |   False |
-        +----+---------+
-        |  2 |   False |
-        +----+---------+
-        |  4 |   True  |
-        +----+---------+
+        1    False
+        2    False
+        4     True
+        dtype: bool
 
         """
         return self.isna()
@@ -1434,16 +1403,10 @@ class Series:
 
         >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
         >>> s.notna()
-
-        +----+---------+
-        |    |   0     |
-        +====+=========+
-        |  1 |   True  |
-        +----+---------+
-        |  2 |   True  |
-        +----+---------+
-        |  4 |   False |
-        +----+---------+
+        1     True
+        2     True
+        4    False
+        dtype: bool
 
         """
         from arkouda.numpy import isnan
@@ -1478,16 +1441,10 @@ class Series:
 
         >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
         >>> s.notnull()
-
-        +----+---------+
-        |    |   0     |
-        +====+=========+
-        |  1 |   True  |
-        +----+---------+
-        |  2 |   True  |
-        +----+---------+
-        |  4 |   False |
-        +----+---------+
+        1     True
+        2     True
+        4    False
+        dtype: bool
 
         """
         return self.notna()
@@ -1508,21 +1465,14 @@ class Series:
 
         >>> s = ak.Series(ak.array([1, 2, 3, np.nan]))
         >>> s
-
-        +----+-------+
-        |    |   0   |
-        +====+=======+
-        |  0 |   1.0 |
-        +----+-------+
-        |  1 |   2.0 |
-        +----+-------+
-        |  2 |   3.0 |
-        +----+-------+
-        |  3 |   nan |
-        +----+-------+
+        0    1.0
+        1    2.0
+        2    3.0
+        3    NaN
+        dtype: float64
 
         >>> s.hasnans()
-        True
+        np.True_
 
         """
         from arkouda.numpy import isnan
@@ -1555,74 +1505,43 @@ class Series:
         --------
         >>> import arkouda as ak
         >>> from arkouda import Series
+        >>> import numpy as np
 
         >>> data = ak.Series([1, np.nan, 3, np.nan, 5])
         >>> data
-
-        +----+-------+
-        |    |   0   |
-        +====+=======+
-        |  0 |   1.0 |
-        +----+-------+
-        |  1 |   nan |
-        +----+-------+
-        |  2 |   3.0 |
-        +----+-------+
-        |  3 |   nan |
-        +----+-------+
-        |  4 |   5.0 |
-        +----+-------+
+        0    1.0
+        1    NaN
+        2    3.0
+        3    NaN
+        4    5.0
+        dtype: float64
 
         >>> fill_values1 = ak.ones(5)
         >>> data.fillna(fill_values1)
-
-        +----+-------+
-        |    |   0   |
-        +====+=======+
-        |  0 |   1.0 |
-        +----+-------+
-        |  1 |   1.0 |
-        +----+-------+
-        |  2 |   3.0 |
-        +----+-------+
-        |  3 |   1.0 |
-        +----+-------+
-        |  4 |   5.0 |
-        +----+-------+
+        0    1.0
+        1    1.0
+        2    3.0
+        3    1.0
+        4    5.0
+        dtype: float64
 
         >>> fill_values2 = Series(ak.ones(5))
         >>> data.fillna(fill_values2)
-
-        +----+-------+
-        |    |   0   |
-        +====+=======+
-        |  0 |   1.0 |
-        +----+-------+
-        |  1 |   1.0 |
-        +----+-------+
-        |  2 |   3.0 |
-        +----+-------+
-        |  3 |   1.0 |
-        +----+-------+
-        |  4 |   5.0 |
-        +----+-------+
+        0    1.0
+        1    1.0
+        2    3.0
+        3    1.0
+        4    5.0
+        dtype: float64
 
         >>> fill_values3 = 100.0
         >>> data.fillna(fill_values3)
-
-        +----+---------+
-        |    |     0   |
-        +====+=========+
-        |  0 |     1.0 |
-        +----+---------+
-        |  1 |   100.0 |
-        +----+---------+
-        |  2 |     3.0 |
-        +----+---------+
-        |  3 |   100.0 |
-        +----+---------+
-        |  4 |     5.0 |
-        +----+---------+
+        0      1.0
+        1    100.0
+        2      3.0
+        3    100.0
+        4      5.0
+        dtype: float64
 
         """
         from arkouda.numpy import isnan, where

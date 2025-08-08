@@ -62,9 +62,9 @@ import json
 from typing import TYPE_CHECKING, List, Optional, Tuple, TypeVar, Union
 
 import numpy as np
-import pandas as pd
 from numpy import array as ndarray
 from numpy import dtype as npdtype
+import pandas as pd
 from typeguard import typechecked
 
 from arkouda.numpy.dtypes import bool_ as akbool
@@ -732,7 +732,7 @@ class Index:
         Unregister this Index object in the arkouda server.
 
         Unregister this Index object in the arkouda server, which was previously
-        registered using register() and/or attached to using attach()
+        registered using register() and/or attached to using attach().
 
         Raises
         ------
@@ -1273,6 +1273,7 @@ class Index:
         compression : str (Optional)
             (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
             Sets the compression type used with Parquet files
+
         Returns
         -------
         string message indicating result of save operation

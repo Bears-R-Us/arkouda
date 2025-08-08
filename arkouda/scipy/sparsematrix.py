@@ -115,6 +115,7 @@ def create_sparse_matrix(size: int, rows: pdarray, cols: pdarray, vals: pdarray,
     -------
     sparray
         A sparse matrix with the specified row and column indices and values
+
     """
     from arkouda.client import generic_msg
 

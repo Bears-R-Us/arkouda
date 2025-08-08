@@ -23,9 +23,6 @@ from arkouda.numpy.dtypes import (
     SeriesDTypes,
     bigint,
 )
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
-from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedInt,
@@ -34,6 +31,9 @@ from arkouda.numpy.dtypes import (
     resolve_scalar_dtype,
     str_,
 )
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
+from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.strings import Strings
@@ -348,12 +348,8 @@ def array(
             payload=_array_memview(encoded_np),
             send_binary=True,
         )
-        parts = cast(str, rep_msg).split("+", maxsplit=3)
-        return (
-            Strings.from_parts(parts[0], parts[1])
-            if dtype is None
-            else akcast(Strings.from_parts(parts[0], parts[1]), dtype)
-        )
+        strings = Strings.from_return_msg(cast(str, rep_msg))
+        return strings if dtype is None else akcast(strings, dtype)
 
     # If not strings, then check that dtype is supported in arkouda
     if dtype == bigint or a.dtype.name not in DTypes:
@@ -1026,10 +1022,11 @@ def arange(
     dtype: Optional[Union[np.dtype, type, bigint]] = None,
     max_bits: Optional[int] = None,
 ) -> pdarray:
-    """# noqa: DAR102
-    arange([start,] stop[, step,] dtype=int64)
-
+    """
     Create a pdarray of consecutive integers within the interval [start, stop).
+
+    Called as: arange([start,] stop[, step,] dtype=int64).
+
     If only one arg is given then arg is the stop parameter. If two args are
     given, then the first arg is start and second is stop. If three args are
     given, then the first arg is start, second is stop, third is step.
@@ -1318,7 +1315,7 @@ def uniform(
 
 @typechecked
 def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) -> pdarray:
-    """
+    r"""
     Draw real numbers from the standard normal distribution.
 
     Parameters
@@ -1437,7 +1434,7 @@ def random_strings_lognormal(
     characters: str = "uppercase",
     seed: Optional[int_scalars] = None,
 ) -> Strings:
-    """
+    r"""
     Generate random strings with log-normally distributed lengths and
     with characters drawn from a specified set.
 

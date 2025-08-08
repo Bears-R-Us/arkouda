@@ -129,7 +129,7 @@ def standard_normal(
     size: Union[int_scalars, Tuple[int_scalars, ...]],
     seed: Union[None, int_scalars] = None,
 ) -> pdarray:
-    """
+    r"""
     Draw real numbers from the standard normal distribution.
 
     Parameters

@@ -2,7 +2,9 @@ import os
 
 import pytest
 
-from server_util.test.server_test_util import TestRunningMode, get_arkouda_numlocales, start_arkouda_server
+from server_util.test.server_test_util import (TestRunningMode,
+                                               get_arkouda_numlocales,
+                                               start_arkouda_server)
 
 
 def pytest_addoption(parser):

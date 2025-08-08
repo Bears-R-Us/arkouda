@@ -9,7 +9,7 @@ module MultiTypeSymEntry
     use Logging;
     use AryUtil;
 
-
+    use MultiTypeSymbolTable;
     public use NumPyDType;
     public use SymArrayDmap;
 
@@ -87,6 +87,13 @@ module MultiTypeSymEntry
          */
         proc getSizeEstimate(): int {
             return 0;
+        }
+
+        /**
+         * When a SegStringSymEntry is removed from the ST, need to remove
+         * its "offsets" and "values". Otherwise nothing to do.
+         */
+        proc removeDependents(st: borrowed SymTab) throws {
         }
 
         /**
@@ -461,8 +468,8 @@ module MultiTypeSymEntry
     class SegStringSymEntry:GenSymEntry {
         type etype = string;
 
-        var offsetsEntry: shared SymEntry(int, 1);
-        var bytesEntry: shared SymEntry(uint(8), 1);
+        const offsetsEntry: shared SymEntry(int, 1);
+        const bytesEntry: shared SymEntry(uint(8), 1);
 
         proc init(offsetsSymEntry: shared SymEntry(int), bytesSymEntry: shared SymEntry(uint(8)), type etype) {
             super.init(etype, bytesSymEntry.size);
@@ -481,6 +488,13 @@ module MultiTypeSymEntry
 
         override proc getSizeEstimate(): int {
             return this.offsetsEntry.getSizeEstimate() + this.bytesEntry.getSizeEstimate();
+        }
+
+        override proc removeDependents(st: borrowed SymTab) throws {
+            if st.contains(offsetsEntry.name) then
+                st.deleteEntry(offsetsEntry.name);
+            if st.contains(bytesEntry.name) then
+                st.deleteEntry(bytesEntry.name);
         }
 
         /**

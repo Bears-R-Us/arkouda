@@ -167,7 +167,7 @@ setup(
         "pip",
         "types-tabulate",
         "tables>=3.10.0",
-        "pyarrow",
+        "pyarrow<21.0.0,>=6.0.1",
         "scipy",
         "cloudpickle",
         # chapel-py

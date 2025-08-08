@@ -1,7 +1,7 @@
+from collections import deque
 import datetime as dt
 import math
 import statistics
-from collections import deque
 
 import numpy as np
 import pandas as pd

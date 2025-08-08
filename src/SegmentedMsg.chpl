@@ -47,7 +47,7 @@ module SegmentedMsg {
     // st.deleteEntry(valuesName);
 
     // Now return msg binding our newly created SegString object
-    var repMsg = "created " + st.attrib(segString.name) + "+created bytes.size %?".format(segString.nBytes);
+    var repMsg = "".join("created ", st.attrib(segString.name), "+created bytes.size ", segString.nBytes:string);
     smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }

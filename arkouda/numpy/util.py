@@ -226,6 +226,7 @@ def register(obj, name):
     >>> registered_cat = register(cat, "my_cat")
     >>> print(registered_cat)
     ['apple', 'banana', 'cherry']
+
     """
     return obj.register(name)
 
@@ -345,6 +346,7 @@ def unregister(name: str) -> str:
     >>> response = ak.unregister("my_array")
     >>> print(response)
     Unregistered PDARRAY my_array
+
     """
     from arkouda.client import generic_msg
 
@@ -422,6 +424,7 @@ def register_all(data: dict):
     After calling this function, "array1" and "array2" are registered
     in Arkouda, and can be accessed by their names.
     >>> ak.unregister_all(["array1", "array2"])
+
     """
     for reg_name, obj in data.items():
         register(obj, reg_name)
@@ -598,7 +601,6 @@ def broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]:
     >>> broadcast_dims((4,), (3, 1))
     (3, 4)
     """
-
     Na = len(sa)
     Nb = len(sb)
     N = max(Na, Nb)

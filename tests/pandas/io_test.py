@@ -8,10 +8,10 @@ from typing import List, Mapping, Union
 import h5py
 import numpy as np
 import pandas as pd
+from pandas.testing import assert_series_equal
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
-from pandas.testing import assert_series_equal
 
 import arkouda as ak
 from arkouda import read_zarr, to_zarr

@@ -27,7 +27,6 @@ def xlogy(x: Union[pdarray, np.float64], y: pdarray):
 
     Examples
     --------
-
     >>> import arkouda as ak
     >>> from arkouda.scipy.special import xlogy
     >>> xlogy( ak.array([1, 2, 3, 4]),  ak.array([5,6,7,8]))

@@ -15,15 +15,6 @@ Main Features
 - Utility methods for enabling/disabling verbose output globally
 - Client-side custom log injection into the Arkouda server logs via `write_log`
 
-Exports
--------
-__all__ = [
-    "LogLevel",
-    "enableVerbose",
-    "disableVerbose",
-    "write_log",
-]
-
 Classes
 -------
 LogLevel : Enum
@@ -65,7 +56,6 @@ See Also
 
 """
 
-import os
 from enum import Enum
 from logging import (
     CRITICAL,
@@ -78,6 +68,7 @@ from logging import (
     Logger,
     StreamHandler,
 )
+import os
 from typing import List, Optional, cast
 
 from typeguard import typechecked

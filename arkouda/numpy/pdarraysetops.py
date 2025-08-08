@@ -203,7 +203,7 @@ def in1d(
     arkouda.pandas.groupbyclass.unique, intersect1d, union1d
 
     Notes
-    ------
+    -----
     `in1d` can be considered as an element-wise function version of the
     python keyword `in`, for 1-D sequences. ``in1d(a, b)`` is logically
     equivalent to ``ak.array([item in b for item in a])``, but is much

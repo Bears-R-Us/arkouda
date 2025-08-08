@@ -28,6 +28,5 @@ def bench_strings_split(benchmark, label, delim, use_regex):
     benchmark.extra_info["description"] = f"Performance of Strings.split (mode: {label})"
     benchmark.extra_info["problem_size"] = N
     benchmark.extra_info["backend"] = "Arkouda"
-    benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (num_bytes / benchmark.stats["mean"]) / 2**30
-    )
+    #   units are GiB/sec:
+    benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)

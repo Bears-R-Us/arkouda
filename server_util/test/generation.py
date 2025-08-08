@@ -2,9 +2,9 @@ import random
 from string import ascii_lowercase, ascii_uppercase, digits
 from typing import Mapping
 
+from context import arkouda as ak
 import h5py
 import numpy as np
-from context import arkouda as ak
 
 ALPHABET = ascii_lowercase
 UPPERCASE_ALPHABET = ascii_uppercase

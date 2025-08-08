@@ -1,8 +1,9 @@
 
+import numpy as np
 from base_test import ArkoudaTest
 from context import arkouda as ak
+
 import arkouda.array_api as xp
-import numpy as np
 
 SEED = 314159
 s = SEED

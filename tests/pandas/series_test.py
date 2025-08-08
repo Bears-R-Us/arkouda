@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
-import pytest
 from pandas.testing import assert_frame_equal as pd_assert_frame_equal
 from pandas.testing import assert_series_equal as pd_assert_series_equal
+import pytest
 
 import arkouda as ak
 from arkouda.pandas.series import Series
@@ -15,13 +15,13 @@ INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bool_, ak.bigint]
 
 
 class TestSeries:
-    # def test_series_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(
-    #         series, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
-    #     )
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    def test_series_docstrings(self):
+        import doctest
+
+        from arkouda import series
+
+        result = doctest.testmod(series, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_series_creation(self, dtype):
