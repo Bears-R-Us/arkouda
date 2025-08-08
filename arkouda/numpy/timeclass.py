@@ -232,7 +232,7 @@ class _AbstractBaseTime(pdarray):
         file_type: str = "distribute",
     ):
         """
-        Override of the pdarray to_hdf to store the special dtype
+        Override of the pdarray to_hdf to store the special dtype.
         """
         from typing import cast as typecast
 
@@ -655,7 +655,7 @@ class Datetime(_AbstractBaseTime):
 
     def register(self, user_defined_name):
         """
-        Register this Datetime object and underlying components with the Arkouda server
+        Register this Datetime object and underlying components with the Arkouda server.
 
         Parameters
         ----------
@@ -686,6 +686,7 @@ class Datetime(_AbstractBaseTime):
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.client import generic_msg
 
@@ -705,7 +706,7 @@ class Datetime(_AbstractBaseTime):
     def unregister(self):
         """
         Unregister this Datetime object in the arkouda server which was previously
-        registered using register() and/or attached to using attach()
+        registered using register() and/or attached to using attach().
 
         Raises
         ------
@@ -721,6 +722,7 @@ class Datetime(_AbstractBaseTime):
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.numpy.util import unregister
 
@@ -903,7 +905,7 @@ class Timedelta(_AbstractBaseTime):
         keepdims: Optional[bool] = False,
     ):
         """
-        Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std
+        Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std.
         """
         return self._scalar_callback(self.values.std(ddof, axis, keepdims))
 
@@ -920,7 +922,7 @@ class Timedelta(_AbstractBaseTime):
 
     def register(self, user_defined_name):
         """
-        Register this Timedelta object and underlying components with the Arkouda server
+        Register this Timedelta object and underlying components with the Arkouda server.
 
         Parameters
         ----------
@@ -951,6 +953,7 @@ class Timedelta(_AbstractBaseTime):
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.client import generic_msg
 
@@ -970,7 +973,7 @@ class Timedelta(_AbstractBaseTime):
     def unregister(self):
         """
         Unregister this timedelta object in the arkouda server which was previously
-        registered using register() and/or attached to using attach()
+        registered using register() and/or attached to using attach().
 
         Raises
         ------
@@ -986,6 +989,7 @@ class Timedelta(_AbstractBaseTime):
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.numpy.util import unregister
 
@@ -1082,7 +1086,6 @@ def date_range(
     <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
 
     """
-
     return Datetime(
         pd_date_range(
             start,

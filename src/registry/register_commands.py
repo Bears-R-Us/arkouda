@@ -1,7 +1,7 @@
+from enum import Enum
 import itertools
 import json
 import sys
-from enum import Enum
 
 import chapel
 

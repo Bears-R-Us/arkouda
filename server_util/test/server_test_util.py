@@ -14,14 +14,14 @@ stopped atexit or with a call to stop_arkouda_server().
 """
 
 import atexit
+from collections import namedtuple
 import contextlib
+from enum import Enum
 import logging
 import os
 import socket
 import subprocess
 import time
-from collections import namedtuple
-from enum import Enum
 
 
 class TestRunningMode(Enum):

@@ -1,6 +1,6 @@
+from math import isclose, prod, sqrt
 import random
 import warnings
-from math import isclose, prod, sqrt
 
 import numpy as np
 import pytest

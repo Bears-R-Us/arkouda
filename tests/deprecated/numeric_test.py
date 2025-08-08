@@ -1,5 +1,6 @@
-import numpy as np
 from math import isclose
+
+import numpy as np
 from base_test import ArkoudaTest
 from context import arkouda as ak
 

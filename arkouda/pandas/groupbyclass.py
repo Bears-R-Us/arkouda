@@ -2361,7 +2361,7 @@ class GroupBy:
         Unregister this GroupBy object.
 
         Unregister this GroupBy object in the arkouda server which was previously
-        registered using register() and/or attached to using attach()
+        registered using register() and/or attached to using attach().
 
         Raises
         ------

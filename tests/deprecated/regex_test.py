@@ -1,7 +1,6 @@
 import re
 
 import numpy as np
-
 from base_test import ArkoudaTest
 from context import arkouda as ak
 

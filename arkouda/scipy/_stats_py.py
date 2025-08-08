@@ -75,7 +75,6 @@ def power_divergence(f_obs, f_exp=None, ddof=0, lambda_=None):
 
     Examples
     --------
-
     >>> import arkouda as ak
     >>> from arkouda.scipy import power_divergence
     >>> x = ak.array([10, 20, 30, 10])
@@ -88,19 +87,17 @@ def power_divergence(f_obs, f_exp=None, ddof=0, lambda_=None):
         pvalue=np.float64(0.04380595350226197))
 
     See Also
-    -------
+    --------
     scipy.stats.power_divergence
     arkouda.akstats.chisquare
 
     Notes
     -----
-
     This is a modified version of scipy.stats.power_divergence [2]
     in order to scale using arkouda pdarrays.
 
     References
     ----------
-
         [1] "scipy.stats.power_divergence",
         https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.power_divergence.html
 
@@ -193,7 +190,6 @@ def chisquare(f_obs, f_exp=None, ddof=0):
 
     Examples
     --------
-
     >>> import arkouda as ak
     >>> from arkouda.scipy import chisquare
     >>> chisquare(ak.array([10, 20, 30, 10]), ak.array([10, 30, 20, 10]))
@@ -202,7 +198,7 @@ def chisquare(f_obs, f_exp=None, ddof=0):
 
 
     See Also
-    -------
+    --------
     scipy.stats.chisquare
     arkouda.akstats.power_divergence
 

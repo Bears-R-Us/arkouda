@@ -1,6 +1,6 @@
-import os
 from collections import Counter
 from itertools import product
+import os
 
 import numpy as np
 import pytest

@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-import sys, time, argparse
+import argparse
+import sys
+import time
+
 import arkouda as ak
 
 if __name__ == "__main__":

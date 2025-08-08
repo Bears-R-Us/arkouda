@@ -182,7 +182,7 @@ def create_sparray(repMsg: str, max_bits=None) -> sparray:
         A sparray with the same attributes as on the server
 
     Raises
-    -----
+    ------
     ValueError
         If there's an error in parsing the repMsg parameter into the six
         values needed to create the pdarray instance

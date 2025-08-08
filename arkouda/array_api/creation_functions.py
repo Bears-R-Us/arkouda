@@ -57,7 +57,7 @@ def asarray(
     - a sequence of scalar values (not yet implemented)
     - a buffer (not yet implemented)
     - an arkouda class:`~arkouda.numpy.pdarrayclass.pdarray`
-    - a numpy ndarray
+    - a numpy ndarray.
 
     Parameters
     ----------
@@ -110,7 +110,7 @@ def arange(
     device: Optional[Device] = None,
 ) -> Array:
     """
-    Return a 1D of array of evenly spaced values within the half-open interval [start, stop)
+    Return a 1D of array of evenly spaced values within the half-open interval [start, stop).
 
     Parameters
     ----------
@@ -334,7 +334,6 @@ def triu(x: Array, /, *, k: int = 0) -> Array:
     Create a new array with the values from `x` above the `k`-th diagonal, and
     all other elements zero.
     """
-
     from .array_object import Array
 
     return Array._new(ak.triu(x._array, k))

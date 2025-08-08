@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import builtins
-import sys
 from enum import Enum
+import sys
 from typing import TYPE_CHECKING, List, Union, cast
 
 import numpy as np
@@ -207,8 +207,7 @@ def can_cast(from_, to) -> builtins.bool:
     Returns True if cast between data types can occur according to the casting rule.
 
     Parameters
-    __________
-
+    ----------
     from_: dtype, dtype specifier, NumPy scalar, or pdarray
         Data type, NumPy scalar, or array to cast from.
     to: dtype or dtype specifier
@@ -321,7 +320,7 @@ def _is_dtype_in_union(dtype, union_type) -> builtins.bool:
 
 def _val_isinstance_of_union(val, union_type) -> builtins.bool:
     """
-    Check if a given val is an instance of one of the types in the typing.Union
+    Check if a given val is an instance of one of the types in the typing.Union.
 
     Args
     ----
@@ -437,14 +436,14 @@ class DType(Enum):
     def __str__(self) -> str:
         """
         Overridden method returns value, which is useful in outputting
-        a DType as a request parameter
+        a DType as a request parameter.
         """
         return self.value
 
     def __repr__(self) -> str:
         """
         Overridden method returns value, which is useful in outputting
-        a DType as a request parameter
+        a DType as a request parameter.
         """
         return self.value
 
@@ -667,7 +666,6 @@ def resolve_scalar_dtype(val: object) -> str:
     'float64'
 
     """
-
     # Python builtins.bool or np.bool
     if isinstance(val, builtins.bool) or (
         hasattr(val, "dtype") and cast(np.bool_, val).dtype.kind == "b"
@@ -737,7 +735,7 @@ def get_byteorder(dt: np.dtype) -> str:
 
 def get_server_byteorder() -> str:
     """
-    Get the server's byteorder
+    Get the server's byteorder.
 
     Return
     ------
