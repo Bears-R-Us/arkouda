@@ -206,6 +206,8 @@ module FindMsg
     var queryOrigIndices: [PrivateSpace] list(int);
     var spaceOrigIndices: [PrivateSpace] list(int);
 
+    writeln("Starting off");
+
     coforall loc in Locales do on loc {
 
       // QUERY side
@@ -257,6 +259,8 @@ module FindMsg
       
     }
 
+    writeln("Passed first coforall, onto repartitioning");
+
     var (queryRecvOffsets, queryRecvBytes, queryDestLocales) = repartitionByHashStringWithDestLocales(
                                                                queryStrOffsetInLocale,
                                                                queryStrBytesInLocale
@@ -267,8 +271,12 @@ module FindMsg
                                                                spaceStrBytesInLocale
                                                              );
 
+    writeln("Did the first two repartitions");
+
     var queryRecvInds = repartitionByLocale(int, queryDestLocales, queryOrigIndices);
     var spaceRecvInds = repartitionByLocale(int, spaceDestLocales, spaceOrigIndices);
+
+    writeln("Did the other repartitions");
 
     var queryRespVals: [PrivateSpace] list(int);
     var queryRespValLocales: [PrivateSpace] list(int);
@@ -372,9 +380,9 @@ module FindMsg
       } else { // I do not like this else. Essentially, if the situation is normal, proceed as normal.
 
 
-        /*
+        
 
-        record tupComparator {
+        record tupComparator: relativeComparator {
           proc compare(a: (string, int), b: (string, int)) {
             if a[0] < b[0] {
               return 1;
@@ -393,7 +401,9 @@ module FindMsg
           }
         }
 
-        */
+        
+
+        /*
 
         // Instead of sorting, we can assign each tuple to a thread.
         // I can make a numThreads x numThreads table of how many things each thread has of every other
@@ -595,7 +605,9 @@ module FindMsg
         queryRespOffsets[here.id] = new list(myQueryRespOffsets);
         queryRespOffsetLocales[here.id] = new list(queryLocs);
 
-        /*
+        */
+
+        
 
         sort(strIndPairs, comparator=new tupComparator());
 
@@ -707,14 +719,18 @@ module FindMsg
         queryRespOffsets[here.id] = new list(myQueryRespOffsets);
         queryRespOffsetLocales[here.id] = new list(queryLocs);
 
-        */
+        
 
       }
 
     }
 
+    writeln("Did that massive coforall");
+
     var queryRecvRespVals = repartitionByLocale(int, queryRespValLocales, queryRespVals);
     var queryRecvRespOffsets = repartitionByLocale(int, queryRespOffsetLocales, queryRespOffsets);
+
+    writeln("More repartitioning just wrapped up");
 
     var queryRespByLoc: [0..<numLocales] int;
     var queryRespSizeByLoc: [0..<numLocales] int;
@@ -729,6 +745,8 @@ module FindMsg
 
     var queryResp = makeDistArray(+ reduce queryRespSizeByLoc, int);
     var queryOffsets = makeDistArray(+ reduce queryRespByLoc, int);
+
+    writeln("About to go into last coforall");
 
     coforall loc in Locales do on loc {
       const numRespByLoc = queryRespNumRecv[here.id];
@@ -807,6 +825,8 @@ module FindMsg
         queryOffsets[myQueryRespOffsetInd..#finalGlobalOffsets.size] = finalGlobalOffsets;
       }
     }
+
+    writeln("Finished coforall");
 
     var respName = st.nextName();
     var offsetName = st.nextName();
