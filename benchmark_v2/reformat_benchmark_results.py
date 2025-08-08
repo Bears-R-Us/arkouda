@@ -8,13 +8,13 @@ automatically.
 
 import argparse
 import csv
+from datetime import datetime
 import json
 import logging
 import os
 import re
 import subprocess
 import sys
-from datetime import datetime
 from typing import Union
 
 benchmark_dir = os.path.dirname(__file__)

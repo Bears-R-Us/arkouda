@@ -115,8 +115,9 @@ class DtypesTest(ArkoudaTest):
         self.assertEqual("<class 'list'>", dtypes.resolve_scalar_dtype([1]))
 
     def test_is_dtype_in_union(self):
-        from arkouda.numpy.dtypes import _is_dtype_in_union
         from typing import Union
+
+        from arkouda.numpy.dtypes import _is_dtype_in_union
 
         float_scalars = Union[float, np.float64, np.float32]
         self.assertTrue(_is_dtype_in_union(np.float64, float_scalars))

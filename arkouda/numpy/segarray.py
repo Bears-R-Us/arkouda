@@ -216,7 +216,7 @@ class SegArray:
     @classmethod
     def concat(cls, x, axis=0, ordered=True):
         """
-        Concatenate a sequence of SegArrays
+        Concatenate a sequence of SegArrays.
 
         Parameters
         ----------
@@ -328,7 +328,7 @@ class SegArray:
 
     def get_suffixes(self, n, return_origins=True, proper=True):
         """
-        Return the n-long suffix of each sub-array, where possible
+        Return the n-long suffix of each sub-array, where possible.
 
         Parameters
         ----------
@@ -367,7 +367,7 @@ class SegArray:
 
     def get_prefixes(self, n, return_origins=True, proper=True):
         """
-        Return all sub-array prefixes of length n (for sub-arrays that are at least n+1 long)
+        Return all sub-array prefixes of length n (for sub-arrays that are at least n+1 long).
 
         Parameters
         ----------
@@ -486,7 +486,7 @@ class SegArray:
                 A Boolean array that is True where j is in bounds for the sub-array.
 
         Notes
-        ------
+        -----
         If values are Strings, only the compressed format is supported.
         """
         longenough, newj = self._normalize_index(j)
@@ -517,7 +517,7 @@ class SegArray:
             The value(s) to set. If v is a pdarray, it must have same length as i.
 
         Raises
-        -----
+        ------
         ValueError
             If j is out of bounds in any of the sub-arrays specified by i.
         """
@@ -671,7 +671,7 @@ class SegArray:
 
     def to_ndarray(self):
         """
-        Convert the array into a numpy.ndarray containing sub-arrays
+        Convert the array into a numpy.ndarray containing sub-arrays.
 
         Returns
         -------
@@ -702,7 +702,7 @@ class SegArray:
 
     def tolist(self):
         """
-        Convert the segarray into a list containing sub-arrays
+        Convert the segarray into a list containing sub-arrays.
 
         Returns
         -------
@@ -876,7 +876,7 @@ class SegArray:
         None
 
         See Also
-        ---------
+        --------
         load
         """
         from arkouda.client import generic_msg
@@ -910,7 +910,7 @@ class SegArray:
         the dataset does not exist it is added.
 
         Parameters
-        -----------
+        ----------
         prefix_path : str
             Directory and filename prefix that all output files share
         dataset : str
@@ -923,12 +923,12 @@ class SegArray:
             file sizes to expand.
 
         Raises
-        -------
+        ------
         RuntimeError
             Raised if a server-side error is thrown saving the SegArray
 
         Notes
-        ------
+        -----
         - If file does not contain File_Format attribute to indicate how it was saved,
           the file name is checked for _LOCALE#### to determine if it is distributed.
         - If the dataset provided does not exist, it will be added
@@ -976,6 +976,7 @@ class SegArray:
         one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the object to its
         corresponding file.
+
         Parameters
         ----------
         prefix_path : str
@@ -991,15 +992,18 @@ class SegArray:
         compression : str (Optional)
             (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
             Sets the compression type used with Parquet files
+
         Returns
         -------
         string message indicating result of save operation
+
         Raises
         ------
         RuntimeError
             Raised if a server-side error is thrown saving the pdarray
         ValueError
             If write mode is not Truncate.
+
         Notes
         -----
         - Append mode for Parquet has been deprecated. It was not implemented for SegArray.
@@ -1040,7 +1044,7 @@ class SegArray:
     def read_hdf(cls, prefix_path, dataset="segarray"):
         """
         Load a saved SegArray from HDF5. All arguments must match what
-        was supplied to SegArray.save()
+        was supplied to SegArray.save().
 
         Parameters
         ----------
@@ -1279,7 +1283,7 @@ class SegArray:
 
     def filter(self, filter, discard_empty: bool = False):
         """
-        Filter values out of the SegArray object
+        Filter values out of the SegArray object.
 
         Parameters
         ----------
@@ -1290,7 +1294,7 @@ class SegArray:
             the return SegArray
 
         Returns
-        --------
+        -------
         SegArray
         """
         from arkouda.numpy import cumsum
@@ -1319,7 +1323,7 @@ class SegArray:
 
     def register(self, user_defined_name):
         """
-        Register this SegArray object and underlying components with the Arkouda server
+        Register this SegArray object and underlying components with the Arkouda server.
 
         Parameters
         ----------
@@ -1347,6 +1351,7 @@ class SegArray:
         See Also
         --------
         unregister, attach, is_registered
+
         """
         from arkouda.client import generic_msg
 
@@ -1368,7 +1373,7 @@ class SegArray:
     def unregister(self):
         """
         Unregister this SegArray object in the arkouda server which was previously
-        registered using register() and/or attached to using attach()
+        registered using register() and/or attached to using attach().
 
         Raises
         ------
@@ -1383,6 +1388,7 @@ class SegArray:
         See Also
         --------
         register, attach, is_registered
+
         """
         from arkouda.numpy.util import unregister
 
@@ -1393,7 +1399,7 @@ class SegArray:
 
     def is_registered(self) -> bool:
         """
-        Check if the name of the SegArray object is registered in the Symbol Table
+        Check if the name of the SegArray object is registered in the Symbol Table.
 
         Returns
         -------

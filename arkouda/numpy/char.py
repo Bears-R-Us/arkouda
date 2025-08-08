@@ -48,7 +48,6 @@ def isnumeric(pda) -> pdarray:
     >>> ak.isnumeric(special_strings)
     array([False True True True False])
     """
-
     from arkouda.numpy.strings import Strings
 
     if type(pda) is not Strings:

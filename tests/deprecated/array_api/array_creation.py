@@ -1,7 +1,8 @@
+import numpy as np
 from base_test import ArkoudaTest
 from context import arkouda as ak
+
 import arkouda.array_api as xp
-import numpy as np
 
 # requires the server to be built with 2D array support
 SHAPES = [(), (0,), (0, 0), (1,), (5,), (2, 2), (5, 10)]

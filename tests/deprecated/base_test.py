@@ -4,13 +4,10 @@ import unittest
 
 from context import arkouda as ak
 
-from server_util.test.server_test_util import (
-    TestRunningMode,
-    get_arkouda_numlocales,
-    start_arkouda_server,
-    stop_arkouda_server,
-)
-
+from server_util.test.server_test_util import (TestRunningMode,
+                                               get_arkouda_numlocales,
+                                               start_arkouda_server,
+                                               stop_arkouda_server)
 
 """
 ArkoudaTest defines the base Arkouda test logic for starting up the arkouda_server at the

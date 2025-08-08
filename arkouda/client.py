@@ -95,11 +95,11 @@ See Also
 
 """
 
+from enum import Enum
 import json
 import os
-import warnings
-from enum import Enum
 from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
+import warnings
 
 import zmq  # for typechecking
 
