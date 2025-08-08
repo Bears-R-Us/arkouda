@@ -925,7 +925,7 @@ def square(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
 
 
 @typechecked
-def cumsum(pda: pdarray) -> pdarray:
+def cumsum(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
     """
     Return the cumulative sum over the array.
 
@@ -935,17 +935,20 @@ def cumsum(pda: pdarray) -> pdarray:
     Parameters
     ----------
     pda : pdarray
+    axis : int, optional
+        the axis along with to compute the sum
 
     Returns
     -------
     pdarray
-        A pdarray containing cumulative sums for each element
-        of the original pdarray
+        A pdarray containing cumulative sums for each element of the original pdarray
 
     Raises
     ------
     TypeError
         Raised if the parameter is not a pdarray
+    ValueError
+        Raised if an invalid axis is given
 
     Examples
     --------
@@ -960,19 +963,51 @@ def cumsum(pda: pdarray) -> pdarray:
     array([1 1 2 3 4])
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy.pdarrayclass import _axis_validation
 
     _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], "cumsum")
-    repMsg = generic_msg(
-        cmd=f"cumsum<{pda.dtype},{pda.ndim}>",
-        args={
-            "x": pda,
-        },
-    )
+
+    pda_ = pda
+    if pda.dtype.name == "bool":
+        pda_ = akcast(pda, int)  # bools are handled as ints, a la numpy
+
+    if pda.ndim == 1:
+        repMsg = generic_msg(
+            cmd=f"cumSum<{pda_.dtype},{1}>",
+            args={
+                "x": pda_,
+                "axis": 0,
+                "includeInitial": False,
+            },
+        )
+    elif axis is None:
+        repMsg = generic_msg(
+            cmd=f"cumSum<{pda_.dtype},{1}>",
+            args={
+                "x": pda_.flatten(),
+                "axis": 0,
+                "includeInitial": False,
+            },
+        )
+    else:
+        good, axis_ = _axis_validation(axis, pda_.ndim)
+        if good:
+            repMsg = generic_msg(
+                cmd=f"cumSum<{pda_.dtype},{pda_.ndim}>",
+                args={
+                    "x": pda_,
+                    "axis": axis_,
+                    "includeInitial": False,
+                },
+            )
+        else:
+            raise ValueError(f"{axis} is not valid for the given array.")
     return create_pdarray(type_cast(str, repMsg))
 
 
 @typechecked
-def cumprod(pda: pdarray) -> pdarray:
+def cumprod(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
     """
     Return the cumulative product over the array.
 
@@ -982,6 +1017,8 @@ def cumprod(pda: pdarray) -> pdarray:
     Parameters
     ----------
     pda : pdarray
+    axis : int, optional
+        the axis along with to compute the product
 
     Returns
     -------
@@ -993,6 +1030,8 @@ def cumprod(pda: pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+    ValueError
+        Raised if an invalid axis is given
 
     Examples
     --------
@@ -1001,18 +1040,52 @@ def cumprod(pda: pdarray) -> pdarray:
     array([1 2 6 24])
 
     >>> ak.cumprod(ak.uniform(5,1.0,5.0, seed=1))
-    array([4.14859379... 5.54704379... 22.2010913...
-        79.7021268... 298.265515...])
+    array([4.14859379... 5.54704379... 22.20109135... 79.7021268... 298.2655159...])
+
+    >>> ak.cumprod(ak.randint(0, 1, 5, dtype=ak.bool_, seed=1))
+    array([1 0 0 0 0])
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy.pdarrayclass import _axis_validation
 
     _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], "cumprod")
-    repMsg = generic_msg(
-        cmd=f"cumprod<{pda.dtype},{pda.ndim}>",
-        args={
-            "x": pda,
-        },
-    )
+
+    pda_ = pda
+    if pda.dtype.name == "bool":
+        pda_ = akcast(pda, int)  # bools are handled as ints, a la numpy
+
+    if pda.ndim == 1:
+        repMsg = generic_msg(
+            cmd=f"cumProd<{pda_.dtype},{1}>",
+            args={
+                "x": pda_,
+                "axis": 0,
+                "includeInitial": False,
+            },
+        )
+    elif axis is None:
+        repMsg = generic_msg(
+            cmd=f"cumProd<{pda_.dtype},{1}>",
+            args={
+                "x": pda_.flatten(),
+                "axis": 0,
+                "includeInitial": False,
+            },
+        )
+    else:
+        good, axis_ = _axis_validation(axis, pda_.ndim)
+        if good:
+            repMsg = generic_msg(
+                cmd=f"cumProd<{pda_.dtype},{pda_.ndim}>",
+                args={
+                    "x": pda_,
+                    "axis": axis_,
+                    "includeInitial": False,
+                },
+            )
+        else:
+            raise ValueError(f"{axis} is not valid for the given array.")
     return create_pdarray(type_cast(str, repMsg))
 
 
