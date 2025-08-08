@@ -488,12 +488,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0','2.4.0']
+        chpl-version: ['2.5.0']
       max-parallel: 3
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
+      image: ajpotts/ubuntu-with-arkouda-deps-slim:1.0.0
     steps:
     - name: Show memory available
       run: |
@@ -502,14 +502,7 @@ jobs:
         echo "CPU info:"
         nproc
     - name: Checkout Repository
-      uses: actions/checkout@v4
-    - name: Set Python version to 3.13
-      run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1      
-    - name: Set Chapel version to ${matrix.chpl-version}
-      run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-${{ matrix.chpl-version }}/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-${{ matrix.chpl-version }}/bin/linux64-x86_64/chpldoc 1
+      uses: actions/checkout@v4    
     - name: Check Chapel version
       run: |
         chpl --version
@@ -529,9 +522,6 @@ jobs:
     - name: Check chpl version
       run: |
         chpl --version
-    - name: Install Chapel frontend bindings
-      run: |
-        (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)    
     - name: Use MultiDim Configs
       run: |
         cp .configs/registration-config-multi-dim.json registration-config.json
