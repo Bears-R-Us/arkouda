@@ -58,6 +58,8 @@ module SegmentedString {
   proc getSegString(segments: [] int, values: [] uint(8), st: borrowed SymTab): owned SegString throws {
       var offsetsEntry = createSymEntry(segments);
       var valuesEntry = createSymEntry(values);
+      st.insert(offsetsEntry);  // insert() is needed for checkpointing
+      st.insert(valuesEntry);
       var stringsEntry = new shared SegStringSymEntry(offsetsEntry, valuesEntry, string);
       var name = st.nextName();
       st.addEntry(name, stringsEntry);

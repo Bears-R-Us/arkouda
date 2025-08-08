@@ -341,12 +341,8 @@ def array(
             payload=_array_memview(encoded_np),
             send_binary=True,
         )
-        parts = cast(str, rep_msg).split("+", maxsplit=3)
-        return (
-            Strings.from_parts(parts[0], parts[1])
-            if dtype is None
-            else akcast(Strings.from_parts(parts[0], parts[1]), dtype)
-        )
+        strings = Strings.from_return_msg(cast(str, rep_msg))
+        return strings if dtype is None else akcast(strings, dtype)
 
     # If not strings, then check that dtype is supported in arkouda
     if dtype == bigint or a.dtype.name not in DTypes:
