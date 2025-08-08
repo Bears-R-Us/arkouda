@@ -99,19 +99,6 @@ class TestString:
         assert self.compare_strings(base_words.to_ndarray(), np_base_words)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_argsort(self, size):
-        base_words, _ = self.base_words(size)
-        strings = self.get_strings(size, base_words)
-        akperm = ak.argsort(strings)
-        aksorted = strings[akperm].to_ndarray()
-        npsorted = np.sort(strings.to_ndarray())
-        assert (aksorted == npsorted).all()
-        cat = ak.Categorical(strings)
-        catperm = ak.argsort(cat)
-        catsorted = cat[catperm].to_ndarray()
-        assert (catsorted == npsorted).all()
-
-    @pytest.mark.parametrize("size", pytest.prob_size)
     def test_unique(self, size):
         base_words, _ = self.base_words(size)
         strings = self.get_strings(size, base_words)
@@ -978,6 +965,19 @@ class TestString:
         assert set(output.to_ndarray()) == correct
 
     @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_argsort(self, size):
+        base_words, _ = self.base_words(size)
+        strings = self.get_strings(size, base_words)
+        akperm = ak.argsort(strings)
+        aksorted = strings[akperm].to_ndarray()
+        npsorted = np.sort(strings.to_ndarray())
+        assert (aksorted == npsorted).all()
+        cat = ak.Categorical(strings)
+        catperm = ak.argsort(cat)
+        catsorted = cat[catperm].to_ndarray()
+        assert (catsorted == npsorted).all()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("ascending", [True, False])
     def test_argsort_basic(self, size, ascending):
         strings = ak.random_strings_uniform(
@@ -991,7 +991,7 @@ class TestString:
         assert_equivalent(result, np_result)
 
     def test_argsort_empty(self):
-        strings = ak.array([])
+        strings = ak.array([], dtype="str_")
         result = strings.argsort()
         assert result.size == 0
 
