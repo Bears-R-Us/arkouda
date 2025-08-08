@@ -59,17 +59,10 @@ WORKDIR /opt
 RUN wget https://github.com/chapel-lang/chapel/releases/download/2.5.0/chapel-2.5.0.tar.gz && \
     tar -xzf chapel-2.5.0.tar.gz && \
     rm chapel-2.5.0.tar.gz && \
-    cd chapel-2.5.0 && make -j
+    cd chapel-2.5.0 && make -j && \
+    CHPL_HOME=/opt/chapel-2.5.0 make chapel-py-venv && \
+    make chpldoc
 
-# Set CHPL_HOME to the built source dir
-ENV CHPL_HOME=/opt/chapel-2.5.0
-
-# Install chapel-py
-RUN cd /opt/chapel-2.5.0 && CHPL_HOME=/opt/chapel-2.5.0 make chapel-py-venv
-
-# Build chpldoc
-WORKDIR /opt/chapel-2.5.0
-RUN make chpldoc
 
 ##########################################
 #         Install Arkouda Deps           #
