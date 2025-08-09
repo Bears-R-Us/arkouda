@@ -33,6 +33,7 @@ def cp_test_base_tmp(request):
 
 
 class TestCheckpoint:
+    @pytest.mark.skip_if_max_rank_greater_than(1)
     @pytest.mark.skipif(
         os.environ.get("CHPL_HOST_PLATFORM") == "hpe-apollo",
         reason="skipped on CHPL_HOST_PLATFORM=hpe-apollo - login/compute file system access unreliable",
@@ -68,6 +69,7 @@ class TestCheckpoint:
         finally:
             rmtree(expected_dir)
 
+    @pytest.mark.skip_if_max_rank_greater_than(1)
     def test_bigint_checkpoint(self, cp_test_base_tmp):
         prob_size = 300  # force memBuf resizing in the implementation
         lst = list()
@@ -91,6 +93,7 @@ class TestCheckpoint:
             for i in range(prob_size):
                 assert pda[i] == lst[i]
 
+    @pytest.mark.skip_if_max_rank_greater_than(1)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_checkpoint_custom_names(self, cp_test_base_tmp, prob_size):
         arr = ak.zeros(prob_size, int)
@@ -117,6 +120,7 @@ class TestCheckpoint:
             assert arr[3] == 0
             assert arr[2] == 2
 
+    @pytest.mark.skip_if_max_rank_greater_than(1)
     def test_incorrect_nl(self):
         cp_name = "test_incorrect_nl_cp"
         create_fake_cp(cp_name, num_locales=ak.get_config()["numLocales"] + 1)
@@ -130,6 +134,7 @@ class TestCheckpoint:
         finally:
             clean_fake_cp(cp_name)
 
+    @pytest.mark.skip_if_max_rank_greater_than(1)
     def test_incorrect_chunks(self):
         cp_name = "test_incorrect_chunks_cp"
         create_fake_cp(cp_name)
@@ -148,6 +153,7 @@ class TestCheckpoint:
         finally:
             clean_fake_cp(cp_name)
 
+    @pytest.mark.skip_if_max_rank_greater_than(1)
     def test_corrupt_json(self):
         cp_name = "test_corrupt_json_cp"
         create_fake_cp(cp_name)
@@ -161,6 +167,7 @@ class TestCheckpoint:
         finally:
             clean_fake_cp(cp_name)
 
+    @pytest.mark.skip_if_max_rank_greater_than(1)
     def test_wrong_argument(self):
         try:
             ak.save_checkpoint(mode="override")

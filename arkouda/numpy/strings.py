@@ -333,10 +333,20 @@ class Strings:
         return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     def __eq__(self, other):  # type: ignore
-        return self._binop(other, "==")
+        if self.size > 0:
+            return self._binop(other, "==")
+        else:
+            from arkouda import array as ak_array
 
-    def __ne__(self, other):  # type: ignore
-        return self._binop(cast(Strings, other), "!=")
+            return ak_array([], dtype="bool")
+
+    def __ne__(self, other):
+        if self.size > 0:  # type: ignore
+            return self._binop(cast(Strings, other), "!=")
+        else:
+            from arkouda import array as ak_array
+
+            return ak_array([], dtype="bool")
 
     def __getitem__(self, key):
         from arkouda.client import generic_msg

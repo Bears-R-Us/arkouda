@@ -715,7 +715,6 @@ class Generator:
         array([5 9 7 3 0 2 1 6 4 8])
 
         """
-
         from arkouda.client import generic_msg
 
         if not isinstance(x, pdarray):
