@@ -1,6 +1,6 @@
+import numpy as np
 from base_test import ArkoudaTest
 from context import arkouda as ak
-import numpy as np
 
 
 class BitOpsTest(ArkoudaTest):

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from builtins import str as builtin_str
 import json
 import operator
-from builtins import str as builtin_str
 from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, TypeVar, Union, cast
 
 import numpy as np
@@ -10,7 +10,6 @@ import pandas as pd
 from pandas._config import get_option
 from typeguard import typechecked
 
-import arkouda.pandas.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
 from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
@@ -26,6 +25,7 @@ from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import get_callback, is_float
 from arkouda.pandas.categorical import Categorical
+import arkouda.pandas.dataframe
 from arkouda.pandas.groupbyclass import GroupBy, groupable_element_type
 from arkouda.pandas.index import Index, MultiIndex
 
@@ -781,19 +781,19 @@ class Series:
 
     @typechecked
     def tail(self, n: int = 10) -> Series:
-        """Return the last n values of the series"""
+        """Return the last n values of the series."""
         idx_series = self.index[-n:]
         return Series(index=idx_series.index, data=self.values[-n:])
 
     @typechecked
     def head(self, n: int = 10) -> Series:
-        """Return the first n values of the series"""
+        """Return the first n values of the series."""
         idx_series = self.index[0:n]
         return Series(index=idx_series.index, data=self.values[0:n])
 
     @typechecked
     def to_pandas(self) -> pd.Series:
-        """Convert the series to a local PANDAS series"""
+        """Convert the series to a local PANDAS series."""
         import copy
 
         from arkouda.numpy.segarray import SegArray
@@ -964,7 +964,7 @@ class Series:
     @typechecked
     def register(self, user_defined_name: builtin_str):
         """
-        Register this Series object and underlying components with the Arkouda server
+        Register this Series object and underlying components with the Arkouda server.
 
         Parameters
         ----------
@@ -1061,7 +1061,7 @@ class Series:
     def unregister(self):
         """
         Unregister this Series object in the arkouda server which was previously
-        registered using register() and/or attached to using attach()
+        registered using register() and/or attached to using attach().
 
         Raises
         ------
@@ -1159,7 +1159,7 @@ class Series:
     @staticmethod
     @typechecked
     def _all_aligned(array: List) -> bool:
-        """Is an array of Series indexed aligned?"""
+        """Return whether all Series in the array are index-aligned."""
         itor = iter(array)
         a1 = next(itor).index
         for a2 in itor:

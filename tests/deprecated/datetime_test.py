@@ -1,10 +1,10 @@
+import logging
+
+import numpy as np
+import pandas as pd
 from base_test import ArkoudaTest
 
 import arkouda as ak
-
-import pandas as pd
-import numpy as np
-import logging
 
 
 def build_op_table():

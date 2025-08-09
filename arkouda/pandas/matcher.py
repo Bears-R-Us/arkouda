@@ -178,6 +178,7 @@ class Matcher:
     def split(self, maxsplit: int = 0, return_segments: bool = False):
         """
         Split string by the occurrences of pattern.
+
         If maxsplit is nonzero, at most maxsplit splits occur.
         """
         from arkouda.client import generic_msg
@@ -236,8 +237,9 @@ class Matcher:
         """
         Return the Strings obtained by replacing non-overlapping occurrences of pattern
         with the replacement repl.
+
         If count is nonzero, at most count substitutions occur
-        If return_num_subs is True, return the number of substitutions that occurred
+        If return_num_subs is True, return the number of substitutions that occurred.
         """
         from arkouda.client import generic_msg
         from arkouda.numpy.strings import Strings

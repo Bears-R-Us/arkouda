@@ -10,9 +10,9 @@ import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
-from arkouda.pandas import io_util
-from arkouda import to_zarr, read_zarr
 import arkouda.array_api as Array
+from arkouda import read_zarr, to_zarr
+from arkouda.pandas import io_util
 
 """
 Tests writing Arkouda pdarrays to and reading from files

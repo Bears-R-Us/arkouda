@@ -1,9 +1,4 @@
 """
-__all__ = [
-    'Array',
-    'implements_numpy',
-]
-
 Wrapper class around the pdarray object for the array API standard.
 
 The information below can be found online here:
@@ -24,8 +19,8 @@ of ndarray.
 
 from __future__ import annotations
 
-import types
 from enum import IntEnum
+import types
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -85,8 +80,7 @@ class Array:
     @classmethod
     def _new(cls, x, /, empty: bool = False):
         """
-        This is a private method for initializing the array API Array
-        object.
+        Initialize the array API Array object.
 
         Functions outside of the array_api submodule should not use this
         method. Use one of the creation functions instead, such as
@@ -163,7 +157,6 @@ class Array:
         ak.transpose()
 
         """
-
         return asarray(ak.transpose(self._array, axes))
 
     def __str__(self: Array, /) -> str:
@@ -222,7 +215,7 @@ class Array:
 
     def __array__(self, dtype: None | np.dtype[Any] = None):
         """
-        Get a numpy ndarray
+        Get a numpy ndarray.
         """
         return np.asarray(self.to_ndarray(), dtype=dtype)
 
@@ -247,7 +240,6 @@ class Array:
             if other is NotImplemented:
                 return other
         """
-
         if self.dtype not in _dtype_categories[dtype_category]:
             raise TypeError(f"Only {dtype_category} dtypes are allowed in {op}")
         if isinstance(other, (int, complex, float, bool)):
@@ -326,7 +318,7 @@ class Array:
     @staticmethod
     def _normalize_two_args(x1, x2) -> Tuple[Array, Array]:
         """
-        Normalize inputs to two arg functions to fix type promotion rules
+        Normalize inputs to two arg functions to fix type promotion rules.
 
         NumPy deviates from the spec type promotion rules in cases where one
         argument is 0-dimensional and the other is not. For example:
@@ -372,7 +364,6 @@ class Array:
         ak.abs()
 
         """
-
         return ak.abs(self._array)
 
     def __add__(self: Array, other: Union[int, float, Array], /) -> Array:

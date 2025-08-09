@@ -56,7 +56,6 @@ See Also
 
 """
 
-import os
 from enum import Enum
 from logging import (
     CRITICAL,
@@ -69,6 +68,7 @@ from logging import (
     Logger,
     StreamHandler,
 )
+import os
 from typing import List, Optional, cast
 
 from typeguard import typechecked

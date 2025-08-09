@@ -53,7 +53,6 @@ module BigIntMsg {
 
         var retname = st.nextName();
         st.addEntry(retname, createSymEntry(bigIntArray, max_bits));
-        var syment = st[retname]: SymEntry(array_dtype, array_nd); // Is this line necessary?
         repMsg = "created %s".format(st.attrib(retname));
         biLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);

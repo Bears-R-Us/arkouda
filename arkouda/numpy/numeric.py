@@ -1,5 +1,5 @@
-import json
 from enum import Enum
+import json
 from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, TypeVar, Union
 from typing import cast as type_cast
 from typing import no_type_check
@@ -8,23 +8,20 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.groupbyclass import GroupBy, groupable
-from arkouda.numpy.dtypes import ARKOUDA_SUPPORTED_INTS, _datatype_check, bigint
-from arkouda.numpy.dtypes import bool_ as ak_bool
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import float64 as ak_float64
-from arkouda.numpy.dtypes import int64 as ak_int64
 from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
 )
+from arkouda.numpy.dtypes import ARKOUDA_SUPPORTED_INTS, _datatype_check, bigint
+from arkouda.numpy.dtypes import bool_ as ak_bool
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import float64 as ak_float64
+from arkouda.numpy.dtypes import int64 as ak_int64
 from arkouda.numpy.dtypes import str_
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as ak_uint64
-from arkouda.numpy.pdarrayclass import _reduces_to_single_value
-from arkouda.numpy.pdarrayclass import all as ak_all
-from arkouda.numpy.pdarrayclass import any as ak_any
 from arkouda.numpy.pdarrayclass import (
     argmax,
     broadcast_if_needed,
@@ -33,6 +30,9 @@ from arkouda.numpy.pdarrayclass import (
     pdarray,
     sum,
 )
+from arkouda.numpy.pdarrayclass import _reduces_to_single_value
+from arkouda.numpy.pdarrayclass import all as ak_all
+from arkouda.numpy.pdarrayclass import any as ak_any
 from arkouda.numpy.pdarraycreation import array, linspace, scalar_array
 from arkouda.numpy.sorting import sort
 from arkouda.numpy.strings import Strings
@@ -2046,7 +2046,8 @@ def where(
 # histogram helper
 def _pyrange(count):
     """Simply makes a range(count). For use in histogram* functions
-    that, like in numpy, have a 'range' parameter."""
+    that, like in numpy, have a 'range' parameter.
+    """
     return range(count)
 
 
@@ -2149,7 +2150,7 @@ def histogram2d(
     ] = None,
 ) -> Tuple[pdarray, pdarray, pdarray]:
     """
-    Compute the bi-dimensional histogram of two data samples with evenly spaced bins
+    Compute the bi-dimensional histogram of two data samples with evenly spaced bins.
 
     Parameters
     ----------
@@ -2425,7 +2426,7 @@ def clip(
     hi: Union[numeric_scalars, pdarray],
 ) -> pdarray:
     """
-    Clip (limit) the values in an array to a given range [lo,hi]
+    Clip (limit) the values in an array to a given range [lo,hi].
 
     Given an array a, values outside the range are clipped to the
     range edges, such that all elements lie in the range.
@@ -2485,8 +2486,8 @@ def clip(
     ------
     ValueError
         Raised if both lo and hi are None
-    """
 
+    """
     # Check that a range was actually supplied.
 
     if lo is None and hi is None:
@@ -2545,7 +2546,6 @@ def median(pda: pdarray) -> np.float64:
     np.float64(2.5)
 
     """
-
     #  Now do the computation
 
     if pda.dtype == bool:
@@ -2595,7 +2595,6 @@ def count_nonzero(pda: pdarray) -> np.int64:
     np.int64(2)
 
     """
-
     from arkouda.numpy.dtypes import can_cast
     from arkouda.numpy.util import is_numeric
 
@@ -2814,7 +2813,7 @@ def eye(N: int_scalars, M: int_scalars, k: int_scalars = 0, dt: type = ak_float6
 
 def triu(pda: pdarray, diag: int_scalars = 0) -> pdarray:
     """
-    Return a copy of the pda with the lower triangle zeroed out
+    Return a copy of the pda with the lower triangle zeroed out.
 
     Parameters
     ----------
@@ -2872,7 +2871,7 @@ def triu(pda: pdarray, diag: int_scalars = 0) -> pdarray:
 
 def tril(pda: pdarray, diag: int_scalars = 0) -> pdarray:
     """
-    Return a copy of the pda with the upper triangle zeroed out
+    Return a copy of the pda with the upper triangle zeroed out.
 
     Parameters
     ----------
@@ -3353,7 +3352,6 @@ def percentile(
         Raised if the result would have a rank not in the compiled ranks.
 
     """
-
     q_ = 50.0 if q is None else q if np.isscalar(q) else array(q)  # type: ignore
 
     if np.isscalar(q_):

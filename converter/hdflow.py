@@ -1,6 +1,6 @@
+from itertools import repeat
 import multiprocessing as mp
 import os
-from itertools import repeat
 
 import h5py
 import numpy as np

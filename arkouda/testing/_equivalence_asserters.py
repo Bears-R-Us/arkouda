@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+# Third Party
 import numpy as np
-import pandas as pd
 from numpy import bool_, floating, integer, str_
+import pandas as pd
 
+# First Party
 from arkouda import (
     Categorical,
     DataFrame,

@@ -40,8 +40,8 @@ arkouda.client.regexMaxCaptures
 
 """
 
-import json
 from enum import Enum
+import json
 from typing import TYPE_CHECKING, TypeVar, cast
 
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray

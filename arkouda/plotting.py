@@ -50,8 +50,8 @@ See Also
 
 import math
 
-import numpy as np
 from matplotlib import pyplot as plt
+import numpy as np
 
 from arkouda.categorical import Categorical
 from arkouda.dataframe import DataFrame

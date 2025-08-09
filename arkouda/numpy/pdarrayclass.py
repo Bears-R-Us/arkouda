@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import builtins
-import json
 from functools import reduce
+import json
 from math import ceil
 from sys import modules
 from typing import TYPE_CHECKING, List, Optional, Tuple, TypeVar, Union, cast, overload
@@ -12,12 +12,6 @@ from typeguard import typechecked
 
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
-from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import bool_scalars, dtype
-from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import get_byteorder, get_server_byteorder
-from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedBool,
@@ -28,6 +22,12 @@ from arkouda.numpy.dtypes import (
     resolve_scalar_dtype,
     result_type,
 )
+from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
+from arkouda.numpy.dtypes import bool_ as akbool
+from arkouda.numpy.dtypes import bool_scalars, dtype
+from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import get_byteorder, get_server_byteorder
+from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
 
@@ -318,7 +318,7 @@ def parse_single_value(msg: str) -> Union[numpy_scalars, int]:
 
 def _create_scalar_array(value):
     """
-    Create a pdarray from a single scalar value
+    Create a pdarray from a single scalar value.
     """
     from arkouda.client import generic_msg
 
@@ -334,7 +334,7 @@ def _create_scalar_array(value):
 
 def _slice_index(array: pdarray, starts: List[int], stops: List[int], strides: List[int]):
     """
-    Slice a pdarray with a set of start, stop and stride values
+    Slice a pdarray with a set of start, stop and stride values.
     """
     from arkouda.client import generic_msg
 
@@ -354,10 +354,10 @@ def _slice_index(array: pdarray, starts: List[int], stops: List[int], strides: L
 
 def _parse_index_tuple(key, shape):
     """
-    Parse a tuple of indices into slices, scalars, and pdarrays
+    Parse a tuple of indices into slices, scalars, and pdarrays.
 
     Return a tuple of (starts, stops and strides) for the slices and scalar indices,
-    as well as lists indicating which axes are indexed by scalars and pdarrays
+    as well as lists indicating which axes are indexed by scalars and pdarrays.
     """
     scalar_axes = []
     pdarray_axes = []
@@ -391,14 +391,13 @@ def _parse_index_tuple(key, shape):
 
 def _parse_none_and_ellipsis_keys(key, ndim):
     """
-    Parse a key tuple for None and Ellipsis values
+    Parse a key tuple for None and Ellipsis values.
 
     Return a tuple of the key with None values removed and the ellipsis replaced
-    with the appropriate number of colons
+    with the appropriate number of colons.
 
-    Also returns a tuple without the 'None' values removed
+    Also returns a tuple without the 'None' values removed.
     """
-
     # create a copy to avoid modifying the original key
     ret_key = key
 
@@ -707,7 +706,7 @@ class pdarray:
     # binary operators
     def _binop(self, other: pdarray, op: str) -> pdarray:
         """
-        Execute binary operation specified by the op string
+        Execute binary operation specified by the op string.
 
         Parameters
         ----------
@@ -787,7 +786,7 @@ class pdarray:
     # pdarray binop pdarray: taken care of by binop function
     def _r_binop(self, other: pdarray, op: str) -> pdarray:
         """
-        Execute reverse binary operation specified by the op string
+        Execute reverse binary operation specified by the op string.
 
         Parameters
         ----------
@@ -1498,7 +1497,7 @@ class pdarray:
         value : numeric_scalars
 
         Raises
-        -------
+        ------
         TypeError
             Raised if value is not an int, int64, float, or float64
         """
@@ -1681,7 +1680,7 @@ class pdarray:
 
     def is_registered(self) -> np.bool_:
         """
-        Return True iff the object is contained in the registry
+        Return True iff the object is contained in the registry.
 
         Returns
         -------
@@ -1706,7 +1705,7 @@ class pdarray:
 
     def _list_component_names(self) -> List[str]:
         """
-        Return a list of all component names
+        Return a list of all component names.
 
         Returns
         -------
@@ -2085,6 +2084,7 @@ class pdarray:
         array([2.00000000000000000 7.00000000000000000])
 
         Raises
+        ------
             Raised if pda is not a pdarray instance
         RuntimeError
             Raised if there's a server-side error thrown
@@ -2333,7 +2333,6 @@ class pdarray:
         >>> ak.array([2, 0, 2, 4, 0, 0]).value_counts()
         (array([0 2 4]), array([3 2 1]))
         """
-
         from arkouda.numpy import value_counts
 
         if self.ndim > 1:
@@ -2343,10 +2342,10 @@ class pdarray:
 
     def astype(self, dtype) -> pdarray:
         """
-        Cast values of pdarray to provided dtype
+        Cast values of pdarray to provided dtype.
 
         Parameters
-        __________
+        ----------
         dtype: np.dtype or str
             Dtype to cast to
 
@@ -2361,13 +2360,14 @@ class pdarray:
         array([1 0])
 
         Returns
-        _______
-        ak.pdarray
+        -------
+        pdarray
             An arkouda pdarray with values converted to the specified data type
 
         Notes
-        _____
+        -----
         This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
+
         """
         from arkouda.numpy import cast as akcast
 
@@ -2381,7 +2381,7 @@ class pdarray:
         pda.slice_bits(0, 63)
 
         Parameters
-        __________
+        ----------
         low: int
             The lowest bit included in the slice (inclusive)
             zero indexed, so the first bit is 0
@@ -2552,6 +2552,7 @@ class pdarray:
             Raised if there is a server-side error thrown, if the pdarray size
             exceeds the built-in client.maxTransferBytes size limit, or if the bytes
             received does not match expected number of bytes
+
         Notes
         -----
         The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
@@ -2643,6 +2644,7 @@ class pdarray:
             Raised if there is a server-side error thrown, if the pdarray size
             exceeds the built-in client.maxTransferBytes size limit, or if the bytes
             received does not match expected number of bytes
+
         Notes
         -----
         The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
@@ -2842,7 +2844,7 @@ class pdarray:
         string message indicating result of save operation
 
         Raises
-        -------
+        ------
         RuntimeError
             Raised if a server-side error is thrown saving the pdarray
 
@@ -2901,7 +2903,7 @@ class pdarray:
     def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
         """
         Overwrite the dataset with the name provided with this pdarray. If
-        the dataset does not exist it is added
+        the dataset does not exist it is added.
 
         Parameters
         ----------
@@ -2917,16 +2919,16 @@ class pdarray:
             file sizes to expand.
 
         Returns
-        --------
+        -------
         str - success message if successful
 
         Raises
-        -------
+        ------
         RuntimeError
             Raised if a server-side error is thrown saving the pdarray
 
         Notes
-        ------
+        -----
         - If file does not contain File_Format attribute to indicate how it was saved,
           the file name is checked for _LOCALE#### to determine if it is distributed.
         - If the dataset provided does not exist, it will be added
@@ -2969,7 +2971,7 @@ class pdarray:
         col_delim: str = ",",
         overwrite: bool = False,
     ):
-        """
+        r"""
         Write pdarry to CSV file(s).  File will contain a single column
         with the pdarray data.  All CSV files written by Arkouda include
         a header denoting data types of the columns.
@@ -3034,7 +3036,8 @@ class pdarray:
     def register(self, user_defined_name: str) -> pdarray:
         """
         Register this pdarray with a user defined name in the arkouda server
-        so it can be attached to later using pdarray.attach()
+        so it can be attached to later using pdarray.attach().
+
         This is an in-place operation, registering a pdarray more than once will
         update the name in the registry and remove the previously registered name.
         A name can only be registered to one pdarray at a time.
@@ -3080,6 +3083,7 @@ class pdarray:
         potentially disconnect from server and reconnect to server
         >>> b = ak.attach("my_zeros")
         >>> b.unregister()
+
         """
         from arkouda.client import generic_msg
 
@@ -3099,7 +3103,7 @@ class pdarray:
     def unregister(self) -> None:
         """
         Unregister a pdarray in the arkouda server which was previously
-        registered using register() and/or attahced to using attach()
+        registered using register() and/or attahced to using attach().
 
         Raises
         ------
@@ -3125,6 +3129,7 @@ class pdarray:
         potentially disconnect from server and reconnect to server
         >>> b = ak.attach("my_zeros")
         >>> b.unregister()
+
         """
         from arkouda.numpy.util import unregister
 
@@ -3193,7 +3198,6 @@ def create_pdarray(repMsg: str, max_bits=None) -> pdarray:
         Raised if a server-side error is thrown in the process of creating
         the pdarray instance
     """
-
     try:
         fields = repMsg.split()
         name = fields[1]
@@ -3243,7 +3247,6 @@ def create_pdarrays(repMsg: str) -> List[pdarray]:
         Raised if a server-side error is thrown in the process of creating
         the pdarray instance
     """
-
     # TODO: maybe add more robust json parsing here
     try:
         repMsg = repMsg.strip("[]")
@@ -3534,7 +3537,6 @@ def _common_stats_reduction(
     ValueError
         Raised op is not a supported reduction operation.
     """
-
     from arkouda.client import generic_msg
 
     if kind not in SUPPORTED_STATS_REDUCTION_OPS:
@@ -3900,7 +3902,6 @@ def dot(
     ValueError
         Raised if either pdda1 or pda2 is not an allowed type, or if shapes are incompatible.
     """
-
     from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy import cast as akcast
     from arkouda.numpy.numeric import matmul as akmatmul
@@ -3976,7 +3977,7 @@ def dot(
 @typechecked
 def cov(x: pdarray, y: pdarray) -> np.float64:
     """
-    Return the covariance of x and y
+    Return the covariance of x and y.
 
     Parameters
     ----------
@@ -4015,6 +4016,7 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
     -----
     The covariance is calculated by
     ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.
+
     """
     from arkouda.client import generic_msg
 
@@ -4026,7 +4028,7 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
 @typechecked
 def corr(x: pdarray, y: pdarray) -> np.float64:
     """
-    Return the correlation between x and y
+    Return the correlation between x and y.
 
     Parameters
     ----------
@@ -4065,6 +4067,7 @@ def corr(x: pdarray, y: pdarray) -> np.float64:
     -----
     The correlation is calculated by
     cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
+
     """
     from arkouda.client import generic_msg
 
@@ -4852,7 +4855,6 @@ def skew(pda: pdarray, bias: bool = True) -> np.float64:
     TypeError
         raised if pda.dtype is Strings
     """
-
     deviations = pda - pda.mean()
     cubed_deviations = deviations**3
 
@@ -5036,7 +5038,7 @@ def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, boo
 
 @typechecked
 def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
-    """
+    r"""
     Create a "broadcasted" array (of rank 'nd') by copying an array into an
     array of the given shape.
 
@@ -5080,6 +5082,7 @@ def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
     ------
     RuntimeError
         raised if the pda can't be broadcast to the given shape
+
     """
     from arkouda.client import generic_msg
 
@@ -5189,4 +5192,4 @@ def diff(a: pdarray, n: int = 1, axis: int = -1, prepend=None, append=None) -> p
 
 # TODO In the future move this to a specific errors file
 class RegistrationError(Exception):
-    """Error/Exception used when the Arkouda Server cannot register an object"""
+    """Error/Exception used when the Arkouda Server cannot register an object."""

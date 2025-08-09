@@ -37,10 +37,10 @@ class UniqueInverseResult(NamedTuple):
 def unique_all(x: Array, /) -> UniqueAllResult:
     """
     Return a tuple of arrays containing:
-    - the unique values in `x`
-    - the indices of the first occurrence of each unique value
-    - the inverse indices that reconstruct `x` from the unique values
-    - the counts of each unique value
+    - the unique values in `x`.
+    - the indices of the first occurrence of each unique value.
+    - the inverse indices that reconstruct `x` from the unique values.
+    - the counts of each unique value.
 
     """
     from arkouda.client import generic_msg
@@ -67,7 +67,7 @@ def unique_counts(x: Array, /) -> UniqueCountsResult:
     """
     Return a tuple of arrays containing:
     - the unique values in `x`
-    - the counts of each unique value
+    - the counts of each unique value.
     """
     from arkouda.client import generic_msg
 
@@ -91,7 +91,7 @@ def unique_inverse(x: Array, /) -> UniqueInverseResult:
     """
     Return a tuple of arrays containing:
     - the unique values in `x`
-    - the inverse indices that reconstruct `x` from the unique values
+    - the inverse indices that reconstruct `x` from the unique values.
     """
     from arkouda.client import generic_msg
 
