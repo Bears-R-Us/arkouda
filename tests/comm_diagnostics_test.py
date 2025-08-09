@@ -40,6 +40,7 @@ diagnostic_stats_functions = [
 
 
 class TestCommDiagnostics:
+    @pytest.mark.skip_if_max_rank_greater_than(1)
     @pytest.mark.skipif(
         os.environ.get("CHPL_HOST_PLATFORM") == "hpe-apollo",
         reason="Test skipped on CHPL_HOST_PLATFORM=hpe-apollo for debugging purposes (hanging test)",
@@ -57,12 +58,14 @@ class TestCommDiagnostics:
         )
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
+    @pytest.mark.skip_if_max_rank_greater_than(1)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_verbose_comm(self, size):
         start_verbose_comm()
         ak.zeros(size)
         stop_verbose_comm()
 
+    @pytest.mark.skip_if_max_rank_greater_than(1)
     @pytest.mark.parametrize("op", diagnostic_stats_functions)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_comm_diagnostics_single_locale(self, op, size):
@@ -80,6 +83,7 @@ class TestCommDiagnostics:
         reset_comm_diagnostics()
         stop_comm_diagnostics()
 
+    @pytest.mark.skip_if_max_rank_greater_than(1)
     @pytest.mark.skip_if_nl_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_comm_diagnostics_multi_locale(self, size):
@@ -96,6 +100,7 @@ class TestCommDiagnostics:
 
         stop_comm_diagnostics()
 
+    @pytest.mark.skip_if_max_rank_greater_than(1)
     def test_get_comm_diagnostics(self):
         start_comm_diagnostics()
 
