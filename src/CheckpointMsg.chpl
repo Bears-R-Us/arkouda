@@ -1,6 +1,6 @@
 module CheckpointMsg {
   use FileSystem;
-  use Types, List;
+  use List;
   use ArkoudaJSONCompat;
   import IO, Path, Time;
   import Reflection.{getModuleName as M,
@@ -14,7 +14,7 @@ module CheckpointMsg {
   use ParquetMsg;
   use IOUtils;
   use Logging;
-  use BigInteger, CTypes, GMP;  // for checkpointing of bigint arrays
+  use BigInteger, CTypes, GMP, FileIO;  // for checkpointing of bigint arrays
 
   config param metadataExt = "md";
   config param dataExt = "data";
@@ -122,7 +122,7 @@ module CheckpointMsg {
       const mdName = Path.joinPath(cpPath, ".".join(name, metadataExt));
       var mdWriter = IO.open(mdName, ioMode.cw).writer(locking=false);
       writeJson(mdWriter, entryMD, "entry metadata", mdName);
-        
+
       // actual work is done here
       entry.saveEntry(name, cpPath, mdName, mdWriter);
     }
@@ -355,19 +355,24 @@ module CheckpointMsg {
                           name, this.entryType:string, mdName));
   }
 
-  private proc checkSymEntryType(entry: SymEntry(?), direction: string) {
-    if entry.entryType != SymEntryType then
-      cpLogger.error(M(), R(), L(), "unexpected SymEntry.entryType=",
-                     entry.entryType:string, ", expected: ", SymEntryType:string,
+  private proc checkEntryType(entry: borrowed AbstractSymEntry,
+                              expected: SymbolEntryType, direction: string) {
+    if entry.entryType != expected then
+      cpLogger.error(M(), R(), L(), "unexpected entry.entryType=",
+                     entry.entryType:string, ", expected: ", expected:string,
                      " when ", direction, " an entry with name:", entry.name);
   }
+
+  /******************************************************************/
+  /*** SymEntry / PrimitiveTypedArraySymEntry aka SymEntryType ***/
+  /******************************************************************/
 
   private proc hasPrimitiveElements(entry) param do
     return isIntegral(entry.etype) || isReal(entry.etype) || isBool(entry.etype);
 
   override proc SymEntry.saveEntry(name, path, mdName, mdWriter) throws {
     const entry = this;
-    checkSymEntryType(entry, "saving");
+    checkEntryType(entry, SymEntryType, "saving");
 
     // SymEntry.saveEntry() will be instantiated by the compiler for each
     // (etype, dimensions) combination that the program can create.
@@ -418,11 +423,11 @@ module CheckpointMsg {
       writeJson(mdWriter, chunkMD, "chunk metadata", mdName);
     }
 
-    cpLogger.debug(M(), R(), L(), "Metadata created: ", mdName);
+    cpLogger.debug(M(), R(), L(), "SymEntry metadata created in", mdName);
   }
 
-  private proc localeName(baseName, locIdx) do
-    return "".join(baseName, ".loc", locIdx:string, ".bin");
+  private proc localeName(baseName, locIdx) throws do
+    return generateFilename(baseName, ".bin", locIdx);
 
   private proc saveSymEntryBigint(entry, name, path, mdName, mdWriter) throws {
     // Metadata is similar to saveSymEntryPrimitive(), except no "chunks".
@@ -498,7 +503,7 @@ module CheckpointMsg {
     }
 
     cpLogger.debug(M(), R(), L(), "Data loaded %s".format(mdName));
-    checkSymEntryType(entryVal, "loading");
+    checkEntryType(entryVal, SymEntryType, "loading");
     return entryVal;
   }
 

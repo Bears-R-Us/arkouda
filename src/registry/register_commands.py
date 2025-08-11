@@ -1358,6 +1358,7 @@ def make_reg_config_module(config):
     elts_ty = " ".join(f"{dim}," for dim in arr_elts)
 
     stamps = [
+        "// ./doc-support.chpl is used instead when generating docs for this module\n"
         "module RegistrationConfig {",
         "use BigInteger;",
         watermarkConfig(config),
