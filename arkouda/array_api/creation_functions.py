@@ -78,18 +78,15 @@ def asarray(
 
     if isinstance(obj, ak.pdarray):
         return Array._new(obj)
-    elif (
-        isinstance(obj, bool)
-        or isinstance(obj, int)
-        or isinstance(obj, float)
-        or isinstance(obj, complex)
-    ):
+    elif isinstance(obj, (bool, int, float)):
         if dtype is None:
             xdtype = akdtype(resolve_scalar_dtype(obj))
         else:
             xdtype = akdtype(dtype)
         res = ak.full(1, obj, xdtype)
         return Array._new(res)
+    elif isinstance(obj, complex):
+        raise TypeError("complex dtype is not supported in Arkouda Arrays")
     elif isinstance(obj, Array):
         return Array._new(ak.array(obj._array))
     elif isinstance(obj, ak.pdarray):

@@ -77,7 +77,6 @@ from arkouda.numpy.pdarraysetops import argsort, in1d
 from arkouda.numpy.sorting import coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import convert_if_categorical, generic_concat, get_callback
-from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GroupBy, unique
 
 __all__ = [
@@ -85,12 +84,14 @@ __all__ = [
     "MultiIndex",
 ]
 
-
 if TYPE_CHECKING:
-    from arkouda.numpy import cast as akcast
+    from arkouda import cast as akcast
+    from arkouda.categorical import Categorical
     from arkouda.pandas.series import Series
 else:
+    Series = TypeVar("Series")
     akcast = TypeVar("akcast")
+    Categorical = TypeVar("Categorical")
 
 
 class Index:
@@ -144,6 +145,7 @@ class Index:
 
         """
         from arkouda.numpy.dtypes import dtype as ak_dtype
+        from arkouda.pandas.categorical import Categorical
 
         if isinstance(self.values, List):
             # Infer dtype from first element
@@ -163,6 +165,8 @@ class Index:
         allow_list=False,
         max_list_size=1000,
     ):
+        from arkouda.pandas.categorical import Categorical
+
         self.max_list_size = max_list_size
         self.registered_name: Optional[str] = None
 
@@ -483,6 +487,8 @@ class Index:
             The reconstructed Index or MultiIndex instance.
 
         """
+        from arkouda.pandas.categorical import Categorical
+
         data = json.loads(rep_msg)
 
         idx = []
@@ -598,6 +604,8 @@ class Index:
 
     def to_pandas(self):
         """Return the equivalent Pandas Index."""
+        from arkouda.pandas.categorical import Categorical
+
         if isinstance(self.values, list):
             val = ndarray(self.values)
         elif isinstance(self.values, Categorical):
@@ -684,6 +692,8 @@ class Index:
         they are unregistered.
 
         """
+        from arkouda.pandas.categorical import Categorical
+
         if isinstance(self.values, list):
             raise TypeError("Index cannot be registered when values are list type.")
 
@@ -785,6 +795,7 @@ class Index:
 
         """
         from arkouda.numpy.util import is_registered
+        from arkouda.pandas.categorical import Categorical
 
         if self.registered_name is None:
             if not isinstance(self.values, Categorical):
@@ -1402,6 +1413,8 @@ class MultiIndex(Index):
         name: Optional[str] = None,
         names: Optional[list[str]] = None,
     ):
+        from arkouda.pandas.categorical import Categorical
+
         self.registered_name: Optional[str] = None
         if isinstance(data, MultiIndex):
             self.levels = data.levels
@@ -1695,6 +1708,8 @@ class MultiIndex(Index):
         while others are converted to NumPy arrays.
 
         """
+        from arkouda.pandas.categorical import Categorical
+
         mi = pd.MultiIndex.from_arrays(
             [i.to_pandas() if isinstance(i, Categorical) else i.to_ndarray() for i in self.index],
             names=self.names,
@@ -1775,6 +1790,7 @@ class MultiIndex(Index):
 
         """
         from arkouda.client import generic_msg
+        from arkouda.pandas.categorical import Categorical
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
