@@ -1844,7 +1844,9 @@ def load_all(
     file_format: str = "INFER",
     column_delim: str = ",",
     read_nested: bool = True,
-) -> Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]:
+) -> Mapping[
+    str, pdarray | Strings | SegArray | Categorical | DataFrame | IPv4 | Datetime | Timedelta | Index
+]:
     """
     Load multiple pdarrays, Strings, SegArrays, or Categoricals previously saved with ``save_all()``.
 

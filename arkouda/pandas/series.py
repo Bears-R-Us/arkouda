@@ -24,20 +24,21 @@ from arkouda.numpy.pdarraycreation import arange, array, full, zeros
 from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import get_callback, is_float
-from arkouda.pandas.categorical import Categorical
 import arkouda.pandas.dataframe
 from arkouda.pandas.groupbyclass import GroupBy, groupable_element_type
 from arkouda.pandas.index import Index, MultiIndex
 
 if TYPE_CHECKING:
+    from arkouda.categorical import Categorical
     from arkouda.numpy import cast as akcast
-    from arkouda.numpy import isnan, value_counts
     from arkouda.numpy.segarray import SegArray
 else:
     SegArray = TypeVar("SegArray")
     akcast = TypeVar("akcast")
     isnan = TypeVar("isnan")
     value_counts = TypeVar("value_counts")
+    Categorical = TypeVar("Categorical")
+
 
 # pd.set_option("display.max_colwidth", 65) is being called in DataFrame.py. This will resolve BitVector
 # truncation issues. If issues arise, that's where to look for it.
@@ -154,6 +155,8 @@ class Series:
         name=None,
         index: Optional[Union[pdarray, Strings, Tuple, List, Index]] = None,
     ):
+        from arkouda.pandas.categorical import Categorical
+
         if isinstance(data, pd.Categorical):
             data = Categorical(data)
 
@@ -802,6 +805,7 @@ class Series:
         import copy
 
         from arkouda.numpy.segarray import SegArray
+        from arkouda.pandas.categorical import Categorical
 
         idx = self.index.to_pandas()
 
@@ -1003,6 +1007,7 @@ class Series:
 
         """
         from arkouda.client import generic_msg
+        from arkouda.pandas.categorical import Categorical
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -1148,6 +1153,8 @@ class Series:
             Raised if a server-side error is thrown in the process of creating
             the Series instance.
         """
+        from arkouda.pandas.categorical import Categorical
+
         data = json.loads(repMsg)
         val_comps = data["value"].split("+|+")
         if val_comps[0] == Categorical.objType.upper():

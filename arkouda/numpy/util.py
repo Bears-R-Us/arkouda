@@ -22,7 +22,6 @@ from arkouda.numpy.pdarraysetops import unique
 from arkouda.numpy.sorting import coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
-from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GroupBy
 
 __all__ = [
@@ -51,11 +50,10 @@ __all__ = [
 
 
 if TYPE_CHECKING:
+    from arkouda.categorical import Categorical
     from arkouda.client import generic_msg, get_config, get_mem_used
-    from arkouda.numpy.segarray import SegArray
     from arkouda.pandas.index import Index
     from arkouda.pandas.series import Series
-
 else:
     Index = TypeVar("Index")
     Series = TypeVar("Series")
@@ -63,6 +61,7 @@ else:
     generic_msg = TypeVar("generic_msg")
     get_config = TypeVar("get_config")
     get_mem_used = TypeVar("get_mem_used")
+    Categorical = TypeVar("Categorical")
 
 
 def identity(x):
@@ -180,6 +179,8 @@ def convert_if_categorical(values):
     >>> print(result)
     [1 2 3]
     """
+    from arkouda.pandas.categorical import Categorical
+
     if isinstance(values, Categorical):
         values = values.categories[values.codes]
     return values
@@ -272,6 +273,7 @@ def attach(name: str):
     from arkouda.client import generic_msg
     from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.numpy.segarray import SegArray
+    from arkouda.pandas.categorical import Categorical
     from arkouda.pandas.dataframe import DataFrame
     from arkouda.pandas.index import Index, MultiIndex
     from arkouda.pandas.series import Series
@@ -838,6 +840,7 @@ def map(
 
     from arkouda import Series, array, broadcast, full
     from arkouda.numpy.pdarraysetops import in1d
+    from arkouda.pandas.categorical import Categorical
 
     keys = values
     gb = GroupBy(keys, dropna=False)
