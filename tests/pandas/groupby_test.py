@@ -15,7 +15,7 @@ UNIQUE_TYPES = [ak.categorical, ak.int64, ak.float64, ak.str_]
 VOWELS_AND_SUCH = ["a", "e", "i", "o", "u", "AB", 47, 2, 3.14159]
 PICKS = np.array([f"base {i}" for i in range(10)])
 
-seed = pytest.seed if pytest.seed is not None else 8675309
+seed = pytest.seed
 
 
 def isSorted(x):

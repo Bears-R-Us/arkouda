@@ -15,7 +15,6 @@ from arkouda.testing import assert_equivalent
 ak.verbose = False
 N = 100
 UNIQUE = N // 4
-seed = pytest.seed if pytest.seed is not None else 8675309
 
 
 class TestString:
@@ -980,7 +979,7 @@ class TestString:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("ascending", [True, False])
     def test_argsort_basic(self, size, ascending):
-        strings = ak.random_strings_uniform(minlen=1, maxlen=8, size=size, seed=seed)
+        strings = ak.random_strings_uniform(minlen=1, maxlen=8, size=size, seed=pytest.seed)
         result = strings.argsort(ascending=ascending)
         np_strings = strings.to_ndarray()
         np_result = np_strings.argsort(stable=True)

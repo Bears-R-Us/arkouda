@@ -21,7 +21,7 @@ from arkouda.testing import assert_frame_equal
 NUMERIC_TYPES = ["int64", "float64", "bool", "uint64"]
 NUMERIC_AND_STR_TYPES = NUMERIC_TYPES + ["str"]
 
-seed = pytest.seed if pytest.seed is not None else 8675309
+seed = pytest.seed
 
 
 @pytest.fixture

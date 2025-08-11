@@ -4,7 +4,7 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
-seed = pytest.seed if pytest.seed is not None else 8675309
+seed = pytest.seed
 
 
 def ret_shapes():

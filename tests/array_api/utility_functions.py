@@ -4,7 +4,7 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
-seed = pytest.seed if pytest.seed is not None else 8675309
+seed = pytest.seed
 
 DTYPES = [ak.int64, ak.float64, ak.uint64, ak.uint8]
 DTYPES_WITH_BOOL = [ak.int64, ak.float64, ak.uint64, ak.uint8, ak.bool_]
