@@ -183,7 +183,7 @@ def generate_username_token_json(token: str) -> str:
 
     Parameters
     ----------
-    token : string
+    token : str
         The token to be used to access arkouda server
 
     Returns
