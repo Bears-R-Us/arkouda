@@ -8,11 +8,13 @@ ENV CHPL_HOME=/opt/chapel-2.5.0 \
     CHPL_GMP=bundled \
     CHPL_COMM=none \
     CHPL_TARGET_CPU=none \
+    CHPL_TARGET_COMPILER=gnu \
     CHPL_TASKS=qthreads \
     CHPL_TARGET_MEM=cstdlib \
     CHPL_HOST_MEM=cstdlib \
     CHPL_LLVM=none \
     CHPL_DEVELOPER=0 \
+    CHPL_FLAGS=" --target-compiler=gnu" \
     MANPATH=/opt/chapel-2.5.0/man \
     DEP_DIR=/opt/dep \
     DEP_BUILD_DIR=/opt/dep/build \
