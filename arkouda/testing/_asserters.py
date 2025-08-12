@@ -237,7 +237,6 @@ def assert_index_equal(
     >>> tm.assert_index_equal(a, b)
 
     """
-
     __tracebackhide__ = not DEBUG
 
     def _check_types(left, right, obj: str = "Index") -> None:
@@ -447,7 +446,6 @@ def assert_categorical_equal(
         Defaults to 'Categorical'.
 
     """
-
     _check_isinstance(left, right, Categorical)
 
     exact = True
