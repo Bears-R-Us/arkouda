@@ -493,7 +493,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps-slim:1.0.0
+      image: ajpotts/ubuntu-with-arkouda-deps-slim:1.0.0-gnu
     steps:
     - name: Show memory available
       run: |
