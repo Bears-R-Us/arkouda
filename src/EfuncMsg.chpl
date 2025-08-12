@@ -291,50 +291,6 @@ module EfuncMsg
         return outArray;
     }
 
-    //  cumsum and cumprod -- the below helper function gives return type
-
-    proc cumspReturnType(type t) type
-      do return if t == bool then int else t;
-
-    // Implements + reduction over numeric data, converting all elements to int before summing.
-    // See https://chapel-lang.org/docs/technotes/reduceIntents.html#readme-reduceintents-interface
-
-    class PlusIntReduceOp: ReduceScanOp {
-        type eltType;
-        var value: int;
-        proc identity      do return 0: int;
-        proc accumulate(elm)  { value = value + elm:int; }
-        proc accumulateOntoState(ref state, elm)  { state = state + elm:int; }
-        proc initialAccumulate(outerVar) { value = value + outerVar: int; }
-        proc combine(other: borrowed PlusIntReduceOp(?))   { value = value + other.value; }
-        proc generate()    do return value;
-        proc clone()       do return new unmanaged PlusIntReduceOp(eltType=eltType);
-    }
-
-    @arkouda.registerCommand()
-    proc cumsum(x : [?d] ?t) : [d] cumspReturnType(t) throws
-        where (t==int || t==real || t==uint || t==bool) && (d.rank==1)
-    {
-        overMemLimit(numBytes(int) * x.size) ;
-        if t == bool {
-            return (PlusIntReduceOp scan x);
-        } else {
-            return (+ scan x) ;
-        }
-    }
-
-    @arkouda.registerCommand()
-    proc cumprod(x : [?d] ?t) : [d] cumspReturnType(t) throws
-        where (t==int || t==real || t==uint || t==bool) && (d.rank==1)
-    {
-        overMemLimit(numBytes(int) * x.size) ;
-        if t == bool {
-            return (&& scan x);
-        } else {
-            return (*scan x) ;
-        }
-    }
-
     // sgn is a special case.  It is the only thing that returns int(8).
 
     @arkouda.registerCommand(name="sgn")
