@@ -401,6 +401,11 @@ class Strings:
                 },
             )
             return Strings.from_return_msg(repMsg)
+        elif isinstance(key, np.ndarray):
+            # convert numpy array to pdarray
+            from arkouda.numpy.pdarraycreation import array as ak_array
+
+            return self[ak_array(key)]
         else:
             raise TypeError(f"unsupported pdarray index type {key.__class__.__name__}")
 
