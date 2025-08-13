@@ -15,11 +15,11 @@ RUN dnf install -y gcc gcc-c++ m4 perl python3.12 python3-devel bash make gawk g
 RUN wget https://github.com/chapel-lang/chapel/releases/download/2.5.0/chapel-2.5.0.tar.gz && tar -xvf chapel-2.5.0.tar.gz
 
 #   Install Chapel
-RUN source ~/.bashrc && cd $CHPL_HOME && make && chpl --version
+# RUN source ~/.bashrc && cd $CHPL_HOME && make && chpl --version
 
 # install chapel-py
-RUN source ~/.bashrc && cd  $CHPL_HOME  && make chapel-py-venv
+# RUN source ~/.bashrc && cd  $CHPL_HOME  && make chapel-py-venv
 
-WORKDIR /root
+# WORKDIR /root
 
-ENTRYPOINT ["/bin/bash", "-l"]
+# ENTRYPOINT ["/bin/bash", "-l"]
