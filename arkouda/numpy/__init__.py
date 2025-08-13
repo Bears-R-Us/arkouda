@@ -263,7 +263,6 @@ from arkouda.numpy.pdarraycreation import (
     ones,
     ones_like,
     promote_to_common_dtype,
-    rand,
     randint,
     random_strings_lognormal,
     random_strings_uniform,
@@ -276,6 +275,7 @@ from arkouda.numpy.pdarraycreation import (
 from arkouda.numpy.pdarraymanipulation import append, delete, hstack, vstack
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.char import isnumeric
+from arkouda.numpy.random import rand
 from arkouda.numpy.timeclass import (
     Datetime,
     Timedelta,

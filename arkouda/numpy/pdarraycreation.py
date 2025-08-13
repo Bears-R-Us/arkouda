@@ -23,8 +23,9 @@ from arkouda.numpy.dtypes import (
     SeriesDTypes,
     bigint,
     bool_scalars,
-)
-from arkouda.numpy.dtypes import (
+    float64,
+    get_byteorder,
+    get_server_byteorder,
     int_scalars,
     isSupportedInt,
     isSupportedNumber,
@@ -33,7 +34,6 @@ from arkouda.numpy.dtypes import (
     str_,
 )
 from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import (
@@ -1232,7 +1232,6 @@ def logspace(
         array([4.00000000000000000 16.00000000000000000])
         array([16.00000000000000000 64.00000000000000000])])
     """
-
     if dtype not in (None, float64):
         raise TypeError("dtype must be None or float64")
     if base <= 0:
@@ -1318,7 +1317,6 @@ def linspace(
         array([1.00000000000000000 2.00000000000000000])
         array([2.00000000000000000 3.00000000000000000])])
     """
-
     from arkouda import newaxis
     from arkouda.numeric import transpose
     from arkouda.numpy.manipulation_functions import tile
@@ -1397,41 +1395,6 @@ def linspace(
             raise ValueError("axis should not be supplied when start and stop are scalars.")
 
     return result
-
-
-@typechecked
-def rand(*size: int_scalars, seed: Union[None, int_scalars] = None) -> Union[pdarray, float64]:
-    """
-    Generate a pdarray of float values in the range (0,1).
-
-    Parameters
-    ----------
-    size : int
-        Dimensions of the returned array. Multiple arguments define a shape tuple.
-
-    seed : int_scalars, optional
-        The seed for the random number generator
-
-    Returns
-    -------
-    pdarray
-        Values drawn uniformly from the range (0,1).
-
-    Raises
-    ------
-    TypeError
-        Raised if size is not an int or a sequence of ints, or if seed is not an int
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.rand(3,seed=1701)
-    array([0.011410423448327005 0.73618171558685619 0.12367222192448891])
-    """
-
-    from arkouda.numpy.random import rand as akrand
-
-    return akrand(*size, seed=seed)
 
 
 @typechecked
