@@ -385,16 +385,16 @@ module FindMsg
         record tupComparator: relativeComparator {
           proc compare(a: (string, int), b: (string, int)) {
             if a[0] < b[0] {
-              return 1;
+              return -1;
             }
             if a[0] > b[0] {
-              return -1;
-            }
-            if a[1] < b[1] {
               return 1;
             }
-            if a[1] > b[1] {
+            if a[1] < b[1] {
               return -1;
+            }
+            if a[1] > b[1] {
+              return 1;
             }
             // Since the 2nd components are original indices, this shouldn't happen.
             return 0;
