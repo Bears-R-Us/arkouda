@@ -856,7 +856,7 @@ class Series:
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
+
         >>> s = ak.Series(["elk", "pig", "dog", "quetzal"], name="animal")
         >>> print(s.to_markdown())
         +----+----------+

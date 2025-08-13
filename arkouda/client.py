@@ -81,7 +81,6 @@ Notes
 Examples
 --------
 >>> import arkouda as ak
->>> ak.connect() # doctest: +SKIP
 >>> ak.get_config() # doctest: +SKIP
 {'serverHostname': 'localhost', 'numLocales': 4, ...}
 >>> ak.disconnect() # doctest: +SKIP
@@ -1586,8 +1585,6 @@ def generate_history(
     Examples
     --------
     >>> import arkouda as ak
-    >>> ak.connect()    # doctest: +SKIP
-    connected to arkouda server tcp://*:5555
     >>> ak.get_config()    # doctest: +SKIP
     {'arkoudaVersion': 'v2025.01.13+165.g23ccdfd6c', 'chplVersion': '2.4.0',
         ... 'pythonVersion': '3.13', 'ZMQVersion': '4.3.5', 'HDF5Version': '1.14.4',

@@ -2078,7 +2078,7 @@ class DataFrame(UserDict):
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
+
         >>> df = ak.DataFrame({"A": ak.array([1, 2, 3]), "B": ak.array([4, 5, 6])})
         >>> df
            A  B
@@ -2158,7 +2158,7 @@ class DataFrame(UserDict):
         Examples
         --------
         >>> import arkouda as ak
-        >>> ak.connect()
+
         >>> df1 = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
         >>> df1
             col1  col2
