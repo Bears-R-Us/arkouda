@@ -421,12 +421,7 @@
     <span class="n">str_</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">_axis_validation</span><span class="p">,</span>
-    <span class="n">broadcast_to_shape</span><span class="p">,</span>
-    <span class="n">create_pdarray</span><span class="p">,</span>
-    <span class="n">pdarray</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -445,7 +440,6 @@
     <span class="s2">&quot;full_like&quot;</span><span class="p">,</span>
     <span class="s2">&quot;arange&quot;</span><span class="p">,</span>
     <span class="s2">&quot;linspace&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;logspace&quot;</span><span class="p">,</span>
     <span class="s2">&quot;randint&quot;</span><span class="p">,</span>
     <span class="s2">&quot;uniform&quot;</span><span class="p">,</span>
     <span class="s2">&quot;standard_normal&quot;</span><span class="p">,</span>
@@ -1554,263 +1548,61 @@
 
 
 
-<div class="viewcode-block" id="logspace">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.logspace">[docs]</a>
+<div class="viewcode-block" id="linspace">
+<a class="viewcode-back" href="../../../usage/creation.html#arkouda.linspace">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">logspace</span><span class="p">(</span>
-    <span class="n">start</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
-    <span class="n">stop</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
-    <span class="n">num</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
-    <span class="n">base</span><span class="p">:</span> <span class="n">numeric_scalars</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
-    <span class="n">endpoint</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">float64</span><span class="p">,</span>
-    <span class="n">axis</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">linspace</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create a pdarray of numbers evenly spaced on a log scale.</span>
+<span class="sd">    Create a pdarray of linearly-spaced floats in a closed interval.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    start : Union[numeric_scalars, pdarray]</span>
-<span class="sd">        The starting value of the sequence.</span>
-<span class="sd">    stop : Union[numeric_scalars, pdarray]</span>
-<span class="sd">        The end value of the sequence, unless `endpoint` is set to False.</span>
-<span class="sd">        In that case, the sequence consists of all but the last of ``num + 1``</span>
-<span class="sd">        evenly spaced samples, so that `stop` is excluded.  Note that the step</span>
-<span class="sd">        size changes when `endpoint` is False.</span>
-<span class="sd">    num : int, optional</span>
-<span class="sd">        Number of samples to generate. Default is 50. Must be non-negative.</span>
-<span class="sd">    base : numeric_scalars, optional</span>
-<span class="sd">        the base of the log space, defaults to 10.0.</span>
-<span class="sd">    endpoint : bool, optional</span>
-<span class="sd">        If True, `stop` is the last sample. Otherwise, it is not included.</span>
-<span class="sd">        Default is True.</span>
-<span class="sd">    dtype : Union[None, float64]</span>
-<span class="sd">        allowed for compatibility with numpy, but ignored.  Outputs are always float</span>
-<span class="sd">    axis : int, optional</span>
-<span class="sd">        The axis in the result to store the samples.  Relevant only if start</span>
-<span class="sd">        or stop are array-like.  By default (0), the samples will be along a</span>
-<span class="sd">        new axis inserted at the beginning. Use -1 to get an axis at the end.</span>
+<span class="sd">    start : numeric_scalars</span>
+<span class="sd">        Start of interval (inclusive)</span>
+<span class="sd">    stop : numeric_scalars</span>
+<span class="sd">        End of interval (inclusive)</span>
+<span class="sd">    length : int_scalars</span>
+<span class="sd">        Number of points</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
-<span class="sd">        There are `num` equally spaced (logarithmically) samples in the closed interval</span>
-<span class="sd">        base**``[start, stop]`` or the half-open interval base**``[start, stop)``</span>
-<span class="sd">        (depending on whether `endpoint` is True or False).</span>
+<span class="sd">        Array of evenly spaced float values along the interval</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if start or stop is not a float or a pdarray, or if num</span>
-<span class="sd">        is not an int, or if endpoint is not a bool, or if dtype is anything</span>
-<span class="sd">        other than None or float64, or axis is not an integer.</span>
-<span class="sd">    ValueError</span>
-<span class="sd">        Raised if axis is not a valid axis for the given data, or if base &lt; 0.</span>
+<span class="sd">        Raised if start or stop is not a float or int or if length is not an int</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    linspace</span>
+<span class="sd">    arange</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    If start is greater than stop, the pdarray values are generated</span>
+<span class="sd">    If that start is greater than stop, the pdarray values are generated</span>
 <span class="sd">    in descending order.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; ak.logspace(2,3,3,4)</span>
-<span class="sd">    array([16.00000000000000000 32.00000000000000000 64.00000000000000000])</span>
-<span class="sd">    &gt;&gt;&gt; ak.logspace(2,3,3,4,endpoint=False)</span>
-<span class="sd">    array([16.00000000000000000 25.398416831491197 40.317473596635935])</span>
-<span class="sd">    &gt;&gt;&gt; ak.logspace(0,1,3,4)</span>
-<span class="sd">    array([1.00000000000000000 2.00000000000000000 4.00000000000000000])</span>
-<span class="sd">    &gt;&gt;&gt; ak.logspace(1,0,3,4)</span>
-<span class="sd">    array([4.00000000000000000 2.00000000000000000 1.00000000000000000])</span>
-<span class="sd">    &gt;&gt;&gt; ak.logspace(0,1,3,endpoint=False)</span>
-<span class="sd">    array([1.00000000000000000 2.1544346900318838 4.6415888336127784])</span>
-<span class="sd">    &gt;&gt;&gt; ak.logspace(0,ak.array([2,3]),3,base=2)</span>
-<span class="sd">    array([array([1.00000000000000000 1.00000000000000000])</span>
-<span class="sd">        array([2.00000000000000000 2.8284271247461903])</span>
-<span class="sd">        array([4.00000000000000000 8.00000000000000000])])</span>
-<span class="sd">    &gt;&gt;&gt; ak.logspace(ak.array([0,1]),3,3,base=3)</span>
-<span class="sd">    array([array([1.00000000000000000 3.00000000000000000])</span>
-<span class="sd">        array([5.196152422706632 9.00000000000000000])</span>
-<span class="sd">        array([27.00000000000000000 27.00000000000000000])])</span>
-<span class="sd">    &gt;&gt;&gt; ak.logspace(ak.array([0,1]),ak.array([2,3]),3,base=4)</span>
-<span class="sd">    array([array([1.00000000000000000 4.00000000000000000])</span>
-<span class="sd">        array([4.00000000000000000 16.00000000000000000])</span>
-<span class="sd">        array([16.00000000000000000 64.00000000000000000])])</span>
+<span class="sd">    &gt;&gt;&gt; ak.linspace(0, 1, 5)</span>
+<span class="sd">    array([0.00000000000000000 0.25 0.5 0.75 1.00000000000000000])</span>
+
+<span class="sd">    &gt;&gt;&gt; ak.linspace(start=1, stop=0, length=5)</span>
+<span class="sd">    array([1.00000000000000000 0.75 0.5 0.25 0.00000000000000000])</span>
+
+<span class="sd">    &gt;&gt;&gt; ak.linspace(start=-5, stop=0, length=5)</span>
+<span class="sd">    array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">float64</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;dtype must be None or float64&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">base</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;base must be positive&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">endpoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">endpoint</span> <span class="o">=</span> <span class="kc">True</span>
-
-    <span class="k">return</span> <span class="n">base</span> <span class="o">**</span> <span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float64</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="linspace">
-<a class="viewcode-back" href="../../../usage/creation.html#arkouda.linspace">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">linspace</span><span class="p">(</span>
-    <span class="n">start</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
-    <span class="n">stop</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
-    <span class="n">num</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
-    <span class="n">endpoint</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">float64</span><span class="p">,</span>
-    <span class="n">axis</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return evenly spaced numbers over a specified interval.</span>
-
-<span class="sd">    Returns `num` evenly spaced samples, calculated over the</span>
-<span class="sd">    interval [`start`, `stop`].</span>
-
-<span class="sd">    The endpoint of the interval can optionally be excluded.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    start : Union[numeric_scalars, pdarray]</span>
-<span class="sd">        The starting value of the sequence.</span>
-<span class="sd">    stop : Union[numeric_scalars, pdarray]</span>
-<span class="sd">        The end value of the sequence, unless `endpoint` is set to False.</span>
-<span class="sd">        In that case, the sequence consists of all but the last of ``num + 1``</span>
-<span class="sd">        evenly spaced samples, so that `stop` is excluded.  Note that the step</span>
-<span class="sd">        size changes when `endpoint` is False.</span>
-<span class="sd">    num : int, optional</span>
-<span class="sd">        Number of samples to generate. Default is 50. Must be non-negative.</span>
-<span class="sd">    endpoint : bool, optional</span>
-<span class="sd">        If True, `stop` is the last sample. Otherwise, it is not included.</span>
-<span class="sd">        Default is True.</span>
-<span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        Allowed for compatibility with numpy linspace, but anything entered</span>
-<span class="sd">        is ignored.  The output is always ak.float64.</span>
-<span class="sd">    axis : int, optional</span>
-<span class="sd">        The axis in the result to store the samples.  Relevant only if start</span>
-<span class="sd">        or stop are array-like.  By default (0), the samples will be along a</span>
-<span class="sd">        new axis inserted at the beginning. Use -1 to get an axis at the end.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    pdarray</span>
-<span class="sd">        There are `num` equally spaced samples in the closed interval</span>
-<span class="sd">        ``[start, stop]`` or the half-open interval ``[start, stop)``</span>
-<span class="sd">        (depending on whether `endpoint` is True or False).</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if start or stop is not a float or a pdarray, or if num</span>
-<span class="sd">        is not an int, or if endpoint is not a bool, or if dtype is anything</span>
-<span class="sd">        other than None or float64, or axis is not an integer.</span>
-<span class="sd">    ValueError</span>
-<span class="sd">        Raised if axis is not a valid axis for the given data.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; ak.linspace(0,1,3)</span>
-<span class="sd">    array([0.00000000000000000 0.5 1.00000000000000000])</span>
-<span class="sd">    &gt;&gt;&gt; ak.linspace(1,0,3)</span>
-<span class="sd">    array([1.00000000000000000 0.5 0.00000000000000000])</span>
-<span class="sd">    &gt;&gt;&gt; ak.linspace(0,1,3,endpoint=False)</span>
-<span class="sd">    array([0.00000000000000000 0.33333333333333331 0.66666666666666663])</span>
-<span class="sd">    &gt;&gt;&gt; ak.linspace(0,ak.array([2,3]),3)</span>
-<span class="sd">    array([array([0.00000000000000000 0.00000000000000000])</span>
-<span class="sd">        array([1.00000000000000000 1.5]) array([2.00000000000000000 3.00000000000000000])])</span>
-<span class="sd">    &gt;&gt;&gt; ak.linspace(ak.array([0,1]),3,3)</span>
-<span class="sd">    array([array([0.00000000000000000 1.00000000000000000])</span>
-<span class="sd">        array([1.5 2.00000000000000000]) array([3.00000000000000000 3.00000000000000000])])</span>
-<span class="sd">    &gt;&gt;&gt; ak.linspace(ak.array([0,1]),ak.array([2,3]),3)</span>
-<span class="sd">    array([array([0.00000000000000000 1.00000000000000000])</span>
-<span class="sd">        array([1.00000000000000000 2.00000000000000000])</span>
-<span class="sd">        array([2.00000000000000000 3.00000000000000000])])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">newaxis</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">transpose</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.manipulation_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">tile</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">broadcast_dims</span>
-
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">float64</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;dtype must be None or float64&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">endpoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">endpoint</span> <span class="o">=</span> <span class="kc">True</span>
-
-    <span class="n">start_</span> <span class="o">=</span> <span class="n">start</span>
-    <span class="n">stop_</span> <span class="o">=</span> <span class="n">stop</span>
-
-    <span class="c1">#   First make sure everything&#39;s a float.</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-        <span class="n">start_</span> <span class="o">=</span> <span class="n">start_</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">float64</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">start_</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">start_</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-        <span class="n">stop_</span> <span class="o">=</span> <span class="n">stop_</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">float64</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">stop_</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">stop_</span><span class="p">)</span>
-
-    <span class="c1">#   Determine whether this is all scalars, or if vectors are involved.</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-        <span class="c1">#  they must be broadcast to a matching shape</span>
-        <span class="k">if</span> <span class="n">start_</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">stop_</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
-            <span class="n">newshape</span> <span class="o">=</span> <span class="n">broadcast_dims</span><span class="p">(</span><span class="n">start_</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">stop_</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-            <span class="n">start_</span> <span class="o">=</span> <span class="n">broadcast_to_shape</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">newshape</span><span class="p">)</span>
-            <span class="n">stop_</span> <span class="o">=</span> <span class="n">broadcast_to_shape</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">newshape</span><span class="p">)</span>
-
-    <span class="c1">#   If one is a scalar and other a vector, we use full_like to &quot;promote&quot; the scalar one.</span>
-
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">stop_</span><span class="p">):</span>
-            <span class="n">stop_</span> <span class="o">=</span> <span class="n">full_like</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">stop_</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">start_</span><span class="p">):</span>
-            <span class="n">start_</span> <span class="o">=</span> <span class="n">full_like</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">start_</span><span class="p">)</span>
-
-    <span class="n">divisor</span> <span class="o">=</span> <span class="n">num</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="k">else</span> <span class="n">num</span>
-
-    <span class="c1">#   In the vector case, by the time we reach here, start_ and stop_ are the same</span>
-    <span class="c1">#   shape.  They are tiled by num (the size of the linspace), the delta is</span>
-    <span class="c1">#   computed, and a solution is calculated involving start_ plus arange(num)</span>
-    <span class="c1">#   multipled by delta.</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-        <span class="n">pad</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-        <span class="n">start_</span> <span class="o">=</span> <span class="n">tile</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">pad</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num</span><span class="p">,)</span> <span class="o">+</span> <span class="n">start_</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="n">stop_</span> <span class="o">=</span> <span class="n">tile</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">pad</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num</span><span class="p">,)</span> <span class="o">+</span> <span class="n">stop_</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="n">delta_</span> <span class="o">=</span> <span class="p">(</span><span class="n">stop_</span> <span class="o">-</span> <span class="n">start_</span><span class="p">)</span> <span class="o">/</span> <span class="n">divisor</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">start_</span> <span class="o">+</span> <span class="n">arange</span><span class="p">(</span><span class="n">num</span><span class="p">)[(</span><span class="o">...</span><span class="p">,)</span> <span class="o">+</span> <span class="p">(</span><span class="n">newaxis</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="n">delta_</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">*</span> <span class="n">delta_</span>
-
-        <span class="c1"># Handle the axis parameter if needed</span>
-
-        <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">good</span><span class="p">,</span> <span class="n">axis_</span> <span class="o">=</span> <span class="n">_axis_validation</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">good</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is not a valid axis for the result of linspace.&quot;</span><span class="p">)</span>
-            <span class="n">axes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
-            <span class="n">axes</span><span class="p">[</span><span class="n">axis_</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">axis_</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">axes</span><span class="p">))</span>
-
-    <span class="c1">#   Scalar case is pretty straightforward.</span>
-
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">stop_</span> <span class="o">-</span> <span class="n">start_</span><span class="p">)</span> <span class="o">/</span> <span class="n">divisor</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">start_</span><span class="p">)</span> <span class="o">+</span> <span class="n">arange</span><span class="p">(</span><span class="n">num</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">float64</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;axis should not be supplied when start and stop are scalars.&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">result</span></div>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">stop</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;both start and stop must be an int, np.int64, float, or np.float64&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;length must be an int or int64&quot;</span><span class="p">)</span>
+    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;linspace&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span> <span class="s2">&quot;len&quot;</span><span class="p">:</span> <span class="n">length</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
 
 
 

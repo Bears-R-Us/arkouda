@@ -742,8 +742,8 @@ Values must be arkouda objects.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><em>DataFrame</em></a><em>, or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The two items to be compared.</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><em>DataFrame</em></a><em>, or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The two items to be compared.</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a><em>, or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The two items to be compared.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a><em>, or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The two items to be compared.</p></li>
 <li><p><strong>**kwargs</strong> – All keyword arguments are passed through to the underlying assert method.</p></li>
 </ul>
 </dd>
@@ -788,8 +788,8 @@ equality checks performed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><em>DataFrame</em></a>) – First DataFrame to compare.</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><em>DataFrame</em></a>) – Second DataFrame to compare.</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a>) – First DataFrame to compare.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a>) – Second DataFrame to compare.</p></li>
 <li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to check the DataFrame dtype is identical.</p></li>
 <li><p><strong>check_index_type</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default = True</em>) – Whether to check the Index class, dtype and inferred_type
 are identical.</p></li>
@@ -855,8 +855,8 @@ Arkouda equivalents before comparison.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><em>DataFrame</em></a><em> or </em><em>pd.DataFrame</em>) – First DataFrame to compare.</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><em>DataFrame</em></a><em> or </em><em>pd.DataFrame</em>) – Second DataFrame to compare.</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a><em> or </em><em>pd.DataFrame</em>) – First DataFrame to compare.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a><em> or </em><em>pd.DataFrame</em>) – Second DataFrame to compare.</p></li>
 <li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check that dtypes are identical. Default is True.</p></li>
 <li><p><strong>check_index_type</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check that index class, dtype, and inferred type are identical. Default is True.</p></li>
 <li><p><strong>check_column_type</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check that column class, dtype, and inferred type are identical. Default is True.</p></li>
