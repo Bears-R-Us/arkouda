@@ -433,3 +433,55 @@ class TestSort:
         np_output = np.searchsorted(np_x1, np_x2, side)
         ak_output = ak.searchsorted(ak_x1, ak_x2, side, x2_sorted=True)  # x2_sorted=True for fast path
         assert_arkouda_array_equivalent(ak_output, np_output)
+
+    def test_argsort(self):
+        size = 10
+
+        # floats
+        ak_array = ak.randint(0, 10 * size, size, dtype=ak.float64, seed=1)
+        np_array = ak_array.to_ndarray()
+
+        assert np.array_equal(
+            ak_array[ak.argsort(ak_array, ascending=True)].to_ndarray(),
+            np_array[np.argsort(np_array)],
+        )
+        assert np.array_equal(
+            ak_array[ak.argsort(ak_array, ascending=False)].to_ndarray(),
+            np_array[np.flip(np.argsort(np_array))],
+        )
+
+        # ints
+        ak_array = ak.randint(0, 10 * size, size, dtype=ak.int64, seed=1)
+        np_array = ak_array.to_ndarray()
+        assert np.array_equal(
+            ak_array[ak.argsort(ak_array, ascending=True)].to_ndarray(),
+            np_array[np.argsort(np_array)],
+        )
+        assert np.array_equal(
+            ak_array[ak.argsort(ak_array, ascending=False)].to_ndarray(),
+            np_array[np.flip(np.argsort(np_array))],
+        )
+
+        # strings
+        ak_array = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=size)
+        np_array = ak_array.to_ndarray()
+        assert np.array_equal(
+            ak_array[ak.argsort(ak_array, ascending=True)].to_ndarray(),
+            np_array[np.argsort(np_array)],
+        )
+        assert np.array_equal(
+            ak_array[ak.argsort(ak_array, ascending=False)].to_ndarray(),
+            np_array[np.flip(np.argsort(np_array))],
+        )
+
+        # categorical
+        ak_array = ak.Categorical(ak_array)
+        np_array = ak_array.to_ndarray()
+        assert np.array_equal(
+            ak_array[ak.argsort(ak_array, ascending=True)].to_ndarray(),
+            np_array[np.argsort(np_array)],
+        )
+        assert np.array_equal(
+            ak_array[ak.argsort(ak_array, ascending=False)].to_ndarray(),
+            np_array[np.flip(np.argsort(np_array))],
+        )
