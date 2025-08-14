@@ -535,6 +535,7 @@ jobs:
     - name: Use MultiDim Configs
       run: |
         cp .configs/registration-config-multi-dim.json registration-config.json
+        bash scripts/trim_server_modules.sh
     - name: Build Arkouda
       run: |
         /usr/bin/time -v make

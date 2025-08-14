@@ -231,6 +231,10 @@ def skip_by_rank(request):
             raise TypeError("skip_if_rank_not_compiled only accepts type int or list of int.")
 
 
+def skip_if_max_rank_greater_than(n):
+    return pytest.mark.skipif(pytest.max_rank > n, reason=f"requires max_rank ≤ {n}")
+
+
 @pytest.fixture(autouse=True)
 def skip_by_num_locales(request):
     if request.node.get_closest_marker("skip_if_nl_less_than"):
