@@ -14,7 +14,7 @@ ENV CHPL_HOME=/opt/chapel-2.5.0 \
     CHPL_HOST_MEM=cstdlib \
     CHPL_LLVM=none \
     CHPL_DEVELOPER=0 \
-    CHPL_FLAGS=" --target-compiler=clang" \
+    CHPL_FLAGS=" --target-compiler=clang --incremental" \
     MANPATH=/opt/chapel-2.5.0/man \
     DEP_DIR=/opt/dep \
     DEP_BUILD_DIR=/opt/dep/build \
