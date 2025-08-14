@@ -1232,7 +1232,6 @@ def logspace(
         array([4.00000000000000000 16.00000000000000000])
         array([16.00000000000000000 64.00000000000000000])])
     """
-
     if dtype not in (None, float64):
         raise TypeError("dtype must be None or float64")
     if base <= 0:
@@ -1318,7 +1317,6 @@ def linspace(
         array([1.00000000000000000 2.00000000000000000])
         array([2.00000000000000000 3.00000000000000000])])
     """
-
     from arkouda import newaxis
     from arkouda.numeric import transpose
     from arkouda.numpy.manipulation_functions import tile
