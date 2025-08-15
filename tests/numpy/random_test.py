@@ -9,7 +9,6 @@ from scipy import stats as sp_stats
 import arkouda as ak
 from arkouda.numpy import random
 from arkouda.scipy import chisquare as akchisquare
-
 from arkouda.testing import assert_arkouda_array_equal
 
 INT_FLOAT = [ak.int64, ak.float64]
@@ -684,14 +683,14 @@ class TestRandom:
 
         # random integers -- make the seed, generate a bunch of pdas, check that they track
         ak.random.seed(seed)
-        for i in range(10) :
-            pda1 = ak.random.integers(1,10,10)
+        for i in range(10):
+            pda1 = ak.random.integers(1, 10, 10)
         ak.random.seed(seed)
-        for i in range(10) :
-            pda2 = ak.random.integers(1,10,10)
-        assert_arkouda_array_equal(pda1,pda2)
+        for i in range(10):
+            pda2 = ak.random.integers(1, 10, 10)
+        assert_arkouda_array_equal(pda1, pda2)
         ak.random.seed(seed)
-        pda1 = ak.random.integers(1,10,10)
-        ak.random.seed(seed+1)
-        pda3 = ak.random.integers(1,10,10)
-        assert ((pda1 != pda3).any())
+        pda1 = ak.random.integers(1, 10, 10)
+        ak.random.seed(seed + 1)
+        pda3 = ak.random.integers(1, 10, 10)
+        assert (pda1 != pda3).any()
