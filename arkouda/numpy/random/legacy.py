@@ -1,14 +1,12 @@
-from arkouda.numpy.random.generator import default_rng
-
 from typing import Optional, Tuple, Union, cast
 
 from typeguard import typechecked
 
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes
+from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, int_scalars, numeric_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.random.generator import default_rng
 
 __all__ = [
     "choice",
@@ -256,6 +254,7 @@ def uniform(
     """
     return randint(low=low, high=high, size=size, dtype="float64", seed=seed)
 
+
 #   In the experimental stuff below, there is a global object called theGenerator
 #   This is what I use in order to implement a global seed.
 
@@ -264,94 +263,115 @@ def uniform(
 #      ak.random.integers(lower_limit, upper_limit, how_many_to_make)
 #      etc.
 
-def defaultGeneratorExists() :   # used in all of the fns below to determine
-    global theGenerator          # if the global generator already exists
+
+def defaultGeneratorExists():  # used in all of the fns below to determine
+    global theGenerator  # noqa: F824
     try:
         theGenerator  # this will succeed if the object exists, and fail if not
-    except:
+    except NameError:
         return False
     else:
         return True
 
-def seed (seed=None) :
+
+def seed(seed=None):
     # reseeding always causes the destruction of an existing generator, because
     # there is no way to reseed a chapel randomStream.  So if there is no existing
     # global generator, we create one with the seed, otherwise we destroy it and
     # make a new one with the seed.
     global theGenerator
     if defaultGeneratorExists():
-        del theGenerator 
+        del theGenerator  # not strictly necessary, but I have plans for this
     theGenerator = default_rng(seed)
+
 
 #   All of the functions below are called as ak.random.function_name.  They
 #   pass their arguments to the appropriate function method in theGenerator.
 
-def integers(low=0,high=10,size=5) :
-    if not defaultGeneratorExists() :
+
+def integers(low=0, high=10, size=5):
+    if not defaultGeneratorExists():
         seed()
-    return theGenerator.integers(low,high,size)
+    return theGenerator.integers(low, high, size)
+
 
 def choice(a, size=None, replace=True, p=None):
-    if not defaultGeneratorExists() :
+    if not defaultGeneratorExists():
         seed()
     return theGenerator.choice(a, size, replace, p)
 
+
 def exponential(scale=1.0, size=None, method="zig"):
-    if not defaultGeneratorExists() :
+    if not defaultGeneratorExists():
         seed()
-    return theGenerator.exponential(scale,size,method)
+    return theGenerator.exponential(scale, size, method)
+
 
 def standard_exponential(size=None, method="zig"):
-    if not defaultGeneratorExists() :
+    if not defaultGeneratorExists():
         seed()
-    return theGenerator.standard_exponential(size,method)
+    return theGenerator.standard_exponential(size, method)
+
 
 def logistic(loc=0.0, scale=0.0, size=None):
-    if not defaultGeneratorExists() :
+    if not defaultGeneratorExists():
         seed()
     return theGenerator.logistic(loc, scale, size)
 
+
 def lognormal(mean=0.0, sigma=1.0, size=None, method="zig"):
-    if not defaultGeneratorExists() :
+    if not defaultGeneratorExists():
         seed()
     return theGenerator.lognormal(mean, sigma, size, method)
 
+
 def normal(loc=0.0, scale=1.0, size=None, method="zig"):
-    if not defaultGeneratorExists() :
+    if not defaultGeneratorExists():
         seed()
     return theGenerator.normal(loc, scale, size, method)
 
+
 def random(size=None):
-    if not defaultGeneratorExists() :
+    if not defaultGeneratorExists():
         seed()
     return theGenerator.random(size)
 
+
 def standard_gamma(shape, size=None):
-    if not defaultGeneratorExists() :
+    if not defaultGeneratorExists():
         seed()
     return theGenerator.standard_gamma(shape, size)
 
-def standard_normal(shape, size=None, method="zig"):
-    if not defaultGeneratorExists() :
-        seed()
-    return theGenerator.standard_normal(size, method)
 
 def shuffle(x, method="FisherYates"):
-    if not defaultGeneratorExists() :
+    if not defaultGeneratorExists():
         seed()
     return theGenerator.shuffle(x, method)
 
+
 def permutation(x, method="Argsort"):
-    if not defaultGeneratorExists() :
+    if not defaultGeneratorExists():
         seed()
     return theGenerator.permutation(x, method)
 
+
 def poisson(lam=1.0, size=None):
-    if not defaultGeneratorExists() :
+    if not defaultGeneratorExists():
         seed()
     return theGenerator.poisson(lam, size)
 
-def uniform(low=0.0, high=1.0, size=None):
-    if not defaultGeneratorExists() :
-        seed()
-    return theGenerator.uniform(low, high, size)
+#   I implemented the two below, before realize they're already defined above.
+#   So for now, these are commented out.  I think that long-term, the ones with
+#   the global seed are the ones we'll keep.  But for now, for going through drafts,
+#   I'm sticking to functions that don't already exist in this file.
+
+# def standard_normal(shape, size=None, method="zig"):
+#    if not defaultGeneratorExists():
+#        seed()
+#    return theGenerator.standard_normal(size, method)
+
+
+# def uniform(low=0.0, high=1.0, size=None):
+#    if not defaultGeneratorExists():
+#        seed()
+#    return theGenerator.uniform(low, high, size)
