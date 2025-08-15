@@ -18,7 +18,6 @@ __all__ = [
     "float_array_or_scalar_helper",
 ]
 
-
 class Generator:
     """
     ``Generator`` exposes a number of methods for generating random

@@ -1,3 +1,5 @@
+from arkouda.numpy.random.generator import default_rng
+
 from typing import Optional, Tuple, Union, cast
 
 from typeguard import typechecked
@@ -9,7 +11,20 @@ from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
 __all__ = [
+    "choice",
+    "exponential",
+    "integers",
+    "logistic",
+    "lognormal",
+    "normal",
+    "permutation",
+    "poisson",
+    "random",
     "randint",
+    "seed",
+    "shuffle",
+    "standard_exponential",
+    "standard_gamma",
     "standard_normal",
     "uniform",
 ]
@@ -240,3 +255,103 @@ def uniform(
     array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
     """
     return randint(low=low, high=high, size=size, dtype="float64", seed=seed)
+
+#   In the experimental stuff below, there is a global object called theGenerator
+#   This is what I use in order to implement a global seed.
+
+#   These functions will be called as:
+#      ak.random.seed(the_seed_value), and
+#      ak.random.integers(lower_limit, upper_limit, how_many_to_make)
+#      etc.
+
+def defaultGeneratorExists() :   # used in all of the fns below to determine
+    global theGenerator          # if the global generator already exists
+    try:
+        theGenerator  # this will succeed if the object exists, and fail if not
+    except:
+        return False
+    else:
+        return True
+
+def seed (seed=None) :
+    # reseeding always causes the destruction of an existing generator, because
+    # there is no way to reseed a chapel randomStream.  So if there is no existing
+    # global generator, we create one with the seed, otherwise we destroy it and
+    # make a new one with the seed.
+    global theGenerator
+    if defaultGeneratorExists():
+        del theGenerator 
+    theGenerator = default_rng(seed)
+
+#   All of the functions below are called as ak.random.function_name.  They
+#   pass their arguments to the appropriate function method in theGenerator.
+
+def integers(low=0,high=10,size=5) :
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.integers(low,high,size)
+
+def choice(a, size=None, replace=True, p=None):
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.choice(a, size, replace, p)
+
+def exponential(scale=1.0, size=None, method="zig"):
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.exponential(scale,size,method)
+
+def standard_exponential(size=None, method="zig"):
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.standard_exponential(size,method)
+
+def logistic(loc=0.0, scale=0.0, size=None):
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.logistic(loc, scale, size)
+
+def lognormal(mean=0.0, sigma=1.0, size=None, method="zig"):
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.lognormal(mean, sigma, size, method)
+
+def normal(loc=0.0, scale=1.0, size=None, method="zig"):
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.normal(loc, scale, size, method)
+
+def random(size=None):
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.random(size)
+
+def standard_gamma(shape, size=None):
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.standard_gamma(shape, size)
+
+def standard_normal(shape, size=None, method="zig"):
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.standard_normal(size, method)
+
+def shuffle(x, method="FisherYates"):
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.shuffle(x, method)
+
+def permutation(x, method="Argsort"):
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.permutation(x, method)
+
+def poisson(lam=1.0, size=None):
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.poisson(lam, size)
+
+def uniform(low=0.0, high=1.0, size=None):
+    if not defaultGeneratorExists() :
+        seed()
+    return theGenerator.uniform(low, high, size)
