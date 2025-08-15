@@ -10,6 +10,8 @@ import arkouda as ak
 from arkouda.numpy import random
 from arkouda.scipy import chisquare as akchisquare
 
+from arkouda.testing import assert_arkouda_array_equal
+
 INT_FLOAT = [ak.int64, ak.float64]
 
 
@@ -672,3 +674,24 @@ class TestRandom:
         ak.random.standard_normal(np.uint8(100))
         ak.random.standard_normal(np.uint16(100))
         ak.random.standard_normal(np.uint32(100))
+
+    def test_global_seed(self):
+        # for each function method in default_rng, show that the same
+        # seed gives the same results, and that different seeds give
+        # different results.
+
+        seed = pytest.seed if pytest.seed is not None else 8675309
+
+        # random integers -- make the seed, generate a bunch of pdas, check that they track
+        ak.random.seed(seed)
+        for i in range(10) :
+            pda1 = ak.random.integers(1,10,10)
+        ak.random.seed(seed)
+        for i in range(10) :
+            pda2 = ak.random.integers(1,10,10)
+        assert_arkouda_array_equal(pda1,pda2)
+        ak.random.seed(seed)
+        pda1 = ak.random.integers(1,10,10)
+        ak.random.seed(seed+1)
+        pda3 = ak.random.integers(1,10,10)
+        assert ((pda1 != pda3).any())
