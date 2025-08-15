@@ -115,6 +115,18 @@ class TestClient:
 
         assert get_server_max_array_dims() == ak.client.get_max_array_rank()
 
+    def test_client_get_registration_config(self):
+        """
+        Tests that we can call ak.client.get_registration_config()
+        and that the returned result matches the contents of "registration-config.json".
+        """
+        from_server = ak.client.get_registration_config()
+
+        import json
+
+        from_file = json.load(open("registration-config.json", "r"))
+        assert from_server == from_file
+
     def test_get_mem_used(self):
         """
         Tests the ak.get_mem_used and ak.get_mem_avail methods
@@ -175,8 +187,7 @@ class TestClient:
         assert isinstance(availableRanks, list)
         assert len(availableRanks) >= 1
         assert 1 in availableRanks
-        assert ak.client.get_max_array_rank() in availableRanks
-        assert ak.client.get_max_array_rank() + 1 not in availableRanks
+        assert ak.client.get_max_array_rank() == max(availableRanks)
 
     def test_no_op(self):
         """

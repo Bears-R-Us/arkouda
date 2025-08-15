@@ -49,6 +49,7 @@ See Also
 """
 
 import math
+from typing import Optional
 
 from matplotlib import pyplot as plt
 import numpy as np
@@ -121,17 +122,17 @@ def plot_dist(b, h, log=True, xlabel=None, newfig=True):
         plt.gca().set_xlabel(xlabel, fontsize=14)
 
 
-def hist_all(ak_df: DataFrame, cols: list = []):
+def hist_all(ak_df: DataFrame, cols: Optional[list[str]] = None):
     """
     Create a grid of histograms for numeric columns in an Arkouda DataFrame.
 
     Parameters
     ----------
-    ak_df : ak.DataFrame
+    ak_df : DataFrame
         An Arkouda DataFrame containing the data to visualize.
-    cols : list of str, optional
-        A list of column names to plot. If empty or not provided, all columns in
-        the DataFrame are considered.
+    cols : list
+        Optional. A list of column names to plot. If empty or not provided, all
+        columns in the DataFrame are considered.
 
     Notes
     -----
@@ -153,7 +154,7 @@ def hist_all(ak_df: DataFrame, cols: list = []):
     >>> hist_all(ak_df)
 
     """
-    if len(cols) == 0:
+    if not cols or len(cols) == 0:
         cols = ak_df.columns
 
     num_rows = int(math.ceil(len(cols) ** 0.5))

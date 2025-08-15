@@ -176,17 +176,17 @@ def prod(
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
     """
+    from arkouda import prod as ak_prod
+    from arkouda.numpy import pdarray
+
     if x.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in prod")
 
-    # cast to the appropriate dtype if necessary
     cast_to = _prod_sum_dtype(x.dtype) if dtype is None else dtype
-    if cast_to != x.dtype:
-        x_op = akcast(x._array, cast_to)
-    else:
-        x_op = x._array
+    x_op = akcast(x._array, cast_to) if cast_to != x.dtype else x._array
 
-    from arkouda import prod as ak_prod
+    if not isinstance(x_op, pdarray):
+        raise TypeError(f"Expected pdarray, got {type(x_op)}")
 
     return Array._new(ak_prod(x_op, axis=axis, keepdims=keepdims))
 
@@ -271,17 +271,17 @@ def sum(
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
     """
+    from arkouda import sum as ak_sum
+    from arkouda.numpy import pdarray
+
     if x.dtype not in _numeric_dtypes:
         raise TypeError("Only numeric dtypes are allowed in sum")
 
-    # cast to the appropriate dtype if necessary
     cast_to = _prod_sum_dtype(x.dtype) if dtype is None else dtype
-    if cast_to != x.dtype:
-        x_op = akcast(x._array, cast_to)
-    else:
-        x_op = x._array
+    x_op = akcast(x._array, cast_to) if cast_to != x.dtype else x._array
 
-    from arkouda import sum as ak_sum
+    if not isinstance(x_op, pdarray):
+        raise TypeError(f"Expected pdarray, got {type(x_op)}")
 
     return Array._new(ak_sum(x_op, axis=axis, keepdims=keepdims))
 
@@ -385,7 +385,7 @@ def cumulative_sum(
     if dtype is None:
         x_ = x
     else:
-        x_ = akcast(x, dtype)
+        x_ = Array(akcast(x._array, dtype))
 
     resp = generic_msg(
         cmd=f"cumSum<{x_.dtype},{x.ndim}>",

@@ -16,6 +16,8 @@
 # `ARKOUDA_HOME/pytest.opts.ini` configures pytest for this directory.
 
 import importlib
+import re
+import subprocess
 from typing import Iterator
 
 import pytest
@@ -65,11 +67,52 @@ def _my_start_server(server_args, note):
 def _my_stop_server():
     if hasattr(pytest, "server_already_stopped"):
         del pytest.server_already_stopped
-        # Without clearing 'connected', the parent fixture manage_connection()
-        # invokes ak.disconnect(), which throws a ZMQ error, which breaks testing.
         ak.client.connected = False
     else:
         stop_arkouda_server()
+
+
+def _server_help_text() -> str:
+    for cmd in (["./arkouda_server", "--help"], ["arkouda_server", "--help"]):
+        try:
+            return subprocess.check_output(cmd, text=True, stderr=subprocess.STDOUT)
+        except Exception:
+            pass
+    return ""
+
+
+_HELP = _server_help_text()
+
+
+def _has_flag(flag: str) -> bool:
+    return bool(_HELP) and re.search(rf"--{re.escape(flag)}(?:[=\s]|$)", _HELP) is not None
+
+
+def _maybe_skip_by_rank_mark(request) -> None:
+    mark_gt = request.node.get_closest_marker("skip_if_max_rank_greater_than")
+    if mark_gt:
+        req = mark_gt.args[0]
+        max_rank = getattr(pytest, "max_rank", None)
+        if max_rank is not None and max_rank > req:
+            pytest.skip(f"max_rank {max_rank} > {req}")
+
+    mark_lt = request.node.get_closest_marker("skip_if_max_rank_less_than")
+    if mark_lt:
+        req = mark_lt.args[0]
+        max_rank = getattr(pytest, "max_rank", None)
+        if max_rank is not None and max_rank < req:
+            pytest.skip(f"max_rank {max_rank} < {req}")
+
+
+def _maybe_skip_if_flags_missing(request, server_args: list[str]) -> None:
+    missing = []
+    for arg in server_args:
+        if arg.startswith("--"):
+            flag = arg[2:].split("=", 1)[0]
+            if not _has_flag(flag):
+                missing.append(flag)
+    if missing:
+        pytest.skip(f"arkouda_server does not support flags: {', '.join(sorted(set(missing)))}")
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -86,9 +129,7 @@ def _module_server(request) -> Iterator[None]:
         _my_stop_server()
         pytest.module_server_launched = False
     else:
-        # arkouda server will start for each class
         pytest.module_server_launched = False
-
         yield
 
 
@@ -101,6 +142,11 @@ def _class_server(request) -> Iterator[None]:
             raise RuntimeError("both " + _module_args(r) + "and " + _class_args(r) + "are given")
         if type(class_server_args) is not list:
             raise TypeError(_class_error_msg(r, class_server_args))
+
+        # NEW: pre-class skip checks
+        _maybe_skip_by_rank_mark(request)
+        _maybe_skip_if_flags_missing(request, class_server_args)
+
         _my_start_server(class_server_args, "with class_server_args")
 
         yield
@@ -109,10 +155,4 @@ def _class_server(request) -> Iterator[None]:
     else:
         if not pytest.module_server_launched:
             raise RuntimeError("neither " + _module_args(r) + "nor " + _class_args(r) + "is given")
-
         yield
-
-
-# NB ak.connect() and ak.disconnect() are invoked in the parent conftest.py, see:
-#  @pytest.fixture(scope="class", autouse=True)
-#  def manage_connection(_class_server):

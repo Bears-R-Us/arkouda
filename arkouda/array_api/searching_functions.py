@@ -92,6 +92,7 @@ def where(condition: Array, x1: Array, x2: Array, /) -> Array:
     from arkouda.client import generic_msg
 
     broadcasted = broadcast_arrays(condition, x1, x2)
+    assert isinstance(broadcasted, list) and all(isinstance(arg, Array) for arg in broadcasted)
 
     a = broadcasted[1]._array
     b = broadcasted[2]._array

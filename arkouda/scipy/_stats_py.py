@@ -196,7 +196,6 @@ def chisquare(f_obs, f_exp=None, ddof=0):
     Power_divergenceResult(statistic=np.float64(8.333333333333334),
         pvalue=np.float64(0.03960235520756414))
 
-
     See Also
     --------
     scipy.stats.chisquare

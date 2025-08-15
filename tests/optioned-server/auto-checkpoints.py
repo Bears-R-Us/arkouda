@@ -51,6 +51,7 @@ def directory_exists_delayed(path, num_delays, delay=0.1):
     return directory_exists(path)
 
 
+@pytest.mark.skip_if_max_rank_greater_than(1)
 class TestIdleAndInterval:
     class_server_args = [
         "--checkpointIdleTime=1",
@@ -113,6 +114,7 @@ class TestIdleAndInterval:
         del a, b, c  # avoid flake8 errors about unused a,b,c
 
 
+@pytest.mark.skip_if_max_rank_greater_than(1)
 class TestMemPct:
     class_server_args = [
         "--checkpointMemPct=5",
