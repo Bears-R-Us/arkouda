@@ -15,6 +15,7 @@ module RandMsg
     use RandUtil;
     use ArkoudaSortCompat;
     use CommAggregation;
+    use Repartition;
     use ZigguratConstants;
 
     use MultiTypeSymbolTable;
@@ -22,6 +23,8 @@ module RandMsg
     use ServerErrorStrings;
 
     import BigInteger;
+
+    use List;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -765,23 +768,24 @@ module RandMsg
 
     @arkouda.instantiateAndRegister
     proc shuffle(
-        cmd: string, 
-        msgArgs: borrowed MessageArgs, 
-        st: borrowed SymTab, 
-        type array_dtype, 
+        cmd: string,
+        msgArgs: borrowed MessageArgs,
+        st: borrowed SymTab,
+        type array_dtype,
         param array_nd: int
-        ): MsgTuple throws{
+    ): MsgTuple throws {
         const method = msgArgs["method"].toScalar(string);
-        if method == "mergeshuffle"{
+        if method == "mergeshuffle" {
             return mergeShuffleHelp(cmd, msgArgs, st, array_dtype, array_nd);
-        } else if method == "fisheryates"{
+        } else if method == "fisheryates" {
             return shuffleHelp(cmd, msgArgs, st, array_dtype, array_nd);
-        }else{
+        } else if method == "feistel" {
+            return feistelShuffleHelp(cmd, msgArgs, st, array_dtype, array_nd);
+        } else {
             const errorMsg = "Error: Invalid method for shuffle.  " +
-            "Allowed values: fisheryates, mergeshuffle";
+                            "Allowed values: fisheryates, mergeshuffle, feistel";
             return MsgTuple.error(errorMsg);
         }
-
     }
 
     @chplcheck.ignore("UnusedFormal")
@@ -1611,6 +1615,239 @@ module RandMsg
             domainHighs[here.id] = x.localSubdomain(loc=here).high;
         } 
         return domainHighs;
+    }
+
+    @chplcheck.ignore("UnusedFormal")
+    proc feistelShuffleHelp(
+        cmd: string,
+        msgArgs: borrowed MessageArgs,
+        st: borrowed SymTab,
+        type array_dtype,
+        param array_nd: int
+    ): MsgTuple throws where array_nd == 1
+    {
+        const name   = msgArgs["name"],
+              xName  = msgArgs["x"].toScalar(string),
+              shape  = msgArgs["shape"].toScalarTuple(int, array_nd),
+              state  = msgArgs["state"].toScalar(int);
+
+        const rounds = if msgArgs.contains("feistel_rounds")
+                        then msgArgs["feistel_rounds"].toScalar(int)
+                        else 16;
+
+        randLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                        "name: %? shape %? dtype: %? state %i rounds %i".format(
+                            name, shape, type2str(array_dtype), state, rounds));
+
+        // RNG hookup
+        var generatorEntry = st[name]: borrowed GeneratorSymEntry(int);
+        ref rng = generatorEntry.generator;
+        if state != 1 then rng.skipTo(state-1);
+
+        // Key: client-supplied or derived
+        var key: uint(64);
+        if msgArgs.contains("feistel_key") {
+            key = msgArgs["feistel_key"].toScalar(uint(64));
+        } else {
+            key = rng.next():uint(64);
+            if key == 0:uint(64) then key = 0x9E37_79B9_7F4A_7C15:uint(64);
+        }
+
+        // Target array & domain
+        const arrEntry = st[xName]: SymEntry(array_dtype, array_nd);
+        ref a = arrEntry.a;
+
+        const d = a.domain;
+        const N = d.size;
+        if N <= 1 then return MsgTuple.success();
+
+        // Base of the 1-D global index range
+        const idxRange = d.dim(0);
+        const base = idxRange.low;
+
+        // ------------------------
+        // Per-locale index ranges to find owners of destination indices
+        // ------------------------
+        const flatLocRanges = [loc in Locales] d.localSubdomain(loc).dim(0);
+
+        // ------------------------
+        // Build *per-sender* aligned lists:
+        //   myDestLocales : list(int)         -- destination locale id
+        //   myDestIdx     : list(int)         -- destination global index
+        //   myVals        : list(array_dtype) -- payloads aligned 1:1 with myDestIdx
+        // Gather them into sender-indexed arrays for the repartitioner.
+        // ------------------------
+        var allDestLocales : [PrivateSpace] list(int);
+        var allDestIdx     : [PrivateSpace] list(int);
+        var allVals        : [PrivateSpace] list(array_dtype);
+
+        coforall loc in Locales with (ref allDestLocales, ref allDestIdx, ref allVals) do on loc {
+
+            const flatLocRangesHere = flatLocRanges;  // copies ranges to 'here' once
+            inline proc ownerOfIndex(gIdx: int): int {
+                for (rr, i) in zip(flatLocRangesHere, 0..<numLocales) do
+                if rr.contains(gIdx) then return i;
+                return numLocales-1;
+            }
+
+            const ld = d.localSubdomain();
+            if ! ld.isEmpty() {
+
+                const m = ld.size;
+
+                // Preallocate simple arrays to avoid concurrent list appends inside forall
+                var myDestLocalesArr: [0..#m] int;
+                var myDestIdxArr    : [0..#m] int;
+                var myValsArr       : [0..#m] array_dtype;
+
+                // Local bulk read of payloads in the same iteration order
+                myValsArr = a[ld];
+
+                // Compute Feistel destinations for each locally-owned element
+                // Iterate in lock-step over 0..#m and local indices
+                forall (i, gIdx) in zip(0..#m, ld) with
+                    (const n=N, const k=key, const r=rounds, const b=base) {
+                    const ordHere = gIdx - b;                   // 0-based ordinal ∈ [0,N)
+                    const ordDest = permuteIndexFeistel(ordHere, n, k, r);
+                    const destIdx = b + ordDest;                // back to global index space
+                    myDestIdxArr[i]     = destIdx;
+                    myDestLocalesArr[i] = ownerOfIndex(destIdx);
+                }
+
+                // Stash sender-local lists in the global arrays (one slot per sender locale)
+                allDestLocales[here.id] = new list(myDestLocalesArr);
+                allDestIdx    [here.id] = new list(myDestIdxArr);
+                allVals       [here.id] = new list(myValsArr);
+            } else {
+                allDestLocales[here.id] = new list(int);
+                allDestIdx[here.id] = new list(int);
+                allVals[here.id] = new list(array_dtype);
+            }
+        }
+
+        // ------------------------
+        // Repartition twice with the *same* routing:
+        //   1) destination indices (int)
+        //   2) payload values (array_dtype)
+        // Returns [PrivateSpace] list(eltType), indexed by **receiver** locale ID.
+        // ------------------------
+        const recvIdx  = repartitionByLocale(int,         allDestLocales, allDestIdx);
+        const recvVals = repartitionByLocale(array_dtype, allDestLocales, allVals);
+
+        // ------------------------
+        // Local writes: zip indices with payloads and store into local portion of 'a'
+        // ------------------------
+        coforall loc in Locales with (ref a) do on loc {
+            const myIdxs  = recvIdx [here.id];
+            const myValsL = recvVals[here.id];
+            // Alignment guaranteed because both repartitions used identical routing
+            forall (dstIdx, val) in zip(myIdxs.these(), myValsL.these()) {
+                a[dstIdx] = val;
+            }
+        }
+
+        return MsgTuple.success();
+    }
+
+    @chplcheck.ignore("UnusedFormal")
+    proc feistelShuffleHelp(
+        cmd: string,
+        msgArgs: borrowed MessageArgs,
+        st: borrowed SymTab,
+        type array_dtype,
+        param array_nd: int
+    ): MsgTuple throws where array_nd != 1
+    {
+        return new MsgTuple("feistel shuffle does not support arrays of dimension > 1.",
+                            MsgType.ERROR);
+    }
+
+    // ---- constants & bit helpers ----
+    const MASK64: uint(64) = 0xFFFF_FFFF_FFFF_FFFF:uint(64);
+    const GOLDEN: uint(64) = 0x9E37_79B9_7F4A_7C15:uint(64);
+
+    inline proc rotl64(x: uint(64), r: int): uint(64) {
+        const s = r & 63;
+        return (x << s) | (x >> (64 - s));
+    }
+
+    inline proc bitMask(nbits: int): uint(64) {
+        if nbits <= 0 then return 0:uint(64);
+        if nbits >= 64 then return MASK64;
+        return (1:uint(64) << nbits:uint(64)) - 1:uint(64);
+    }
+
+    // Number of bits to represent N
+    inline proc bitsFor(N: int): int {
+        const m = if N > 0 then N - 1 else 0;
+        var nbits = 0, v = m;
+        while v > 0 do { v >>= 1; nbits += 1; }
+        return max(1, nbits);
+    }
+
+    inline proc roundKey(master: uint(64), i: int): uint(64) {
+        return rotl64(master ^ (GOLDEN * (i + 1):uint(64)), 7*i + 13);
+    }
+
+    // Expand a 64-bit seed to 'wantBits' (<=64 here).
+    // prf = Pseudorandom function, not meant to be invertible, just to provide
+    // some randomization bits.
+    proc prfBits(seed0: uint(64), wantBits: int, tweak0: uint(64)): uint(64) {
+        var acc: uint(64) = 0;
+        var produced = 0;
+        var v = seed0 ^ (GOLDEN ^ tweak0);
+        var tweak = tweak0;
+
+        while produced < wantBits {
+            v = (v * GOLDEN) & MASK64;
+            v ^= (v >> 29) ^ (v >> 43);
+            v = rotl64(v, 17) ^ (tweak * 0xA5A5_A5A5_A5A5_A5A5:uint(64));
+            const take = min(64, wantBits - produced);
+            acc |= (v & bitMask(take)) << produced:uint(64);
+            produced += take;
+            tweak = (tweak * 0x2545_F491_4F6C_DD1D:uint(64)) & MASK64;
+        }
+        return acc & bitMask(wantBits);
+    }
+
+    inline proc F(R: uint(64), outBits: int, k: uint(64), roundIdx: int): uint(64) {
+        return prfBits(k ^ R ^ rotl64(k, roundIdx), outBits, roundIdx:uint(64));
+    }
+
+    proc feistelEnc(x: uint(64), nbits: int, key: uint(64), rounds: int): uint(64) {
+        const m = bitMask(nbits);
+        var X = x & m;
+
+        const rbits = nbits / 2;
+        const lbits = nbits - rbits;
+        var R = X & bitMask(rbits);
+        var L = X >> rbits;
+
+        var lb = lbits, rb = rbits;
+        for i in 0..#rounds {
+            const k = roundKey(key, i);
+            const fout = F(R, lb, k, i) & bitMask(lb);
+            const newL = R;
+            const newR = (L ^ fout) & bitMask(rb);
+            L = newL; R = newR;
+            const tmp = lb; lb = rb; rb = tmp;  // swap widths
+        }
+
+        return ((R << rbits:uint(64)) | L) & m;
+    }
+
+    proc permuteIndexFeistel(i: int, N: int, key: uint(64), rounds: int): int {
+        const nb = bitsFor(N);
+        // Easier to work with even number of bits
+        const nbits = if nb & 1 == 0 then nb else nb + 1;
+        // TODO: look into unbalanced Feistel
+        var x: uint(64) = i:uint(64);
+        while true {
+            const y = feistelEnc(x, nbits, key, rounds);
+            if y:int < N then return y:int;
+            x = y;  // cycle-walk if out of range
+        }
+        return 0;
     }
 
     use CommandMap;
