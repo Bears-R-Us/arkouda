@@ -148,9 +148,9 @@ module StatsMsg {
         var cs = makeDistArray(if includeInitial then x.size+1 else x.size, t);
         if includeInitial {
             cs[0] = 1:t;
-            cs[1..] = (*scan x):t;
+            cs[1..] = (* scan x):t;
         } else {
-            cs[0..] = (*scan x):t;
+            cs[0..] = (* scan x):t;
         }
         return cs;
       } else {    // fill with 1s so that if includeInitial is set, answer starts with 1
