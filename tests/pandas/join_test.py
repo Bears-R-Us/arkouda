@@ -94,9 +94,8 @@ class TestJoin:
 
     def test_multi_array_inner_join(self):
         size = 1000
-        seed = 1
-        a = ak.randint(-size // 10, size // 10, size, seed=seed)
-        b = ak.randint(-size // 10, size // 10, size, seed=seed + 1)
+        a = ak.randint(-size // 10, size // 10, size, seed=pytest.seed)
+        b = ak.randint(-size // 10, size // 10, size, seed=pytest.seed + 1)
         ones = ak.ones(size, int)
         altr = ak.cast(ak.arange(size) % 2 == 0, int)
         left_lists = [

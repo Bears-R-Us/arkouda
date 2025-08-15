@@ -22,10 +22,9 @@ class TestChar:
         import random
         import string
 
-        seed = pytest.seed if pytest.seed is not None else 8675309
         numerics = [chr(i) for i in range(0x110000) if np.char.isnumeric(chr(i))]  # unicode numerics
         alphanumerics = string.digits + string.ascii_letters
-        random.seed(seed)
+        random.seed(pytest.seed)
         prob_set = list()
         for i in range(prob_size):
             heads_or_tails = random.choice([True, False])
