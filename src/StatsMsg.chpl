@@ -141,6 +141,35 @@ module StatsMsg {
       }
     }
 
+    @arkouda.registerCommand()
+    proc cumProd(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
+        where t != bool {
+      if d.rank == 1 {
+        var cs = makeDistArray(if includeInitial then x.size+1 else x.size, t);
+        if includeInitial {
+            cs[0] = 1:t;
+            cs[1..] = (* scan x):t;
+        } else {
+            cs[0..] = (* scan x):t;
+        }
+        return cs;
+      } else {    // fill with 1s so that if includeInitial is set, answer starts with 1
+        var cs = makeDistArray(if includeInitial then expandedDomain(d, axis) else d, 1:t);
+
+        forall (slice, _) in axisSlices(d, new list([axis])) {
+          const xSlice = removeDegenRanks(x[slice], 1),
+                csSlice = (* scan xSlice):t;
+
+          for idx in slice {
+            var csIdx = idx;
+            if includeInitial then csIdx[axis] += 1;
+            cs[csIdx] = csSlice[idx[axis]];
+          }
+        }
+        return cs;
+      }
+    }
+
     private proc expandedDomain(d: domain(?), axis: int): domain(?) {
       var rngs: d.rank*range;
       for param i in 0..<d.rank do rngs[i] = if i == axis

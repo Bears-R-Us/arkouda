@@ -158,7 +158,7 @@ class TestStatsFunction:
         assert aSum02Keepdims[0, 0, 0] == 12
 
     @pytest.mark.skip_if_rank_not_compiled([3])
-    def test_cumsum(self):
+    def test_cumulative_sum(self):
         a = xp.asarray(ak.randint(0, 100, (5, 6, 7), seed=SEED))
 
         a_sum_0 = xp.cumulative_sum(a, axis=0)
@@ -167,7 +167,7 @@ class TestStatsFunction:
         assert a_sum_0.tolist() == a_sum_0_np.tolist()
 
         a_sum_1 = xp.cumulative_sum(a, axis=1)
-        a_sum_1_np = np.cumsum(a.to_ndarray(), axis=1)
+        a_sum_1_np = np.cumulative_sum(a.to_ndarray(), axis=1)
         assert a_sum_1.shape == (5, 6, 7)
         assert a_sum_1.tolist() == a_sum_1_np.tolist()
 
@@ -187,10 +187,47 @@ class TestStatsFunction:
 
         c = xp.asarray(ak.randint(0, 100, 50, dtype=ak.float64, seed=SEED))
         c_sum = xp.cumulative_sum(c)
-        c_sum_np = np.cumsum(c.to_ndarray())
+        c_sum_np = np.cumulative_sum(c.to_ndarray())
 
         assert c_sum.shape == (50,)
         c_list = c_sum.tolist()
         c_sum_np = c_sum_np.tolist()
-        for i in range(50):
-            np.allclose(c_list, c_sum_np)
+        # for i in range(50):
+        np.allclose(c_list, c_sum_np)
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    def test_cumulative_prod(self):
+        a = xp.asarray(ak.randint(1, 100, (5, 6, 7), seed=SEED))
+
+        a_prod_0 = xp.cumulative_prod(a, axis=0)
+        a_prod_0_np = np.cumulative_prod(a.to_ndarray(), axis=0)
+        assert a_prod_0.shape == (5, 6, 7)
+        assert a_prod_0.tolist() == a_prod_0_np.tolist()
+
+        a_prod_1 = xp.cumulative_prod(a, axis=1)
+        a_prod_1_np = np.cumulative_prod(a.to_ndarray(), axis=1)
+        assert a_prod_1.shape == (5, 6, 7)
+        assert a_prod_1.tolist() == a_prod_1_np.tolist()
+
+        b = xp.ones((5, 6, 7))
+
+        b_prod_0 = xp.cumulative_prod(b, axis=0, include_initial=True)
+        assert b_prod_0.shape == (6, 6, 7)
+        assert b_prod_0[0, 0, 0] == 1
+        assert b_prod_0[1, 0, 0] == 1
+        assert b_prod_0[5, 0, 0] == 1
+
+        b_prod_1 = xp.cumulative_prod(b, axis=1, include_initial=True)
+        assert b_prod_1.shape == (5, 7, 7)
+        assert b_prod_1[0, 0, 0] == 1
+        assert b_prod_1[0, 1, 0] == 1
+        assert b_prod_1[0, 6, 0] == 1
+
+        c = xp.asarray(ak.randint(1, 100, 50, dtype=ak.float64, seed=SEED))
+        c_prod = xp.cumulative_prod(c)
+        c_prod_np = np.cumulative_prod(c.to_ndarray())
+
+        assert c_prod.shape == (50,)
+        c_list = c_prod.tolist()
+        c_prod_np = c_prod_np.tolist()
+        np.allclose(c_list, c_prod_np)
