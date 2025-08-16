@@ -7,6 +7,8 @@ CFG_FILE="ServerModules.cfg"
 EXCLUDE_MODULES=(
   "CheckpointMsg"
   "CommDiagnosticsMsg"
+  "ArraySetops"
+  "ArraySetopsMsg"
 )
 
 # Backup original
