@@ -7,6 +7,13 @@ CFG_FILE="ServerModules.cfg"
 EXCLUDE_MODULES=(
   "CheckpointMsg"
   "CommDiagnosticsMsg"
+  "ArraySetops"
+  "ArraySetopsMsg"
+  "DataFrameIndexingMsg" 
+  "EncodingMsg"
+  "Codecs"
+  "CSVMsg"
+  "ExternalIntegration"
 )
 
 # Backup original

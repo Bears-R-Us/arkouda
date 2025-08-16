@@ -2338,6 +2338,7 @@ class TestHDF5:
             assert df["timedelta"].tolist() == rd_df["timedelta"].tolist()
 
 
+@pytest.mark.skip_if_max_rank_greater_than(1)
 class TestCSV:
     def test_csv_read_write(self, csv_test_base_tmp):
         # first test that can read csv with no header not written by Arkouda
