@@ -23,6 +23,7 @@ from .manipulation_functions import squeeze
 __all__ = [
     "_prod_sum_dtype",
     "cumulative_sum",
+    "cumulative_prod",
     "max",
     "mean",
     "mean_shim",
@@ -381,17 +382,89 @@ def cumulative_sum(
         Whether to include the initial value as the first element of the output.
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarrayclass import _axis_validation
+
+    x_ = x._array
+
+    if axis is None:
+        if x.ndim != 1:
+            raise ValueError("multi-dim args to cumulative_sum must supply an axis.")
+        else:
+            axis = 0
+
+    yesNo, axis_ = _axis_validation(axis, x.ndim)
+
+    if not yesNo:
+        raise ValueError(f"axis {axis} is not valid for the given array.")
 
     if dtype is None:
-        x_ = x
+        if x_.dtype == "bool":
+            x_ = akcast(x_, int)
     else:
-        x_ = Array(akcast(x._array, dtype))
+        x_ = akcast(x_, dtype)
 
     resp = generic_msg(
         cmd=f"cumSum<{x_.dtype},{x.ndim}>",
         args={
-            "x": x_._array,
-            "axis": axis if axis is not None else 0,
+            "x": x_,
+            "axis": axis_,
+            "includeInitial": include_initial,
+        },
+    )
+
+    return Array._new(create_pdarray(resp))
+
+
+def cumulative_prod(
+    x: Array,
+    /,
+    *,
+    axis: Optional[int] = None,
+    dtype: Optional[Dtype] = None,
+    include_initial: bool = False,
+) -> Array:
+    """
+    Compute the cumulative product of the elements of an array along a given axis.
+
+    Parameters
+    ----------
+    x : Array
+        The array to compute the cumulative product of
+    axis : int, optional
+        The axis along which to compute the cumulative product. If x is 1D, this argument is optional,
+        otherwise it is required.
+    dtype : Dtype, optional
+        The dtype of the returned array. If None, the dtype of the input array is used.
+    include_initial : bool, optional
+        Whether to include the initial value as the first element of the output.
+    """
+    from arkouda.client import generic_msg
+    from arkouda.numpy.pdarrayclass import _axis_validation
+
+    x_ = x._array
+
+    if axis is None:
+        if x.ndim != 1:
+            raise ValueError("multi-dim args to cumulative_prod must supply an axis.")
+        else:
+            axis = 0
+
+    yesNo, axis_ = _axis_validation(axis, x.ndim)
+
+    if not yesNo:
+        raise ValueError(f"axis {axis} is not valid for the given array.")
+
+    if dtype is None:
+        if x_.dtype == "bool":
+            x_ = akcast(x_, int)
+    else:
+        x_ = akcast(x_, dtype)
+
+    resp = generic_msg(
+        cmd=f"cumProd<{x_.dtype},{x.ndim}>",
+        args={
+            "x": x_,
+            "axis": axis_,
             "includeInitial": include_initial,
         },
     )

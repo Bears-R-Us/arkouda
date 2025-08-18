@@ -138,7 +138,7 @@ from .set_functions import unique_all, unique_counts, unique_inverse, unique_val
 
 from .sorting_functions import argsort, sort
 
-from .statistical_functions import max, mean, min, prod, std, sum, var, cumulative_sum
+from .statistical_functions import max, mean, min, prod, std, sum, var, cumulative_sum, cumulative_prod
 
 from .utility_functions import all, any, clip, diff, trapz, trapezoid, pad
 
@@ -281,7 +281,7 @@ __all__ += ["unique_all", "unique_counts", "unique_inverse", "unique_values"]
 
 __all__ += ["argsort", "sort"]
 
-__all__ += ["max", "mean", "min", "prod", "std", "sum", "var", "cumulative_sum"]
+__all__ += ["max", "mean", "min", "prod", "std", "sum", "var", "cumulative_sum", "cumulative_prod"]
 
 __all__ += ["all", "any", "clip", "diff", "trapz", "trapezoid", "pad"]
 
