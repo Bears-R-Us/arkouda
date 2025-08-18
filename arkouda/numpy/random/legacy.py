@@ -265,9 +265,9 @@ def uniform(
 
 
 def defaultGeneratorExists():  # used in all of the fns below to determine
-    global theGenerator  # noqa: F824
-    try:
-        theGenerator  # this will succeed if the object exists, and fail if not
+    global theGenerator  # noqa
+    try: # this try will fail if theGenerator does not exist
+        theGenerator  # noqa
     except NameError:
         return False
     else:

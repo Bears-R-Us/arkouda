@@ -1,8 +1,8 @@
 from .generator import Generator, default_rng  # noqa
-from .legacy import (
+from .legacy import (  # noqa: F401
     randint,
     standard_normal,
-    uniform,  #  why is flake8 complaining about this one and only this one?
+    uniform,  # why is flake8 complaining about this one and only this one?
     choice,
     seed,
     integers,
