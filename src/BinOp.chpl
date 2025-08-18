@@ -10,6 +10,7 @@ module BinOp
   use BitOps;
   use BigInteger;
   use Set;
+  use Math;
 
 
   private config const logLevel = ServerConfig.logLevel;
@@ -729,18 +730,69 @@ module BinOp
     }
   }
 
-  proc realToBigInt(val: ?t)
-    where (t != bigint)
-  {
-    var bi: bigint;
-    bi.set(val);
-    return bi;
+  // Compare a bigint to a real(64).
+  // Returns -1 if b < r, 0 if b == r, 1 if b > r.
+  // (Assumes r is not NaN; NaN handled by wrappers below.)
+  inline proc cmpBigReal(b: bigint, r: real(64)): int {
+    // infinities
+    if !isFinite(r) {
+      if r > 0.0 {
+        return -1; // b < +inf
+      } else {
+        return 1;  // b > -inf
+      }
+    }
+
+    // Check if r is integer-valued in real64
+    const ri = trunc(r);     // ri is real(64), trunc toward zero
+    if r == ri {
+      var zi: bigint;        // exact integer to compare against
+      zi.set(ri);            // safe because r == ri (no fractional part)
+      if b < zi then return -1;
+      else if b > zi then return 1;
+      else return 0;
+    }
+
+    // Non-integer r: use the integer part to bound r
+    var tz: bigint;          // tz = trunc(r) as bigint
+    tz.set(ri);
+
+    // non-integer cases
+    if r > 0.0 {
+      // r in (tz, tz+1)
+      if b <= tz {
+        return -1;
+      } else {
+        return 1;
+      }
+    } else {
+      // r in (tz-1, tz)
+      if b >= tz {
+        return 1;
+      } else {
+        return -1;
+      }
+    }
   }
 
-  proc realToBigInt(val: ?t)
-    where (t == bigint)
-  {
-    return val;
+  // Convenience predicates derived from cmpBigReal + NaN rules
+  inline proc ltBigReal(b: bigint, r: real(64)): bool {
+    return !isNan(r) && cmpBigReal(b, r) < 0;
+  }
+  inline proc gtBigReal(b: bigint, r: real(64)): bool {
+    return !isNan(r) && cmpBigReal(b, r) > 0;
+  }
+  inline proc leBigReal(b: bigint, r: real(64)): bool {
+    return !isNan(r) && cmpBigReal(b, r) <= 0;
+  }
+  inline proc geBigReal(b: bigint, r: real(64)): bool {
+    return !isNan(r) && cmpBigReal(b, r) >= 0;
+  }
+  inline proc eqBigReal(b: bigint, r: real(64)): bool {
+    return !isNan(r) && cmpBigReal(b, r) == 0;
+  }
+  inline proc neBigReal(b: bigint, r: real(64)): bool {
+    return isNan(r) || cmpBigReal(b, r) != 0;
   }
 
   proc doBigIntBinOpvvBoolReturnRealInput(const ref la: [?d] ?t1, const ref ra: [d] ?t2, op: string) throws
@@ -750,20 +802,53 @@ module BinOp
 
     var e = makeDistArray(d, bool);
     ref ea = e;
-
     select op {
-      when "<" { forall (ei, li, ri) in zip(ea, la, ra) do ei = realToBigInt(li) < realToBigInt(ri); }
-      when ">" { forall (ei, li, ri) in zip(ea, la, ra) do ei = realToBigInt(li) > realToBigInt(ri); }
-      when "<=" { forall (ei, li, ri) in zip(ea, la, ra) do ei = realToBigInt(li) <= realToBigInt(ri); }
-      when ">=" { forall (ei, li, ri) in zip(ea, la, ra) do ei = realToBigInt(li) >= realToBigInt(ri); }
-      when "==" { forall (ei, li, ri) in zip(ea, la, ra) do ei = realToBigInt(li) == realToBigInt(ri); }
-      when "!=" { forall (ei, li, ri) in zip(ea, la, ra) do ei = realToBigInt(li) != realToBigInt(ri); }
-      otherwise {
-        // we should never reach this since we only enter this proc
-        // if boolOps.contains(op)
-        throw new Error("Unsupported operation: " + t1:string +" "+ op +" "+ t2:string);
+      when "<"  {
+        if t1 == bigint {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = ltBigReal(li, ri);
+        } else { // t2 == bigint
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = gtBigReal(ri, li); // li<ri  <=>  ri>li
+        }
       }
+      when ">"  {
+        if t1 == bigint {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = gtBigReal(li, ri);
+        } else {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = ltBigReal(ri, li);
+        }
+      }
+      when "<=" {
+        if t1 == bigint {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = leBigReal(li, ri);
+        } else {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = geBigReal(ri, li);
+        }
+      }
+      when ">=" {
+        if t1 == bigint {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = geBigReal(li, ri);
+        } else {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = leBigReal(ri, li);
+        }
+      }
+      when "==" {
+        if t1 == bigint {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = eqBigReal(li, ri);
+        } else {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = eqBigReal(ri, li);
+        }
+      }
+      when "!=" {
+        if t1 == bigint {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = neBigReal(li, ri);
+        } else {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = neBigReal(ri, li);
+        }
+      }
+      otherwise do
+        throw new Error("Unsupported operation: " + t1:string + " " + op + " " + t2:string);
     }
+
     return e;
   }
 
