@@ -492,7 +492,6 @@ jobs:
       max-parallel: 3
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
-      ARKOUDA_DEVELOPER: true
     container:
       image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
     steps:
