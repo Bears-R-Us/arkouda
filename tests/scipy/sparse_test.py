@@ -42,6 +42,7 @@ class TestSparse:
             Perform matrix-matrix multiplication of two sparse matrices represented by
             3 arrays of rows, cols, and vals.
             A . B
+
             Parameters
             ----------
             rowsA : list or array-like

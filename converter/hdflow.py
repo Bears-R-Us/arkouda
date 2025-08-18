@@ -58,7 +58,8 @@ def write_strings(f, group, packed, offsets):
 def col2dset(name, col, f, dtype=None, compression="gzip"):
     """Write a pandas Series <col> to dataset <name> in HDF5 file <f>.
     Optionally, specify a dtype to convert to before writing. Compression
-    with gzip is also supported."""
+    with gzip is also supported.
+    """
     normdtype = _normalize_dtype(col, dtype)
     data = _cast_values(col, dtype)
     try:
@@ -75,7 +76,8 @@ def col2dset(name, col, f, dtype=None, compression="gzip"):
 
 def df2hdf(filename, df, dtypes={}, compression="gzip"):
     """Write a pandas DataFrame <df> to a HDF5 file <filename>. Optionally,
-    specify dtypes for converting the columns and a compression to use."""
+    specify dtypes for converting the columns and a compression to use.
+    """
     with h5py.File(filename, "w") as f:
         for colname in df.columns:
             col2dset(

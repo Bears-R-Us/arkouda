@@ -46,7 +46,7 @@ quote-style = "double"
 # UP    - pyupgrade: recommend modern Python syntax (e.g., f-strings, `|` for union)
 # YTT   - flake8-2020: flag outdated or fragile Python version checks
 # E501  - enforces maximum line length
-select = ["E", "F", "I", "D", "W", "A", "B", "C4", "EM", "ERA", "N", "PGH", "PIE", "PL", "PT", "PTH", "RET","RUF", "SIM", "SLF", "T20", "UP", "YTT", "E501"] 
+select = ["E", "F", "D", "W", "A", "B", "C4", "EM", "ERA", "N", "PGH", "PIE", "PL", "PT", "PTH", "RET","RUF", "SIM", "SLF", "T20", "UP", "YTT", "E501"] 
 fixable = ["I","D"]
 ignore = ["D401","D104","D205","D100","D102","D105","D103","D200","D101",
 "A004","A002","A001",

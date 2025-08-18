@@ -127,10 +127,12 @@ def get_test_parquet_files() -> List[Path]:
     """
     Discover parquet test files, excluding those known to crash the server.
 
-    Returns:
+    Returns
+    -------
         List of Path objects for parquet files to test (empty list if env var not set)
 
-    Raises:
+    Raises
+    ------
         FileNotFoundError: If test data directory doesn't exist
         ValueError: If no parquet files found in valid directory
     """
@@ -178,7 +180,8 @@ def read_parquet_with_arkouda(
     """
     Read a parquet file with Arkouda and optionally compare with pandas.
 
-    Returns:
+    Returns
+    -------
         ParquetTestResult object with test outcomes
     """
     filename = Path(filepath).name
