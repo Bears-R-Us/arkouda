@@ -2,9 +2,10 @@ from typing import Optional, Tuple, Union, cast
 
 from typeguard import typechecked
 
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, int_scalars, numeric_scalars
+from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.random.generator import default_rng
 
@@ -266,7 +267,7 @@ def uniform(
 
 def defaultGeneratorExists():  # used in all of the fns below to determine
     global theGenerator  # noqa
-    try: # this try will fail if theGenerator does not exist
+    try:  # this try will fail if theGenerator does not exist
         theGenerator  # noqa
     except NameError:
         return False

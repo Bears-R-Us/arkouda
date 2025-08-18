@@ -2,17 +2,13 @@ import numpy as np
 import numpy.random as np_random
 
 from arkouda.client import get_registration_config
-from arkouda.numpy.dtypes import (
-    _val_isinstance_of_union,
-    dtype_for_chapel,
-    float_scalars,
-    int_scalars,
-    numeric_scalars,
-)
-from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import _val_isinstance_of_union
 from arkouda.numpy.dtypes import dtype as to_numpy_dtype
+from arkouda.numpy.dtypes import dtype_for_chapel
 from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import float_scalars
 from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
 __all__ = [
@@ -218,7 +214,7 @@ class Generator:
         rep_msg = generic_msg(
             cmd=f"standardExponential<{ndim}>",
             args={
-                "name": self._name_dict[akdtype("float64")],
+                "name": self._name_dict[to_numpy_dtype("float64")],
                 "size": shape,
                 "method": method.upper(),
                 "has_seed": self._seed is not None,
@@ -368,7 +364,7 @@ class Generator:
         rep_msg = generic_msg(
             cmd="logisticGenerator",
             args={
-                "name": self._name_dict[akdtype("float64")],
+                "name": self._name_dict[to_numpy_dtype("float64")],
                 "mu": mu,
                 "is_single_mu": is_single_mu,
                 "scale": scale,
@@ -588,7 +584,7 @@ class Generator:
         rep_msg = generic_msg(
             cmd=f"standardGamma<{ndim}>",
             args={
-                "name": self._name_dict[akdtype("float64")],
+                "name": self._name_dict[to_numpy_dtype("float64")],
                 "size": shape,
                 "is_single_k": is_single_k,
                 "k_arg": k_arg,
@@ -651,7 +647,7 @@ class Generator:
         rep_msg = generic_msg(
             cmd=f"standardNormalGenerator<{ndim}>",
             args={
-                "name": self._name_dict[akdtype("float64")],
+                "name": self._name_dict[to_numpy_dtype("float64")],
                 "shape": shape,
                 "method": method.upper(),
                 "has_seed": self._seed is not None,
@@ -861,7 +857,7 @@ class Generator:
         rep_msg = generic_msg(
             cmd="poissonGenerator",
             args={
-                "name": self._name_dict[akdtype("float64")],
+                "name": self._name_dict[to_numpy_dtype("float64")],
                 "lam": lam,
                 "is_single_lambda": is_single_lambda,
                 "size": size,
@@ -921,7 +917,7 @@ class Generator:
         if full_size < 0:
             raise ValueError("The size parameter must be > 0")
 
-        dt = akdtype("float64")
+        dt = to_numpy_dtype("float64")
         rep_msg = generic_msg(
             cmd=f"uniformGenerator<{dt.name},{ndim}>",
             args={
