@@ -207,8 +207,9 @@ def get_nested_value(data: dict, keys: list):
 
 
 def get_value(field: str, benchmark_name: str, field_lookup_map: dict, benchmark_data):
-    """get the value of a field in a benchmark using the field_lookup_map
-    and the benchmark_data in pytest json format."""
+    """Get the value of a field in a benchmark using the field_lookup_map
+    and the benchmark_data in pytest json format.
+    """
     regex_str = None
     if (
         field_lookup_map.get(benchmark_name).get(field) is not None
@@ -243,7 +244,8 @@ def get_value(field: str, benchmark_name: str, field_lookup_map: dict, benchmark
 
 def compute_average(benchmark_name_regex: str, keys: list, benchmark_data):
     """Compute the average value of a statistic, using a regex on
-    the benchmark name to determine which values to use."""
+    the benchmark name to determine which values to use.
+    """
     total = 0.0
     count = 0
     try:

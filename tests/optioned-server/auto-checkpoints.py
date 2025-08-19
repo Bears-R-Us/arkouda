@@ -77,7 +77,6 @@ class TestIdleAndInterval:
           3.0 [more than checkpointInterval]
           verify existence of an auto-checkpoint and a previous auto-checkpoint
         """
-
         delete_directory(autockptDir)  # start with a clean slate
         delete_directory(autockptPrevDir)
         a = ak.ones(pytest.prob_size[0])

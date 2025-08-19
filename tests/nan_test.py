@@ -59,7 +59,6 @@ def run_test(verbose=True):
 
     :return:
     """
-
     d = make_arrays()
     df = pd.DataFrame(d)
     akdf = {k: ak.array(v) for k, v in d.items()}
