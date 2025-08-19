@@ -22,6 +22,14 @@ class TestRandom:
         result = doctest.testmod(random, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
+    def test_random_generator_docstrings(self):
+        import doctest
+
+        from arkouda.numpy.random import generator
+
+        result = doctest.testmod(generator, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     def test_integers(self):
         # verify same seed gives different but reproducible arrays
         rng = ak.random.default_rng(pytest.seed)
