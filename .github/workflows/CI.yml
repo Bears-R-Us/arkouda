@@ -191,7 +191,7 @@ jobs:
           pip install flake8 pydoclint[flake8]==0.6.10
     - name: flake8 version
       run: | 
-          python3 -m ensurepip --default-pip
+        python3 -m ensurepip --default-pip
         flake8 --version
     - name: Arkouda flake8
       run: |
