@@ -30,4 +30,4 @@ dependencies:
 
   - pip:
       - typeguard==2.10.0
-      - pydoclint==0.6.6
+      - pydoclint==0.6.10
