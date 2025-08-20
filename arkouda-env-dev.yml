@@ -57,7 +57,7 @@ dependencies:
     - myst-parser
     - linkify-it-py
     - ruff==0.11.2
-    - pydoclint[flake8]==0.6.6
+    - pydoclint[flake8]==0.6.10
     - docstr-coverage
     - numba
     - pytest-html
