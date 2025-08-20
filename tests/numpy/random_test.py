@@ -31,7 +31,7 @@ class TestRandom:
         same_seed_first = rng.integers(-(2**32), 2**32, 10)
         same_seed_second = rng.integers(-(2**32), 2**32, 10)
         assert first.tolist() == same_seed_first.tolist()
-        second.tolist() == same_seed_second.tolist()
+        assert second.tolist() == same_seed_second.tolist()
 
         # test endpoint
         rng = ak.random.default_rng()
