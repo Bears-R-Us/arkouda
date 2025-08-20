@@ -26,8 +26,8 @@ jobs:
         python3 -m ensurepip --default-pip    
     - name: Set Chapel version to 2.5.0
       run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.5.0/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.5.0/bin/linux64-x86_64/chpldoc 1
+        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.5.0/bin/linux64-aarch64/chpl 1
+        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.5.0/bin/linux64-aarch64/chpldoc 1
     - name: check chpldoc version
       run: |  
         chpldoc --version
