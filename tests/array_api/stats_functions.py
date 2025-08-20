@@ -162,7 +162,7 @@ class TestStatsFunction:
         a = xp.asarray(ak.randint(0, 100, (5, 6, 7), seed=SEED))
 
         a_sum_0 = xp.cumulative_sum(a, axis=0)
-        a_sum_0_np = np.cumsum(a.to_ndarray(), axis=0)
+        a_sum_0_np = np.cumulative_sum(a.to_ndarray(), axis=0)
         assert a_sum_0.shape == (5, 6, 7)
         assert a_sum_0.tolist() == a_sum_0_np.tolist()
 
