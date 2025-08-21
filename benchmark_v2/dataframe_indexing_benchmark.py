@@ -13,7 +13,7 @@ def bench_dataframe(benchmark, op):
     """
     Measures the performance of arkouda Dataframe indexing
     """
-    N = pytest.prob_size * ak.get_config()["numLocales"]
+    N = pytest.N
 
     types = [ak.Categorical, ak.pdarray, ak.Strings, ak.SegArray]
     df_dict = {}

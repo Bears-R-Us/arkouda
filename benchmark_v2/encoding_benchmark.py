@@ -17,7 +17,7 @@ def compute_nbytes(a):
 @pytest.mark.benchmark(group="Strings_EncodeDecode")
 @pytest.mark.parametrize("encoding", ENCODINGS)
 def bench_encode(benchmark, encoding):
-    N = pytest.prob_size * ak.get_config()["numLocales"]
+    N = pytest.N
     a = generate_string_array(N)
     nbytes = compute_nbytes(a)
 
@@ -37,7 +37,7 @@ def bench_encode(benchmark, encoding):
 @pytest.mark.benchmark(group="Strings_EncodeDecode")
 @pytest.mark.parametrize("encoding", ENCODINGS)
 def bench_decode(benchmark, encoding):
-    N = pytest.prob_size * ak.get_config()["numLocales"]
+    N = pytest.N
     a = generate_string_array(N)
     encoded = a.encode(encoding)
     nbytes = compute_nbytes(a)

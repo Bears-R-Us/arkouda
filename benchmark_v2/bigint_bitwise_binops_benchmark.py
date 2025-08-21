@@ -23,7 +23,7 @@ def bench_bitwise_binops(benchmark, op):
     """
     Measures the performance of bigint bitwise binops
     """
-    N = pytest.prob_size * ak.get_config()["numLocales"]
+    N = pytest.N
     nbytes = compute_nbytes(N)
 
     a = generate_bigint_pair(N)

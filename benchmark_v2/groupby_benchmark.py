@@ -36,7 +36,7 @@ def generate_arrays(dtype, numArrays, N):
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_groupby(benchmark, numArrays, dtype):
     if dtype in pytest.dtype:
-        N = pytest.prob_size * ak.get_config()["numLocales"]
+        N = pytest.N
         arrays, numBytes = generate_arrays(dtype, numArrays, N)
 
         benchmark.pedantic(ak.GroupBy, args=[arrays], rounds=pytest.trials)
