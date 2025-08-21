@@ -1105,6 +1105,8 @@ class pdarray:
 
     # overload a[] to treat like list
     def __getitem__(self, key):
+        import numpy as np
+
         from arkouda.client import generic_msg
 
         if self.ndim == 1 and np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
@@ -1230,6 +1232,12 @@ class pdarray:
             else:
                 return ret_array
 
+        # Support NumPy integer array indexing (used in pandas internals)
+        if isinstance(key, np.ndarray) and np.issubdtype(key.dtype, np.integer) and self.ndim == 1:
+            from arkouda.numpy.pdarraycreation import array as ak_array
+
+            key = ak_array(key)
+
         if isinstance(key, pdarray) and self.ndim == 1:
             if key.dtype not in ("bool", "int", "uint"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
@@ -1243,6 +1251,8 @@ class pdarray:
                 },
             )
             return create_pdarray(repMsg)
+
+        import numpy as np
 
         if isinstance(key, slice):
             # handle the arr[:] case
