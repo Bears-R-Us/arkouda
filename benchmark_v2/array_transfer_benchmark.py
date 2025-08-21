@@ -21,7 +21,7 @@ def create_ak_array(N, dtype):
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_array_transfer_tondarray(benchmark, dtype):
     if dtype in pytest.dtype:
-        N = pytest.prob_size * ak.get_config()["numLocales"]
+        N = pytest.N
         a, nb = create_ak_array(N, dtype)
         ak.client.maxTransferBytes = nb
 
@@ -42,7 +42,7 @@ def bench_array_transfer_tondarray(benchmark, dtype):
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_array_transfer_akarray(benchmark, dtype):
     if dtype in pytest.dtype:
-        N = pytest.prob_size * ak.get_config()["numLocales"]
+        N = pytest.N
         a, nb = create_ak_array(N, dtype)
         ak.client.maxTransferBytes = nb
         npa = a.to_ndarray()
