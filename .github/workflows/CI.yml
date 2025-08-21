@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
       run: make check-doc-examples
 
   chpl-lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
