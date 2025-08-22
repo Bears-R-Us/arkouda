@@ -1180,7 +1180,7 @@
         "extra_info",
         "transfer_rate"
       ],
-      "lookup_regex": null,
+      "lookup_regex": "bench_read_hdf_multi\\[(?:int64|float64|bool|uint64|str)\\]",
       "name": ""
     },
     "read Average time HDF5 =": {
@@ -1189,7 +1189,7 @@
         "stats",
         "mean"
       ],
-      "lookup_regex": null,
+      "lookup_regex": "bench_read_hdf_multi\\[(?:int64|float64|bool|uint64|str)\\]",
       "name": ""
     },
     "write Average rate HDF5 =": {
@@ -1198,7 +1198,7 @@
         "extra_info",
         "transfer_rate"
       ],
-      "lookup_regex": null,
+      "lookup_regex": "bench_write_hdf_multi\\[(?:int64|float64|bool|uint64|str)\\]",
       "name": ""
     },
     "write Average time HDF5 =": {
@@ -1207,7 +1207,7 @@
         "stats",
         "mean"
       ],
-      "lookup_regex": null,
+      "lookup_regex": "bench_write_hdf_multi\\[(?:int64|float64|bool|uint64|str)\\]",
       "name": ""
     }
   },
