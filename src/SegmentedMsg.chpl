@@ -18,6 +18,9 @@ module SegmentedMsg {
   use CTypes;
   use IOUtils;
   use CommAggregation;
+  use Repartition;
+  use PrivateDist;
+  use List;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -882,54 +885,280 @@ module SegmentedMsg {
     var gIV: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
     
     select objtype {
-        when ObjType.STRINGS {
-            var newStringsName = "";
-            var nBytes = 0;
-            var strings = getSegString(objName, st);
-            try {
-                select gIV.dtype {
-                    when DType.Int64 {
-                        var iv = toSymEntry(gIV, int);
-                        var (newSegs, newVals) = strings[iv.a];
-                        var newStringsObj = getSegString(newSegs, newVals, st);
-                        newStringsName = newStringsObj.name;
-                        nBytes = newStringsObj.nBytes;
-                        repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %?".format(nBytes);
-                    }
-                    when DType.UInt64 {
-                        var iv = toSymEntry(gIV, uint);
-                        var (newSegs, newVals) = strings[iv.a];
-                        var newStringsObj = getSegString(newSegs, newVals, st);
-                        newStringsName = newStringsObj.name;
-                        nBytes = newStringsObj.nBytes;
-                        repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %?".format(nBytes);
-                    } 
-                    when DType.Bool {
-                        var iv = toSymEntry(gIV, bool);
-                        var (newSegs, newVals) = strings[iv.a];
-                        var newStringsObj = getSegString(newSegs, newVals, st);
-                        newStringsName = newStringsObj.name;
-                        nBytes = newStringsObj.nBytes;
-                        repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %?".format(nBytes);
-                    }
-                    otherwise {
-                        var errorMsg = "("+objtype: string+","+dtype2str(gIV.dtype)+")";
-                        smLogger.error(getModuleName(),getRoutineName(),
-                                                      getLineNumber(),errorMsg); 
-                        return new MsgTuple(notImplementedError(pn,errorMsg), MsgType.ERROR);
-                    }
+      when ObjType.STRINGS {
+        var newStringsName = "";
+        var nBytes = 0;
+        var strings = getSegString(objName, st);
+
+        try {
+          select gIV.dtype {
+            when DType.Int64 {
+
+              const locDom = 0..#numLocales;
+
+              // Cache per-locale local subdomains once
+              const localDomPerLoc = [i in locDom] strings.offsets.a.domain.localSubdomain(Locales[i]);
+
+              // How many offsets on each locale?
+              const numOffsetsPerLocale = [i in locDom] localDomPerLoc[i].size;
+              const hasData = [i in locDom] numOffsetsPerLocale[i] > 0;
+
+              // Safe start index/offset (don’t touch .first when empty)
+              const startIndexPerLocale  = [i in locDom]
+                if hasData[i] then localDomPerLoc[i].first else 0;
+
+              const startOffsetPerLocale = [i in locDom]
+                if hasData[i] then strings.offsets.a[startIndexPerLocale[i]] else 0;
+
+              // Compute the "next start" for each i: the start of the next *non-empty* locale,
+              // or the total size if none. Do this with a simple reverse pass.
+              var nextStartOffsetPerLocale: [locDom] startOffsetPerLocale.eltType;
+              var nextStart = strings.offsets.a.size;
+              for i in (numLocales-1)..-1{
+                nextStartOffsetPerLocale[i] = nextStart;
+                if hasData[i] then nextStart = startOffsetPerLocale[i];
+              }
+
+              // Finally: bytes per locale, zero for empty locales
+              const numBytesPerLocale = [i in locDom]
+                if hasData[i] then
+                  nextStartOffsetPerLocale[i] - startOffsetPerLocale[i]
+                else
+                  0;
+
+
+              var strOffsetInLocale: [PrivateSpace] innerArray(int);
+              var strBytesInLocale: [PrivateSpace] innerArray(uint(8));
+              var strOrigIndices: [PrivateSpace] innerArray(int);
+              const arrSize = strings.offsets.a.size;
+
+              coforall loc in Locales do on loc {
+                
+                ref globalOffsets = strings.offsets.a;
+                const offsetsDom = strings.offsets.a.domain.localSubdomain();
+                const size = offsetsDom.size;
+
+                if size > 0 {
+                  strOffsetInLocale[here.id] = new innerArray({0..#size}, int);
+                  ref offsets = strOffsetInLocale[here.id].Arr;
+                  offsets[0..#size] = strings.offsets.a.localSlice[offsetsDom];
+                  const end = if offsetsDom.high >= strings.offsets.a.domain.high
+                                      then strings.values.a.size
+                                      else globalOffsets[offsetsDom.high + 1];
+                  const start = offsets[0];
+                  strBytesInLocale[here.id] = new innerArray({0..#(end - start)}, uint(8));
+                  strBytesInLocale[here.id].Arr[0..#(end - start)] = strings.values.a[start..<end];
+
+                  offsets = offsets - offsets[0];
+
+                  strOrigIndices[here.id] = new innerArray({0..#offsets.size}, int);
+                  strOrigIndices[here.id].Arr[0..#offsets.size] = offsetsDom.low..;
                 }
-            } catch e: Error {
-                var errorMsg =  e.message();
-                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
+
+              }
+
+              var iv = toSymEntry(gIV, int);
+              ref iva = iv.a;
+              var newSegs = makeDistArray(iva.size, int);
+              const flatLocRanges = [loc in Locales] strings.offsets.a.domain.localSubdomain(loc).dim(0);
+              /*
+              var destLocales: [PrivateSpace] list(int);
+              var sendIdx: [PrivateSpace] list(int);
+              var sendBackLoc: [PrivateSpace] list(int);
+              var sendBackIdx: [PrivateSpace] list(int);
+              var baselineIndices: [PrivateSpace] int;
+
+              var destLocales: [PrivateSpace] [0..#numOffsetAlloc] int;
+              var sendIdx: [PrivateSpace] [0..#numOffsetAlloc] int;
+              var sendBackLoc: [PrivateSpace] [0..#numOffsetAlloc] int;
+              var sendBackIdx: [PrivateSpace] [0..#numOffsetAlloc] int;
+              var baselineIndices: [PrivateSpace] int;
+              */
+              var destLocales: [PrivateSpace] innerArray(int);
+              var sendIdx: [PrivateSpace] innerArray(int);
+              var sendBackLoc: [PrivateSpace] innerArray(int);
+              var sendBackIdx: [PrivateSpace] innerArray(int);
+              var baselineIndices: [PrivateSpace] int;
+
+              coforall loc in Locales do on loc {
+                const flatLocRangesHere = flatLocRanges;  // copies ranges to 'here' once
+                inline proc ownerOfIndex(gIdx: int): int {
+                  for (rr, i) in zip(flatLocRangesHere, 0..<numLocales) do
+                    if rr.contains(gIdx) then return i;
+                  return numLocales-1;
+                }
+
+                const indicesDom = iva.domain.localSubdomain();
+                const myIndices = iva.localSlice[indicesDom];
+
+                destLocales[here.id] = new innerArray({0..#indicesDom.size}, int);
+                sendIdx[here.id] = new innerArray({0..#indicesDom.size}, int);
+                sendBackLoc[here.id] = new innerArray({0..#indicesDom.size}, int);
+                sendBackIdx[here.id] = new innerArray({0..#indicesDom.size}, int);
+
+                ref myDestLocales = destLocales[here.id].Arr;
+                ref mySendIdx = sendIdx[here.id].Arr;
+                sendBackLoc[here.id].Arr = here.id;
+                ref mySendBackIdx = sendBackIdx[here.id].Arr;
+
+                forall (i, j, idx) in zip(indicesDom, 0.., myIndices) {
+                  var tempIdx = if idx < 0 then idx + arrSize else idx;
+                  if tempIdx >= 0 && tempIdx < arrSize {
+                    mySendIdx[j] = tempIdx;
+                    myDestLocales[j] = ownerOfIndex(tempIdx);
+                    mySendBackIdx[j] = i;
+                  } else {
+                    throw new IllegalArgumentError("index " + tempIdx:string +
+                                         " out of bounds [0.." + (arrSize-1):string + "]");
+                  }
+                }
+
+                baselineIndices[here.id] = indicesDom.low;
+              }
+
+              var getIdx = repartitionByLocaleArray(int,
+                                                    destLocales,
+                                                    sendIdx);
+              var newDestLocales = repartitionByLocaleArray(int,
+                                                            destLocales,
+                                                            sendBackLoc);
+              var destIndices = repartitionByLocaleArray(int,
+                                                         destLocales,
+                                                         sendBackIdx);
+
+              var tempOffsetsByLoc: [PrivateSpace] innerArray(int);
+              var tempBytesByLoc: [PrivateSpace] innerArray(uint(8));
+
+              coforall loc in Locales do on loc {
+
+                if strOrigIndices[here.id].Arr.size > 0 {
+
+                  ref myStrOffsets = strOffsetInLocale[here.id].Arr;
+                  ref myStrBytes = strBytesInLocale[here.id].Arr;
+                  // var myOrigIndices = strOrigIndices[here.id].toArray();
+                  ref myReqIndices = getIdx[here.id].Arr;
+                  const baseIdx = strOrigIndices[here.id].Arr[0];
+
+                  tempOffsetsByLoc[here.id] = new innerArray({0..#myReqIndices.size}, int);
+                  ref tempOffsets = tempOffsetsByLoc[here.id].Arr;
+                  
+                  var tempSizes: [0..#myReqIndices.size] int;
+
+                  forall i in 0..#myReqIndices.size {
+                    const adjustedInd = myReqIndices[i] - baseIdx;
+                    const upperEnd = if adjustedInd == myStrOffsets.size - 1 then myStrBytes.size else myStrOffsets[adjustedInd + 1];
+                    // writeln(here.id, " i: ", i, ", adjustedInd: ", adjustedInd, ", upperEnd: ", upperEnd);
+                    tempSizes[i] = upperEnd - myStrOffsets[adjustedInd];
+                    // writeln(here.id, " i: ", i, ", tempSizes[i]: ", tempSizes[i]);
+                  }
+
+                  tempOffsets = (+ scan tempSizes) - tempSizes;
+
+                  var totalBytes = + reduce tempSizes;
+                  tempBytesByLoc[here.id] = new innerArray({0..#totalBytes}, uint(8));
+                  ref tempBytes = tempBytesByLoc[here.id].Arr;
+
+                  forall i in 0..#myReqIndices.size {
+                    const adjustedInd = myReqIndices[i] - baseIdx;
+                    tempBytes[tempOffsets[i]..#tempSizes[i]] = myStrBytes[myStrOffsets[adjustedInd]..#tempSizes[i]];
+                  }
+
+                }
+
+              }
+
+              var (recvOffsets, recvBytes) = repartitionByLocaleStringArray(newDestLocales,
+                                                                            tempOffsetsByLoc,
+                                                                            tempBytesByLoc);
+
+              var finIndices = repartitionByLocaleArray(int, newDestLocales, destIndices);
+              
+              var bytesByLocale: [PrivateSpace] int;
+              bytesByLocale = [i in recvBytes.domain] recvBytes[i].Arr.size;
+              var baseOffsetByLocale = (+ scan bytesByLocale) - bytesByLocale;
+              var numBytes = + reduce bytesByLocale;
+              var newVals = makeDistArray(numBytes, uint(8));
+
+              coforall loc in Locales do on loc {
+
+                ref myOffsets = recvOffsets[here.id].Arr;
+                ref myBytes = recvBytes[here.id].Arr;
+                ref myIndices = finIndices[here.id].Arr;
+                var currSizes: [0..#myOffsets.size] int;
+                var endSizes: [0..#myOffsets.size] int;
+                const baseIdx = baselineIndices[here.id];
+                const baseOffsetByLocaleCopy = baseOffsetByLocale;
+                const baseOffset = baseOffsetByLocaleCopy[here.id];
+                const myNumBytes = bytesByLocale[here.id];
+
+                if myNumBytes > 0 {
+
+                  forall i in 0..#myOffsets.size {
+                    const start = myOffsets[i];
+                    const end = if i == myOffsets.size - 1 then myBytes.size else myOffsets[i + 1];
+                    currSizes[i] = end - start;
+                    endSizes[myIndices[i] - baseIdx] = end - start;
+                  }
+                  
+                  var newByteOffsets = (+ scan endSizes) - endSizes;
+                  newSegs[baseIdx..#myOffsets.size] = newByteOffsets + baseOffset;
+
+                  // This is unfortunately kind of necessary because newVals is a distArray, so one
+                  // bulk transfer is probably best.
+                  var tempBytes: [0..#myNumBytes] uint(8);
+
+                  forall i in 0..#myOffsets.size {
+                    const destInd = myIndices[i] - baseIdx;
+                    // writeln(here.id, " i: ", i, ", destInd: ", destInd, ", myIndices[i]: ", myIndices[i], ", myIndices.domain: ", myIndices.domain);
+                    tempBytes[newByteOffsets[destInd]..#endSizes[destInd]] = myBytes[myOffsets[i]..#currSizes[i]];
+                  }
+
+                  newVals[baseOffset..#myNumBytes] = tempBytes[0..#myNumBytes];
+
+                }
+
+              }
+
+              // var (newSegs, newVals) = strings[iv.a];
+              var newStringsObj = getSegString(newSegs, newVals, st);
+              newStringsName = newStringsObj.name;
+              nBytes = newStringsObj.nBytes;
+              repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %?".format(nBytes);
             }
+            when DType.UInt64 {
+              var iv = toSymEntry(gIV, uint);
+              var (newSegs, newVals) = strings[iv.a];
+              var newStringsObj = getSegString(newSegs, newVals, st);
+              newStringsName = newStringsObj.name;
+              nBytes = newStringsObj.nBytes;
+              repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %?".format(nBytes);
+            } 
+            when DType.Bool {
+              var iv = toSymEntry(gIV, bool);
+              var (newSegs, newVals) = strings[iv.a];
+              var newStringsObj = getSegString(newSegs, newVals, st);
+              newStringsName = newStringsObj.name;
+              nBytes = newStringsObj.nBytes;
+              repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %?".format(nBytes);
+            }
+            otherwise {
+              var errorMsg = "("+objtype: string+","+dtype2str(gIV.dtype)+")";
+              smLogger.error(getModuleName(),getRoutineName(),
+                                            getLineNumber(),errorMsg); 
+              return new MsgTuple(notImplementedError(pn,errorMsg), MsgType.ERROR);
+            }
+          }
+        } catch e: Error {
+          var errorMsg =  e.message();
+          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
         }
-        otherwise {
-            var errorMsg = "unsupported objtype: %?".format(objtype);
-            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(notImplementedError(pn, objtype: string), MsgType.ERROR);
-        }
+      }
+      otherwise {
+        var errorMsg = "unsupported objtype: %?".format(objtype);
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        return new MsgTuple(notImplementedError(pn, objtype: string), MsgType.ERROR);
+      }
     }
 
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
