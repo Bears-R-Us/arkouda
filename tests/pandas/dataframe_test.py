@@ -37,6 +37,7 @@ def df_test_base_tmp(request):
     return df_test_base_tmp
 
 
+@pytest.mark.skip_if_max_rank_greater_than(1)
 class TestDataFrame:
     def test_dataframe_docstrings(self, df_test_base_tmp):
         import doctest

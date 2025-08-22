@@ -18,6 +18,7 @@ UNIQUE = N // 4
 SEED = 12345
 
 
+@pytest.mark.skip_if_max_rank_greater_than(1)
 class TestString:
     @pytest.mark.skipif(
         os.environ.get("CHPL_HOST_PLATFORM") == "hpe-apollo",
