@@ -892,6 +892,7 @@ module SegmentedMsg {
         var strOffsetInLocale: [PrivateSpace] list(int);
         var strBytesInLocale: [PrivateSpace] list(uint(8));
         var strOrigIndices: [PrivateSpace] list(int);
+        const arrSize = strings.offsets.a.size;
 
         coforall loc in Locales do on loc {
           
@@ -950,9 +951,15 @@ module SegmentedMsg {
                 var mySendBackIdx: [0..#myIndices.size] int;
 
                 forall (i, j, idx) in zip(indicesDom, 0.., myIndices) {
-                  mySendIdx[j] = idx;
-                  myDestLocales[j] = ownerOfIndex(idx);
-                  mySendBackIdx[j] = i;
+                  var tempIdx = if idx < 0 then idx + arrSize else idx;
+                  if tempIdx >= 0 && tempIdx < arrSize {
+                    mySendIdx[j] = tempIdx;
+                    myDestLocales[j] = ownerOfIndex(tempIdx);
+                    mySendBackIdx[j] = i;
+                  } else {
+                    throw new IllegalArgumentError("index " + tempIdx:string +
+                                         " out of bounds [0.." + (arrSize-1):string + "]");
+                  }
                 }
 
                 destLocales[here.id] = new list(myDestLocales);
@@ -1049,28 +1056,33 @@ module SegmentedMsg {
                 writeln(here.id, " baseOffset: ", baseOffset);
                 writeln(here.id, " myNumBytes: ", myNumBytes);
 
-                forall i in 0..#myOffsets.size {
-                  var start = myOffsets[i];
-                  var end = if i == myOffsets.size - 1 then myBytes.size else myOffsets[i + 1];
-                  currSizes[i] = end - start;
-                  endSizes[myIndices[i] - baseIdx] = end - start;
+                if myNumBytes > 0 {
+
+                  forall i in 0..#myOffsets.size {
+                    var start = myOffsets[i];
+                    var end = if i == myOffsets.size - 1 then myBytes.size else myOffsets[i + 1];
+                    currSizes[i] = end - start;
+                    endSizes[myIndices[i] - baseIdx] = end - start;
+                  }
+
+                  writeln(here.id, " currSizes: ", currSizes);
+                  writeln(here.id, " endSizes: ", endSizes);
+                  
+                  var newByteOffsets = (+ scan endSizes) - endSizes;
+                  writeln(here.id, " newByteOffsets: ", newByteOffsets);
+                  newSegs[baseIdx..#myOffsets.size] = newByteOffsets + baseOffset;
+                  var tempBytes: [0..#myNumBytes] uint(8);
+
+                  forall i in 0..#myOffsets.size {
+                    const destInd = myIndices[i] - baseIdx;
+                    writeln(here.id, " i: ", i, ", destInd: ", destInd, ", myIndices[i]: ", myIndices[i], ", myIndices.domain: ", myIndices.domain);
+                    tempBytes[newByteOffsets[destInd]..#endSizes[destInd]] = myBytes[myOffsets[i]..#currSizes[i]];
+                  }
+
+                  newVals[baseOffset..#myNumBytes] = tempBytes[0..#myNumBytes];
+                  writeln(here.id, " tempBytes: ", tempBytes);
+
                 }
-
-                writeln(here.id, " currSizes: ", currSizes);
-                writeln(here.id, " endSizes: ", endSizes);
-                
-                var newByteOffsets = (+ scan endSizes) - endSizes;
-                writeln(here.id, " newByteOffsets: ", newByteOffsets);
-                newSegs[baseIdx..#myOffsets.size] = newByteOffsets + baseOffset;
-                var tempBytes: [0..#myNumBytes] uint(8);
-
-                forall i in 0..#myOffsets.size {
-                  const destInd = myIndices[i];
-                  tempBytes[newByteOffsets[destInd]..#endSizes[destInd]] = myBytes[myOffsets[i]..#currSizes[i]];
-                }
-
-                newVals[baseOffset..#myNumBytes] = tempBytes[0..#myNumBytes];
-                writeln(here.id, " tempBytes: ", tempBytes);
 
               }
 
