@@ -281,6 +281,8 @@ def add_default_mappings(field_lookup_map):
                 regex = rf"^bench_{base_bench}.*$"
             elif base_bench == "bigint_stream":
                 regex = r"bench_bigint_stream\[bigint\]"
+            elif base_bench == "split":
+                regex = "bench_split.*"
             else:
                 regex = f"bench_{base_bench}\\[{dtype}\\]"
 

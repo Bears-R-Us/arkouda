@@ -2478,7 +2478,7 @@
         "extra_info",
         "transfer_rate"
       ],
-      "lookup_regex": "bench_split\\[(?:int64|float64|bool|uint64)\\]",
+      "lookup_regex": "bench_split.*",
       "name": "bench_split"
     },
     "Average time =": {
@@ -2487,7 +2487,7 @@
         "stats",
         "mean"
       ],
-      "lookup_regex": "bench_split\\[(?:int64|float64|bool|uint64)\\]",
+      "lookup_regex": "bench_split.*",
       "name": "bench_split"
     }
   },
