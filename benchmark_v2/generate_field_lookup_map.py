@@ -341,7 +341,7 @@ def main():
 
     os.makedirs(os.path.dirname(OUTPUT_JSON), exist_ok=True)
     with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(field_lookup_map, f, indent=2)
+        json.dump(field_lookup_map, f, indent=2, sort_keys=True)
 
     logger.debug(f"Updated {OUTPUT_JSON} with {len(field_lookup_map)} benchmarks.")
 
