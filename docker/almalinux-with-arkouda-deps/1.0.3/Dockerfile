@@ -1,4 +1,4 @@
-FROM jaketrookman/almalinux-chapel:1.0.3
+FROM ajpotts/almalinux-chapel:1.0.3
 
 # Set user to root
 USER root

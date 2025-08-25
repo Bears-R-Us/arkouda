@@ -8,11 +8,12 @@ ENV CHPL_HOME=/chapel-2.5.0 \
     CHPL_GMP=bundled \
     CHPL_COMM=none \
     CHPL_TARGET_COMPILER=gnu \
-    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/chapel-2.5.0:/chapel-2.5.0/bin/linux64-aarch64 \
+    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/chapel-2.5.0:/chapel-2.5.0/bin/linux64-aarch64:/chapel-2.5.0/bin/linux64-x86_64 \
     CHPL_TARGET_CPU=native \
     CHPL_HOST_MEM=jemalloc \
     ARKOUDA_QUICK_COMPILE=true \
-    ARKOUDA_SKIP_CHECK_DEPS=True
+    ARKOUDA_SKIP_CHECK_DEPS=True \
+    CHPL_HOME=/chapel-2.5.0
 
 
 
