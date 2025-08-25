@@ -4,14 +4,13 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
-SEED = 12345
-s = SEED
+seed = pytest.seed
 
 
 def randArr(shape):
-    global s
-    s += 2
-    return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=s))
+    global seed
+    seed += 2  # ensures that unique values are created each time randArr is invoked
+    return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=seed))
 
 
 class TestManipulation:
@@ -124,7 +123,7 @@ class TestManipulation:
         assert b2.tolist() == [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
 
         # ND case
-        r = xp.asarray(ak.randint(0, 100, (7, 8, 9), dtype=ak.int64, seed=SEED))
+        r = xp.asarray(ak.randint(0, 100, (7, 8, 9), dtype=ak.int64, seed=seed))
         rn = np.asarray(r.tolist())
 
         f1 = xp.flip(r)  # flip all axes

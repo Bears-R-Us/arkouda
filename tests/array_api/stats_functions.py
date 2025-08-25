@@ -6,8 +6,6 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
-SEED = 314159
-
 
 class TestStatsFunction:
     def test_statistical_functions_docstrings(self):
@@ -22,7 +20,7 @@ class TestStatsFunction:
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_max(self):
-        a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))
+        a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=pytest.seed))
         a[3, 6, 2] = 101
 
         assert xp.max(a) == 101
@@ -41,7 +39,7 @@ class TestStatsFunction:
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_min(self):
-        a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))
+        a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=pytest.seed))
         a[3, 6, 2] = -1
 
         assert xp.min(a) == -1
@@ -159,7 +157,7 @@ class TestStatsFunction:
 
     @pytest.mark.skip_if_rank_not_compiled([3])
     def test_cumulative_sum(self):
-        a = xp.asarray(ak.randint(0, 100, (5, 6, 7), seed=SEED))
+        a = xp.asarray(ak.randint(0, 100, (5, 6, 7), seed=pytest.seed))
 
         a_sum_0 = xp.cumulative_sum(a, axis=0)
         a_sum_0_np = np.cumulative_sum(a.to_ndarray(), axis=0)
@@ -185,7 +183,7 @@ class TestStatsFunction:
         assert b_sum_1[0, 1, 0] == 1
         assert b_sum_1[0, 6, 0] == 6
 
-        c = xp.asarray(ak.randint(0, 100, 50, dtype=ak.float64, seed=SEED))
+        c = xp.asarray(ak.randint(0, 100, 50, dtype=ak.float64, seed=pytest.seed))
         c_sum = xp.cumulative_sum(c)
         c_sum_np = np.cumulative_sum(c.to_ndarray())
 
@@ -197,7 +195,7 @@ class TestStatsFunction:
 
     @pytest.mark.skip_if_rank_not_compiled([3])
     def test_cumulative_prod(self):
-        a = xp.asarray(ak.randint(1, 100, (5, 6, 7), seed=SEED))
+        a = xp.asarray(ak.randint(1, 100, (5, 6, 7), seed=pytest.seed))
 
         a_prod_0 = xp.cumulative_prod(a, axis=0)
         a_prod_0_np = np.cumulative_prod(a.to_ndarray(), axis=0)
@@ -223,7 +221,7 @@ class TestStatsFunction:
         assert b_prod_1[0, 1, 0] == 1
         assert b_prod_1[0, 6, 0] == 1
 
-        c = xp.asarray(ak.randint(1, 100, 50, dtype=ak.float64, seed=SEED))
+        c = xp.asarray(ak.randint(1, 100, 50, dtype=ak.float64, seed=pytest.seed))
         c_prod = xp.cumulative_prod(c)
         c_prod_np = np.cumulative_prod(c.to_ndarray())
 

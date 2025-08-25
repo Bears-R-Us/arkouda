@@ -21,6 +21,8 @@ from arkouda.testing import assert_frame_equal
 NUMERIC_TYPES = ["int64", "float64", "bool", "uint64"]
 NUMERIC_AND_STR_TYPES = NUMERIC_TYPES + ["str"]
 
+seed = pytest.seed
+
 
 @pytest.fixture
 def par_test_base_tmp(request):
@@ -768,8 +770,12 @@ class TestParquet:
         val_size = 1000000
 
         df_dict = dict()
-        seed = np.random.default_rng().choice(2**63)
-        rng = ak.random.default_rng(seed)
+
+        # This retains the use of default_rng to generate a seed, but it seeds the
+        # rng itself with pytest.seed.
+
+        iseed = np.random.default_rng(seed).choice(2**63)
+        rng = ak.random.default_rng(iseed)
         some_nans = rng.uniform(-(2**10), 2**10, val_size)
         some_nans[ak.arange(val_size) % 2 == 0] = np.nan
         vals_list = [
@@ -778,7 +784,7 @@ class TestParquet:
             rng.integers(0, 1, size=val_size, dtype="bool"),
             rng.integers(-(2**32), 2**32, size=val_size, dtype="int"),
             some_nans,  # contains nans
-            ak.random_strings_uniform(0, 4, val_size, seed=seed),  # contains empty strings
+            ak.random_strings_uniform(0, 4, val_size, seed=iseed),  # contains empty strings
         ]
 
         for vals in vals_list:
@@ -788,7 +794,7 @@ class TestParquet:
             segs = ak.concatenate(
                 [
                     ak.array([0]),
-                    ak.sort(ak.randint(0, val_size, val_size - 1, seed=seed)),
+                    ak.sort(ak.randint(0, val_size, val_size - 1, seed=iseed)),
                 ]
             )
             df_dict["rand"] = ak.SegArray(segs, vals).tolist()
@@ -805,7 +811,7 @@ class TestParquet:
                 # are lists of lists. assert_series_equal handles this and properly handles nans.
                 # we pass the same absolute and relative tolerances as the numpy default in allclose
                 # to ensure float point differences don't cause errors
-                print("\nseed: ", seed)
+                print("\nseed: ", iseed)
                 assert_series_equal(pddf["rand"], to_pd, check_names=False, rtol=1e-05, atol=1e-08)
 
                 # test writing multi-batch non-segarrays

@@ -4,14 +4,13 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
-SEED = 12345
-s = SEED
+seed = pytest.seed
 
 
 def randArr(shape):
-    global s
-    s += 2
-    return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=s))
+    global seed
+    seed += 2  # ensures unique results each time randArr is invoked
+    return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=seed))
 
 
 class TestIndexing:

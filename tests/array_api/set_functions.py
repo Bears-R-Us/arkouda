@@ -1,10 +1,10 @@
 import numpy as np
+import pytest
 
 import arkouda as ak
 import arkouda.array_api as xp
 
-SEED = 314159
-s = SEED
+seed = pytest.seed
 
 
 def ret_shapes():
@@ -17,9 +17,9 @@ def ret_shapes():
 
 
 def rand_arr(shape):
-    global s
-    s += 2
-    return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=s))
+    global seed
+    seed += 2
+    return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=seed))
 
 
 class TestSetFunction:

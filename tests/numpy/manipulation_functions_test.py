@@ -7,8 +7,6 @@ import arkouda as ak
 from arkouda.pandas.categorical import Categorical
 from arkouda.testing import assert_arkouda_array_equivalent, assert_equal
 
-seed = pytest.seed
-
 DTYPES = ["uint64", "uint8", "int64", "float64", "bigint", "bool"]
 
 
@@ -57,12 +55,12 @@ class TestNumpyManipulationFunctions:
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_flip_string(self, size):
-        s = ak.random_strings_uniform(1, 2, size, seed=seed)
+        s = ak.random_strings_uniform(1, 2, size, seed=pytest.seed)
         assert_equal(ak.flip(s), s[::-1])
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_flip_categorical(self, size):
-        s = ak.random_strings_uniform(1, 2, size, seed=seed)
+        s = ak.random_strings_uniform(1, 2, size, seed=pytest.seed)
         c = Categorical(s)
         assert_equal(ak.flip(c), c[::-1])
 
@@ -102,16 +100,16 @@ class TestNumpyManipulationFunctions:
         else:
             a = ak.arange(shape_prod, dtype=dtype).reshape(shape)
             np_a = np.arange(shape_prod, dtype=dtype).reshape(shape)
-        reps = akrandint(0, 10, 1, seed=seed)
+        reps = akrandint(0, 10, 1, seed=pytest.seed)
         f = ak.repeat(a, reps)
         np_f = np.repeat(np_a, reps.to_ndarray())
         assert_arkouda_array_equivalent(np_f, f)
         for axis in range(-3, 3):
-            reps = akrandint(0, 10, 1, seed=seed)
+            reps = akrandint(0, 10, 1, seed=pytest.seed)
             f = ak.repeat(a, reps, axis=axis)
             np_f = np.repeat(np_a, reps.to_ndarray(), axis=axis)
             assert_arkouda_array_equivalent(np_f, f)
-            reps = akrandint(0, 10, size=shape[axis], seed=seed)
+            reps = akrandint(0, 10, size=shape[axis], seed=pytest.seed)
             f = ak.repeat(a, reps, axis=axis)
             np_f = np.repeat(np_a, reps.to_ndarray(), axis=axis)
             assert_arkouda_array_equivalent(np_f, f)
@@ -131,16 +129,16 @@ class TestNumpyManipulationFunctions:
         else:
             a = ak.arange(shape_prod, dtype=dtype).reshape(shape)
             np_a = np.arange(shape_prod, dtype=dtype).reshape(shape)
-        reps = akrandint(0, 10, 1, seed=seed)
+        reps = akrandint(0, 10, 1, seed=pytest.seed)
         f = ak.repeat(a, reps)
         np_f = np.repeat(np_a, reps.to_ndarray())
         assert_arkouda_array_equivalent(np_f, f)
         for axis in range(-2, 2):
-            reps = akrandint(0, 10, 1, seed=seed)
+            reps = akrandint(0, 10, 1, seed=pytest.seed)
             f = ak.repeat(a, reps, axis=axis)
             np_f = np.repeat(np_a, reps.to_ndarray(), axis=axis)
             assert_arkouda_array_equivalent(np_f, f)
-            reps = akrandint(0, 10, size=shape[axis], seed=seed)
+            reps = akrandint(0, 10, size=shape[axis], seed=pytest.seed)
             f = ak.repeat(a, reps, axis=axis)
             np_f = np.repeat(np_a, reps.to_ndarray(), axis=axis)
             assert_arkouda_array_equivalent(np_f, f)

@@ -15,6 +15,8 @@ UNIQUE_TYPES = [ak.categorical, ak.int64, ak.float64, ak.str_]
 VOWELS_AND_SUCH = ["a", "e", "i", "o", "u", "AB", 47, 2, 3.14159]
 PICKS = np.array([f"base {i}" for i in range(10)])
 
+seed = pytest.seed
+
 
 def isSorted(x):
     return np.all(x[:-1] <= x[1:])  # short for is x[i] <= x[i+1] for all i
@@ -57,7 +59,6 @@ class TestGroupBy:
     OPS = list(ak.GroupBy.Reductions)
     OPS.append("count")
     NAN_OPS = frozenset(["mean", "min", "max", "sum", "prod"])
-    seed = pytest.seed if pytest.seed is not None else 8675309
     np.random.seed(seed)
 
     def test_groupbyclass_docstrings(self):
@@ -828,10 +829,9 @@ class TestGroupBy:
     @pytest.mark.parametrize("data_type", UNIQUE_TYPES)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_unique(self, data_type, prob_size):
-        Jenny = pytest.seed if pytest.seed is not None else 8675309
         T = True
         F = False
-        np.random.seed(Jenny)
+        np.random.seed(seed)
         arrays = {
             ak.str_: np.random.choice(VOWELS_AND_SUCH, prob_size),
             ak.int64: np.random.randint(0, prob_size // 3, prob_size),
@@ -909,7 +909,7 @@ class TestGroupBy:
 
         # I tested this many times without a set seed, but with no seed
         # it's expected to fail one out of every ~20 runs given a pval limit of 0.05
-        rng = ak.random.default_rng(43)
+        rng = ak.random.default_rng(seed)
         num_samples = 10**4
 
         prob_arr = ak.array([0.35, 0.10, 0.55])
@@ -938,11 +938,11 @@ class TestGroupBy:
         assert pval > 0.05
 
     def test_sample_flags(self):
-        # use numpy to randomly generate a set seed
-        seed = np.random.default_rng().choice(2**63)
+        # use numpy to randomly generate a set seed, but seed the rng from the standard
+        iseed = np.random.default_rng(seed).choice(2**63)
         cfg = ak.get_config()
 
-        rng = ak.random.default_rng(seed)
+        rng = ak.random.default_rng(iseed)
         weights = rng.uniform(size=12)
         a_vals = [
             rng.integers(0, 2**32, size=12, dtype="uint"),
@@ -955,7 +955,7 @@ class TestGroupBy:
 
         choice_arrays = []
         # return_indices and permute_samples are tested by the dataframe version
-        rng = ak.random.default_rng(seed)
+        rng = ak.random.default_rng(iseed)
         for a in a_vals:
             for size in 2, 4:
                 for replace in True, False:
@@ -975,7 +975,7 @@ class TestGroupBy:
                         )
 
         # reset generator to ensure we get the same arrays
-        rng = ak.random.default_rng(seed)
+        rng = ak.random.default_rng(iseed)
         for a in a_vals:
             for size in 2, 4:
                 for replace in True, False:
@@ -997,7 +997,7 @@ class TestGroupBy:
                         )
                         if not res:
                             print(f"\nnum locales: {cfg['numLocales']}")
-                            print(f"Failure with seed:\n{seed}")
+                            print(f"Failure with seed:\n{iseed}")
                         assert res
 
     def test_nunique_ordering_bug(self):
