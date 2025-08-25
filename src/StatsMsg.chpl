@@ -127,12 +127,8 @@ module StatsMsg {
 //    rewriting some code to hopefully produce a speed improvement
 
           if !includeInitial {
-            //writeln ("<===========>  This is happening!!!");
             return (+ scan x);
-            //stdout.flush();
           } else {
-            //writeln ("<===========>  This is NOT happening!!!");
-            //stdout.flush();
             var cs = makeDistArray(x.size+1, t);
             cs[1..] = (+ scan x); //:t;
             return cs;
@@ -143,8 +139,6 @@ module StatsMsg {
 //      return cs;
 
       } else {
-        //writeln ("<===========>  This CAN'T be happening!!!");
-        //stdout.flush();
         var cs = makeDistArray(if includeInitial then expandedDomain(d, axis) else d, t);
 
         forall (slice, _) in axisSlices(d, new list([axis])) {
@@ -170,12 +164,8 @@ module StatsMsg {
 //    rewriting some code to hopefully produce a speed improvement
 
           if !includeInitial {
-            //writeln ("<===========>  That is happening!!!");
             return (* scan x);
-            //stdout.flush();
           } else {
-            //writeln ("<===========>  That is NOT happening!!!");
-            //stdout.flush();
             var cs = makeDistArray(x.size+1, t);
             cs[1..] = (* scan x); //:t;
             cs[0] = 1:t;
@@ -192,8 +182,6 @@ module StatsMsg {
 //        return cs;
 
       } else {    // fill with 1s so that if includeInitial is set, answer starts with 1
-        //writeln ("<===========>  That CAN'T be happening!!!");
-        //stdout.flush();
         var cs = makeDistArray(if includeInitial then expandedDomain(d, axis) else d, 1:t);
 
         forall (slice, _) in axisSlices(d, new list([axis])) {
