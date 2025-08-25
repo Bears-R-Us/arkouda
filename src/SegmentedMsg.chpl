@@ -918,9 +918,9 @@ module SegmentedMsg {
           strBytesInLocale[here.id] = new list(myBytes);
           strOrigIndices[here.id] = new list(origIndices);
 
-          writeln(here.id, " strOffsetInLocale: ", offsetsRelative);
-          writeln(here.id, " strBytesInLocale: ", myBytes);
-          writeln(here.id, " strOrigIndices: ", origIndices);
+          // writeln(here.id, " strOffsetInLocale: ", offsetsRelative);
+          // writeln(here.id, " strBytesInLocale: ", myBytes);
+          // writeln(here.id, " strOrigIndices: ", origIndices);
 
         }
 
@@ -968,11 +968,11 @@ module SegmentedMsg {
                 sendBackIdx[here.id] = new list(mySendBackIdx);
                 baselineIndices[here.id] = indicesDom.low;
 
-                writeln(here.id, " destLocales: ", myDestLocales);
-                writeln(here.id, " sendIdx: ", mySendIdx);
-                writeln(here.id, " sendBackLoc: ", mySendBackLoc);
-                writeln(here.id, " sendBackIdx: ", mySendBackIdx);
-                writeln(here.id, " baselineIndices: ", indicesDom.low);
+                // writeln(here.id, " destLocales: ", myDestLocales);
+                // writeln(here.id, " sendIdx: ", mySendIdx);
+                // writeln(here.id, " sendBackLoc: ", mySendBackLoc);
+                // writeln(here.id, " sendBackIdx: ", mySendBackIdx);
+                // writeln(here.id, " baselineIndices: ", indicesDom.low);
               }
 
               var getIdx = repartitionByLocale(int,
@@ -996,33 +996,37 @@ module SegmentedMsg {
                 var myReqIndices = getIdx[here.id].toArray();
                 const baseIdx = strOrigIndices[here.id][0];
 
-                writeln(here.id, " myStrOffsets: ", myStrOffsets);
-                writeln(here.id, " myStrBytes: ", myStrBytes);
-                writeln(here.id, " myReqIndices: ", myReqIndices);
-                writeln(here.id, " baseIdx: ", baseIdx);
+                // writeln(here.id, " myStrOffsets: ", myStrOffsets);
+                // writeln(here.id, " myStrBytes: ", myStrBytes);
+                // writeln(here.id, " myReqIndices: ", myReqIndices);
+                // writeln(here.id, " baseIdx: ", baseIdx);
                 
                 var tempSizes: [0..#myReqIndices.size] int;
 
                 forall i in 0..#myReqIndices.size {
                   const adjustedInd = myReqIndices[i] - baseIdx;
                   const upperEnd = if adjustedInd == myStrOffsets.size - 1 then myStrBytes.size else myStrOffsets[adjustedInd + 1];
+                  // writeln(here.id, " i: ", i, ", adjustedInd: ", adjustedInd, ", upperEnd: ", upperEnd);
                   tempSizes[i] = upperEnd - myStrOffsets[adjustedInd];
+                  // writeln(here.id, " i: ", i, ", tempSizes[i]: ", tempSizes[i]);
                 }
 
                 var tempOffsets = (+ scan tempSizes) - tempSizes;
                 var totalBytes = + reduce tempSizes;
                 var tempBytes: [0..#totalBytes] uint(8);
+                // writeln(here.id, " tempOffsets: ", tempOffsets);
+                // writeln(here.id, " totalBytes: ", totalBytes);
 
                 forall i in 0..#myReqIndices.size {
                   const adjustedInd = myReqIndices[i] - baseIdx;
-                  tempBytes[tempOffsets[i]..#tempSizes[i]] = myStrBytes[myStrOffsets[adjustedInd]..#tempSizes[adjustedInd]];
+                  tempBytes[tempOffsets[i]..#tempSizes[i]] = myStrBytes[myStrOffsets[adjustedInd]..#tempSizes[i]];
                 }
 
                 tempOffsetsByLoc[here.id] = new list(tempOffsets);
                 tempBytesByLoc[here.id] = new list(tempBytes);
 
-                writeln(here.id, " tempOffsetsByLoc: ", tempOffsets);
-                writeln(here.id, " tempBytesByLoc: ", tempBytes);
+                // writeln(here.id, " tempOffsetsByLoc: ", tempOffsets);
+                // writeln(here.id, " tempBytesByLoc: ", tempBytes);
 
               }
 
@@ -1049,12 +1053,12 @@ module SegmentedMsg {
                 const baseOffset = baseOffsetByLocale[here.id];
                 const myNumBytes = bytesByLocale[here.id];
 
-                writeln(here.id, " myOffsets: ", myOffsets);
-                writeln(here.id, " myBytes: ", myBytes);
-                writeln(here.id, " myIndices: ", myIndices);
-                writeln(here.id, " baseIdx: ", baseIdx);
-                writeln(here.id, " baseOffset: ", baseOffset);
-                writeln(here.id, " myNumBytes: ", myNumBytes);
+                // writeln(here.id, " myOffsets: ", myOffsets);
+                // writeln(here.id, " myBytes: ", myBytes);
+                // writeln(here.id, " myIndices: ", myIndices);
+                // writeln(here.id, " baseIdx: ", baseIdx);
+                // writeln(here.id, " baseOffset: ", baseOffset);
+                // writeln(here.id, " myNumBytes: ", myNumBytes);
 
                 if myNumBytes > 0 {
 
@@ -1065,22 +1069,22 @@ module SegmentedMsg {
                     endSizes[myIndices[i] - baseIdx] = end - start;
                   }
 
-                  writeln(here.id, " currSizes: ", currSizes);
-                  writeln(here.id, " endSizes: ", endSizes);
+                  // writeln(here.id, " currSizes: ", currSizes);
+                  // writeln(here.id, " endSizes: ", endSizes);
                   
                   var newByteOffsets = (+ scan endSizes) - endSizes;
-                  writeln(here.id, " newByteOffsets: ", newByteOffsets);
+                  // writeln(here.id, " newByteOffsets: ", newByteOffsets);
                   newSegs[baseIdx..#myOffsets.size] = newByteOffsets + baseOffset;
                   var tempBytes: [0..#myNumBytes] uint(8);
 
                   forall i in 0..#myOffsets.size {
                     const destInd = myIndices[i] - baseIdx;
-                    writeln(here.id, " i: ", i, ", destInd: ", destInd, ", myIndices[i]: ", myIndices[i], ", myIndices.domain: ", myIndices.domain);
+                    // writeln(here.id, " i: ", i, ", destInd: ", destInd, ", myIndices[i]: ", myIndices[i], ", myIndices.domain: ", myIndices.domain);
                     tempBytes[newByteOffsets[destInd]..#endSizes[destInd]] = myBytes[myOffsets[i]..#currSizes[i]];
                   }
 
                   newVals[baseOffset..#myNumBytes] = tempBytes[0..#myNumBytes];
-                  writeln(here.id, " tempBytes: ", tempBytes);
+                  // writeln(here.id, " tempBytes: ", tempBytes);
 
                 }
 
