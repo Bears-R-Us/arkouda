@@ -1064,6 +1064,7 @@ def cumprod(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
     )
     return create_pdarray(type_cast(str, repMsg))
 
+
 #   The next block replicates the previous versions of cumsum and cumprod, for
 #   performance investigation.
 
@@ -1092,6 +1093,7 @@ def oldcumprod(pda: pdarray) -> pdarray:
         },
     )
     return create_pdarray(type_cast(str, repMsg))
+
 
 #   End of block of old code.
 
