@@ -1,3 +1,4 @@
+from benchmark_utils import calc_num_bytes
 import numpy as np
 import pytest
 
@@ -29,11 +30,7 @@ def bench_coargsort(benchmark, dtype, numArrays):
         elif dtype == "str":
             arrs = [ak.random_strings_uniform(1, 16, N // numArrays, seed=s) for s in seeds]
 
-        nbytes = (
-            sum(a.size * a.itemsize for a in arrs)
-            if dtype != "str"
-            else sum(a.nbytes * a.entry.itemsize for a in arrs)
-        )
+        num_bytes = calc_num_bytes(arrs)
 
         if pytest.numpy:
             arrs = [a.to_ndarray() for a in arrs]
@@ -45,5 +42,6 @@ def bench_coargsort(benchmark, dtype, numArrays):
 
         benchmark.extra_info["description"] = "Measures the performance of ak.coargsort"
         benchmark.extra_info["problem_size"] = N
+        benchmark.extra_info["num_bytes"] = num_bytes
         #   units are GiB/sec:
-        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+        benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)

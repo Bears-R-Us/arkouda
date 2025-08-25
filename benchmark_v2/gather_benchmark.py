@@ -1,3 +1,4 @@
+from benchmark_utils import calc_num_bytes
 import pytest
 
 import arkouda as ak
@@ -7,15 +8,6 @@ TYPES = ("int64", "float64", "bool", "str")
 
 def _run_gather(a, i):
     return a[i]
-
-
-def compute_transfer_bytes(result, dtype):
-    if dtype == "str":
-        offsets = 3 * result.size * 8
-        buffers = (result.size * 8) + (2 * result.nbytes)
-        return offsets + buffers
-    else:
-        return result.size * result.itemsize * 3
 
 
 @pytest.mark.benchmark(group="Gather")
@@ -51,18 +43,21 @@ def bench_gather(benchmark, dtype):
         v = v_ak.to_ndarray()
 
         def gather_np_op():
-            c = _run_gather(v, i)
-            return compute_transfer_bytes(c, dtype)
+            return _run_gather(v, i)
 
-        numBytes = benchmark.pedantic(gather_np_op, rounds=pytest.trials)
+        result = benchmark.pedantic(gather_np_op, rounds=pytest.trials)
+        num_bytes = calc_num_bytes(i) + 2 * calc_num_bytes(result)
         backend = "NumPy"
     else:
 
         def gather_ak_op():
-            c = _run_gather(v_ak, i_ak)
-            return compute_transfer_bytes(c, dtype)
+            return _run_gather(v_ak, i_ak)
 
-        numBytes = benchmark.pedantic(gather_ak_op, rounds=pytest.trials)
+        result = benchmark.pedantic(gather_ak_op, rounds=pytest.trials)
+        #   To compute the data transfer bytes, add the size of the index `i_ak`,
+        #   the size of `result`,
+        #   and the portion of v that is indexed into which should have the approx. same size as `result`
+        num_bytes = calc_num_bytes(i_ak) + 2 * calc_num_bytes(result)
         backend = "Arkouda"
 
     benchmark.extra_info["description"] = f"Measures the performance of {backend} gather"
@@ -71,4 +66,4 @@ def bench_gather(benchmark, dtype):
     benchmark.extra_info["index_size"] = isize
     benchmark.extra_info["value_size"] = vsize
     #   units are GiB/sec:
-    benchmark.extra_info["transfer_rate"] = float((numBytes / benchmark.stats["mean"]) / 2**30)
+    benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)

@@ -1,3 +1,4 @@
+from benchmark_utils import calc_num_bytes
 import pytest
 
 import arkouda as ak
@@ -12,13 +13,11 @@ def bench_bigint_conversion(benchmark, direction):
 
     a = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=pytest.seed)
     b = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=pytest.seed)
-    tot_bytes = N * 8 if (0 < max_bits <= 64) else N * 16
 
     if direction == "bigint_from_uint_arrays":
 
         def run():
             ak.bigint_from_uint_arrays([a, b], max_bits=max_bits)
-            return tot_bytes
 
         label = "bigint_from_uint_arrays"
     else:
@@ -26,15 +25,16 @@ def bench_bigint_conversion(benchmark, direction):
 
         def run():
             ba.bigint_to_uint_arrays()
-            return tot_bytes
 
         label = "bigint_to_uint_arrays"
 
-    bytes_processed = benchmark.pedantic(run, rounds=pytest.trials)
+    benchmark.pedantic(run, rounds=pytest.trials)
+    num_bytes = calc_num_bytes(a)
 
     benchmark.extra_info["description"] = f"Measures performance of {label} with max_bits={max_bits}"
     benchmark.extra_info["problem_size"] = N
     benchmark.extra_info["backend"] = "Arkouda"
     benchmark.extra_info["max_bits"] = max_bits
+    benchmark.extra_info["num_bytes"] = num_bytes
     #   units are GiB/sec:
-    benchmark.extra_info["transfer_rate"] = float((bytes_processed / benchmark.stats["mean"]) / 2**30)
+    benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)

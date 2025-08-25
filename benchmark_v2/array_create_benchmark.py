@@ -1,3 +1,4 @@
+from benchmark_utils import calc_num_bytes
 import numpy as np
 import pytest
 
@@ -49,19 +50,20 @@ def bench_array_create(benchmark, op, dtype):
         if pytest.numpy:
 
             def create_array():
-                a = _create_np_array(N, op, dtype, pytest.seed)
-                return a.size * a.itemsize
+                return _create_np_array(N, op, dtype, pytest.seed)
+
         else:
 
             def create_array():
-                a = _create_ak_array(N, op, dtype, pytest.seed)
-                return a.size * a.itemsize
+                return _create_ak_array(N, op, dtype, pytest.seed)
 
-        nbytes = benchmark.pedantic(create_array, rounds=pytest.trials)
+        result = benchmark.pedantic(create_array, rounds=pytest.trials)
+        num_bytes = calc_num_bytes(result)
 
         benchmark.extra_info["description"] = (
             f"Measures performance of {'NumPy' if pytest.numpy else 'Arkouda'} array creation"
         )
         benchmark.extra_info["problem_size"] = N
+        benchmark.extra_info["num_bytes"] = num_bytes
         #   units are GiB/sec:
-        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+        benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
