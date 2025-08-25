@@ -91,11 +91,18 @@ def infer_regex(benchmark_name: str, field: str) -> str:
     # CSV Read/Write
     if "csvIO" == benchmark_name:
         m1 = re.search(r"(write|read)", field)
-
         if m1:
             op = m1.group(1)
             dtype = "(?:int64|float64|bool|uint64|str)"
             return f"bench_csv_io\\[{op}-{dtype}\\]"
+
+    # multiIO Read/Write
+    if "multiIO" == benchmark_name:
+        m1 = re.search(r"(write|read)", field)
+        if m1:
+            op = m1.group(1)
+            dtype = "(?:int64|float64|bool|uint64|str)"
+            return f"bench_{op}_hdf_multi\\[{dtype}\\]"
 
     # parquet IO
     if benchmark_name in ["parquetIO", "parquetMultiIO"]:

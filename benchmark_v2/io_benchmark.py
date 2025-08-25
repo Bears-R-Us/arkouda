@@ -36,6 +36,16 @@ def _write_multi(a, dtype, compression=None):
         )
 
 
+def _write_multi_hdf(df, dtype):
+    # Write each column into its own HDF5 file across pytest.io_files,
+    # mirroring the "multi" strategy used for Parquet (many files, multiple columns).
+    for i in range(pytest.io_files):
+        for c in df.columns:
+            arr = df[c]
+            fname = f"{pytest.io_path}_hdf_multi_{dtype}_{c}_{i:04}"
+            arr.to_hdf(fname)
+
+
 def _append_files(a, dtype, compression):
     _remove_append_test_files(compression, dtype)
     for i in range(pytest.io_files):
@@ -280,6 +290,60 @@ def bench_read_parquet_multi(benchmark, dtype, comp):
         benchmark.extra_info["description"] = "Measures the performance of IO read from Parquet files"
         benchmark.extra_info["problem_size"] = pytest.prob_size
         #   units are GiB/sec:
+        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+
+
+@pytest.mark.skip_numpy(True)
+@pytest.mark.benchmark(group="Arkouda_IO_Write_HDF5_Multi")
+@pytest.mark.parametrize("dtype", TYPES)
+def bench_write_hdf_multi(benchmark, dtype):
+    if pytest.io_write or (not pytest.io_read and not pytest.io_delete) and dtype in pytest.dtype:
+        N = pytest.N
+        df = _generate_df(N, dtype)
+        benchmark.pedantic(_write_multi_hdf, args=(df, dtype), rounds=pytest.trials)
+
+        # compute nbytes like in parquet multi
+        nbytes = 0
+        for c in df.columns:
+            col = df[c]
+            if dtype in ["int64", "float64", "uint64"]:
+                nbytes += col.size * col.itemsize * pytest.io_files
+            else:
+                nbytes += col.nbytes * col.entry.itemsize * pytest.io_files
+
+        benchmark.extra_info["description"] = f"Measures IO write (multi) {dtype} to HDF5"
+        benchmark.extra_info["problem_size"] = pytest.prob_size
+        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+
+
+@pytest.mark.skip_numpy(True)
+@pytest.mark.benchmark(group="Arkouda_IO_Read_HDF5_Multi")
+@pytest.mark.parametrize("dtype", TYPES)
+def bench_read_hdf_multi(benchmark, dtype):
+    if pytest.io_read or (not pytest.io_write and not pytest.io_delete) and dtype in pytest.dtype:
+        dataset = "strings_array" if dtype == "str" else "array"
+        a = benchmark.pedantic(
+            ak.read_hdf,
+            args=[pytest.io_path + f"_hdf_multi_{dtype}_*", dataset],
+            rounds=pytest.trials,
+        )
+
+        nbytes = 0
+
+        if isinstance(a, dict):
+            # Sum over all values in the dict
+            for val in a.values():
+                if isinstance(val, ak.pdarray):
+                    nbytes += val.size * val.itemsize
+                elif isinstance(val, ak.Strings):
+                    nbytes += val.nbytes * val.entry.itemsize
+        elif isinstance(a, ak.pdarray):
+            nbytes += a.size * a.itemsize
+        elif isinstance(a, ak.Strings):
+            nbytes += a.nbytes * a.entry.itemsize
+
+        benchmark.extra_info["description"] = "Measures IO read (multi) from HDF5 files"
+        benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
 
 
