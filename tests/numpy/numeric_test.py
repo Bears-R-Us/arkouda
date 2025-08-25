@@ -182,29 +182,27 @@ class TestNumeric:
     @pytest.mark.parametrize("numeric_type", NUMERIC_TYPES)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_seeded_rng_typed(self, prob_size, numeric_type):
-        seed = pytest.seed if pytest.seed is not None else 8675309
-
         # Make sure unseeded runs differ
         a = ak.randint(0, 2**32, prob_size, dtype=numeric_type)
         b = ak.randint(0, 2**32, prob_size, dtype=numeric_type)
         assert not (a == b).all()
 
         # Make sure seeded results are same
-        a = ak.randint(0, 2**32, prob_size, dtype=numeric_type, seed=seed)
-        b = ak.randint(0, 2**32, prob_size, dtype=numeric_type, seed=seed)
+        a = ak.randint(0, 2**32, prob_size, dtype=numeric_type, seed=pytest.seed)
+        b = ak.randint(0, 2**32, prob_size, dtype=numeric_type, seed=pytest.seed)
         assert (a == b).all()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_seeded_rng_general(self, prob_size):
-        seed = pytest.seed if pytest.seed is not None else 8675309
         # Uniform
         assert not (ak.uniform(prob_size) == ak.uniform(prob_size)).all()
-        assert (ak.uniform(prob_size, seed=seed) == ak.uniform(prob_size, seed=seed)).all()
+        assert (ak.uniform(prob_size, seed=pytest.seed) == ak.uniform(prob_size, seed=pytest.seed)).all()
 
         # Standard Normal
         assert not (ak.standard_normal(prob_size) == ak.standard_normal(prob_size)).all()
         assert (
-            ak.standard_normal(prob_size, seed=seed) == ak.standard_normal(prob_size, seed=seed)
+            ak.standard_normal(prob_size, seed=pytest.seed)
+            == ak.standard_normal(prob_size, seed=pytest.seed)
         ).all()
 
         # Strings (uniformly distributed length)
@@ -213,8 +211,8 @@ class TestNumeric:
         ).all()
 
         assert (
-            ak.random_strings_uniform(1, 10, prob_size, seed=seed)
-            == ak.random_strings_uniform(1, 10, prob_size, seed=seed)
+            ak.random_strings_uniform(1, 10, prob_size, seed=pytest.seed)
+            == ak.random_strings_uniform(1, 10, prob_size, seed=pytest.seed)
         ).all()
 
         # Strings (log-normally distributed length)
@@ -222,20 +220,19 @@ class TestNumeric:
             ak.random_strings_lognormal(2, 1, prob_size) == ak.random_strings_lognormal(2, 1, prob_size)
         ).all()
         assert (
-            ak.random_strings_lognormal(2, 1, prob_size, seed=seed)
-            == ak.random_strings_lognormal(2, 1, prob_size, seed=seed)
+            ak.random_strings_lognormal(2, 1, prob_size, seed=pytest.seed)
+            == ak.random_strings_lognormal(2, 1, prob_size, seed=pytest.seed)
         ).all()
 
     @pytest.mark.parametrize("cast_to", SUPPORTED_TYPES)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_cast(self, prob_size, cast_to):
-        seed = pytest.seed if pytest.seed is not None else 8675309
         arrays = {
-            ak.int64: ak.randint(-(2**48), 2**48, prob_size, seed=seed),
-            ak.uint64: ak.randint(0, 2**48, prob_size, dtype=ak.uint64, seed=seed + 1),
-            ak.float64: ak.randint(0, 1, prob_size, dtype=ak.float64, seed=seed + 2),
-            ak.bool_: ak.randint(0, 2, prob_size, dtype=ak.bool_, seed=seed + 3),
-            ak.str_: ak.cast(ak.randint(0, 2**48, prob_size, seed=seed + 4), "str"),
+            ak.int64: ak.randint(-(2**48), 2**48, prob_size, seed=pytest.seed),
+            ak.uint64: ak.randint(0, 2**48, prob_size, dtype=ak.uint64, seed=pytest.seed + 1),
+            ak.float64: ak.randint(0, 1, prob_size, dtype=ak.float64, seed=pytest.seed + 2),
+            ak.bool_: ak.randint(0, 2, prob_size, dtype=ak.bool_, seed=pytest.seed + 3),
+            ak.str_: ak.cast(ak.randint(0, 2**48, prob_size, seed=pytest.seed + 4), "str"),
         }
 
         for t1, orig in arrays.items():
@@ -304,8 +301,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_histogram(self, num_type):
-        seed = pytest.seed if pytest.seed is not None else 8675309
-        pda = ak.randint(10, 30, 40, dtype=num_type, seed=seed)
+        pda = ak.randint(10, 30, 40, dtype=num_type, seed=pytest.seed)
         result, bins = ak.histogram(pda, bins=20)
 
         assert isinstance(result, ak.pdarray)
@@ -336,10 +332,9 @@ class TestNumeric:
     @pytest.mark.parametrize("num_type2", NO_BOOL)
     def test_histogram_multidim(self, num_type1, num_type2):
         # test 2d histogram
-        seed = pytest.seed if pytest.seed is not None else 8675309
-        np.random.seed(seed)
-        ak_x = ak.randint(1, 100, 1000, seed=seed, dtype=num_type1)
-        ak_y = ak.randint(1, 100, 1000, seed=seed + 1, dtype=num_type2)
+        np.random.seed(pytest.seed)
+        ak_x = ak.randint(1, 100, 1000, seed=pytest.seed, dtype=num_type1)
+        ak_y = ak.randint(1, 100, 1000, seed=pytest.seed + 1, dtype=num_type2)
         np_x, np_y = ak_x.to_ndarray(), ak_y.to_ndarray()
 
         np_hist, np_x_edges, np_y_edges = np.histogram2d(np_x, np_y)
@@ -481,8 +476,7 @@ class TestNumeric:
     @pytest.mark.parametrize("num_type", NO_BOOL)
     @pytest.mark.parametrize("denom_type", NO_BOOL)
     def test_arctan2(self, num_type, denom_type):
-        seed = pytest.seed if pytest.seed is not None else 8675309
-        np.random.seed(seed)
+        np.random.seed(pytest.seed)
         na_num = np.random.permutation(NP_TRIG_ARRAYS[num_type])
         na_denom = np.random.permutation(DENOM_ARCTAN2_ARRAYS[denom_type])
 
@@ -664,11 +658,10 @@ class TestNumeric:
         # See https://github.com/Bears-R-Us/arkouda/issues/964
         # Grouped sum was exacerbating floating point errors
         # This test verifies the fix
-        seed = pytest.seed if pytest.seed is not None else 8675309
         G = prob_size // 10
         ub = 2**63 // prob_size
-        groupnum = ak.randint(0, G, prob_size, seed=seed)
-        intval = ak.randint(0, ub, prob_size, seed=seed + 1)
+        groupnum = ak.randint(0, G, prob_size, seed=pytest.seed)
+        intval = ak.randint(0, ub, prob_size, seed=pytest.seed + 1)
         floatval = ak.cast(intval, ak.float64)
         g = ak.GroupBy(groupnum)
         _, intmean = g.mean(intval)
@@ -829,8 +822,7 @@ class TestNumeric:
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_clip(self, prob_size):
-        seed = pytest.seed if pytest.seed is not None else 8675309
-        np.random.seed(seed)
+        np.random.seed(pytest.seed)
         ia = np.random.randint(1, 100, prob_size)
         ilo = 25
         ihi = 75
@@ -1156,9 +1148,8 @@ class TestNumeric:
     @pytest.mark.parametrize("matching", YES_NO)
     @pytest.mark.parametrize("nan_handling", YES_NO)
     def test_array_equal(self, prob_size, data_type, same_size, matching, nan_handling):
-        seed = pytest.seed if pytest.seed is not None else 8675309
         if data_type is ak.str_:  # strings require special handling
-            np.random.seed(seed)
+            np.random.seed(pytest.seed)
             temp = np.random.choice(VOWELS_AND_SUCH, prob_size)
             pda_a = ak.array(temp)
             pda_b = ak.array(temp)
@@ -1200,8 +1191,7 @@ class TestNumeric:
         akfunc = getattr(ak, func)
         npfunc = getattr(np, func)
 
-        seed = pytest.seed if pytest.seed is not None else 8675309
-        np.random.seed(seed)
+        np.random.seed(pytest.seed)
         for rank in get_array_ranks():
             last_dim = prob_size // (2 ** (rank - 1))  # build a dimension of (2,2,...n)
             local_shape = (rank - 1) * [2]  # such that 2*2*..*n is close to prob_size
@@ -1525,14 +1515,13 @@ class TestNumeric:
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_take_1d(self, dtype, size):
-        seed = pytest.seed if pytest.seed is not None else 8675309
         if dtype == "bool":
-            a = ak.randint(0, 2, size, dtype=dtype, seed=seed)
+            a = ak.randint(0, 2, size, dtype=dtype, seed=pytest.seed)
         else:
-            a = ak.randint(0, 100, size, dtype=dtype, seed=seed)
+            a = ak.randint(0, 100, size, dtype=dtype, seed=pytest.seed)
         anp = a.to_ndarray()
 
-        indices = ak.randint(0, size, size // 2, dtype="int64", seed=seed)
+        indices = ak.randint(0, size, size // 2, dtype="int64", seed=pytest.seed)
         indices_np = indices.to_ndarray()
 
         a_taken = ak.take(a, indices)
@@ -1544,14 +1533,13 @@ class TestNumeric:
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("axis", [None, 0, 1, 2])
     def test_take_multidim(self, dtype, axis):
-        seed = pytest.seed if pytest.seed is not None else 8675309
         if dtype == "bool":
-            a = ak.randint(0, 2, (5, 6, 7), dtype=dtype, seed=seed)
+            a = ak.randint(0, 2, (5, 6, 7), dtype=dtype, seed=pytest.seed)
         else:
-            a = ak.randint(0, 100, (5, 6, 7), dtype=dtype, seed=seed)
+            a = ak.randint(0, 100, (5, 6, 7), dtype=dtype, seed=pytest.seed)
         anp = a.to_ndarray()
 
-        indices = ak.randint(0, 6, 3, dtype="int64", seed=seed)
+        indices = ak.randint(0, 6, 3, dtype="int64", seed=pytest.seed)
         indices_np = indices.to_ndarray()
 
         a_taken = ak.take(a, indices, axis=axis)
@@ -1562,9 +1550,8 @@ class TestNumeric:
     @pytest.mark.parametrize("dtype", NO_BOOL)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_vecdot_1d(self, dtype, size):
-        seed = pytest.seed if pytest.seed is not None else 8675309
-        a = ak.randint(0, 100, size, dtype=dtype, seed=seed)
-        b = ak.randint(0, 100, size, dtype=dtype, seed=seed + 1)
+        a = ak.randint(0, 100, size, dtype=dtype, seed=pytest.seed)
+        b = ak.randint(0, 100, size, dtype=dtype, seed=pytest.seed + 1)
         np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray())
         ak_vecdot_f = ak.vecdot(a, b)
         ak_vecdot_r = ak.vecdot(a, b)
@@ -1576,15 +1563,14 @@ class TestNumeric:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("same_shape", YES_NO)
     def test_vecdot_2d(self, dtype, size, same_shape):
-        seed = pytest.seed if pytest.seed is not None else 8675309
         if same_shape:
             a_shape = (2, size // 2)
             b_shape = (2, size // 2)
         else:
             a_shape = (1, size // 2)
             b_shape = (2, size // 2)
-        a = ak.randint(0, 100, a_shape, dtype=dtype, seed=seed)
-        b = ak.randint(0, 100, b_shape, dtype=dtype, seed=seed + 1)
+        a = ak.randint(0, 100, a_shape, dtype=dtype, seed=pytest.seed)
+        b = ak.randint(0, 100, b_shape, dtype=dtype, seed=pytest.seed + 1)
         if same_shape:
             for axis in [0, 1]:
                 np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray(), axis=axis)
@@ -1604,15 +1590,14 @@ class TestNumeric:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("same_shape", YES_NO)
     def test_vecdot_3d(self, dtype, size, same_shape):
-        seed = pytest.seed if pytest.seed is not None else 8675309
         if same_shape:
             a_shape = (2, 2, size // 4)
             b_shape = (2, 2, size // 4)
         else:
             a_shape = (1, size // 4)
             b_shape = (2, 2, size // 4)
-        a = ak.randint(0, 100, a_shape, dtype=dtype, seed=seed)
-        b = ak.randint(0, 100, b_shape, dtype=dtype, seed=seed + 1)
+        a = ak.randint(0, 100, a_shape, dtype=dtype, seed=pytest.seed)
+        b = ak.randint(0, 100, b_shape, dtype=dtype, seed=pytest.seed + 1)
         if same_shape:
             for axis in [0, 1, 2]:
                 np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray(), axis=axis)
@@ -1634,7 +1619,6 @@ class TestNumeric:
     @pytest.mark.parametrize("dtype", NO_BOOL)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_vecdot_with_broadcast(self, dtype, size):
-        seed = pytest.seed if pytest.seed is not None else 8675309
         ashape = [1, 1]
         bshape = [1, 1]
         for i in range(2):
@@ -1647,8 +1631,8 @@ class TestNumeric:
         lastdim = max(2, size // (prod(ashape) * prod(bshape)))
         ashape.append(lastdim)
         bshape.append(lastdim)
-        a = ak.randint(0, 100, tuple(ashape), dtype=dtype, seed=seed)
-        b = ak.randint(0, 100, tuple(bshape), dtype=dtype, seed=seed + 1)
+        a = ak.randint(0, 100, tuple(ashape), dtype=dtype, seed=pytest.seed)
+        b = ak.randint(0, 100, tuple(bshape), dtype=dtype, seed=pytest.seed + 1)
         np_vecdot = np.vecdot(a.to_ndarray(), b.to_ndarray())
         ak_vecdot_f = ak.vecdot(a, b)
         ak_vecdot_r = ak.vecdot(b, a)
@@ -1662,12 +1646,11 @@ class TestNumeric:
     @pytest.mark.parametrize("dtype", NO_BOOL)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_vecdot_error(self, dtype, size):
-        seed = pytest.seed if pytest.seed is not None else 8675309
         a_shape = (1, size // 2)
         b_shape = (2, size // 4)
         with pytest.raises(ValueError):
-            a = ak.randint(0, 100, a_shape, dtype=dtype, seed=seed)
-            b = ak.randint(0, 100, b_shape, dtype=dtype, seed=seed + 1)
+            a = ak.randint(0, 100, a_shape, dtype=dtype, seed=pytest.seed)
+            b = ak.randint(0, 100, b_shape, dtype=dtype, seed=pytest.seed + 1)
             ak.vecdot(a, b)  # causes the ValueError
 
     def test_empty_str_array(self):

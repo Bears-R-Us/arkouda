@@ -4,17 +4,16 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
-SEED = 314159
-s = SEED
+seed = pytest.seed
 
 DTYPES = [ak.int64, ak.float64, ak.uint64, ak.uint8]
 DTYPES_WITH_BOOL = [ak.int64, ak.float64, ak.uint64, ak.uint8, ak.bool_]
 
 
 def randArr(shape, dtype):
-    global s
-    s += 2
-    return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=s), dtype=dtype)
+    global seed
+    seed += 2  # ensures differing results each time randArr is invoked
+    return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=seed), dtype=dtype)
 
 
 class TestUtilFunctions:
@@ -59,7 +58,7 @@ class TestUtilFunctions:
     @pytest.mark.skip_if_rank_not_compiled([3])
     def test_clip_errors(self):
         # bool
-        a = xp.asarray(ak.randint(0, 100, (5, 6, 7), dtype=ak.bool_, seed=s), dtype=ak.bool_)
+        a = xp.asarray(ak.randint(0, 100, (5, 6, 7), dtype=ak.bool_, seed=seed), dtype=ak.bool_)
         with pytest.raises(
             RuntimeError,
             match="Error executing command: clip does not support dtype bool",

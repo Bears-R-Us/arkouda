@@ -96,7 +96,7 @@ def pytest_configure(config):
     pytest.client_timeout = int(os.getenv("ARKOUDA_CLIENT_TIMEOUT", 5))
     pytest.verbose = bool(os.getenv("ARKOUDA_VERBOSE", False))
     pytest.nl = _get_test_locales(config)
-    pytest.seed = None if config.getoption("seed") == "" else eval(config.getoption("seed"))
+    pytest.seed = 8675309 if config.getoption("seed") == "" else eval(config.getoption("seed"))
     pytest.prob_size = [eval(x) for x in config.getoption("size").split(",")]
     pytest.test_running_mode = TestRunningMode(os.getenv("ARKOUDA_RUNNING_MODE", "CLASS_SERVER"))
     pytest.client_host = subprocess.check_output("hostname").decode("utf-8").strip()
