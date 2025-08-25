@@ -40,9 +40,11 @@ __all__ = [
     "is_numeric",
     "is_registered",
     "map",
+    "may_share_memory",
     "register",
     "register_all",
     "report_mem",
+    "shares_memory",
     "sparse_sum_help",
     "unregister",
     "unregister_all",
@@ -988,3 +990,124 @@ def copy(a: Union[Strings, pdarray]) -> Union[Strings, pdarray]:
     if isinstance(a, (Strings, pdarray)):
         return a.copy()
     raise TypeError(f"Unsupported type for copy: {type(a)}")
+
+
+def _ak_buffer_names(x):
+    """
+    Return a set of server-side buffer names that back `x`.
+
+    We try to be conservative: if we recognize a container, we pull out
+    all of its backing pdarrays' `.name` values.
+
+    Supported:
+      - pdarray
+      - Strings  (offsets + values/bytes)
+      - SegArray (segments + values)
+      - Categorical (codes + categories Strings)
+      - Nested containers of the above (tuples/lists/dicts)
+    """
+    names = set()
+
+    # Base case: pdarray
+    if hasattr(x, "name") and isinstance(getattr(x, "name"), str):
+        # Heuristic: Arkouda pdarray has `.name` referring to a server object
+        names.add(x.name)
+        return names
+
+    # Strings: typically has .offsets and .values (or .offsets and .bytes)
+    try:
+        from arkouda.strings import Strings
+
+        if isinstance(x, Strings):
+            # Some versions expose .values, older expose .bytes
+            _ak_buffer_names(x.get_offsets())
+            _ak_buffer_names(x.get_bytes())
+            if hasattr(x, "entry"):
+                names |= _ak_buffer_names(x.entry)
+            return names
+    except Exception:
+        pass
+
+    # SegArray: segments + values
+    try:
+        from arkouda.segarray import SegArray
+
+        if isinstance(x, SegArray):
+            if hasattr(x, "segments"):
+                names |= _ak_buffer_names(x.segments)
+            if hasattr(x, "values"):
+                names |= _ak_buffer_names(x.values)
+            return names
+    except Exception:
+        pass
+
+    # Categorical: codes + categories (Strings)
+    try:
+        from arkouda.categorical import Categorical
+
+        if isinstance(x, Categorical):
+            if hasattr(x, "codes"):
+                names |= _ak_buffer_names(x.codes)
+            if hasattr(x, "categories"):
+                names |= _ak_buffer_names(x.categories)
+            if hasattr(x, "segments"):
+                names |= _ak_buffer_names(x.segments)
+            if hasattr(x, "permutation"):
+                names |= _ak_buffer_names(x.permutation)
+            return names
+    except Exception:
+        pass
+
+    # Compound structures: recurse
+    if isinstance(x, (list, tuple, set)):
+        for xi in x:
+            names |= _ak_buffer_names(xi)
+        return names
+
+    if isinstance(x, dict):
+        for xi in x.values():
+            names |= _ak_buffer_names(xi)
+        return names
+
+    # Unknown / unsupported type: returns empty => we assume no buffers known
+    return names
+
+
+def shares_memory(a, b):
+    """
+    Return True if `a` and `b` share any Arkouda server-side buffers.
+
+    This is an Arkouda analogue of numpy.shares_memory with a simpler definition:
+    it checks for identical backing buffer *identities* (same server object names).
+
+    Notes
+    -----
+    - Because Arkouda commonly *materializes* results (rather than views),
+      aliasing is rare and usually only true when objects literally reference
+      the same backing buffers.
+    - For compound containers (e.g., SegArray, Strings, Categorical), we check
+      all of their component buffers.
+    - If you introduce true view semantics in the future, teach `_ak_buffer_names`
+      to surface the base buffer name(s) and view descriptors, and compare bases.
+    """
+    a_names = _ak_buffer_names(a)
+    b_names = _ak_buffer_names(b)
+    return len(a_names.intersection(b_names)) > 0
+
+
+def may_share_memory(a, b):
+    """
+    Conservative version akin to numpy.may_share_memory.
+
+    For now it just defers to shares_memory.
+
+    """
+    # Example conservative policy:
+    # if we fail to find any buffer names for either side but recognize
+    # the object as Arkouda-ish, return True to be conservative.
+    a_names = _ak_buffer_names(a)
+    b_names = _ak_buffer_names(b)
+    if not a_names and not b_names:
+        # Unknown types: be conservative if you wish; here we say False.
+        return False
+    return len(a_names.intersection(b_names)) > 0

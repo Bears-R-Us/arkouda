@@ -3,6 +3,7 @@ import pytest
 
 import arkouda as ak
 from arkouda.numpy import util
+from arkouda.numpy.util import may_share_memory, shares_memory
 from arkouda.util import is_float, is_int, is_numeric, map
 
 
@@ -143,3 +144,147 @@ class TestUtil:
 
         assert a is not b
         ak_assert_equal(a, b)
+
+
+@pytest.mark.parametrize("n", [0, 1, 5, 1024])
+def test_pdarray_identity_and_copy(n):
+    a = ak.arange(n)
+    b = a  # alias
+    assert shares_memory(a, b)
+    assert may_share_memory(a, b)
+
+    c = a + 0  # materialized new buffer
+    assert not shares_memory(a, c)
+    assert not may_share_memory(a, c)
+
+    # slicing should materialize (no views today)
+    d = a[::2]
+    assert not shares_memory(a, d)
+    assert not may_share_memory(a, d)
+
+
+def test_pdarray_after_reassignment_breaks_alias():
+    a = ak.arange(10)
+    b = a
+    assert shares_memory(a, b)
+    # rebind a to a new server buffer
+    a = a + 1
+    assert not shares_memory(a, b)
+
+
+def test_gather_materializes():
+    a = ak.arange(10)
+    idx = ak.array([0, 2, 4, 6, 8])
+    g = a[idx]
+    assert not shares_memory(a, g)
+    assert not may_share_memory(a, g)
+
+
+def test_strings_identity_and_slice():
+    s = ak.array(["a", "bb", "ccc", "dddd"])
+    s_alias = s
+    assert shares_memory(s, s_alias)
+    assert may_share_memory(s, s_alias)
+
+    s_tail = s[1:]  # should materialize new offsets/bytes
+    assert not shares_memory(s, s_tail)
+    assert not may_share_memory(s, s_tail)
+
+
+def test_categorical_components_share_with_self():
+    s = ak.array(["x", "y", "x", "z", "y"])
+    cat = ak.Categorical(s)
+
+    # Components share with themselves
+    assert shares_memory(cat.codes, cat.codes)
+    assert shares_memory(cat.categories, cat.categories)
+
+    # The Categorical wrapper should report sharing with its own components
+    assert shares_memory(cat, cat.codes)
+    assert shares_memory(cat, cat.categories)
+    assert shares_memory(cat, cat.permutation)
+    assert shares_memory(cat, cat.segments)
+
+    # But not necessarily with the original Strings (don't assert either way).
+    # We only guarantee that different freshly materialized objects don't share.
+    s_copy = s[::2]
+    assert not shares_memory(s_copy, cat.codes)
+    # categories may or may not share with s; no assertion here
+
+
+def test_segarray_components_and_aliasing():
+    segs = ak.array([0, 2, 5])
+    vals = ak.array([10, 11, 20, 21, 22])
+    from arkouda.segarray import SegArray
+
+    sa = SegArray(segs, vals)
+    # SegArray reports sharing with its own components
+    assert shares_memory(sa, segs)
+    assert shares_memory(sa, vals)
+
+    # Aliasing the SegArray should share
+    sa2 = sa
+    assert shares_memory(sa, sa2)
+
+    # New construction with copied buffers should not share
+    segs2 = segs + 0
+    vals2 = vals + 0
+    sa_new = SegArray(segs2, vals2)
+    assert not shares_memory(sa_new, sa)
+    assert not shares_memory(sa_new, segs)
+    assert not shares_memory(sa_new, vals)
+
+
+def test_nested_containers_detect_shared_pdarray():
+    a = ak.arange(5)
+    nested1 = (a, {"k": 1})
+    nested2 = {"x": a, "y": [42]}
+    assert shares_memory(nested1, nested2)
+    assert may_share_memory(nested1, nested2)
+
+    other = ak.arange(5) + 1
+    nested3 = (other, {"k": 1})
+    assert not shares_memory(nested1, nested3)
+    assert not may_share_memory(nested1, nested3)
+
+
+def test_disparate_types_and_python_scalars():
+    a = ak.arange(3)
+    assert not shares_memory(a, 123)
+    assert not shares_memory("abc", a)
+    assert not shares_memory(None, None)
+    assert not may_share_memory(a, 123)
+
+
+def test_empty_and_size_one_arrays():
+    empty = ak.arange(0)
+    one = ak.arange(1)
+    assert not shares_memory(empty, one)
+    # alias still shares though
+    alias = empty
+    assert shares_memory(empty, alias)
+
+
+def test_idempotence_and_symmetry():
+    a = ak.arange(7)
+    b = a + 0
+    # symmetry
+    assert shares_memory(a, a)
+    assert shares_memory(a, a) == shares_memory(a, a)  # idempotent
+    assert shares_memory(a, b) == shares_memory(b, a)
+    assert may_share_memory(a, b) == may_share_memory(b, a)
+
+
+@pytest.mark.parametrize(
+    "builder",
+    [
+        lambda: ak.arange(5),
+        lambda: ak.array(["a", "bb", "c"]),
+        lambda: ak.Categorical(ak.array(["t", "t", "f"])),
+    ],
+)
+def test_aliasing_true_for_same_object(builder):
+    obj = builder()
+    alias = obj
+    assert shares_memory(obj, alias)
+    assert may_share_memory(obj, alias)
