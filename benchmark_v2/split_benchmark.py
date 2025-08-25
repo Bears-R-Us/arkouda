@@ -12,7 +12,7 @@ SPLIT_MODES = [
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_Strings_Split")
 @pytest.mark.parametrize("label, delim, use_regex", SPLIT_MODES)
-def bench_strings_split(benchmark, label, delim, use_regex):
+def bench_split(benchmark, label, delim, use_regex):
     N = pytest.N
 
     thirds = [ak.cast(ak.arange(i, N * 3, 3), "str") for i in range(3)]

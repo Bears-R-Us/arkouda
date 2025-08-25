@@ -52,7 +52,7 @@ BENCHMARKS = [
     "str-gather",
     "str-in1d",
     "substring_search",
-    # "split",
+    "split",
     "sort-cases",
     # "multiIO",
     "str-locality",
