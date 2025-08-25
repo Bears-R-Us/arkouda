@@ -94,6 +94,8 @@ __all__ = [
     "vecdot",
     "cumsum",
     "cumprod",
+    "oldcumsum",
+    "oldcumprod",
     "sin",
     "cos",
     "tan",
@@ -1097,6 +1099,37 @@ def cumprod(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
     )
     return create_pdarray(type_cast(str, repMsg))
 
+#   The next block replicates the previous versions of cumsum and cumprod, for
+#   performance investigation.
+
+
+def oldcumsum(pda: pdarray) -> pdarray:
+    from arkouda.client import generic_msg
+
+    _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], "cumsum")
+    repMsg = generic_msg(
+        cmd=f"oldcumsum<{pda.dtype},{pda.ndim}>",
+        args={
+            "x": pda_,
+            "axis": axis_,
+            "includeInitial": False,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+def oldcumprod(pda: pdarray) -> pdarray:
+    from arkouda.client import generic_msg
+
+    _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], "cumprod")
+    repMsg = generic_msg(
+        cmd=f"oldcumprod<{pda.dtype},{pda.ndim}>",
+        args={
+            "x": pda,
+        },
+    )
+    return create_pdarray(type_cast(str, repMsg))
+
+#   End of block of old code.
 
 @typechecked
 def sin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
