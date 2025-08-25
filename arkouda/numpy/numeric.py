@@ -1082,6 +1082,7 @@ def oldcumsum(pda: pdarray) -> pdarray:
     )
     return create_pdarray(type_cast(str, repMsg))
 
+
 def oldcumprod(pda: pdarray) -> pdarray:
     from arkouda.client import generic_msg
 
@@ -1095,6 +1096,7 @@ def oldcumprod(pda: pdarray) -> pdarray:
     return create_pdarray(type_cast(str, repMsg))
 
 #   End of block of old code.
+
 
 @typechecked
 def sin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
