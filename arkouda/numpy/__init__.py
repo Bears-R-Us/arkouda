@@ -163,8 +163,6 @@ from arkouda.numpy.numeric import (
     count_nonzero,
     cumprod,
     cumsum,
-    oldcumsum,
-    oldcumprod,
     deg2rad,
     exp,
     expm1,
