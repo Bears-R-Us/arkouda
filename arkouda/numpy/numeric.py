@@ -1075,9 +1075,7 @@ def oldcumsum(pda: pdarray) -> pdarray:
     repMsg = generic_msg(
         cmd=f"oldcumsum<{pda.dtype},{pda.ndim}>",
         args={
-            "x": pda_,
-            "axis": axis_,
-            "includeInitial": False,
+            "x": pda,
         },
     )
     return create_pdarray(type_cast(str, repMsg))
