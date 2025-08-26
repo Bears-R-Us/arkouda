@@ -119,18 +119,19 @@ module StatsMsg {
     }
 
     @arkouda.registerCommand()
-//  proc cumSum(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
-    proc cumSum(x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
+    proc cumSum(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
+//  proc cumSum(x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
         where t!= bool { // bool case was already converted to int python-side
+
       if d.rank == 1 {
 
 //    rewriting some code to hopefully produce a speed improvement
 
           if !includeInitial {
-            return (+ scan x);
+            return (+ scan x); 
           } else {
             var cs = makeDistArray(x.size+1, t);
-            cs[1..] = (+ scan x); //:t;
+            cs[1..] = (+ scan x);
             return cs;
           }
 
@@ -156,8 +157,8 @@ module StatsMsg {
     }
 
     @arkouda.registerCommand()
-//  proc cumProd(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
-    proc cumProd(x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
+    proc cumProd(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
+//  proc cumProd(x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
         where t != bool { // bool case was already converted to int python-side
       if d.rank == 1 {
 

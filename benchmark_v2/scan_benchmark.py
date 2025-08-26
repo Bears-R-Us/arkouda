@@ -3,7 +3,7 @@ import pytest
 
 import arkouda as ak
 
-OPS = ("cumsum", "cumprod")
+OPS = ("cumsum", "cumprod", "oldcumsum", "oldcumprod")
 TYPES = ("int64", "float64")
 
 
