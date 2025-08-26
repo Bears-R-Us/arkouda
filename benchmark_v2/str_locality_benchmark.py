@@ -13,7 +13,7 @@ LOCALITY = {"good", "poor"}
 
 
 def _generate_data(loc):
-    N = pytest.prob_size * ak.get_config()["numLocales"]
+    N = pytest.N
     prefix = ak.random_strings_uniform(
         minlen=1, maxlen=16, size=N, seed=pytest.seed, characters="numeric"
     )

@@ -14,8 +14,7 @@ def bench_find(benchmark, dtype):
     Runs for each dtype in TYPES.
 
     """
-    cfg = ak.get_config()
-    N = pytest.prob_size * cfg["numLocales"]
+    N = pytest.N
     query_frac = 0.01  # Use 1% of the space as query set
     qN = max(1, int(query_frac * N))
 

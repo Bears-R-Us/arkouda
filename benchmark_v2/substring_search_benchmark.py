@@ -13,7 +13,7 @@ SEARCHES = {
 @pytest.mark.benchmark(group="Arkouda_Strings_SubstringSearch")
 @pytest.mark.parametrize("search_string,use_regex", SEARCHES.values(), ids=list(SEARCHES.keys()))
 def bench_strings_contains(benchmark, search_string, use_regex):
-    N = pytest.prob_size * ak.get_config()["numLocales"]
+    N = pytest.N
     seed = pytest.seed
 
     start = ak.random_strings_uniform(minlen=1, maxlen=8, size=N, seed=seed)
