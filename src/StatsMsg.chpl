@@ -119,17 +119,32 @@ module StatsMsg {
     }
 
     @arkouda.registerCommand()
-    proc cumSum(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws {
+    proc cumSum(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
+//  proc cumSum(x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
+        where t!= bool { // bool case was already converted to int python-side
+
       if d.rank == 1 {
-        var cs = makeDistArray(if includeInitial then x.size+1 else x.size, t);
-        cs[if includeInitial then 1.. else 0..] = (+ scan x):t;
-        return cs;
+
+//    rewriting some code to hopefully produce a speed improvement
+
+          if !includeInitial {
+            return (+ scan x); 
+          } else {
+            var cs = makeDistArray(x.size+1, t);
+            cs[1..] = (+ scan x);
+            return cs;
+          }
+
+//      var cs = makeDistArray(if includeInitial then x.size+1 else x.size, t);
+//      cs[if includeInitial then 1.. else 0..] = (+ scan x):t;
+//      return cs;
+
       } else {
         var cs = makeDistArray(if includeInitial then expandedDomain(d, axis) else d, t);
 
         forall (slice, _) in axisSlices(d, new list([axis])) {
           const xSlice = removeDegenRanks(x[slice], 1),
-                csSlice = (+ scan xSlice):t;
+                csSlice = (+ scan xSlice); //:t;
 
           for idx in slice {
             var csIdx = idx;
@@ -143,22 +158,36 @@ module StatsMsg {
 
     @arkouda.registerCommand()
     proc cumProd(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
-        where t != bool {
+//  proc cumProd(x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
+        where t != bool { // bool case was already converted to int python-side
       if d.rank == 1 {
-        var cs = makeDistArray(if includeInitial then x.size+1 else x.size, t);
-        if includeInitial {
+
+//    rewriting some code to hopefully produce a speed improvement
+
+          if !includeInitial {
+            return (* scan x);
+          } else {
+            var cs = makeDistArray(x.size+1, t);
+            cs[1..] = (* scan x); //:t;
             cs[0] = 1:t;
-            cs[1..] = (* scan x):t;
-        } else {
-            cs[0..] = (* scan x):t;
-        }
-        return cs;
+            return cs;
+          }
+
+//        var cs = makeDistArray(if includeInitial then x.size+1 else x.size, t);
+//        if includeInitial {
+//            cs[0] = 1:t;
+//            cs[1..] = (* scan x):t;
+//        } else {
+//            cs[0..] = (* scan x):t;
+//        }
+//        return cs;
+
       } else {    // fill with 1s so that if includeInitial is set, answer starts with 1
         var cs = makeDistArray(if includeInitial then expandedDomain(d, axis) else d, 1:t);
 
         forall (slice, _) in axisSlices(d, new list([axis])) {
           const xSlice = removeDegenRanks(x[slice], 1),
-                csSlice = (* scan xSlice):t;
+                csSlice = (* scan xSlice); //:t;
 
           for idx in slice {
             var csIdx = idx;
@@ -169,6 +198,54 @@ module StatsMsg {
         return cs;
       }
     }
+
+//  The next block implements the previous versions of cumsum and cumprod, for performance
+//  investigations.
+
+
+    proc old_cumspReturnType(type t) type
+      do return if t == bool then int else t;
+
+    // Implements + reduction over numeric data, converting all elements to int before summing.
+    // See https://chapel-lang.org/docs/technotes/reduceIntents.html#readme-reduceintents-interface
+
+    class oldPlusIntReduceOp: ReduceScanOp {
+        type eltType;
+        var value: int;
+        proc identity      do return 0: int;
+        proc accumulate(elm)  { value = value + elm:int; }
+        proc accumulateOntoState(ref state, elm)  { state = state + elm:int; }
+        proc initialAccumulate(outerVar) { value = value + outerVar: int; }
+        proc combine(other: borrowed oldPlusIntReduceOp(?))   { value = value + other.value; }
+        proc generate()    do return value;
+        proc clone()       do return new unmanaged oldPlusIntReduceOp(eltType=eltType);
+    }
+
+    @arkouda.registerCommand()
+    proc oldcumsum(x : [?d] ?t) : [d] old_cumspReturnType(t) throws
+        where (t==int || t==real || t==uint || t==bool) && (d.rank==1)
+    {
+        overMemLimit(numBytes(int) * x.size) ;
+        if t == bool {
+            return (oldPlusIntReduceOp scan x);
+        } else {
+            return (+ scan x) ;
+        }
+    }
+
+    @arkouda.registerCommand()
+    proc oldcumprod(x : [?d] ?t) : [d] old_cumspReturnType(t) throws
+        where (t==int || t==real || t==uint || t==bool) && (d.rank==1)
+    {
+        overMemLimit(numBytes(int) * x.size) ;
+        if t == bool {
+            return (&& scan x);
+        } else {
+            return (*scan x) ;
+        }
+    }
+
+//  End of block of old code.
 
     private proc expandedDomain(d: domain(?), axis: int): domain(?) {
       var rngs: d.rank*range;
