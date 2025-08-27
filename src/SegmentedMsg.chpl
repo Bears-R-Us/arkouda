@@ -22,6 +22,8 @@ module SegmentedMsg {
   use PrivateDist;
   use List;
 
+  use CommDiagnostics;
+
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
   const smLogger = new Logger(logLevel, logChannel);
@@ -875,6 +877,7 @@ module SegmentedMsg {
                        st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
+    startCommDiagnostics();
 
     // check to make sure symbols defined
     st.checkTable(objName);
@@ -931,11 +934,6 @@ module SegmentedMsg {
               ref iva = iv.a;
               var newSegs = makeDistArray(iva.size, int);
               const flatLocRanges = [loc in Locales] strings.offsets.a.domain.localSubdomain(loc).dim(0);
-              inline proc ownerOfIndex(gIdx: int): int {
-                  for (rr, i) in zip(flatLocRanges, 0..<numLocales) do
-                      if rr.contains(gIdx) then return i;
-                  return numLocales-1;
-              }
               var destLocales: [PrivateSpace] list(int);
               var sendIdx: [PrivateSpace] list(int);
               var sendBackLoc: [PrivateSpace] list(int);
@@ -943,6 +941,12 @@ module SegmentedMsg {
               var baselineIndices: [PrivateSpace] int;
 
               coforall loc in Locales do on loc {
+                const flatLocRangesHere = flatLocRanges;  // copies ranges to 'here' once
+                inline proc ownerOfIndex(gIdx: int): int {
+                  for (rr, i) in zip(flatLocRangesHere, 0..<numLocales) do
+                    if rr.contains(gIdx) then return i;
+                  return numLocales-1;
+                }
                 const indicesDom = iva.domain.localSubdomain();
                 const myIndices = iva.localSlice[indicesDom];
                 var mySendIdx: [0..#myIndices.size] int;
@@ -975,6 +979,12 @@ module SegmentedMsg {
                 // writeln(here.id, " baselineIndices: ", indicesDom.low);
               }
 
+              stopCommDiagnostics();
+              writeln("Initialization and first coforall");
+              printCommDiagnosticsTable();
+              resetCommDiagnostics();
+              startCommDiagnostics();
+
               var getIdx = repartitionByLocale(int,
                                                destLocales,
                                                sendIdx);
@@ -984,6 +994,12 @@ module SegmentedMsg {
               var destIndices = repartitionByLocale(int,
                                                     destLocales,
                                                     sendBackIdx);
+
+              stopCommDiagnostics();
+              writeln("Some repartitioning");
+              printCommDiagnosticsTable();
+              resetCommDiagnostics();
+              startCommDiagnostics();
 
               var tempOffsetsByLoc: [PrivateSpace] list(int);
               var tempBytesByLoc: [PrivateSpace] list(uint(8));
@@ -1030,17 +1046,41 @@ module SegmentedMsg {
 
               }
 
+              stopCommDiagnostics();
+              writeln("Second real coforall");
+              printCommDiagnosticsTable();
+              resetCommDiagnostics();
+              startCommDiagnostics();
+
               var (recvOffsets, recvBytes) = repartitionByLocaleString(newDestLocales,
                                                                        tempOffsetsByLoc,
                                                                        tempBytesByLoc);
 
+              stopCommDiagnostics();
+              writeln("repartitionByLocaleString");
+              printCommDiagnosticsTable();
+              resetCommDiagnostics();
+              startCommDiagnostics();
+
               var finIndices = repartitionByLocale(int, newDestLocales, destIndices);
+
+              stopCommDiagnostics();
+              writeln("repartitionByLocale");
+              printCommDiagnosticsTable();
+              resetCommDiagnostics();
+              startCommDiagnostics();
               
               var bytesByLocale: [PrivateSpace] int;
               bytesByLocale = [i in recvBytes.domain] recvBytes[i].size;
               var baseOffsetByLocale = (+ scan bytesByLocale) - bytesByLocale;
               var numBytes = + reduce bytesByLocale;
               var newVals = makeDistArray(numBytes, uint(8));
+
+              stopCommDiagnostics();
+              writeln("Getting ready for last coforall");
+              printCommDiagnosticsTable();
+              resetCommDiagnostics();
+              startCommDiagnostics();
 
               coforall loc in Locales do on loc {
 
@@ -1052,6 +1092,8 @@ module SegmentedMsg {
                 const baseIdx = baselineIndices[here.id];
                 const baseOffset = baseOffsetByLocale[here.id];
                 const myNumBytes = bytesByLocale[here.id];
+
+                const baseOffsetByLocaleCopy = baseOffsetByLocale;
 
                 // writeln(here.id, " myOffsets: ", myOffsets);
                 // writeln(here.id, " myBytes: ", myBytes);
@@ -1089,6 +1131,12 @@ module SegmentedMsg {
                 }
 
               }
+
+              stopCommDiagnostics();
+              writeln("Last coforall");
+              printCommDiagnosticsTable();
+              resetCommDiagnostics();
+              startCommDiagnostics();
 
               // var (newSegs, newVals) = strings[iv.a];
               var newStringsObj = getSegString(newSegs, newVals, st);
@@ -1131,6 +1179,10 @@ module SegmentedMsg {
         return new MsgTuple(notImplementedError(pn, objtype: string), MsgType.ERROR);
       }
     }
+
+    stopCommDiagnostics();
+    printCommDiagnosticsTable();
+    resetCommDiagnostics();
 
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
