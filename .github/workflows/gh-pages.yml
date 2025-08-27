@@ -16,7 +16,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.4.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.2
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
