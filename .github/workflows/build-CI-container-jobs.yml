@@ -1,0 +1,34 @@
+name: build-CI-container-jobs
+on:
+  push:
+    branches: [ main ]
+    # This limits the action so it only builds when this file changes
+    paths:
+      - docker/ubuntu-with-arkouda-deps/Dockerfile
+      - docker/almalinux-with-arkouda-deps/Dockerfile
+      # also trigger on changes to this workflow file itself
+      - .github/workflows/build-CI-container.yml
+      - .github/workflows/build-CI-container-jobs.yml
+  pull_request:
+    paths:
+      # same as for pushes above
+      - docker/ubuntu-with-arkouda-deps/Dockerfile
+      - docker/almalinux-with-arkouda-deps/Dockerfile
+      - .github/workflows/build-CI-container.yml
+      - .github/workflows/build-CI-container-jobs.yml
+  # Adds a "manual run" option in the GH UI
+  workflow_dispatch:
+
+jobs:
+  build-ubuntu-with-arkouda-deps:
+    uses: ./.github/workflows/build-CI-container.yml
+    with:
+      DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
+      IMAGE_NAME: ubuntu-with-arkouda-deps
+      VERSION: latest
+  build-almalinux-with-arkouda-deps:
+    uses: ./.github/workflows/build-CI-container.yml
+    with:
+      DOCKERFILE: docker/almalinux-with-arkouda-deps/Dockerfile
+      IMAGE_NAME: almalinux-with-arkouda-deps
+      VERSION: latest

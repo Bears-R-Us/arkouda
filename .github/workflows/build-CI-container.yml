@@ -1,0 +1,45 @@
+name: build-CI-container
+on:
+  workflow_call:
+    inputs:
+      DOCKERFILE:
+        description: 'Path to Dockerfile'
+        required: true
+        type: string
+      IMAGE_NAME:
+        description: 'Name for the Docker image'
+        required: true
+        type: string
+      VERSION:
+        description: 'Version tag for the Docker image'
+        required: false
+        type: string
+        default: 'latest'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1.14.1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Docker Image
+        uses: docker/build-push-action@v2.9.0
+        with:
+          file: ${{ inputs.DOCKERFILE }}
+          tags: ghcr.io/${{ github.repository_owner }}/${{ inputs.IMAGE_NAME }}:${{ inputs.VERSION }}
+      - name: Push Docker Image if on main
+        if: github.repository_owner == 'Bears-R-Us' && ((github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push'))
+        uses: docker/build-push-action@v2.9.0
+        with:
+          file: ${{ inputs.DOCKERFILE }}
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/${{ inputs.IMAGE_NAME }}:${{ inputs.VERSION }}
