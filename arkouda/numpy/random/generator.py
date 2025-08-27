@@ -262,11 +262,12 @@ class Generator:
         Examples
         --------
         >>> import arkouda as ak
-        >>> rng = ak.random.default_rng()
+        >>> rng = ak.random.default_rng(seed=1)
         >>> rng.integers(5, 20, 10)
-        array([15, 13, 10, 8, 5, 18, 16, 14, 7, 13])  # random
+        array([7 19 5 16 19 11 18 15 10 5])
         >>> rng.integers(5, size=10)
-        array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random
+        array([4 2 5 5 3 5 5 2 2 2])
+
         """
         from arkouda.client import generic_msg
         from arkouda.numpy.util import _infer_shape_from_size
@@ -430,7 +431,8 @@ class Generator:
         --------
         >>> import arkouda as ak
         >>> ak.random.default_rng(17).lognormal(3, 2.5, 3)
-        array([7.3866978126031091 106.20159494048757 4.5424399190667666])
+        array([75.587346973566639 9.4194790331678568 1.0996120079897966])
+
         """
         from arkouda.numpy import exp
 
@@ -480,7 +482,8 @@ class Generator:
         --------
         >>> import arkouda as ak
         >>> ak.random.default_rng(17).normal(3, 2.5, 3)
-        array([2.3673425816523577 4.0532529435624589 2.0598322696795694])
+        array([4.3252889011033728 2.2427797827243081 0.09495739757471533])
+
         """
         if size is None:
             # delegate to numpy when return size is 1
@@ -520,11 +523,12 @@ class Generator:
         Examples
         --------
         >>> import arkouda as ak
-        >>> rng = ak.random.default_rng()
+        >>> rng = ak.random.default_rng(seed=17)
         >>> rng.random()
-        0.47108547995356098 # random
+        0.8450747927979015
         >>> rng.random(3)
-        array([0.055256829926011691, 0.62511314008006458, 0.16400145561571539]) # random
+        array([0.8059711747202466 0.71958748004486961 0.72539618972095954])
+
         """
         if size is None:
             # delegate to numpy when return size is 1
@@ -561,11 +565,12 @@ class Generator:
         Examples
         --------
         >>> import arkouda as ak
-        >>> rng = ak.random.default_rng()
+        >>> rng = ak.random.default_rng(seed=17)
         >>> rng.standard_gamma(1)
-        0.8729704388729135 # random
+        1.5654448696305245
         >>> rng.standard_gamma(1, size=3)
-        array([0.4879818539586227 0.6534654349920751 0.40990997253631162]) # random
+        array([0.016990291286171716 0.21612542775489499 0.49600147238356695])
+
         """  # noqa: W605
         from arkouda.client import generic_msg
         from arkouda.numpy.util import _infer_shape_from_size
@@ -628,11 +633,12 @@ class Generator:
         Examples
         --------
         >>> import arkouda as ak
-        >>> rng = ak.random.default_rng()
+        >>> rng = ak.random.default_rng(seed=17)
         >>> rng.standard_normal()
-        2.1923875335537315 # random
+        1.101262453505847
         >>> rng.standard_normal(3)
-        array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random
+        array([0.53011556044134911 -0.30288808691027669 -1.1620170409701138])
+
         """
         from arkouda.client import generic_msg
         from arkouda.numpy.util import _infer_shape_from_size
@@ -714,7 +720,7 @@ class Generator:
         array([0 8 2 7 9 4 6 3 5 1])
         >>> rng.shuffle(pda, method="MergeShuffle")
         >>> pda
-        array([5 9 7 3 0 2 1 6 4 8])
+        array([5 6 9 3 8 2 7 0 4 1])
 
         """
         from arkouda.client import generic_msg
@@ -841,9 +847,10 @@ class Generator:
         Examples
         --------
         >>> import arkouda as ak
-        >>> rng = ak.random.default_rng()
+        >>> rng = ak.random.default_rng(seed=17)
         >>> rng.poisson(lam=3, size=5)
-        array([5 3 2 2 3])  # random
+        array([1 2 3 2 5])
+
         """
         from arkouda.client import generic_msg
 
@@ -903,9 +910,10 @@ class Generator:
         Examples
         --------
         >>> import arkouda as ak
-        >>> rng = ak.random.default_rng()
+        >>> rng = ak.random.default_rng(seed=17)
         >>> rng.uniform(-1, 1, 3)
-        array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random
+        array([0.61194234944049319 0.43917496008973922 0.45079237944191908])
+
         """
         from arkouda.client import generic_msg
         from arkouda.numpy.util import _infer_shape_from_size
