@@ -297,4 +297,6 @@ from arkouda.numpy.util import (
     is_registered,
     broadcast_dims,
     copy,
+    shares_memory,
+    may_share_memory,
 )
