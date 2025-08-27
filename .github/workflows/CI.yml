@@ -33,7 +33,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -109,7 +112,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -132,7 +138,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -171,7 +180,10 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -205,7 +217,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -248,7 +263,10 @@ jobs:
     env:
       CHPL_HOME: /chapel-2.5.0
     container:
-      image: ajpotts/almalinux-with-arkouda-deps:1.0.3
+      image: ghcr.io/${{ github.repository_owner }}/almalinux-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -347,7 +365,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4    
@@ -445,7 +466,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -494,7 +518,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Show memory available
       run: |
@@ -553,7 +580,10 @@ jobs:
       CHPL_RT_NUM_THREADS_PER_LOCALE: 2
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -604,7 +634,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
