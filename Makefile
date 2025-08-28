@@ -148,7 +148,7 @@ zmq-clean:
 	rm -r $(ZMQ_BUILD_DIR)
 
 HDF5_MAJ_MIN_VER := 1.14
-HDF5_VER := 1.14.4
+HDF5_VER := 1.14.6
 HDF5_NAME_VER := hdf5-$(HDF5_VER)
 
 # new hdf5 path requires underscored delimited and "v" prepended
