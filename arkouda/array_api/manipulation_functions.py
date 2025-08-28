@@ -126,6 +126,13 @@ def expand_dims(x: Array, /, *, axis: int) -> Array:
         `[-x.ndim-1, x.ndim]`.
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.util import _integer_axis_validation
+
+    # expand_dims and stack test the axis validity against an array of rank ndim+1
+
+    valid, axis_ = _integer_axis_validation(axis, x.ndim + 1)
+    if not valid:
+        raise IndexError(f"{axis} is not a valid axis for expanding rank of {x.ndim}")
 
     try:
         return Array._new(
@@ -136,7 +143,7 @@ def expand_dims(x: Array, /, *, axis: int) -> Array:
                         cmd=f"expandDims<{x.dtype},{x.ndim}>",
                         args={
                             "name": x._array,
-                            "axis": axis,
+                            "axis": axis_,
                         },
                     ),
                 )
@@ -418,11 +425,18 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
         of dimensions in the input arrays. The default is 0.
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.util import _integer_axis_validation
 
     ndim = arrays[0].ndim
     for a in arrays:
         if a.ndim != ndim:
             raise ValueError("all input arrays must have the same number of dimensions to stack")
+
+    # expand_dims and stack test the axis validity against an array of rank ndim+1
+
+    valid, axis_ = _integer_axis_validation(axis, ndim + 1)
+    if not valid:
+        raise IndexError(f"{axis} is not a valid axis for stacking arrays of rank {ndim}")
 
     (common_dt, _arrays) = promote_to_common_dtype([a._array for a in arrays])
 
@@ -436,7 +450,7 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
                     args={
                         "names": _arrays,
                         "n": len(arrays),
-                        "axis": axis,
+                        "axis": axis_,
                     },
                 ),
             )
@@ -498,6 +512,11 @@ def unstack(x: Array, /, *, axis: int = 0) -> Tuple[Array, ...]:
         The axis along which to unstack the array. The default is 0.
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.util import _integer_axis_validation
+
+    valid, axis_ = _integer_axis_validation(axis, x.ndim)
+    if not valid:
+        raise IndexError(f"{axis} is not a valid axis for arrays of rank {x.ndim}")
 
     return tuple(
         Array._new(
@@ -508,7 +527,7 @@ def unstack(x: Array, /, *, axis: int = 0) -> Tuple[Array, ...]:
                         cmd=f"unstack<{x.dtype},{x.ndim}>",
                         args={
                             "name": x._array,
-                            "axis": axis,
+                            "axis": axis_,
                             "numReturnArrays": x.shape[axis],
                         },
                     ),

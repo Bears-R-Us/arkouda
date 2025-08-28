@@ -964,7 +964,7 @@ def cumsum(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
     """
     from arkouda.client import generic_msg
     from arkouda.numpy import cast as akcast
-    from arkouda.numpy.pdarrayclass import _axis_validation
+    from arkouda.numpy.util import _integer_axis_validation
 
     _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], "cumsum")
 
@@ -978,9 +978,9 @@ def cumsum(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
         axis_ = 0
         pda_ = pda_.flatten()
     else:
-        good, axis_ = _axis_validation(axis, pda_.ndim)
-        if not good:
-            raise ValueError(f"{axis} is not valid for the given array.")
+        valid, axis_ = _integer_axis_validation(axis, pda_.ndim)
+        if not valid:
+            raise IndexError(f"{axis} is not valid for the given array.")
 
     repMsg = generic_msg(
         cmd=f"cumSum<{pda_.dtype},{pda_.ndim}>",
@@ -1034,7 +1034,7 @@ def cumprod(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
     """
     from arkouda.client import generic_msg
     from arkouda.numpy import cast as akcast
-    from arkouda.numpy.pdarrayclass import _axis_validation
+    from arkouda.numpy.util import _integer_axis_validation
 
     _datatype_check(pda.dtype, [int, float, ak_uint64, ak_bool], "cumprod")
 
@@ -1048,9 +1048,9 @@ def cumprod(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
         axis_ = 0
         pda_ = pda_.flatten()
     else:
-        good, axis_ = _axis_validation(axis, pda_.ndim)
-        if not good:
-            raise ValueError(f"{axis} is not valid for the given array.")
+        valid, axis_ = _integer_axis_validation(axis, pda_.ndim)
+        if not valid:
+            raise IndexError(f"{axis} is not valid for the given array.")
 
     repMsg = generic_msg(
         cmd=f"cumProd<{pda_.dtype},{pda_.ndim}>",
@@ -3132,6 +3132,9 @@ def vecdot(
     from arkouda.numpy.pdarrayclass import broadcast_to_shape
     from arkouda.numpy.util import broadcast_dims
 
+    #  axis handling in vecdot is unique, and doesn't use one of the standard
+    #  validation functions.
+
     if x1.shape[-1] != x2.shape[-1]:
         raise ValueError("Last dimensions of inputs must match for vecdot.")
 
@@ -3443,15 +3446,19 @@ def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[in
 
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.util import _integer_axis_validation
 
-    if axis is None and a.ndim != 1:
-        a = a.flatten()
+    if axis is None:
+        axis_ = 0
+        if a.ndim != 1:
+            a = a.flatten()
+    else:
+        valid, axis_ = _integer_axis_validation(axis, a.ndim)
+        if not valid:
+            raise IndexError(f"{axis} is not a valid axis for rank {a.ndim}")
 
     if isinstance(indices, pdarray) and indices.ndim != 1:
         raise ValueError("indices must be 1D")
-
-    if axis is None:
-        axis = 0
 
     if not isinstance(indices, pdarray) and isinstance(indices, list):
         indices_ = array(indices)
@@ -3466,7 +3473,7 @@ def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[in
             args={
                 "x": a,
                 "indices": indices_,
-                "axis": axis,
+                "axis": axis_,
             },
         )
     )

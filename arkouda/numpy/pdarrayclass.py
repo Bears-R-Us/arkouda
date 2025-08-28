@@ -1565,12 +1565,12 @@ class pdarray:
         from arkouda.numpy.manipulation_functions import flip
         from arkouda.numpy.pdarraycreation import zeros
         from arkouda.numpy.sorting import coargsort
+        from arkouda.numpy.util import _integer_axis_validation
 
         ndim = type_cast(Union[int, np.integer], getattr(self, "ndim"))
-        is_valid, axis_ = _axis_validation(axis, ndim)
-
-        if not is_valid:
-            raise ValueError(f"axis={axis} is invalid for array with ndim={self.ndim}")
+        valid, axis_ = _integer_axis_validation(axis, ndim)
+        if not valid:
+            raise IndexError(f"{axis} is not a valid axis for array of rank {ndim}")
 
         if self.size == 0:
             return zeros(0, dtype=akint64)
@@ -5171,21 +5171,24 @@ def diff(a: pdarray, n: int = 1, axis: int = -1, prepend=None, append=None) -> p
 
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.util import _integer_axis_validation
+
+    valid, axis_ = _integer_axis_validation(axis, a.ndim)
+    if not valid:
+        raise IndexError(f"{axis} is not a valid axis for array of rank {a.ndim}")
 
     if a.dtype == bigint:
         raise RuntimeError(f"Error executing command: diff does not support dtype {a.dtype}")
     from arkouda.numpy.pdarraysetops import concatenate
 
     if prepend is not None and append is not None:
-        a_ = concatenate((prepend, a, append), axis=axis)
+        a_ = concatenate((prepend, a, append), axis=axis_)
     elif prepend is not None:
-        a_ = concatenate((prepend, a), axis=axis)
+        a_ = concatenate((prepend, a), axis=axis_)
     elif append is not None:
-        a_ = concatenate((a, append), axis=axis)
+        a_ = concatenate((a, append), axis=axis_)
     else:
         a_ = a
-    if axis < 0:
-        axis = a_.ndim + axis
     return create_pdarray(
         cast(
             str,
@@ -5194,7 +5197,7 @@ def diff(a: pdarray, n: int = 1, axis: int = -1, prepend=None, append=None) -> p
                 args={
                     "x": a_,
                     "n": n,
-                    "axis": axis,
+                    "axis": axis_,
                 },
             ),
         )

@@ -85,16 +85,15 @@ def argsort(
 
     """
     from arkouda.numpy.dtypes import int64
+    from arkouda.numpy.util import _integer_axis_validation
     from arkouda.pandas.categorical import Categorical
 
     check_type("argsort", pda, Union[pdarray, Strings, Categorical])
 
     ndim = pda.ndim
-    axis = int(axis)
-    if axis < 0:
-        axis += ndim
-    if axis < 0 or axis >= ndim:
-        raise ValueError(f"axis {axis} is out of bounds for array of rank {ndim}")
+    valid, axis_ = _integer_axis_validation(axis, ndim)
+    if not valid:
+        raise IndexError(f"{axis} is not a valid axis for array of rank {ndim}")
 
     size = pda.size
     if size == 0:
@@ -299,6 +298,11 @@ def sort(
     array([0 1 1 4 5 5 5 7 8 9])
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.util import _integer_axis_validation
+
+    valid, axis_ = _integer_axis_validation(axis, pda.ndim)
+    if not valid:
+        raise IndexError(f"{axis} is not a valid axis for array of rank {pda.ndim}")
 
     if pda.dtype == bigint:
         return pda[coargsort(pda.bigint_to_uint_arrays(), algorithm)]
@@ -308,7 +312,7 @@ def sort(
         return zeros(0, dtype=pda.dtype)
     repMsg = generic_msg(
         cmd=f"sort<{pda.dtype.name},{pda.ndim}>",
-        args={"alg": algorithm.name, "array": pda, "axis": axis},
+        args={"alg": algorithm.name, "array": pda, "axis": axis_},
     )
     return create_pdarray(cast(str, repMsg))
 
