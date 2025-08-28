@@ -22,8 +22,6 @@ module SegmentedMsg {
   use PrivateDist;
   use List;
 
-  use CommDiagnostics;
-
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
   const smLogger = new Logger(logLevel, logChannel);
@@ -877,7 +875,6 @@ module SegmentedMsg {
                        st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    startCommDiagnostics();
 
     // check to make sure symbols defined
     st.checkTable(objName);
@@ -979,12 +976,6 @@ module SegmentedMsg {
                 // writeln(here.id, " baselineIndices: ", indicesDom.low);
               }
 
-              stopCommDiagnostics();
-              writeln("Initialization and first coforall");
-              printCommDiagnosticsTable();
-              resetCommDiagnostics();
-              startCommDiagnostics();
-
               var getIdx = repartitionByLocale(int,
                                                destLocales,
                                                sendIdx);
@@ -994,12 +985,6 @@ module SegmentedMsg {
               var destIndices = repartitionByLocale(int,
                                                     destLocales,
                                                     sendBackIdx);
-
-              stopCommDiagnostics();
-              writeln("Some repartitioning");
-              printCommDiagnosticsTable();
-              resetCommDiagnostics();
-              startCommDiagnostics();
 
               var tempOffsetsByLoc: [PrivateSpace] list(int);
               var tempBytesByLoc: [PrivateSpace] list(uint(8));
@@ -1046,41 +1031,17 @@ module SegmentedMsg {
 
               }
 
-              stopCommDiagnostics();
-              writeln("Second real coforall");
-              printCommDiagnosticsTable();
-              resetCommDiagnostics();
-              startCommDiagnostics();
-
               var (recvOffsets, recvBytes) = repartitionByLocaleString(newDestLocales,
                                                                        tempOffsetsByLoc,
                                                                        tempBytesByLoc);
 
-              stopCommDiagnostics();
-              writeln("repartitionByLocaleString");
-              printCommDiagnosticsTable();
-              resetCommDiagnostics();
-              startCommDiagnostics();
-
               var finIndices = repartitionByLocale(int, newDestLocales, destIndices);
-
-              stopCommDiagnostics();
-              writeln("repartitionByLocale");
-              printCommDiagnosticsTable();
-              resetCommDiagnostics();
-              startCommDiagnostics();
               
               var bytesByLocale: [PrivateSpace] int;
               bytesByLocale = [i in recvBytes.domain] recvBytes[i].size;
               var baseOffsetByLocale = (+ scan bytesByLocale) - bytesByLocale;
               var numBytes = + reduce bytesByLocale;
               var newVals = makeDistArray(numBytes, uint(8));
-
-              stopCommDiagnostics();
-              writeln("Getting ready for last coforall");
-              printCommDiagnosticsTable();
-              resetCommDiagnostics();
-              startCommDiagnostics();
 
               coforall loc in Locales do on loc {
 
@@ -1132,12 +1093,6 @@ module SegmentedMsg {
 
               }
 
-              stopCommDiagnostics();
-              writeln("Last coforall");
-              printCommDiagnosticsTable();
-              resetCommDiagnostics();
-              startCommDiagnostics();
-
               // var (newSegs, newVals) = strings[iv.a];
               var newStringsObj = getSegString(newSegs, newVals, st);
               newStringsName = newStringsObj.name;
@@ -1179,10 +1134,6 @@ module SegmentedMsg {
         return new MsgTuple(notImplementedError(pn, objtype: string), MsgType.ERROR);
       }
     }
-
-    stopCommDiagnostics();
-    printCommDiagnosticsTable();
-    resetCommDiagnostics();
 
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
