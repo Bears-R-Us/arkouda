@@ -42,4 +42,4 @@ def vecdot(x1: Array, x2: Array, /, *, axis: int = -1) -> Array:
 
     from .array_object import Array
 
-    return Array._new(ak_vecdot(x1._array, x2._array))
+    return Array._new(ak_vecdot(x1._array, x2._array, axis))

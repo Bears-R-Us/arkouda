@@ -269,26 +269,29 @@ def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: 
     # Modified slightly to fit Arkouda
     # https://github.com/numpy/numpy/blob/d35cd07ea997f033b2d89d349734c61f5de54b0d/numpy/lib/function_base.py#L4857-L4984
 
+    from arkouda.numpy.util import _integer_axis_validation
+
     if y.dtype == ak.bigint:
         raise RuntimeError(f"Error executing command: trapz does not support dtype {y.dtype}")
 
     nd = y.ndim
-    if axis < 0:
-        axis = nd + axis
+    valid, axis_ = _integer_axis_validation(axis, nd)
+    if not valid:
+        raise IndexError(f"{axis} is not a valid axis for array of rank {nd}")
 
     slice1 = [slice(None)] * nd
     slice2 = [slice(None)] * nd
-    slice1[axis] = slice(1, None)
-    slice2[axis] = slice(None, -1)
+    slice1[axis_] = slice(1, None)
+    slice2[axis_] = slice(None, -1)
 
     if x is None:
         if dx is None:
             raise ValueError("dx cannot be None when x is None for trapz")
-        ret = sum(dx * (y[tuple(slice1)] + y[tuple(slice2)]) / 2.0, axis=axis)
+        ret = sum(dx * (y[tuple(slice1)] + y[tuple(slice2)]) / 2.0, axis=axis_)
     else:
         if x.dtype == ak.bigint:
             raise RuntimeError(f"Error executing command: trapz does not support dtype {x.dtype}")
-        d = diff(x, axis=axis)
+        d = diff(x, axis=axis_)
         if x.ndim == 1:
             shape = [1] * y.ndim
             shape[axis] = d.shape[0]
