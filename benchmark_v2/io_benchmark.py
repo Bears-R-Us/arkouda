@@ -2,6 +2,7 @@ from glob import glob
 import os
 import shutil
 
+from benchmark_utils import calc_num_bytes
 import pytest
 
 import arkouda as ak
@@ -106,16 +107,17 @@ def bench_write_hdf(benchmark, dtype):
         benchmark.pedantic(_write_files, args=(a, "HDF5", dtype), rounds=pytest.trials)
 
         if dtype in ["int64", "float64", "uint64"]:
-            nbytes = a.size * a.itemsize * pytest.io_files
+            num_bytes = calc_num_bytes(a) * pytest.io_files
         else:
-            nbytes = a.nbytes * a.entry.itemsize * pytest.io_files
+            num_bytes = calc_num_bytes(a) * pytest.io_files
 
         benchmark.extra_info["description"] = (
             f"Measures the performance of IO write {dtype} to HDF5 file"
         )
         benchmark.extra_info["problem_size"] = pytest.prob_size
+        benchmark.extra_info["num_bytes"] = num_bytes
         #   units are GiB/sec:
-        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+        benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -136,16 +138,17 @@ def bench_write_parquet(benchmark, dtype, comp):
         benchmark.pedantic(_write_files, args=(a, "PARQUET", dtype, comp), rounds=pytest.trials)
 
         if dtype in ["int64", "float64", "uint64"]:
-            nbytes = a.size * a.itemsize * pytest.io_files
+            num_bytes = calc_num_bytes(a) * pytest.io_files
         else:
-            nbytes = a.nbytes * a.entry.itemsize * pytest.io_files
+            num_bytes = calc_num_bytes(a) * pytest.io_files
 
         benchmark.extra_info["description"] = (
             f"Measures the performance of IO write {dtype} to Parquet file using {comp} compression"
         )
         benchmark.extra_info["problem_size"] = pytest.prob_size
+        benchmark.extra_info["num_bytes"] = num_bytes
         #   units are GiB/sec:
-        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+        benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -165,20 +168,21 @@ def bench_write_parquet_multi(benchmark, dtype, comp):
 
         benchmark.pedantic(_write_multi, args=(a, dtype, comp), rounds=pytest.trials)
 
-        nbytes = 0
+        num_bytes = 0
         for c in a.columns:
             col = a[c]
             if dtype in ["int64", "float64", "uint64"]:
-                nbytes = col.size * col.itemsize * pytest.io_files
+                num_bytes += calc_num_bytes(col) * pytest.io_files
             else:
-                nbytes = col.nbytes * col.entry.itemsize * pytest.io_files
+                num_bytes += calc_num_bytes(col) * pytest.io_files
 
         benchmark.extra_info["description"] = (
             f"Measures the performance of IO write {dtype} to Parquet file using {comp} compression"
         )
         benchmark.extra_info["problem_size"] = pytest.prob_size
+        benchmark.extra_info["num_bytes"] = num_bytes
         #   units are GiB/sec:
-        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+        benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -198,19 +202,20 @@ def bench_write_parquet_append(benchmark, dtype, comp):
 
         benchmark.pedantic(_append_files, args=(a, dtype, comp), rounds=pytest.trials)
 
-        nbytes = 0
+        num_bytes = 0
         for col in a.values():
             if dtype in ["int64", "float64", "uint64"]:
-                nbytes = col.size * col.itemsize * pytest.io_files
+                num_bytes += calc_num_bytes(col) * pytest.io_files
             else:
-                nbytes = col.nbytes * col.entry.itemsize * pytest.io_files
+                num_bytes += calc_num_bytes(col) * pytest.io_files
 
         benchmark.extra_info["description"] = (
             f"Measures the performance of IO write {dtype} to Parquet file using {comp} compression"
         )
         benchmark.extra_info["problem_size"] = pytest.prob_size
+        benchmark.extra_info["num_bytes"] = num_bytes
         #   units are GiB/sec:
-        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+        benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -223,16 +228,13 @@ def bench_read_hdf(benchmark, dtype):
             ak.read_hdf, args=[pytest.io_path + f"_hdf_{dtype}*", dataset], rounds=pytest.trials
         )
 
-        nbytes = 0
-        if isinstance(a, ak.pdarray):
-            nbytes += a.size * a.itemsize
-        elif isinstance(a, ak.Strings):
-            nbytes += a.nbytes * a.entry.itemsize
+        num_bytes = calc_num_bytes(a)
 
         benchmark.extra_info["description"] = "Measures the performance of IO read from HDF5 files"
         benchmark.extra_info["problem_size"] = pytest.prob_size
+        benchmark.extra_info["num_bytes"] = num_bytes
         #   units are GiB/sec:
-        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+        benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -250,16 +252,13 @@ def bench_read_parquet(benchmark, dtype, comp):
             ak.read_parquet, args=[pytest.io_path + f"_par_{comp}_{dtype}_*"], rounds=pytest.trials
         )
 
-        nbytes = 0
-        if isinstance(a, ak.pdarray):
-            nbytes += a.size * a.itemsize
-        elif isinstance(a, ak.Strings):
-            nbytes += a.nbytes * a.entry.itemsize
+        num_bytes = calc_num_bytes(a)
 
         benchmark.extra_info["description"] = "Measures the performance of IO read from Parquet files"
         benchmark.extra_info["problem_size"] = pytest.prob_size
+        benchmark.extra_info["num_bytes"] = num_bytes
         #   units are GiB/sec:
-        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+        benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -280,17 +279,13 @@ def bench_read_parquet_multi(benchmark, dtype, comp):
             ak.read_parquet, args=[pytest.io_path + f"_par_multi_{comp}_{dtype}_*"], rounds=pytest.trials
         )
 
-        nbytes = 0
-        for col in a:
-            if isinstance(col, ak.pdarray):
-                nbytes += col.size * col.itemsize
-            elif isinstance(col, ak.Strings):
-                nbytes += col.nbytes * col.entry.itemsize
+        num_bytes = calc_num_bytes(a)
 
         benchmark.extra_info["description"] = "Measures the performance of IO read from Parquet files"
         benchmark.extra_info["problem_size"] = pytest.prob_size
+        benchmark.extra_info["num_bytes"] = num_bytes
         #   units are GiB/sec:
-        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+        benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -302,18 +297,13 @@ def bench_write_hdf_multi(benchmark, dtype):
         df = _generate_df(N, dtype)
         benchmark.pedantic(_write_multi_hdf, args=(df, dtype), rounds=pytest.trials)
 
-        # compute nbytes like in parquet multi
-        nbytes = 0
-        for c in df.columns:
-            col = df[c]
-            if dtype in ["int64", "float64", "uint64"]:
-                nbytes += col.size * col.itemsize * pytest.io_files
-            else:
-                nbytes += col.nbytes * col.entry.itemsize * pytest.io_files
+        # compute num_bytes like in parquet multi
+        num_bytes = calc_num_bytes(df)
 
         benchmark.extra_info["description"] = f"Measures IO write (multi) {dtype} to HDF5"
         benchmark.extra_info["problem_size"] = pytest.prob_size
-        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+        benchmark.extra_info["num_bytes"] = num_bytes
+        benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)
@@ -328,23 +318,12 @@ def bench_read_hdf_multi(benchmark, dtype):
             rounds=pytest.trials,
         )
 
-        nbytes = 0
-
-        if isinstance(a, dict):
-            # Sum over all values in the dict
-            for val in a.values():
-                if isinstance(val, ak.pdarray):
-                    nbytes += val.size * val.itemsize
-                elif isinstance(val, ak.Strings):
-                    nbytes += val.nbytes * val.entry.itemsize
-        elif isinstance(a, ak.pdarray):
-            nbytes += a.size * a.itemsize
-        elif isinstance(a, ak.Strings):
-            nbytes += a.nbytes * a.entry.itemsize
+        num_bytes = calc_num_bytes(a)
 
         benchmark.extra_info["description"] = "Measures IO read (multi) from HDF5 files"
         benchmark.extra_info["problem_size"] = pytest.prob_size
-        benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+        benchmark.extra_info["num_bytes"] = num_bytes
+        benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.skip_numpy(True)

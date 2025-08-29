@@ -1,3 +1,4 @@
+from benchmark_utils import calc_num_bytes
 import pytest
 
 import arkouda as ak
@@ -40,18 +41,12 @@ def bench_scatter(benchmark, dtype):
         v = v_ak.to_ndarray()
         c = c_ak.to_ndarray()
 
-        def scatter_np_op():
-            _run_scatter(c, i, v)
-            return i.size * i.itemsize * 3
-
-        numBytes = benchmark.pedantic(scatter_np_op, rounds=pytest.trials)
+        benchmark.pedantic(_run_scatter, args=[c, i, v], rounds=pytest.trials)
+        num_bytes = calc_num_bytes((i, v, c))
         backend = "NumPy"
     else:
-
-        def scatter_ak_op():
-            return _run_scatter(c_ak, i_ak, v_ak)
-
-        numBytes = benchmark.pedantic(scatter_ak_op, rounds=pytest.trials)
+        benchmark.pedantic(_run_scatter, args=[c_ak, i_ak, v_ak], rounds=pytest.trials)
+        num_bytes = calc_num_bytes((c_ak, i_ak, v_ak))
         backend = "Arkouda"
 
     benchmark.extra_info["description"] = f"Measures the performance of {backend} scatter"
@@ -59,5 +54,6 @@ def bench_scatter(benchmark, dtype):
     benchmark.extra_info["problem_size"] = N
     benchmark.extra_info["index_size"] = isize
     benchmark.extra_info["value_size"] = vsize
+    benchmark.extra_info["num_bytes"] = num_bytes
     #   units are GiB/sec:
-    benchmark.extra_info["transfer_rate"] = float((numBytes / benchmark.stats["mean"]) / 2**30)
+    benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)

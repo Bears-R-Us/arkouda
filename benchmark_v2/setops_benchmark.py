@@ -1,3 +1,4 @@
+from benchmark_utils import calc_num_bytes
 import numpy as np
 import pytest
 
@@ -35,14 +36,13 @@ def bench_segarr_setops_small(benchmark, op, dtype):
     fxn = getattr(seg_a, op)
     benchmark.pedantic(fxn, args=[seg_b], rounds=pytest.trials)
 
-    nbytes = (
-        (seg_a.values.size * seg_a.values.itemsize) + (seg_a.segments.size * seg_a.segments.itemsize)
-    ) * 2
+    num_bytes = calc_num_bytes((seg_a, seg_b))
 
     benchmark.extra_info["description"] = "Measures the performance of SegArray setops (small input)"
     benchmark.extra_info["problem_size"] = N
+    benchmark.extra_info["num_bytes"] = num_bytes
     #   units are GiB/sec:
-    benchmark.extra_info["transfer_rate"] = float((nbytes / benchmark.stats["mean"]) / 2**30)
+    benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.benchmark(group="Setops")
@@ -65,7 +65,7 @@ def bench_setops(benchmark, op, dtype):
             return fxn(a, b)
 
         benchmark.pedantic(np_op, rounds=pytest.trials)
-        numBytes = a.size * a.itemsize * 2
+        num_bytes = calc_num_bytes((a, b)) if pytest.numpy else calc_num_bytes((a_ak, b_ak))
         backend = "NumPy"
     else:
         fxn = getattr(ak, op)
@@ -74,11 +74,12 @@ def bench_setops(benchmark, op, dtype):
             return fxn(a_ak, b_ak)
 
         benchmark.pedantic(ak_op, rounds=pytest.trials)
-        numBytes = a_ak.size * a_ak.itemsize * 2
+        num_bytes = calc_num_bytes((a_ak, b_ak))
         backend = "Arkouda"
 
     benchmark.extra_info["description"] = f"Measures the performance of {backend} {op}"
     benchmark.extra_info["problem_size"] = N
     benchmark.extra_info["backend"] = backend
+    benchmark.extra_info["num_bytes"] = num_bytes
     #   units are GiB/sec:
-    benchmark.extra_info["transfer_rate"] = float((numBytes / benchmark.stats["mean"]) / 2**30)
+    benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)

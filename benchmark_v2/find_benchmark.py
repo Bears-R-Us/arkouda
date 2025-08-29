@@ -1,3 +1,4 @@
+from benchmark_utils import calc_num_bytes
 import pytest
 
 import arkouda as ak
@@ -32,10 +33,7 @@ def bench_find(benchmark, dtype):
     # Select query values from the space to guarantee matches
     query = space[ak.randint(0, N, qN, seed=seed + 1)]
 
-    if dtype == "str":
-        nbytes = space.nbytes * space.entry.itemsize + query.nbytes * query.entry.itemsize
-    else:
-        nbytes = (space.size + query.size) * space.itemsize
+    num_bytes = calc_num_bytes((space, query))
 
     benchmark.pedantic(
         ak.find,
@@ -47,6 +45,7 @@ def bench_find(benchmark, dtype):
     benchmark.extra_info["description"] = "Measures the performance of ak.find with all_occurrences=True"
     benchmark.extra_info["problem_size"] = N
     benchmark.extra_info["query_size"] = qN
+    benchmark.extra_info["num_bytes"] = num_bytes
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (nbytes / benchmark.stats["mean"]) / 2**30
+        (num_bytes / benchmark.stats["mean"]) / 2**30
     )

@@ -1,3 +1,4 @@
+from benchmark_utils import calc_num_bytes
 import numpy as np
 import pytest
 
@@ -5,13 +6,6 @@ import arkouda as ak
 from arkouda.numpy.sorting import SortingAlgorithm
 
 TYPES = ("int64", "float64")
-
-
-def get_nbytes(data):
-    if isinstance(data, (ak.pdarray, ak.Strings)):
-        return data.nbytes
-    else:
-        return sum(x.nbytes for x in data)
 
 
 def do_argsort(data, algo):
@@ -29,13 +23,11 @@ def run_sort(benchmark, name, data, sort_fn):
 
             def sort_op():
                 np.lexsort(data_np[::-1])
-                return sum(x.nbytes for x in data_np)
         else:
             data_np = data.to_ndarray()
 
             def sort_op():
                 np.argsort(data_np)
-                return data_np.nbytes
 
         backend = "NumPy"
 
@@ -43,17 +35,18 @@ def run_sort(benchmark, name, data, sort_fn):
 
         def sort_op():
             p = sort_fn(data)  # noqa: F841
-            return get_nbytes(data)
 
         backend = "Arkouda"
 
-    numBytes = benchmark.pedantic(sort_op, rounds=pytest.trials)
+    benchmark.pedantic(sort_op, rounds=pytest.trials)
+    num_bytes = calc_num_bytes(data)
 
     benchmark.extra_info["description"] = f"{name} via {backend}"
     benchmark.extra_info["problem_size"] = data[0].size if isinstance(data, tuple) else data.size
     benchmark.extra_info["backend"] = backend
+    benchmark.extra_info["num_bytes"] = num_bytes
     #   units are GiB/sec:
-    benchmark.extra_info["transfer_rate"] = float((numBytes / benchmark.stats["mean"]) / 2**30)
+    benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
 
 
 @pytest.mark.benchmark(group="AK_Sort_Cases")

@@ -1,3 +1,4 @@
+from benchmark_utils import calc_num_bytes
 import pytest
 
 import arkouda as ak
@@ -31,8 +32,8 @@ def bench_shuffle(benchmark, dtype, method):
     # Create RNG
     rng = ak.random.default_rng(seed)
 
-    # Compute bytes involved (string arrays report nbytes appropriately)
-    nbytes = pda.nbytes
+    # Compute bytes involved (string arrays report num_bytes appropriately)
+    num_bytes = calc_num_bytes(pda)
 
     # Benchmark: shuffle in place
     benchmark.pedantic(
@@ -47,6 +48,7 @@ def bench_shuffle(benchmark, dtype, method):
         f"Shuffles a 1..N array with dtype={dtype} using rng.shuffle(method='{method}')."
     )
     benchmark.extra_info["problem_size"] = N
+    benchmark.extra_info["num_bytes"] = num_bytes
     benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-        (nbytes / benchmark.stats["mean"]) / 2**30
+        (num_bytes / benchmark.stats["mean"]) / 2**30
     )

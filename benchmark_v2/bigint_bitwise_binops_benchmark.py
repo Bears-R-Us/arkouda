@@ -24,7 +24,7 @@ def bench_bitwise_binops(benchmark, op):
     Measures the performance of bigint bitwise binops
     """
     N = pytest.N
-    nbytes = compute_nbytes(N)
+    num_bytes = compute_nbytes(N)
 
     a = generate_bigint_pair(N)
     b = generate_bigint_pair(N)
@@ -33,22 +33,22 @@ def bench_bitwise_binops(benchmark, op):
 
         def do_op():
             _ = a & b
-            return nbytes
+
     elif op == "or":
 
         def do_op():
             _ = a | b
-            return nbytes
+
     elif op == "shift":
 
         def do_op():
             _ = a >> 10
-            return nbytes
 
-    result = benchmark.pedantic(do_op, rounds=pytest.trials)
+    benchmark.pedantic(do_op, rounds=pytest.trials)
 
     benchmark.extra_info["description"] = "Measures the performance of bigint bitwise binops"
     benchmark.extra_info["problem_size"] = N
+    benchmark.extra_info["num_bytes"] = num_bytes
     #   units are GiB/sec:
-    benchmark.extra_info["transfer_rate"] = float((result / benchmark.stats["mean"]) / 2**30)
+    benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
     benchmark.extra_info["max_bit"] = pytest.max_bits

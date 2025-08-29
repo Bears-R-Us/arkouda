@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from benchmark_utils import calc_num_bytes
 import numpy as np
 import pytest
 
@@ -35,20 +36,7 @@ def bench_dataframe(benchmark, op):
     df = ak.DataFrame(df_dict)
 
     # calculate nbytes
-    nbytes = 0
-    for col in df.columns:
-        col_obj = df[col]
-        if isinstance(col_obj, ak.pdarray):
-            nbytes += col_obj.size * col_obj.itemsize
-        elif isinstance(col_obj, ak.Categorical):
-            nbytes += col_obj.codes.size * col_obj.codes.itemsize
-        elif isinstance(col_obj, ak.Strings):
-            nbytes += col_obj.nbytes * col_obj.entry.itemsize
-        elif isinstance(col_obj, ak.SegArray):
-            nbytes += (
-                col_obj.values.size * col_obj.values.itemsize
-                + col_obj.segments.size * col_obj.segments.itemsize
-            )
+    num_bytes = calc_num_bytes(df)
 
     if pytest.numpy:
         # simulate with pandas
@@ -57,19 +45,18 @@ def bench_dataframe(benchmark, op):
         def pandas_op():
             if op == "_get_head_tail_server" or op == "_get_head_tail":
                 df_sim.head()  # simplified equivalent
-            return nbytes
 
-        numBytes = benchmark.pedantic(pandas_op, rounds=pytest.trials)
+        benchmark.pedantic(pandas_op, rounds=pytest.trials)
     else:
         fxn = getattr(df, op)
 
         def arkouda_op():
             fxn()
-            return nbytes
 
-        numBytes = benchmark.pedantic(arkouda_op, rounds=pytest.trials)
+        benchmark.pedantic(arkouda_op, rounds=pytest.trials)
 
     benchmark.extra_info["description"] = "Measures the performance of arkouda Dataframe indexing"
     benchmark.extra_info["problem_size"] = N
+    benchmark.extra_info["num_bytes"] = num_bytes
     #   units are GiB/sec:
-    benchmark.extra_info["transfer_rate"] = float((numBytes / benchmark.stats["mean"]) / 2**30)
+    benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
