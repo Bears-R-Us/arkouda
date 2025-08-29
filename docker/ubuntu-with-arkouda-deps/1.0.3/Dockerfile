@@ -12,7 +12,7 @@ ENV CHPL_TARGET_CPU=native
 ENV MANPATH=/opt/chapel-2.5.0/man
 ENV CHPL_TASKS=qthreads
 ENV CHPL_MEM=cstdlib
-ENV CHPL_HOST_MEM=cstdlib
+ENV CHPL_HOST_MEM=jemalloc
 ENV CHPL_LLVM=none
 
 #   Set timezone, a prerequisite of the python3.12 install
