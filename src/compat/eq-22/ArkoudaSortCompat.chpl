@@ -1,5 +1,5 @@
 module ArkoudaSortCompat {
-  public use Sort except defaultComparator, DefaultComparator;
+  public use Sort except defaultComparator;
 
   proc defaultComparator type {
     import Sort;
