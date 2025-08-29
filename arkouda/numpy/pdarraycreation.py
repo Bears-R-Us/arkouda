@@ -36,12 +36,7 @@ from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.numpy.pdarrayclass import (
-    _axis_validation,
-    broadcast_to_shape,
-    create_pdarray,
-    pdarray,
-)
+from arkouda.numpy.pdarrayclass import broadcast_to_shape, create_pdarray, pdarray
 from arkouda.numpy.strings import Strings
 
 if TYPE_CHECKING:
@@ -1320,7 +1315,7 @@ def linspace(
     from arkouda import newaxis
     from arkouda.numeric import transpose
     from arkouda.numpy.manipulation_functions import tile
-    from arkouda.numpy.util import broadcast_dims
+    from arkouda.numpy.util import _integer_axis_validation, broadcast_dims
 
     if dtype not in (None, float64):
         raise TypeError("dtype must be None or float64")
@@ -1377,9 +1372,9 @@ def linspace(
         # Handle the axis parameter if needed
 
         if axis != 0:
-            good, axis_ = _axis_validation(axis, result.ndim)
-            if not good:
-                raise ValueError(f"{axis} is not a valid axis for the result of linspace.")
+            valid, axis_ = _integer_axis_validation(axis, result.ndim)
+            if not valid:
+                raise IndexError(f"{axis} is not a valid axis for the result of linspace.")
             axes = list(range(result.ndim))
             axes[axis_] = 0
             axes[0] = axis_

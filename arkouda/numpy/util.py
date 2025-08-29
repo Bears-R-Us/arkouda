@@ -27,6 +27,7 @@ from arkouda.pandas.groupbyclass import GroupBy
 __all__ = [
     "attach",
     "attach_all",
+    "_axis_validation",
     "broadcast_dims",
     "convert_bytes",
     "convert_if_categorical",
@@ -34,6 +35,7 @@ __all__ = [
     "generic_concat",
     "get_callback",
     "identity",
+    "_integer_axis_validation",
     "invert_permutation",
     "is_float",
     "is_int",
@@ -1111,3 +1113,66 @@ def may_share_memory(a, b):
         # Unknown types: be conservative if you wish; here we say False.
         return False
     return len(a_names.intersection(b_names)) > 0
+
+
+# bounds_check is just called on integers, to ensure they fit in the range
+
+
+def bounds_check(axis, rank):
+    if axis < -rank or axis >= rank:
+        return False
+    else:
+        return True
+
+
+# adjust_negs will only be called if bounds_check passes
+
+
+def adjust_negs(axis, rank):
+    return axis if axis >= 0 else axis + rank
+
+
+# axis validation can be called in multiple conditions.
+
+# Some functions require the axis to be an integer.  For that, we have
+# _integer_axis_validation, which returns a boolean and an int.
+
+
+def _integer_axis_validation(axis: int_scalars, rank):
+    if bounds_check(axis, rank):
+        axis = adjust_negs(axis, rank)
+        return True, axis
+    else:
+        return False, axis
+
+
+# Other functions allow the axis to be None, int, List, or Tuple.
+# For that, we have the more general _axis_validation, which returns
+# a boolean and a list.
+
+
+def _axis_validation(axis, rank):
+    if axis is None:
+        return True, None
+
+    elif isinstance(axis, int):
+        if bounds_check(axis, rank):
+            axis = adjust_negs(axis, rank)
+            return True, list[axis]
+        else:
+            return False, list[axis]
+
+    else:
+        if isinstance(axis, list):
+            axis_ = axis.copy()
+        elif isinstance(axis, tuple):
+            axis_ = list(axis)
+        else:
+            return False, axis
+        valid = True
+        for i in range(len(axis_)):
+            if bounds_check(axis_[i], rank):
+                axis_[i] = adjust_negs(axis_[i], rank)
+            else:
+                valid = False
+        return valid, axis_

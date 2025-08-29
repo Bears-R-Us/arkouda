@@ -78,14 +78,14 @@ def argsort(
     >>> ak.argsort(a, ak.sorting.SortingAlgorithm["TwoArrayRadixSort"])
     array([9 3 5 4 2 7 8 0 6 1])
     """
+    from arkouda.numpy.util import _integer_axis_validation
     from arkouda.pandas.categorical import Categorical
 
     ndim = cast(Union[int, np.integer], getattr(pda, "ndim"))
 
-    if axis < -1 or axis > int(ndim):
-        raise ValueError(f"Axis must be between -1 and the PD Array's rank ({int(ndim)})")
-    if axis == -1:
-        axis = int(ndim) - 1
+    valid, axis_ = _integer_axis_validation(axis, ndim)
+    if not valid:
+        raise IndexError(f"{axis} is not a valid axis for array of rank {ndim}")
 
     check_type(
         argname="argsort",
@@ -99,7 +99,7 @@ def argsort(
         perm = pda.argsort(algorithm=algorithm)
         return perm
     elif isinstance(pda, pdarray):
-        return pda.argsort(algorithm=algorithm, axis=axis)
+        return pda.argsort(algorithm=algorithm, axis=axis_)
     else:
         raise TypeError(f"ak.argsort only supports pdarray, Strings, and Categorical, not {type(pda)}")
 
@@ -284,6 +284,11 @@ def sort(
     array([0 1 1 4 5 5 5 7 8 9])
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.util import _integer_axis_validation
+
+    valid, axis_ = _integer_axis_validation(axis, pda.ndim)
+    if not valid:
+        raise IndexError(f"{axis} is not a valid axis for array of rank {pda.ndim}")
 
     if pda.dtype == bigint:
         return pda[coargsort(pda.bigint_to_uint_arrays(), algorithm)]
@@ -293,7 +298,7 @@ def sort(
         return zeros(0, dtype=pda.dtype)
     repMsg = generic_msg(
         cmd=f"sort<{pda.dtype.name},{pda.ndim}>",
-        args={"alg": algorithm.name, "array": pda, "axis": axis},
+        args={"alg": algorithm.name, "array": pda, "axis": axis_},
     )
     return create_pdarray(cast(str, repMsg))
 
