@@ -665,30 +665,45 @@ class Generator:
         self._state += full_size * 2
         return create_pdarray(rep_msg)
 
-    def shuffle(self, x, method="FisherYates"):
+    def shuffle(
+        self,
+        x,
+        method: str = "FisherYates",
+        *,
+        feistel_rounds: int = 16,
+        feistel_key: int | None = None,
+    ):
         """
         Randomly shuffle the elements of a `pdarray` in place.
 
         This method performs a reproducible in-place shuffle of the array `x`
-        using the specified strategy. Two methods are currently available:
+        using the specified strategy. Three methods are available:
 
         Parameters
         ----------
         x : pdarray
             The array to be shuffled in place. Must be a one-dimensional Arkouda array.
 
-        method : str, optional
-            The shuffling method to use. Supported options:
-
-            - "FisherYates": Applies a **serial, global** Fisher-Yates shuffle implemented
-              in Chapel. This is a simple and fast algorithm for small to medium arrays,
-              but **not distributed** — the entire array must fit in the memory of one locale.
-
-            - "MergeShuffle": A **fully distributed shuffle** that combines local randomization
-              and cross-locale probabilistic merging. This scales to large datasets and
-              ensures good statistical uniformity across locales.
+        method : {"FisherYates","MergeShuffle","Feistel"}, optional
+            - "FisherYates": A **serial, global** Fisher–Yates shuffle implemented in Chapel.
+              Simple and fast for small/medium arrays, but **not distributed** — the entire
+              array must fit on one locale.
+            - "MergeShuffle": A **fully distributed** shuffle that combines local randomization
+              and cross-locale probabilistic merging. Scales to large datasets and maintains
+              good statistical uniformity across locales.
+            - "Feistel": A **keyed permutation** of indices via a Feistel PRP over [0, N),
+              then applies that permutation to `x`. Works for any `N` (uses cycle-walking
+              when N is not a power of two). **Distributed-friendly** and reproducible.
+              Not intended for cryptographic security.
 
             Default is "FisherYates".
+
+        feistel_rounds : int, optional (keyword-only)
+            Number of Feistel rounds (default 16). Higher may cost more time.
+
+        feistel_key : int or None, optional (keyword-only)
+            64-bit key for the Feistel permutation. If None, the backend should derive
+            a key from the RNG stream so results remain deterministic given the client RNG state.
 
         Raises
         ------
@@ -696,17 +711,18 @@ class Generator:
             If `x` is not a `pdarray`.
 
         ValueError
-            If an unsupported shuffle method is specified.
+            If an unsupported shuffle method is specified, or if `feistel_key` is not a 64-bit integer.
 
         Notes
         -----
         - The shuffle modifies `x` in place.
         - The result is deterministic given the client RNG state.
-        - For `"MergeShuffle"`, reproducibility is guaranteed
-            **only if the number of locales remains fixed**
-            between runs. Changing locale count will result in different permutations.
+        - For `"MergeShuffle"`, reproducibility is guaranteed **only if the number of locales
+          remains fixed** between runs. Changing locale count will yield different permutations.
         - Use `"FisherYates"` only for small arrays or testing.
         - Use `"MergeShuffle"` for production-scale distributed shuffling.
+        - Use `"Feistel"` when you need a keyed, reproducible permutation of indices that
+          also scales in distributed settings.
 
         Examples
         --------
@@ -721,26 +737,64 @@ class Generator:
         >>> rng.shuffle(pda, method="MergeShuffle")
         >>> pda
         array([5 6 9 3 8 2 7 0 4 1])
-
+        >>> rng.shuffle(pda, method="Feistel", feistel_rounds=18)
+        >>> pda
+        array([8 7 3 2 4 9 0 1 5 6])
+        >>> rng.shuffle(pda, method="Feistel", feistel_key=0x1234_5678_9ABC_DEF0, feistel_rounds=18)
+        >>> pda
+        array([6 1 7 3 4 9 2 0 5 8])
         """
         from arkouda.client import generic_msg
 
         if not isinstance(x, pdarray):
             raise TypeError("shuffle only accepts a pdarray.")
+
+        method_lower = method.lower()
+        supported = {"fisheryates", "mergeshuffle", "feistel"}
+        if method_lower not in supported:
+            raise ValueError(
+                f"Unsupported shuffle method '{method}'. Supported: {sorted(m for m in supported)}"
+            )
+
+        # Validate Feistel options on the client side (cheap sanity checks)
+        if method_lower == "feistel":
+            if not isinstance(feistel_rounds, int) or feistel_rounds <= 0:
+                raise ValueError("feistel_rounds must be a positive integer.")
+            if feistel_key is not None:
+                if not isinstance(feistel_key, int):
+                    raise ValueError("feistel_key must be an int (64-bit).")
+                # Enforce 64-bit domain
+                if feistel_key < 0 or feistel_key > (1 << 64) - 1:
+                    raise ValueError("feistel_key must fit in 64 bits (0..2^64-1).")
+
         dtype = to_numpy_dtype(x.dtype)
         name = self._name_dict[to_numpy_dtype(akint64)]
         ndim = len(x.shape)
+
+        args = {
+            "name": name,
+            "x": x,
+            "shape": x.shape,
+            "state": self._state,
+            "method": method_lower,
+        }
+
+        # Method-specific extras
+        if method_lower == "feistel":
+            args.update(
+                {
+                    "feistel_rounds": int(feistel_rounds),
+                    # Pass the key when provided; otherwise omit and let Chapel derive from RNG
+                    **({"feistel_key": int(feistel_key)} if feistel_key is not None else {}),
+                }
+            )
+
         generic_msg(
             cmd=f"shuffle<{dtype.name},{ndim}>",
-            args={
-                "name": name,
-                "x": x,
-                "shape": x.shape,
-                "state": self._state,
-                "method": method.lower(),
-            },
+            args=args,
         )
-        self._state += 1
+        if method_lower != "feistel" or feistel_key is None:
+            self._state += 1
 
     def permutation(self, x, method="Argsort"):
         """

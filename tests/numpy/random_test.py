@@ -76,7 +76,7 @@ class TestRandom:
         assert all(bounded_arr.to_ndarray() < 5)
 
     @pytest.mark.parametrize("data_type", INT_FLOAT)
-    @pytest.mark.parametrize("method", ["FisherYates", "MergeShuffle"])
+    @pytest.mark.parametrize("method", ["FisherYates", "MergeShuffle", "Feistel"])
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_shuffle(self, data_type, method, size):
         # ints are checked for equality; floats are checked for closeness
@@ -586,10 +586,10 @@ class TestRandom:
         with pytest.raises(TypeError):
             ak.random.randint()
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="size must be >= 0, ndim >= 1, and high >= low"):
             ak.random.randint(low=0, high=1, size=-1, dtype=ak.float64)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="size must be >= 0, ndim >= 1, and high >= low"):
             ak.random.randint(low=1, high=0, size=1, dtype=ak.float64)
 
         with pytest.raises(TypeError):
@@ -720,7 +720,7 @@ class TestRandom:
         with pytest.raises(TypeError):
             ak.random.standard_normal(100.0)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="The size parameter must be > 0"):
             ak.random.standard_normal(-1)
 
         # Test that int_scalars covers uint8, uint16, uint32
