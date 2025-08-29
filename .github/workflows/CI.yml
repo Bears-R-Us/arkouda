@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   lint:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -29,11 +29,11 @@ jobs:
       run: make check-doc-examples
 
   chpl-lint:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: jaketrookman/ubuntu-with-arkouda-deps:1.0.3
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -56,7 +56,7 @@ jobs:
         make chplcheck
 
   darglint:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -70,7 +70,7 @@ jobs:
         darglint -v 2 arkouda
 
   isort:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -86,7 +86,7 @@ jobs:
         run: isort --check-only --diff .
 
   ruff-format:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Install Python
@@ -105,11 +105,11 @@ jobs:
         run: ruff format --check --diff
 
   mypy:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: jaketrookman/ubuntu-with-arkouda-deps:1.0.3
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -128,11 +128,11 @@ jobs:
         python3 -m mypy arkouda
 
   docs:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: jaketrookman/ubuntu-with-arkouda-deps:1.0.3
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -155,7 +155,7 @@ jobs:
         make doc
 
   docstr-cov:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -169,9 +169,9 @@ jobs:
           make docstr-coverage
 
   flake8:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     container:
-      image: jaketrookman/ubuntu-with-arkouda-deps:1.0.3
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -198,14 +198,15 @@ jobs:
         flake8
 
   arkouda_python_portability:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13']
     env:
       CHPL_HOME: /opt/chapel-2.5.0
+      PATH: /opt/chapel-2.5.0/bin/linux64-x86_64:/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/venv/bin
     container:
-      image: jaketrookman/ubuntu-with-arkouda-deps:1.0.3
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -241,14 +242,14 @@ jobs:
         make test-python size=100
         
   arkouda_makefile_almalinux:
-    runs-on: ubuntu-24.04-arm    
+    runs-on: ubuntu-24.04  
     strategy:
       matrix:
         python-version: ['3.13']
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: jaketrookman/almalinux-with-arkouda-deps:1.0.3
+      image: ajpotts/almalinux-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -343,11 +344,11 @@ jobs:
           HDF5_DIR=$(pwd)/dep/hdf5-install/ make install-pytables
 
   arkouda_makefile:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: jaketrookman/ubuntu-with-arkouda-deps:1.0.3
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4    
@@ -438,14 +439,14 @@ jobs:
 
 
   arkouda_chpl_portability:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0','2.4.0','2.5.0']
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: jaketrookman/ubuntu-with-arkouda-deps:1.0.3
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -486,7 +487,7 @@ jobs:
         make test-python size=100
 
   arkouda_multi-dim:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0','2.4.0','2.0.5']
@@ -494,7 +495,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: jaketrookman/ubuntu-with-arkouda-deps:1.0.3
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Show memory available
       run: |
@@ -548,12 +549,12 @@ jobs:
         make test-python size=100
 
   arkouda_tests_linux:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     env:
       CHPL_RT_NUM_THREADS_PER_LOCALE: 2
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: jaketrookman/ubuntu-with-arkouda-deps:1.0.3
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -600,11 +601,11 @@ jobs:
         ARKOUDA_HOME=$(pwd) ./benchmarks/run_benchmarks.py --size=100 --gen-graphs
         
   arkouda_benchmark_linux:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: jaketrookman/ubuntu-with-arkouda-deps:1.0.3
+      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
