@@ -416,7 +416,7 @@ class TestPdarrayCreation:
         assert (uint_array == int_array).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", [ak.float64, ak.uint64, ak.float64])
+    @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
     @pytest.mark.parametrize("start", [0, 2, 5])
     @pytest.mark.parametrize("step", [1, 3])
     def test_compare_arange(self, size, dtype, start, step):
