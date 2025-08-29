@@ -54,7 +54,7 @@ BENCHMARKS = [
     "substring_search",
     "split",
     "sort-cases",
-    # "multiIO",
+    "multiIO",
     "str-locality",
     "dataframe",
     "encode",
