@@ -554,7 +554,7 @@ ifeq ($(shell expr $(CHPL_MINOR) \>= 4),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-24
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \>= 2),1)
+ifeq ($(shell expr $(expr $(CHPL_MINOR) \>= 2) & $(expr $(CHPL_MINOR) \< 5)),1)
 	ARKOUDA_KEYPART_FLAG := -suseKeyPartStatus=true
 endif
 
