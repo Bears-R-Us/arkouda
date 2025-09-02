@@ -8,13 +8,29 @@ from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.random.generator import default_rng
 
 __all__ = [
+    "choice",
+    "exponential",
+    "integers",
+    "logistic",
+    "lognormal",
+    "normal",
+    "permutation",
+    "poisson",
     "rand",
+    "random",
     "randint",
+    "seed",
+    "shuffle",
+    "standard_exponential",
+    "standard_gamma",
     "standard_normal",
     "uniform",
 ]
+
+theGenerator = None  # create a symbol, used below to check if generator exists
 
 
 @typechecked
@@ -283,3 +299,96 @@ def uniform(
     array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
     """
     return randint(low=low, high=high, size=size, dtype="float64", seed=seed)
+
+
+def defaultGeneratorExists():  # used to determine if generator has been created
+    return theGenerator is not None
+
+
+def seed(seed=None):
+    # reseeding always causes the destruction of an existing generator, because
+    # there is no way to reseed a chapel randomStream.
+    # The existing generator can be deleted, though python doesn't require that.
+    # Python-side, it suffices to create a new generator with the new seed.
+
+    # Chapel-side, there isn't presently (Sep 2025) a destructor for the random
+    # number generator -- if there were, then from the python-side, we could invoke
+    # it before creating a new generator with a new seed.
+
+    global theGenerator
+
+    if defaultGeneratorExists():
+        del theGenerator
+
+    theGenerator = default_rng(seed)
+
+
+#   All of the functions below are called as ak.random.function_name.  They
+#   pass their arguments to the appropriate function method in theGenerator.
+
+#   "seed() if condition else None" is a 1-line implementation of  "if condition then seed()"
+
+
+def integers(low=0, high=10, size=5):
+    seed() if not defaultGeneratorExists() else None
+    return theGenerator.integers(low, high, size)
+
+
+def choice(a, size=None, replace=True, p=None):
+    seed() if not defaultGeneratorExists() else None
+    return theGenerator.choice(a, size, replace, p)
+
+
+def exponential(scale=1.0, size=None, method="zig"):
+    seed() if not defaultGeneratorExists() else None
+    return theGenerator.exponential(scale, size, method)
+
+
+def standard_exponential(size=None, method="zig"):
+    seed() if not defaultGeneratorExists() else None
+    return theGenerator.standard_exponential(size, method)
+
+
+def logistic(loc=0.0, scale=0.0, size=None):
+    seed() if not defaultGeneratorExists() else None
+    return theGenerator.logistic(loc, scale, size)
+
+
+def lognormal(mean=0.0, sigma=1.0, size=None, method="zig"):
+    seed() if not defaultGeneratorExists() else None
+    return theGenerator.lognormal(mean, sigma, size, method)
+
+
+def normal(loc=0.0, scale=1.0, size=None, method="zig"):
+    seed() if not defaultGeneratorExists() else None
+    return theGenerator.normal(loc, scale, size, method)
+
+
+def random(size=None):
+    seed() if not defaultGeneratorExists() else None
+    return theGenerator.random(size)
+
+
+def standard_gamma(shape, size=None):
+    seed() if not defaultGeneratorExists() else None
+    return theGenerator.standard_gamma(shape, size)
+
+
+def shuffle(x, method="FisherYates"):
+    seed() if not defaultGeneratorExists() else None
+    return theGenerator.shuffle(x, method)
+
+
+def permutation(x, method="Argsort"):
+    seed() if not defaultGeneratorExists() else None
+    return theGenerator.permutation(x, method)
+
+
+def poisson(lam=1.0, size=None):
+    seed() if not defaultGeneratorExists() else None
+    return theGenerator.poisson(lam, size)
+
+
+#   TODO:
+#   Resolve the duplication of standard_normal and uniform (which are both here and
+#   in generator.py).  The python code is not identical.

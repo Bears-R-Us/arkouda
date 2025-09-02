@@ -1,10 +1,43 @@
-from .generator import Generator, default_rng  # noqa
-from .legacy import rand, randint, standard_normal, uniform
+from .generator import Generator, default_rng
+
+from .legacy import (
+    randint,
+    standard_normal,
+    uniform,
+    choice,
+    seed,
+    integers,
+    exponential,
+    standard_exponential,
+    logistic,
+    lognormal,
+    normal,
+    permutation,
+    poisson,
+    random,
+    rand,
+    shuffle,
+    standard_gamma,
+)
 
 __all__ = [
     "Generator",
-    "rand",
     "randint",
+    "choice",
+    "default_rng",
+    "exponential",
+    "integers",
+    "logistic",
+    "lognormal",
+    "normal",
+    "permutation",
+    "poisson",
+    "random",
+    "rand",
+    "seed",
+    "shuffle",
+    "standard_exponential",
+    "standard_gamma",
     "standard_normal",
     "uniform",
 ]
