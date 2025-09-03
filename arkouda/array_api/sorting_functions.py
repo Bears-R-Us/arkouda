@@ -54,9 +54,6 @@ def sort(x: Array, /, *, axis: int = -1, descending: bool = False, stable: bool 
         Whether to use a stable sorting algorithm. Note: arkouda's sorting algorithm is always stable so
         this argument is ignored.
     """
-    if axis == -1:
-        axis = x.ndim - 1
-
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in sort")
 

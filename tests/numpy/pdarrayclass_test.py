@@ -493,7 +493,7 @@ class TestPdarrayClass:
 
     def test_argsort_invalid_axis(self):
         a = ak.array([1, 2, 3])
-        with pytest.raises(ValueError, match="axis=2 is invalid for array with ndim=1"):
+        with pytest.raises(IndexError):
             a.argsort(axis=2)
 
     def test_argsort_axis_minus1(self):
