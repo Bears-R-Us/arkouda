@@ -69,27 +69,6 @@ class TestDTypes:
         # Test with a non-Union type
         assert not _is_dtype_in_union(np.float64, float)
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    @pytest.mark.parametrize(
-        "dtype",
-        [
-            ak.numpy.dtypes.uint8,
-            ak.numpy.dtypes.uint64,
-            ak.numpy.dtypes.int64,
-            ak.numpy.dtypes.float64,
-            ak.numpy.dtypes.bool_,
-            ak.numpy.dtypes.bigint,
-        ],
-    )
-    def test_nbytes(self, size, dtype):
-        a = ak.array(ak.arange(size), dtype=dtype)
-        assert a.nbytes == size * ak.dtype(dtype).itemsize
-
-    def test_nbytes_str(self):
-        a = ak.array(["a", "b", "c"])
-        c = ak.Categorical(a)
-        assert c.nbytes == 82
-
     def test_pdarrays_datatypes(self):
         assert dtypes.dtype("int64") == ak.array(np.arange(10)).dtype
         assert dtypes.dtype("uint64") == ak.array(np.arange(10), ak.uint64).dtype

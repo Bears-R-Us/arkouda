@@ -24,6 +24,55 @@ DTYPES = ["int64", "float64", "bool", "uint64"]
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
 NUMERIC_TYPES_NO_BOOL = [ak.int64, ak.float64, ak.uint64]
 
+
+def _singleton_bigint(init=0):
+    # Guaranteed length-1 bigint array, then set initial value.
+    a = ak.arange(1, dtype=ak.bigint)
+    a[0] = init
+    return a
+
+
+def _detect_limb_params():
+    """
+    Detect limb_bytes (4 or 8) and limb_bits by watching nbytes jumps.
+    Creates a length-1 bigint safely (no empty array surprises).
+    """
+    import math
+
+    a = _singleton_bigint(0)
+
+    prev = int(a.nbytes)
+    deltas = []
+
+    # bump value and watch for capacity jumps
+    for e in range(1, 1025):
+        a[0] = 1 << e
+        nb = int(a.nbytes)
+        if nb > prev:
+            deltas.append(nb - prev)
+            prev = nb
+            if len(deltas) >= 3:
+                break
+
+    if not deltas:
+        pytest.skip("Could not detect limb parameters from nbytes deltas")
+
+    limb_bytes = deltas[0]
+    for d in deltas[1:]:
+        limb_bytes = math.gcd(limb_bytes, d)
+    assert limb_bytes in (4, 8), f"Unexpected limb size: {limb_bytes}"
+
+    limb_bits = limb_bytes * 8
+    return limb_bytes, limb_bits
+
+
+def _limbs_needed(val: int, limb_bits: int) -> int:
+    """Number of limbs required for the value (used, not capacity)."""
+    if val == 0:
+        return 1
+    return (val.bit_length() + limb_bits - 1) // limb_bits
+
+
 #   TODO: add uint8 to DTYPES
 
 
@@ -568,3 +617,69 @@ class TestPdarrayClass:
 
         assert a_cpy is not a
         ak_assert_equal(a, a_cpy)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize(
+        "dtype",
+        [
+            ak.numpy.dtypes.uint8,
+            ak.numpy.dtypes.uint64,
+            ak.numpy.dtypes.int64,
+            ak.numpy.dtypes.float64,
+            ak.numpy.dtypes.bool_,
+        ],
+    )
+    def test_nbytes(self, size, dtype):
+        a = ak.array(ak.arange(size), dtype=dtype)
+        assert a.nbytes == size * ak.dtype(dtype).itemsize
+
+    def test_nbytes_str(self):
+        a = ak.array(["a", "b", "c"])
+        c = ak.Categorical(a)
+        assert c.nbytes == 82
+
+    def test_bigint_nbytes_does_not_shrink_on_zero_assignment(self):
+        limb_bytes, limb_bits = _detect_limb_params()
+
+        N = 64
+        four_limb_val = 1 << (3 * limb_bits)  # needs 4 limbs
+        a = ak.array([four_limb_val] * N, dtype=ak.bigint)
+
+        before = int(a.nbytes)
+        a[0] = 0
+        after = int(a.nbytes)
+
+        # Capacity does not auto-shrink
+        assert after >= before
+
+    def test_bigint_nbytes_grows_by_integral_limb_chunks(self):
+        limb_bytes, limb_bits = _detect_limb_params()
+
+        two_limb_val = 1 << (1 * limb_bits)  # ~2 limbs
+        five_limb_val = 1 << (4 * limb_bits)  # ~5 limbs
+
+        a = ak.array([two_limb_val], dtype=ak.bigint)
+        base = int(a.nbytes)
+
+        a[0] = five_limb_val
+        grown = int(a.nbytes)
+        delta = grown - base
+
+        assert delta % limb_bytes == 0
+        assert delta >= 3 * limb_bytes  # grew by at least 3 limbs
+
+    def test_bigint_nbytes_delta_matches_limbs_times_elements(self):
+        limb_bytes, limb_bits = _detect_limb_params()
+
+        N = 128
+        two_limb_val = 1 << (1 * limb_bits)  # 2 limbs
+        four_limb_val = 1 << (3 * limb_bits)  # 4 limbs
+
+        a = ak.array([four_limb_val] * N, dtype=ak.bigint)
+        b = ak.array([two_limb_val] * N, dtype=ak.bigint)
+
+        bytes_a = int(a.nbytes)
+        bytes_b = int(b.nbytes)
+
+        expected_delta = (4 - 2) * N * limb_bytes
+        assert (bytes_a - bytes_b) == expected_delta

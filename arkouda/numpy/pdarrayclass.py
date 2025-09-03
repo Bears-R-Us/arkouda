@@ -1495,6 +1495,17 @@ class pdarray:
             The size of the pdarray in bytes.
 
         """
+        if self.dtype == bigint:
+            from arkouda.client import generic_msg
+
+            return int(
+                generic_msg(
+                    cmd=f"big_int_nbytes<{self.dtype},{self.ndim}>",
+                    args={
+                        "array": self,
+                    },
+                )
+            )
         return self.size * self.dtype.itemsize
 
     @typechecked
