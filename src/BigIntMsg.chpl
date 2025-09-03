@@ -12,9 +12,48 @@ module BigIntMsg {
     use List;
     use IOUtils;
 
+    use GMP;
+    use CTypes;
+    // Compile/link the C sources alongside this module
+    require "c_helpers/mpz_alloc_shim.h", "c_helpers/mpz_alloc_shim.c";
+
+    // C prototypes (pointer to GMP struct)
+    private extern proc ark_mpz_alloc_from_struct_p(s: c_ptrConst(__mpz_struct)): c_int;
+    private extern proc ark_mpz_size_from_struct_p(s: c_ptrConst(__mpz_struct)): c_int; // optional
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const biLogger = new Logger(logLevel, logChannel);
+
+    @arkouda.instantiateAndRegister("big_int_nbytes")
+    proc bigIntNBytesMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                           st: borrowed SymTab, type array_dtype,
+                           param array_nd: int): MsgTuple throws
+        where (array_dtype == bigint) {
+        param pn = Reflection.getRoutineName();
+        var repMsg: string;
+
+        const name = msgArgs.getValueOf("array");
+        var entry = st[name]: SymEntry(array_dtype, array_nd);
+
+        var nbytes = 0;
+        const limbBytes: int = (GMP.mp_bits_per_limb:int) / 8;  // 8 on 64-bit builds
+        // Fixed in-record overhead ≈ 24 bytes on x86-64:
+        //   16 (struct: two 32-bit ints + 8-byte ptr) + 4 (localeId) + 4 (padding)
+        const fixed = 24;
+
+        forall i in entry.a.domain with (+ reduce nbytes) {
+            const ref bi = entry.a[i];  // const ref binding to the element
+            // getImpl() returns the struct BY VALUE; take a pointer to that temp
+            var impl = bi.getImpl();
+            const alloc: int(64) = ark_mpz_alloc_from_struct_p(c_ptrTo(impl)): int(64);
+            nbytes += fixed + alloc * limbBytes;
+        }
+
+        repMsg = nbytes:string;
+        biLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
 
     @arkouda.instantiateAndRegister("big_int_creation")
     proc bigIntCreationMsg(cmd: string, msgArgs: borrowed MessageArgs,
