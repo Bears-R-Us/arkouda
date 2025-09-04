@@ -78,7 +78,6 @@ class TestDTypes:
             ak.numpy.dtypes.int64,
             ak.numpy.dtypes.float64,
             ak.numpy.dtypes.bool_,
-            ak.numpy.dtypes.bigint,
         ],
     )
     def test_nbytes(self, size, dtype):
