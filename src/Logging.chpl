@@ -33,7 +33,7 @@ module Logging {
      */
     class ConsoleOutputHandler : OutputHandler {
         override proc write(message: string) throws {
-            writeln(message);
+            // writeln(message);
             stdout.flush();
         }
     }
