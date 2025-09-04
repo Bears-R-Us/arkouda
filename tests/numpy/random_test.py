@@ -22,6 +22,7 @@ class TestRandom:
         result = doctest.testmod(random, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
+    @pytest.mark.skip_if_nl_neq(1)
     def test_random_generator_docstrings(self):
         import doctest
 
