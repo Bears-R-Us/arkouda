@@ -56,10 +56,10 @@ def join_on_eq_with_dt(
 
     Parameters
     ----------
-    a1 : pdarray, int64
-        pdarray to be joined
-    a2 : pdarray, int64
-        pdarray to be joined
+    a1 : pdarray
+        Values to join (must be int64 dtype).
+    a2 : pdarray
+        Values to join (must be int64 dtype).
     t1 : pdarray
         timestamps in millis corresponding to the a1 pdarray
     t2 : pdarray

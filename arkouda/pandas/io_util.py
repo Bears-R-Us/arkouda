@@ -163,7 +163,7 @@ def dict_to_delimited_file(path: str, values: Mapping[Any, Any], delimiter: str 
     ----------
     path : str
         Path to the file
-    delimiter
+    delimiter : str
         Delimiter separating key and value
 
     Raises
