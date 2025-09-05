@@ -9,17 +9,18 @@ NUM_ARR = [1, 2, 8, 16]
 
 def generate_arrays(dtype, numArrays, N):
     arrays = []
+    size = max(1, N // numArrays)
     for i in range(numArrays):
         if dtype == ak.bigint.name:
-            a = ak.randint(0, 2**32, N // numArrays, dtype=ak.uint64, seed=pytest.seed)
-            b = ak.randint(0, 2**32, N // numArrays, dtype=ak.uint64, seed=pytest.seed)
+            a = ak.randint(0, 2**32, size, dtype=ak.uint64, seed=pytest.seed)
+            b = ak.randint(0, 2**32, size, dtype=ak.uint64, seed=pytest.seed)
             ba = ak.bigint_from_uint_arrays([a, b], max_bits=pytest.max_bits)
             arrays.append(ba)
         elif dtype == "int64" or (i % 2 == 0 and dtype == "mixed"):
-            a = ak.randint(0, 2**32, N // numArrays, seed=pytest.seed)
+            a = ak.randint(0, 2**32, size, seed=pytest.seed)
             arrays.append(a)
         else:
-            a = ak.random_strings_uniform(1, 16, N // numArrays, seed=pytest.seed)
+            a = ak.random_strings_uniform(1, 16, size, seed=pytest.seed)
             arrays.append(a)
         if pytest.seed is not None:
             pytest.seed += 1
@@ -40,7 +41,7 @@ def bench_groupby(benchmark, numArrays, dtype):
         benchmark.pedantic(ak.GroupBy, args=[arrays], rounds=pytest.trials)
 
         benchmark.extra_info["description"] = (
-            f"Measures the performance of ak.GroupBy creation with {dtype} dtype"
+            f"Measures the performance of ak.GroupBy creation of {numArrays} array(s) with {dtype} dtype"
         )
         benchmark.extra_info["problem_size"] = N
         benchmark.extra_info["num_bytes"] = num_bytes
