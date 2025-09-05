@@ -58,6 +58,7 @@ array([0 1 2 3 4])
 
 import json
 from json import JSONEncoder
+import sys
 from typing import TYPE_CHECKING, List, TypeVar, Union, cast
 
 from typeguard import typechecked
@@ -230,4 +231,4 @@ def pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -
 
     """
     for i in _parse_json(names):
-        print(i)
+        sys.stdout.write(str(i))

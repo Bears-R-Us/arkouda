@@ -3,6 +3,7 @@ from __future__ import annotations
 import builtins
 import json
 from math import prod as maprod
+import sys
 from typing import TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar, Union, cast
 
 from typeguard import typechecked
@@ -105,7 +106,7 @@ def generic_concat(items, ordered=True):
 def report_mem(pre=""):
     cfg = get_config()
     used = get_mem_used() / (cfg["numLocales"] * cfg["physicalMemory"])
-    print(f"{pre} mem use: {get_mem_used() / (1024**4): .2f} TB ({used:.1%})")
+    sys.stdout.write(f"{pre} mem use: {get_mem_used() / (1024**4): .2f} TB ({used:.1%})")
 
 
 @typechecked

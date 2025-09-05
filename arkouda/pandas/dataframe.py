@@ -48,6 +48,7 @@ from functools import reduce
 import json
 import os
 import random
+import sys
 from typing import (
     TYPE_CHECKING,
     Callable,
@@ -2661,10 +2662,10 @@ class DataFrame(UserDict):
             msg = "{:,} KB".format(int(nbytes / KB))
         elif nbytes < GB:
             msg = "{:,} MB".format(int(nbytes / MB))
-            print(f"This transfer will use {msg} .")
+            sys.stdout.write(f"This transfer will use {msg} .")
         else:
             msg = "{:,} GB".format(int(nbytes / GB))
-            print(f"This will transfer {msg} from arkouda to pandas.")
+            sys.stdout.write(f"This will transfer {msg} from arkouda to pandas.")
         # If the total memory transfer requires more than `datalimit` per
         # column, we will warn the user and return.
         if nbytes > (datalimit * len(self._columns) * MB):

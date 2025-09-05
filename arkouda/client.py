@@ -66,6 +66,7 @@ Examples
 from enum import Enum
 import json
 import os
+import sys
 from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 import warnings
 
@@ -262,8 +263,8 @@ mode = ClientMode(os.getenv("ARKOUDA_CLIENT_MODE", "UI").upper())
 if mode == ClientMode.UI:
     import pyfiglet  # type: ignore
 
-    print("{}".format(pyfiglet.figlet_format("Arkouda")))
-    print(f"Client Version: {__version__}")  # type: ignore
+    sys.stdout.write("{}".format(pyfiglet.figlet_format("Arkouda")))
+    sys.stdout.write(f"Client Version: {__version__}")  # type: ignore
 
 
 def set_defaults() -> None:
@@ -1411,9 +1412,9 @@ def print_server_commands():
     """Print the list of available server commands."""
     cmdMap = get_server_commands()
     cmds = [k for k in sorted(cmdMap.keys())]
-    print(f"Total available server commands: {len(cmds)}")
+    sys.stdout.write(f"Total available server commands: {len(cmds)}")
     for cmd in cmds:
-        print(f"\t{cmd}")
+        sys.stdout.write(f"\t{cmd}")
 
 
 def _no_op() -> str:
