@@ -35,6 +35,44 @@ module Repartition
     return repartitionByLocaleString(destLocales, strOffsets, strBytes);
   }
 
+  // Note, the arrays passed here must have PrivateSpace domains.
+  proc repartitionByHashStringWithDestLocales(
+      const ref strOffsets: [] list(int),
+      const ref strBytes: [] list(uint(8))
+  ): ([PrivateSpace] list(int), [PrivateSpace] list(uint(8)), [PrivateSpace] list(int)) 
+  {
+
+    // Same as the function above, but this one also returns the destLocales used.
+    // This is useful if you want to later use this mapping to send along additional information
+    // to the same destination locales.
+
+    var destLocales: [PrivateSpace] list(int);
+
+    coforall loc in Locales do on loc {
+
+      const localOffsets = strOffsets[here.id].toArray();
+      const localBytes = strBytes[here.id].toArray();
+      const numStrings = localOffsets.size;
+
+      // Pre-allocate the result array
+      var myDestLocales: [0..#numStrings] int;
+
+      forall i in myDestLocales.domain {
+        const start = localOffsets[i];
+        const end = if i == numStrings - 1 then localBytes.size else localOffsets[i + 1];
+        const h = localBytes[start..<end].hash();
+        myDestLocales[i] = (h % numLocales): int(64);
+      }
+
+      destLocales[here.id] = new list(myDestLocales);
+
+    }
+
+    var (recvOffsets, recvBytes) = repartitionByLocaleString(destLocales, strOffsets, strBytes);
+
+    return (recvOffsets, recvBytes, destLocales);
+  }
+
   // Note, the arrays passed here must have PrivateSpace domains. With Chapel
   // 2.5, distribution equality with PrivateSpace doesn't work.
   // https://github.com/chapel-lang/chapel/pull/27397 is the upstream PR to
@@ -57,17 +95,19 @@ module Repartition
       with (max reduce maxBytesPerLocale, max reduce maxStringsPerLocale) 
       do on loc
     {
-      const ref myDestLocales = destLocales[here.id];
-      const ref myStrOffsets = strOffsets[here.id];
-      const ref myStrBytes = strBytes[here.id];
+      const myDestLocales = destLocales[here.id].toArray();
+      const myStrOffsets = strOffsets[here.id].toArray();
+      const myStrBytesSize = strBytes[here.id].size;
       var bytesPerLocale: [0..#numLocales] int = 0;
       var stringsPerLocale: [0..#numLocales] int = 0;
       var sizes: [0..#myDestLocales.size] int = 0;
 
-      forall idx in 0..#myDestLocales.size with (+ reduce bytesPerLocale, + reduce stringsPerLocale) {
+      forall idx in myDestLocales.domain with (+ reduce bytesPerLocale, + reduce stringsPerLocale) {
         var destLoc = myDestLocales[idx];
-        var size = if idx == myDestLocales.size - 1 then myStrBytes.size - myStrOffsets[idx]
-                   else myStrOffsets[idx + 1] - myStrOffsets[idx];
+        const start = myStrOffsets[idx];
+        const end = if idx == myDestLocales.size - 1 then myStrBytesSize else myStrOffsets[idx + 1];
+        const size = end - start;
+
         sizes[idx] = size;
         bytesPerLocale[destLoc] += size;
         stringsPerLocale[destLoc] += 1;
@@ -91,10 +131,10 @@ module Repartition
     // with the data that needs to get transferred from another locale
 
     coforall loc in Locales do on loc {
-      const ref myDestLocales = destLocales[here.id];
-      const ref myStrOffsets = strOffsets[here.id];
-      const ref myStrBytes = strBytes[here.id];
-      const ref mySizes = allStrSizes[here.id];
+      const myDestLocales = destLocales[here.id].toArray();
+      const myStrOffsets = strOffsets[here.id].toArray();
+      const myStrBytes = strBytes[here.id].toArray();
+      const mySizes = allStrSizes[here.id].toArray();
       var idxInDestLoc: [0..#myDestLocales.size] int = 0;
       var offsetInDestLoc: [0..#myDestLocales.size] int = 0;
       var bytesPerLocale: [0..#numLocales] int = 0;
@@ -164,15 +204,10 @@ module Repartition
 
         var byteOffsetThisLoc = byteOffsetAdjuster[i];
         var idxOffsetThisLoc = idxOffsetAdjuster[i];
-
-        forall j in 0..#numStringsReceivedByLoc[i] {
-          myOffsets[j + idxOffsetThisLoc] = myRecvOffsets[i][j] + byteOffsetThisLoc;
-          var size = if j == numStringsReceivedByLoc[i] - 1
-                     then numBytesReceivedByLoc[i] - myRecvOffsets[i][j]
-                     else myRecvOffsets[i][j + 1] - myRecvOffsets[i][j];
-          myBytes[(myRecvOffsets[i][j] + byteOffsetThisLoc)..#size]
-            = myRecvBytes[i][myRecvOffsets[i][j]..#size];
-        }
+        myOffsets[idxOffsetThisLoc..#numStringsReceivedByLoc[i]]
+          = myRecvOffsets[i][0..#numStringsReceivedByLoc[i]] + byteOffsetThisLoc;
+        myBytes[byteOffsetThisLoc..#numBytesReceivedByLoc[i]]
+          = myRecvBytes[i][0..#numBytesReceivedByLoc[i]];
 
       }
 
@@ -195,8 +230,8 @@ module Repartition
     var maxValsPerLocale: int;
     var numValsReceivingByLocale: [PrivateSpace] [0..#numLocales] int;
 
-    coforall loc in Locales 
-      with (max reduce maxValsPerLocale) 
+    coforall loc in Locales
+      with (max reduce maxValsPerLocale)
       do on loc
     {
       const ref myDestLocales = destLocales[here.id];
@@ -231,9 +266,9 @@ module Repartition
 
       for i in 0..#numLocales {
         var onCurrLoc = [j in 0..#myDestLocales.size] if myDestLocales[j] == i then 1 else 0;
-        
+
         var idxInCurrLoc = (+ scan onCurrLoc) - onCurrLoc;
-        idxInDestLoc = [j in 0..#myDestLocales.size] if myDestLocales[j] == i then idxInCurrLoc[j] 
+        idxInDestLoc = [j in 0..#myDestLocales.size] if myDestLocales[j] == i then idxInCurrLoc[j]
                                                      else idxInDestLoc[j];
 
         numValsPerLocale[i] = + reduce onCurrLoc;
@@ -245,7 +280,7 @@ module Repartition
 
         var destLoc = myDestLocales[idx];
         var idxInValArr = idxInDestLoc[idx];
-        
+
         sendVals[destLoc][idxInValArr] = myVals[idx];
 
       }
