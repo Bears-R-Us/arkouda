@@ -18,7 +18,7 @@ def create_ak_array(N, dtype):
 
 @pytest.mark.benchmark(group="ArrayTransfer_tondarray")
 @pytest.mark.parametrize("dtype", TYPES)
-def bench_array_transfer_tondarray(benchmark, dtype):
+def bench_array_transfer_to_ndarray(benchmark, dtype):
     if dtype in pytest.dtype:
         N = pytest.N
         a = create_ak_array(N, dtype)
@@ -40,7 +40,7 @@ def bench_array_transfer_tondarray(benchmark, dtype):
 
 @pytest.mark.benchmark(group="ArrayTransfer_ak.array")
 @pytest.mark.parametrize("dtype", TYPES)
-def bench_array_transfer_akarray(benchmark, dtype):
+def bench_array_transfer_from_ndarray(benchmark, dtype):
     if dtype in pytest.dtype:
         N = pytest.N
         a = create_ak_array(N, dtype)
