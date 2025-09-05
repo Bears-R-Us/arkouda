@@ -33,10 +33,14 @@ Examples
 >>> import numpy as np
 >>> from arkouda.plotting import hist_all, plot_dist
 >>> df = ak.DataFrame({'x': ak.array(np.random.randn(100))})
->>> hist_all(df)
 
+Save the figure to disk:
+>>> fig, axes = hist_all(df)
+>>> fig.savefig("hist_all.png")
 >>> b, h = ak.histogram(ak.arange(10), 3)
 >>> plot_dist(b.to_ndarray(), h[:-1].to_ndarray())
+(<Figure size 1200x500 with 2 Axes>, array([<Axes: title={'center': 'distribution'}>,
+       <Axes: title={'center': 'cumulative distribution'}>], dtype=object))
 >>> import matplotlib.pyplot as plt
 >>> plt.show()
 
@@ -48,20 +52,26 @@ See Also
 
 """
 
+from __future__ import annotations
+
 import math
-from typing import Optional
+from typing import Optional, Tuple
 
-from matplotlib import pyplot as plt
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 import numpy as np
+from numpy.typing import NDArray
 
+import arkouda as ak
 from arkouda.categorical import Categorical
 from arkouda.dataframe import DataFrame
 from arkouda.groupbyclass import GroupBy
 from arkouda.numpy import histogram, isnan
-from arkouda.numpy.pdarrayclass import pdarray, skew
+from arkouda.numpy.pdarrayclass import skew
 from arkouda.numpy.pdarraycreation import arange
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta, date_range, timedelta_range
+from arkouda.pdarrayclass import pdarray
 
 __all__ = [
     "hist_all",
@@ -69,57 +79,130 @@ __all__ = [
 ]
 
 
-def plot_dist(b, h, log=True, xlabel=None, newfig=True):
+def plot_dist(
+    b: pdarray | NDArray[np.floating],
+    h: pdarray | NDArray[np.floating],
+    *,
+    log: bool = True,
+    xlabel: Optional[str] = None,
+    newfig: bool = True,
+    show: bool = False,
+) -> Tuple[Figure, np.ndarray]:
     """
-    Plot the distribution and cumulative distribution of histogram Data.
+    Plot the distribution and cumulative distribution of histogram data.
 
     Parameters
     ----------
-    b : np.ndarray
-        Bin edges
-    h : np.ndarray
-        Histogram data
-    log : bool
-        use log to scale y
-    xlabel: str
-        Label for the x axis of the graph
-    newfig: bool
-        Generate a new figure or not
+    b : arkouda.pdarray or numpy.ndarray
+        Histogram bin edges (length N+1) or bin centers (length N).
+    h : arkouda.pdarray or numpy.ndarray
+        Histogram counts. Accepts length N or N+1 (Arkouda-like extra last bin).
+    log : bool, default True
+        If True, use a log scale for the y-axis of the distribution plot.
+    xlabel : str, optional
+        Label for the x-axis.
+    newfig : bool, default True
+        If True, create a new figure; otherwise draw into the current figure.
+    show : bool, default False
+        If True, call ``plt.show()`` before returning.
+
+    Returns
+    -------
+    tuple[matplotlib.figure.Figure, numpy.ndarray]
+        (fig, axes) where axes[0] is the distribution, axes[1] the cumulative.
 
     Notes
     -----
-    This function does not return or display the plot. A user must have matplotlib imported in
-    addition to arkouda to display plots. This could be updated to return the object or have a
-    flag to show the resulting plots.
-    See Examples Below.
+    If ``h`` is one element longer than expected (as with ``ak.histogram``),
+    the final element is dropped automatically.
 
     Examples
     --------
+    Using Arkouda's histogram:
     >>> import arkouda as ak
+    >>> import numpy as np
     >>> from matplotlib import pyplot as plt
-    >>> b, h = ak.histogram(ak.arange(10), 3)
-    >>> h = h[:-1]
-    >>> ak.plot_dist(b.to_ndarray(), h.to_ndarray())
+    >>> from arkouda.plotting import plot_dist
+    >>> edges, counts = ak.histogram(ak.arange(10), 3)
+    >>> fig, axes = plot_dist(edges, counts)
+    >>> fig.savefig("dist.png")
 
-    Show the plot:
+    Using NumPy's histogram:
+    >>> data = np.random.randn(1000)
+    >>> counts, edges = np.histogram(data, bins=20)
+    >>> fig, axes = plot_dist(edges, counts, xlabel="Value")
     >>> plt.show()
 
     """
+
+    def to_ndarray(arr: pdarray | NDArray[np.floating]) -> NDArray[np.floating]:
+        if isinstance(arr, pdarray):
+            nbytes = arr.nbytes
+            if nbytes > ak.client.maxTransferBytes:
+                raise ValueError(
+                    f"Array too large to transfer: {nbytes} bytes (max {ak.client.maxTransferBytes})"
+                )
+            return arr.to_ndarray()
+        return np.asarray(arr)
+
+    b = to_ndarray(b)
+    h = to_ndarray(h)
+
+    if b.ndim != 1 or h.ndim != 1:
+        raise ValueError("b and h must be 1-D arrays.")
+
+    # Normalize Arkouda-style extra last count
+    if b.shape[0] == h.shape[0] + 1:
+        # edges (N+1) + counts (N)
+        x = 0.5 * (b[:-1] + b[1:])
+    elif b.shape[0] == h.shape[0]:
+        # edges (N+1) + counts (N+1) -> drop last count
+        h = h[:-1]
+        x = 0.5 * (b[:-1] + b[1:])
+    elif b.shape[0] == h.shape[0] - 1:
+        # centers (N) + counts (N+1) -> drop last count, use centers
+        h = h[:-1]
+        x = b
+    elif b.shape[0] == h.shape[0]:
+        # centers (N) + counts (N)
+        x = b
+    else:
+        raise ValueError(
+            f"Length mismatch: len(b)={b.shape[0]} vs len(h)={h.shape[0]}. "
+            "Expected: edges (N+1) with counts N or N+1; or centers N with counts N or N+1."
+        )
+
     if newfig:
-        plt.figure(figsize=(12, 5))
-    plt.subplot(1, 2, 1)
-    plt.plot(b, h, marker=".", linestyle="solid")
-    if log:
-        plt.yscale("log")
+        fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    else:
+        fig = plt.gcf()
+        ax1 = plt.subplot(1, 2, 1)
+        ax2 = plt.subplot(1, 2, 2)
+        axes = np.array([ax1, ax2], dtype=object)
+
+    # Distribution
+    ax = axes[0]
+    ax.plot(x, h, marker=".", linestyle="solid")
+    if log and np.any(h > 0):
+        ax.set_yscale("log")
     if xlabel is not None:
-        plt.gca().set_xlabel(xlabel, fontsize=14)
-    plt.gca().set_title("distribution")
-    plt.subplot(1, 2, 2)
-    plt.plot(b, np.cumsum(h) / np.sum(h), marker=None, linestyle="solid")
-    plt.gca().set_ylim((0, 1))
-    plt.gca().set_title("cumulative distribution")
+        ax.set_xlabel(xlabel, fontsize=12)
+    ax.set_title("distribution")
+
+    # Cumulative (normalized)
+    ax = axes[1]
+    total = float(np.sum(h))
+    cdf = np.cumsum(h / total) if total > 0 else np.zeros_like(h, dtype=float)
+    ax.plot(x, cdf, linestyle="solid")
+    ax.set_ylim((0, 1))
+    ax.set_title("cumulative distribution")
     if xlabel is not None:
-        plt.gca().set_xlabel(xlabel, fontsize=14)
+        ax.set_xlabel(xlabel, fontsize=12)
+
+    if show:
+        plt.show()
+
+    return fig, axes
 
 
 def hist_all(ak_df: DataFrame, cols: Optional[list[str]] = None):
@@ -130,9 +213,14 @@ def hist_all(ak_df: DataFrame, cols: Optional[list[str]] = None):
     ----------
     ak_df : DataFrame
         An Arkouda DataFrame containing the data to visualize.
-    cols : list
-        Optional. A list of column names to plot. If empty or not provided, all
+    cols : list, optional
+        A list of column names to plot. If empty or not provided, all
         columns in the DataFrame are considered.
+
+    Returns
+    -------
+    tuple[matplotlib.figure.Figure, numpy.ndarray]
+        A tuple containing the matplotlib Figure and an array of Axes objects.
 
     Notes
     -----
@@ -142,6 +230,7 @@ def hist_all(ak_df: DataFrame, cols: Optional[list[str]] = None):
 
     Examples
     --------
+    Basic usage with all columns:
     >>> import arkouda as ak
     >>> import numpy as np
     >>> from arkouda.plotting import hist_all
@@ -151,7 +240,11 @@ def hist_all(ak_df: DataFrame, cols: Optional[list[str]] = None):
     ...     "c": ak.array(np.random.randn(100)),
     ...     "d": ak.array(np.random.randn(100))
     ... })
-    >>> hist_all(ak_df)
+    >>> fig, axes = hist_all(ak_df)
+
+    Save the figure to disk:
+    >>> fig, axes = hist_all(ak_df, cols=["a", "b"])
+    >>> fig.savefig("hist_all.png")
 
     """
     if not cols or len(cols) == 0:
@@ -163,57 +256,40 @@ def hist_all(ak_df: DataFrame, cols: Optional[list[str]] = None):
     fig.tight_layout(pad=2.0)
 
     if isinstance(axes, plt.Axes):
-        axes = np.array(axes).flatten()
+        axes = np.array([axes])
     elif isinstance(axes, np.ndarray):
         axes = axes.flatten()
     else:
         axes = [axes]
 
-    for col in cols:
+    for idx, col in enumerate(cols):
+        ax = axes[idx]
         try:
-            from typing import List
-
-            cols_idx = cols.index
-            if isinstance(cols_idx, List):
-                ax = axes[cols_idx.index(col)]
-            else:
-                ax = axes[cols_idx(col)]
             x = ak_df[col]
-
             if x.dtype == "float64":
                 x = x[~isnan(x)]
-
             n = len(x)
             g1 = skew(x)
-
         except ValueError:
             GB_df = GroupBy(ak_df[col])
-
             if not isinstance(GB_df.unique_keys, (Strings, Categorical, pdarray)):
                 raise TypeError(
                     f"expected one of (Strings, Categorical, pdarray), "
                     f"got {type(GB_df.unique_keys).__name__!r}"
                 )
-
             new_labels = arange(GB_df.unique_keys.size)
             newcol = GB_df.broadcast(new_labels)
             x = newcol[: ak_df.size]
-
             if x.dtype == "float64":
                 x = x[~isnan(x)]
-
             n = len(x)
             g1 = skew(x)
 
         sigma_g1 = math.sqrt(6 * (n - 2) / ((n + 1) * (n + 3)))
-        # Doane's Formula
         num_bins = int(1 + math.log2(n) + math.log2(1 + abs(g1) / sigma_g1))
 
-        # Compute histogram counts in arkouda
         h = histogram(x, num_bins)
-        # Compute bins in numpy
         if isinstance(x, Datetime):
-            # Matplotlib has trouble plotting np.datetime64 and np.timedelta64
             bins = date_range(x.min(), x.max(), periods=num_bins).to_ndarray().astype("int")
         elif isinstance(x, Timedelta):
             bins = timedelta_range(x.min(), x.max(), periods=num_bins).to_ndarray().astype("int")
@@ -224,3 +300,5 @@ def hist_all(ak_df: DataFrame, cols: Optional[list[str]] = None):
         ax.set_title(col, size=8)
         if x.max() > 100 * x.min():
             ax.set_yscale("log")
+
+    return fig, axes
