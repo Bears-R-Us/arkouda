@@ -1,5 +1,4 @@
 from collections import Counter, namedtuple
-import os
 from typing import List
 
 import numpy as np
@@ -19,14 +18,6 @@ UNIQUE = N // 4
 
 @pytest.mark.skip_if_max_rank_greater_than(1)
 class TestString:
-    @pytest.mark.skipif(
-        os.environ.get("CHPL_HOST_PLATFORM") == "hpe-apollo",
-        reason="Test skipped on CHPL_HOST_PLATFORM=hpe-apollo for debugging purposes (hanging test)",
-    )
-    @pytest.mark.skipif(
-        os.environ.get("CHPL_HOST_PLATFORM") == "cray-xc",
-        reason="Test skipped on CHPL_HOST_PLATFORM=cray-xc for debugging purposes (hanging test)",
-    )
     def test_strings_docstrings(self):
         import doctest
 
