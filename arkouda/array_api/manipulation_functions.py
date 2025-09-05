@@ -32,7 +32,15 @@ def broadcast_arrays(*arrays: Array) -> List[Array]:
     """
     Broadcast arrays to a common shape.
 
-    Throws a ValueError if a common shape cannot be determined.
+    Parameters
+    ----------
+    arrays :
+        The arrays to concatenate. Must be broadcastable to a common shape.
+
+    Raises
+    ------
+    ValueError
+        Raised by broadcast_dims if a common shape cannot be determined.
     """
     shapes = [a.shape for a in arrays]
     bcShape = shapes[0]
@@ -46,6 +54,18 @@ def broadcast_arrays(*arrays: Array) -> List[Array]:
 def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
     """
     Broadcast the array to the specified shape.
+
+    Parameters
+    ----------
+    x:
+        The array to be broadcast.
+    shape:
+        The shape to which the array is to be broadcast.
+
+    Raises
+    ------
+    ValueError
+        Raised server-side if the broadcast fails.
 
     See: https://data-apis.org/array-api/latest/API_specification/broadcasting.html for details.
     """
@@ -82,13 +102,37 @@ def concat(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[i
         The axis along which to concatenate the arrays. The default is 0. If None, the arrays are
         flattened before concatenation.
 
+    Raises
+    ------
+    IndexError
+        Raised if axis is not a valid axis for the given arrays.
+    ValueError
+        Raised if array shapes are incompatible with concat.
+
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.util import _integer_axis_validation
+
+    # Check array ranks
 
     ndim = arrays[0].ndim
     for a in arrays:
         if a.ndim != ndim:
             raise ValueError("all input arrays must have the same number of dimensions to concatenate")
+
+    # Check axis
+
+    axis_ = axis
+    if axis_ is not None:
+        valid, axis_ = _integer_axis_validation(axis, ndim)
+        if not valid:
+            raise IndexError(f"{axis} is not a valid axis for array of rank {ndim}")
+
+    # Make all arrays a common type
+    # TODO: use a different approach to the common type.  The promotion function
+    # below uses numpy.common_types, which returns float, even when given all ints.
+    # That means this concat function will output a float, even if all arrays are ints.
+    # numpy concat does not do that.
 
     (common_dt, _arrays) = promote_to_common_dtype([a._array for a in arrays])
 
@@ -99,13 +143,13 @@ def concat(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[i
                 generic_msg(
                     cmd=(
                         f"concat<{common_dt},{ndim}>"
-                        if axis is not None
+                        if axis_ is not None
                         else f"concatFlat<{common_dt},{ndim}>"
                     ),
                     args={
                         "n": len(arrays),
                         "names": _arrays,
-                        "axis": axis,
+                        "axis": axis_,
                     },
                 ),
             )
@@ -124,6 +168,11 @@ def expand_dims(x: Array, /, *, axis: int) -> Array:
     axis : int
         The axis at which to insert the new (size one) dimension. Must be in the range
         `[-x.ndim-1, x.ndim]`.
+
+    Raises
+    ------
+    IndexError
+        Raised if axis is not a valid axis for the given result.
     """
     from arkouda.client import generic_msg
     from arkouda.numpy.util import _integer_axis_validation
@@ -163,12 +212,22 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
         The array to flip
     axis : int or Tuple[int, ...], optional
         The axis or axes along which to flip the array. If None, flip the array along all axes.
+
+    Raises
+    ------
+    IndexError
+        Raised if the axis/axes is/are invalid for the given array, or if the flip
+        fails server-side.
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.util import _axis_validation
 
     axisList = []
     if axis is not None:
-        axisList = list(axis) if isinstance(axis, tuple) else [axis]
+        valid, axisList = _axis_validation(axis, x.ndim)
+        if not valid:
+            raise IndexError(f"{axis} is not a valid axis/axes for array of rank {x.ndim}")
+
     try:
         return Array._new(
             create_pdarray(
@@ -212,18 +271,20 @@ def moveaxis(
     destination : int or Tuple[int, ...]
         Destination positions for each of the original axes. Must be the same length as `source`.
         Values must be unique and fall within the range `[-x.ndim, x.ndim)`.
+
+    Raises
+    ------
+    ValueError
+        Raised if source and destination are not the same type (tuple or int).
     """
     perm = list(range(x.ndim))
-    if isinstance(source, tuple):
-        if isinstance(destination, tuple):
-            for s, d in zip(source, destination):
-                perm[s] = d
-        else:
-            raise ValueError("source and destination must both be tuples if source is a tuple")
-    elif isinstance(destination, int):
+    if isinstance(source, tuple) and isinstance(destination, tuple):
+        for s, d in zip(source, destination):
+            perm[s] = d
+    elif isinstance(source, int) and isinstance(destination, int):
         perm[source] = destination
     else:
-        raise ValueError("source and destination must both be integers if source is a tuple")
+        raise ValueError("source and destination must both be integers or both be tuples.")
 
     return permute_dims(x, axes=tuple(perm))
 
@@ -238,8 +299,19 @@ def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
         The array whose dimensions are to be permuted
     axes : Tuple[int, ...]
         The new order of the dimensions. Must be a permutation of the integers from 0 to `x.ndim-1`.
+
+    Raises
+    ------
+    IndexError
+        Raised if the given axes are not a valid reordering of the axes of x.
     """
     from arkouda.client import generic_msg
+
+    # Check axes, e.g. if x.ndim = 3, axes must be some permutation of 0,1,2.
+    # If it is, then a sort will turn it into (0,1,2).
+
+    if not (np.sort(axes) == np.arange(x.ndim)).all():
+        raise IndexError(f"{axes} is not a valid permutation of axes for arrays of rank {x.ndim}")
 
     try:
         return Array._new(
@@ -275,6 +347,11 @@ def repeat(x: Array, repeats: Union[int, Array], /, *, axis: Optional[int] = Non
            number of elements along the specified axis.
     axis : int, optional
         The axis along which to repeat elements. If None, the array is flattened before repeating.
+
+    Raises
+    ------
+    NotYetImplementedError
+        Raised if axis arg is used.  This is a TODO.
     """
     from arkouda.client import generic_msg
 
@@ -315,8 +392,36 @@ def reshape(x: Array, /, shape: Tuple[int, ...], *, copy: Optional[bool] = None)
     copy : bool, optional
         Whether to create a copy of the array.
         WARNING: currently always creates a copy, ignoring the value of this parameter.
+
+    Raises
+    ------
+    ValueError
+        Raised if the given shape is invalid, or if more than one unknown dimension is specified.
+
     """
     from arkouda.client import generic_msg
+
+    # Check the validity of the new shape.  At most one -1 is allowed, as in numpy.
+
+    if shape.count(-1) > 1:
+        raise ValueError("can only specify one unknown dimension")
+
+    # A -1 represents an "unknown shape."  That means "fill in the rest of it here,"
+    # e.g. reshaping (24,1) to (3,2,-1) creates a shape of (3,2,4).
+
+    elif shape.count(-1) == 1:
+        partial_shape = -np.prod(shape)  # figure out what the -1 equates to
+        if x.size % partial_shape != 0:  # raise error if it doesn't make sense (e.g. (12) to (7,-1)
+            raise ValueError(f"cannot reshape array of size {x.size} into shape {shape}")
+        else:  # but if it does make sense, fill it in as appropriate
+            fillin = x.size // partial_shape
+            shape_copy = [fillin if val == -1 else val for val in shape]
+            shape = tuple(int(x) for x in shape_copy)  # avoids mypy "int vs np.int64" error
+
+    # Finally, if there are no unknown shapes, just check the the new size matches the old.
+
+    elif np.prod(shape) != x.size:  # e.g. can't reshape (4,3,2) to (3,3,3)
+        raise ValueError(f"cannot reshape array of size {x.size} into shape {shape}")
 
     # TODO: figure out copying semantics (currently always creates a copy)
     try:
@@ -361,12 +466,21 @@ def roll(
     axis: int or Tuple[int, ...], optional
         The axis or axes along which to roll the array. If None, the array is flattened before
         rolling.
+
+    Raises
+    ------
+    IndexError
+        Raised if the axis/axes aren't valid for the given array, or if roll fails server-side.
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.util import _axis_validation
 
     axisList = []
     if axis is not None:
-        axisList = list(axis) if isinstance(axis, tuple) else [axis]
+        valid, axisList = _axis_validation(axis, x.ndim)
+        if not valid:
+            raise IndexError(f"{axis} is not a valid axis/axes for array of rank {x.ndim}")
+
     try:
         return Array._new(
             create_pdarray(
@@ -423,20 +537,32 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
     axis : int, optional
         The axis along which to stack the arrays. Must be in the range `[-N, N)`, where N is the number
         of dimensions in the input arrays. The default is 0.
+
+    Raises
+    ------
+    ValueError
+        Raised if the arrays aren't all the same shape.
+    IndexError
+        Raised if axis isn't valid for the given arrays.
     """
     from arkouda.client import generic_msg
     from arkouda.numpy.util import _integer_axis_validation
 
     ndim = arrays[0].ndim
-    for a in arrays:
-        if a.ndim != ndim:
-            raise ValueError("all input arrays must have the same number of dimensions to stack")
+
+    base_shape = arrays[0].shape
+    for a in arrays[1:]:
+        if a.shape != base_shape:
+            raise ValueError("all input arrays must have the same shape to stack")
 
     # expand_dims and stack test the axis validity against an array of rank ndim+1
 
     valid, axis_ = _integer_axis_validation(axis, ndim + 1)
     if not valid:
         raise IndexError(f"{axis} is not a valid axis for stacking arrays of rank {ndim}")
+
+    # TODO: fix the type promotion here, as in concat above.  This is always producing
+    # floats, even when all inputs are integer.  numpy stack doesn't do that.
 
     (common_dt, _arrays) = promote_to_common_dtype([a._array for a in arrays])
 
@@ -510,6 +636,11 @@ def unstack(x: Array, /, *, axis: int = 0) -> Tuple[Array, ...]:
         The array to unstack
     axis : int, optional
         The axis along which to unstack the array. The default is 0.
+
+    Raises
+    ------
+    IndexError
+        Raised if the axis is not valid for the given Array.
     """
     from arkouda.client import generic_msg
     from arkouda.numpy.util import _integer_axis_validation
