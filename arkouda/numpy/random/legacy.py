@@ -314,13 +314,13 @@ def defaultGeneratorExists():  # used to determine if generator has been created
 
 def seed(seed=None):
     """
-    Implements global seed by seeding theGenerator
+    Implements global seed by seeding theGenerator.
 
     Parameters
     ----------
     seed : int, None
         the seed for the global generator.  Can be left out.
-    
+
     Notes
     -----
     reseeding always causes the destruction of an existing generator, because
@@ -331,7 +331,6 @@ def seed(seed=None):
     then invoke it from a python-side destructor for theGenerator, all before
     creating a new theGenerator with a new seed.
     """
-
     global theGenerator
 
     if defaultGeneratorExists():
@@ -382,7 +381,6 @@ def integers(low=0, high=10, size=5):
     array([5 9 7 7 9 9 7 7 8 6])
 
     """
-
     seed() if not defaultGeneratorExists() else None
     return theGenerator.integers(low, high, size)
 
@@ -418,7 +416,6 @@ def choice(a, size=None, replace=True, p=None):
     >>> ak.random.choice(ak.arange(10),size=5,replace=True)
     array([6 5 1 6 3])
     """
-
     seed() if not defaultGeneratorExists() else None
     return theGenerator.choice(a, size, replace, p)
 
@@ -460,7 +457,6 @@ def exponential(scale=1.0, size=None, method="zig"):
     array([0.35023958744297734 1.3308542074773211 1.819197246298274])
 
     """
-
     seed() if not defaultGeneratorExists() else None
     return theGenerator.exponential(scale, size, method)
 
@@ -491,7 +487,6 @@ def standard_exponential(size=None, method="zig"):
     >>> ak.random.standard_exponential(size=3,method="zig")
     array([0.0036288331189547511 0.12747464978660919 2.4564938704378503])
     """
-
     seed() if not defaultGeneratorExists() else None
     return theGenerator.standard_exponential(size, method)
 
@@ -518,7 +513,7 @@ def logistic(loc=0.0, scale=0.0, size=None):
     -----
     The probability density for the Logistic distribution is
 
-    .. math:: 
+    .. math::
        P(x) = \frac{e^{-(x - \mu)/s}}{s( 1 + e^{-(x - \mu)/s})^2}
 
     where :math:`\mu` is the location and :math:`s` is the scale.
@@ -543,7 +538,6 @@ def logistic(loc=0.0, scale=0.0, size=None):
     >>> ak.random.logistic(3, 2.5, 3)
     array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])
     """
-
     seed() if not defaultGeneratorExists() else None
     return theGenerator.logistic(loc, scale, size)
 
@@ -602,7 +596,6 @@ def lognormal(mean=0.0, sigma=1.0, size=None, method="zig"):
     array([75.587346973566639 9.4194790331678568 1.0996120079897966])
 
     """
-
     seed() if not defaultGeneratorExists() else None
     return theGenerator.lognormal(mean, sigma, size, method)
 
@@ -653,7 +646,6 @@ def normal(loc=0.0, scale=1.0, size=None, method="zig"):
     array([4.3252889011033728 2.2427797827243081 0.09495739757471533])
 
     """
-
     seed() if not defaultGeneratorExists() else None
     return theGenerator.normal(loc, scale, size, method)
 
@@ -688,12 +680,11 @@ def random(size=None):
     --------
     >>> ak.random.seed(42)
     >>> ak.random.random()
-    0.7739560485559633 
+    0.7739560485559633
     >>> ak.random.random(3)
     array([0.30447083571882388 0.89653821715718895 0.34737575437149532])
 
     """
-
     seed() if not defaultGeneratorExists() else None
     return theGenerator.random(size)
 
@@ -734,7 +725,6 @@ def standard_gamma(shape, size=None):
     array([0.85277675774402018 3.1253116338237561 0.95808096440750634])
 
     """  # noqa: W605
-
     seed() if not defaultGeneratorExists() else None
     return theGenerator.standard_gamma(shape, size)
 
@@ -816,9 +806,12 @@ def shuffle(
     >>> pda
     array([2 3 6 9 8 5 1 4 7 0])
     """
+    # note that mypy flags this return.theGenerator, and only this use.  Hence the ignore.
 
     seed() if not defaultGeneratorExists() else None
-    return theGenerator.shuffle(x, method)
+    return theGenerator.shuffle(  # type: ignore[union-attr]
+        x, method=method, feistel_rounds=feistel_rounds, feistel_key=feistel_key
+    )
 
 
 def permutation(x, method="Argsort"):
@@ -855,7 +848,6 @@ def permutation(x, method="Argsort"):
     >>> ak.random.permutation(ak.arange(10))
     array([4 7 0 2 5 3 6 1 8 9])
     """
-
     seed() if not defaultGeneratorExists() else None
     return theGenerator.permutation(x, method)
 
@@ -897,7 +889,6 @@ def poisson(lam=1.0, size=None):
     array([3 4 3 3 5])
 
     """
-
     seed() if not defaultGeneratorExists() else None
     return theGenerator.poisson(lam, size)
 
