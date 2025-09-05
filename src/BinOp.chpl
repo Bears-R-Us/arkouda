@@ -162,6 +162,8 @@ module BinOp
   // symbol table entry.
   const boolOps = new set(string, ["<", "<=", ">", ">=", "==", "!="]);
 
+  const smallOps = new set(string, ["<<", ">>", "**"]);
+
   proc doBoolBoolBitOp(
     op: string, ref e: [] bool, l: [] bool, r /*: [] bool OR bool*/
   ): bool {
@@ -599,7 +601,7 @@ module BinOp
 
     // had to create bigint specific BinOp procs which return
     // the distributed array because we need it at SymEntry creation time
-    if l.etype == bigint && r.etype != bigint && (new set(string, ["<<", ">>", "**"])).contains(op) {
+    if l.etype == bigint && r.etype != bigint && smallOps.contains(op) {
       // ops that only work with a left hand side of bigint and right hand side non-bigint
       // Just bitshifts and exponentiation without local_max_size
       select op {
