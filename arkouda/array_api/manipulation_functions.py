@@ -34,7 +34,7 @@ def broadcast_arrays(*arrays: Array) -> List[Array]:
 
     Parameters
     ----------
-    arrays :
+    arrays : Array
         The arrays to concatenate. Must be broadcastable to a common shape.
 
     Raises
@@ -57,9 +57,9 @@ def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
 
     Parameters
     ----------
-    x:
+    x: Array
         The array to be broadcast.
-    shape:
+    shape: Tuple[int, ...]
         The shape to which the array is to be broadcast.
 
     Raises
