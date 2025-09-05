@@ -16,6 +16,16 @@ Key Responsibilities
 - Maintain client-side logging, verbosity, and session parameters
 - (Optional) Provide async-style request *sending* and an `async_connect()` helper
 
+Async Request Mode
+------------------
+Set the environment variable ``ARKOUDA_REQUEST_MODE`` to enable optional async
+*send* behavior for most commands (receives remain blocking):
+
+- ``SYNCHRONOUS`` (default): standard blocking send/receive.
+- ``ASYNCHRONOUS``: non-blocking *send* with periodic progress logs until
+  a reply is received. Some commands (e.g., ``delete``, ``connect``, ``getconfig``)
+  always use synchronous send to protect ordering/bootstrapping.
+
 Classes
 -------
 Channel
@@ -63,9 +73,11 @@ Examples
 
 """
 
+import asyncio
 from enum import Enum
 import json
 import os
+import threading
 from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 import warnings
 
@@ -84,6 +96,7 @@ from arkouda.pandas import io_util
 
 __all__ = [
     "connect",
+    "async_connect",
     "disconnect",
     "shutdown",
     "get_config",
@@ -96,6 +109,7 @@ __all__ = [
     "print_server_commands",
     "generate_history",
     "ruok",
+    "exit",
 ]
 
 username = security.get_username()
@@ -530,6 +544,75 @@ class ZmqChannel(Channel):
 
     __slots__ = ("socket", "heartbeatSocket", "heartbeatInterval")
 
+    @staticmethod
+    def _get_event_loop() -> asyncio.AbstractEventLoop:
+        """
+        Create and set a fresh event loop for background tasks.
+
+        Returns
+        -------
+        asyncio.AbstractEventLoop
+            A new event loop set as current.
+
+        """
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        return loop
+
+    async def _async_send_string_message(self, message: RequestMessage, loop=None):
+        """
+        Send a request using a background executor and emit periodic logs.
+
+        This is used only when `RequestMode.ASYNCHRONOUS` is active.
+        The receive step remains blocking to respect ZMQ REQ/REP.
+
+        Parameters
+        ----------
+        message : RequestMessage
+            The prepared request.
+        loop : asyncio.AbstractEventLoop, optional
+            Loop to execute on; a new loop is created if not provided.
+
+        Returns
+        -------
+        asyncio.Future
+            The send future.
+
+        """
+        try:
+            if not loop:
+                loop = self._get_event_loop()
+            future = loop.run_in_executor(None, self.socket.send_string, json.dumps(message.asdict()))
+            while not future.done():
+                clientLogger.info(f"{message.cmd} request sent...")
+                await asyncio.sleep(5)
+            return future
+        except asyncio.CancelledError:
+            # Cancel gracefully, similar to original PR behavior.
+            future = asyncio.Future()
+            future.set_result("cancelled")  # type: ignore
+            future.cancel()
+            for t in threading.enumerate():
+                if "asyncio" in t.name:
+                    t.join(0)
+            return future
+        except KeyboardInterrupt:
+            future = asyncio.Future()
+            future.set_result("interrupted")  # type: ignore
+            future.cancel()
+            return future
+
+    def _execute_async_send(self, message: RequestMessage, loop=None):
+        """Run `_async_send_string_message` to completion."""
+        try:
+            if not loop:
+                loop = self._get_event_loop()
+            task = loop.create_task(self._async_send_string_message(message, loop))
+            loop.run_until_complete(task)
+        except KeyboardInterrupt:
+            task.cancel()
+            loop.run_until_complete(asyncio.sleep(0))
+
     # --------- Core send/recv ---------
 
     def send_string_message(
@@ -543,6 +626,9 @@ class ZmqChannel(Channel):
         """
         Generate and send a string `RequestMessage` to the Arkouda server.
 
+        Respects `RequestMode`: in `ASYNCHRONOUS`, the *send* may be executed
+        via a background executor for most commands; the receive is blocking.
+
         See `Channel.send_string_message` for full parameter and return docs.
         """
         message = RequestMessage(
@@ -552,7 +638,12 @@ class ZmqChannel(Channel):
         # request_id is a noop for now
         logger.debug(f"sending message {json.dumps(message.asdict())}")
 
-        self.socket.send_string(json.dumps(message.asdict()))
+        # Optional async "send" path (receive is still blocking to respect REQ/REP).
+        async_eligible = cmd not in {"delete", "connect", "getconfig"}
+        if requestMode == RequestMode.ASYNCHRONOUS and async_eligible:
+            self._execute_async_send(message)
+        else:
+            self.socket.send_string(json.dumps(message.asdict()))
 
         self.wait_with_heartbeat()
 
@@ -752,6 +843,12 @@ channel: Optional[Channel] = None
 
 # Get ChannelType, defaulting to ZMQ
 channelType = ChannelType(os.getenv("ARKOUDA_CHANNEL_TYPE", "ZMQ").upper())
+
+# Request mode (defaults to synchronous). Accept "ASYNC" as alias.
+_request_mode_env = os.getenv("ARKOUDA_REQUEST_MODE", "SYNCHRONOUS").upper()
+if _request_mode_env == "ASYNC":
+    _request_mode_env = "ASYNCHRONOUS"
+requestMode = RequestMode(_request_mode_env)
 
 
 def get_channel(
@@ -1506,3 +1603,70 @@ def generate_history(
         from arkouda.history import NotebookHistoryRetriever
 
         return NotebookHistoryRetriever().retrieve(command_filter, num_commands)
+
+
+def _connect_via_channel(
+    server: str, port: int, timeout: int, access_token: Optional[str], connect_url: Optional[str]
+):
+    """
+    Call `connect()` using the provided channel parameters.
+
+    Used by `async_connect()` to run the standard connect procedure in a background
+    executor while providing simple progress logs.
+    """
+    connect(
+        server=server, port=port, timeout=timeout, access_token=access_token, connect_url=connect_url
+    )
+
+
+def async_connect(
+    server: str = "localhost",
+    port: int = 5555,
+    timeout: int = 0,
+    access_token: Optional[str] = None,
+    connect_url: Optional[str] = None,
+) -> None:
+    """
+    Perform `connect()` using a background executor.
+
+    While the connection is being established, emit brief "connecting..." logs.
+    The final connected state is identical to calling `connect()` directly.
+
+    Parameters
+    ----------
+    server : str, default 'localhost'
+        Server hostname.
+    port : int, default 5555
+        Server port.
+    timeout : int, default 0
+        Timeout in seconds (also activates heartbeat if > 0).
+    access_token : str, optional
+        Access token for authenticated servers.
+    connect_url : str, optional
+        Complete URL in the form ``tcp://server:port?token=<token_value>``.
+
+    """
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    future = loop.run_in_executor(
+        None, _connect_via_channel, server, port, timeout, access_token, connect_url
+    )
+    try:
+        while not future.done() and not connected:
+            clientLogger.info("connecting...")
+            loop.run_until_complete(asyncio.sleep(0.5))
+    finally:
+        loop.run_until_complete(asyncio.sleep(0))
+        loop.close()
+
+
+def exit():
+    """
+    Immediately terminate the current Python process.
+
+    Notes
+    -----
+    This is a convenience helper that simply calls ``os._exit(0)``.
+
+    """
+    os._exit(0)
