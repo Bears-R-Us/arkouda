@@ -302,18 +302,35 @@ def uniform(
 
 
 def defaultGeneratorExists():  # used to determine if generator has been created
+    """
+    Returns
+    -------
+    boolean
+        True if theGenerator is not None
+        False if theGenerator is None
+    """
     return theGenerator is not None
 
 
 def seed(seed=None):
-    # reseeding always causes the destruction of an existing generator, because
-    # there is no way to reseed a chapel randomStream.
-    # The existing generator can be deleted, though python doesn't require that.
-    # Python-side, it suffices to create a new generator with the new seed.
+    """
+    Implements global seed by seeding theGenerator
 
-    # Chapel-side, there isn't presently (Sep 2025) a destructor for the random
-    # number generator -- if there were, then from the python-side, we could invoke
-    # it before creating a new generator with a new seed.
+    Parameters
+    ----------
+    seed : int, None
+        the seed for the global generator.  Can be left out.
+    
+    Notes
+    -----
+    reseeding always causes the destruction of an existing generator, because
+    there is no way to reseed a chapel randomStream.
+    The existing generator is deleted, though python doesn't require that.
+    Python-side, it suffices to create a new generator with the new seed.
+    TODO: Chapel-side, implement a destructor for the random number generator
+    then invoke it from a python-side destructor for theGenerator, all before
+    creating a new theGenerator with a new seed.
+    """
 
     global theGenerator
 
@@ -330,61 +347,557 @@ def seed(seed=None):
 
 
 def integers(low=0, high=10, size=5):
+    """
+    Return random integers from low (inclusive) to high (exclusive),
+    or if endpoint=True, low (inclusive) to high (inclusive).
+
+    Return random integers from the “discrete uniform” distribution of the specified dtype.
+    If high is None (the default), then results are from 0 to low.
+
+    Parameters
+    ----------
+    low: numeric_scalars
+        Lowest (signed) integers to be drawn from the distribution (unless high=None,
+        in which case this parameter is 0 and this value is used for high).
+
+    high: numeric_scalars
+        If provided, one above the largest (signed) integer to be drawn from the distribution
+        (see above for behavior if high=None)
+
+    size: numeric_scalars
+        Output shape. Default is None, in which case a single value is returned.
+
+    Returns
+    -------
+    pdarray, numeric_scalar
+        Values drawn uniformly from the specified range having the desired dtype,
+        or a single such random int if size not provided.
+
+    Examples
+    --------
+    >>> ak.random.seed(1)
+    >>> ak.random.integers(5, 20, 10)
+    array([7 19 5 16 19 11 18 15 10 5])
+    >>> ak.random.integers(5, size=10)
+    array([5 9 7 7 9 9 7 7 8 6])
+
+    """
+
     seed() if not defaultGeneratorExists() else None
     return theGenerator.integers(low, high, size)
 
 
 def choice(a, size=None, replace=True, p=None):
+    """
+    Generate a random sample from a.
+
+    Parameters
+    ----------
+    a: int or pdarray
+        If a is an integer, randomly sample from ak.arange(a).
+        If a is a pdarray, randomly sample from a.
+
+    size: int, optional
+        Number of elements to be sampled
+
+    replace: bool, optional
+        If True, sample with replacement. Otherwise sample without replacement.
+        Defaults to True
+
+    p: pdarray, optional
+        p is the probabilities or weights associated with each element of a
+
+    Returns
+    -------
+    pdarray, numeric_scalar
+        A pdarray containing the sampled values or a single random value if size not provided.
+
+    Examples
+    --------
+    >>> ak.random.seed(1701)
+    >>> ak.random.choice(ak.arange(10),size=5,replace=True)
+    array([6 5 1 6 3])
+    """
+
     seed() if not defaultGeneratorExists() else None
     return theGenerator.choice(a, size, replace, p)
 
 
 def exponential(scale=1.0, size=None, method="zig"):
+    r"""
+    Draw samples from an exponential distribution.
+
+    Its probability density function is
+
+    .. math::
+        f(x; \frac{1}{\beta}) = \frac{1}{\beta} \exp(-\frac{x}{\beta}),
+
+    for ``x > 0`` and 0 elsewhere. :math:`\beta` is the scale parameter,
+    which is the inverse of the rate parameter :math:`\lambda = 1/\beta`.
+    The rate parameter is an alternative, widely used parameterization
+    of the exponential distribution.
+
+    Parameters
+    ----------
+    scale: float or pdarray
+        The scale parameter, :math:`\beta = 1/\lambda`. Must be
+        non-negative. An array must have the same size as the size argument.
+    size: numeric_scalars, optional
+        Output shape. Default is None, in which case a single value is returned.
+    method : str, optional
+        Either 'inv' or 'zig'. 'inv' uses the default inverse CDF method.
+        'zig' uses the Ziggurat method.
+
+    Returns
+    -------
+    pdarray
+        Drawn samples from the parameterized exponential distribution.
+
+    Examples
+    --------
+    >>> ak.random.seed(1701)
+    >>> ak.random.exponential(scale=1.0,size=3,method='zig')
+    array([0.35023958744297734 1.3308542074773211 1.819197246298274])
+
+    """
+
     seed() if not defaultGeneratorExists() else None
     return theGenerator.exponential(scale, size, method)
 
 
 def standard_exponential(size=None, method="zig"):
+    """
+    Draw samples from the standard exponential distribution.
+
+    `standard_exponential` is identical to the exponential distribution
+    with a scale parameter of 1.
+
+    Parameters
+    ----------
+    size: numeric_scalars, optional
+        Output shape. Default is None, in which case a single value is returned.
+    method : str, optional
+        Either 'inv' or 'zig'. 'inv' uses the default inverse CDF method.
+        'zig' uses the Ziggurat method.
+
+    Returns
+    -------
+    pdarray
+        Drawn samples from the standard exponential distribution.
+
+    Examples
+    --------
+    >>> ak.random.seed(5551212)
+    >>> ak.random.standard_exponential(size=3,method="zig")
+    array([0.0036288331189547511 0.12747464978660919 2.4564938704378503])
+    """
+
     seed() if not defaultGeneratorExists() else None
     return theGenerator.standard_exponential(size, method)
 
 
 def logistic(loc=0.0, scale=0.0, size=None):
+    r"""
+    Draw samples from a logistic distribution.
+
+    Samples are drawn from a logistic distribution with specified parameters,
+    loc (location or mean, also median), and scale (>0).
+
+    Parameters
+    ----------
+    loc: float or pdarray of floats, optional
+        Parameter of the distribution. Default of 0.
+
+    scale: float or pdarray of floats, optional
+        Parameter of the distribution. Must be non-negative. Default is 1.
+
+    size: numeric_scalars, optional
+        Output shape. Default is None, in which case a single value is returned.
+
+    Notes
+    -----
+    The probability density for the Logistic distribution is
+
+    .. math:: 
+       P(x) = \frac{e^{-(x - \mu)/s}}{s( 1 + e^{-(x - \mu)/s})^2}
+
+    where :math:`\mu` is the location and :math:`s` is the scale.
+
+    The Logistic distribution is used in Extreme Value problems where it can act
+    as a mixture of Gumbel distributions, in Epidemiology, and by the World Chess Federation (FIDE)
+    where it is used in the Elo ranking system, assuming the performance of each player
+    is a logistically distributed random variable.
+
+    Returns
+    -------
+    pdarray
+        Pdarray of floats (unless size=None, in which case a single float is returned).
+
+    See Also
+    --------
+    normal
+
+    Examples
+    --------
+    >>> ak.random.seed(17)
+    >>> ak.random.logistic(3, 2.5, 3)
+    array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])
+    """
+
     seed() if not defaultGeneratorExists() else None
     return theGenerator.logistic(loc, scale, size)
 
 
 def lognormal(mean=0.0, sigma=1.0, size=None, method="zig"):
+    r"""
+    Draw samples from a log-normal distribution with specified mean,
+    standard deviation, and array shape.
+
+    Note that the mean and standard deviation are not the values for the distribution itself,
+    but of the underlying normal distribution it is derived from.
+
+    Parameters
+    ----------
+    mean: float or pdarray of floats, optional
+        Mean of the distribution. Default of 0.
+
+    sigma: float or pdarray of floats, optional
+        Standard deviation of the distribution. Must be non-negative. Default of 1.
+
+    size: numeric_scalars, optional
+        Output shape. Default is None, in which case a single value is returned.
+
+    method : str, optional
+        Either 'box' or 'zig'. 'box' uses the Box–Muller transform
+        'zig' uses the Ziggurat method.
+
+    Notes
+    -----
+    A variable `x` has a log-normal distribution if `log(x)` is normally distributed.
+    The probability density for the log-normal distribution is:
+
+    .. math::
+       p(x) = \frac{1}{\sigma x \sqrt{2\pi}} e^{-\frac{(\ln(x)-\mu)^2}{2\sigma^2}}
+
+    where :math:`\mu` is the mean and :math:`\sigma` the standard deviation of the normally
+    distributed logarithm of the variable.
+    A log-normal distribution results if a random variable is the product of a
+    large number of independent, identically-distributed variables in the same
+    way that a normal distribution results if the variable is
+    the sum of a large number of independent, identically-distributed variables.
+
+    Returns
+    -------
+    pdarray
+        Pdarray of floats (unless size=None, in which case a single float is returned).
+
+    See Also
+    --------
+    normal
+
+    Examples
+    --------
+    >>> ak.random.seed(17)
+    >>> ak.random.lognormal(3, 2.5, 3)
+    array([75.587346973566639 9.4194790331678568 1.0996120079897966])
+
+    """
+
     seed() if not defaultGeneratorExists() else None
     return theGenerator.lognormal(mean, sigma, size, method)
 
 
 def normal(loc=0.0, scale=1.0, size=None, method="zig"):
+    r"""
+    Draw samples from a normal (Gaussian) distribution.
+
+    Parameters
+    ----------
+    loc: float or pdarray of floats, optional
+        Mean of the distribution. Default of 0.
+
+    scale: float or pdarray of floats, optional
+        Standard deviation of the distribution. Must be non-negative. Default of 1.
+
+    size: numeric_scalars, optional
+        Output shape. Default is None, in which case a single value is returned.
+
+    method : str, optional
+        Either 'box' or 'zig'. 'box' uses the Box–Muller transform
+        'zig' uses the Ziggurat method.
+
+    Notes
+    -----
+    The probability density for the Gaussian distribution is:
+
+    .. math::
+       p(x) = \frac{1}{\sqrt{2\pi \sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+
+    where :math:`\mu` is the mean and :math:`\sigma` the standard deviation.
+    The square of the standard deviation, :math:`\sigma^2`, is called the variance.
+
+    Returns
+    -------
+    pdarray
+        Pdarray of floats (unless size=None, in which case a single float is returned).
+
+    See Also
+    --------
+    standard_normal
+    uniform
+
+    Examples
+    --------
+    >>> ak.random.seed(17)
+    >>> ak.random.normal(3, 2.5, 3)
+    array([4.3252889011033728 2.2427797827243081 0.09495739757471533])
+
+    """
+
     seed() if not defaultGeneratorExists() else None
     return theGenerator.normal(loc, scale, size, method)
 
 
 def random(size=None):
+    """
+    Return random floats in the half-open interval [0.0, 1.0).
+
+    Results are from the uniform distribution over the stated interval.
+
+    Parameters
+    ----------
+    size: numeric_scalars, optional
+        Output shape. Default is None, in which case a single value is returned.
+
+    Returns
+    -------
+    pdarray
+        Pdarray of random floats (unless size=None, in which case a single float is returned).
+
+    Notes
+    -----
+    To sample over `[a,b)`, use uniform or multiply the output of random by `(b - a)` and add `a`:
+
+     ``(b - a) * random() + a``
+
+    See Also
+    --------
+    uniform
+
+    Examples
+    --------
+    >>> ak.random.seed(42)
+    >>> ak.random.random()
+    0.7739560485559633 
+    >>> ak.random.random(3)
+    array([0.30447083571882388 0.89653821715718895 0.34737575437149532])
+
+    """
+
     seed() if not defaultGeneratorExists() else None
     return theGenerator.random(size)
 
 
 def standard_gamma(shape, size=None):
+    r"""
+    Draw samples from a standard gamma distribution.
+
+    Samples are drawn from a Gamma distribution with specified parameters,
+    shape (sometimes designated “k”) and scale (sometimes designated “theta”),
+    where both parameters are > 0.
+
+    Parameters
+    ----------
+    shape: numeric_scalars
+        specified parameter (sometimes designated “k”)
+    size: numeric_scalars, optional
+        Output shape. Default is None, in which case a single value is returned.
+
+    Returns
+    -------
+    pdarray
+        Pdarray of floats (unless size=None, in which case a single float is returned).
+
+    Notes
+    -----
+    The probability density function for the Gamma distribution is
+
+    .. math::
+        p(x) = x^{k-1}\frac{e^{\frac{-x}{\theta}}}{\theta^k\Gamma(k)}
+
+    Examples
+    --------
+    >>> ak.random.seed(16309)
+    >>> ak.random.standard_gamma(1)
+    0.22445153117925773
+    >>> ak.random.standard_gamma(1, size=3)
+    array([0.85277675774402018 3.1253116338237561 0.95808096440750634])
+
+    """  # noqa: W605
+
     seed() if not defaultGeneratorExists() else None
     return theGenerator.standard_gamma(shape, size)
 
 
-def shuffle(x, method="FisherYates"):
+def shuffle(
+    x,
+    method: str = "FisherYates",
+    *,
+    feistel_rounds: int = 16,
+    feistel_key: int | None = None,
+):
+    """
+    Randomly shuffle the elements of a `pdarray` in place.
+
+    This method performs a reproducible in-place shuffle of the array `x`
+    using the specified strategy. Three methods are available:
+
+    Parameters
+    ----------
+    x : pdarray
+        The array to be shuffled in place. Must be a one-dimensional Arkouda array.
+
+    method : {"FisherYates","MergeShuffle","Feistel"}, optional
+        - "FisherYates": A **serial, global** Fisher–Yates shuffle implemented in Chapel.
+          Simple and fast for small/medium arrays, but **not distributed** — the entire
+          array must fit on one locale.
+        - "MergeShuffle": A **fully distributed** shuffle that combines local randomization
+          and cross-locale probabilistic merging. Scales to large datasets and maintains
+          good statistical uniformity across locales.
+        - "Feistel": A **keyed permutation** of indices via a Feistel PRP over [0, N),
+          then applies that permutation to `x`. Works for any `N` (uses cycle-walking
+          when N is not a power of two). **Distributed-friendly** and reproducible.
+          Not intended for cryptographic security.
+
+        Default is "FisherYates".
+
+    feistel_rounds : int, optional (keyword-only)
+        Number of Feistel rounds (default 16). Higher may cost more time.
+
+    feistel_key : int or None, optional (keyword-only)
+        64-bit key for the Feistel permutation. If None, the backend should derive
+        a key from the RNG stream so results remain deterministic given the client RNG state.
+
+    Raises
+    ------
+    TypeError
+        If `x` is not a `pdarray`.
+
+    ValueError
+        If an unsupported shuffle method is specified, or if `feistel_key` is not a 64-bit integer.
+
+    Notes
+    -----
+    - The shuffle modifies `x` in place.
+    - The result is deterministic given the client RNG state.
+    - For `"MergeShuffle"`, reproducibility is guaranteed **only if the number of locales
+      remains fixed** between runs. Changing locale count will yield different permutations.
+    - Use `"FisherYates"` only for small arrays or testing.
+    - Use `"MergeShuffle"` for production-scale distributed shuffling.
+    - Use `"Feistel"` when you need a keyed, reproducible permutation of indices that
+      also scales in distributed settings.
+
+    Examples
+    --------
+    >>> ak.random.seed(18)
+    >>> pda = ak.arange(10)
+    >>> pda
+    array([0 1 2 3 4 5 6 7 8 9])
+    >>> ak.random.shuffle(pda, method="FisherYates")
+    >>> pda
+    array([0 8 2 7 9 4 6 3 5 1])
+    >>> ak.random.shuffle(pda, method="MergeShuffle")
+    >>> pda
+    array([5 6 9 3 8 2 7 0 4 1])
+    >>> ak.random.shuffle(pda, method="Feistel", feistel_rounds=18)
+    >>> pda
+    array([4 2 1 6 9 3 0 5 8 7])
+    >>> ak.random.shuffle(pda, method="Feistel", feistel_key=0x1234_5678_9ABC_DEF0, feistel_rounds=18)
+    >>> pda
+    array([2 3 6 9 8 5 1 4 7 0])
+    """
+
     seed() if not defaultGeneratorExists() else None
     return theGenerator.shuffle(x, method)
 
 
 def permutation(x, method="Argsort"):
+    """
+    Randomly permute a sequence, or return a permuted range.
+
+    Parameters
+    ----------
+    x: int or pdarray
+        If x is an integer, randomly permute ak.arange(x). If x is an array,
+        make a copy and shuffle the elements randomly.
+    method: str = 'Argsort'
+        The method for generating the permutation.
+        Allowed values: 'FisherYates', 'Argsort'
+
+        If 'Argsort' is selected, the permutation will be generated by
+        an argsort performed on randomly generated floats.
+
+    Returns
+    -------
+    pdarray
+        pdarray of permuted elements
+
+    Raises
+    ------
+    ValueError
+        Raised if method is not an allowed value.
+    TypeError
+        Raised if x is not of type int or pdarray.
+
+    Examples
+    --------
+    >>> ak.random.seed(1984)
+    >>> ak.random.permutation(ak.arange(10))
+    array([4 7 0 2 5 3 6 1 8 9])
+    """
+
     seed() if not defaultGeneratorExists() else None
     return theGenerator.permutation(x, method)
 
 
 def poisson(lam=1.0, size=None):
+    r"""
+    Draw samples from a Poisson distribution.
+
+    The Poisson distribution is the limit of the binomial distribution for large N.
+
+    Parameters
+    ----------
+    lam: float or pdarray
+        Expected number of events occurring in a fixed-time interval, must be >= 0.
+        An array must have the same size as the size argument.
+    size: numeric_scalars, optional
+        Output shape. Default is None, in which case a single value is returned.
+
+    Notes
+    -----
+    The probability mass function for the Poisson distribution is:
+
+    .. math::
+       f(k; \lambda) = \frac{\lambda^k e^{-\lambda}}{k!}
+
+    For events with an expected separation :math:`\lambda`, the Poisson distribution
+    :math:`f(k; \lambda)` describes the probability of :math:`k` events occurring
+    within the observed interval :math:`\lambda`
+
+    Returns
+    -------
+    pdarray
+        Pdarray of ints (unless size=None, in which case a single int is returned).
+
+    Examples
+    --------
+    >>> ak.random.seed(2525)
+    >>> ak.random.poisson(lam=3, size=5)
+    array([3 4 3 3 5])
+
+    """
+
     seed() if not defaultGeneratorExists() else None
     return theGenerator.poisson(lam, size)
 
