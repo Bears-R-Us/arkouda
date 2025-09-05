@@ -126,7 +126,7 @@ class TestCheckpoint:
         create_fake_cp(cp_name, num_locales=ak.get_config()["numLocales"] + 1)
         try:
             ak.load_checkpoint(cp_name)
-            assert False  # should not get here
+            raise AssertionError("Expected RuntimeError was not raised")
         except RuntimeError as err:
             assert (
                 "Attempting to load a checkpoint that was made with a different number of locales"
@@ -147,7 +147,7 @@ class TestCheckpoint:
 
         try:
             ak.load_checkpoint(cp_name)
-            assert False  # should not get here
+            raise AssertionError("Expected RuntimeError was not raised")
         except RuntimeError as err:
             assert "could not read chunk 1 metadata" in str(err)
         finally:
@@ -161,7 +161,7 @@ class TestCheckpoint:
 
         try:
             ak.load_checkpoint(cp_name)
-            assert False  # should not get here
+            raise AssertionError("Expected RuntimeError was not raised")
         except RuntimeError as err:
             assert "field 'size' not found" in str(err)
         finally:
@@ -171,7 +171,7 @@ class TestCheckpoint:
     def test_wrong_argument(self):
         try:
             ak.save_checkpoint(mode="override")
-            assert False  # should not get here
+            raise AssertionError("Expected RuntimeError was not raised")
         except ValueError as err:
             assert 'invalid checkpointing mode "override"' in str(err)
 

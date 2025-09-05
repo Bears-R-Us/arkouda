@@ -164,6 +164,8 @@ class TestPdarrayCreation:
         assert a is c
         ak_assert_equal(a, c)
 
+    from functools import partial
+
     @pytest.mark.skip_if_max_rank_less_than(2)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_large_array_creation_multi_dim(self, size, subtests):
@@ -173,16 +175,18 @@ class TestPdarrayCreation:
         """
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
+
+            # Bind loop variables at definition time to satisfy Ruff B023
             test_cases = [
-                ("ak.ones", lambda: ak.ones(shape, int)),
-                ("ak.array(ak.ones)", lambda: ak.array(ak.ones(shape, int))),
-                ("ak.zeros", lambda: ak.zeros(shape)),
-                ("ak.ones (default)", lambda: ak.ones(shape)),
-                ("ak.full", lambda: ak.full(shape, 9)),  # only numeric for multi-dim
-                ("ak.zeros_like", lambda: ak.zeros_like(ak.ones(shape))),
-                ("ak.ones_like", lambda: ak.ones_like(ak.zeros(shape))),
-                ("ak.full_like", lambda: ak.full_like(ak.zeros(shape), 9)),
-                ("ak.randint", lambda: ak.randint(0, local_size, shape)),
+                ("ak.ones", lambda s=shape: ak.ones(s, int)),
+                ("ak.array(ak.ones)", lambda s=shape: ak.array(ak.ones(s, int))),
+                ("ak.zeros", lambda s=shape: ak.zeros(s)),
+                ("ak.ones (default)", lambda s=shape: ak.ones(s)),
+                ("ak.full", lambda s=shape: ak.full(s, 9)),  # only numeric for multi-dim
+                ("ak.zeros_like", lambda s=shape: ak.zeros_like(ak.ones(s))),
+                ("ak.ones_like", lambda s=shape: ak.ones_like(ak.zeros(s))),
+                ("ak.full_like", lambda s=shape: ak.full_like(ak.zeros(s), 9)),
+                ("ak.randint", lambda s=shape, n=local_size: ak.randint(0, n, s)),
             ]
 
             for name, constructor in test_cases:
