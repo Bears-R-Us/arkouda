@@ -959,7 +959,7 @@ def cumsum(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
     >>> ak.cumsum(ak.uniform(5,1.0,5.0, seed=1))
     array([4.14859379... 5.48568392... 9.48801240... 13.0780218... 16.8202747...])
 
-    >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_, seed=1))
+    >>> ak.cumsum(ak.randint(0, 2, 5, dtype=ak.bool_, seed=1))
     array([1 1 2 3 4])
     """
     from arkouda.client import generic_msg
@@ -1029,7 +1029,7 @@ def cumprod(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
     >>> ak.cumprod(ak.uniform(5,1.0,5.0, seed=1))
     array([4.14859379... 5.54704379... 22.20109135... 79.7021268... 298.2655159...])
 
-    >>> ak.cumprod(ak.randint(0, 1, 5, dtype=ak.bool_, seed=1))
+    >>> ak.cumprod(ak.randint(0, 2, 5, dtype=ak.bool_, seed=1))
     array([1 0 0 0 0])
     """
     from arkouda.client import generic_msg

@@ -58,7 +58,7 @@ class TestUtilFunctions:
     @pytest.mark.skip_if_rank_not_compiled([3])
     def test_clip_errors(self):
         # bool
-        a = xp.asarray(ak.randint(0, 100, (5, 6, 7), dtype=ak.bool_, seed=seed), dtype=ak.bool_)
+        a = xp.asarray(ak.randint(0, 2, (5, 6, 7), dtype=ak.bool_, seed=seed), dtype=ak.bool_)
         with pytest.raises(
             RuntimeError,
             match="Error executing command: clip does not support dtype bool",

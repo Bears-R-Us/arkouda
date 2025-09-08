@@ -38,22 +38,20 @@ module RandMsg
     :arg reqMsg: message to process (contains cmd,aMin,aMax,len,dtype)
     */
     @arkouda.instantiateAndRegister
-    proc randint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
+    proc randint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
+                type array_dtype, param array_nd: int): MsgTuple throws
         where array_dtype != BigInteger.bigint
     {
         const shape = msgArgs["shape"].toScalarTuple(int, array_nd),
-              seed = msgArgs["seed"].toScalar(int);
+                seed  = msgArgs["seed"].toScalar(int);
 
-        const low = msgArgs["low"].toScalar(array_dtype),
-              high = msgArgs["high"].toScalar(array_dtype) - if isIntegralType(array_dtype) then 1 else 0;
+        type T = array_dtype;
+        param isInt  = isIntegralType(T);
+        param isBool = isBoolType(T);
 
         var len = 1;
         for s in shape do len *= s;
         overMemLimit(len);
-
-        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "cmd: %s len: %i dtype: %s aMin: %?: aMax: %?".format(
-                         cmd,len,type2str(array_dtype),low,high));
 
         var t = new stopwatch();
         t.start();
@@ -61,21 +59,48 @@ module RandMsg
         var e = createSymEntry((...shape), array_dtype);
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "alloc time = %? sec".format(t.elapsed()));
+                        "alloc time = %? sec".format(t.elapsed()));
         t.restart();
 
-        if array_dtype == bool {
-            if seed == -1
-                then fillRandom(e.a);
-                else fillRandom(e.a, seed);
+        if isBool {
+            // ----- BOOL: no bounded fill; decide via integer bounds -----
+            const li = msgArgs["low"].toScalar(int);
+            const hi = msgArgs["high"].toScalar(int);
+
+            randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            "cmd: %s len: %i dtype: %s aMin: %? aMax: %?".format(
+                            cmd, len, type2str(array_dtype), li, hi));
+
+            // [0,1) -> all False, [1,2) -> all True, [0,2) -> random bools
+            if li == 0 && hi == 1 {
+                e.a = false;
+            } else if li == 1 && hi == 2 {
+                e.a = true;
+            } else {
+            if seed == -1 then
+                fillRandom(e.a);         // unbounded boolean fill
+            else
+                fillRandom(e.a, seed);   // seeded unbounded boolean fill
+            }
+
         } else {
-            if seed == -1
-                then fillRandom(e.a, low, high);
-                else fillRandom(e.a, low, high, seed);
+            // ----- NON-BOOL: bounded fill; Chapel is inclusive on the upper end -----
+            const lowT     : T = msgArgs["low"].toScalar(T);
+            const highRawT : T = msgArgs["high"].toScalar(T);
+            const highT    : T = if isInt then (highRawT - (1:T)) else highRawT;
+
+            randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            "cmd: %s len: %i dtype: %s aMin: %? aMax: %?".format(
+                            cmd, len, type2str(array_dtype), lowT, highT));
+
+            if seed == -1 then
+                fillRandom(e.a, lowT, highT);
+            else
+                fillRandom(e.a, lowT, highT, seed);
         }
 
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "compute time = %i sec".format(t.elapsed()));
+                        "compute time = %i sec".format(t.elapsed()));
 
         return st.insert(e);
     }

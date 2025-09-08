@@ -1448,7 +1448,7 @@ def randint(
     >>> ak.randint(0, 1, 3, seed=1701, dtype=ak.float64)
     array([0.011410423448327005 0.73618171558685619 0.12367222192448891])
 
-    >>> ak.randint(0, 1, 5, seed=1701, dtype=ak.bool_)
+    >>> ak.randint(0, 2, 5, seed=1701, dtype=ak.bool_)
     array([False True False True False])
     """
     from arkouda.numpy.random import randint
