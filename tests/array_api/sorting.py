@@ -27,8 +27,9 @@ class TestSortingFunctions:
     @pytest.mark.parametrize("dtype", ak.ScalarDTypes)
     @pytest.mark.parametrize("descending", [True, False])
     def test_argsort(self, shape, dtype, descending):
+        high = 100 if dtype != "bool_" else 2
         for axis in range(len(shape)):
-            a = xp.asarray(ak.randint(0, 100, shape, dtype=dtype, seed=pytest.seed))
+            a = xp.asarray(ak.randint(0, high, shape, dtype=dtype, seed=pytest.seed))
             b = xp.argsort(a, axis=axis, descending=descending)
             np_b = a.to_ndarray().argsort(axis=axis, stable=True)
             np_b = np.flip(np_b, axis=axis) if descending else np_b

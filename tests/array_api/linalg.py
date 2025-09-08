@@ -23,13 +23,15 @@ class TestLinalg:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_matmul(self, data_type1, data_type2, prob_size):
         size = int(sqrt(prob_size))
+        high1 = 10 if data_type1 != ak.bool_ else 2
+        high2 = 10 if data_type2 != ak.bool_ else 2
 
         # test on one square and two non-square products
 
         for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
-            arrayLeft = xp.asarray(ak.randint(0, 10, (rows, size), dtype=data_type1))
+            arrayLeft = xp.asarray(ak.randint(0, high1, (rows, size), dtype=data_type1))
             ndaLeft = arrayLeft.to_ndarray()
-            arrayRight = xp.asarray(ak.randint(0, 10, (size, cols), dtype=data_type2))
+            arrayRight = xp.asarray(ak.randint(0, high2, (size, cols), dtype=data_type2))
             ndaRight = arrayRight.to_ndarray()
             akProduct = xp.matmul(arrayLeft, arrayRight)
             npProduct = np.matmul(ndaLeft, ndaRight)
@@ -57,8 +59,9 @@ class TestLinalg:
     def test_vecdot(self, data_type1, data_type2, prob_size):
         depth = np.random.randint(2, 10)
         width = prob_size // depth
+        high = 10 if data_type1 != ak.bool_ else 2
 
-        pda_a = xp.asarray(ak.randint(0, 10, (depth, width), dtype=data_type1))
+        pda_a = xp.asarray(ak.randint(0, high, (depth, width), dtype=data_type1))
         nda_a = pda_a.to_ndarray()
         pda_b = xp.asarray(ak.randint(0, 10, (depth, width), dtype=data_type2))
         nda_b = pda_b.to_ndarray()
