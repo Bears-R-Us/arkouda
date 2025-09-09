@@ -8,7 +8,7 @@ from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.numpy.random.generator import default_rng, Generator
+from arkouda.numpy.random.generator import Generator, default_rng
 
 __all__ = [
     "choice",
@@ -30,7 +30,7 @@ __all__ = [
     "uniform",
 ]
 
-theGenerator : Optional[Generator] = None  # used below to check if generator exists
+theGenerator: Optional[Generator] = None  # used below to check if generator exists
 
 
 @typechecked
@@ -314,6 +314,7 @@ def globalGeneratorExists():
     """
     return theGenerator is not None
 
+
 def getGlobalGenerator() -> Generator:
     """
     Used to simplify the boilerplate code for each function.
@@ -324,6 +325,7 @@ def getGlobalGenerator() -> Generator:
         return theGenerator
     else:
         raise RuntimeError("Default RNG failed to initialize")
+
 
 def seed(seed=None):
     """
@@ -749,7 +751,7 @@ def shuffle(
     *,
     feistel_rounds: int = 16,
     feistel_key: int | None = None,
-) :
+):
     """
     Randomly shuffle the elements of a `pdarray` in place.
 
@@ -820,7 +822,6 @@ def shuffle(
     >>> pda
     array([2 3 6 9 8 5 1 4 7 0])
     """
-
     getGlobalGenerator().shuffle(
         x, method=method, feistel_rounds=feistel_rounds, feistel_key=feistel_key
     )
