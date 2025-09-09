@@ -74,7 +74,7 @@ class TestRegex:
         strings = ak.array(s)
         ak_sub, ak_sub_counts = strings.subn(pattern, repl, count)
         re_sub, re_sub_counts = zip(
-            *(re.subn(pattern, repl, strings[i], count) for i in range(strings.size))
+            *(re.subn(pattern, repl, strings[i], count=count) for i in range(strings.size))
         )
 
         assert ak_sub.tolist() == list(re_sub)
@@ -185,7 +185,7 @@ class TestRegex:
         maxsplit = 3
         split, split_map = strings.regex_split(pattern, maxsplit, return_segments=True)
         for i in range(strings.size):
-            re_split = re.split(pattern, strings[i], maxsplit)
+            re_split = re.split(pattern, strings[i], maxsplit=maxsplit)
             ak_split = (
                 split[split_map[i] :]
                 if i == strings.size - 1

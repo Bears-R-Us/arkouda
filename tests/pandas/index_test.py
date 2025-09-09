@@ -276,7 +276,7 @@ class TestIndex:
         i4_cpy = ak.Index(["a", "b", "c"], allow_list=False)
         self.assert_equal(i4 == i4_cpy, ak.array([True, True, True]))
         self.assert_equal(i4 != i4_cpy, ak.array([False, False, False]))
-        assert i3.equals(i3_cpy)
+        assert i4.equals(i4_cpy)
 
         i5 = ak.Index(["a", "x", "c"], allow_list=True)
         self.assert_equal(i3 == i5, ak.array([True, False, True]))
@@ -287,10 +287,10 @@ class TestIndex:
         assert not i5.equals(i6)
 
         with pytest.raises(ValueError):
-            i5 == i6
+            _ = i5 == i6
 
         with pytest.raises(ValueError):
-            i5 != i6
+            _ = i5 != i6
 
         with pytest.raises(TypeError):
             i.equals("string")

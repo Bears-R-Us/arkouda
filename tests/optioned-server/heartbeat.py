@@ -31,6 +31,6 @@ class TestHeartbeat:
             # 'keepalive' options in the heartbeat implementation
             # allow 4 times the timeout. Add a wiggle room of 2*timeout.
             ak.client.server_sleep(hb_timeout * 6)
-            assert False  # an exception should have been raised
+            raise AssertionError("Expected RuntimeError was not raised")
         except Exception as e:
             assert "connection to the server is closed or disconnected" in str(e)
