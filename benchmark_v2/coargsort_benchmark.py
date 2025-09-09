@@ -13,6 +13,7 @@ NUM_ARR = [1, 2, 8, 16]
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_coargsort(benchmark, dtype, numArrays):
     N = pytest.N
+    size = max(1, N // numArrays)
 
     if dtype in pytest.dtype:
         if pytest.seed is None:
@@ -22,13 +23,13 @@ def bench_coargsort(benchmark, dtype, numArrays):
 
         # Generate Arkouda arrays
         if dtype == "int64":
-            arrs = [ak.randint(0, 2**32, N // numArrays, seed=s) for s in seeds]
+            arrs = [ak.randint(0, 2**32, size, seed=s) for s in seeds]
         elif dtype == "uint64":
-            arrs = [ak.randint(0, 2**32, N // numArrays, dtype=ak.uint64, seed=s) for s in seeds]
+            arrs = [ak.randint(0, 2**32, size, dtype=ak.uint64, seed=s) for s in seeds]
         elif dtype == "float64":
-            arrs = [ak.randint(0, 1, N // numArrays, dtype=ak.float64, seed=s) for s in seeds]
+            arrs = [ak.randint(0, 1, size, dtype=ak.float64, seed=s) for s in seeds]
         elif dtype == "str":
-            arrs = [ak.random_strings_uniform(1, 16, N // numArrays, seed=s) for s in seeds]
+            arrs = [ak.random_strings_uniform(1, 16, size, seed=s) for s in seeds]
 
         num_bytes = calc_num_bytes(arrs)
 
