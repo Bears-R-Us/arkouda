@@ -86,6 +86,7 @@ arkouda.DataFrame, arkouda.client.generic_msg
 
 """
 
+import sys
 from typing import cast as typecast
 
 from arkouda.numpy.pdarrayclass import create_pdarray
@@ -211,9 +212,9 @@ def print_comm_diagnostics_table(print_empty_columns=False):
 
     df = get_comm_diagnostics()
     if print_empty_columns:
-        print(df.to_markdown())
+        sys.stdout.write(df.to_markdown())
     else:
-        print(df[[col for col in df.columns if ak_sum(df[col]) != 0]].to_markdown())
+        sys.stdout.write(df[[col for col in df.columns if ak_sum(df[col]) != 0]].to_markdown())
 
     return typecast(str, rep_msg)
 

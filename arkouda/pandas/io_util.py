@@ -43,6 +43,8 @@ from pathlib import Path
 import shutil
 from typing import Any, Dict, Mapping
 
+from arkouda.logger import getArkoudaLogger
+
 __all__ = [
     "delete_directory",
     "delimited_file_to_dict",
@@ -50,6 +52,8 @@ __all__ = [
     "get_directory",
     "write_line_to_file",
 ]
+
+logger = getArkoudaLogger("io_util Logger")
 
 
 def get_directory(path: str) -> Path:
@@ -202,7 +206,7 @@ def delete_directory(dir: str) -> None:
         try:
             shutil.rmtree(dir)
         except OSError as e:
-            print("Error: %s - %s." % (e.filename, e.strerror))
+            logger.error("Error: %s - %s." % (e.filename, e.strerror))
 
 
 def directory_exists(dir: str) -> bool:

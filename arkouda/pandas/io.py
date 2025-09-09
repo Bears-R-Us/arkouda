@@ -1393,21 +1393,19 @@ def to_parquet(
         for arr, name in zip(data, cast(List[str], datasetNames)):
             arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compression=compression)
     else:
-        print(
-            cast(
-                str,
-                generic_msg(
-                    cmd="toParquet_multi",
-                    args={
-                        "columns": data,
-                        "col_names": datasetNames,
-                        "col_objtypes": col_objtypes,
-                        "filename": prefix_path,
-                        "num_cols": len(data),
-                        "compression": compression,
-                    },
-                ),
-            )
+        cast(
+            str,
+            generic_msg(
+                cmd="toParquet_multi",
+                args={
+                    "columns": data,
+                    "col_names": datasetNames,
+                    "col_objtypes": col_objtypes,
+                    "filename": prefix_path,
+                    "num_cols": len(data),
+                    "compression": compression,
+                },
+            ),
         )
 
 
