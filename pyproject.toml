@@ -1,22 +1,16 @@
 [build-system]
-requires = ["setuptools>=64", "wheel", "versioneer[toml]>=0.22"]
+requires = ["setuptools>=64", "wheel", "versioneer[toml]>=0.19"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "arkouda"
-# Version is provided dynamically by Versioneer
 dynamic = ["version"]
 description = "Parallel, distributed NumPy-like arrays backed by Chapel"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [
-  { name = "U.S. Government" },
-]
-keywords = [
-  "HPC", "workflow", "exploratory", "analysis", "parallel", "distribute",
-  "arrays", "Chapel"
-]
+authors = [{ name = "U.S. Government" }]
+keywords = ["HPC", "workflow", "exploratory", "analysis", "parallel", "distribute", "arrays", "Chapel"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Science/Research",
@@ -26,7 +20,6 @@ classifiers = [
 ]
 
 dependencies = [
-  # from setup.py install_requires
   "numpy>=2.0",
   "pandas>=1.4.0,!=2.2.0",
   "pyzmq>=20.0.0",
@@ -36,18 +29,16 @@ dependencies = [
   "versioneer",
   "matplotlib>=3.3.2",
   "h5py>=3.7.0",
-  "pip",
+  "pip",  # Consider removing if not truly required at runtime
   "types-tabulate",
   "tables>=3.10.0",
   "pyarrow<21.0.0,>=6.0.1",
   "scipy",
   "cloudpickle",
-  # chapel-py (left as comment as in setup.py)
 ]
 
 [project.optional-dependencies]
 dev = [
-  # from setup.py extras_require["dev"]
   "pexpect",
   "pytest>=6.0",
   "pytest-env",
@@ -78,7 +69,6 @@ dev = [
   "pre-commit",
   "darglint>=1.8.1",
   "pydoclint[flake8]==0.6.10",
-  "pytest-subtests",
   "numba",
 ]
 
@@ -93,19 +83,16 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
-# If you want to exclude tests/examples from wheels, you can add:
 # exclude = ["tests*", "examples*"]
 
-# --- Versioneer configuration (adjust paths/prefixes to match your repo) ---
 [tool.versioneer]
 VCS = "git"
 style = "pep440"
 versionfile_source = "arkouda/_version.py"
-versionfile_build  = "arkouda/_version.py"
+versionfile_build = "arkouda/_version.py"
 tag_prefix = "v"
 parentdir_prefix = "arkouda-"
 
 [tool.setuptools.dynamic]
-# Versioneer writes __version__ in arkouda/_version.py
 version = { attr = "arkouda._version.__version__" }
 
