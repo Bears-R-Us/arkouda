@@ -59,7 +59,7 @@ from __future__ import annotations
 
 import builtins
 import json
-from typing import TYPE_CHECKING, List, Optional, Tuple, TypeVar, Union
+from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, TypeVar, Union
 
 import numpy as np
 from numpy import array as ndarray
@@ -509,7 +509,7 @@ class Index:
 
         Parameters
         ----------
-        other : object
+        other : Index
             object to compare.
 
         Returns
@@ -1063,8 +1063,8 @@ class Index:
         self,
         prefix_path: str,
         dataset: str = "index",
-        mode: str = "truncate",
-        file_type: str = "distribute",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ) -> str:
         """
         Save the Index to HDF5.
@@ -1261,7 +1261,7 @@ class Index:
         self,
         prefix_path: str,
         dataset: str = "index",
-        mode: str = "truncate",
+        mode: Literal["truncate", "append"] = "truncate",
         compression: Optional[str] = None,
     ):
         """
@@ -1278,7 +1278,7 @@ class Index:
             Directory and filename prefix that all output files share
         dataset : str
             Name of the dataset to create in files (must not already exist)
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
         compression : str (Optional)
@@ -2016,8 +2016,8 @@ class MultiIndex(Index):
         self,
         prefix_path: str,
         dataset: str = "index",
-        mode: str = "truncate",
-        file_type: str = "distribute",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ) -> str:
         """
         Save the Index to HDF5.
@@ -2030,10 +2030,10 @@ class MultiIndex(Index):
             Directory and filename prefix that all output files share
         dataset : str
             Name of the dataset to create in files (must not already exist)
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
-        file_type: str ("single" | "distribute")
+        file_type: {"single" | "distribute"}
             Default: "distribute"
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.

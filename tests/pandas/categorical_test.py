@@ -323,7 +323,7 @@ class TestCategorical:
         """
         num_elems = 51  # create_basic_categorical starts counting at 1, so the size is really off by one
         cat = self.create_basic_categorical(size=num_elems)
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             # Expect error for mode not being append or truncate
             cat.to_hdf("foo", dataset="bar", mode="not_allowed")
 
