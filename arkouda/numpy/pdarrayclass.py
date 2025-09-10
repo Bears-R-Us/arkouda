@@ -901,18 +901,42 @@ class pdarray:
     def __rmul__(self, other):
         return self._r_binop(other, "*")
 
+    def _check_denominator(self, denom):
+        from arkouda.numpy.err import _ak_errstate, _dispatch
+
+        mode = _ak_errstate.get("divide", "ignore")
+
+        if mode != "ignore":
+            from arkouda import any as ak_any
+
+            if isinstance(denom, pdarray):
+                has_zero = ak_any(denom == 0)
+            else:
+                has_zero = denom == 0
+
+            if bool(has_zero):
+                msg = "divide by zero encountered"
+                _dispatch("divide", msg)
+
     # overload / for pdarray, other can be {pdarray, int, float}
     def __truediv__(self, other):
+        self._check_denominator(other)
+
         return self._binop(other, "/")
 
     def __rtruediv__(self, other):
+        self._check_denominator(self)
+
         return self._r_binop(other, "/")
 
-    # overload // for pdarray, other can be {pdarray, int, float}
     def __floordiv__(self, other):
+        self._check_denominator(other)
+
         return self._binop(other, "//")
 
     def __rfloordiv__(self, other):
+        self._check_denominator(self)
+
         return self._r_binop(other, "//")
 
     def __mod__(self, other):
