@@ -41,16 +41,16 @@ OUTPUT_JSON = "benchmark_v2/datdir/configs/field_lookup_map.json"
 
 # Benchmarks that just need default Average rate/time keys
 DEFAULT_BENCHMARKS = [
-    "stream",
     "argsort",
-    "str-argsort",
-    "gather",
-    "str-gather",
-    "scatter",
     "bigint_stream",
     "flatten",
+    "gather",
     "noop",
+    "scatter",
     "split",
+    "str-argsort",
+    "str-gather",
+    "stream",
 ]
 
 
@@ -62,10 +62,15 @@ def infer_regex(benchmark_name: str, field: str) -> str:
     base_bench = re.sub(r"^(str|bigint)(?:_|-)", "", benchmark_name)
 
     if "array_transfer" in base_bench:
-        if "to_ndarray" in field:
-            base_bench = base_bench + "_tondarray"
-        elif "ak.array" in field:
-            base_bench = base_bench + "_akarray"
+        m = re.search(r"([\w\.]+) A", field)
+        if m:
+            qualifier = m.group(1)
+            qualifier = qualifier if qualifier == "to_ndarray" else "from_ndarray"
+            if benchmark_name.startswith("bigint-"):
+                dtype = "bigint"
+            else:
+                dtype = "(?:int64|float64|bool|uint64)"
+            return f"bench_{base_bench}_{qualifier}\\[{dtype}\\]"
 
     # Groupby & Coargsort (with array counts)
     if "array" in field and base_bench in ["groupby", "coargsort"]:

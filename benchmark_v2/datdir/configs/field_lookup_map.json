@@ -482,7 +482,7 @@
         "extra_info",
         "transfer_rate"
       ],
-      "lookup_regex": null,
+      "lookup_regex": "bench_array_transfer_from_ndarray\\[(?:int64|float64|bool|uint64)\\]",
       "name": ""
     },
     "ak.array Average time =": {
@@ -491,7 +491,7 @@
         "stats",
         "mean"
       ],
-      "lookup_regex": null,
+      "lookup_regex": "bench_array_transfer_from_ndarray\\[(?:int64|float64|bool|uint64)\\]",
       "name": ""
     },
     "to_ndarray Average rate =": {
@@ -500,7 +500,7 @@
         "extra_info",
         "transfer_rate"
       ],
-      "lookup_regex": null,
+      "lookup_regex": "bench_array_transfer_to_ndarray\\[(?:int64|float64|bool|uint64)\\]",
       "name": ""
     },
     "to_ndarray Average time =": {
@@ -509,7 +509,7 @@
         "stats",
         "mean"
       ],
-      "lookup_regex": null,
+      "lookup_regex": "bench_array_transfer_to_ndarray\\[(?:int64|float64|bool|uint64)\\]",
       "name": ""
     }
   },
@@ -520,7 +520,7 @@
         "extra_info",
         "transfer_rate"
       ],
-      "lookup_regex": null,
+      "lookup_regex": "bench_array_transfer_from_ndarray\\[(?:int64|float64|bool|uint64)\\]",
       "name": ""
     },
     "ak.array Average time =": {
@@ -529,7 +529,7 @@
         "stats",
         "mean"
       ],
-      "lookup_regex": null,
+      "lookup_regex": "bench_array_transfer_from_ndarray\\[(?:int64|float64|bool|uint64)\\]",
       "name": ""
     },
     "to_ndarray Average rate =": {
@@ -538,7 +538,7 @@
         "extra_info",
         "transfer_rate"
       ],
-      "lookup_regex": null,
+      "lookup_regex": "bench_array_transfer_to_ndarray\\[(?:int64|float64|bool|uint64)\\]",
       "name": ""
     },
     "to_ndarray Average time =": {
@@ -547,7 +547,7 @@
         "stats",
         "mean"
       ],
-      "lookup_regex": null,
+      "lookup_regex": "bench_array_transfer_to_ndarray\\[(?:int64|float64|bool|uint64)\\]",
       "name": ""
     }
   },
