@@ -339,14 +339,15 @@ def seed(seed=None):
     Notes
     -----
     Reseeding always causes the destruction of an existing generator, because
-    there is no way to reseed a chapel randomStream.
-    The existing generator is deleted, though python doesn't require that.
-    Python-side, it suffices to create a new generator with the new seed.
+    there is no way to reseed a chapel randomStream.  The existing generator
+    is deleted, and the python destructor invokes the chapel-side delGenerator
+    which removes the generator from the symbol table, deleting it and its
+    RandomStream.
     """
     global theGenerator
 
     if globalGeneratorExists():
-        del theGenerator
+        theGenerator.destructor()
 
     theGenerator = default_rng(seed)
 
@@ -822,6 +823,10 @@ def shuffle(
     >>> pda
     array([2 3 6 9 8 5 1 4 7 0])
     """
+    # It is worth noting that shuffle is unique among the rng functions, in that
+    # it does not return a value.  The elements of x are shuffled in place.  That's
+    # why this function has no return statement.
+
     getGlobalGenerator().shuffle(
         x, method=method, feistel_rounds=feistel_rounds, feistel_key=feistel_key
     )
