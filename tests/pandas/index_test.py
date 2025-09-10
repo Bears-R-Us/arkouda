@@ -397,7 +397,7 @@ class TestIndex:
         from arkouda.pandas.index import Index, MultiIndex
 
         idx = Index(ak.cast(ak.array([1, 2, 3]), dt="bigint"))
-        assert idx.memory_usage() == 3 * bigint.itemsize
+        assert idx.memory_usage() == ak.array([1, 2, 3], dtype=bigint).nbytes
 
         int64_size = ak.dtype(ak.int64).itemsize
         idx = Index(ak.cast(ak.arange(size), dt="int64"))
