@@ -10,9 +10,49 @@ from scipy import stats as sp_stats
 import arkouda as ak
 from arkouda.numpy import random
 from arkouda.scipy import chisquare as akchisquare
-from arkouda.testing import assert_almost_equivalent
+from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equal
 
 INT_FLOAT = [ak.int64, ak.float64]
+RANDOM_METHODS = [
+    "integers",
+    "choice",
+    "exponential",
+    "standard_exponential",
+    "logistic",
+    "lognormal",
+    "normal",
+    "standard_gamma",
+    "shuffle",
+    "permutation",
+    "poisson",
+]
+
+
+def generate_global_seed_test_data(method):
+    if method == "integers":
+        return ak.random.integers(1, 10, 10)
+    if method == "choice":
+        return ak.random.choice(ak.arange(10), size=5, replace=False)
+    if method == "exponential":
+        return ak.random.exponential(size=10)
+    if method == "standard_exponential":
+        return ak.random.standard_exponential(size=10)
+    if method == "logistic":
+        return ak.random.logistic(loc=0.0, scale=1.0, size=10)
+    if method == "lognormal":
+        return ak.random.lognormal(size=10)
+    if method == "normal":
+        return ak.random.normal(size=10)
+    if method == "standard_gamma":
+        return ak.random.standard_gamma(2, size=5)
+    if method == "shuffle":
+        temp = ak.arange(10)
+        ak.random.shuffle(temp)  # unlike others, shuffle works in place
+        return temp
+    if method == "permutation":
+        return ak.random.permutation(ak.arange(10))
+    if method == "poisson":
+        return ak.random.poisson(size=10)
 
 
 class TestRandom:
@@ -728,3 +768,39 @@ class TestRandom:
         ak.random.standard_normal(np.uint8(100))
         ak.random.standard_normal(np.uint16(100))
         ak.random.standard_normal(np.uint32(100))
+
+    def test_global_seed(self):
+        seed = pytest.seed if pytest.seed is not None else 8675309
+
+        #  test for equality when the same global seed is used.
+        #  seed the global generator, run all of the generators 10 times, and
+        #  make a list of every result.
+
+        ak.random.seed(seed)
+        pda1list = []
+        for i in range(10):
+            for method in RANDOM_METHODS:
+                pda1list.append(generate_global_seed_test_data(method))
+
+        #  reseed the generator with the same seed, and get the same results.
+
+        ak.random.seed(seed)
+        pda2list = []
+        for i in range(10):
+            for method in RANDOM_METHODS:
+                pda2list.append(generate_global_seed_test_data(method))
+
+        for pda1, pda2 in zip(pda1list, pda2list):
+            assert_arkouda_array_equal(pda1, pda2)
+
+        #  Now check inequality.  Reseed with a different seed, run the same
+        #  generations, check for different results.
+
+        ak.random.seed(seed + 1)
+        pda2list = []
+        for i in range(10):
+            for method in RANDOM_METHODS:
+                pda2list.append(generate_global_seed_test_data(method))
+
+        for pda1, pda2 in zip(pda1list, pda2list):
+            assert (pda1 != pda2).any()
