@@ -1376,3 +1376,16 @@ class TestPdarrayCreation:
             ones = ak.ones(shape, ak.bigint)
             n_ones = ones.to_ndarray()
             assert_arkouda_array_equal(ones, ak.array(n_ones))
+
+    def test_np_bigint_zeros_conversion(self):
+        a = ak.array(np.array([2**200] * 100) * 0)
+        assert a.size == 100
+        assert ak.all(a == 0)
+        assert ak.all(a == ak.array([0] * 100, dtype=ak.bigint))
+
+    @pytest.mark.skip_if_max_rank_less_than(2)
+    def test_np_bigint_zeros_conversion_multidim(self):
+        a = ak.array((np.array([2**200] * 100) * 0).reshape(5, 20))
+        assert a.size == 100
+        assert ak.all(a == 0)
+        assert ak.all(a == ak.array([0] * 100, dtype=ak.bigint).reshape(5, 20))
