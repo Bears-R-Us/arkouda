@@ -88,7 +88,7 @@ jobs:
         run: |
           isort --version-number
           isort --settings-path pyproject.toml --show-config | head -n 60
-          isort --settings-path pyproject.toml --gitignore --filter-files --check-only --diff .
+          make isort
 
   ruff-format:
     runs-on: ubuntu-latest

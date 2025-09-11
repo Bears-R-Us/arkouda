@@ -691,7 +691,7 @@ ruff-format:
 isort:
 	isort --gitignore --float-to-top .
 	#  Verify if it will pass the CI check:
-	isort --check-only --diff .
+	isort --settings-path $(ARKOUDA_PROJECT_DIR)/pyproject.toml --check-only --diff .
 
 
 .PHONY: check-doc-examples
