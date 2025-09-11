@@ -83,7 +83,10 @@ jobs:
           pip install isort==5.13.2
       # Update output format to enable automatic inline annotations.
       - name: Run isort
-        run: isort --check-only --diff .
+        run: |
+          isort --version-number
+          isort --settings-path pyproject.toml --show-config | head -n 60
+          isort --settings-path pyproject.toml --gitignore --filter-files --check-only --diff .
 
   ruff-format:
     runs-on: ubuntu-latest
