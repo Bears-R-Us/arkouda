@@ -31,6 +31,8 @@ class ArkoudaCategoricalDtype(ExtensionDtype):
 
 
 class ArkoudaCategoricalArray(ArkoudaBaseArray, ExtensionArray):
+    default_fill_value: str = ""
+
     def __init__(self, data):
         if not isinstance(data, ak.Categorical):
             raise TypeError("Expected arkouda Categorical")
