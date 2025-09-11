@@ -4,15 +4,15 @@ USER root
 
 ENV PATH=/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/venv/bin
 
-ENV CHPL_HOME=/opt/chapel-2.4.0
-ENV CHPL_RE2=bundled 
-ENV CHPL_GMP=bundled 
-ENV CHPL_COMM=none 
-ENV CHPL_TARGET_CPU=native 
-ENV MANPATH=/opt/chapel-2.4.0/man
+ENV CHPL_HOME=/opt/chapel-2.5.0
+ENV CHPL_RE2=bundled
+ENV CHPL_GMP=bundled
+ENV CHPL_COMM=none
+ENV CHPL_TARGET_CPU=native
+ENV MANPATH=/opt/chapel-2.5.0/man
 ENV CHPL_TASKS=qthreads
-ENV CHPL_MEM=cstdlib
-ENV CHPL_HOST_MEM=cstdlib
+ENV CHPL_TARGET_MEM=cstdlib
+ENV CHPL_HOST_MEM=jemalloc
 ENV CHPL_LLVM=none
 
 #   Set timezone, a prerequisite of the python3.12 install
@@ -54,6 +54,7 @@ RUN wget https://github.com/chapel-lang/chapel/releases/download/2.1.0/chapel-2.
 RUN wget https://github.com/chapel-lang/chapel/releases/download/2.2.0/chapel-2.2.0.tar.gz && tar -xvf chapel-2.2.0.tar.gz && cd /opt/chapel-2.2.0 && CHPL_HOME=/opt/chapel-2.2.0 make
 RUN wget https://github.com/chapel-lang/chapel/releases/download/2.3.0/chapel-2.3.0.tar.gz && tar -xvf chapel-2.3.0.tar.gz && cd /opt/chapel-2.3.0 && CHPL_HOME=/opt/chapel-2.3.0 make
 RUN wget https://github.com/chapel-lang/chapel/releases/download/2.4.0/chapel-2.4.0.tar.gz && tar -xvf chapel-2.4.0.tar.gz && cd /opt/chapel-2.4.0 && CHPL_HOME=/opt/chapel-2.4.0 make
+RUN wget https://github.com/chapel-lang/chapel/releases/download/2.5.0/chapel-2.5.0.tar.gz && tar -xvf chapel-2.5.0.tar.gz && cd /opt/chapel-2.5.0 && CHPL_HOME=/opt/chapel-2.5.0 make
 
 # install chapel-py
 RUN cd  /opt/chapel-2.0.0  && CHPL_HOME=/opt/chapel-2.0.0  make chapel-py-venv
@@ -61,6 +62,7 @@ RUN cd  /opt/chapel-2.1.0  && CHPL_HOME=/opt/chapel-2.1.0  make chapel-py-venv
 RUN cd  /opt/chapel-2.2.0  && CHPL_HOME=/opt/chapel-2.2.0  make chapel-py-venv
 RUN cd  /opt/chapel-2.3.0  && CHPL_HOME=/opt/chapel-2.3.0  make chapel-py-venv
 RUN cd  /opt/chapel-2.4.0  && CHPL_HOME=/opt/chapel-2.4.0  make chapel-py-venv
+RUN cd  /opt/chapel-2.5.0  && CHPL_HOME=/opt/chapel-2.5.0  make chapel-py-venv
 
 #Install Chapel frontend bindings
 RUN python3 -m venv /venv
@@ -69,6 +71,7 @@ RUN cd /opt/chapel-2.1.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.1.0 python3 
 RUN cd /opt/chapel-2.2.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.2.0 python3 -m pip install .
 RUN cd /opt/chapel-2.3.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.3.0 python3 -m pip install .
 RUN cd /opt/chapel-2.4.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.4.0 python3 -m pip install .
+RUN cd /opt/chapel-2.5.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.5.0 python3 -m pip install .
 
 #Install chpldoc
 RUN cd /opt/chapel-2.0.0 && CHPL_HOME=/opt/chapel-2.0.0 make chpldoc
@@ -76,6 +79,7 @@ RUN cd /opt/chapel-2.1.0 && CHPL_HOME=/opt/chapel-2.1.0 make chpldoc
 RUN cd /opt/chapel-2.2.0 && CHPL_HOME=/opt/chapel-2.2.0 make chpldoc
 RUN cd /opt/chapel-2.3.0 && CHPL_HOME=/opt/chapel-2.3.0 make chpldoc
 RUN cd /opt/chapel-2.4.0 && CHPL_HOME=/opt/chapel-2.4.0 make chpldoc
+RUN cd /opt/chapel-2.5.0 && CHPL_HOME=/opt/chapel-2.5.0 make chpldoc
 
 
 ###############################################################################
