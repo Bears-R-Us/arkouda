@@ -2,17 +2,21 @@ from __future__ import annotations
 
 import builtins
 import json
-import sys
 from math import prod as maprod
-from typing import (TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar,
-                    Union, cast)
+import sys
+from typing import TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar, Union, cast
 
 from typeguard import typechecked
 
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.infoclass import list_registry
-from arkouda.numpy.dtypes import (_is_dtype_in_union, dtype, float_scalars,
-                                  int_scalars, numeric_scalars)
+from arkouda.numpy.dtypes import (
+    _is_dtype_in_union,
+    dtype,
+    float_scalars,
+    int_scalars,
+    numeric_scalars,
+)
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange
 from arkouda.numpy.pdarraysetops import unique

@@ -9,8 +9,14 @@ from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.pdarrayclass import create_pdarray
 
 from ._dtypes import (  # _complex_floating_dtypes,; complex128,
-    _numeric_dtypes, _real_floating_dtypes, _real_numeric_dtypes,
-    _signed_integer_dtypes, float64, int64, uint64)
+    _numeric_dtypes,
+    _real_floating_dtypes,
+    _real_numeric_dtypes,
+    _signed_integer_dtypes,
+    float64,
+    int64,
+    uint64,
+)
 from .array_object import Array, implements_numpy
 from .manipulation_functions import squeeze
 

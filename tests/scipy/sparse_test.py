@@ -1,9 +1,11 @@
 import numpy as np
 
 import arkouda as ak
-from arkouda.scipy.sparsematrix import (create_sparse_matrix,
-                                        random_sparse_matrix,
-                                        sparse_matrix_matrix_mult)
+from arkouda.scipy.sparsematrix import (
+    create_sparse_matrix,
+    random_sparse_matrix,
+    sparse_matrix_matrix_mult,
+)
 
 
 class TestSparse:

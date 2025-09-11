@@ -2,18 +2,29 @@ import pytest
 
 import arkouda as ak
 from arkouda import Categorical, DataFrame, Index, MultiIndex, Series, cast
-from arkouda.testing import (assert_almost_equal, assert_almost_equivalent,
-                             assert_arkouda_array_equal,
-                             assert_arkouda_array_equivalent,
-                             assert_arkouda_segarray_equal,
-                             assert_arkouda_strings_equal, assert_attr_equal,
-                             assert_categorical_equal, assert_class_equal,
-                             assert_contains_all, assert_copy,
-                             assert_dict_equal, assert_equal,
-                             assert_equivalent, assert_frame_equal,
-                             assert_frame_equivalent, assert_index_equal,
-                             assert_index_equivalent, assert_is_sorted,
-                             assert_series_equal, assert_series_equivalent)
+from arkouda.testing import (
+    assert_almost_equal,
+    assert_almost_equivalent,
+    assert_arkouda_array_equal,
+    assert_arkouda_array_equivalent,
+    assert_arkouda_segarray_equal,
+    assert_arkouda_strings_equal,
+    assert_attr_equal,
+    assert_categorical_equal,
+    assert_class_equal,
+    assert_contains_all,
+    assert_copy,
+    assert_dict_equal,
+    assert_equal,
+    assert_equivalent,
+    assert_frame_equal,
+    assert_frame_equivalent,
+    assert_index_equal,
+    assert_index_equivalent,
+    assert_is_sorted,
+    assert_series_equal,
+    assert_series_equivalent,
+)
 
 
 class TestAsserters:

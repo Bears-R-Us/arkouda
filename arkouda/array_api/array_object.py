@@ -19,10 +19,19 @@ of ndarray.
 
 from __future__ import annotations
 
-import types
 from enum import IntEnum
-from typing import (TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple,
-                    Union, cast)
+import types
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+)
 
 import numpy as np
 
@@ -31,8 +40,13 @@ from arkouda import array_api
 from arkouda.numpy.pdarraycreation import scalar_array
 
 from ._dtypes import (  # _all_dtypes,; _integer_or_boolean_dtypes,; _numeric_dtypes,
-    _boolean_dtypes, _complex_floating_dtypes, _dtype_categories,
-    _floating_dtypes, _integer_dtypes, _result_type)
+    _boolean_dtypes,
+    _complex_floating_dtypes,
+    _dtype_categories,
+    _floating_dtypes,
+    _integer_dtypes,
+    _result_type,
+)
 from .creation_functions import asarray
 
 if TYPE_CHECKING:

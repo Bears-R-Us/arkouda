@@ -23,8 +23,7 @@ from typing import Iterator
 import pytest
 
 import arkouda as ak
-from server_util.test.server_test_util import (start_arkouda_server,
-                                               stop_arkouda_server)
+from server_util.test.server_test_util import start_arkouda_server, stop_arkouda_server
 
 
 def _ensure_plugins_installed():

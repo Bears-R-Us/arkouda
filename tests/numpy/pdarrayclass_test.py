@@ -6,8 +6,7 @@ import pytest
 import arkouda as ak
 from arkouda.client import get_array_ranks, get_max_array_rank
 from arkouda.dtypes import bigint
-from arkouda.testing import \
-    assert_almost_equivalent as ak_assert_almost_equivalent
+from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
 from arkouda.testing import assert_arkouda_array_equivalent
 from arkouda.testing import assert_equal as ak_assert_equal
 from arkouda.testing import assert_equivalent

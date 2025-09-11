@@ -1,9 +1,9 @@
+from datetime import datetime
 import json
 import os
-import tempfile
-from datetime import datetime
 from os import path
 from shutil import rmtree
+import tempfile
 
 import pytest
 

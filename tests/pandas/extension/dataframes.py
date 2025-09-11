@@ -3,8 +3,7 @@ import pytest
 
 import arkouda as ak
 from arkouda.pandas.extension._arkouda_array import ArkoudaArray
-from arkouda.pandas.extension._arkouda_categorical_array import \
-    ArkoudaCategoricalArray
+from arkouda.pandas.extension._arkouda_categorical_array import ArkoudaCategoricalArray
 from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
 
 

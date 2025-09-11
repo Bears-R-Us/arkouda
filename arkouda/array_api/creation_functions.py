@@ -30,8 +30,7 @@ __all__ = [
 
 
 if TYPE_CHECKING:
-    from ._typing import (Array, Device, Dtype, NestedSequence,
-                          SupportsBufferProtocol)
+    from ._typing import Array, Device, Dtype, NestedSequence, SupportsBufferProtocol
 
 
 def asarray(

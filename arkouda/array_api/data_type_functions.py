@@ -7,10 +7,17 @@ import numpy as np
 
 import arkouda as ak
 
-from ._dtypes import (_all_dtypes, _boolean_dtypes, _complex_floating_dtypes,
-                      _integer_dtypes, _numeric_dtypes, _real_floating_dtypes,
-                      _result_type, _signed_integer_dtypes,
-                      _unsigned_integer_dtypes)
+from ._dtypes import (
+    _all_dtypes,
+    _boolean_dtypes,
+    _complex_floating_dtypes,
+    _integer_dtypes,
+    _numeric_dtypes,
+    _real_floating_dtypes,
+    _result_type,
+    _signed_integer_dtypes,
+    _unsigned_integer_dtypes,
+)
 from .array_object import Array, implements_numpy
 
 __all__ = [

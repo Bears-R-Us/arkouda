@@ -2,8 +2,8 @@ import os
 import tempfile
 
 import numpy as np
-import pytest
 from pandas import Categorical as pd_Categorical
+import pytest
 
 import arkouda as ak
 from arkouda.numpy.pdarraycreation import array

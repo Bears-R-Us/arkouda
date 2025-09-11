@@ -2,15 +2,28 @@ from __future__ import annotations
 
 # Third Party
 import numpy as np
-import pandas as pd
 from numpy import bool_, floating, integer, str_
+import pandas as pd
 
 # First Party
-from arkouda import (Categorical, DataFrame, Index, MultiIndex, SegArray,
-                     Series, Strings, array, pdarray)
-from arkouda.testing import (assert_almost_equal, assert_arkouda_array_equal,
-                             assert_frame_equal, assert_index_equal,
-                             assert_series_equal)
+from arkouda import (
+    Categorical,
+    DataFrame,
+    Index,
+    MultiIndex,
+    SegArray,
+    Series,
+    Strings,
+    array,
+    pdarray,
+)
+from arkouda.testing import (
+    assert_almost_equal,
+    assert_arkouda_array_equal,
+    assert_frame_equal,
+    assert_index_equal,
+    assert_series_equal,
+)
 
 DEBUG = True
 

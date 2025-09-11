@@ -59,13 +59,12 @@ from __future__ import annotations
 
 import builtins
 import json
-from typing import (TYPE_CHECKING, List, Literal, Optional, Tuple, TypeVar,
-                    Union)
+from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, TypeVar, Union
 
 import numpy as np
-import pandas as pd
 from numpy import array as ndarray
 from numpy import dtype as npdtype
+import pandas as pd
 from typeguard import typechecked
 
 from arkouda.numpy.dtypes import bool_ as akbool
@@ -77,8 +76,7 @@ from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, ones
 from arkouda.numpy.pdarraysetops import argsort, in1d
 from arkouda.numpy.sorting import coargsort
 from arkouda.numpy.strings import Strings
-from arkouda.numpy.util import (convert_if_categorical, generic_concat,
-                                get_callback)
+from arkouda.numpy.util import convert_if_categorical, generic_concat, get_callback
 from arkouda.pandas.groupbyclass import GroupBy, unique
 
 __all__ = [
@@ -1204,8 +1202,12 @@ class Index:
         """
         from arkouda.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
-        from arkouda.pandas.io import (_file_type_to_int, _get_hdf_filetype,
-                                       _mode_str_to_int, _repack_hdf)
+        from arkouda.pandas.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
@@ -2143,8 +2145,12 @@ class MultiIndex(Index):
         """
         from arkouda.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
-        from arkouda.pandas.io import (_file_type_to_int, _get_hdf_filetype,
-                                       _mode_str_to_int, _repack_hdf)
+        from arkouda.pandas.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
 
         if isinstance(self.levels, list):
             raise TypeError("Unable update hdf when Index levels are a list.")
