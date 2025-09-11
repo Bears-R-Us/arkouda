@@ -2,7 +2,6 @@
 
 import arkouda as ak
 
-
 def gen_rmat_edges(lgNv, Ne_per_v, p, perm=False):
     # number of vertices
     Nv = 2**lgNv

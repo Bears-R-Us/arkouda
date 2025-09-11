@@ -3,7 +3,6 @@ import pandas as pd
 
 import arkouda as ak
 
-
 SIZE = 1000
 GROUPS = 32
 verbose = True

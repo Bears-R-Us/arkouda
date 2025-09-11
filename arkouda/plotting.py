@@ -65,7 +65,6 @@ from arkouda.numpy.pdarraycreation import arange
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta, date_range, timedelta_range
 
-
 __all__ = [
     "hist_all",
     "plot_dist",

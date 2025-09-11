@@ -13,7 +13,6 @@ from arkouda.testing import (
     assert_arkouda_array_equivalent,
 )
 
-
 ARRAY_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64, str_]
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
 NO_BOOL = [ak.int64, ak.float64, ak.uint64]

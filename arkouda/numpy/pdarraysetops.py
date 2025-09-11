@@ -20,7 +20,6 @@ from arkouda.numpy.sorting import argsort
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, groupable, groupable_element_type, unique
 
-
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
     from arkouda.pandas.categorical import Categorical

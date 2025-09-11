@@ -4,7 +4,6 @@ import pytest
 
 import arkouda as ak
 
-
 OPS = ("intersect", "union", "setdiff", "setxor")
 OPS1D = ("intersect1d", "union1d", "setxor1d", "setdiff1d")
 TYPES = ("int64", "uint64")

@@ -78,7 +78,6 @@ from arkouda.numpy.random import default_rng
 from arkouda.numpy.sorting import argsort, sort
 from arkouda.numpy.strings import Strings
 
-
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
     from arkouda.pandas.categorical import Categorical

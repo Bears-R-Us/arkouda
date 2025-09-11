@@ -7,7 +7,6 @@ import numpy as np
 
 import arkouda as ak
 
-
 OPS = ("sum", "prod", "min", "max")
 TYPES = ("int64", "float64")
 

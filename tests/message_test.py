@@ -7,7 +7,6 @@ from arkouda import message
 from arkouda.client import _json_args_to_str
 from arkouda.message import MessageFormat, MessageType, ReplyMessage, RequestMessage
 
-
 class TestMessage:
     def test_message_docstrings(self):
         import doctest

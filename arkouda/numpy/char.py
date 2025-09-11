@@ -2,7 +2,6 @@ from numpy import bool_, character, int_, integer, object_, str_
 
 from arkouda.numpy.pdarrayclass import pdarray
 
-
 __all__ = ["bool_", "character", "int_", "integer", "object_", "str_", "isnumeric"]
 
 

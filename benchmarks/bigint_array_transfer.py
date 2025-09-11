@@ -4,7 +4,6 @@ from array_transfer import check_correctness, time_ak_array_transfer
 
 import arkouda as ak
 
-
 def create_parser():
     parser = argparse.ArgumentParser(
         description="Measure the performance of transferring bigint arrays."

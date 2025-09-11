@@ -15,7 +15,6 @@ from arkouda.testing import (
     assert_series_equal,
 )
 
-
 DEBUG = True
 
 __all__ = [

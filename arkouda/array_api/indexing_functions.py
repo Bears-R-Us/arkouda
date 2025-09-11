@@ -4,7 +4,6 @@ from typing import Optional
 
 from .array_object import Array
 
-
 __all__ = [
     "take",
 ]

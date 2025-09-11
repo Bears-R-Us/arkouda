@@ -17,7 +17,6 @@ from arkouda.testing import (
     assert_equivalent,
 )
 
-
 INT_SCALARS = list(ak.numpy.dtypes.int_scalars.__args__)
 NUMERIC_SCALARS = list(ak.numpy.dtypes.numeric_scalars.__args__)
 

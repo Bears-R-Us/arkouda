@@ -26,7 +26,6 @@ from arkouda.testing import (
     assert_series_equivalent,
 )
 
-
 class TestAsserters:
     def test_asserters_docstrings(self):
         import doctest

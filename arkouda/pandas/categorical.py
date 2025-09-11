@@ -86,7 +86,6 @@ from arkouda.numpy.sorting import argsort, sort as pda_sort
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, unique
 
-
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
     from arkouda.numpy import cast as akcast, where

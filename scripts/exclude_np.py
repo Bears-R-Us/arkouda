@@ -4,7 +4,6 @@
 
 import inspect
 
-
 def exclude(name, obj) -> bool:
     if hasattr(obj, "__doc__") and not name.startswith("__") and obj.__doc__ is not None:
         if "array" in obj.__doc__:

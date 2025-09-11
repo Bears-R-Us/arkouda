@@ -62,7 +62,6 @@ from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
 
-
 if TYPE_CHECKING:
     from arkouda.numpy import cast as akcast, where as akwhere
 else:

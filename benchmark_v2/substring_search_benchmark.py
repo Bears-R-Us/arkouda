@@ -3,7 +3,6 @@ import pytest
 
 import arkouda as ak
 
-
 SEARCHES = {
     "Non_Regex": ["1 string 1", False],
     "Regex_Literal": ["1 string 1", True],

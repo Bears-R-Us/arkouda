@@ -17,7 +17,6 @@ from server_util.test.server_test_util import (
 )
 from server_util.test.server_test_util import is_multilocale_arkouda  # TODO probably not needed
 
-
 os.environ["ARKOUDA_CLIENT_MODE"] = "API"
 
 

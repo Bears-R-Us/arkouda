@@ -6,7 +6,6 @@ from context import arkouda as ak
 import h5py
 import numpy as np
 
-
 ALPHABET = ascii_lowercase
 UPPERCASE_ALPHABET = ascii_uppercase
 ALPHANUMERIC = ascii_lowercase + digits

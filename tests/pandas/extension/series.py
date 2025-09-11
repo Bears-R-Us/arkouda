@@ -4,7 +4,6 @@ import pandas as pd
 import arkouda as ak
 from arkouda.pandas.extension._arkouda_array import ArkoudaArray
 
-
 class TestSeriesExtension:
     def test_series_from_strings(self):
         from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray

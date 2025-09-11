@@ -5,7 +5,6 @@ import pytest
 
 import arkouda as ak
 
-
 warnings.simplefilter("always", UserWarning)
 
 

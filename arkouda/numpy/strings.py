@@ -29,7 +29,6 @@ from arkouda.numpy.pdarrayclass import (
 )
 from arkouda.pandas.match import Match, MatchType
 
-
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
 else:

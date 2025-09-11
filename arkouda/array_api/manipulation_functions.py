@@ -10,7 +10,6 @@ from arkouda.numpy.util import broadcast_dims
 
 from .array_object import Array, implements_numpy
 
-
 __all__ = [
     "broadcast_arrays",
     "broadcast_to",

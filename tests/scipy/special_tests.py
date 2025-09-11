@@ -5,7 +5,6 @@ from scipy.special import xlogy as scipy_xlogy
 import arkouda as ak
 from arkouda.scipy.special import xlogy
 
-
 class TestStats:
     def test_scipy_special_docstrings(self):
         import doctest

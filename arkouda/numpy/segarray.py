@@ -21,7 +21,6 @@ from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.pandas.join import gen_ranges
 
-
 __all__ = [
     "SegArray",
 ]

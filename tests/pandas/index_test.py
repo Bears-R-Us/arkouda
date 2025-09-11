@@ -15,7 +15,6 @@ from arkouda.pandas import io_util
 from arkouda.pandas.index import Index
 from arkouda.testing import assert_index_equal, assert_index_equal as ak_assert_index_equal
 
-
 @pytest.fixture
 def df_test_base_tmp(request):
     df_test_base_tmp = "{}/.series_test".format(os.getcwd())

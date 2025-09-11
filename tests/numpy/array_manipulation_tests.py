@@ -6,7 +6,6 @@ from arkouda.client import get_array_ranks
 from arkouda.numpy import pdarraymanipulation
 from arkouda.testing import assert_arkouda_array_equivalent
 
-
 class TestManipulationFunctions:
     @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
     def test_pdarraymanipulation_docstrings(self):

@@ -6,7 +6,6 @@ from arkouda import numeric_and_bool_scalars
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.pandas.extension._arkouda_array import ArkoudaArray, ArkoudaDtype
 
-
 class TestArkoudaArrayExtension:
     def test_array_extension_docstrings(self):
         import doctest

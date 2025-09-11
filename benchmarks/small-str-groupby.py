@@ -5,7 +5,6 @@ import time
 
 import arkouda as ak
 
-
 SIZES = {"small": 6, "medium": 12, "big": 24}
 
 

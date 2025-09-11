@@ -7,7 +7,6 @@ import numpy as np
 
 import arkouda as ak
 
-
 def time_ak_stream(N_per_locale, trials, alpha, max_bits, random, seed):
     print(">>> arkouda bigint stream")
     cfg = ak.get_config()

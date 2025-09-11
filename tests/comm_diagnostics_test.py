@@ -14,7 +14,6 @@ from arkouda.comm_diagnostics import (
     stop_verbose_comm,
 )
 
-
 diagnostic_stats_functions = [
     "get_comm_diagnostics_put",
     "get_comm_diagnostics_get",

@@ -80,7 +80,6 @@ from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.pandas.join import inner_join
 from arkouda.pandas.row import Row
 
-
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
     from arkouda.numpy import cast as akcast, cumsum, where

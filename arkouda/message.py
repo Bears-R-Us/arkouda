@@ -71,7 +71,6 @@ from typeguard import typechecked
 
 from arkouda.numpy.dtypes import isSupportedNumber, resolve_scalar_dtype
 
-
 __all__ = [
     "MessageFormat",
     "MessageType",

@@ -6,7 +6,6 @@ from arkouda.numpy import util
 from arkouda.numpy.util import may_share_memory, shares_memory
 from arkouda.util import is_float, is_int, is_numeric, map
 
-
 class TestUtil:
     def test_util_docstrings(self):
         import doctest

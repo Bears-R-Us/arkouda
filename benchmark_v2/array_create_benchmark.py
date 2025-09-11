@@ -4,7 +4,6 @@ import pytest
 
 import arkouda as ak
 
-
 OPS = ("zeros", "ones", "randint")
 TYPES = ("int64", "float64", "uint64")
 

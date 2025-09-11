@@ -39,7 +39,6 @@ from ._dtypes import (  # _all_dtypes,; _integer_or_boolean_dtypes,; _numeric_dt
 )
 from .creation_functions import asarray
 
-
 if TYPE_CHECKING:
     from ._typing import Device, Dtype
 

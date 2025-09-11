@@ -8,7 +8,6 @@ import numpy as np
 
 import arkouda as ak
 
-
 TYPES = ("int64", "float64")
 
 

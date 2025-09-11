@@ -6,7 +6,6 @@ import arkouda as ak
 
 from ._arkouda_base_array import ArkoudaBaseArray
 
-
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 else:

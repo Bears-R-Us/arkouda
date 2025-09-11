@@ -7,7 +7,6 @@ import pytest
 import arkouda as ak
 from arkouda.pandas import match, matcher
 
-
 class TestRegex:
     def test_match_docstrings(self):
         import doctest

@@ -8,7 +8,6 @@ import pytest
 import arkouda as ak
 from arkouda.pandas.io import to_parquet
 
-
 TYPES = ("int64", "float64", "uint64", "str")
 FILETYPES = ("HDF5", "PARQUET")
 COMPRESSIONS = (None, "snappy", "gzip", "brotli", "zstd", "lz4")

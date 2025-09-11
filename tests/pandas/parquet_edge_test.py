@@ -31,7 +31,6 @@ import pytest
 
 import arkouda as ak
 
-
 # Configure logging for better debugging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

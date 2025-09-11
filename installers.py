@@ -49,7 +49,6 @@ import sys
 
 from setuptools.command.build_py import build_py
 
-
 class ArkoudaBuildError(Exception):
     """
     Custom exception raised when Arkouda server build or installation fails.

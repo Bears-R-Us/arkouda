@@ -16,7 +16,6 @@ from arkouda.pandas import io_util
 from arkouda.scipy import chisquare as akchisquare
 from arkouda.testing import assert_frame_equal as ak_assert_frame_equal, assert_frame_equivalent
 
-
 def alternating_1_0(n):
     a = np.full(n, 0)
     a[::2] = 1

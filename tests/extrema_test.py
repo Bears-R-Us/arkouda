@@ -4,7 +4,6 @@ import pytest
 import arkouda as ak
 from arkouda.testing import assert_arkouda_array_equivalent
 
-
 NUMERIC_TYPES = ["int64", "uint64", "float64", "bool"]
 
 

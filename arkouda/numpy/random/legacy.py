@@ -14,7 +14,6 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.random.generator import Generator, default_rng
 
-
 __all__ = [
     "choice",
     "exponential",

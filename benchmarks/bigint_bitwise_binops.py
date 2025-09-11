@@ -7,7 +7,6 @@ import numpy as np
 
 import arkouda as ak
 
-
 def time_ak_bitwise_binops(N_per_locale, trials, max_bits, seed):
     print(">>> arkouda bigint bitwise binops")
     cfg = ak.get_config()

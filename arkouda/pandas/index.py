@@ -75,7 +75,6 @@ from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import convert_if_categorical, generic_concat, get_callback
 from arkouda.pandas.groupbyclass import GroupBy, unique
 
-
 __all__ = [
     "Index",
     "MultiIndex",

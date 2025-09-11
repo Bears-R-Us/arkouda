@@ -20,7 +20,6 @@ from ._dtypes import (  # _complex_floating_dtypes,; complex128,
 from .array_object import Array, implements_numpy
 from .manipulation_functions import squeeze
 
-
 __all__ = [
     "_prod_sum_dtype",
     "cumulative_sum",

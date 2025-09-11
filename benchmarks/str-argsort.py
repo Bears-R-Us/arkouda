@@ -6,7 +6,6 @@ from argsort import check_correctness, time_ak_argsort, time_np_argsort
 
 import arkouda as ak
 
-
 TYPES = ("str",)
 
 

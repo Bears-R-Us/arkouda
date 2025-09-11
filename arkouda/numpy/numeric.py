@@ -47,7 +47,6 @@ from arkouda.numpy.pdarraycreation import array, linspace, scalar_array
 from arkouda.numpy.sorting import sort
 from arkouda.numpy.strings import Strings
 
-
 NUMERIC_TYPES = [ak_int64, ak_float64, ak_bool, ak_uint64]
 ALLOWED_PERQUANT_METHODS = [
     "inverted_cdf",

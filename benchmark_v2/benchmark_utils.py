@@ -5,7 +5,6 @@ import pytest
 
 import arkouda as ak
 
-
 def calc_num_bytes(a) -> int:
     """
     Recursively calculate bytes for Arkouda arrays/strings and container types.

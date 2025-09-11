@@ -1,6 +1,5 @@
 import arkouda as ak
 
-
 ak.connect()
 
 size = 10**8

@@ -12,7 +12,6 @@ from arkouda.numpy import random
 from arkouda.scipy import chisquare as akchisquare
 from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equal
 
-
 INT_FLOAT = [ak.int64, ak.float64]
 RANDOM_METHODS = [
     "integers",

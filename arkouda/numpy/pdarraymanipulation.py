@@ -8,7 +8,6 @@ from arkouda.numpy.dtypes import bigint, dtype as akdtype, result_type as ak_res
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array
 
-
 __all__ = ["hstack", "vstack", "delete", "append"]
 
 

@@ -3,7 +3,6 @@ import pytest
 
 import arkouda as ak
 
-
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Parquet_Fixed_Strings")
 @pytest.mark.parametrize("scaling", [False, True])

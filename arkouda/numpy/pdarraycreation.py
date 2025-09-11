@@ -28,7 +28,6 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.pdarrayclass import broadcast_to_shape, create_pdarray, pdarray
 from arkouda.numpy.strings import Strings
 
-
 if TYPE_CHECKING:
     from arkouda.client import generic_msg, get_array_ranks
 else:

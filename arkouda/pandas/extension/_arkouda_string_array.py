@@ -5,7 +5,6 @@ import arkouda as ak
 
 from ._arkouda_base_array import ArkoudaBaseArray
 
-
 __all__ = ["ArkoudaStringDtype", "ArkoudaStringArray"]
 
 

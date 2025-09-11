@@ -5,7 +5,6 @@ import pytest
 import arkouda as ak
 from arkouda.numpy import timeclass
 
-
 def build_op_table():
     ALL_OPS = ak.pdarray.BinOps - set(("<<<", ">>>"))
     table = {}

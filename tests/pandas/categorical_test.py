@@ -11,7 +11,6 @@ from arkouda.pandas import io, io_util
 from arkouda.pandas.categorical import Categorical
 from arkouda.testing import assert_categorical_equal, assert_equivalent
 
-
 SEED = 12345
 
 

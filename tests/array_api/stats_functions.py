@@ -6,7 +6,6 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
-
 class TestStatsFunction:
     def test_statistical_functions_docstrings(self):
         import doctest

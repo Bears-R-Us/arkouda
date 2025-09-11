@@ -6,7 +6,6 @@ from groupby import check_correctness, time_ak_groupby
 
 import arkouda as ak
 
-
 TYPES = ("str", "mixed")
 
 

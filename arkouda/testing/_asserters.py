@@ -22,7 +22,6 @@ from arkouda import (
 from arkouda.numpy.pdarrayclass import sum as aksum
 from arkouda.numpy.util import is_numeric
 
-
 DEBUG = True
 
 __all__ = [

@@ -3,7 +3,6 @@ import pytest
 
 import arkouda as ak
 
-
 OPS = {
     "Hashing": lambda x: x.hash(),
     "Regex": lambda x: x.contains(r"\d{3,5}\.\d{5,8}", regex=True),

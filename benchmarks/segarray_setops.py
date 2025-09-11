@@ -7,7 +7,6 @@ import numpy as np
 
 import arkouda as ak
 
-
 OPS = ("intersect", "union", "setdiff", "setxor")
 TYPES = (
     "int64",

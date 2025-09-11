@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-
 def _normalize_dtype(col, dtype):
     if dtype == np.str_ or dtype == str or (isinstance(dtype, str) and dtype in "strings"):
         normdtype = np.dtype("str")

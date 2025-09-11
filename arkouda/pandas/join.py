@@ -11,7 +11,6 @@ from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
 
-
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
     from arkouda.numpy import cumsum

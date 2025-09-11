@@ -35,7 +35,6 @@ from arkouda.numpy.dtypes import (
     uint64 as akuint64,
 )
 
-
 if TYPE_CHECKING:
     from arkouda.client import generic_msg, get_array_ranks
 else:

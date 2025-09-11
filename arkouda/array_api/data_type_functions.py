@@ -20,7 +20,6 @@ from ._dtypes import (
 )
 from .array_object import Array, implements_numpy
 
-
 __all__ = [
     "astype",
     "can_cast",

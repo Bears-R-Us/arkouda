@@ -6,7 +6,6 @@ import arkouda as ak
 from arkouda.client import get_array_ranks, get_max_array_rank
 from arkouda.scipy import chisquare as ak_chisquare, power_divergence as ak_power_divergence
 
-
 DDOF = [0, 1, 2, 3, 4, 5]
 PAIRS = [
     (

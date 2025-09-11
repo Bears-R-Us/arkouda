@@ -45,7 +45,6 @@ from typing import Any, Dict, Mapping
 
 from arkouda.logger import getArkoudaLogger
 
-
 __all__ = [
     "delete_directory",
     "delimited_file_to_dict",

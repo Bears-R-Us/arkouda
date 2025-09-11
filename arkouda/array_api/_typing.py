@@ -14,7 +14,6 @@ from numpy import dtype, float32, float64, int8, int16, int32, int64, uint8, uin
 
 from .array_object import Array
 
-
 __all__ = [
     "Array",
     "Device",

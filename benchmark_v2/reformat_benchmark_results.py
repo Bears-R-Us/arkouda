@@ -17,7 +17,6 @@ import subprocess
 import sys
 from typing import Union
 
-
 benchmark_dir = os.path.dirname(__file__)
 util_dir = os.path.join(benchmark_dir, "..", "server_util", "test")
 sys.path.insert(0, os.path.abspath(util_dir))

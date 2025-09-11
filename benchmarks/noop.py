@@ -8,7 +8,6 @@ import numpy as np
 import arkouda as ak
 import arkouda.client
 
-
 def time_ak_noop(trial_time):
     print(">>> arkouda noop")
     start = time.time()

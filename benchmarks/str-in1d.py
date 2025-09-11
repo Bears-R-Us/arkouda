@@ -5,7 +5,6 @@ import time
 
 import arkouda as ak
 
-
 # Tied to src/In1d.chpl:threshold, which defaults to 2**23
 THRESHOLD = 2**23
 

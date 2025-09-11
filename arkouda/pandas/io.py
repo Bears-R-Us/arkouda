@@ -84,7 +84,6 @@ from arkouda.pandas.dataframe import DataFrame
 from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.pandas.index import Index, MultiIndex
 
-
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
 else:

@@ -8,7 +8,6 @@ import numpy as np
 import arkouda as ak
 from arkouda.numpy.sorting import SortingAlgorithm
 
-
 def is_cosorted(data):
     # (b[0] > a[0]) | ((b[0] == a[0]) & recurse(a[1], b[1]))
     def helper(x, right):

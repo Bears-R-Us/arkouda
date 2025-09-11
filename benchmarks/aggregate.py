@@ -5,7 +5,6 @@ import time
 
 import arkouda as ak
 
-
 BOOLOPS = ("any", "all")
 
 

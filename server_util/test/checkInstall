@@ -16,7 +16,6 @@ from server_test_util import (
     stop_arkouda_server,
 )
 
-
 logging.basicConfig(level=logging.INFO)
 
 start_arkouda_server(get_arkouda_numlocales())

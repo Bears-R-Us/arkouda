@@ -22,7 +22,6 @@ import arkouda.pandas.dataframe
 from arkouda.pandas.groupbyclass import GroupBy, groupable_element_type
 from arkouda.pandas.index import Index, MultiIndex
 
-
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
     from arkouda.numpy import cast as akcast

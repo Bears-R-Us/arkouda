@@ -56,7 +56,6 @@ from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast, unique
 
-
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 

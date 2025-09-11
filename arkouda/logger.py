@@ -63,7 +63,6 @@ from typing import List, Optional, cast
 
 from typeguard import typechecked
 
-
 __all__ = ["LogLevel", "enableVerbose", "disableVerbose", "write_log"]
 
 loggers = {}

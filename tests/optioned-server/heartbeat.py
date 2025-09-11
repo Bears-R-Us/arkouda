@@ -6,7 +6,6 @@ import pytest
 import arkouda as ak
 from server_util.test.server_test_util import get_server_info
 
-
 class TestHeartbeat:
     class_server_args = []  # have 'class_server_args' => start server per class
 
