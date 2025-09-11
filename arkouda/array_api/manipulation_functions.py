@@ -4,10 +4,10 @@ from typing import List, Optional, Tuple, Union, cast
 
 import numpy as np
 
-from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import bool as akbool
-from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
 from arkouda.numpy.pdarraycreation import scalar_array
