@@ -4,7 +4,7 @@ on: [pull_request, merge_group, workflow_dispatch]
 
 env:
   ARKOUDA_QUICK_COMPILE: true
-  
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -33,7 +33,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -99,7 +102,7 @@ jobs:
           pip install ruff==0.11.2
       # Update output format to enable automatic inline annotations.
       - name: ruff version
-        run: | 
+        run: |
           ruff --version
       - name: Run Ruff
         run: ruff format --check --diff
@@ -109,7 +112,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -132,7 +138,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -171,7 +180,10 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -205,7 +217,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -248,7 +263,10 @@ jobs:
     env:
       CHPL_HOME: /chapel-2.5.0
     container:
-      image: ajpotts/almalinux-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/almalinux-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -347,7 +365,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4    
@@ -397,7 +418,7 @@ jobs:
         max_attempts: 2
         retry_wait_seconds: 60
         retry_on: error
-        command: | 
+        command: |
           make install-iconv  DEP_BUILD_DIR=$DEP_BUILD_DIR
     - name: Make install-idn2
       uses: nick-fields/retry@v2
@@ -407,7 +428,7 @@ jobs:
         retry_wait_seconds: 60
         retry_on: error
         command: |
-          make install-idn2  DEP_BUILD_DIR=$DEP_BUILD_DIR   
+          make install-idn2  DEP_BUILD_DIR=$DEP_BUILD_DIR
     - name: Make install-blosc
       uses: nick-fields/retry@v2
       with:
@@ -445,7 +466,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -494,7 +518,10 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Show memory available
       run: |
@@ -553,7 +580,10 @@ jobs:
       CHPL_RT_NUM_THREADS_PER_LOCALE: 2
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -598,13 +628,16 @@ jobs:
       run: |
         ARKOUDA_HOME=$(pwd) ./benchmarks/run_benchmarks.py --correctness-only
         ARKOUDA_HOME=$(pwd) ./benchmarks/run_benchmarks.py --size=100 --gen-graphs
-        
+
   arkouda_benchmark_linux:
     runs-on: ubuntu-latest
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -640,6 +673,4 @@ jobs:
         make benchmark size_bm=10
     - name: Arkouda benchmark -- Numpy
       run: |
-        python3 -m pytest -c benchmark.ini --size=10 --numpy   
-          
-            
+        python3 -m pytest -c benchmark.ini --size=10 --numpy
