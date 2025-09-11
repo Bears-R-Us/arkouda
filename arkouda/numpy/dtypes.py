@@ -1,63 +1,23 @@
 from __future__ import annotations
 
 import builtins
-from enum import Enum
 import sys
+from enum import Enum
 from typing import TYPE_CHECKING, List, Union, cast
 
 import numpy as np
-from numpy import (
-    bool,
-    bool_,
-    complex64,
-    complex128,
-    float16,
-    float32,
-    float64,
-    int8,
-    int16,
-    int32,
-    int64,
-    str_,
-    uint8,
-    uint16,
-    uint32,
-    uint64,
-)
-from numpy.dtypes import (
-    BoolDType,
-    ByteDType,
-    BytesDType,
-    CLongDoubleDType,
-    Complex64DType,
-    Complex128DType,
-    DateTime64DType,
-    Float16DType,
-    Float32DType,
-    Float64DType,
-    Int8DType,
-    Int16DType,
-    Int32DType,
-    Int64DType,
-    IntDType,
-    LongDoubleDType,
-    LongDType,
-    LongLongDType,
-    ObjectDType,
-    ShortDType,
-    StrDType,
-    TimeDelta64DType,
-    UByteDType,
-    UInt8DType,
-    UInt16DType,
-    UInt32DType,
-    UInt64DType,
-    UIntDType,
-    ULongDType,
-    ULongLongDType,
-    UShortDType,
-    VoidDType,
-)
+from numpy import (bool, bool_, complex64, complex128, float16, float32,
+                   float64, int8, int16, int32, int64, str_, uint8, uint16,
+                   uint32, uint64)
+from numpy.dtypes import (BoolDType, ByteDType, BytesDType, CLongDoubleDType,
+                          Complex64DType, Complex128DType, DateTime64DType,
+                          Float16DType, Float32DType, Float64DType, Int8DType,
+                          Int16DType, Int32DType, Int64DType, IntDType,
+                          LongDoubleDType, LongDType, LongLongDType,
+                          ObjectDType, ShortDType, StrDType, TimeDelta64DType,
+                          UByteDType, UInt8DType, UInt16DType, UInt32DType,
+                          UInt64DType, UIntDType, ULongDType, ULongLongDType,
+                          UShortDType, VoidDType)
 
 if TYPE_CHECKING:
     from arkouda.pdarrayclass import pdarray

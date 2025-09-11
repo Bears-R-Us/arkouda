@@ -1,13 +1,5 @@
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Optional,
-    Sequence,
-    Tuple,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import (TYPE_CHECKING, Callable, Optional, Sequence, Tuple,
+                    TypeVar, Union, cast)
 
 import numpy as np
 from typeguard import typechecked

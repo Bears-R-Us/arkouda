@@ -2,16 +2,11 @@ from __future__ import annotations
 
 import arkouda as ak
 
-from ._dtypes import (
-    _floating_dtypes,
-    _integer_dtypes,
-    _integer_or_boolean_dtypes,
-    _numeric_dtypes,
-    _real_floating_dtypes,
-    _real_numeric_dtypes,
-    _result_type,
-)
 from ._dtypes import _boolean_dtypes  # _complex_floating_dtypes,
+from ._dtypes import (_floating_dtypes, _integer_dtypes,
+                      _integer_or_boolean_dtypes, _numeric_dtypes,
+                      _real_floating_dtypes, _real_numeric_dtypes,
+                      _result_type)
 from .array_object import Array
 
 __all__ = [

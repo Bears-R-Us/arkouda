@@ -1,42 +1,22 @@
 import itertools
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Iterable,
-    List,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-    cast,
-    overload,
-)
+from typing import (TYPE_CHECKING, Any, Iterable, List, Optional, Tuple,
+                    TypeVar, Union, cast, overload)
 
 import numpy as np
 import pandas as pd
 from typeguard import typechecked
 
-from arkouda.numpy.dtypes import (
-    NUMBER_FORMAT_STRINGS,
-    DTypes,
-    NumericDTypes,
-    SeriesDTypes,
-    bigint,
-    bool_scalars,
-)
-from arkouda.numpy.dtypes import (
-    int_scalars,
-    isSupportedInt,
-    isSupportedNumber,
-    numeric_scalars,
-    resolve_scalar_dtype,
-    str_,
-)
+from arkouda.numpy.dtypes import (NUMBER_FORMAT_STRINGS, DTypes, NumericDTypes,
+                                  SeriesDTypes, bigint, bool_scalars)
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
 from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import (int_scalars, isSupportedInt,
+                                  isSupportedNumber, numeric_scalars,
+                                  resolve_scalar_dtype, str_)
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.numpy.pdarrayclass import broadcast_to_shape, create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import (broadcast_to_shape, create_pdarray,
+                                        pdarray)
 from arkouda.numpy.strings import Strings
 
 if TYPE_CHECKING:
@@ -603,9 +583,8 @@ def zeros(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
 
-    from arkouda.numpy.util import (
-        _infer_shape_from_size,  # placed here to avoid circ import
-    )
+    from arkouda.numpy.util import \
+        _infer_shape_from_size  # placed here to avoid circ import
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
@@ -750,9 +729,8 @@ def full(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    from arkouda.numpy.util import (
-        _infer_shape_from_size,  # placed here to avoid circ import
-    )
+    from arkouda.numpy.util import \
+        _infer_shape_from_size  # placed here to avoid circ import
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 

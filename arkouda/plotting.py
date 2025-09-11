@@ -53,8 +53,8 @@ See Also
 import math
 from typing import Optional
 
-from matplotlib import pyplot as plt
 import numpy as np
+from matplotlib import pyplot as plt
 
 from arkouda.categorical import Categorical
 from arkouda.dataframe import DataFrame
@@ -63,7 +63,8 @@ from arkouda.numpy import histogram, isnan
 from arkouda.numpy.pdarrayclass import pdarray, skew
 from arkouda.numpy.pdarraycreation import arange
 from arkouda.numpy.strings import Strings
-from arkouda.numpy.timeclass import Datetime, Timedelta, date_range, timedelta_range
+from arkouda.numpy.timeclass import (Datetime, Timedelta, date_range,
+                                     timedelta_range)
 
 __all__ = [
     "hist_all",

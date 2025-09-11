@@ -6,19 +6,8 @@ import numpy as np
 from pandas.api.types import is_bool, is_number
 from pandas.io.formats.printing import pprint_thing  # type: ignore
 
-from arkouda import (
-    Categorical,
-    DataFrame,
-    Index,
-    MultiIndex,
-    SegArray,
-    Series,
-    Strings,
-    argsort,
-    array,
-    pdarray,
-    sort,
-)
+from arkouda import (Categorical, DataFrame, Index, MultiIndex, SegArray,
+                     Series, Strings, argsort, array, pdarray, sort)
 from arkouda.numpy.pdarrayclass import sum as aksum
 from arkouda.numpy.util import is_numeric
 

@@ -47,20 +47,11 @@ See Also
 
 from __future__ import annotations
 
-from collections import defaultdict
 import itertools
 import json
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from collections import defaultdict
+from typing import (TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Tuple,
+                    TypeVar, Union)
 from typing import cast as type_cast
 
 import numpy as np
@@ -74,11 +65,13 @@ from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars
+from arkouda.numpy.dtypes import (int_scalars, resolve_scalar_dtype, str_,
+                                  str_scalars)
 from arkouda.numpy.pdarrayclass import RegistrationError
 from arkouda.numpy.pdarrayclass import all as akall
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import arange, array, ones, zeros, zeros_like
+from arkouda.numpy.pdarraycreation import (arange, array, ones, zeros,
+                                           zeros_like)
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort
 from arkouda.numpy.sorting import sort as pda_sort
@@ -1286,12 +1279,8 @@ class Categorical:
 
         """
         from arkouda.client import generic_msg
-        from arkouda.pandas.io import (
-            _file_type_to_int,
-            _get_hdf_filetype,
-            _mode_str_to_int,
-            _repack_hdf,
-        )
+        from arkouda.pandas.io import (_file_type_to_int, _get_hdf_filetype,
+                                       _mode_str_to_int, _repack_hdf)
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
