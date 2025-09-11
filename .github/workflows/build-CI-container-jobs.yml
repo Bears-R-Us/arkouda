@@ -6,6 +6,7 @@ on:
     paths:
       - docker/ubuntu-with-arkouda-deps/Dockerfile
       - docker/almalinux-with-arkouda-deps/Dockerfile
+      - docker/almalinux-chapel/Dockerfile
       # also trigger on changes to this workflow file itself
       - .github/workflows/build-CI-container.yml
       - .github/workflows/build-CI-container-jobs.yml
@@ -13,6 +14,7 @@ on:
     paths:
       # same as for pushes above
       - docker/ubuntu-with-arkouda-deps/Dockerfile
+      - docker/almalinux-chapel/Dockerfile
       - docker/almalinux-with-arkouda-deps/Dockerfile
       - .github/workflows/build-CI-container.yml
       - .github/workflows/build-CI-container-jobs.yml
@@ -26,7 +28,14 @@ jobs:
       DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
       IMAGE_NAME: ubuntu-with-arkouda-deps
       VERSION: latest
+  build-almalinux-chapel:
+    uses: ./.github/workflows/build-CI-container.yml
+    with:
+      DOCKERFILE: docker/almalinux-chapel/Dockerfile
+      IMAGE_NAME: almalinux-chapel
+      VERSION: latest
   build-almalinux-with-arkouda-deps:
+    needs: build-almalinux-chapel
     uses: ./.github/workflows/build-CI-container.yml
     with:
       DOCKERFILE: docker/almalinux-with-arkouda-deps/Dockerfile
