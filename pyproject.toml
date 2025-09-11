@@ -133,6 +133,10 @@ extend_skip_glob = [
   "dep/*",
   "*__init__.py",
   "*deprecated*",
+  "arkouda/versioneer.py",
+  "arkouda/toys/*",
+  "arkouda/benchmark_v2/*",
+  "arkouda/server_util/test/*",
 ]
 
 [tool.flake8]
