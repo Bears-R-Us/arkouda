@@ -19,7 +19,7 @@ on:
         description: 'Chapel version to install'
         required: false
         type: string
-        default: ''
+        default: '2.5.0'
       VERSION:
         description: 'Version tag for the Docker image'
         required: false

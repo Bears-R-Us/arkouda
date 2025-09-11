@@ -1,15 +1,17 @@
 FROM ubuntu:24.04
 
+ARG CHPL_VERSION
+
 USER root
 
 ENV PATH=/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/venv/bin
 
-ENV CHPL_HOME=/opt/chapel-2.5.0
+ENV CHPL_HOME=/opt/chapel-$CHPL_VERSION
 ENV CHPL_RE2=bundled
 ENV CHPL_GMP=bundled
 ENV CHPL_COMM=none
 ENV CHPL_TARGET_CPU=native
-ENV MANPATH=/opt/chapel-2.5.0/man
+ENV MANPATH=/opt/chapel-$CHPL_VERSION/man
 ENV CHPL_TASKS=qthreads
 ENV CHPL_TARGET_MEM=cstdlib
 ENV CHPL_HOST_MEM=jemalloc
@@ -49,37 +51,37 @@ RUN apt-get install -y gcc g++ m4 perl python3-dev bash make mawk git pkg-config
 RUN apt-get install -y llvm-dev llvm clang libclang-dev libclang-cpp-dev libedit-dev
 
 #   Download and install Chapel source
-RUN wget https://github.com/chapel-lang/chapel/releases/download/2.0.0/chapel-2.0.0.tar.gz && tar -xvf chapel-2.0.0.tar.gz && cd /opt/chapel-2.0.0 && CHPL_HOME=/opt/chapel-2.0.0 make
-RUN wget https://github.com/chapel-lang/chapel/releases/download/2.1.0/chapel-2.1.0.tar.gz && tar -xvf chapel-2.1.0.tar.gz && cd /opt/chapel-2.1.0 && CHPL_HOME=/opt/chapel-2.1.0 make
-RUN wget https://github.com/chapel-lang/chapel/releases/download/2.2.0/chapel-2.2.0.tar.gz && tar -xvf chapel-2.2.0.tar.gz && cd /opt/chapel-2.2.0 && CHPL_HOME=/opt/chapel-2.2.0 make
-RUN wget https://github.com/chapel-lang/chapel/releases/download/2.3.0/chapel-2.3.0.tar.gz && tar -xvf chapel-2.3.0.tar.gz && cd /opt/chapel-2.3.0 && CHPL_HOME=/opt/chapel-2.3.0 make
-RUN wget https://github.com/chapel-lang/chapel/releases/download/2.4.0/chapel-2.4.0.tar.gz && tar -xvf chapel-2.4.0.tar.gz && cd /opt/chapel-2.4.0 && CHPL_HOME=/opt/chapel-2.4.0 make
-RUN wget https://github.com/chapel-lang/chapel/releases/download/2.5.0/chapel-2.5.0.tar.gz && tar -xvf chapel-2.5.0.tar.gz && cd /opt/chapel-2.5.0 && CHPL_HOME=/opt/chapel-2.5.0 make
+RUN wget https://github.com/chapel-lang/chapel/releases/download/$CHPL_VERSION/chapel-$CHPL_VERSION.tar.gz && tar -xvf chapel-$CHPL_VERSION.tar.gz && cd /opt/chapel-$CHPL_VERSION && CHPL_HOME=/opt/chapel-$CHPL_VERSION make all chapel-py-venv chpldoc chplcheck
+# RUN wget https://github.com/chapel-lang/chapel/releases/download/2.1.0/chapel-2.1.0.tar.gz && tar -xvf chapel-2.1.0.tar.gz && cd /opt/chapel-2.1.0 && CHPL_HOME=/opt/chapel-2.1.0 make
+# RUN wget https://github.com/chapel-lang/chapel/releases/download/2.2.0/chapel-2.2.0.tar.gz && tar -xvf chapel-2.2.0.tar.gz && cd /opt/chapel-2.2.0 && CHPL_HOME=/opt/chapel-2.2.0 make
+# RUN wget https://github.com/chapel-lang/chapel/releases/download/2.3.0/chapel-2.3.0.tar.gz && tar -xvf chapel-2.3.0.tar.gz && cd /opt/chapel-2.3.0 && CHPL_HOME=/opt/chapel-2.3.0 make
+# RUN wget https://github.com/chapel-lang/chapel/releases/download/2.4.0/chapel-2.4.0.tar.gz && tar -xvf chapel-2.4.0.tar.gz && cd /opt/chapel-2.4.0 && CHPL_HOME=/opt/chapel-2.4.0 make
+# RUN wget https://github.com/chapel-lang/chapel/releases/download/2.5.0/chapel-2.5.0.tar.gz && tar -xvf chapel-2.5.0.tar.gz && cd /opt/chapel-2.5.0 && CHPL_HOME=/opt/chapel-2.5.0 make
 
 # install chapel-py
-RUN cd  /opt/chapel-2.0.0  && CHPL_HOME=/opt/chapel-2.0.0  make chapel-py-venv
-RUN cd  /opt/chapel-2.1.0  && CHPL_HOME=/opt/chapel-2.1.0  make chapel-py-venv
-RUN cd  /opt/chapel-2.2.0  && CHPL_HOME=/opt/chapel-2.2.0  make chapel-py-venv
-RUN cd  /opt/chapel-2.3.0  && CHPL_HOME=/opt/chapel-2.3.0  make chapel-py-venv
-RUN cd  /opt/chapel-2.4.0  && CHPL_HOME=/opt/chapel-2.4.0  make chapel-py-venv
-RUN cd  /opt/chapel-2.5.0  && CHPL_HOME=/opt/chapel-2.5.0  make chapel-py-venv
+# RUN cd  /opt/chapel-2.0.0  && CHPL_HOME=/opt/chapel-2.0.0  make chapel-py-venv
+# RUN cd  /opt/chapel-2.1.0  && CHPL_HOME=/opt/chapel-2.1.0  make chapel-py-venv
+# RUN cd  /opt/chapel-2.2.0  && CHPL_HOME=/opt/chapel-2.2.0  make chapel-py-venv
+# RUN cd  /opt/chapel-2.3.0  && CHPL_HOME=/opt/chapel-2.3.0  make chapel-py-venv
+# RUN cd  /opt/chapel-2.4.0  && CHPL_HOME=/opt/chapel-2.4.0  make chapel-py-venv
+# RUN cd  /opt/chapel-2.5.0  && CHPL_HOME=/opt/chapel-2.5.0  make chapel-py-venv
 
 #Install Chapel frontend bindings
 RUN python3 -m venv /venv
-RUN cd /opt/chapel-2.0.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.0.0 python3 -m pip install .
-RUN cd /opt/chapel-2.1.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.1.0 python3 -m pip install .
-RUN cd /opt/chapel-2.2.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.2.0 python3 -m pip install .
-RUN cd /opt/chapel-2.3.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.3.0 python3 -m pip install .
-RUN cd /opt/chapel-2.4.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.4.0 python3 -m pip install .
-RUN cd /opt/chapel-2.5.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.5.0 python3 -m pip install .
+RUN cd /opt/chapel-$CHPL_HOME/tools/chapel-py && CHPL_HOME=/opt/chapel-$CHPL_HOME python3 -m pip install .
+# RUN cd /opt/chapel-2.1.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.1.0 python3 -m pip install .
+# RUN cd /opt/chapel-2.2.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.2.0 python3 -m pip install .
+# RUN cd /opt/chapel-2.3.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.3.0 python3 -m pip install .
+# RUN cd /opt/chapel-2.4.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.4.0 python3 -m pip install .
+# RUN cd /opt/chapel-2.5.0/tools/chapel-py && CHPL_HOME=/opt/chapel-2.5.0 python3 -m pip install .
 
 #Install chpldoc
-RUN cd /opt/chapel-2.0.0 && CHPL_HOME=/opt/chapel-2.0.0 make chpldoc
-RUN cd /opt/chapel-2.1.0 && CHPL_HOME=/opt/chapel-2.1.0 make chpldoc
-RUN cd /opt/chapel-2.2.0 && CHPL_HOME=/opt/chapel-2.2.0 make chpldoc
-RUN cd /opt/chapel-2.3.0 && CHPL_HOME=/opt/chapel-2.3.0 make chpldoc
-RUN cd /opt/chapel-2.4.0 && CHPL_HOME=/opt/chapel-2.4.0 make chpldoc
-RUN cd /opt/chapel-2.5.0 && CHPL_HOME=/opt/chapel-2.5.0 make chpldoc
+# RUN cd /opt/chapel-2.0.0 && CHPL_HOME=/opt/chapel-2.0.0 make chpldoc
+# RUN cd /opt/chapel-2.1.0 && CHPL_HOME=/opt/chapel-2.1.0 make chpldoc
+# RUN cd /opt/chapel-2.2.0 && CHPL_HOME=/opt/chapel-2.2.0 make chpldoc
+# RUN cd /opt/chapel-2.3.0 && CHPL_HOME=/opt/chapel-2.3.0 make chpldoc
+# RUN cd /opt/chapel-2.4.0 && CHPL_HOME=/opt/chapel-2.4.0 make chpldoc
+# RUN cd /opt/chapel-2.5.0 && CHPL_HOME=/opt/chapel-2.5.0 make chpldoc
 
 
 ###############################################################################
