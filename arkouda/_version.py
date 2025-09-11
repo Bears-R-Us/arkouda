@@ -15,6 +15,32 @@ import re
 import subprocess
 import sys
 
+from arkouda.logger import getArkoudaLogger
+
+logger = getArkoudaLogger("_version Logger")
+
+__all__ = [
+    "NotThisMethod",
+    "VersioneerConfig",
+    "get_config",
+    "get_keywords",
+    "get_versions",
+    "git_get_keywords",
+    "git_pieces_from_vcs",
+    "git_versions_from_keywords",
+    "plus_or_dot",
+    "register_vcs_handler",
+    "render",
+    "render_git_describe",
+    "render_git_describe_long",
+    "render_pep440",
+    "render_pep440_old",
+    "render_pep440_post",
+    "render_pep440_pre",
+    "run_command",
+    "versions_from_parentdir",
+]
+
 
 def get_keywords():
     """Get the keywords needed to look up the version information."""
@@ -51,7 +77,7 @@ class NotThisMethod(Exception):
     """Exception raised if a method is not valid for the current scenario."""
 
 
-LONG_VERSION_PY: dict[str, str] = {}
+LONG_VERSION_PY = {}  # type: ignore
 HANDLERS = {}
 
 
@@ -89,24 +115,25 @@ def run_command(commands, args, cwd=None, verbose=False, hide_stderr=False, env=
             if e.errno == errno.ENOENT:
                 continue
             if verbose:
-                print("unable to run %s" % dispcmd)
-                print(e)
+                logger.error("unable to run %s" % dispcmd)
+                logger.error(e)
             return None, None
     else:
         if verbose:
-            print("unable to find command, tried %s" % (commands,))
+            logger.warning("unable to find command, tried %s" % (commands,))
         return None, None
     stdout = p.communicate()[0].strip().decode()
     if p.returncode != 0:
         if verbose:
-            print("unable to run %s (error)" % dispcmd)
-            print("stdout was %s" % stdout)
+            logger.warning("unable to run %s (error)" % dispcmd)
+            logger.warning("stdout was %s" % stdout)
         return None, p.returncode
     return stdout, p.returncode
 
 
 def versions_from_parentdir(parentdir_prefix, root, verbose):
-    """Try to determine the version from the parent directory name.
+    """
+    Try to determine the version from the parent directory name.
 
     Source tarballs conventionally unpack into a directory that includes both
     the project name and a version string. We will also support searching up
@@ -129,7 +156,9 @@ def versions_from_parentdir(parentdir_prefix, root, verbose):
             root = os.path.dirname(root)  # up a level
 
     if verbose:
-        print("Tried directories %s but none started with prefix %s" % (str(rootdirs), parentdir_prefix))
+        logger.warning(
+            "Tried directories %s but none started with prefix %s" % (str(rootdirs), parentdir_prefix)
+        )
     raise NotThisMethod("rootdir doesn't start with parentdir_prefix")
 
 
@@ -183,13 +212,13 @@ def git_versions_from_keywords(keywords, tag_prefix, verbose):
     refnames = keywords["refnames"].strip()
     if refnames.startswith("$Format"):
         if verbose:
-            print("keywords are unexpanded, not using")
+            logger.warning("keywords are unexpanded, not using")
         raise NotThisMethod("unexpanded keywords, not a git-archive tarball")
-    refs = set([r.strip() for r in refnames.strip("()").split(",")])
+    refs = {r.strip() for r in refnames.strip("()").split(",")}
     # starting in git-1.8.3, tags are listed as "tag: foo-1.0" instead of
     # just "foo-1.0". If we see a "tag: " prefix, prefer those.
     TAG = "tag: "
-    tags = set([r[len(TAG) :] for r in refs if r.startswith(TAG)])
+    tags = {r[len(TAG) :] for r in refs if r.startswith(TAG)}
     if not tags:
         # Either we're using git < 1.8.3, or there really are no tags. We use
         # a heuristic: assume all version tags have a digit. The old git %d
@@ -198,17 +227,17 @@ def git_versions_from_keywords(keywords, tag_prefix, verbose):
         # between branches and tags. By ignoring refnames without digits, we
         # filter out many common branch names like "release" and
         # "stabilization", as well as "HEAD" and "master".
-        tags = set([r for r in refs if re.search(r"\d", r)])
+        tags = {r for r in refs if re.search(r"\d", r)}
         if verbose:
-            print("discarding '%s', no digits" % ",".join(refs - tags))
+            logger.warning("discarding '%s', no digits" % ",".join(refs - tags))
     if verbose:
-        print("likely tags: %s" % ",".join(sorted(tags)))
+        logger.warning("likely tags: %s" % ",".join(sorted(tags)))
     for ref in sorted(tags):
         # sorting will prefer e.g. "2.0" over "2.0rc1"
         if ref.startswith(tag_prefix):
             r = ref[len(tag_prefix) :]
             if verbose:
-                print("picking %s" % r)
+                logger.warning("picking %s" % r)
             return {
                 "version": r,
                 "full-revisionid": keywords["full"].strip(),
@@ -218,7 +247,7 @@ def git_versions_from_keywords(keywords, tag_prefix, verbose):
             }
     # no suitable tags, so version is "0+unknown", but full hex is still there
     if verbose:
-        print("no suitable tags, using unknown + full revision id")
+        logger.warning("no suitable tags, using unknown + full revision id")
     return {
         "version": "0+unknown",
         "full-revisionid": keywords["full"].strip(),
@@ -230,7 +259,8 @@ def git_versions_from_keywords(keywords, tag_prefix, verbose):
 
 @register_vcs_handler("git", "pieces_from_vcs")
 def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):
-    """Get version from 'git describe' in the root of the source tree.
+    """
+    Get version from 'git describe' in the root of the source tree.
 
     This only gets called if the git-archive 'subst' keywords were *not*
     expanded, and _version.py hasn't already been rewritten with a short
@@ -243,7 +273,7 @@ def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):
     out, rc = run_command(GITS, ["rev-parse", "--git-dir"], cwd=root, hide_stderr=True)
     if rc != 0:
         if verbose:
-            print("Directory %s not under git control" % root)
+            logger.warning("Directory %s not under git control" % root)
         raise NotThisMethod("'git rev-parse --git-dir' returned error")
 
     # if there is a tag matching tag_prefix, this yields TAG-NUM-gHEX[-dirty]
@@ -292,7 +322,7 @@ def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):
         if not full_tag.startswith(tag_prefix):
             if verbose:
                 fmt = "tag '%s' doesn't start with prefix '%s'"
-                print(fmt % (full_tag, tag_prefix))
+                logger.warning(fmt % (full_tag, tag_prefix))
             pieces["error"] = "tag '%s' doesn't start with prefix '%s'" % (full_tag, tag_prefix)
             return pieces
         pieces["closest-tag"] = full_tag[len(tag_prefix) :]
@@ -327,7 +357,8 @@ def plus_or_dot(pieces):
 
 
 def render_pep440(pieces):
-    """Build up version string, with post-release "local version identifier".
+    """
+    Build up version string, with post-release "local version identifier".
 
     Our goal: TAG[+DISTANCE.gHEX[.dirty]] . Note that if you
     get a tagged build and then dirty it, you'll get TAG+0.gHEX.dirty
@@ -351,7 +382,8 @@ def render_pep440(pieces):
 
 
 def render_pep440_pre(pieces):
-    """TAG[.post0.devDISTANCE] -- No -dirty.
+    """
+    TAG[.post0.devDISTANCE] -- No -dirty.
 
     Exceptions:
     1: no tags. 0.post0.devDISTANCE
@@ -367,7 +399,8 @@ def render_pep440_pre(pieces):
 
 
 def render_pep440_post(pieces):
-    """TAG[.postDISTANCE[.dev0]+gHEX] .
+    """
+    TAG[.postDISTANCE[.dev0]+gHEX] .
 
     The ".dev0" means dirty. Note that .dev0 sorts backwards
     (a dirty tree will appear "older" than the corresponding clean one),
@@ -394,7 +427,8 @@ def render_pep440_post(pieces):
 
 
 def render_pep440_old(pieces):
-    """TAG[.postDISTANCE[.dev0]] .
+    """
+    TAG[.postDISTANCE[.dev0]] .
 
     The ".dev0" means dirty.
 
@@ -416,7 +450,8 @@ def render_pep440_old(pieces):
 
 
 def render_git_describe(pieces):
-    """TAG[-DISTANCE-gHEX][-dirty].
+    """
+    TAG[-DISTANCE-gHEX][-dirty].
 
     Like 'git describe --tags --dirty --always'.
 
@@ -436,7 +471,8 @@ def render_git_describe(pieces):
 
 
 def render_git_describe_long(pieces):
-    """TAG-DISTANCE-gHEX[-dirty].
+    """
+    TAG-DISTANCE-gHEX[-dirty].
 
     Like 'git describe --tags --dirty --always -long'.
     The distance/hash is unconditional.
