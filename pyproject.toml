@@ -126,6 +126,7 @@ skip = [
   ".eggs",
   "venv",
   "_build",
+  "runs",
 ]
 extend_skip_glob = [
   ".venv/*",
