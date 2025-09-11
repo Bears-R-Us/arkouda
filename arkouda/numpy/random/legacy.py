@@ -2,13 +2,18 @@ from typing import Optional, Tuple, Union, cast
 
 from typeguard import typechecked
 
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars, numeric_scalars
+from arkouda.numpy.dtypes import (
+    NUMBER_FORMAT_STRINGS,
+    DTypes,
+    dtype as akdtype,
+    float64 as akfloat64,
+    int64 as akint64,
+    int_scalars,
+    numeric_scalars,
+)
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.random.generator import Generator, default_rng
+
 
 __all__ = [
     "choice",
@@ -263,12 +268,12 @@ def uniform(
 
     Parameters
     ----------
+    size : int_scalars
+        The length of the returned array
     low : float_scalars
         The low value (inclusive) of the range, defaults to 0.0
     high : float_scalars
         The high value (inclusive) of the range, defaults to 1.0
-    size : int_scalars
-        The length of the returned array
     seed : int_scalars, optional
         Value used to initialize the random number generator
 

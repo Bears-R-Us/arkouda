@@ -71,27 +71,29 @@ from typeguard import typechecked
 from arkouda.client import maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.index import Index, MultiIndex
-from arkouda.numpy.dtypes import _is_dtype_in_union, bigint
-from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import numeric_scalars
-from arkouda.numpy.dtypes import uint64 as akuint64
+from arkouda.numpy.dtypes import (
+    _is_dtype_in_union,
+    bigint,
+    bool_ as akbool,
+    float64 as akfloat64,
+    int64 as akint64,
+    numeric_scalars,
+    uint64 as akuint64,
+)
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, full, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d, intersect1d
-from arkouda.numpy.sorting import argsort, coargsort
-from arkouda.numpy.sorting import sort as aksort
+from arkouda.numpy.sorting import argsort, coargsort, sort as aksort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
 from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.pandas.join import inner_join
 from arkouda.pandas.row import Row
 
+
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
-    from arkouda.numpy import cast as akcast
-    from arkouda.numpy import cumsum, where
+    from arkouda.numpy import cast as akcast, cumsum, where
     from arkouda.numpy.segarray import SegArray
     from arkouda.pandas.series import Series
 else:
@@ -188,8 +190,7 @@ class DataFrameGroupBy:
         self.all_non_nan = False
 
         if self.dropna:
-            from arkouda import all as ak_all
-            from arkouda import isnan
+            from arkouda import all as ak_all, isnan
 
             # calculate ~isnan on each key then & them all together
             # keep up with if they're all_non_nan, so we can skip indexing later
@@ -2052,14 +2053,14 @@ class DataFrame(UserDict):
             Function or dictionary mapping existing values to new values.
             Nonexistent names will not raise an error.
             Uses the value of axis to determine if renaming column or index
-        column : callable or dict-like, Optional
-            Function or dictionary mapping existing column names to
-            new column names. Nonexistent names will not raise an
-            error.
-            When this is set, axis is ignored.
         index : callable or dict-like, Optional
             Function or dictionary mapping existing index names to
             new index names. Nonexistent names will not raise an
+            error.
+            When this is set, axis is ignored.
+        column : callable or dict-like, Optional
+            Function or dictionary mapping existing column names to
+            new column names. Nonexistent names will not raise an
             error.
             When this is set, axis is ignored.
         axis: int or str, default=0
@@ -4254,8 +4255,7 @@ class DataFrame(UserDict):
         True
 
         """
-        from arkouda import any as akany
-        from arkouda import array, full
+        from arkouda import any as akany, array, full
         from arkouda.pandas.series import Series
 
         if self.empty:
@@ -4346,8 +4346,7 @@ class DataFrame(UserDict):
         False
 
         """
-        from arkouda import all as akall
-        from arkouda import array, full
+        from arkouda import all as akall, array, full
         from arkouda.pandas.series import Series
 
         if self.empty:

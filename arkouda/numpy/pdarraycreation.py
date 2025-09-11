@@ -23,21 +23,22 @@ from arkouda.numpy.dtypes import (
     SeriesDTypes,
     bigint,
     bool_scalars,
-)
-from arkouda.numpy.dtypes import (
+    dtype as akdtype,
+    float64,
+    get_byteorder,
+    get_server_byteorder,
+    int64 as akint64,
     int_scalars,
     isSupportedInt,
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
     str_,
+    uint64 as akuint64,
 )
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
-from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import broadcast_to_shape, create_pdarray, pdarray
 from arkouda.numpy.strings import Strings
+
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg, get_array_ranks
@@ -1469,12 +1470,12 @@ def uniform(
 
     Parameters
     ----------
+    size : int_scalars
+        The length of the returned array
     low : float_scalars
         The low value (inclusive) of the range, defaults to 0.0
     high : float_scalars
         The high value (inclusive) of the range, defaults to 1.0
-    size : int_scalars
-        The length of the returned array
     seed : int_scalars, optional
         Value used to initialize the random number generator
 
