@@ -33,7 +33,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -112,7 +112,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -138,7 +138,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -180,7 +180,7 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -217,7 +217,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -263,7 +263,7 @@ jobs:
     env:
       CHPL_HOME: /chapel-2.5.0
     container:
-      image: ghcr.io/${{ github.repository_owner }}/almalinux-with-arkouda-deps:latest
+      image: ghcr.io/bears-r-us/almalinux-with-arkouda-deps:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -365,7 +365,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -466,7 +466,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -518,7 +518,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -580,7 +580,7 @@ jobs:
       CHPL_RT_NUM_THREADS_PER_LOCALE: 2
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -634,7 +634,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}

@@ -16,7 +16,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ghcr.io/${{ github.repository_owner }}/ubuntu-with-arkouda-deps:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -25,7 +25,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Set Python version to 3.13
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1  
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
         python3 -m ensurepip --default-pip
     - name: Set Chapel version to 2.5.0
       run: |
