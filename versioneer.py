@@ -365,7 +365,7 @@ class NotThisMethod(Exception):
 
 
 # these dictionaries contain VCS-specific tools
-LONG_VERSION_PY = {}
+LONG_VERSION_PY= {}
 HANDLERS = {}
 
 
