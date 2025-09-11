@@ -5,6 +5,7 @@ import pytest
 
 import arkouda as ak
 
+
 OPS = ["_get_head_tail_server", "_get_head_tail"]
 
 

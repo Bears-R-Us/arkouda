@@ -49,17 +49,7 @@ import json
 import os
 import random
 import sys
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple, TypeVar, Union, cast
 from warnings import warn
 
 import numpy as np  # type: ignore
@@ -3232,11 +3222,7 @@ class DataFrame(UserDict):
         4 -4  4 (5 rows x 2 columns)
 
         """
-        from arkouda.pandas.io import (
-            _dict_recombine_segarrays_categoricals,
-            get_filetype,
-            load_all,
-        )
+        from arkouda.pandas.io import _dict_recombine_segarrays_categoricals, get_filetype, load_all
 
         prefix, extension = os.path.splitext(prefix_path)
         first_file = f"{prefix}_LOCALE0000{extension}"

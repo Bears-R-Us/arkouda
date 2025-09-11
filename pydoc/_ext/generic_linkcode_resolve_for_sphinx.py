@@ -11,6 +11,7 @@ import os
 import subprocess
 import sys
 
+
 linkcode_revision = "master"
 try:
     # lock to commit number

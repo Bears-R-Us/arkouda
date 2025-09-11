@@ -48,16 +48,14 @@ from warnings import warn
 
 import numpy as np
 
-from arkouda.numpy.dtypes import bigint
-from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import uint64 as akuint64
+from arkouda.numpy.dtypes import bigint, float64 as akfloat64, int64 as akint64, uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, full, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast, unique
+
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical

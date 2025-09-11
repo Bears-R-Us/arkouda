@@ -2,6 +2,7 @@ import numpy as np
 
 import arkouda as ak
 
+
 """
 Encapsulates unit tests for the pdarrayclass module that provide
 summarized values via reduction methods

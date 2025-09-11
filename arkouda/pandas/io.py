@@ -66,17 +66,7 @@ arkouda.categorical.Categorical, arkouda.index.Index, arkouda.index.MultiIndex
 import glob
 import json
 import os
-from typing import (
-    TYPE_CHECKING,
-    Dict,
-    List,
-    Literal,
-    Mapping,
-    Optional,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Dict, List, Literal, Mapping, Optional, TypeVar, Union, cast
 from warnings import warn
 
 import pandas as pd

@@ -3,6 +3,7 @@ import pytest
 
 import arkouda as ak
 
+
 TYPES = ["int64", "bigint", "str", "mixed"]
 NUM_ARR = [1, 2, 8, 16]
 

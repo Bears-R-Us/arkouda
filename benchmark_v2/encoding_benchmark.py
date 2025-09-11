@@ -2,6 +2,7 @@ import pytest
 
 import arkouda as ak
 
+
 ENCODINGS = ("idna", "ascii")
 
 

@@ -6,6 +6,7 @@ import pytest
 import arkouda as ak
 from arkouda.numpy.sorting import SortingAlgorithm
 
+
 NUMERIC_TYPES = ["int64", "float64", "uint64", "bigint", "bool"]
 
 

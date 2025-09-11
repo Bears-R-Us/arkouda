@@ -1,12 +1,15 @@
 import numpy as np
 import pandas as pd
-from pandas.testing import assert_frame_equal as pd_assert_frame_equal
-from pandas.testing import assert_series_equal as pd_assert_series_equal
+from pandas.testing import (
+    assert_frame_equal as pd_assert_frame_equal,
+    assert_series_equal as pd_assert_series_equal,
+)
 import pytest
 
 import arkouda as ak
 from arkouda.pandas.series import Series
 from arkouda.testing import assert_series_equal as ak_assert_series_equal
+
 
 DTYPES = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint, ak.str_]
 NO_STRING = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint]

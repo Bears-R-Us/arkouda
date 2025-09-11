@@ -54,6 +54,7 @@ from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.numpy.pdarraysetops import concatenate as ak_concat
 from arkouda.numpy.strings import Strings
 
+
 __all__ = ["_ensure_numpy", "ArkoudaBaseArray"]
 
 
@@ -130,9 +131,7 @@ class ArkoudaBaseArray(ExtensionArray):
 
         # Categorical: pandas returns strings when fill may not be in categories
         try:
-            from arkouda.pandas.extension._arkouda_categorical_array import (
-                ArkoudaCategoricalArray,
-            )
+            from arkouda.pandas.extension._arkouda_categorical_array import ArkoudaCategoricalArray
         except Exception:
             ArkoudaCategoricalArray = ()  # not available yet
 

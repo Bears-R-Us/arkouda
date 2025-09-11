@@ -2,6 +2,7 @@ import pytest
 
 import arkouda as ak
 
+
 OPS = ["and", "or", "shift"]
 
 

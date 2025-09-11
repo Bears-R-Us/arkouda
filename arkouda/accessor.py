@@ -55,6 +55,7 @@ from typing import TYPE_CHECKING, TypeVar
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime
 
+
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 else:

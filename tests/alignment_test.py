@@ -2,6 +2,7 @@ import pytest
 
 import arkouda as ak
 
+
 DATA_TYPES = [ak.int64, ak.uint64, ak.float64]
 
 

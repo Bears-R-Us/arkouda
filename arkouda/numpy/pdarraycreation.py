@@ -1,16 +1,5 @@
 import itertools
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Iterable,
-    List,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-    cast,
-    overload,
-)
+from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Tuple, TypeVar, Union, cast, overload
 
 import numpy as np
 import pandas as pd
@@ -604,9 +593,7 @@ def zeros(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
 
-    from arkouda.numpy.util import (
-        _infer_shape_from_size,  # placed here to avoid circ import
-    )
+    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
@@ -751,9 +738,7 @@ def full(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    from arkouda.numpy.util import (
-        _infer_shape_from_size,  # placed here to avoid circ import
-    )
+    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 

@@ -3,16 +3,20 @@ import json
 from typing import TYPE_CHECKING, Optional, TypeVar, Union
 
 import numpy as np
-from pandas import Series as pdSeries
-from pandas import Timedelta as pdTimedelta
-from pandas import Timestamp as pdTimestamp
-from pandas import date_range as pd_date_range
-from pandas import timedelta_range as pd_timedelta_range
-from pandas import to_datetime, to_timedelta
+from pandas import (
+    Series as pdSeries,
+    Timedelta as pdTimedelta,
+    Timestamp as pdTimestamp,
+    date_range as pd_date_range,
+    timedelta_range as pd_timedelta_range,
+    to_datetime,
+    to_timedelta,
+)
 
 from arkouda.numpy.dtypes import int64, int_scalars, intTypes, isSupportedInt
 from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import from_series
+
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
@@ -260,12 +264,7 @@ class _AbstractBaseTime(pdarray):
         Override the pdarray implementation so that the special object type will be used.
         """
         from arkouda.client import generic_msg
-        from arkouda.pandas.io import (
-            _file_type_to_int,
-            _get_hdf_filetype,
-            _mode_str_to_int,
-            _repack_hdf,
-        )
+        from arkouda.pandas.io import _file_type_to_int, _get_hdf_filetype, _mode_str_to_int, _repack_hdf
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
