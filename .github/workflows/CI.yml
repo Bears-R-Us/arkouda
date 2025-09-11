@@ -4,7 +4,7 @@ on: [pull_request, merge_group, workflow_dispatch]
 
 env:
   ARKOUDA_QUICK_COMPILE: true
-  
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -102,7 +102,7 @@ jobs:
           pip install ruff==0.11.2
       # Update output format to enable automatic inline annotations.
       - name: ruff version
-        run: | 
+        run: |
           ruff --version
       - name: Run Ruff
         run: ruff format --check --diff
@@ -418,7 +418,7 @@ jobs:
         max_attempts: 2
         retry_wait_seconds: 60
         retry_on: error
-        command: | 
+        command: |
           make install-iconv  DEP_BUILD_DIR=$DEP_BUILD_DIR
     - name: Make install-idn2
       uses: nick-fields/retry@v2
@@ -428,7 +428,7 @@ jobs:
         retry_wait_seconds: 60
         retry_on: error
         command: |
-          make install-idn2  DEP_BUILD_DIR=$DEP_BUILD_DIR   
+          make install-idn2  DEP_BUILD_DIR=$DEP_BUILD_DIR
     - name: Make install-blosc
       uses: nick-fields/retry@v2
       with:
@@ -628,7 +628,7 @@ jobs:
       run: |
         ARKOUDA_HOME=$(pwd) ./benchmarks/run_benchmarks.py --correctness-only
         ARKOUDA_HOME=$(pwd) ./benchmarks/run_benchmarks.py --size=100 --gen-graphs
-        
+
   arkouda_benchmark_linux:
     runs-on: ubuntu-latest
     env:
@@ -673,6 +673,4 @@ jobs:
         make benchmark size_bm=10
     - name: Arkouda benchmark -- Numpy
       run: |
-        python3 -m pytest -c benchmark.ini --size=10 --numpy   
-          
-            
+        python3 -m pytest -c benchmark.ini --size=10 --numpy
