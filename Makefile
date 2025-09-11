@@ -689,6 +689,7 @@ ruff-format:
 	ruff format --check --diff
 
 isort:
+	isort --version-number
 	isort --gitignore --float-to-top .
 	#  Verify if it will pass the CI check:
 	isort --settings-path $(ARKOUDA_PROJECT_DIR)/pyproject.toml --check-only --diff .
