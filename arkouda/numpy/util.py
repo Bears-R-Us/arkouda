@@ -1135,14 +1135,19 @@ def adjust_negs(axis, rank):
 
 # axis validation can be called in multiple conditions.
 
-# Some functions require the axis to be an integer.  For that, we have
-# _integer_axis_validation, which returns a boolean and an int.
+# Some functions require the axis to be an integer (or None).  For that, we have
+# _integer_axis_validation, which returns a boolean and an int (or None).
 
 
-def _integer_axis_validation(axis: int_scalars, rank):
-    if bounds_check(axis, rank):
-        axis = adjust_negs(axis, rank)
-        return True, axis
+def _integer_axis_validation(axis, rank):
+    if axis is None:
+        return True, None
+    elif isinstance(axis, int):
+        if bounds_check(axis, rank):
+            axis = adjust_negs(axis, rank)
+            return True, axis
+        else:
+            return False, axis
     else:
         return False, axis
 
@@ -1159,9 +1164,9 @@ def _axis_validation(axis, rank):
     elif isinstance(axis, int):
         if bounds_check(axis, rank):
             axis = adjust_negs(axis, rank)
-            return True, list[axis]
+            return True, [axis]
         else:
-            return False, list[axis]
+            return False, [axis]
 
     else:
         if isinstance(axis, list):
