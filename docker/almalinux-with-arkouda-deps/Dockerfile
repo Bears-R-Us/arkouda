@@ -1,4 +1,4 @@
-FROM ghcr.io/Bears-R-Us/almalinux-chapel:latest
+FROM ghcr.io/bears-r-us/almalinux-chapel:latest
 
 # Set user to root
 USER root
