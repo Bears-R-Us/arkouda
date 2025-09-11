@@ -7,7 +7,8 @@ from arkouda.pandas.extension._arkouda_array import ArkoudaArray
 
 class TestSeriesExtension:
     def test_series_from_strings(self):
-        from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
+        from arkouda.pandas.extension._arkouda_string_array import \
+            ArkoudaStringArray
 
         s_arr = ArkoudaStringArray(ak.array(["alpha", "beta", "gamma"]))
         s = pd.Series(s_arr)
@@ -15,7 +16,8 @@ class TestSeriesExtension:
         assert s.iloc[2] == "gamma"
 
     def test_string_series_take_with_fill(self):
-        from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
+        from arkouda.pandas.extension._arkouda_string_array import \
+            ArkoudaStringArray
 
         s_arr = ArkoudaStringArray(ak.array(["a", "b", "c"]))
         s = pd.Series(s_arr)
@@ -24,9 +26,8 @@ class TestSeriesExtension:
         assert taken.iloc[2] == "c"
 
     def test_series_from_categorical(self):
-        from arkouda.pandas.extension._arkouda_categorical_array import (
-            ArkoudaCategoricalArray,
-        )
+        from arkouda.pandas.extension._arkouda_categorical_array import \
+            ArkoudaCategoricalArray
 
         s_arr = ArkoudaCategoricalArray(ak.Categorical(ak.array(["high", "low", "medium", "low"])))
         s = pd.Series(s_arr)
@@ -34,9 +35,8 @@ class TestSeriesExtension:
         assert s.iloc[3] == "low"
 
     def test_categorical_series_take_with_fill(self):
-        from arkouda.pandas.extension._arkouda_categorical_array import (
-            ArkoudaCategoricalArray,
-        )
+        from arkouda.pandas.extension._arkouda_categorical_array import \
+            ArkoudaCategoricalArray
 
         s_arr = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "z"])))
         s = pd.Series(s_arr)

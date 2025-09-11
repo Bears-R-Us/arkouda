@@ -1,7 +1,7 @@
 import math
 import os
-from string import ascii_letters, digits
 import tempfile
+from string import ascii_letters, digits
 
 import numpy as np
 import pytest

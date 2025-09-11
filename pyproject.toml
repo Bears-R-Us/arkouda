@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=64", "wheel", "versioneer>=0.19"]  # or drop versioneer here if you use the sys.path trick below
+requires = ["setuptools>=64", "wheel", "versioneer[toml]>=0.22"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "arkouda"
-version = "0.0.0"            # placeholder; Versioneer will override via setup.py
+dynamic = ["version"]                # <-- Versioneer will supply this
 description = "Parallel, distributed NumPy-like arrays backed by Chapel"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -19,9 +19,9 @@ classifiers = [
   "Programming Language :: Python :: 3",
 ]
 
-# ... keep your dependencies and optional-dependencies blocks ...
+# keep your dependencies/optional-dependencies blocks here;
+# importantly: DO NOT list "versioneer" as a runtime dependency
 
-# keep your dependencies and optional-dependencies as-is
 
 
 dependencies = [
@@ -31,7 +31,7 @@ dependencies = [
   "typeguard==2.10.0",
   "tabulate",
   "pyfiglet",
-  "versioneer",
+  "versioneer>=0.22",
   "matplotlib>=3.3.2",
   "h5py>=3.7.0",
   "pip",  # Consider removing if not truly required at runtime
@@ -77,6 +77,7 @@ dev = [
   "numba",
 ]
 
+
 [project.urls]
 Homepage = "https://github.com/Bears-R-Us/arkouda"
 "Bug Reports" = "https://github.com/Bears-R-Us/arkouda/issues"
@@ -88,9 +89,14 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
-# exclude = ["tests*", "examples*"]
 
+# Versioneer 0.22+ reads config from TOML:
+[tool.versioneer]
+VCS = "git"
+style = "pep440"
+versionfile_source = "arkouda/_version.py"
+versionfile_build  = "arkouda/_version.py"
+tag_prefix = ""                     # "" if your tags look like v1.2.3 or 1.2.3; set "v" if needed
+parentdir_prefix = "arkouda-"
 
-[tool.setuptools.dynamic]
-version = { attr = "arkouda._version.__version__" }
 

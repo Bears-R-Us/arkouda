@@ -3,7 +3,8 @@ import time
 import pytest
 
 import arkouda as ak
-from server_util.test.server_test_util import TestRunningMode, start_arkouda_server
+from server_util.test.server_test_util import (TestRunningMode,
+                                               start_arkouda_server)
 
 
 @pytest.mark.skipif(

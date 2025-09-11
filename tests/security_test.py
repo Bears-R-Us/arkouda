@@ -1,5 +1,5 @@
-from os.path import expanduser
 import platform
+from os.path import expanduser
 
 from arkouda import security
 

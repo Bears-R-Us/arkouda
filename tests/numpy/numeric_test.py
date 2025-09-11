@@ -1,6 +1,6 @@
-from math import isclose, prod, sqrt
 import random
 import warnings
+from math import isclose, prod, sqrt
 
 import numpy as np
 import pytest
@@ -9,7 +9,8 @@ import arkouda as ak
 from arkouda.client import get_array_ranks, get_max_array_rank
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import str_
-from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
+from arkouda.testing import \
+    assert_almost_equivalent as ak_assert_almost_equivalent
 from arkouda.testing import assert_arkouda_array_equivalent
 
 ARRAY_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64, str_]
