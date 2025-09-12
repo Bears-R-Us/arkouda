@@ -4,8 +4,13 @@ from typing import List, Optional, Tuple, Union, cast
 
 import numpy as np
 
+from arkouda.numpy.dtypes import bool as akbool
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
-from arkouda.numpy.pdarraycreation import promote_to_common_dtype, scalar_array
+from arkouda.numpy.pdarraycreation import scalar_array
 from arkouda.numpy.util import broadcast_dims
 
 from .array_object import Array, implements_numpy
@@ -100,6 +105,37 @@ def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
         raise ValueError(f"Failed to broadcast array: {e}")
 
 
+#   Dtype resolution in concat and stack both follow conventional numpy rules of:
+
+#   if there are any floats OR (there are any ints AND there are any uints)
+#                                   -> result is float
+#   else if there are any ints      -> result is int
+#   else if there are any uints     -> result is uint
+#   else if there are any bools     -> result is bool
+
+
+def _has_type(aktype, pdarrayList):
+    return True in [array.dtype == aktype for array in pdarrayList]
+
+
+def _resolve_common_dtype(pdarrayList):
+    if _has_type(akfloat64, pdarrayList):
+        dt = akfloat64
+    elif _has_type(akint64, pdarrayList) and _has_type(akuint64, pdarrayList):
+        dt = akfloat64
+    elif _has_type(akint64, pdarrayList):
+        dt = akint64
+    elif _has_type(akuint64, pdarrayList):
+        dt = akuint64
+    elif _has_type(akbool, pdarrayList):
+        dt = akbool
+    else:
+        raise TypeError("All arrays in operation must be float, int, uint, or bool.")
+
+    dt = akdtype(dt)
+    return dt, [array.astype(dt) for array in pdarrayList]
+
+
 def concat(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[int] = 0) -> Array:
     """
     Concatenate arrays along an axis.
@@ -149,7 +185,7 @@ def concat(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[i
     # That means this concat function will output a float, even if all arrays are ints.
     # numpy concat does not do that.
 
-    (common_dt, _arrays) = promote_to_common_dtype([a._array for a in arrays])
+    (common_dt, _arrays) = _resolve_common_dtype([a._array for a in arrays])
 
     return Array._new(
         create_pdarray(
@@ -661,12 +697,8 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
     if not valid:
         raise IndexError(f"{axis} is not a valid axis for stacking arrays of rank {ndim}")
 
-    # TODO: fix the type promotion here, as in concat above.  This is always producing
-    # floats, even when all inputs are integer.  numpy stack doesn't do that.
+    (common_dt, _arrays) = _resolve_common_dtype([a._array for a in arrays])
 
-    (common_dt, _arrays) = promote_to_common_dtype([a._array for a in arrays])
-
-    # TODO: type promotion across input arrays
     return Array._new(
         create_pdarray(
             cast(
