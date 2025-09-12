@@ -7,21 +7,18 @@ from typeguard import typechecked
 
 from arkouda.client_dtypes import BitVector
 from arkouda.logger import getArkoudaLogger
-from arkouda.numpy.dtypes import bigint
-from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import uint64 as akuint64
+from arkouda.numpy.dtypes import (
+    bigint,
+    bool_ as akbool,
+    dtype as akdtype,
+    int64 as akint64,
+    uint64 as akuint64,
+)
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import array, ones, zeros, zeros_like
 from arkouda.numpy.sorting import argsort
 from arkouda.numpy.strings import Strings
-from arkouda.pandas.groupbyclass import (
-    GroupBy,
-    groupable,
-    groupable_element_type,
-    unique,
-)
+from arkouda.pandas.groupbyclass import GroupBy, groupable, groupable_element_type, unique
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg

@@ -3,7 +3,6 @@ import pytest
 
 import arkouda as ak
 
-
 def setup_agg(N, t="int"):
     keys = ak.sort(ak.randint(0, 2**32, N, seed=pytest.seed if pytest.seed is not None else None))
     intvals = ak.randint(0, 2**16, N, seed=(pytest.seed + 1 if pytest.seed is not None else None))

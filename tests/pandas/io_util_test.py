@@ -5,7 +5,6 @@ import pytest
 
 from arkouda.pandas import io_util
 
-
 class TestIOUtil:
     def test_io_util_docstrings(self):
         import doctest

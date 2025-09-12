@@ -66,17 +66,7 @@ arkouda.categorical.Categorical, arkouda.index.Index, arkouda.index.MultiIndex
 import glob
 import json
 import os
-from typing import (
-    TYPE_CHECKING,
-    Dict,
-    List,
-    Literal,
-    Mapping,
-    Optional,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Dict, List, Literal, Mapping, Optional, TypeVar, Union, cast
 from warnings import warn
 
 import pandas as pd
@@ -1192,15 +1182,14 @@ def export(
     read_path: str
         path to file where arkouda data is stored.
     dataset_name: str
-        name to store dataset under
-    index: bool
-        Default False. When True, maintain the indexes loaded from the pandas file
+        name to store dataset under.
     write_file: str
         path to file to write pandas formatted data to. Only write the file if this is set.
         Default is None.
     return_obj: bool
         When True (default) return the Pandas DataFrame object, otherwise return None.
-
+    index: bool
+        Default False. When True, maintain the indexes loaded from the pandas file.
 
     Raises
     ------

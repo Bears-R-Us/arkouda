@@ -689,9 +689,10 @@ ruff-format:
 	ruff format --check --diff
 
 isort:
+	isort --version-number
 	isort --gitignore --float-to-top .
 	#  Verify if it will pass the CI check:
-	isort --check-only --diff .
+	isort --settings-path $(ARKOUDA_PROJECT_DIR)/pyproject.toml --check-only --diff .
 
 
 .PHONY: check-doc-examples
@@ -708,7 +709,7 @@ format: ruff-format isort check-doc-examples
 	#   Run docstring linter
 	pydocstyle
 	#   Run flake8
-	flake8 --config=$(ARKOUDA_PROJECT_DIR)/setup.cfg $(ARKOUDA_PROJECT_DIR)/arkouda
+	flake8 $(ARKOUDA_PROJECT_DIR)/arkouda
 
 darglint: 
 	#   Check darglint linter for doc strings:

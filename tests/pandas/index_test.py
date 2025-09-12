@@ -4,8 +4,7 @@ import tempfile
 
 from numpy import dtype as npdtype
 import pandas as pd
-from pandas import Categorical as pd_Categorical
-from pandas import Index as pd_Index
+from pandas import Categorical as pd_Categorical, Index as pd_Index
 from pandas.testing import assert_index_equal as pd_assert_index_equal
 import pytest
 
@@ -14,9 +13,7 @@ from arkouda.numpy.dtypes import dtype
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.pandas import io_util
 from arkouda.pandas.index import Index
-from arkouda.testing import assert_index_equal
-from arkouda.testing import assert_index_equal as ak_assert_index_equal
-
+from arkouda.testing import assert_index_equal, assert_index_equal as ak_assert_index_equal
 
 @pytest.fixture
 def df_test_base_tmp(request):
@@ -562,8 +559,7 @@ class TestIndex:
         pd_assert_index_equal(ak_multi.to_pandas(), pd_multi, check_categorical=True)
 
     def test_to_ndarray(self):
-        from numpy import array as ndarray
-        from numpy import array_equal
+        from numpy import array as ndarray, array_equal
 
         i = ak.Index([1, 2, 3])
         assert array_equal(i.to_ndarray(), ndarray([1, 2, 3]))

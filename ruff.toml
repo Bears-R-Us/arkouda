@@ -8,7 +8,8 @@ extend-exclude = [
   "*.rst",                      # skip ReST docs                           
   "src/*",   
   "dep/*",
-  ".venv/**",       
+  ".venv/**",  
+  "arkouda/_version.py",        #   This is a generated file     
 ]
 
 #   This should match the lowest supported version:

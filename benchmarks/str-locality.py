@@ -5,7 +5,6 @@ import time
 
 import arkouda as ak
 
-
 def generate_data(N, seed):
     prefix = ak.random_strings_uniform(minlen=1, maxlen=16, size=N, seed=seed, characters="numeric")
     if seed is not None:

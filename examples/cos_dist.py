@@ -4,7 +4,6 @@ import math
 
 import arkouda as ak
 
-
 # dot product or two arkouda pdarrays
 def ak_dot(u, v):
     if isinstance(u, ak.pdarray) and isinstance(v, ak.pdarray):

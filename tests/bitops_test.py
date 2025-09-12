@@ -2,7 +2,6 @@ import pytest
 
 import arkouda as ak
 
-
 class TestBitOps:
     @classmethod
     def setup_class(cls):

@@ -134,11 +134,11 @@ def searchsorted(
     side : {'left', 'right'}, optional
         If 'left', the index of the first suitable location found is given. If 'right', return the
         last such index. Default is 'left'.
-    sorter : Array, optional
-        The indices that would sort `x1` in ascending order. If None, `x1` is assumed to be sorted.
     x2_sorted : bool, default=False
         If True, assumes that `x2` is already sorted in ascending order. This can improve performance
         for large, sorted search arrays. If False, no assumption is made about the order of `x2`.
+    sorter : Array, optional
+        The indices that would sort `x1` in ascending order. If None, `x1` is assumed to be sorted.
     """
     from arkouda.client import generic_msg
 

@@ -2,7 +2,6 @@
 import inspect
 import re
 
-
 def insert_spaces_after_newlines(input_string, spaces):
     if input_string is not None:
         pattern = r"^\n(\s+)"

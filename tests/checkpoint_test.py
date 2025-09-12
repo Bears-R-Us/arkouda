@@ -10,7 +10,6 @@ import pytest
 import arkouda as ak
 from arkouda.pandas import io_util
 
-
 @pytest.fixture
 def cp_test_base_tmp(request):
     # make sure to create a unique directory

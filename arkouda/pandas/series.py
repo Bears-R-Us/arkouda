@@ -13,13 +13,7 @@ from typeguard import typechecked
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
 from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
-from arkouda.numpy.pdarrayclass import (
-    RegistrationError,
-    any,
-    argmaxk,
-    create_pdarray,
-    pdarray,
-)
+from arkouda.numpy.pdarrayclass import RegistrationError, any, argmaxk, create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, full, zeros
 from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.numpy.strings import Strings

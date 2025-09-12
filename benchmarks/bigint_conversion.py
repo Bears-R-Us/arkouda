@@ -3,7 +3,6 @@ import time
 
 import arkouda as ak
 
-
 def time_bigint_conversion(N_per_locale, trials, seed, max_bits):
     print(">>> arkouda uint arrays from bigint array")
     cfg = ak.get_config()

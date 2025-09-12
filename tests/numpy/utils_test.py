@@ -3,7 +3,6 @@ import pytest
 
 import arkouda as ak
 
-
 class TestFromNumericFunctions:
     # def test_utils_docstrings(self):
     #     import doctest

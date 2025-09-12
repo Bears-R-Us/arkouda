@@ -5,7 +5,6 @@ import arkouda as ak
 from arkouda.numpy import char
 from arkouda.testing import assert_arkouda_array_equivalent
 
-
 class TestChar:
     def test_char_docstrings(self):
         import doctest

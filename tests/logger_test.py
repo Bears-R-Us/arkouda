@@ -8,7 +8,6 @@ from arkouda import logger
 from arkouda.logger import LogLevel, getArkoudaClientLogger, getArkoudaLogger
 from arkouda.pandas import io_util
 
-
 class TestLogger:
     logger_test_base_tmp = f"{pytest.temp_directory}/logger_io_test"
     io_util.get_directory(logger_test_base_tmp)

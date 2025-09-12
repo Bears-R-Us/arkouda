@@ -3,7 +3,6 @@ import pytest
 
 import arkouda as ak
 
-
 @pytest.mark.benchmark(group="Arkouda_No_Op")
 def bench_noop(benchmark):
     if pytest.numpy:

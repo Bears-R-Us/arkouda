@@ -4,7 +4,6 @@ import pytest
 
 import arkouda as ak
 
-
 class TestStats:
     @classmethod
     def setup_class(cls):

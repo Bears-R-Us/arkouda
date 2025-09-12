@@ -6,11 +6,13 @@ import pytest
 import arkouda as ak
 from arkouda.client import get_array_ranks, get_max_array_rank
 from arkouda.dtypes import bigint
-from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
-from arkouda.testing import assert_arkouda_array_equivalent
-from arkouda.testing import assert_equal as ak_assert_equal
-from arkouda.testing import assert_equivalent
-from arkouda.testing import assert_equivalent as ak_assert_equivalent
+from arkouda.testing import (
+    assert_almost_equivalent as ak_assert_almost_equivalent,
+    assert_arkouda_array_equivalent,
+    assert_equal as ak_assert_equal,
+    assert_equivalent,
+    assert_equivalent as ak_assert_equivalent,
+)
 
 seed = 314159  # this hardcoded seed is retained because the sorted tests
 # require known results

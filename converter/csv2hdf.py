@@ -3,7 +3,6 @@
 import os
 import sys
 
-
 def import_local(path):
     if not os.path.exists(path):
         raise ImportError(f"{path} not found")

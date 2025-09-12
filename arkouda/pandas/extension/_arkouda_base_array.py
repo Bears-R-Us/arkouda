@@ -130,9 +130,7 @@ class ArkoudaBaseArray(ExtensionArray):
 
         # Categorical: pandas returns strings when fill may not be in categories
         try:
-            from arkouda.pandas.extension._arkouda_categorical_array import (
-                ArkoudaCategoricalArray,
-            )
+            from arkouda.pandas.extension._arkouda_categorical_array import ArkoudaCategoricalArray
         except Exception:
             ArkoudaCategoricalArray = ()  # not available yet
 

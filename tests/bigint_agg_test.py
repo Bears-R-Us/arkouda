@@ -3,7 +3,6 @@ import pytest
 
 import arkouda as ak
 
-
 def gather_scatter(a):
     rev = ak.array(np.arange(len(a) - 1, -1, -1))
     a2 = a[rev]

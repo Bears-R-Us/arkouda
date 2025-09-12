@@ -4,7 +4,6 @@ import arkouda as ak
 from arkouda.pandas.extension._arkouda_array import ArkoudaArray
 from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
 
-
 class TestIndexExtension:
     def test_index_basic_ops(self):
         idx = pd.Index(ArkoudaArray(ak.array([10, 20, 30])), name="foo")

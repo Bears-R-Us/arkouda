@@ -5,7 +5,6 @@ import time
 
 import arkouda as ak
 
-
 def time_substring_search(N_per_locale, trials, seed):
     print(">>> arkouda substring search")
     cfg = ak.get_config()

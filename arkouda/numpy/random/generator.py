@@ -2,14 +2,17 @@ import numpy as np
 import numpy.random as np_random
 
 from arkouda.client import get_registration_config
-from arkouda.numpy.dtypes import _val_isinstance_of_union
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import dtype as to_numpy_dtype
-from arkouda.numpy.dtypes import dtype_for_chapel
-from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import float_scalars
-from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars, numeric_scalars
+from arkouda.numpy.dtypes import (
+    _val_isinstance_of_union,
+    dtype as akdtype,
+    dtype as to_numpy_dtype,
+    dtype_for_chapel,
+    float64 as akfloat64,
+    float_scalars,
+    int64 as akint64,
+    int_scalars,
+    numeric_scalars,
+)
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
 __all__ = [
@@ -30,13 +33,11 @@ class Generator:
 
     Parameters
     ----------
-    seed : int
-        Seed to allow for reproducible random number generation.
-
     name_dict: dict
         Dictionary mapping the server side names associated with
         the generators for each dtype.
-
+    seed : int
+        Seed to allow for reproducible random number generation.
     state: int
         The current state we are in the random number generation stream.
         This information makes it so calls to any dtype generator

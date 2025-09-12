@@ -13,6 +13,16 @@ from typeguard import typechecked
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import (
+    NUMBER_FORMAT_STRINGS,
+    DTypes,
+    bigint,
+    bool_ as akbool,
+    bool_scalars,
+    dtype,
+    float64 as akfloat64,
+    get_byteorder,
+    get_server_byteorder,
+    int64 as akint64,
     int_scalars,
     isSupportedBool,
     isSupportedInt,
@@ -21,15 +31,9 @@ from arkouda.numpy.dtypes import (
     numpy_scalars,
     resolve_scalar_dtype,
     result_type,
+    str_ as akstr_,
+    uint64 as akuint64,
 )
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
-from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import bool_scalars, dtype
-from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import get_byteorder, get_server_byteorder
-from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import str_ as akstr_
-from arkouda.numpy.dtypes import uint64 as akuint64
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg, get_array_ranks
@@ -2955,12 +2959,7 @@ class pdarray:
         - If the dataset provided does not exist, it will be added
         """
         from arkouda.client import generic_msg
-        from arkouda.pandas.io import (
-            _file_type_to_int,
-            _get_hdf_filetype,
-            _mode_str_to_int,
-            _repack_hdf,
-        )
+        from arkouda.pandas.io import _file_type_to_int, _get_hdf_filetype, _mode_str_to_int, _repack_hdf
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
@@ -4149,8 +4148,7 @@ def divmod(
     >>> ak.divmod(x,y, x % 2 == 0)
     (array([5 6 7 1 9]), array([5 0 7 3 9]))
     """
-    from arkouda.numpy import cast as akcast
-    from arkouda.numpy import where as akwhere
+    from arkouda.numpy import cast as akcast, where as akwhere
     from arkouda.pdarraycreation import full
 
     if not isinstance(x, pdarray) and not isinstance(y, pdarray):
@@ -4783,8 +4781,7 @@ def power(
     ValueError
         raised if pda and power are of incompatible dimensions
     """
-    from arkouda.numpy import cast as akcast
-    from arkouda.numpy import where as akwhere
+    from arkouda.numpy import cast as akcast, where as akwhere
 
     if where is True:
         return pda**pwr

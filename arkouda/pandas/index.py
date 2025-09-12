@@ -62,15 +62,11 @@ import json
 from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, TypeVar, Union
 
 import numpy as np
-from numpy import array as ndarray
-from numpy import dtype as npdtype
+from numpy import array as ndarray, dtype as npdtype
 import pandas as pd
 from typeguard import typechecked
 
-from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import bool_scalars
-from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import bool_ as akbool, bool_scalars, float64 as akfloat64, int64 as akint64
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, ones
 from arkouda.numpy.pdarraysetops import argsort, in1d
@@ -1202,12 +1198,7 @@ class Index:
         """
         from arkouda.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
-        from arkouda.pandas.io import (
-            _file_type_to_int,
-            _get_hdf_filetype,
-            _mode_str_to_int,
-            _repack_hdf,
-        )
+        from arkouda.pandas.io import _file_type_to_int, _get_hdf_filetype, _mode_str_to_int, _repack_hdf
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
@@ -2145,12 +2136,7 @@ class MultiIndex(Index):
         """
         from arkouda.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
-        from arkouda.pandas.io import (
-            _file_type_to_int,
-            _get_hdf_filetype,
-            _mode_str_to_int,
-            _repack_hdf,
-        )
+        from arkouda.pandas.io import _file_type_to_int, _get_hdf_filetype, _mode_str_to_int, _repack_hdf
 
         if isinstance(self.levels, list):
             raise TypeError("Unable update hdf when Index levels are a list.")

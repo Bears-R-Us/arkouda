@@ -23,7 +23,6 @@ import socket
 import subprocess
 import time
 
-
 class TestRunningMode(Enum):
     """
     Enum indicating the running mode of the test harness

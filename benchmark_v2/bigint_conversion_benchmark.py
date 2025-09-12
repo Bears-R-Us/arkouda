@@ -3,7 +3,6 @@ import pytest
 
 import arkouda as ak
 
-
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="BigInt_Conversion")
 @pytest.mark.parametrize("direction", ["bigint_from_uint_arrays", "bigint_to_uint_arrays"])

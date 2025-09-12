@@ -5,9 +5,7 @@ from numpy import ndarray
 from pandas.api.extensions import ExtensionArray, ExtensionDtype
 
 from arkouda.numpy.dtypes import dtype as ak_dtype
-from arkouda.numpy.pdarraycreation import array as ak_array
-from arkouda.numpy.pdarraycreation import full as ak_full
-from arkouda.numpy.pdarraycreation import pdarray
+from arkouda.numpy.pdarraycreation import array as ak_array, full as ak_full, pdarray
 
 from ._arkouda_base_array import ArkoudaBaseArray
 

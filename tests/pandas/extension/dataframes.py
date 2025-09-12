@@ -6,7 +6,6 @@ from arkouda.pandas.extension._arkouda_array import ArkoudaArray
 from arkouda.pandas.extension._arkouda_categorical_array import ArkoudaCategoricalArray
 from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
 
-
 class TestDataFrameExtension:
     def test_dataframe_with_extensionarrays(self):
         N = 5

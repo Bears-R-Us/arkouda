@@ -4,9 +4,7 @@ from warnings import warn
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.numpy.dtypes import bigint
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import result_type as ak_result_type
+from arkouda.numpy.dtypes import bigint, dtype as akdtype, result_type as ak_result_type
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array
 

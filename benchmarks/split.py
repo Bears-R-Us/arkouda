@@ -5,7 +5,6 @@ import time
 
 import arkouda as ak
 
-
 def time_split(N_per_locale, trials):
     print(">>> arkouda split")
     cfg = ak.get_config()

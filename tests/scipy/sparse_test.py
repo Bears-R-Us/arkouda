@@ -7,7 +7,6 @@ from arkouda.scipy.sparsematrix import (
     sparse_matrix_matrix_mult,
 )
 
-
 class TestSparse:
     def test_sparrayclass_docstrings(self):
         import doctest

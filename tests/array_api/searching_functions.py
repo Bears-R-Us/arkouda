@@ -4,7 +4,6 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
-
 class TestSearchingFunctions:
     @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
     def test_searching_functions_docstrings(self):

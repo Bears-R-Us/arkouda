@@ -3,7 +3,6 @@ import platform
 
 from arkouda import security
 
-
 class TestSecurity:
     def test_security_docstrings(self):
         import doctest

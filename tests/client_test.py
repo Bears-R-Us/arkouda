@@ -5,7 +5,6 @@ import pytest
 import arkouda as ak
 from server_util.test.server_test_util import TestRunningMode, start_arkouda_server
 
-
 @pytest.mark.skipif(
     pytest.client_host == "horizon", reason="nightly test failures due to machine busyness"
 )

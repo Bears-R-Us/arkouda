@@ -1,6 +1,5 @@
 import sys
 
-
 def getModules(config):
     with open(config, "r") as cfg_file:
         mods = []

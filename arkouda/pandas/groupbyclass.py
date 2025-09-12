@@ -62,19 +62,17 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.logger import ArkoudaLogger, getArkoudaLogger
-from arkouda.numpy.dtypes import _val_isinstance_of_union, bigint
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import float_scalars
-from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars
-from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.numpy.pdarrayclass import (
-    RegistrationError,
-    create_pdarray,
-    is_sorted,
-    pdarray,
+from arkouda.numpy.dtypes import (
+    _val_isinstance_of_union,
+    bigint,
+    dtype as akdtype,
+    float64 as akfloat64,
+    float_scalars,
+    int64 as akint64,
+    int_scalars,
+    uint64 as akuint64,
 )
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.numpy.pdarraycreation import arange, full
 from arkouda.numpy.random import default_rng
 from arkouda.numpy.sorting import argsort, sort
@@ -575,12 +573,7 @@ class GroupBy:
 
         """
         from arkouda.client import generic_msg
-        from arkouda.pandas.io import (
-            _file_type_to_int,
-            _get_hdf_filetype,
-            _mode_str_to_int,
-            _repack_hdf,
-        )
+        from arkouda.pandas.io import _file_type_to_int, _get_hdf_filetype, _mode_str_to_int, _repack_hdf
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")
@@ -1947,8 +1940,7 @@ class GroupBy:
 
         """
         from arkouda.client import generic_msg
-        from arkouda.numpy import cast as akcast
-        from arkouda.numpy import round as akround
+        from arkouda.numpy import cast as akcast, round as akround
 
         if frac is not None and n is not None:
             raise ValueError("Please enter a value for `frac` OR `n`, not both")

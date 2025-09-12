@@ -5,7 +5,6 @@ from groupby import check_correctness, time_ak_groupby
 
 import arkouda as ak
 
-
 def create_parser():
     parser = argparse.ArgumentParser(
         description="Measure performance of grouping bigint arrays of random values."
