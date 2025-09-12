@@ -17,6 +17,7 @@ module RandMsg
     use CommAggregation;
     use Repartition;
     use ZigguratConstants;
+    use BitOps;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -1767,8 +1768,7 @@ module RandMsg
     const GOLDEN: uint(64) = 0x9E37_79B9_7F4A_7C15:uint(64);
 
     inline proc rotl64(x: uint(64), r: int): uint(64) {
-        const s = r & 63;
-        return (x << s) | (x >> (64 - s));
+        return rotl(x, r & 63);
     }
 
     inline proc bitMask(nbits: int): uint(64) {
