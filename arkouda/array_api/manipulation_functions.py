@@ -114,18 +114,20 @@ def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
 #   else if there are any bools     -> result is bool
 
 
+def _has_type(aktype, pdarrayList):
+    return True in [array.dtype == aktype for array in pdarrayList]
+
+
 def _resolve_common_dtype(pdarrayList):
-    if True in [array.dtype == akfloat64 for array in pdarrayList]:
+    if _has_type(akfloat64, pdarrayList):
         dt = akfloat64
-    elif True in [array.dtype == akint64 for array in pdarrayList] and True in [
-        array.dtype == akuint64 for array in pdarrayList
-    ]:
+    elif _has_type(akint64, pdarrayList) and _has_type(akuint64, pdarrayList):
         dt = akfloat64
-    elif True in [array.dtype == akint64 for array in pdarrayList]:
+    elif _has_type(akint64, pdarrayList):
         dt = akint64
-    elif True in [array.dtype == akuint64 for array in pdarrayList]:
+    elif _has_type(akuint64, pdarrayList):
         dt = akuint64
-    elif True in [array.dtype == akbool for array in pdarrayList]:
+    elif _has_type(akbool, pdarrayList):
         dt = akbool
     else:
         raise TypeError("All arrays in concat must be float, int, uint, or bool.")
