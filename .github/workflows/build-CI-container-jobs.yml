@@ -24,42 +24,42 @@ jobs:
     uses: ./.github/workflows/build-CI-container.yml
     with:
       DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
-      IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-200
+      IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-2.0.0
       CONTEXTPATH: docker/ubuntu-with-arkouda-deps
       CHPL_VERSION: 2.0.0
   build-ubuntu-with-arkouda-deps-210:
     uses: ./.github/workflows/build-CI-container.yml
     with:
       DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
-      IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-210
+      IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-2.1.0
       CONTEXTPATH: docker/ubuntu-with-arkouda-deps
       CHPL_VERSION: 2.1.0
   build-ubuntu-with-arkouda-deps-220:
     uses: ./.github/workflows/build-CI-container.yml
     with:
       DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
-      IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-220
+      IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-2.2.0
       CONTEXTPATH: docker/ubuntu-with-arkouda-deps
       CHPL_VERSION: 2.2.0
   build-ubuntu-with-arkouda-deps-230:
     uses: ./.github/workflows/build-CI-container.yml
     with:
       DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
-      IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-230
+      IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-2.3.0
       CONTEXTPATH: docker/ubuntu-with-arkouda-deps
       CHPL_VERSION: 2.3.0
   build-ubuntu-with-arkouda-deps-240:
     uses: ./.github/workflows/build-CI-container.yml
     with:
       DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
-      IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-240
+      IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-2.4.0
       CONTEXTPATH: docker/ubuntu-with-arkouda-deps
       CHPL_VERSION: 2.4.0
   build-ubuntu-with-arkouda-deps-250:
     uses: ./.github/workflows/build-CI-container.yml
     with:
       DOCKERFILE: docker/ubuntu-with-arkouda-deps/Dockerfile
-      IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-250
+      IMAGE_NAME: ubuntu-with-arkouda-deps-chpl-2.5.0
       CONTEXTPATH: docker/ubuntu-with-arkouda-deps
       CHPL_VERSION: 2.5.0
   build-almalinux-with-arkouda-deps:
