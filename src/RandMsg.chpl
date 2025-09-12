@@ -44,7 +44,8 @@ module RandMsg
         st.deleteEntry(generatorEntry.name);
         var repMsg = "deleted " +  generatorEntry.name;
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
+        // return new MsgTuple(repMsg, MsgType.NORMAL);
+        return MsgTuple.success();
     }
 
     /*
