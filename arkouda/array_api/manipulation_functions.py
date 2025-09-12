@@ -130,7 +130,7 @@ def _resolve_common_dtype(pdarrayList):
     elif _has_type(akbool, pdarrayList):
         dt = akbool
     else:
-        raise TypeError("All arrays in concat must be float, int, uint, or bool.")
+        raise TypeError("All arrays in operation must be float, int, uint, or bool.")
 
     dt = akdtype(dt)
     return dt, [array.astype(dt) for array in pdarrayList]
