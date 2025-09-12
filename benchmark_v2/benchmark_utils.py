@@ -1,7 +1,6 @@
 from builtins import sum as py_sum
 
 import numpy as np
-import pytest
 
 import arkouda as ak
 
@@ -31,10 +30,7 @@ def calc_num_bytes(a) -> int:
 
     # Arkouda arrays
     if isinstance(a, ak.pdarray):
-        if a.dtype == "bigint":
-            return a.size * 8 if 0 < pytest.max_bits <= 64 else a.size * 16
-        else:
-            return a.nbytes
+        return a.nbytes
     if isinstance(a, ak.Strings):
         num_bytes = a.get_bytes().nbytes + a.get_offsets().nbytes
         if hasattr(a, "entry"):
