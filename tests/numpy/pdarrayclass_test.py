@@ -16,8 +16,10 @@ seed = 314159  # this hardcoded seed is retained because the sorted tests
 # require known results
 
 
-REDUCTION_OPS = list(set(ak.pdarrayclass.SUPPORTED_REDUCTION_OPS) - set(["isSorted", "isSortedLocally"]))
-INDEX_REDUCTION_OPS = ak.pdarrayclass.SUPPORTED_INDEX_REDUCTION_OPS
+REDUCTION_OPS = list(
+    set(ak.numpy.pdarrayclass.SUPPORTED_REDUCTION_OPS) - set(["isSorted", "isSortedLocally"])
+)
+INDEX_REDUCTION_OPS = ak.numpy.pdarrayclass.SUPPORTED_INDEX_REDUCTION_OPS
 
 SHAPES = [(1,), (25,), (5, 10), (10, 5)]
 DTYPES = ["int64", "float64", "bool", "uint64"]
