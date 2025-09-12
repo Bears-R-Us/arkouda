@@ -141,6 +141,7 @@ extend_skip_glob = [
   "arkouda/server_util/test/*",
 ]
 
+
 [tool.flake8]
 max-line-length = 105
 application-import-names = "arkouda"
@@ -189,7 +190,5 @@ ignore = [
   "DAR402","DAR103","DAR101","DAR002","DAR201","DAR401","DAR102"
 ]
 
-# (optional) keep Ruff away from vendored trees too
-[tool.ruff]
-extend-exclude = ["dep"]
+
 
