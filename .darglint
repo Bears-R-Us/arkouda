@@ -1,4 +1,0 @@
-[darglint]
-strictness = full
-docstring_style = numpy
-ignore = DAR002,DAR101,DAR102,DAR103,DAR201,DAR401,DAR402

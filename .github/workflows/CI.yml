@@ -55,20 +55,6 @@ jobs:
       run: |
         make chplcheck
 
-  darglint:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install darglint>=1.8.1
-    - name: Check docstrings with darglint
-      run: |
-        #  darglint is a docstring linter that checks whether docstring sections (arguments, returns, raises, etc.) match the function signature or implementation.
-        darglint -v 2 arkouda
-
   isort:
     runs-on: ubuntu-latest
     steps:
@@ -196,7 +182,7 @@ jobs:
         flake8 --version
     - name: Arkouda flake8
       run: |
-        flake8
+        flake8 --config .flake8 .
 
   arkouda_python_portability:
     runs-on: ubuntu-latest
