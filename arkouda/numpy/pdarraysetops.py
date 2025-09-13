@@ -484,7 +484,7 @@ def concatenate(
                 shape1 = prev_arr.shape
                 offsets[i] = offsets[i - 1] + shape1[0]
         valid, axis_ = _integer_axis_validation(axis, arrays[0].ndim)
-        if not valid :
+        if not valid:
             raise IndexError(f"{axis} is not a valid axis for array of rank {arrays[0].ndim}")
         repMsg = generic_msg(
             cmd=f"concatenate<{akdtype(dtype_).name},{arrays[0].ndim}>",
