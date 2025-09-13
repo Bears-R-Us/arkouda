@@ -355,6 +355,13 @@ def array(
             # attempt to break bigint into multiple uint64 arrays
             # early out if we would have more uint arrays than can fit in max_bits
             early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
+            if all(a == 0):
+                if isinstance(a, np.ndarray):
+                    low = a.astype("O") % 2**64
+                else:
+                    low = a % 2**64
+                uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
+                return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits)
             while any(a != 0) and len(uint_arrays) < early_out:
                 if isinstance(a, np.ndarray):
                     low, a = a.astype("O") % 2**64, a.astype("O") // 2**64
