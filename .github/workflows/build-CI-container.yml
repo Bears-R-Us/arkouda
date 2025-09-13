@@ -1,0 +1,59 @@
+name: build-CI-container
+on:
+  workflow_call:
+    inputs:
+      DOCKERFILE:
+        description: 'Path to Dockerfile'
+        required: true
+        type: string
+      IMAGE_NAME:
+        description: 'Name for the Docker image'
+        required: true
+        type: string
+      CONTEXTPATH:
+        description: 'Path to the build context'
+        required: false
+        type: string
+        default: '.'
+      CHPL_VERSION:
+        description: 'Chapel version to install'
+        required: false
+        type: string
+        default: '2.5.0'
+      VERSION:
+        description: 'Version tag for the Docker image'
+        required: false
+        type: string
+        default: 'latest'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3.5.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Docker Image
+        uses: docker/build-push-action@v6.18.0
+        with:
+          file: ${{ inputs.DOCKERFILE }}
+          push: false
+          tags: ghcr.io/bears-r-us/${{ inputs.IMAGE_NAME }}:${{ inputs.VERSION }}
+          context: ${{ inputs.CONTEXTPATH }}
+          build-args: |
+            CHPL_VERSION=${{ inputs.CHPL_VERSION }}
+      - name: Push Docker Image if on main
+        if: github.repository_owner == 'Bears-R-Us' && ((github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push'))
+        uses: docker/build-push-action@v6.18.0
+        with:
+          file: ${{ inputs.DOCKERFILE }}
+          push: true
+          tags: ghcr.io/bears-r-us/${{ inputs.IMAGE_NAME }}:${{ inputs.VERSION }}
