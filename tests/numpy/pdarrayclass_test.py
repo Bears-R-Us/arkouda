@@ -162,9 +162,9 @@ class TestPdarrayClass:
         a = ak.array(ak.randint(0, 100, (5, 7, 4), dtype=dtype, seed=seed))
         sorted = ak.is_sorted(a, axis=axis)
         if isinstance(sorted, np.bool_):
-            assert not sorted
+            assert sorted is np.False_
         else:
-            assert ak.all(sorted == False)
+            assert ak.all(sorted == False)  # noqa: E712
 
         x = ak.arange(40).reshape((2, 10, 2))
         sorted = ak.is_sorted(x, axis=axis)
@@ -209,9 +209,9 @@ class TestPdarrayClass:
         a = ak.array(ak.randint(0, 100, (20, 20, 20), dtype=dtype, seed=seed))
         sorted = is_locally_sorted(a, axis=axis)
         if isinstance(sorted, np.bool_):
-            assert not sorted
+            assert sorted is np.False_
         else:
-            assert ak.all(sorted == False)
+            assert ak.all(sorted == False)  # noqa: E712
 
         x = ak.arange(40).reshape((2, 10, 2))
         sorted = is_locally_sorted(x, axis=axis)

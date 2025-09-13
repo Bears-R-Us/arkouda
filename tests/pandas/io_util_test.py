@@ -42,10 +42,10 @@ class TestIOUtil:
 
         from os.path import isdir
 
-        assert isdir(path) == True
+        assert isdir(path) is True
 
         io_util.delete_directory(path)
-        assert isdir(path) == False
+        assert isdir(path) is False
 
         # Check no error when run on non-existant directory:
         io_util.delete_directory(path)
