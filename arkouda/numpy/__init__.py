@@ -300,3 +300,5 @@ from arkouda.numpy.util import (
     shares_memory,
     may_share_memory,
 )
+
+from arkouda.numpy.err import geterr, seterr, geterrcall, seterrcall, errstate
