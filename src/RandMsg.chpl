@@ -32,11 +32,29 @@ module RandMsg
     const randLogger = new Logger(logLevel, logChannel);
 
     /*
+        The delGeneratorMsg allows the deletion of random number generator objects.
+        This was implemented so that in the event that the global rng is reseeded
+        multiple times, we won't build up a never-ending set of generatorEntrys and
+        RandomStreams.
+     */
+
+    @chplcheck.ignore("UnusedFormal")
+    proc delGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        const name = msgArgs.getValueOf("name");
+        var generatorEntry = st(name);
+        st.deleteEntry(generatorEntry.name);
+        var repMsg = "deleted " +  generatorEntry.name;
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return MsgTuple.success();
+    }
+
+    /*
     parse, execute, and respond to randint message
     uniform int in half-open interval [min,max)
 
     :arg reqMsg: message to process (contains cmd,aMin,aMax,len,dtype)
     */
+
     @arkouda.instantiateAndRegister
     proc randint(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws
         where array_dtype != BigInteger.bigint
@@ -1854,4 +1872,5 @@ module RandMsg
     registerFunction("logisticGenerator", logisticGeneratorMsg, getModuleName());
     registerFunction("segmentedSample", segmentedSampleMsg, getModuleName());
     registerFunction("poissonGenerator", poissonGeneratorMsg, getModuleName());
+    registerFunction("delGenerator", delGeneratorMsg, getModuleName());
 }

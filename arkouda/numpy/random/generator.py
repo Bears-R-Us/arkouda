@@ -63,6 +63,14 @@ class Generator:
         _str += "(PCG64)"
         return _str
 
+    def __del__(self):
+        try:
+            if self.handle and not self.handle.closed:
+                self.handle.close()
+        except Exception:
+            # suppress errors in __del__
+            pass
+
     def choice(self, a, size=None, replace=True, p=None):
         """
         Generate a randomly sample from a.
@@ -304,6 +312,27 @@ class Generator:
         )
         self._state += full_size
         return create_pdarray(rep_msg)
+
+    #   An arkouda Generator object automatically includes rngs for all data types, so
+    #   those generators must be destroyed individually before the python-side Generator
+    #   is destroyed.  This is not strictly necessary, but should prevent memory creep in
+    #   the event of reseeding the global Generator repeatedly.
+
+    def destructor(self):
+        from arkouda.client import generic_msg
+
+        for chapel_dt in get_registration_config()["parameter_classes"]["array"]["dtype"]:
+            if chapel_dt not in _supported_chapel_types:
+                continue
+            dt = dtype_for_chapel(chapel_dt)
+            generic_msg(
+                cmd="delGenerator",
+                args={
+                    "name": self._name_dict[dt],
+                },
+            )
+        self.__del__()
+        return
 
     def logistic(self, loc=0.0, scale=1.0, size=None):
         r"""
