@@ -8,6 +8,7 @@ import arkouda.array_api as xp
 
 
 class TestStatsFunction:
+    @pytest.mark.skip_if_rank_not_compiled([2])
     def test_statistical_functions_docstrings(self):
         import doctest
 
@@ -65,7 +66,7 @@ class TestStatsFunction:
 
         a[:, 0, 0] = 26
 
-        print(a.tolist())
+        assert int(xp.mean(a)) == 2
 
         aMean0 = xp.mean(a, axis=0)
         assert aMean0.shape == (5, 5)
