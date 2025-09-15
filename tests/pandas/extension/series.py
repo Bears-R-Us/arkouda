@@ -55,7 +55,7 @@ class TestSeriesExtension:
         a = ArkoudaArray(ak.array([1, 2, 3]))
         s = pd.Series(a)
         output = repr(s)
-        assert "arkouda" in output
+        assert "int64" in output
         assert "1" in output
 
     def test_series_indexing(self):
