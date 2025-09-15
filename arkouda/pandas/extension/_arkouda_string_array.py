@@ -1,34 +1,12 @@
 import numpy as np
-from pandas.api.extensions import (
-    ExtensionArray,
-    ExtensionDtype,
-    register_extension_dtype,
-)
+from pandas.api.extensions import ExtensionArray
 
 import arkouda as ak
 
 from ._arkouda_base_array import ArkoudaBaseArray
+from ._dtypes import ArkoudaStringDtype
 
-__all__ = ["ArkoudaStringDtype", "ArkoudaStringArray"]
-
-
-@register_extension_dtype
-class ArkoudaStringDtype(ExtensionDtype):
-    name = "string"  # <<< This is what pandas expects
-    type = str
-    kind = "O"
-
-    @property
-    def _is_numeric(self):
-        return False
-
-    @property
-    def _is_boolean(self):
-        return False
-
-    @classmethod
-    def construct_array_type(cls):
-        return ArkoudaStringArray
+__all__ = ["ArkoudaStringArray"]
 
 
 class ArkoudaStringArray(ArkoudaBaseArray, ExtensionArray):

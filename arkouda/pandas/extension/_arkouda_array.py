@@ -2,7 +2,7 @@ from typing import Any
 
 import numpy as np
 from numpy import ndarray
-from pandas.api.extensions import ExtensionArray, ExtensionDtype
+from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.dtypes import dtype as ak_dtype
 from arkouda.numpy.pdarraycreation import array as ak_array
@@ -10,30 +10,17 @@ from arkouda.numpy.pdarraycreation import full as ak_full
 from arkouda.numpy.pdarraycreation import pdarray
 
 from ._arkouda_base_array import ArkoudaBaseArray
+from ._dtypes import (
+    ArkoudaBigintDtype,
+    ArkoudaBoolDtype,
+    ArkoudaFloat64Dtype,
+    ArkoudaInt64Dtype,
+    ArkoudaUint8Dtype,
+    ArkoudaUint64Dtype,
+    _ArkoudaBaseDtype,
+)
 
-__all__ = ["ArkoudaArray", "ArkoudaDtype"]
-
-
-class ArkoudaDtype(ExtensionDtype):
-    # implement required properties/methods here
-    name = "arkouda"
-    type = object  # or the underlying Python type, like int/str
-    kind = "O"
-
-    @classmethod
-    def construct_array_type(cls):
-        from ._arkouda_array import ArkoudaArray
-
-        return ArkoudaArray
-
-    @property
-    def na_value(self):
-        return -1  # or np.nan or None depending on your use case
-
-    #   TODO: Implement numpy_dtype function
-    # @property
-    # def numpy_dtype(self):
-    #     return np.int64  # or whatever underlies this EA
+__all__ = ["ArkoudaArray"]
 
 
 class ArkoudaArray(ArkoudaBaseArray, ExtensionArray):
@@ -51,8 +38,8 @@ class ArkoudaArray(ArkoudaBaseArray, ExtensionArray):
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
         # If pandas passes our own EA dtype, ignore it and infer from data
-        if isinstance(dtype, ArkoudaDtype):
-            dtype = None
+        if isinstance(dtype, _ArkoudaBaseDtype):
+            dtype = dtype.numpy_dtype
         # If scalars is already a numpy array, we can preserve its dtype
         return cls(ak_array(scalars, dtype=dtype, copy=copy))
 
@@ -105,8 +92,8 @@ class ArkoudaArray(ArkoudaBaseArray, ExtensionArray):
         if dtype in (object, np.object_, "object", np.dtype("O")):
             return self.to_ndarray().astype(object, copy=copy)
 
-        if isinstance(dtype, ArkoudaDtype):
-            return self.copy() if copy else self
+        if isinstance(dtype, _ArkoudaBaseDtype):
+            dtype = dtype.numpy_dtype
 
         # Server-side cast for numeric/bool
         try:
@@ -137,7 +124,20 @@ class ArkoudaArray(ArkoudaBaseArray, ExtensionArray):
 
     @property
     def dtype(self):
-        return ArkoudaDtype()
+        if self._data.dtype == "int64":
+            return ArkoudaInt64Dtype()
+        elif self._data.dtype == "float64":
+            return ArkoudaFloat64Dtype()
+        elif self._data.dtype == "bool":
+            return ArkoudaBoolDtype()
+        elif self._data.dtype == "uint64":
+            return ArkoudaUint64Dtype()
+        elif self._data.dtype == "uint8":
+            return ArkoudaUint8Dtype()
+        elif self._data.dtype == "bigint":
+            return ArkoudaBigintDtype()
+        else:
+            raise TypeError(f"Unsupported dtype {self._data.dtype}")
 
     @property
     def nbytes(self):
