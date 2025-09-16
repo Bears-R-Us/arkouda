@@ -34,7 +34,7 @@ jobs:
       matrix:
         chpl-version: ['2.5.0']
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -109,7 +109,7 @@ jobs:
       matrix:
         chpl-version: ['2.5.0']
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -136,7 +136,7 @@ jobs:
       matrix:
         chpl-version: ['2.5.0']
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -177,7 +177,7 @@ jobs:
       matrix:
         chpl-version: ['2.5.0']
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -215,7 +215,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -360,7 +360,7 @@ jobs:
       matrix:
         chpl-version: ['2.5.0']
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -455,7 +455,7 @@ jobs:
       matrix:
         chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0','2.4.0','2.5.0']
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -495,7 +495,7 @@ jobs:
         chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0','2.4.0','2.5.0']
       max-parallel: 3
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -549,7 +549,7 @@ jobs:
       matrix:
         chpl-version: ['2.5.0']
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -598,7 +598,7 @@ jobs:
       matrix:
         chpl-version: ['2.5.0']
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
