@@ -52,7 +52,7 @@ jobs:
         fi
     - name: Run chplcheck (respecting .chplcheckignore)
       run: |
-        . $CHPL_HOME/util/setchplenv.bash
+        . $CHPL_HOME/util/setchplenv.sh
         make chplcheck
 
   darglint:
