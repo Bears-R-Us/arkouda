@@ -52,7 +52,6 @@ jobs:
         fi
     - name: Run chplcheck (respecting .chplcheckignore)
       run: |
-        export PATH=$CHPL_HOME/bin/$($CHPL_HOME/util/chplenv/chpl_bin_subdir.py):$PATH
         make chplcheck
 
   darglint:
