@@ -44,6 +44,9 @@ jobs:
     - name: Set Python version to 3.13
       run: |
         update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+    - name: Printenv
+      run: |
+        env
     - name: Ensure ignore file exists
       # .chplcheckignore should live at your repo root
       run: |
