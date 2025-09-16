@@ -50,7 +50,6 @@ jobs:
         if [ ! -f .chplcheckignore ]; then
           echo "# add paths/globs to ignore, e.g. src/generated/*" > .chplcheckignore
         fi
-
     - name: Run chplcheck (respecting .chplcheckignore)
       run: |
         make chplcheck
