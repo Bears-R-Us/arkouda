@@ -112,7 +112,14 @@ def randint(
         Raised if dtype.name not in DTypes, size is not an int, low or high is
         not an int or float, or seed is not an int
     ValueError
-        Raised if size < 0 or if high < low
+        If ``size < 0`` or ``ndim < 1``.
+        For ``dtype=int64``, if ``low >= high``.
+        For ``dtype=bool`` (NumPy-compatible), one of:
+            * ``"high <= 0"`` if ``high <= 0``
+            * ``"low < 0"`` if ``low < 0``
+            * ``"high is out of bounds for bool"`` if ``high > 2``
+            * ``"low >= high"`` if ``low >= high``
+        For ``dtype=float64``, if ``high < low``.
 
     Notes
     -----
@@ -157,8 +164,10 @@ def randint(
         shape = full_size
         ndim = 1
 
-    if full_size < 0 or ndim < 1 or high < low:
-        raise ValueError("size must be >= 0, ndim >= 1, and high >= low")
+    # Only validate size/ndim here; bounds are checked per-dtype below
+    if full_size < 0 or ndim < 1:
+        raise ValueError("size must be >= 0, ndim >= 1")
+
     dtype = akdtype(dtype)  # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:
@@ -166,11 +175,33 @@ def randint(
 
     from arkouda.numpy.dtypes import isSupportedFloat
 
-    if dtype == akint64:
+    # Legacy NumPy randint semantics:
+    # - For integer/boolean output, floats in low/high are truncated toward zero
+    if dtype == akint64 or dtype == "bool":
         if isSupportedFloat(low):
             low = int(low)
         if isSupportedFloat(high):
             high = int(high)
+
+    # NumPy-style validation/error messages
+    if dtype == "bool":
+        # These match numpy.random.RandomState.randint(..., dtype=bool)
+        if cast(int, high) <= 0:
+            raise ValueError("high <= 0")
+        if cast(int, low) < 0:
+            raise ValueError("low < 0")
+        if cast(int, high) > 2:
+            raise ValueError("high is out of bounds for bool")
+        if cast(int, low) >= cast(int, high):
+            raise ValueError("low >= high")
+    elif dtype == akint64:
+        # General integer path: half-open interval requires high > low
+        if cast(int, high) <= cast(int, low):
+            raise ValueError("low >= high")
+    else:
+        # Float path (Arkouda-specific behavior): still require high > low
+        if cast(float, high) < cast(float, low):
+            raise ValueError("low >= high")
 
     repMsg = generic_msg(
         cmd=f"randint<{dtype.name},{ndim}>",

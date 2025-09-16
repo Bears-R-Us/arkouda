@@ -433,7 +433,8 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("array_type", [ak.int64, ak.float64, bool])
     def test_randint_array_dtype(self, size, array_type):
-        test_array = ak.randint(0, size, size, array_type)
+        high = size if array_type != bool else 2
+        test_array = ak.randint(0, high, size, array_type)
         assert isinstance(test_array, ak.pdarray)
         assert size == len(test_array)
         assert array_type == test_array.dtype
@@ -446,7 +447,8 @@ class TestPdarrayCreation:
     def test_randint_array_dtype_multi_dim(self, size, array_type):
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
-            test_array = ak.randint(0, size, shape, array_type)
+            high = size if array_type != bool else 2
+            test_array = ak.randint(0, high, shape, array_type)
             assert isinstance(test_array, ak.pdarray)
             assert size == len(test_array)
             assert array_type == test_array.dtype
@@ -535,10 +537,10 @@ class TestPdarrayCreation:
         assert ans == values.tolist()
 
         bools = [False, True, True, True, True, False, True, True, True, True]
-        values = ak.randint(1, 5, 10, dtype=ak.bool_, seed=2)
+        values = ak.randint(0, 2, 10, dtype=ak.bool_, seed=2)
         assert values.tolist() == bools
 
-        values = ak.randint(1, 5, 10, dtype=bool, seed=2)
+        values = ak.randint(0, 2, 10, dtype=bool, seed=2)
         assert values.tolist() == bools
 
         # Test that int_scalars covers uint8, uint16, uint32

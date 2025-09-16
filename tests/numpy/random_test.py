@@ -627,11 +627,23 @@ class TestRandom:
         with pytest.raises(TypeError):
             ak.random.randint()
 
-        with pytest.raises(ValueError, match="size must be >= 0, ndim >= 1, and high >= low"):
+        with pytest.raises(ValueError, match="size must be >= 0, ndim >= 1"):
             ak.random.randint(low=0, high=1, size=-1, dtype=ak.float64)
 
-        with pytest.raises(ValueError, match="size must be >= 0, ndim >= 1, and high >= low"):
+        with pytest.raises(ValueError, match="low >= high"):
             ak.random.randint(low=1, high=0, size=1, dtype=ak.float64)
+
+        with pytest.raises(ValueError, match="high <= 0"):
+            ak.random.randint(low=0, high=0, size=10, dtype=ak.bool_)
+
+        with pytest.raises(ValueError, match="low < 0"):
+            ak.random.randint(low=-1, high=1, size=10, dtype=ak.bool_)
+
+        with pytest.raises(ValueError, match="high is out of bounds for bool"):
+            ak.random.randint(low=1, high=3, size=10, dtype=ak.bool_)
+
+        with pytest.raises(ValueError, match="low >= high"):
+            ak.random.randint(low=1, high=1, size=10, dtype=ak.bool_)
 
         with pytest.raises(TypeError):
             ak.random.randint(0, 1, "1000")
@@ -666,7 +678,7 @@ class TestRandom:
             4.0337935981006172,
         ] == values.tolist()
 
-        values = ak.random.randint(1, 5, 10, dtype=ak.bool_, seed=2)
+        values = ak.random.randint(0, 2, 10, dtype=ak.bool_, seed=2)
         assert [
             False,
             True,
@@ -680,7 +692,7 @@ class TestRandom:
             True,
         ] == values.tolist()
 
-        values = ak.random.randint(1, 5, 10, dtype=bool, seed=2)
+        values = ak.random.randint(0, 2, 10, dtype=bool, seed=2)
         assert [
             False,
             True,

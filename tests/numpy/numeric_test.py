@@ -182,14 +182,15 @@ class TestNumeric:
     @pytest.mark.parametrize("numeric_type", NUMERIC_TYPES)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_seeded_rng_typed(self, prob_size, numeric_type):
+        high = 2**32 if numeric_type != ak.bool_ else 2
         # Make sure unseeded runs differ
-        a = ak.randint(0, 2**32, prob_size, dtype=numeric_type)
-        b = ak.randint(0, 2**32, prob_size, dtype=numeric_type)
+        a = ak.randint(0, high, prob_size, dtype=numeric_type)
+        b = ak.randint(0, high, prob_size, dtype=numeric_type)
         assert not (a == b).all()
 
         # Make sure seeded results are same
-        a = ak.randint(0, 2**32, prob_size, dtype=numeric_type, seed=pytest.seed)
-        b = ak.randint(0, 2**32, prob_size, dtype=numeric_type, seed=pytest.seed)
+        a = ak.randint(0, high, prob_size, dtype=numeric_type, seed=pytest.seed)
+        b = ak.randint(0, high, prob_size, dtype=numeric_type, seed=pytest.seed)
         assert (a == b).all()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
@@ -1119,6 +1120,8 @@ class TestNumeric:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_matmul(self, data_type1, data_type2, prob_size):
         size = int(sqrt(prob_size))
+        high1 = 10 if data_type1 != ak.bool_ else 2
+        high2 = 10 if data_type2 != ak.bool_ else 2
 
         # ints and bools are checked for equality; floats are checked for closeness
 
@@ -1129,9 +1132,9 @@ class TestNumeric:
         # test on one square and two non-square products
 
         for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
-            pdaLeft = ak.randint(0, 10, (rows, size), dtype=data_type1)
+            pdaLeft = ak.randint(0, high1, (rows, size), dtype=data_type1)
             ndaLeft = pdaLeft.to_ndarray()
-            pdaRight = ak.randint(0, 10, (size, cols), dtype=data_type2)
+            pdaRight = ak.randint(0, high2, (size, cols), dtype=data_type2)
             ndaRight = pdaRight.to_ndarray()
             akProduct = ak.matmul(pdaLeft, pdaRight)
             npProduct = np.matmul(ndaLeft, ndaRight)
@@ -1172,16 +1175,17 @@ class TestNumeric:
             pda_b = ak.array(nda_b) if same_size else ak.array(nda_b[:-1])
             assert ak.array_equal(pda_a, pda_b, nan_handling) == (matching and same_size)
         else:  # other types have simpler tests
-            pda_a = ak.random.randint(0, 100, prob_size, dtype=data_type)
+            high = 100 if data_type != ak.bool_ else 2
+            pda_a = ak.random.randint(0, high, prob_size, dtype=data_type)
             if matching:  # known to match?
                 pda_b = pda_a if same_size else pda_a[:-1]
                 assert ak.array_equal(pda_a, pda_b) == (matching and same_size)
             elif same_size:  # not matching, but same size?
-                pda_b = ak.random.randint(0, 100, prob_size, dtype=data_type)
+                pda_b = ak.random.randint(0, high, prob_size, dtype=data_type)
                 assert not (ak.array_equal(pda_a, pda_b))
             else:
                 pda_b = ak.random.randint(
-                    0, 100, (prob_size if same_size else prob_size - 1), dtype=data_type
+                    0, high, (prob_size if same_size else prob_size - 1), dtype=data_type
                 )
                 assert not (ak.array_equal(pda_a, pda_b))
 
@@ -1515,7 +1519,7 @@ class TestNumeric:
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_take_1d(self, dtype, size):
-        if dtype == "bool":
+        if dtype == "bool" or dtype == ak.bool_:
             a = ak.randint(0, 2, size, dtype=dtype, seed=pytest.seed)
         else:
             a = ak.randint(0, 100, size, dtype=dtype, seed=pytest.seed)
@@ -1533,7 +1537,7 @@ class TestNumeric:
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("axis", [None, 0, 1, 2])
     def test_take_multidim(self, dtype, axis):
-        if dtype == "bool":
+        if dtype == ak.bool_:
             a = ak.randint(0, 2, (5, 6, 7), dtype=dtype, seed=pytest.seed)
         else:
             a = ak.randint(0, 100, (5, 6, 7), dtype=dtype, seed=pytest.seed)
