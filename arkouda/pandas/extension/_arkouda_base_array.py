@@ -37,8 +37,6 @@ Examples
 >>> a.to_numpy()
 array([1, 2, 3])
 
-The ``take`` method supports missing values via ``allow_fill=True``:
-
 >>> import numpy as np
 >>> idx = np.array([0, -1, 2])
 >>> a.take(idx, allow_fill=True, fill_value=99).to_numpy()
@@ -46,9 +44,12 @@ array([ 1, 99,  3])
 
 """
 
+from typing import Optional
+
 import numpy as np
 from pandas.api.extensions import ExtensionArray
 
+from arkouda.numpy.dtypes import all_scalars
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.numpy.pdarraysetops import concatenate as ak_concat
@@ -64,6 +65,8 @@ def _ensure_numpy(x):
 
 
 class ArkoudaBaseArray(ExtensionArray):
+    default_fill_value: Optional[all_scalars] = -1
+
     def __init__(self, data):
         # Subclasses should ensure this is the correct ak object
         self._data = data
@@ -88,87 +91,106 @@ class ArkoudaBaseArray(ExtensionArray):
     def _concat_same_type(cls, to_concat):
         return cls(ak_concat([x._data for x in to_concat]))
 
-    def take(self, indexer, fill_value=None, allow_fill=False, axis=None):
+    def _fill_missing(self, mask, fill_value):
+        raise NotImplementedError("Subclasses must implement _fill_missing")
+
+    def take(self, indexer, fill_value=None, allow_fill=False):
+        """
+        Take elements by (0-based) position, returning a new array.
+
+        This follows the pandas ``ExtensionArray.take`` semantics:
+
+        * If ``allow_fill=False`` (default), negative indices wrap from the end
+          (NumPy-style indexing).
+        * If ``allow_fill=True``, then **only** ``-1`` is allowed as a sentinel
+          for missing; those positions are filled with ``fill_value``. Any other
+          negative index raises ``ValueError``.
+
+        Parameters
+        ----------
+        indexer : Union[Sequence, ndarray, pdarray]
+            Positions to take. May be a Python sequence, a NumPy integer array,
+            or an Arkouda ``pdarray``. Internally normalized to ``int64``.
+        fill_value : all_scalars
+            Value used to fill positions where ``indexer == -1`` when
+            ``allow_fill=True``. If ``None``, uses ``self.default_fill_value``.
+            The value is cast to the underlying dtype.  Optional.
+        allow_fill : bool
+            If ``False`` (default), negative indices are interpreted as counting from the
+            end. If ``True``, only ``-1`` is permitted as a sentinel for missing,
+            and other negative values are invalid.
+
+        Returns
+        -------
+        self.__class__
+            A new array of the same logical dtype with length ``len(indexer)``.
+
+        Raises
+        ------
+        ValueError
+            If ``allow_fill=True`` and ``indexer`` contains values less than ``-1``.
+
+        Notes
+        -----
+        ``indexer`` is coerced to an Arkouda ``int64`` ``pdarray``. When
+        ``allow_fill=True``, masked positions (where ``indexer == -1``) are
+        filled with ``fill_value`` (cast via ``self._data.dtype.type``), and all
+        other positions are gathered from ``self._data`` in a single pass.
+
+        See Also
+        --------
+        pandas.api.extensions.ExtensionArray.take : Reference semantics in pandas.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>> arr = ArkoudaArray(ak.array([10, 20, 30, 40]))
+
+        Basic take:
+        >>> arr.take([0, 2, 3]).to_numpy().tolist()
+        [10, 30, 40]
+
+        Use ``-1`` as a sentinel with ``allow_fill=True``:
+        >>> arr.take([0, -1, 2, -1], allow_fill=True, fill_value=-999).to_numpy().tolist()
+        [10, -999, 30, -999]
+
+        When ``fill_value`` is ``None``, the class default is used:
+        >>> arr.default_fill_value
+        -1
+        >>> arr.take([1, -1, 3], allow_fill=True).to_numpy().tolist()
+        [20, -1, 40]
+
+        """
         import numpy as np
 
         import arkouda as ak
         from arkouda.numpy.pdarrayclass import pdarray
-        from arkouda.numpy.strings import Strings
 
-        # normalize indexer to ak int64
-        if isinstance(indexer, pdarray):
-            idx_ak = indexer.astype("int64")
-        else:
-            idx_ak = ak.array(np.asarray(indexer, dtype="int64"))
+        # Normalize indexer to ak int64
+        if not isinstance(indexer, pdarray):
+            indexer = ak_array(np.asarray(indexer, dtype="int64"))
+        elif indexer.dtype != "int64":
+            indexer = indexer.astype("int64")
 
         if not allow_fill:
-            gathered = self._data[idx_ak]
-            return type(self)(gathered)
+            return type(self)(self._data[indexer])
 
         # allow_fill=True
-        mask = idx_ak == -1
-        idx_fix = ak.where(mask, 0, idx_ak)  # valid placeholder
+        if (indexer < -1).any():
+            raise ValueError("Invalid negative indexer when allow_fill=True")
 
-        # server-side gather
-        gathered = self._data[idx_fix]
-
-        # choose default fill if needed
         if fill_value is None:
-            # rely on EA dtype name if you exposed it; fall back to ak dtype
-            from arkouda.dtypes import dtype as ak_dtype
+            fill_value = self.default_fill_value
 
-            dtype = ak_dtype(self._data.dtype)
-            if dtype == "str_":
-                fill_value = ""
-            elif dtype in ["int64", "uint64"]:
-                fill_value = -1
-            elif dtype == "bool_":
-                fill_value = False
-            else:
-                # safest: require explicit fill for weird/non-numeric types
-                raise ValueError("Specify fill_value explicitly for this dtype when allow_fill=True")
+        # cast once to ensure dtype match
+        fv = self._data.dtype.type(fill_value)
 
-        # Categorical: pandas returns strings when fill may not be in categories
-        try:
-            from arkouda.pandas.extension._arkouda_categorical_array import (
-                ArkoudaCategoricalArray,
-            )
-        except Exception:
-            ArkoudaCategoricalArray = ()  # not available yet
+        mask = indexer == -1
+        idx_fix = ak.where(mask, 0, indexer)
 
-        if isinstance(self, ArkoudaCategoricalArray):
-            # Convert to strings for mixing category + fill
-            gathered_str = self._data.to_strings()[idx_fix]  # subset as strings
-            if not isinstance(fill_value, str):
-                fill_value = str(fill_value)
-            fill_vec = ak.full(mask.size, fill_value, dtype="str_")
-            out = ak.where(mask, fill_vec, gathered_str)
-            return ArkoudaCategoricalArray(ak.Categorical(out))
-
-        # Strings: use string fill
-        if isinstance(self._data, Strings):
-            if not isinstance(fill_value, str):
-                fill_value = str(fill_value)
-            fill_vec = ak.full(mask.size, fill_value, dtype="str_")
-            out = ak.where(mask, fill_vec, gathered)
-            return type(self)(out)
-
-        # Numeric/bool: scalar fill is fine
-        # Make sure the fill is castable to the underlying dtype
-        from arkouda.numpy.dtypes import can_cast
-
-        fv = (
-            ak.cast(ak_array([fill_value]), dt=self._data.dtype)[0]
-            if can_cast(fill_value, self._data.dtype)
-            else fill_value
-        )
-        out = ak.where(
-            mask, ak.full(mask.size, fv, dtype=str(getattr(self._data, "dtype", "int64"))), gathered
-        )
-        return type(self)(out)
-
-    def _fill_missing(self, mask, fill_value):
-        raise NotImplementedError("Subclasses must implement _fill_missing")
+        gathered = ak.where(mask, fv, self._data[idx_fix])
+        return type(self)(gathered)
 
     def to_numpy(self, dtype=None, copy=False):
         out = self._data.to_ndarray()
