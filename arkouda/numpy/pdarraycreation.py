@@ -253,6 +253,9 @@ def array(
     from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy.numeric import cast as akcast
 
+    if dtype == "bigint":
+        dtype = bigint
+
     if isinstance(a, pdarray) and (a.dtype == dtype or dtype is None):
         return _deepcopy(a) if copy else a
 
@@ -263,6 +266,7 @@ def array(
             Strings(cast(pdarray, array([], dtype="int64")), 0) if a.size == 0 else a[:] if copy else a
         )
 
+    # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
         casted = akcast(a, dtype)  # the "dtype is None" case was covered above
         if dtype == bigint and max_bits != -1:
@@ -288,6 +292,9 @@ def array(
                 a = np.array(a)
         except (RuntimeError, TypeError, ValueError):
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
+
+    elif a.dtype != dtype and dtype != bigint and dtype is not None:
+        a = np.array(a, dtype=dtype)
 
     #   Special case, to get around error when putting negative numbers in a bigint
 
