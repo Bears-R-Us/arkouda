@@ -218,7 +218,7 @@ class Generator:
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
-            raise ValueError("The size parameter must be > 0")
+            raise ValueError("The size parameter must be >= 0")
 
         rep_msg = generic_msg(
             cmd=f"standardExponential<{ndim}>",
@@ -298,7 +298,7 @@ class Generator:
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size <= 0:
-            raise ValueError("The size parameter must be > 0")
+            raise ValueError("The size parameter must be >= 0")
 
         rep_msg = generic_msg(
             cmd=f"uniformGenerator<{dtype.name},{ndim}>",
@@ -614,7 +614,7 @@ class Generator:
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
-            raise ValueError("The size parameter must be > 0")
+            raise ValueError("The size parameter must be >= 0")
 
         rep_msg = generic_msg(
             cmd=f"standardGamma<{ndim}>",
@@ -678,7 +678,7 @@ class Generator:
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
-            raise ValueError("The size parameter must be > 0")
+            raise ValueError("The size parameter must be >= 0")
 
         rep_msg = generic_msg(
             cmd=f"standardNormalGenerator<{ndim}>",
@@ -944,7 +944,7 @@ class Generator:
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
-            raise ValueError("The size parameter must be > 0")
+            raise ValueError("The size parameter must be >= 0")
 
         is_single_lambda, lam = float_array_or_scalar_helper("poisson", "lam", lam, size)
         if (lam < 0).any() if isinstance(lam, pdarray) else lam < 0:
@@ -1012,7 +1012,7 @@ class Generator:
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
-            raise ValueError("The size parameter must be > 0")
+            raise ValueError("The size parameter must be >= 0")
 
         dt = akdtype("float64")
         rep_msg = generic_msg(
