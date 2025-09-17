@@ -762,6 +762,21 @@ class Categorical:
             # Initialization now determines which categories are used
             return Categorical.from_codes(self.codes[key], self.categories)
 
+    def copy(self) -> Categorical:
+        """
+        Return an copy of the given Categorical.
+
+        Returns
+        -------
+        Categorical
+            A deep copy of the Categorical.
+        """
+        perm = self.permutation.copy() if self.permutation is not None else None
+        segs = self.segments.copy() if self.segments is not None else None
+        return Categorical.from_codes(
+            self.codes.copy(), self.categories.copy(), permutation=perm, segments=segs
+        )
+
     def isna(self):
         """Find where values are missing or null (as defined by self.NAvalue)."""
         return self.codes == self._NAcode

@@ -35,9 +35,6 @@ class ArkoudaStringArray(ArkoudaBaseArray, ExtensionArray):
                 return result
         return ArkoudaStringArray(result)
 
-    def __len__(self):
-        return int(self._data.size)
-
     def astype(self, dtype, copy: bool = False):
         if dtype in (object, np.object_, "object", np.dtype("O")):
             return self.to_ndarray().astype(object, copy=copy)
@@ -49,9 +46,6 @@ class ArkoudaStringArray(ArkoudaBaseArray, ExtensionArray):
 
     def copy(self):
         return ArkoudaStringArray(self._data[:])
-
-    def to_numpy(self, dtype=None, copy=False, na_value=None):
-        return self._data.to_ndarray()
 
     def __eq__(self, other):
         return self._data == (other._data if isinstance(other, ArkoudaStringArray) else other)
