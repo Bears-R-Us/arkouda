@@ -69,6 +69,34 @@ int64_t cpp_getNumRows(const char* filename, char** errMsg) {
   }
 }
 
+static int getSchema(const char* filename,
+                      std::shared_ptr<arrow::Schema>* out,
+                      char** errMsg) {
+
+  std::shared_ptr<arrow::io::ReadableFile> infile;
+  ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename,
+                                               arrow::default_memory_pool()),
+                                               infile);
+
+  std::unique_ptr<parquet::arrow::FileReader> reader;
+  ARROWSTATUS_OK(parquet::arrow::OpenFile(infile,
+                                          arrow::default_memory_pool(),
+                                          &reader));
+  ARROWSTATUS_OK(reader->GetSchema(out));
+
+  return 0;
+}
+
+int64_t cpp_getNumCols(const char* filename, char** errMsg) {
+  std::shared_ptr<arrow::Schema> sc;
+
+  if (getSchema(filename, &sc, errMsg) == ARROWERROR) {
+    return ARROWERROR;
+  }
+
+  return sc->num_fields();
+}
+
 int cpp_getPrecision(const char* filename, const char* colname, char** errMsg) {
   try {
     std::shared_ptr<arrow::io::ReadableFile> infile;
@@ -92,6 +120,67 @@ int cpp_getPrecision(const char* filename, const char* colname, char** errMsg) {
     *errMsg = strdup(e.what());
     return ARROWERROR;
   }
+}
+
+static int getTypeOfFieldAtIdx(std::shared_ptr<arrow::Schema> sc,
+                               int idx) {
+  auto myType = sc -> field(idx) -> type();
+
+  if(myType->id() == arrow::Type::INT64)
+    return ARROWINT64;
+  else if(myType->id() == arrow::Type::INT32 || myType->id() == arrow::Type::INT16)
+    return ARROWINT32; // int16 is logical type, stored as int32
+  else if(myType->id() == arrow::Type::UINT64)
+    return ARROWUINT64;
+  else if(myType->id() == arrow::Type::UINT32 ||
+          myType->id() == arrow::Type::UINT16)
+    return ARROWUINT32; // uint16 is logical type, stored as uint32
+  else if(myType->id() == arrow::Type::TIMESTAMP)
+    return ARROWTIMESTAMP;
+  else if(myType->id() == arrow::Type::BOOL)
+    return ARROWBOOLEAN;
+  else if(myType->id() == arrow::Type::STRING ||
+          myType->id() == arrow::Type::BINARY ||
+          myType->id() == arrow::Type::LARGE_STRING)
+    return ARROWSTRING;
+  else if(myType->id() == arrow::Type::FLOAT)
+    return ARROWFLOAT;
+  else if(myType->id() == arrow::Type::DOUBLE)
+    return ARROWDOUBLE;
+  else if(myType->id() == arrow::Type::LIST)
+    return ARROWLIST;
+  else if(myType->id() == arrow::Type::DECIMAL)
+    return ARROWDECIMAL;
+  else {
+    return ARROWERROR;
+  }
+}
+
+int cpp_getAllTypes(const char* filename, int* types_out, char** errMsg) {
+  assert(types_out); // this has to be allocated by the caller
+
+  std::shared_ptr<arrow::Schema> sc;
+
+  try {
+    getSchema(filename, &sc, errMsg);
+  } catch (const std::exception& e) {
+    *errMsg = strdup(e.what());
+    return ARROWERROR;
+  }
+
+  const int num_cols = sc->num_fields();
+  for(int i=0 ; i<num_cols ; i++) {
+    int ret = getTypeOfFieldAtIdx(sc, i);
+    if (ret == ARROWERROR) {
+      std::string msg = "Unsupported type";
+      *errMsg = strdup(msg.c_str());
+      return ARROWERROR;
+    }
+
+    types_out[i] = ret;
+  }
+
+  return 0;
 }
 
 int cpp_getType(const char* filename, const char* colname, char** errMsg) {
@@ -693,12 +782,20 @@ int cpp_readParquetColumnChunks(const char* filename, int64_t batchSize, int64_t
 */
 
 extern "C" {
-  int64_t c_getNumRows(const char* chpl_str, char** errMsg) {
-    return cpp_getNumRows(chpl_str, errMsg);
+  int64_t c_getNumRows(const char* filename, char** errMsg) {
+    return cpp_getNumRows(filename, errMsg);
+  }
+
+  int64_t c_getNumCols(const char* filename, char** errMsg) {
+    return cpp_getNumCols(filename, errMsg);
   }
 
   int c_getType(const char* filename, const char* colname, char** errMsg) {
     return cpp_getType(filename, colname, errMsg);
+  }
+
+  int c_getAllTypes(const char* filename, int* types_out, char** errMsg) {
+    return cpp_getAllTypes(filename, types_out, errMsg);
   }
 
   int c_getListType(const char* filename, const char* colname, char** errMsg) {
