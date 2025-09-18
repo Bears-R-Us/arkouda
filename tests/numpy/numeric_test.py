@@ -408,6 +408,32 @@ class TestNumeric:
         with pytest.raises(TypeError):
             ak.abs(np.array([range(0, 10)]).astype(num_type))
 
+    @pytest.mark.parametrize("num_type", INT_FLOAT)  # keep both int and float types
+    def test_fabs(self, num_type):
+        # cover negative + positive values
+        na = np.linspace(-10, 10, 21).astype(num_type)
+        pda = ak.array(na, dtype=num_type)
+
+        out = ak.fabs(pda)
+
+        # check element-wise correctness against numpy
+        assert_arkouda_array_equivalent(np.fabs(na), out.to_ndarray())
+
+        # check dtype is always float64
+        assert out.dtype == ak.float64
+
+        # secondary case: fabs turns negatives into positives and outputs float
+        ar = ak.arange(-5, 0, dtype=num_type)
+        res = ak.fabs(ar)
+        assert res.tolist() == [5.0, 4.0, 3.0, 2.0, 1.0]
+        assert res.dtype == ak.float64
+
+    def test_fabs_edge_case(self):
+        # Related to issue 1020
+        x = ak.array([-1, -(2**63), 1])
+
+        assert_arkouda_array_equivalent(ak.fabs(x), ak.array([1, 2**63, 1], dtype=ak.float64))
+
     @pytest.mark.parametrize("num_type", NO_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_square(self, prob_size, num_type):

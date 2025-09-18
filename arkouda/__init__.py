@@ -171,6 +171,7 @@ from arkouda.numpy import (
     exp,
     expm1,
     eye,
+    fabs,
     finfo,
     flexible,
     flip,

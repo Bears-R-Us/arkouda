@@ -167,6 +167,7 @@ from arkouda.numpy.numeric import (
     exp,
     expm1,
     eye,
+    fabs,
     floor,
     hash,
     histogram,
