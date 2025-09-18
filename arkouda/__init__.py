@@ -153,6 +153,8 @@ from arkouda.numpy import (
     ctz,
     cumprod,
     cumsum,
+    oldcumsum,
+    oldcumprod,
     date_range,
     datetime64,
     deg2rad,
