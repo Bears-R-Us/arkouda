@@ -57,6 +57,7 @@ NumPyDType.chpl
 OperatorMsg.chpl
 parquet
 ParquetMsg.chpl
+ParquetSharedEnums.chpl
 parseServerConfig.py
 RadixSortLSD.chpl
 RandArray.chpl
