@@ -221,17 +221,17 @@ class Generator:
             raise ValueError("The size parameter must be >= 0")
 
         rep_msg = generic_msg(
-            cmd=f"standardExponential<{ndim}>",
+            cmd=f"standardExponential<{1}>",
             args={
                 "name": self._name_dict[akdtype("float64")],
-                "size": shape,
+                "size": full_size,
                 "method": method.upper(),
                 "has_seed": self._seed is not None,
                 "state": self._state,
             },
         )
         self._state += full_size if method.upper() == "INV" else 1
-        return create_pdarray(rep_msg)
+        return create_pdarray(rep_msg) if ndim == 1 else create_pdarray(rep_msg).reshape(shape)
 
     def integers(self, low, high=None, size=None, dtype=akint64, endpoint=False):
         """
