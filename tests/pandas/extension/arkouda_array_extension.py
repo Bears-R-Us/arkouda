@@ -73,7 +73,7 @@ class TestArkoudaArrayExtension:
         ak_data = ak.arange(10)
         arr = ArkoudaArray(ak_data)
         na = arr.isna()
-        assert ak.all(na == False)
+        assert ak.all(na == False)  # noqa: E712
 
     def test_isna_with_nan(self):
         from arkouda.testing import assert_equal

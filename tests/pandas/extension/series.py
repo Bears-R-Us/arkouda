@@ -79,7 +79,7 @@ class TestSeriesExtension:
         assert s.max() == 3
         assert s.min() == 1
         assert s.all()  # nonzero
-        assert pd.Series(ArkoudaArray(ak.array([0, 0, 0]))).any() == False
+        assert pd.Series(ArkoudaArray(ak.array([0, 0, 0]))).any() is np.False_
 
     def test_series_equality(self):
         a1 = ArkoudaArray(ak.array([1, 2, 3]))
