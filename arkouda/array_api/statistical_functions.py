@@ -75,10 +75,10 @@ def max(
     --------
     >>> import arkouda as ak
     >>> import arkouda.array_api as xp
-    >>> a = xp.asarray(ak.arange(10).astype(ak.float64))
+    >>> a = xp.asarray(ak.arange(10,dtype=ak.float64))
     >>> xp.max(a)
     Arkouda Array ((), float64)9.0
-    >>> a = xp.asarray(ak.arange(10).astype(ak.float64).reshape(2,5))
+    >>> a = xp.asarray(ak.arange(10,dtype=ak.float64).reshape(2,5))
     >>> xp.max(a,axis=0)
     Arkouda Array ((5,), float64)[5.0 6.0 7.0 8.0 9.0]
     >>> xp.max(a,axis=1)
@@ -139,10 +139,10 @@ def mean(
     --------
     >>> import arkouda as ak
     >>> import arkouda.array_api as xp
-    >>> a = xp.asarray(ak.arange(10).astype(ak.float64))
+    >>> a = xp.asarray(ak.arange(10,dtype=ak.float64))
     >>> xp.mean(a)
     Arkouda Array ((1,), float64)[4.5]
-    >>> a = xp.asarray(ak.arange(10).astype(ak.float64).reshape(2,5))
+    >>> a = xp.asarray(ak.arange(10,dtype=ak.float64).reshape(2,5))
     >>> xp.mean(a,axis=0)
     Arkouda Array ((5,), float64)[2.5 3.5 4.5 5.5 6.5]
     >>> xp.mean(a,axis=1)
@@ -215,10 +215,10 @@ def min(
     --------
     >>> import arkouda as ak
     >>> import arkouda.array_api as xp
-    >>> a = xp.asarray(ak.arange(10).astype(ak.float64))
+    >>> a = xp.asarray(ak.arange(10,dtype=ak.float64))
     >>> xp.min(a)
     Arkouda Array ((), float64)0.0
-    >>> a = xp.asarray(ak.arange(10).astype(ak.float64).reshape(2,5))
+    >>> a = xp.asarray(ak.arange(10,dtype=ak.float64).reshape(2,5))
     >>> xp.min(a,axis=0)
     Arkouda Array ((5,), float64)[0.0 1.0 2.0 3.0 4.0]
     >>> xp.min(a,axis=1)
@@ -270,10 +270,10 @@ def prod(
     --------
     >>> import arkouda as ak
     >>> import arkouda.array_api as xp
-    >>> a = xp.asarray((1 + ak.arange(10)).astype(ak.float64))
+    >>> a = xp.asarray(1 + ak.arange(10,dtype=ak.float64))
     >>> xp.prod(a)
     Arkouda Array ((), float64)3628800.0
-    >>> a = xp.asarray((1 + ak.arange(10)).astype(ak.float64).reshape(2,5))
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
     >>> xp.prod(a,axis=0)
     Arkouda Array ((5,), float64)[6.0 14.0 24.0 36.0 50.0]
     >>> xp.prod(a,axis=1)
@@ -339,10 +339,10 @@ def std(
     --------
     >>> import arkouda as ak
     >>> import arkouda.array_api as xp
-    >>> a = xp.asarray((1 + ak.arange(10)).astype(ak.float64))
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)))
     >>> xp.std(a)
     Arkouda Array ((1,), float64)[2.87228]
-    >>> a = xp.asarray((1 + ak.arange(10)).astype(ak.float64).reshape(2,5))
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
     >>> xp.std(a,axis=0)
     Arkouda Array ((5,), float64)[2.5 2.5 2.5 2.5 2.5]
     >>> xp.std(a,axis=1)
@@ -421,10 +421,10 @@ def sum(
     --------
     >>> import arkouda as ak
     >>> import arkouda.array_api as xp
-    >>> a = xp.asarray((1 + ak.arange(10)).astype(ak.float64))
+    >>> a = xp.asarray(1 + ak.arange(10,dtype=ak.float64))
     >>> xp.sum(a)
     Arkouda Array ((), float64)55.0
-    >>> a = xp.asarray((1 + ak.arange(10)).astype(ak.float64).reshape(2,5))
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
     >>> xp.sum(a,axis=0)
     Arkouda Array ((5,), float64)[7.0 9.0 11.0 13.0 15.0]
     >>> xp.sum(a,axis=1)
@@ -490,10 +490,10 @@ def var(
     --------
     >>> import arkouda as ak
     >>> import arkouda.array_api as xp
-    >>> a = xp.asarray((1 + ak.arange(10)).astype(ak.float64))
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)))
     >>> xp.var(a)
     Arkouda Array ((1,), float64)[8.25]
-    >>> a = xp.asarray((1 + ak.arange(10)).astype(ak.float64).reshape(2,5))
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
     >>> xp.var(a,axis=0)
     Arkouda Array ((5,), float64)[6.25 6.25 6.25 6.25 6.25]
     >>> xp.var(a,axis=1)
@@ -587,7 +587,7 @@ def cumulative_sum(
     --------
     >>> import arkouda as ak
     >>> import arkouda.array_api as xp
-    >>> a = xp.asarray((1 + ak.arange(10)).astype(ak.float64).reshape(2,5))
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
     >>> xp.cumulative_sum(a,axis=0,include_initial=True)
     Arkouda Array ((3, 5), float64)[[0.0 0.0 0.0 0.0 0.0] [1.0 2.0 3.0 4.0 5.0] [7.0 9.0 11.0 13.0 15.0]]
     >>> xp.cumulative_sum(a,axis=1,include_initial=False)
@@ -666,7 +666,7 @@ def cumulative_prod(
     --------
     >>> import arkouda as ak
     >>> import arkouda.array_api as xp
-    >>> a = xp.asarray((1 + ak.arange(6)).astype(ak.float64).reshape(2,3))
+    >>> a = xp.asarray((1 + ak.arange(6,dtype=ak.float64).reshape(2,3)))
     >>> xp.cumulative_prod(a,axis=0,include_initial=True)
     Arkouda Array ((3, 3), float64)[[1.0 1.0 1.0] [1.0 2.0 3.0] [4.0 10.0 18.0]]
     >>> xp.cumulative_prod(a,axis=1,include_initial=False)
