@@ -67,6 +67,7 @@ else:
 __all__ = [
     "cast",
     "abs",
+    "fabs",
     "ceil",
     "clip",
     "count_nonzero",
@@ -284,6 +285,40 @@ def abs(pda: pdarray) -> pdarray:
         },
     )
     return create_pdarray(type_cast(str, repMsg))
+
+
+@typechecked
+def fabs(pda: pdarray) -> pdarray:
+    """
+    Compute the absolute values element-wise, casting to a float beforehand.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing absolute values of the input array elements, casted to float type
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.fabs(ak.arange(-5,-1))
+    array([5.00000000000000000 4.00000000000000000 3.00000000000000000 2.00000000000000000])
+
+    >>> ak.fabs(ak.linspace(-5,-1,5))
+    array([5.00000000... 4.00000000... 3.00000000...
+    2.00000000... 1.00000000...])
+    """
+    pda_ = cast(pda, ak_float64)
+
+    return abs(pda_)
 
 
 @typechecked
