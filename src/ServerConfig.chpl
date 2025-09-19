@@ -41,12 +41,6 @@ module ServerConfig
     };
 
     /*
-      maximum array dimensionality supported by the server
-      set in 'registration-config.json'
-    */
-    config param MaxArrayDims: int = 1;
-
-    /*
     Type of deployment, which currently is either STANDARD, meaning
     that Arkouda is deployed bare-metal or within an HPC environment, 
     or on Kubernetes, defaults to Deployment.STANDARD
@@ -208,7 +202,6 @@ module ServerConfig
             const byteorder: string;
             const autoShutdown: bool;
             const serverInfoNoSplash: bool;
-            const maxArrayDims: int;
         }
 
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
@@ -235,8 +228,7 @@ module ServerConfig
             regexMaxCaptures = regexMaxCaptures,
             byteorder = try! getByteorder(),
             autoShutdown = autoShutdown,
-            serverInfoNoSplash = serverInfoNoSplash,
-            maxArrayDims = MaxArrayDims
+            serverInfoNoSplash = serverInfoNoSplash
         );
         return try! formatJson(cfg);
 
