@@ -529,3 +529,95 @@ class TestCategorical:
         result = cat.argsort()
         sorted_values = strings[result].tolist()
         assert sorted_values == sorted(strings.tolist())
+
+    def basic_cat(self):
+        # categories: ["a", "b", "c"], codes map to labels
+        categories = ak.array(["a", "b", "c"])  # Strings
+        codes = ak.array([0, 1, 2, 1, 0])  # pdarray[int64]
+        return Categorical.from_codes(codes, categories)
+
+    def cat_with_perm_segments(self):
+        # Build a small example with explicit permutation/segments metadata.
+        categories = ak.array(["red", "green", "blue"])
+        codes = ak.array([2, 0, 2, 1, 1, 0])  # labels: blue, red, blue, green, green, red
+        # Example permutation/segments (shape/meaning may vary by impl;
+        # these are just nontrivial, valid-length pdarrays to pass through)
+        permutation = ak.array([1, 5, 3, 4, 0, 2])  # some reordering indices
+        segments = ak.array([0, 2, 4])  # example segment starts
+        return Categorical.from_codes(codes, categories, permutation=permutation, segments=segments)
+
+    def empty_cat(self):
+        return Categorical(ak.array([], dtype="str"))
+
+    def _assert_arrays_distinct_and_equal(self, left, right):
+        # Distinct objects…
+        assert left is not right
+        # …but equal contents
+        np.testing.assert_array_equal(
+            # Convert Arkouda arrays to NumPy once
+            left.to_ndarray() if hasattr(left, "to_ndarray") else np.asarray(left),
+            right.to_ndarray() if hasattr(right, "to_ndarray") else np.asarray(right),
+        )
+
+    # ------------------------------ Basic copy behavior ------------------------------
+
+    def test_copy_returns_new_instance(self):
+        c = self.basic_cat()
+        c2 = c.copy()
+        assert isinstance(c2, Categorical)
+        assert c2 is not c
+        assert len(c2) == len(c)
+        # Label equality
+        np.testing.assert_array_equal(c2.to_ndarray(), c.to_ndarray())
+
+    def test_copy_is_deep_for_internal_arrays(self):
+        c = self.basic_cat()
+        c2 = c.copy()
+
+        # Internals should be distinct objects with equal contents
+        self._assert_arrays_distinct_and_equal(c2.codes, c.codes)
+        self._assert_arrays_distinct_and_equal(c2.categories, c.categories)
+
+        # permutation/segments might be None; if present, they should also be deep-copied
+        for name in ("permutation", "segments"):
+            a = getattr(c, name, None)
+            b = getattr(c2, name, None)
+            assert (a is None) == (b is None)
+            if a is not None:
+                self._assert_arrays_distinct_and_equal(b, a)
+
+    # ------------------------------ Metadata preserved ------------------------------
+
+    def test_copy_preserves_metadata_when_present(self):
+        c = self.cat_with_perm_segments()
+        c2 = c.copy()
+
+        # Distinct instances
+        assert c2 is not c
+        assert len(c2) == len(c)
+
+        # Distinct internals; equal contents
+        self._assert_arrays_distinct_and_equal(c2.codes, c.codes)
+        self._assert_arrays_distinct_and_equal(c2.categories, c.categories)
+        self._assert_arrays_distinct_and_equal(c2.permutation, c.permutation)
+        self._assert_arrays_distinct_and_equal(c2.segments, c.segments)
+
+        # Labels equal
+        np.testing.assert_array_equal(c2.to_ndarray(), c.to_ndarray())
+
+    # ------------------------------ Empty case ------------------------------
+
+    def test_copy_empty_categorical(self):
+        empty_cat = self.empty_cat()
+        c2 = empty_cat.copy()
+        assert len(c2) == 0
+        np.testing.assert_array_equal(c2.to_ndarray(), empty_cat.to_ndarray())
+        self._assert_arrays_distinct_and_equal(c2.codes, empty_cat.codes)
+        self._assert_arrays_distinct_and_equal(c2.categories, empty_cat.categories)
+        # permutation/segments may be None or empty; only check distinctness if present
+        for name in ("permutation", "segments"):
+            a = getattr(empty_cat, name, None)
+            b = getattr(c2, name, None)
+            assert (a is None) == (b is None)
+            if a is not None:
+                self._assert_arrays_distinct_and_equal(b, a)

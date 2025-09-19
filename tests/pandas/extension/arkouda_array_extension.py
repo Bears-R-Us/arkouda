@@ -5,7 +5,12 @@ import pytest
 import arkouda as ak
 from arkouda import numeric_and_bool_scalars
 from arkouda.numpy.pdarrayclass import pdarray
-from arkouda.pandas.extension._arkouda_array import ArkoudaArray, ArkoudaDtype
+from arkouda.pandas.extension import (
+    ArkoudaArray,
+    ArkoudaCategoricalArray,
+    ArkoudaStringArray,
+)
+from arkouda.pandas.extension._arkouda_array import ArkoudaDtype
 from arkouda.testing import assert_equivalent
 
 SUPPORTED_TYPES = [ak.bool_, ak.uint64, ak.int64, ak.bigint, ak.float64]
@@ -262,3 +267,95 @@ class TestArkoudaArrayExtension:
         s = pd.Series(pda.to_ndarray())
         idx1 = ak.arange(prob_size, dtype=ak.int64) // 2
         assert_equivalent(arr.take(idx1)._data, s.take(idx1.to_ndarray()).to_numpy())
+
+    # --------------------------- Negative cases / validation ------------------------------------------
+
+    def test_concat_empty_raises_value_error(self):
+        with pytest.raises(ValueError, match="at least one"):
+            ArkoudaArray._concat_same_type([])
+
+    def test_concat_mixed_subclass_types_raises_value_error(self):
+        a = ArkoudaArray(ak.array([1, 2]))
+        b = ArkoudaStringArray(ak.array(["x", "y"]))
+        with pytest.raises(ValueError, match="instances of the same class"):
+            ArkoudaArray._concat_same_type([a, b])
+
+    def test_concat_dtype_mismatch_pdarray_raises_value_error(self):
+        a = ArkoudaArray(ak.array([1, 2, 3]))  # int64
+        b = ArkoudaArray(ak.array(np.array([1.0, 2.0])))  # float64
+        with pytest.raises(ValueError, match="All pdarrays must have same dtype"):
+            ArkoudaArray._concat_same_type([a, b])
+
+    # ------------------------------- Fast path: single item -------------------------------------------
+
+    def test_single_item_fast_path_identity(self):
+        for arr in [
+            ArkoudaArray(ak.array([1, 2, 3])),
+            ArkoudaStringArray(ak.array(["a", "b"])),
+            ArkoudaCategoricalArray(ak.Categorical(ak.array(["a", "b"]))),
+        ]:
+            out = type(arr)._concat_same_type([arr])
+            # Should be the same object (no new allocation)
+            assert out._data is arr._data
+
+    # -------------------------------------- Happy paths -----------------------------------------------
+
+    def test_concat_pdarray_happy_path_contents_and_length(self):
+        a = ArkoudaArray(ak.array([1, 2, 3]))
+        b = ArkoudaArray(ak.array([4, 5]))
+        c = ArkoudaArray(ak.array([], dtype="int64"))
+
+        out = ArkoudaArray._concat_same_type([a, b, c])
+        assert isinstance(out, ArkoudaArray)
+        # Length should add up
+        assert len(out) == len(a) + len(b) + len(c)
+        # Contents should match numpy concatenation
+        np.testing.assert_array_equal(
+            out.to_numpy(),
+            np.array([1, 2, 3, 4, 5], dtype="int64"),
+        )
+
+    def test_concat_strings_happy_path_contents_and_length(self):
+        a = ArkoudaStringArray(ak.array(["a", "bb"]))
+        b = ArkoudaStringArray(ak.array(["ccc"]))
+        out = ArkoudaStringArray._concat_same_type([a, b])
+        assert isinstance(out, ArkoudaStringArray)
+        assert len(out) == len(a) + len(b)
+        np.testing.assert_array_equal(out.to_numpy(), np.array(["a", "bb", "ccc"], dtype=object))
+
+    def test_concat_categorical_happy_path_contents_and_length(self):
+        s1 = ak.array(["r", "g", "b"])
+        s2 = ak.array(["g", "r"])
+        a = ArkoudaCategoricalArray(ak.Categorical(s1))
+        b = ArkoudaCategoricalArray(ak.Categorical(s2))
+
+        out = ArkoudaCategoricalArray._concat_same_type([a, b])
+        assert isinstance(out, ArkoudaCategoricalArray)
+        assert len(out) == len(a) + len(b)
+        # Compare as numpy arrays of labels
+        np.testing.assert_array_equal(out.to_numpy(), np.array(["r", "g", "b", "g", "r"], dtype=object))
+
+    # ------------------------------ Mixed content sanity checks ---------------------------------------
+
+    def test_concat_with_zero_length_segments(self):
+        a = ArkoudaArray(ak.array([], dtype="int64"))
+        b = ArkoudaArray(ak.array([10, 20]))
+        c = ArkoudaArray(ak.array([], dtype="int64"))
+        out = ArkoudaArray._concat_same_type([a, b, c])
+        assert len(out) == 2
+        np.testing.assert_array_equal(out.to_numpy(), np.array([10, 20], dtype="int64"))
+
+    def test_concat_largeish_segments_length_only_smoke(self):
+        # Keep it lightweight but non-trivial
+        from arkouda.pandas.extension._arkouda_array import ArkoudaArray
+
+        a = ArkoudaArray(ak.arange(0, 1000))
+        b = ArkoudaArray(ak.arange(1000, 1500))
+        out = ArkoudaArray._concat_same_type([a, b])
+        assert len(out) == 1500
+        # Spot check a few values to avoid moving too much data to the client
+        arr = out.to_numpy()
+        assert arr[0] == 0
+        assert arr[999] == 999
+        assert arr[1000] == 1000
+        assert arr[-1] == 1499
