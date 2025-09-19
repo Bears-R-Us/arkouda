@@ -7,6 +7,7 @@ import numpy as np
 from arkouda.numpy import cast as akcast
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.pdarrayclass import create_pdarray
+from arkouda.numpy.util import _axis_validation
 
 from ._dtypes import (  # _complex_floating_dtypes,; complex128,
     _numeric_dtypes,
@@ -59,6 +60,30 @@ def max(
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
 
+    Returns
+    -------
+    Array
+        An array with the maximum values along the given axis, or a one-element
+        array with the maximum value, if no axis is given.
+
+    Raises
+    ------
+    TypeError
+        Raised if x is not real numeric.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import arkouda.array_api as xp
+    >>> a = xp.asarray(ak.arange(10,dtype=ak.float64))
+    >>> xp.max(a)
+    Arkouda Array ((), float64)9.0
+    >>> a = xp.asarray(ak.arange(10,dtype=ak.float64).reshape(2,5))
+    >>> xp.max(a,axis=0)
+    Arkouda Array ((5,), float64)[5.0 6.0 7.0 8.0 9.0]
+    >>> xp.max(a,axis=1)
+    Arkouda Array ((2,), float64)[4.0 9.0]
+
     """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in max")
@@ -96,16 +121,45 @@ def mean(
         computed (returning a scalar-array).
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
+
+    Returns
+    -------
+    Array
+        The mean calculated from the pda sum and size, along the axis/axes if
+        those are given.
+
+    Raises
+    ------
+    IndexError
+        Raised if axis is not valid for the given array.
+    TypeError
+        Raised if x is not real numeric.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import arkouda.array_api as xp
+    >>> a = xp.asarray(ak.arange(10,dtype=ak.float64))
+    >>> xp.mean(a)
+    Arkouda Array ((1,), float64)[4.5]
+    >>> a = xp.asarray(ak.arange(10,dtype=ak.float64).reshape(2,5))
+    >>> xp.mean(a,axis=0)
+    Arkouda Array ((5,), float64)[2.5 3.5 4.5 5.5 6.5]
+    >>> xp.mean(a,axis=1)
+    Arkouda Array ((2,), float64)[2.0 7.0]
+
     """
     from arkouda.client import generic_msg
 
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in mean")
 
-    if axis is not None:
-        axis_list = list(axis) if isinstance(axis, tuple) else [axis]
-    else:
-        axis_list = list(range(x.ndim))
+    valid, axis_ = _axis_validation(axis, x.ndim)
+
+    if not valid:
+        raise IndexError(f"axis = {axis} is not valid for rank {x.ndim}")
+
+    axis_ = axis_ if axis_ is not None else list(range(x.ndim))
 
     arr = Array._new(
         create_pdarray(
@@ -113,7 +167,7 @@ def mean(
                 cmd=f"mean<{x.dtype},{x.ndim}>",
                 args={
                     "x": x._array,
-                    "axis": axis_list,
+                    "axis": axis_,
                     "skipNan": True,  # TODO: handle all-nan slices
                 },
             )
@@ -145,6 +199,30 @@ def min(
         array is computed (returning a scalar-array).
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
+
+    Returns
+    -------
+    Array
+        An array with the minimum values along the given axis, or a one-element
+        array with the minimum value, if no axis is given.
+
+    Raises
+    ------
+    TypeError
+        Raised if x is not real numeric.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import arkouda.array_api as xp
+    >>> a = xp.asarray(ak.arange(10,dtype=ak.float64))
+    >>> xp.min(a)
+    Arkouda Array ((), float64)0.0
+    >>> a = xp.asarray(ak.arange(10,dtype=ak.float64).reshape(2,5))
+    >>> xp.min(a,axis=0)
+    Arkouda Array ((5,), float64)[0.0 1.0 2.0 3.0 4.0]
+    >>> xp.min(a,axis=1)
+    Arkouda Array ((2,), float64)[0.0 5.0]
     """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in min")
@@ -176,6 +254,31 @@ def prod(
         The dtype of the returned array. If None, the dtype of the input array is used.
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
+
+    Returns
+    -------
+    Array
+        An array with the product along the given axis, or a one-element
+        array with the product of the entire array, if no axis is given.
+
+    Raises
+    ------
+    TypeError
+        Raised if x._array is not real numeric, or can't be cast to a pdarray.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import arkouda.array_api as xp
+    >>> a = xp.asarray(1 + ak.arange(10,dtype=ak.float64))
+    >>> xp.prod(a)
+    Arkouda Array ((), float64)3628800.0
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
+    >>> xp.prod(a,axis=0)
+    Arkouda Array ((5,), float64)[6.0 14.0 24.0 36.0 50.0]
+    >>> xp.prod(a,axis=1)
+    Arkouda Array ((2,), float64)[120.0 30240.0]
+
     """
     from arkouda import prod as ak_prod
     from arkouda.numpy import pdarray
@@ -216,6 +319,35 @@ def std(
         The degrees of freedom correction to apply. The default is 0.
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
+
+    Returns
+    -------
+    Array
+        An array with the standard deviation along the given axis, or a one-element
+        array with the std of the entire array, if no axis is given.
+
+    Raises
+    ------
+    TypeError
+        Raised if x is not floating point.
+    ValueError
+        Raised if correction is negative.
+    IndexError
+        Raised if axis is not valid for given Array.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import arkouda.array_api as xp
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)))
+    >>> xp.std(a)
+    Arkouda Array ((1,), float64)[2.87228]
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
+    >>> xp.std(a,axis=0)
+    Arkouda Array ((5,), float64)[2.5 2.5 2.5 2.5 2.5]
+    >>> xp.std(a,axis=1)
+    Arkouda Array ((2,), float64)[1.41421 1.41421]
+
     """
     from arkouda.client import generic_msg
 
@@ -224,10 +356,12 @@ def std(
     if correction < 0:
         raise ValueError("Correction must be non-negative in std")
 
-    if axis is not None:
-        axis_list = list(axis) if isinstance(axis, tuple) else [axis]
-    else:
-        axis_list = list(range(x.ndim))
+    valid, axis_ = _axis_validation(axis, x.ndim)
+
+    if not valid:
+        raise IndexError(f"axis = {axis} is not valid for rank {x.ndim}")
+
+    axis_ = axis_ if axis_ is not None else list(range(x.ndim))
 
     arr = Array._new(
         create_pdarray(
@@ -236,7 +370,7 @@ def std(
                 args={
                     "x": x._array,
                     "ddof": correction,
-                    "axis": axis_list,
+                    "axis": axis_,
                     "skipNan": True,
                 },
             )
@@ -271,6 +405,31 @@ def sum(
         The dtype of the returned array. If None, the dtype of the input array is used.
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
+
+    Returns
+    -------
+    Array
+        An array with the sum along the given axis, or a one-element
+        array with the sum of the entire array, if no axis is given.
+
+    Raises
+    ------
+    TypeError
+        Raised if x is not numeric.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import arkouda.array_api as xp
+    >>> a = xp.asarray(1 + ak.arange(10,dtype=ak.float64))
+    >>> xp.sum(a)
+    Arkouda Array ((), float64)55.0
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
+    >>> xp.sum(a,axis=0)
+    Arkouda Array ((5,), float64)[7.0 9.0 11.0 13.0 15.0]
+    >>> xp.sum(a,axis=1)
+    Arkouda Array ((2,), float64)[15.0 40.0]
+
     """
     from arkouda import sum as ak_sum
     from arkouda.numpy import pdarray
@@ -311,6 +470,35 @@ def var(
         The degrees of freedom correction to apply. The default is 0.
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
+
+    Returns
+    -------
+    Array
+        An array with the variance along the given axis, or a one-element
+        array with the var of the entire array, if no axis is given.
+
+    Raises
+    ------
+    TypeError
+        Raised if x is not floating point.
+    ValueError
+        Raised if correction is negative.
+    IndexError
+        Raised if axis is not valid for given Array.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import arkouda.array_api as xp
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)))
+    >>> xp.var(a)
+    Arkouda Array ((1,), float64)[8.25]
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
+    >>> xp.var(a,axis=0)
+    Arkouda Array ((5,), float64)[6.25 6.25 6.25 6.25 6.25]
+    >>> xp.var(a,axis=1)
+    Arkouda Array ((2,), float64)[2.0 2.0]
+
     """
     from arkouda.client import generic_msg
 
@@ -320,10 +508,12 @@ def var(
     if correction < 0:
         raise ValueError("Correction must be non-negative in std")
 
-    if axis is not None:
-        axis_list = list(axis) if isinstance(axis, tuple) else [axis]
-    else:
-        axis_list = list(range(x.ndim))
+    valid, axis_ = _axis_validation(axis, x.ndim)
+
+    if not valid:
+        raise IndexError(f"axis = {axis} is not valid for rank {x.ndim}")
+
+    axis_ = axis_ if axis_ is not None else list(range(x.ndim))
 
     arr = Array._new(
         create_pdarray(
@@ -332,7 +522,7 @@ def var(
                 args={
                     "x": x._array,
                     "ddof": correction,
-                    "axis": axis_list,
+                    "axis": axis_,
                     "skipNan": True,
                 },
             )
@@ -380,6 +570,28 @@ def cumulative_sum(
         The dtype of the returned array. If None, the dtype of the input array is used.
     include_initial : bool, optional
         Whether to include the initial value as the first element of the output.
+
+    Returns
+    -------
+    Array
+        A new array holding the result of the cumulative sum along the given axis.
+
+    Raises
+    ------
+    ValueError
+        Raised if x is multi-dim and no axis was supplied.
+    IndexError
+        Raised if axis is invalid for the given array.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import arkouda.array_api as xp
+    >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
+    >>> xp.cumulative_sum(a,axis=0,include_initial=True)
+    Arkouda Array ((3, 5), float64)[[0.0 0.0 0.0 0.0 0.0] [1.0 2.0 3.0 4.0 5.0] [7.0 9.0 11.0 13.0 15.0]]
+    >>> xp.cumulative_sum(a,axis=1,include_initial=False)
+    Arkouda Array ((2, 5), float64)[[1.0 3.0 6.0 10.0 15.0] [6.0 13.0 21.0 30.0 40.0]]
     """
     from arkouda.client import generic_msg
     from arkouda.numpy.pdarrayclass import _axis_validation
@@ -392,9 +604,9 @@ def cumulative_sum(
         else:
             axis = 0
 
-    yesNo, axis_ = _axis_validation(axis, x.ndim)
+    valid, axis_ = _axis_validation(axis, x.ndim)
 
-    if not yesNo:
+    if not valid:
         raise ValueError(f"axis {axis} is not valid for the given array.")
 
     if dtype is None:
@@ -437,6 +649,28 @@ def cumulative_prod(
         The dtype of the returned array. If None, the dtype of the input array is used.
     include_initial : bool, optional
         Whether to include the initial value as the first element of the output.
+
+    Returns
+    -------
+    Array
+        A new array holding the result of the cumulative prod along the given axis.
+
+    Raises
+    ------
+    ValueError
+        Raised if x is multi-dim and no axis was supplied.
+    IndexError
+        Raised if axis is invalid for the given array.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import arkouda.array_api as xp
+    >>> a = xp.asarray((1 + ak.arange(6,dtype=ak.float64).reshape(2,3)))
+    >>> xp.cumulative_prod(a,axis=0,include_initial=True)
+    Arkouda Array ((3, 3), float64)[[1.0 1.0 1.0] [1.0 2.0 3.0] [4.0 10.0 18.0]]
+    >>> xp.cumulative_prod(a,axis=1,include_initial=False)
+    Arkouda Array ((2, 3), float64)[[1.0 2.0 6.0] [4.0 20.0 120.0]]
     """
     from arkouda.client import generic_msg
     from arkouda.numpy.pdarrayclass import _axis_validation
@@ -449,9 +683,9 @@ def cumulative_prod(
         else:
             axis = 0
 
-    yesNo, axis_ = _axis_validation(axis, x.ndim)
+    valid, axis_ = _axis_validation(axis, x.ndim)
 
-    if not yesNo:
+    if not valid:
         raise ValueError(f"axis {axis} is not valid for the given array.")
 
     if dtype is None:
