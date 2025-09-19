@@ -889,9 +889,16 @@ module SegmentedMsg {
         var newStringsName = "";
         var nBytes = 0;
         var strings = getSegString(objName, st);
-        var strOffsetInLocale: [PrivateSpace] list(int);
-        var strBytesInLocale: [PrivateSpace] list(uint(8));
-        var strOrigIndices: [PrivateSpace] list(int);
+        const numOffsetsPerLocale = [i in 0..#numLocales] strings.offsets.a.domain.localSubdomain(Locales[i]).size;
+        const startOffsetIndexPerLocale = [i in 0..#numLocales] strings.offsets.a.domain.localSubdomain(Locales[i]).first;
+        const startOffsetPerLocale = [i in 0..#numLocales] strings.offsets.a.domain.localSubdomain(Locales[i])[startOffsetIndexPerLocale[i]];
+        const numBytesPerLocale = [i in 0..#numLocales] if i == numLocales - 1 then string.offsets.a.size - startOffsetPerLocale[i]
+                                                                               else startOffsetPerLocale[i + 1] - startOffsetPerLocale[i];
+        const numOffsetAlloc = max reduce numOffsetsPerLocale;
+        const numByteAlloc = max reduce numBytesPerLocale;
+        var strOffsetInLocale: [PrivateSpace] [0..#(numOffsetAlloc)] int;
+        var strBytesInLocale: [PrivateSpace] [0..#(numByteAlloc)] uint(8);
+        var strOrigIndices: [PrivateSpace] [0..#(numOffsetAlloc)] int;
         const arrSize = strings.offsets.a.size;
 
         coforall loc in Locales do on loc {
@@ -914,9 +921,9 @@ module SegmentedMsg {
           const offsetsRelative = offsets - offsets[0];
           const origIndices: [0..#offsets.size] int = offsetsDom.low..;
 
-          strOffsetInLocale[here.id] = new list(offsetsRelative);
-          strBytesInLocale[here.id] = new list(myBytes);
-          strOrigIndices[here.id] = new list(origIndices);
+          strOffsetInLocale[here.id][0..] = offsetsRelative;
+          strBytesInLocale[here.id][0..] = myBytes;
+          strOrigIndices[here.id][0..] = origIndices;
 
           // writeln(here.id, " strOffsetInLocale: ", offsetsRelative);
           // writeln(here.id, " strBytesInLocale: ", myBytes);
@@ -931,10 +938,17 @@ module SegmentedMsg {
               ref iva = iv.a;
               var newSegs = makeDistArray(iva.size, int);
               const flatLocRanges = [loc in Locales] strings.offsets.a.domain.localSubdomain(loc).dim(0);
+              /*
               var destLocales: [PrivateSpace] list(int);
               var sendIdx: [PrivateSpace] list(int);
               var sendBackLoc: [PrivateSpace] list(int);
               var sendBackIdx: [PrivateSpace] list(int);
+              var baselineIndices: [PrivateSpace] int;
+              */
+              var destLocales: [PrivateSpace] [0..#numOffsetAlloc] int;
+              var sendIdx: [PrivateSpace] [0..#numOffsetAlloc] int;
+              var sendBackLoc: [PrivateSpace] [0..#numOffsetAlloc] int;
+              var sendBackIdx: [PrivateSpace] [0..#numOffsetAlloc] int;
               var baselineIndices: [PrivateSpace] int;
 
               coforall loc in Locales do on loc {
