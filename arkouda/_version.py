@@ -17,6 +17,7 @@ import sys
 
 from arkouda.logger import getArkoudaLogger
 
+
 logger = getArkoudaLogger("_version Logger")
 
 __all__ = [

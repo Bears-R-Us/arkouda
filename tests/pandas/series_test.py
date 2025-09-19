@@ -8,6 +8,7 @@ import arkouda as ak
 from arkouda.pandas.series import Series
 from arkouda.testing import assert_series_equal as ak_assert_series_equal
 
+
 DTYPES = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint, ak.str_]
 NO_STRING = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint]
 NUMERICAL_TYPES = [ak.int64, ak.uint64, ak.float64, ak.bigint]

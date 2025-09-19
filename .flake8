@@ -1,0 +1,23 @@
+[flake8]
+max-line-length = 105
+application-import-names = arkouda
+extend-select = F403
+extend-ignore =
+    E203,E302,
+    DOC001,DOC101,DOC102,DOC103,DOC105,DOC106,DOC107,DOC109,DOC110,DOC201,DOC203,DOC301,DOC302,DOC501,DOC502,DOC503,DOC601,DOC603,
+per-file-ignores =
+    tests/operator_test.py: E501
+    tests/symbol_table_test.py: F841
+exclude =
+    toys
+    tests/deprecated
+    src/registry/register_commands.py
+    src/parseServerConfig.py
+    runs
+    dep
+    examples
+    benchmarks
+    tests
+    arkouda/_version.py
+    converter/*
+    pydoc/_ext/generic_linkcode_resolve_for_sphinx.py

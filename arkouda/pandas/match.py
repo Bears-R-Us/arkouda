@@ -46,6 +46,7 @@ from typing import TYPE_CHECKING, TypeVar, cast
 
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
+
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
 else:

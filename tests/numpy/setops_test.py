@@ -5,6 +5,7 @@ import pytest
 import arkouda as ak
 from arkouda.testing import assert_arkouda_array_equivalent
 
+
 OPS = ["in1d", "intersect1d", "union1d", "setxor1d", "setdiff1d"]
 INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bigint]
 NUMERIC_TYPES = [ak.int64, ak.uint64, ak.bigint, ak.bool_]

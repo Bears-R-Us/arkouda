@@ -3,6 +3,7 @@ import pytest
 
 import arkouda as ak
 
+
 TYPES = ("int64", "float64", "bigint")
 
 

@@ -8,17 +8,12 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.groupbyclass import GroupBy, groupable
-from arkouda.numpy.dtypes import (
-    int_scalars,
-    isSupportedNumber,
-    numeric_scalars,
-    resolve_scalar_dtype,
-)
 from arkouda.numpy.dtypes import ARKOUDA_SUPPORTED_INTS, _datatype_check, bigint
 from arkouda.numpy.dtypes import bool_ as ak_bool
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as ak_float64
 from arkouda.numpy.dtypes import int64 as ak_int64
+from arkouda.numpy.dtypes import int_scalars, isSupportedNumber, numeric_scalars, resolve_scalar_dtype
 from arkouda.numpy.dtypes import str_
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as ak_uint64
@@ -36,6 +31,7 @@ from arkouda.numpy.pdarrayclass import any as ak_any
 from arkouda.numpy.pdarraycreation import array, linspace, scalar_array
 from arkouda.numpy.sorting import sort
 from arkouda.numpy.strings import Strings
+
 
 NUMERIC_TYPES = [ak_int64, ak_float64, ak_bool, ak_uint64]
 ALLOWED_PERQUANT_METHODS = [

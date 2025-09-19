@@ -6,6 +6,7 @@ import pytest
 
 import arkouda as ak
 
+
 NUMERIC_TYPES = ["int64", "float64", "bool", "uint64"]
 
 

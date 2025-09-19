@@ -7,6 +7,7 @@ import numpy as np
 
 import arkouda as ak
 
+
 ENCODINGS = ("idna", "ascii")
 
 

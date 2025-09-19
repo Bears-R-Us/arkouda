@@ -5,6 +5,7 @@ import time
 
 import arkouda as ak
 
+
 TYPES = ("int64", "uint64")
 
 # Tied to src/In1d.chpl:threshold, which defaults to 2**23

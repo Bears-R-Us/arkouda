@@ -10,21 +10,10 @@ from __future__ import annotations
 
 from typing import Any, Literal, Protocol, TypeVar, Union
 
-from numpy import (
-    dtype,
-    float32,
-    float64,
-    int8,
-    int16,
-    int32,
-    int64,
-    uint8,
-    uint16,
-    uint32,
-    uint64,
-)
+from numpy import dtype, float32, float64, int8, int16, int32, int64, uint8, uint16, uint32, uint64
 
 from .array_object import Array
+
 
 __all__ = [
     "Array",

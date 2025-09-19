@@ -6,6 +6,7 @@ import numpy as np
 from arkouda.numpy import log
 from arkouda.numpy.pdarrayclass import pdarray
 
+
 __all__ = [
     "xlogy",
 ]

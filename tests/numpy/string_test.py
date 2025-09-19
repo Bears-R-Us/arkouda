@@ -11,6 +11,7 @@ from arkouda.numpy import strings
 from arkouda.testing import assert_equal as ak_assert_equal
 from arkouda.testing import assert_equivalent
 
+
 ak.verbose = False
 N = 100
 UNIQUE = N // 4

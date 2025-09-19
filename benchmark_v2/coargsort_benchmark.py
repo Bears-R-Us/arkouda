@@ -4,6 +4,7 @@ import pytest
 
 import arkouda as ak
 
+
 TYPES = ["int64", "uint64", "float64", "str"]
 NUM_ARR = [1, 2, 8, 16]
 

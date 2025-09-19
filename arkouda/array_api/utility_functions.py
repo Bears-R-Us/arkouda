@@ -10,6 +10,7 @@ from .array_object import Array
 from .manipulation_functions import reshape
 from .statistical_functions import sum
 
+
 __all__ = [
     "all",
     "any",

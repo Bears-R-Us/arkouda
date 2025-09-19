@@ -4,6 +4,7 @@ import pytest
 import arkouda as ak
 from arkouda.numpy import dtypes
 
+
 """
 DtypesTest encapsulates arkouda dtypes module methods
 """

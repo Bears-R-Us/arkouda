@@ -12,6 +12,7 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
+
 __all__ = [
     "Generator",
     "default_rng",
@@ -30,13 +31,11 @@ class Generator:
 
     Parameters
     ----------
-    seed : int
-        Seed to allow for reproducible random number generation.
-
     name_dict: dict
         Dictionary mapping the server side names associated with
         the generators for each dtype.
-
+    seed : int
+        Seed to allow for reproducible random number generation.
     state: int
         The current state we are in the random number generation stream.
         This information makes it so calls to any dtype generator

@@ -14,6 +14,7 @@ from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equal
 from arkouda.testing import assert_equal as ak_assert_equal
 from arkouda.testing import assert_equivalent
 
+
 INT_SCALARS = list(ak.numpy.dtypes.int_scalars.__args__)
 NUMERIC_SCALARS = list(ak.numpy.dtypes.numeric_scalars.__args__)
 

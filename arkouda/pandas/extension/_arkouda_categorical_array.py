@@ -1,14 +1,11 @@
 from typing import TYPE_CHECKING, TypeVar
 
-from pandas.api.extensions import (
-    ExtensionArray,
-    ExtensionDtype,
-    register_extension_dtype,
-)
+from pandas.api.extensions import ExtensionArray, ExtensionDtype, register_extension_dtype
 
 import arkouda as ak
 
 from ._arkouda_base_array import ArkoudaBaseArray
+
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical

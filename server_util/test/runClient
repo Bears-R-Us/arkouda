@@ -22,6 +22,7 @@ from server_util.test.server_test_util import (
     stop_arkouda_server,
 )
 
+
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument(
     "clients",

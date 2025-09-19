@@ -1,13 +1,10 @@
 import numpy as np
-from pandas.api.extensions import (
-    ExtensionArray,
-    ExtensionDtype,
-    register_extension_dtype,
-)
+from pandas.api.extensions import ExtensionArray, ExtensionDtype, register_extension_dtype
 
 import arkouda as ak
 
 from ._arkouda_base_array import ArkoudaBaseArray
+
 
 __all__ = ["ArkoudaStringDtype", "ArkoudaStringArray"]
 

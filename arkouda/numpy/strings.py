@@ -3,17 +3,7 @@ from __future__ import annotations
 import codecs
 import itertools
 import re
-from typing import (
-    TYPE_CHECKING,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Tuple, TypeVar, Union, cast
 
 import numpy as np
 from numpy import dtype as npdtype
@@ -29,6 +19,7 @@ from arkouda.numpy.pdarrayclass import RegistrationError
 from arkouda.numpy.pdarrayclass import all as akall
 from arkouda.numpy.pdarrayclass import create_pdarray, parse_single_value, pdarray
 from arkouda.pandas.match import Match, MatchType
+
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
@@ -2730,12 +2721,7 @@ class Strings:
         - If the dataset provided does not exist, it will be added
         """
         from arkouda.client import generic_msg
-        from arkouda.pandas.io import (
-            _file_type_to_int,
-            _get_hdf_filetype,
-            _mode_str_to_int,
-            _repack_hdf,
-        )
+        from arkouda.pandas.io import _file_type_to_int, _get_hdf_filetype, _mode_str_to_int, _repack_hdf
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")

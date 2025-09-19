@@ -5,6 +5,7 @@ import pytest
 import arkouda as ak
 from arkouda.numpy.sorting import SortingAlgorithm
 
+
 TYPES = ("int64", "float64")
 
 
@@ -56,7 +57,8 @@ def run_sort(benchmark, name, data, sort_fn):
 def bench_random_uniform(benchmark, algo, dtype, bits):
     """
     Uniformly distributed integers of 1, 2, and 4 digits.
-    Uniformly distributed reals in (0, 1)
+
+    Uniformly distributed reals in (0, 1).
     """
     if dtype in pytest.dtype:
         N = pytest.prob_size
@@ -88,7 +90,7 @@ def _generate_power_law_data():
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_power_law(benchmark, algo, dtype):
     """
-    Power law distributed (alpha = 2.5) reals and integers in (1, 2**32)
+    Power law distributed (alpha = 2.5) reals and integers in (1, 2**32).
     """
     if dtype in pytest.dtype:
         data = _generate_power_law_data()
@@ -103,7 +105,7 @@ def bench_power_law(benchmark, algo, dtype):
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 def bench_rmat(benchmark, algo):
     """
-    RMAT-generated edges (coargsort of two vertex arrays)
+    RMAT-generated edges (coargsort of two vertex arrays).
     """
     # N = number of edges = number of elements / 2
     N = pytest.prob_size // 2
@@ -138,11 +140,10 @@ def bench_rmat(benchmark, algo):
 @pytest.mark.parametrize("mode", ("concat", "interleaved"))
 def bench_block_sorted(benchmark, algo, mode):
     """
-    The concatenation of two sorted arrays of unequal length
-    The interleaving of two sorted arrays of unequal length
+    The concatenation or interleaving of two sorted arrays of unequal length.
 
     Most often occurs in array setops, where two arrays are
-    uniqued (via sorting), then concatenated and sorted
+    uniqued (via sorting), then concatenated and sorted.
     """
     N = pytest.prob_size
 
@@ -164,7 +165,7 @@ def bench_block_sorted(benchmark, algo, mode):
 def bench_refinement(benchmark, algo):
     """
     Coargsort of two arrays, where the first is already sorted
-    but has many repeated values
+    but has many repeated values.
     """
     N = pytest.prob_size
     groupsize = 100
@@ -181,6 +182,8 @@ def bench_refinement(benchmark, algo):
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 def bench_time_like(benchmark, algo):
     """
+    Sort datetime-like data.
+
     Data like a datetime64[ns]:
     - spanning 1 year
     - with second granularity
@@ -203,7 +206,7 @@ def bench_time_like(benchmark, algo):
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 def bench_ip_like(benchmark, algo):
     """
-    Data like a 90/10 mix of IPv4 and IPv6 addresses
+    Data like a 90/10 mix of IPv4 and IPv6 addresses.
     """
     N = pytest.prob_size
     multiplicity = 10

@@ -1,5 +1,6 @@
 from .array_object import Array
 
+
 __all__ = [
     "matmul",
     "matrix_transpose",
