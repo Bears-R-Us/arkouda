@@ -55,6 +55,9 @@ class ArkoudaCategoricalArray(ArkoudaBaseArray, ExtensionArray):
     def __len__(self):
         return int(self._data.size)
 
+    def astype(x, dtype, /):
+        raise NotImplementedError("array_api.astype is not implemented in Arkouda yet")
+
     def isna(self):
         return ak.zeros(self._data.size, dtype=ak.bool)
 

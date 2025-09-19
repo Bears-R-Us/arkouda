@@ -80,6 +80,7 @@ from arkouda.numpy.pdarrayclass import all as akall
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, ones, zeros, zeros_like
 from arkouda.numpy.pdarraysetops import concatenate, in1d
+from arkouda.numpy.random import permutation
 from arkouda.numpy.sorting import argsort
 from arkouda.numpy.sorting import sort as pda_sort
 from arkouda.numpy.strings import Strings
@@ -770,6 +771,21 @@ class Categorical:
             # Don't reset categories because they might have been user-defined
             # Initialization now determines which categories are used
             return Categorical.from_codes(self.codes[key], self.categories)
+
+    def copy(self) -> Categorical:
+        """
+        Return an copy of the given Categorical.
+
+        Returns
+        -------
+        Categorical
+            A deep copy of the Categorical.
+        """
+        perm = self.permutation.copy() if self.permutation is not None else None
+        segs = self.segments.copy() if self.segments is not None else None
+        return Categorical.from_codes(
+            self.codes.copy(), self.categories.copy(), permutation=perm, segments=segs
+        )
 
     def isna(self):
         """Find where values are missing or null (as defined by self.NAvalue)."""
