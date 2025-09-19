@@ -218,20 +218,22 @@ class Generator:
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
-            raise ValueError("The size parameter must be > 0")
+            raise ValueError("The size parameter must be >= 0")
 
         rep_msg = generic_msg(
-            cmd=f"standardExponential<{ndim}>",
+            # cmd=f"standardExponential<{ndim}>",
+            cmd=f"standardExponential<{1}>",
             args={
                 "name": self._name_dict[akdtype("float64")],
-                "size": shape,
+                # "size": shape,
+                "size": full_size,
                 "method": method.upper(),
                 "has_seed": self._seed is not None,
                 "state": self._state,
             },
         )
         self._state += full_size if method.upper() == "INV" else 1
-        return create_pdarray(rep_msg)
+        return create_pdarray(rep_msg) if ndim == 1 else create_pdarray(rep_msg).reshape(shape)
 
     def integers(self, low, high=None, size=None, dtype=akint64, endpoint=False):
         """
@@ -298,7 +300,7 @@ class Generator:
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size <= 0:
-            raise ValueError("The size parameter must be > 0")
+            raise ValueError("The size parameter must be >= 0")
 
         rep_msg = generic_msg(
             cmd=f"uniformGenerator<{dtype.name},{ndim}>",
@@ -614,7 +616,7 @@ class Generator:
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
-            raise ValueError("The size parameter must be > 0")
+            raise ValueError("The size parameter must be >= 0")
 
         rep_msg = generic_msg(
             cmd=f"standardGamma<{ndim}>",
@@ -678,7 +680,7 @@ class Generator:
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
-            raise ValueError("The size parameter must be > 0")
+            raise ValueError("The size parameter must be >= 0")
 
         rep_msg = generic_msg(
             cmd=f"standardNormalGenerator<{ndim}>",
@@ -936,10 +938,15 @@ class Generator:
 
         """
         from arkouda.client import generic_msg
+        from arkouda.numpy.util import _infer_shape_from_size
 
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.poisson(lam, size)
+
+        shape, ndim, full_size = _infer_shape_from_size(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be >= 0")
 
         is_single_lambda, lam = float_array_or_scalar_helper("poisson", "lam", lam, size)
         if (lam < 0).any() if isinstance(lam, pdarray) else lam < 0:
@@ -951,14 +958,14 @@ class Generator:
                 "name": self._name_dict[akdtype("float64")],
                 "lam": lam,
                 "is_single_lambda": is_single_lambda,
-                "size": size,
+                "size": full_size,
                 "has_seed": self._seed is not None,
                 "state": self._state,
             },
         )
         # we only generate one val using the generator in the symbol table
         self._state += 1
-        return create_pdarray(rep_msg)
+        return create_pdarray(rep_msg) if ndim == 1 else create_pdarray(rep_msg).reshape(shape)
 
     def uniform(self, low=0.0, high=1.0, size=None):
         """
@@ -1007,7 +1014,7 @@ class Generator:
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
-            raise ValueError("The size parameter must be > 0")
+            raise ValueError("The size parameter must be >= 0")
 
         dt = akdtype("float64")
         rep_msg = generic_msg(
