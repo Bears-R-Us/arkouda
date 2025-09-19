@@ -60,6 +60,12 @@ def max(
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
 
+    Returns
+    -------
+    Array
+        An array with the maximum values along the given axis, or a one-element
+        array with the maximum value, if no axis is given.
+
     Raises
     ------
     TypeError
@@ -77,12 +83,6 @@ def max(
     Arkouda Array ((5,), float64)[5.0 6.0 7.0 8.0 9.0]
     >>> xp.max(a,axis=1)
     Arkouda Array ((2,), float64)[4.0 9.0]
-
-    Returns
-    -------
-    Array
-        An array with the maximum values along the given axis, or a one-element
-        array with the maximum value, if no axis is given.
 
     """
     if x.dtype not in _real_numeric_dtypes:
@@ -128,6 +128,13 @@ def mean(
         The mean calculated from the pda sum and size, along the axis/axes if
         those are given.
 
+    Raises
+    ------
+    IndexError
+        Raised if axis is not valid for the given array.
+    TypeError
+        Raised if x is not real numeric.
+
     Examples
     --------
     >>> import arkouda as ak
@@ -140,13 +147,6 @@ def mean(
     Arkouda Array ((5,), float64)[2.5 3.5 4.5 5.5 6.5]
     >>> xp.mean(a,axis=1)
     Arkouda Array ((2,), float64)[2.0 7.0]
-
-    Raises
-    ------
-    IndexError
-        Raised if axis is not valid for the given array.
-    TypeError
-        Raised if x is not real numeric.
 
     """
     from arkouda.client import generic_msg
@@ -200,6 +200,12 @@ def min(
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
 
+    Returns
+    -------
+    Array
+        An array with the minimum values along the given axis, or a one-element
+        array with the minimum value, if no axis is given.
+
     Raises
     ------
     TypeError
@@ -217,12 +223,6 @@ def min(
     Arkouda Array ((5,), float64)[0.0 1.0 2.0 3.0 4.0]
     >>> xp.min(a,axis=1)
     Arkouda Array ((2,), float64)[0.0 5.0]
-
-    Returns
-    -------
-    Array
-        An array with the minimum values along the given axis, or a one-element
-        array with the minimum value, if no axis is given.
     """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in min")
@@ -255,16 +255,16 @@ def prod(
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
 
-    Raises
-    ------
-    TypeError
-        Raised if x._array is not real numeric, or can't be cast to a pdarray.
-
     Returns
     -------
     Array
         An array with the product along the given axis, or a one-element
         array with the product of the entire array, if no axis is given.
+
+    Raises
+    ------
+    TypeError
+        Raised if x._array is not real numeric, or can't be cast to a pdarray.
 
     Examples
     --------
@@ -320,6 +320,12 @@ def std(
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
 
+    Returns
+    -------
+    Array
+        An array with the standard deviation along the given axis, or a one-element
+        array with the std of the entire array, if no axis is given.
+
     Raises
     ------
     TypeError
@@ -328,12 +334,6 @@ def std(
         Raised if correction is negative.
     IndexError
         Raised if axis is not valid for given Array.
-
-    Returns
-    -------
-    Array
-        An array with the standard deviation along the given axis, or a one-element
-        array with the std of the entire array, if no axis is given.
 
     Examples
     --------
@@ -406,16 +406,16 @@ def sum(
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
 
-    Raises
-    ------
-    TypeError
-        Raised if x is not numeric.
-
     Returns
     -------
     Array
         An array with the sum along the given axis, or a one-element
         array with the sum of the entire array, if no axis is given.
+
+    Raises
+    ------
+    TypeError
+        Raised if x is not numeric.
 
     Examples
     --------
@@ -471,6 +471,12 @@ def var(
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
 
+    Returns
+    -------
+    Array
+        An array with the variance along the given axis, or a one-element
+        array with the var of the entire array, if no axis is given.
+
     Raises
     ------
     TypeError
@@ -479,12 +485,6 @@ def var(
         Raised if correction is negative.
     IndexError
         Raised if axis is not valid for given Array.
-
-    Returns
-    -------
-    Array
-        An array with the variance along the given axis, or a one-element
-        array with the var of the entire array, if no axis is given.
 
     Examples
     --------
@@ -571,6 +571,11 @@ def cumulative_sum(
     include_initial : bool, optional
         Whether to include the initial value as the first element of the output.
 
+    Returns
+    -------
+    Array
+        A new array holding the result of the cumulative sum along the given axis.
+
     Raises
     ------
     ValueError
@@ -587,11 +592,6 @@ def cumulative_sum(
     Arkouda Array ((3, 5), float64)[[0.0 0.0 0.0 0.0 0.0] [1.0 2.0 3.0 4.0 5.0] [7.0 9.0 11.0 13.0 15.0]]
     >>> xp.cumulative_sum(a,axis=1,include_initial=False)
     Arkouda Array ((2, 5), float64)[[1.0 3.0 6.0 10.0 15.0] [6.0 13.0 21.0 30.0 40.0]]
-
-    Returns
-    -------
-    Array
-        A new array holding the result of the cumulative sum along the given axis.
     """
     from arkouda.client import generic_msg
     from arkouda.numpy.pdarrayclass import _axis_validation
@@ -650,6 +650,11 @@ def cumulative_prod(
     include_initial : bool, optional
         Whether to include the initial value as the first element of the output.
 
+    Returns
+    -------
+    Array
+        A new array holding the result of the cumulative prod along the given axis.
+
     Raises
     ------
     ValueError
@@ -666,11 +671,6 @@ def cumulative_prod(
     Arkouda Array ((3, 3), float64)[[1.0 1.0 1.0] [1.0 2.0 3.0] [4.0 10.0 18.0]]
     >>> xp.cumulative_prod(a,axis=1,include_initial=False)
     Arkouda Array ((2, 3), float64)[[1.0 2.0 6.0] [4.0 20.0 120.0]]
-
-    Returns
-    -------
-    Array
-        A new array holding the result of the cumulative prod along the given axis.
     """
     from arkouda.client import generic_msg
     from arkouda.numpy.pdarrayclass import _axis_validation
