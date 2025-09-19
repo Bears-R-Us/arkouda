@@ -141,7 +141,7 @@ install-zmq: zmq-download-source
 	rm -rf $(ZMQ_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
 
-	cd $(ZMQ_BUILD_DIR) && ./configure --prefix=$(ZMQ_INSTALL_DIR) CFLAGS=-O3 CXXFLAGS=-O3 && make && make install
+	cd $(ZMQ_BUILD_DIR) && ./configure --prefix=$(ZMQ_INSTALL_DIR) CFLAGS="-O3 -Wno-error" CXXFLAGS="-O3 -Wno-error" && make && make install
 	echo '$$(eval $$(call add-path,$(ZMQ_INSTALL_DIR)))' >> Makefile.paths
 
 zmq-clean:
@@ -554,7 +554,7 @@ ifeq ($(shell expr $(CHPL_MINOR) \>= 4),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-24
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \>= 2),1)
+ifeq ($(shell expr $(expr $(CHPL_MINOR) \>= 2) \& $(expr $(CHPL_MINOR) /< 5)),1)
 	ARKOUDA_KEYPART_FLAG := -suseKeyPartStatus=true
 endif
 

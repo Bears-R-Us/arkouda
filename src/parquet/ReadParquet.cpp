@@ -1,5 +1,404 @@
 #include "ReadParquet.h"
-#include "UtilParquet.h"
+
+
+namespace akcpp {
+
+namespace {
+
+// ChplBuf::ElemType can be used to get the type of the Chapel buffer from an
+// Arrow type.
+template<typename ArrowType>
+struct ChplBuf {
+  using ElemType = typename ArrowType::c_type;
+};
+
+// specialization for storing 32-bit data in 64-bit arrays
+template<> struct ChplBuf<arrow::Int32Type>  { using ElemType = int64_t; };
+template<> struct ChplBuf<arrow::UInt32Type> { using ElemType = uint64_t; };
+template<> struct ChplBuf<arrow::FloatType>  { using ElemType = double; };
+
+// TODO The implementation seemingly reads 128-bit decimal values into
+// Chapel `real`s (or C `double`s). I don't see how this can work properly with
+// large enough data. For now, I think this keeps the implementation practically
+// same as the old, likely carrying the same bug into the new implementation,
+// unfortunately.
+// See https://github.com/Bears-R-Us/arkouda/issues/4911.
+template<> struct ChplBuf<parquet::FLBAType>  {using ElemType = double;};
+
+// this struct is used to bundle different types into one, based on a single
+// ArrowType
+template<typename ArrowType>
+struct TypeBundle {
+  using ReaderType = typename parquet::TypedColumnReader<ArrowType>;
+  using ChplType = typename ChplBuf<ArrowType>::ElemType;
+  using PqType = typename ArrowType::c_type;
+};
+
+template<>
+struct TypeBundle<arrow::Decimal128Type> {
+  using ReaderType = typename parquet::TypedColumnReader<parquet::FLBAType>;
+  using ChplType = typename ChplBuf<parquet::FLBAType>::ElemType;
+  using PqType = typename parquet::FixedLenByteArray;
+};
+} // end anonymous namespace
+
+// Generic read implementation
+template<typename ArrowType>
+int64_t ColReadOp::read() {
+  using Types = TypeBundle<ArrowType>;
+  using ChplType = typename Types::ChplType;
+  using ReaderType = typename Types::ReaderType;
+
+  auto chpl_ptr = (ChplType*)chpl_arr;
+  int64_t num_read = 0;
+  ReaderType* reader = static_cast<ReaderType*>(column_reader.get());
+  *startIdx -= reader->Skip(*startIdx);
+
+  // TODO find better variable names. values_read and num_read are confusing
+  int64_t values_read = 0;
+
+  // note that floats are the types that natively support nulls. This generic
+  // read() shouldn't do anything with floats
+  if (nullMode == noNulls || nullMode == onlyFloats) {
+    while (reader->HasNext() && row_idx < numElems) {
+      if((numElems - row_idx) < batchSize) // adjust batchSize if needed
+        batchSize = numElems - row_idx;
+      std::ignore = reader->ReadBatch(batchSize, nullptr, nullptr,
+                                      &chpl_ptr[row_idx], &values_read);
+      row_idx+=values_read;
+      num_read+=values_read;
+    }
+  }
+  else {
+    int16_t definition_level; // nullable type and only reading single records in batch
+    while (reader->HasNext() && row_idx < numElems) {
+      std::ignore = reader->ReadBatch(1, &definition_level, nullptr,
+                                      &chpl_ptr[row_idx], &values_read);
+      // if values_read is 0, that means that it was a null value
+      if(values_read == 0) {
+        where_null_chpl[row_idx] = true;
+      }
+      row_idx++;
+      num_read++;
+    }
+  }
+  return num_read;
+}
+
+template<typename Types>
+int64_t ColReadOp::_readShortIntegral() {
+  using ReaderType = typename Types::ReaderType;
+  using ChplType = typename Types::ChplType;
+  using PqType = typename Types::PqType;
+
+  auto chpl_ptr = (ChplType*)chpl_arr;
+  ReaderType* reader = static_cast<ReaderType*>(column_reader.get());
+  *startIdx -= reader->Skip(*startIdx);
+
+  // TODO find better variable names. values_read and num_read are confusing
+  int64_t values_read = 0;
+
+  int64_t num_read = 0;
+  if (not hasNonFloatNulls) {
+    // TODO we can read into the actual Chapel array, and then space the data
+    // out in reverse order. I don't think we need to have this temporary
+    // buffer
+    PqType* tmpArr = (PqType*)malloc(batchSize * sizeof(PqType));
+    while (reader->HasNext() && row_idx < numElems) {
+      if((numElems - row_idx) < batchSize) // adjust batchSize if needed
+        batchSize = numElems - row_idx;
+
+      // Can't read directly into chpl_ptr because it is int64
+      std::ignore = reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr,
+                                      &values_read);
+
+      for (int64_t j = 0; j < values_read; j++) {
+        chpl_ptr[row_idx+j] = (ChplType)tmpArr[j];
+      }
+
+      row_idx+=values_read;
+      num_read+=values_read;
+    }
+    free(tmpArr);
+  }
+  else {
+    PqType tmp;
+    // Engin: we don't seem to use this anywhere, but passing nullptr instead
+    // of this causes errors. Why?
+    int16_t definition_level; // nullable type and only reading single
+                              // records in batch
+    while (reader->HasNext() && row_idx < numElems) {
+      std::ignore = reader->ReadBatch(1, &definition_level, nullptr, &tmp,
+                                      &values_read);
+      // if values_read is 0, that means that it was a null value
+      if(values_read == 0) {
+        where_null_chpl[row_idx] = true;
+      }
+      else {
+        chpl_ptr[row_idx] = (ChplType)tmp;
+      }
+      row_idx++;
+      num_read++;
+    }
+  }
+  return num_read;
+}
+
+template<>
+int64_t ColReadOp::read<arrow::Int32Type>() {
+  return _readShortIntegral<TypeBundle<arrow::Int32Type>>();
+}
+
+template<>
+int64_t ColReadOp::read<arrow::UInt32Type>() {
+  return _readShortIntegral<TypeBundle<arrow::UInt32Type>>();
+}
+
+template<>
+int64_t ColReadOp::read<arrow::FloatType>() {
+  using Types = TypeBundle<arrow::FloatType>;
+  using ReaderType = typename Types::ReaderType;
+  using ChplType = typename Types::ChplType;
+  using PqType = typename Types::PqType;
+
+  auto chpl_ptr = (ChplType*)chpl_arr;
+  ReaderType* reader = static_cast<ReaderType*>(column_reader.get());
+  *startIdx -= reader->Skip(*startIdx);
+
+  // TODO find better variable names. values_read and num_read are confusing
+  int64_t values_read = 0;
+
+  int64_t num_read = 0;
+  if (nullMode == noNulls) {
+    PqType* tmpArr = (PqType*)malloc(batchSize * sizeof(PqType));
+    while (reader->HasNext() && row_idx < numElems) {
+      if((numElems - row_idx) < batchSize) // adjust batchSize if needed
+        batchSize = numElems - row_idx;
+      std::ignore = reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr,
+                                      &values_read);
+
+      // promote to larger type
+      for (int64_t j = 0; j < values_read; j++) {
+        chpl_ptr[row_idx+j] = (ChplType)tmpArr[j];
+      }
+
+      row_idx+=values_read;
+      num_read+=values_read;
+
+    }
+    free(tmpArr);
+  }
+  else {
+    int16_t definition_level; // nullable type and only reading single records in batch
+    while (reader->HasNext() && row_idx < numElems) {
+      PqType value = 0;
+      std::ignore = reader->ReadBatch(1, &definition_level, nullptr, &value,
+                                      &values_read);
+      // if values_read is 0, that means that it was a null value
+      if(values_read > 0) {
+        chpl_ptr[row_idx] = (ChplType) value;
+      }
+      else {
+        chpl_ptr[row_idx] = NAN;
+      }
+      row_idx++;
+      num_read++;
+    }
+  }
+  return num_read;
+}
+
+template<>
+int64_t ColReadOp::read<arrow::DoubleType>() {
+  using Types = TypeBundle<arrow::DoubleType>;
+  using ReaderType = typename Types::ReaderType;
+  using ChplType = typename Types::ChplType;
+  using PqType = typename Types::PqType;
+
+  auto chpl_ptr = (ChplType*)chpl_arr;
+  ReaderType* reader = static_cast<ReaderType*>(column_reader.get());
+  *startIdx -= reader->Skip(*startIdx);
+
+  // TODO find better variable names. values_read and num_read are confusing
+  int64_t values_read = 0;
+
+  int64_t num_read = 0;
+  if (nullMode == noNulls) {
+    while (reader->HasNext() && row_idx < numElems) {
+      if((numElems - row_idx) < batchSize) // adjust batchSize if needed
+        batchSize = numElems - row_idx;
+      std::ignore = reader->ReadBatch(batchSize, nullptr, nullptr,
+                                      &chpl_ptr[row_idx], &values_read);
+      row_idx+=values_read;
+      num_read+=values_read;
+    }
+  }
+  else {
+    int16_t definition_level; // nullable type and only reading single records in batch
+    while (reader->HasNext() && row_idx < numElems) {
+      PqType value = 0;
+      std::ignore = reader->ReadBatch(1, &definition_level, nullptr, &value,
+                                      &values_read);
+      // if values_read is 0, that means that it was a null value
+      if(values_read > 0) {
+        chpl_ptr[row_idx] = (ChplType) value;
+      }
+      else {
+        chpl_ptr[row_idx] = NAN;
+      }
+      row_idx++;
+      num_read++;
+    }
+  }
+  return num_read;
+}
+
+// For Parquet's "Decimal" types -- typically larger, or more precise floats
+template<>
+int64_t ColReadOp::read<arrow::Decimal128Type>() {
+  using Types = TypeBundle<arrow::Decimal128Type>;
+  using ReaderType = typename Types::ReaderType;
+  using ChplType = typename Types::ChplType;
+  using PqType = typename Types::PqType;
+
+  auto chpl_ptr = (ChplType*)chpl_arr;
+  ReaderType* reader = static_cast<ReaderType*>(column_reader.get());
+  startIdx -= reader->Skip(*startIdx);
+
+  // TODO find better variable names. values_read and num_read are confusing
+  int64_t values_read = 0;
+  int64_t num_read = 0;
+
+  using LogType = parquet::DecimalLogicalType;
+  const auto& type = dynamic_cast<const LogType&>(*col_info->logical_type());
+  const int64_t precision = type.precision();
+
+  // In ReadParquet.cpp, there is a basic look up table for this. But number
+  // of required bytes can be found mathematically:
+  int numbits = ceil(precision*3.321928);  // the magic number is the constant
+                                           // from log2(10^precision)
+  if (numbits%8==0) numbits++;             // add a bit for the sign bit if we
+                                           // are at the byte boundary
+  const auto numbytes = ceil(numbits/8.0);
+
+  while (reader->HasNext() && row_idx < numElems) {
+    PqType value;
+    std::ignore = reader->ReadBatch(1, nullptr, nullptr, &value,
+                                    &values_read);
+    arrow::Decimal128 v;
+    PARQUET_ASSIGN_OR_THROW(v,
+                            ::arrow::Decimal128::FromBigEndian(value.ptr,
+                                                               numbytes));
+
+    chpl_ptr[row_idx] = v.ToDouble(0);
+    row_idx+=values_read;
+    num_read+=values_read;
+  }
+
+  return num_read;
+}
+
+
+int readAllCols(const char* filename, void** chpl_arrs, int* types,
+                bool* where_null_chpl, int64_t numElems, int64_t startIdx,
+                int64_t batchSize,
+                chplEnum_t nullMode, char** errMsg) {
+  try {
+    std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
+        parquet::ParquetFileReader::OpenFile(filename, false);
+
+    std::shared_ptr<parquet::FileMetaData> file_metadata =
+        parquet_reader->metadata();
+
+    int num_row_groups = file_metadata->num_row_groups();
+
+    const auto num_cols = cpp_getNumCols(filename, errMsg);
+    if (num_cols == ARROWERROR) {
+      return ARROWERROR;
+    }
+
+    std::vector<int64_t> startIdxPerCol;
+    startIdxPerCol.resize(num_cols, startIdx);
+
+    int64_t row_idx = 0;
+
+    for (int rg_idx = 0; (rg_idx<num_row_groups) && (row_idx<numElems);
+         rg_idx++) {
+
+      std::shared_ptr<parquet::RowGroupReader> row_group_reader =
+          parquet_reader->RowGroup(rg_idx);
+
+      std::shared_ptr<parquet::ColumnReader> column_reader;
+
+      int64_t nrows_in_iter = -1;
+
+      for (int col_idx = 0; col_idx<num_cols ; col_idx++) {
+        column_reader = row_group_reader->Column(col_idx);
+        const parquet::ColumnDescriptor* col_info =
+          file_metadata->schema()->Column(col_idx);
+
+        void* chpl_arr = chpl_arrs[col_idx];
+
+        // TODO, I want values of this type to be created per read operation,
+        // not per column, per rowgroup
+        auto op = ColReadOp { chpl_arr,
+                              &startIdxPerCol[col_idx],
+                              column_reader,
+                              false, // has_non_float_nulls is for backward
+                                     // compat and ignored while reading all
+                                     // columns. nullMode is used instead.
+                              nullMode,
+                              row_idx,
+                              numElems,
+                              batchSize,
+                              where_null_chpl,
+                              col_info };
+
+        int64_t nread;
+        switch (types[col_idx]) {
+          case ARROWFLOAT:   nread = op.read<arrow::FloatType>();      break;
+          case ARROWDOUBLE:  nread = op.read<arrow::DoubleType>();     break;
+          case ARROWINT64:   nread = op.read<arrow::Int64Type>();      break;
+          case ARROWUINT64:  nread = op.read<arrow::UInt64Type>();     break;
+          case ARROWBOOLEAN: nread = op.read<arrow::BooleanType>();    break;
+          case ARROWINT32:   nread = op.read<arrow::Int32Type>();      break;
+          case ARROWUINT32:  nread = op.read<arrow::UInt32Type>();     break;
+          case ARROWDECIMAL: nread = op.read<arrow::Decimal128Type>(); break;
+          default:
+            // TODO we might want to have our own exception types on C++ side,
+            // too 
+            throw std::domain_error("Unknown Arrow type");
+        }
+
+        if (nrows_in_iter == -1) {
+          // this is the first time we are reading in this row group. We'll need
+          // to bump up the row_idx in the end of the iteration by nrows_read
+          nrows_in_iter = nread;
+        }
+        else {
+          // we already now how many rows we are reading per column, which is
+          // stored in nrows_in_iter. But did we read the correct number of rows
+          // in this particular iteration?
+          if (nread != nrows_in_iter) {
+            std::stringstream msgStream;
+            msgStream << "Uneven number of rows are read.";
+            msgStream << " Expected " << nrows_in_iter;
+            msgStream << " But read " << nread << " instead\n";
+            throw std::length_error(msgStream.str());
+            return ARROWERROR;
+          }
+        }
+      }
+
+      row_idx += nrows_in_iter;
+    }
+    return 0;
+  } catch (const std::exception& e) {
+    *errMsg = strdup(e.what());
+    return ARROWERROR;
+  }
+}
+} // end namespace akcpp
 
 // Returns the number of elements read
 template <typename ReaderType, typename ChplType>
@@ -37,7 +436,8 @@ int64_t readColumn(void* chpl_arr, int64_t *startIdx, std::shared_ptr<parquet::C
 }
 
 template <typename ReaderType, typename ChplType, typename PqType>
-int64_t readColumnDbFl(void* chpl_arr, int64_t *startIdx, std::shared_ptr<parquet::ColumnReader> column_reader,
+int64_t readColumnDbFl(void* chpl_arr, int64_t *startIdx,
+                       std::shared_ptr<parquet::ColumnReader> column_reader,
                     bool hasNonFloatNulls, int64_t i, int64_t numElems, int64_t batchSize,
                     int64_t values_read, bool* where_null_chpl) {
   int16_t definition_level; // nullable type and only reading single records in batch
@@ -75,13 +475,14 @@ int64_t readColumnIrregularBitWidth(void* chpl_arr, int64_t *startIdx, std::shar
 
   int64_t num_read = 0;
   if (not hasNonFloatNulls) {
-    PqType* tmpArr = (PqType*)malloc(batchSize * sizeof(int32_t));
+    PqType* tmpArr = (PqType*)malloc(batchSize * sizeof(PqType));
     while (reader->HasNext() && i < numElems) {
       if((numElems - i) < batchSize) // adjust batchSize if needed
         batchSize = numElems - i;
 
       // Can't read directly into chpl_ptr because it is int64
-      (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
+      (void)reader->ReadBatch(batchSize, nullptr, nullptr,
+                              (int32_t*)tmpArr, &values_read);
       for (int64_t j = 0; j < values_read; j++)
         chpl_ptr[i+j] = (ChplType)tmpArr[j];
       i+=values_read;
@@ -90,9 +491,10 @@ int64_t readColumnIrregularBitWidth(void* chpl_arr, int64_t *startIdx, std::shar
     free(tmpArr);
   }
   else {
-    int32_t tmp;
+    PqType tmp;
     while (reader->HasNext() && i < numElems) {
-      (void)reader->ReadBatch(1, &definition_level, nullptr, &tmp, &values_read);
+      (void)reader->ReadBatch(1, &definition_level, nullptr,
+                              (int32_t*)&tmp, &values_read);
       // if values_read is 0, that means that it was a null value
       if(values_read == 0) {
         where_null_chpl[i] = true;
@@ -180,6 +582,7 @@ int cpp_readStrColumnByName(const char* filename, void* chpl_arr, const char* co
   }
 }
 
+
 int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_chpl, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, int64_t byteLength, bool hasNonFloatNulls, char** errMsg) {
   try {
     int64_t ty = cpp_getType(filename, colname, errMsg);
@@ -215,11 +618,25 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_
       // Since int64 and uint64 Arrow dtypes share a physical type and only differ
       // in logical type, they must be read from the file in the same way
       if(ty == ARROWINT64 || ty == ARROWUINT64) {
-        i += readColumn<parquet::Int64Reader, int64_t>(chpl_arr, &startIdx, column_reader, hasNonFloatNulls, i,
-                   numElems, batchSize, values_read, where_null_chpl);
-      } else if(ty == ARROWINT32 || ty == ARROWUINT32) {
-        i += readColumnIrregularBitWidth<parquet::Int32Reader, int64_t, int32_t>(chpl_arr, &startIdx, column_reader, hasNonFloatNulls, i,
-                                              numElems, batchSize, values_read, where_null_chpl);
+        i += readColumn<parquet::Int64Reader, int64_t>(chpl_arr,
+                                                       &startIdx,
+                                                       column_reader,
+                                                       hasNonFloatNulls,
+                                                       i,
+                                                       numElems,
+                                                       batchSize,
+                                                       values_read,
+                                                       where_null_chpl);
+      } else if(ty == ARROWINT32) {
+        i += 
+          readColumnIrregularBitWidth<parquet::Int32Reader, int64_t, int32_t>(
+              chpl_arr, &startIdx, column_reader, hasNonFloatNulls, i,
+              numElems, batchSize, values_read, where_null_chpl);
+      } else if(ty == ARROWUINT32) {
+        i += 
+          readColumnIrregularBitWidth<parquet::Int32Reader, uint64_t, uint32_t>(
+              chpl_arr, &startIdx, column_reader, hasNonFloatNulls, i,
+              numElems, batchSize, values_read, where_null_chpl);
       } else if(ty == ARROWBOOLEAN) {
         i += readColumn<parquet::BoolReader, bool>(chpl_arr, &startIdx, column_reader, hasNonFloatNulls, i,
                                               numElems, batchSize, values_read, where_null_chpl);
@@ -771,8 +1188,23 @@ extern "C" {
     return cpp_readStrColumnByName(filename, chpl_arr, colname, numElems, batchSize, errMsg);
   }
   
-  int c_readColumnByName(const char* filename, void* chpl_arr, bool* where_null_chpl, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, int64_t byteLength, bool hasNonFloatNulls, char** errMsg) {
-    return cpp_readColumnByName(filename, chpl_arr, where_null_chpl, colname, numElems, startIdx, batchSize, byteLength, hasNonFloatNulls, errMsg);
+  int c_readAllCols(const char* filename, void** chpl_arrs, int* types,
+                         bool* where_null_chpl, int64_t numElems,
+                         int64_t startIdx, int64_t batchSize,
+                         chplEnum_t nullMode, char** errMsg) {
+    return akcpp::readAllCols(filename, chpl_arrs, types, where_null_chpl,
+                              numElems, startIdx, batchSize, nullMode,
+                              errMsg);
+  }
+
+  int c_readColumnByName(const char* filename, void* chpl_arr,
+                         bool* where_null_chpl, const char* colname,
+                         int64_t numElems, int64_t startIdx, int64_t batchSize,
+                         int64_t byteLength, bool hasNonFloatNulls,
+                         char** errMsg) {
+    return cpp_readColumnByName(filename, chpl_arr, where_null_chpl, colname,
+                                numElems, startIdx, batchSize, byteLength,
+                                hasNonFloatNulls, errMsg);
   }
 
   int c_readListColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {

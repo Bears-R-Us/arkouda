@@ -1,5 +1,11 @@
+#ifndef UTIL_PARQUET_H
+#define UTIL_PARQUET_H
+
 #include <stdint.h>
 #include <stdbool.h>
+#include "SharedEnums.h"
+
+#define chplEnum_t int64_t
 
 // Wrap functions in C extern if compiling C++ object file
 #ifdef __cplusplus
@@ -14,7 +20,9 @@
 #include <cmath>
 #include <queue>
 
+
 std::shared_ptr<parquet::schema::GroupNode> SetupSchema(void* column_names, void * objTypes, void* datatypes, int64_t colnum);
+
 
 extern "C" {
 #endif
@@ -44,6 +52,7 @@ extern "C" {
 #define ZSTD_COMP 4
 #define LZ4_COMP 5
 
+
   typedef struct {
     uint32_t len;
     const uint8_t* ptr;
@@ -67,6 +76,11 @@ extern "C" {
   // is no C++ interoperability supported in Chapel today.
   int64_t c_getNumRows(const char*, char** errMsg);
   int64_t cpp_getNumRows(const char*, char** errMsg);
+
+  int64_t c_getNumCols(const char* filename, char** errMsg);
+  int64_t cpp_getNumCols(const char* filename, char** errMsg);
+
+  int c_getAllTypes(const char* filename, int* types_out, char** errMsg);
   
   int64_t c_getStringColumnNullIndices(const char* filename, const char* colname, void* chpl_nulls, char** errMsg);
   int64_t cpp_getStringColumnNullIndices(const char* filename, const char* colname, void* chpl_nulls, char** errMsg);
@@ -148,3 +162,4 @@ extern "C" {
   bool check_status_ok(arrow::Status status, char** errMsg);
 }
 #endif
+#endif //UTIL_PARQUET_H
