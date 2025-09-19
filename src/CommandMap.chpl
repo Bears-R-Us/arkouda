@@ -23,6 +23,7 @@ module CommandMap {
   var moduleMap: map(string, (string, int));  // cmd-name => (module-name, line number)
   use Set;
   var usedModules: set(string);
+  const requiredModules = new set(string, ["GenSymIO", "MsgProcessing"]);
 
   /**
    * Register command->function in the CommandMap
@@ -83,7 +84,10 @@ module CommandMap {
 
   proc executeCommand(cmd: string, msgArgs, st): MsgTuple throws {
     if commandMap.contains(cmd) {
-      if moduleMap.contains(cmd) then usedModules.add(moduleMap[cmd][0]);
+      if moduleMap.contains(cmd) {
+        var m = moduleMap[cmd][0];
+        if !requiredModules.contains(m) then usedModules.add(m);
+      }
       return commandMap[cmd](cmd, msgArgs, st);
     } else {
       return MsgTuple.error("Unrecognized command: %s".format(cmd));

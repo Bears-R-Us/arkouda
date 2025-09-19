@@ -12,7 +12,10 @@ def getModules(config):
 
 
 def getModuleFiles(mods, src_dir):
-    return " ".join([f"{mod}.chpl" if mod[0] == "/" else f"{src_dir}/{mod}.chpl" for mod in mods])
+    required_modules = {'GenSymIO', 'MsgProcessing', f'{src_dir}/GenSymIO.chpl',
+                       f'{src_dir}/MsgProcessing.chpl'}
+    return " ".join([f"{mod}.chpl" if mod[0] == "/" else f"{src_dir}/{mod}.chpl" for mod in mods
+                      if mod not in required_modules])
 
 
 def parseServerConfig(config_filename, src_dir):
