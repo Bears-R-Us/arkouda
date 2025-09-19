@@ -1,14 +1,11 @@
 from typing import TYPE_CHECKING, TypeVar
 
-from pandas.api.extensions import (
-    ExtensionArray,
-    ExtensionDtype,
-    register_extension_dtype,
-)
+from pandas.api.extensions import ExtensionArray
 
 import arkouda as ak
 
 from ._arkouda_base_array import ArkoudaBaseArray
+from ._dtypes import ArkoudaCategoricalDtype
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
@@ -16,18 +13,7 @@ else:
     Categorical = TypeVar("Categorical")
 
 
-__all__ = ["ArkoudaCategoricalDtype", "ArkoudaCategoricalArray"]
-
-
-@register_extension_dtype
-class ArkoudaCategoricalDtype(ExtensionDtype):
-    name = "arkouda_categorical"
-    type = Categorical
-    kind = "O"
-
-    @classmethod
-    def construct_array_type(cls):
-        return ArkoudaCategoricalArray
+__all__ = ["ArkoudaCategoricalArray"]
 
 
 class ArkoudaCategoricalArray(ArkoudaBaseArray, ExtensionArray):
