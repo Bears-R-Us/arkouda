@@ -282,6 +282,28 @@ class TestCategorical:
             assert cat1[revs].tolist() == ans[revs].tolist()
             assert cat2[~revs].tolist() == ans[~revs].tolist()
 
+    def test_where_cat_with_scalar_existing_and_new_labels(self):
+        revs = ak.arange(6) % 2 == 0
+        cat = ak.Categorical(ak.array(["a", "a", "a", "a", "a", "a"]))
+
+        # existing label (after we seed one)
+        cat2 = ak.Categorical(ak.array(["b", "a", "a", "a", "a", "a"]))
+        out_existing = ak.where(revs, "b", cat2)
+        assert out_existing.to_ndarray().tolist() == ["b", "a", "b", "a", "b", "a"]
+
+        # new label not in categories
+        out_new = ak.where(revs, "None", cat)
+        assert out_new.to_ndarray().tolist() == ["None", "a", "None", "a", "None", "a"]
+
+    def test_where_scalar_then_cat_symmetry(self):
+        mask = ak.array([True, False, True, False])
+        cat = ak.Categorical(ak.array(["x", "y", "y", "y"]))
+
+        out1 = ak.where(mask, cat, "z")  # new label
+        out2 = ak.where(mask, "z", cat)  # symmetric path
+        assert out1.to_ndarray().tolist() == ["x", "z", "y", "z"]
+        assert out2.to_ndarray().tolist() == ["z", "y", "z", "y"]
+
     def test_concatenate(self):
         cat_one = self.create_basic_categorical("string", 50)
         cat_two = self.create_basic_categorical("string-two", 50)
@@ -359,7 +381,6 @@ class TestCategorical:
             # for both constructors should be sufficient
             assert cat_from_hdf.segments is not None
             assert cat_from_hdf.permutation is not None
-            print(f"==> cat_from_hdf.size:{cat_from_hdf.size}")
             assert cat_from_hdf.size == num_elems
 
     def test_save_and_load_categorical_multi(self, df_test_base_tmp):

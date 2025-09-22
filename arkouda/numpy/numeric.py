@@ -1936,7 +1936,7 @@ def _str_cat_where(
             b_code = argmax(is_in_categories)
         else:
             new_categories = concatenate([A.categories, array([B])])
-            b_code = A.codes.size + 1
+            b_code = A.categories.size
         new_codes = where(condition, A.codes, b_code)
         return Categorical.from_codes(new_codes, new_categories, NAvalue=A.NAvalue).reset_categories()
 
