@@ -4,7 +4,7 @@ ARG CHPL_VERSION
 
 USER root
 
-ENV PATH=/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/venv/bin
+ENV PATH=/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/chapel-$CHPL_VERSION/bin/linux64-x86_64:/opt/chapel-$CHPL_VERSION/bin/linux64-arm64:/opt/chapel-$CHPL_VERSION/bin/linux64-aarch64
 
 ENV CHPL_HOME=/opt/chapel-$CHPL_VERSION
 ENV CHPL_RE2=bundled
@@ -98,6 +98,7 @@ RUN rm -fr arkouda
 ###############################################################################
 
 #   Save build environment to the .bashrc.local
+# TODO: is this really needed?
 RUN env >> ~/.bashrc.local
 
 
