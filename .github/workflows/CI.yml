@@ -270,7 +270,7 @@ jobs:
         dnf update -y
         dnf install -y zlib-devel gcc gcc-c++ make zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl openssl-devel libffi-devel xz-devel zlib-devel
 
-    # TODO: why does this need to build its own Python when the container has itrs own?
+    # TODO: why does this need to build its own Python when the container has its own?
     # Download and install Python from source (updated URL for Python 3.13)
     - name: Download Python ${matrix.python-version} source
       run: |
