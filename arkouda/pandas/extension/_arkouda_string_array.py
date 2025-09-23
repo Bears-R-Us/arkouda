@@ -79,14 +79,3 @@ class ArkoudaStringArray(ArkoudaBaseArray, ExtensionArray):
 
     def __repr__(self):
         return f"ArkoudaStringArray({self._data})"
-
-    def factorize(self, *, sort=False, use_na_sentinel=True, **kwargs):
-        import numpy as np
-        import pandas as pd
-
-        codes, uniques = pd.factorize(
-            np.asarray(self.to_numpy()),
-            sort=sort,
-            use_na_sentinel=use_na_sentinel,
-        )
-        return codes, uniques
