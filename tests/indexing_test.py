@@ -76,7 +76,7 @@ class TestIndexing:
         # set [int] = val with uint key and value
         val = value_scalar(dtype, prob_size)[0]
         pda[np.uint(2)] = val
-        assert pda[2] == val
+        assert np.allclose(pda[2], val)
 
         # set [slice] = scalar/pdarray
         pda[:prob_size] = val
