@@ -845,6 +845,7 @@ def read_parquet(
     tag_data: bool = False,
     read_nested: bool = True,
     has_non_float_nulls: bool = False,
+    null_handling: Optional[str] = None,
     fixed_len: int = -1,
 ) -> Union[
     Mapping[
@@ -892,8 +893,18 @@ def read_parquet(
         SegArray (or other nested Parquet columns) will be ignored.
         If datasets is not None, this will be ignored.
     has_non_float_nulls: bool
+        Deprecated. Please use null_handling.
         Default False. This flag must be set to True to read non-float parquet columns
         that contain null values.
+    null_handling: Optional str
+        Defaults to "only floats".
+        Supported values are "none", "only floats", "all".
+        If "none", the data is assumed to be free of nulls.  This results in the
+        fastest performance. However, if there is nulls in the data, the
+        behavior is undefined. If "only floats", only floating point typed
+        columns may contain nulls. This makes reading other data types faster.
+        If "all", any column can contain nulls. This is the most generally
+        applicable mode, though results in slower performance across the board.
     fixed_len: int
         Default -1. This value can be set for reading Parquet string columns when the
         length of each string is known at runtime. This can allow for skipping byte
@@ -955,6 +966,42 @@ def read_parquet(
 
     if isinstance(filenames, str):
         filenames = [filenames]
+
+    # normalize null handling arguments
+    if null_handling not in (
+        None,
+        "none",
+        "only floats",
+        "all",
+    ):
+        raise RuntimeError("null_handling argument only accepts 'none', 'only_floats', or 'all' options")
+
+    if datasets is None and has_non_float_nulls:
+        warn(
+            "has_non_float_nulls argument has been deprecated when reading "
+            "Parquet files. Please use null_handling='all', instead",
+            DeprecationWarning,
+        )
+        if null_handling is not None:
+            warn(
+                "Both the deprecated has_non_float_nulls and its replacement "
+                "null_handling arguments are used. null_handling will be "
+                "preferred and has_non_float_nulls will be ignored",
+                UserWarning,
+            )
+        else:
+            null_handling = "all"
+
+    if null_handling is None:
+        null_handling = "only floats"
+
+    # adjust has_non_float_nulls in case we are reading a single column. This is
+    # a workaround while we unify the read interface of the server
+    if null_handling in ("only floats", "none"):
+        has_non_float_nulls = False
+
+    read_all_cols = datasets is None
+
     datasets = _prep_datasets(filenames, datasets, read_nested=read_nested)
 
     if iterative:
@@ -974,20 +1021,38 @@ def read_parquet(
             for dset in datasets
         }
     else:
-        rep_msg = generic_msg(
-            cmd="readAllParquet",
-            args={
-                "strict_types": strict_types,
-                "dset_size": len(datasets),
-                "filename_size": len(filenames),
-                "allow_errors": allow_errors,
-                "dsets": datasets,
-                "filenames": filenames,
-                "tag_data": tag_data,
-                "has_non_float_nulls": has_non_float_nulls,
-                "fixed_len": fixed_len,
-            },
-        )
+        if read_all_cols:
+            rep_msg = generic_msg(
+                cmd="readAllColsParquet",
+                args={
+                    "strict_types": strict_types,
+                    "dset_size": len(datasets),
+                    "filename_size": len(filenames),
+                    "allow_errors": allow_errors,
+                    "dsets": datasets,
+                    "filenames": filenames,
+                    "tag_data": tag_data,
+                    "has_non_float_nulls": has_non_float_nulls,
+                    "null_handling": null_handling,
+                    "fixed_len": fixed_len,
+                },
+            )
+        else:
+            rep_msg = generic_msg(
+                cmd="readAllParquet",
+                args={
+                    "strict_types": strict_types,
+                    "dset_size": len(datasets),
+                    "filename_size": len(filenames),
+                    "allow_errors": allow_errors,
+                    "dsets": datasets,
+                    "filenames": filenames,
+                    "tag_data": tag_data,
+                    "has_non_float_nulls": has_non_float_nulls,
+                    "fixed_len": fixed_len,
+                },
+            )
+
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure
         _parse_errors(rep, allow_errors)
         return _build_objects(rep)

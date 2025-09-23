@@ -325,7 +325,9 @@ class TestParquet:
                 assert (np_edge_case == pq_arr.to_ndarray()).all()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
-    def test_large_parquet_io(self, par_test_base_tmp, prob_size):
+    @pytest.mark.parametrize("use_str", [True, False])
+    @pytest.mark.parametrize("null_handling", ["none", "only floats", "all"])
+    def test_large_parquet_io(self, par_test_base_tmp, prob_size, use_str, null_handling):
         with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             filename = f"{tmp_dirname}/pq_test_large_parquet"
             size = max(
@@ -334,15 +336,17 @@ class TestParquet:
             bool_array = np.array((size // 2) * [True, False]).tolist()
             flt_array = np.arange(size).astype(np.float64).tolist()
             int_array = np.arange(size).astype(np.int64).tolist()
-            str_array = np.array(["a" + str(i) for i in np.arange(size)]).tolist()
-            arrays = [bool_array, int_array, flt_array, str_array]
+            arrays = [bool_array, int_array, flt_array]
+            names = ["first", "second", "third"]
+            if use_str:
+                arrays.append(np.array(["a" + str(i) for i in np.arange(size)]).tolist())
+                names.append("fourth")
             tuples = list(zip(*arrays))
-            names = ["first", "second", "third", "fourth"]
             index = pd.MultiIndex.from_tuples(tuples, names=names)
             s = pd.Series(np.random.randn(size), index=index)
             df = s.to_frame()
             df.to_parquet(filename)
-            ak_df = ak.DataFrame(ak.read_parquet(filename))
+            ak_df = ak.DataFrame(ak.read_parquet(filename, null_handling=null_handling))
             #  This check is on all of the random numbers generated in s
             assert np.all(ak_df.to_pandas().values[:, 0] == s.values)
             #  This check is on all of the elements of the MultiIndex
@@ -747,7 +751,9 @@ class TestParquet:
     def test_decimal_reads(self, par_test_base_tmp):
         cols = []
         data = []
-        for i in range(1, 39):
+        min_prec = 1
+        max_prec = 39
+        for i in range(min_prec, max_prec):
             cols.append(("decCol" + str(i), pa.decimal128(i, 0)))
             data.append([i])
 
@@ -757,8 +763,8 @@ class TestParquet:
         with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             pq.write_table(table, f"{tmp_dirname}/decimal")
             ak_data = ak.read(f"{tmp_dirname}/decimal")
-            for i in range(1, 39):
-                assert np.allclose(ak_data["decCol" + str(i)].to_ndarray(), data[i - 1])
+            for idx, i in enumerate(range(min_prec, max_prec)):
+                assert np.allclose(ak_data["decCol" + str(i)].to_ndarray(), data[idx])
 
     def test_multi_batch_reads(self, par_test_base_tmp):
         # verify reproducer for #3074 is resolved
@@ -893,6 +899,61 @@ class TestParquet:
                 # this file should raise an error and not crash the server
                 with pytest.raises(RuntimeError):
                     ak.read_parquet(filename, datasets=columns)
+
+    def test_null_handling_all(self, par_test_base_tmp):
+        df = pd.DataFrame(
+            {
+                "ints": [1, None, 3, 4, None, 6],  # pandas None → null
+                "floats": [1.0, 2.5, None, 4.2, None, 6.7],
+                "doubles": [1.0, None, 3.14, None, 5.55, 6.66],
+            }
+        )
+
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            filename = f"{tmp_dirname}/null_handling_all.parquet"
+            table = pa.Table.from_pandas(df, preserve_index=False)
+            pq.write_table(table, filename)
+
+            ak_df = ak.DataFrame(ak.read_parquet(filename, null_handling="all"))
+
+            pd.testing.assert_frame_equal(df, ak_df.to_pandas())
+
+    def test_null_handling_only_floats(self, par_test_base_tmp):
+        df = pd.DataFrame(
+            {
+                "floats": [1.0, 2.5, None, 4.2, None, 6.7],
+                "doubles": [1.0, None, 3.14, None, 5.55, 6.66],
+            }
+        )
+
+        with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
+            filename = f"{tmp_dirname}/null_handling_only_floats.parquet"
+            table = pa.Table.from_pandas(df, preserve_index=False)
+            pq.write_table(table, filename)
+
+            ak_df = ak.DataFrame(ak.read_parquet(filename, null_handling="only floats"))
+
+            pd.testing.assert_frame_equal(df, ak_df.to_pandas())
+
+    def test_incorrect_null_handling(self):
+        try:
+            ak.read_parquet("bogus", null_handling="bogus")
+        except RuntimeError as err:
+            assert "null_handling argument only accepts" in str(err)
+
+    def test_deprecated_has_non_float_nulls(self):
+        with pytest.deprecated_call():
+            try:
+                ak.read_parquet("bogus", has_non_float_nulls=True)
+            except RuntimeError as err:
+                assert "File bogus does not exist" in str(err)
+
+    def test_both_null_warning(self):
+        with pytest.warns(UserWarning):
+            try:
+                ak.read_parquet("bogus", has_non_float_nulls=True, null_handling="only floats")
+            except RuntimeError as err:
+                assert "File bogus does not exist" in str(err)
 
 
 class TestHDF5:
