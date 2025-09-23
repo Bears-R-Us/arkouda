@@ -42,8 +42,8 @@ module RandMsg
     proc delGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const name = msgArgs.getValueOf("name");
         var generatorEntry = st(name);
-        st.deleteEntry(generatorEntry.name);
         var repMsg = "deleted " +  generatorEntry.name;
+        st.deleteEntry(generatorEntry.name);
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return MsgTuple.success();
     }
