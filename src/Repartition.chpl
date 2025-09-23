@@ -195,9 +195,9 @@ module Repartition
 
   }
 
-  proc repartitionByLocaleStringArray(const ref destLocales: [PrivateSpace] innerArray(int),
-                                 const ref strOffsets: [PrivateSpace] innerArray(int),
-                                 const ref strBytes: [PrivateSpace] innerArray(uint(8))):
+  proc repartitionByLocaleStringArray(const ref destLocales: [] innerArray(int),
+                                 const ref strOffsets: [] innerArray(int),
+                                 const ref strBytes: [] innerArray(uint(8))):
     ([PrivateSpace] innerArray(int), [PrivateSpace] innerArray(uint(8)))
   {
     var numBytesSendingByLocale: [PrivateSpace] [0..#numLocales] int;
@@ -217,13 +217,14 @@ module Repartition
       const myStrBytesSize = myStrBytes.size;
       var bytesPerLocale: [0..#numLocales] int = 0;
       var stringsPerLocale: [0..#numLocales] int = 0;
-      allStrSizes[here.id] = new innerArray({0..#myDestLocales.size}, int);
+      allStrSizes[here.id] = new innerArray(myDestLocales.domain, int);
       ref sizes = allStrSizes[here.id].Arr;
+      const topEnd = myDestLocales.high;
 
-      forall idx in myDestLocales.domain {
+      forall idx in myDestLocales.domain with (+ reduce bytesPerLocale, + reduce stringsPerLocale) {
         var destLoc = myDestLocales[idx];
         const start = myStrOffsets[idx];
-        const end = if idx == myDestLocales.size - 1 then myStrBytesSize else myStrOffsets[idx + 1];
+        const end = if idx == topEnd then myStrBytesSize else myStrOffsets[idx + 1];
         const size = end - start;
 
         sizes[idx] = size;
@@ -234,28 +235,31 @@ module Repartition
       numBytesSendingByLocale[here.id] = bytesPerLocale;
       numStringsSendingByLocale[here.id] = stringsPerLocale;
 
+      var currLocIndAllLocales: [myDestLocales.domain] int;
+      var currLocOffsetAllLocales: [myDestLocales.domain] int;
+
       for i in 0..#numLocales {
         sendOffsets[here.id][i] = new innerArray({0..#stringsPerLocale[i]}, int);
         sendBytes[here.id][i] = new innerArray({0..#bytesPerLocale[i]}, uint(8));
-
-        ref currSendOffsets = sendOffsets[here.id][i].Arr;
-        ref currSendBytes = sendBytes[here.id][i].Arr;
 
         const doCurrLoc = [j in myDestLocales.domain] myDestLocales[j] == i;
         const currLocInd = (+ scan doCurrLoc) - doCurrLoc;
         const currLocSizes = doCurrLoc * sizes;
         const currLocOffsets = (+ scan currLocSizes) - currLocSizes;
 
-        // This might be possible to make more efficient by doing all locales at the same time.
-
-        forall j in doCurrLoc.domain {
-          if doCurrLoc[j] {
-            const currSize = currLocSizes[j];
-            currSendOffsets[currLocInd[j]] = currLocOffsets[j];
-            currSendBytes[currLocOffsets[j]..#currSize] = myStrBytes[myStrOffsets[j]..#currSize];
-          }
-        }
+        currLocIndAllLocales += doCurrLoc * currLocInd;
+        currLocOffsetAllLocales += doCurrLoc * currLocOffsets;
       }
+
+      ref currSendOffsets = [i in 0..#numLocales] sendOffsets[here.id][i].Arr;
+      ref currSendBytes = [i in 0..#numLocales] sendBytes[here.id][i].Arr;
+
+      forall (j, dl) in zip(myDestLocales.domain, myDestLocales) {
+        const currSize = sizes[j];
+        currSendOffsets[dl][currLocIndAllLocales[j]] = currLocOffsetAllLocales[j];
+        currSendBytes[dl][currLocOffsetAllLocales[j]..#currSize] = myStrBytes[myStrOffsets[j]..#currSize];
+      }
+      
     }
 
     var recvOffsets: [PrivateSpace] innerArray(int);
@@ -266,46 +270,26 @@ module Repartition
 
     coforall loc in Locales do on loc {
       
-      const numStringsReceivingByLocale = [i in 0..#numLocales] numStringsSendingByLocale[i] [here.id];
-      const numBytesReceivingByLocale = [i in 0..#numLocales] numBytesReceivingByLocale[i] [here.id];
+      const numStringsReceivingByLocale = [i in 0..#numLocales] numStringsSendingByLocale[i][here.id];
+      const numBytesReceivingByLocale = [i in 0..#numLocales] numBytesSendingByLocale[i][here.id];
+      const stringOffsetByLocale = (+ scan numStringsReceivingByLocale) - numStringsReceivingByLocale;
+      const byteOffsetByLocale = (+ scan numBytesReceivingByLocale) - numBytesReceivingByLocale;
 
-    }
-
-    var returnedOffsets: [PrivateSpace] [0..#(max reduce recvNumOffsets)] int;
-    var returnedBytes: [PrivateSpace] [0..#(max reduce recvNumBytes)] uint(8);
-
-    // Now that the buffers have been filled, we're going to group them together into a single array.
-    // Strictly speaking, this probably isn't necessary, but it does make it more friendly to work with
-
-    coforall loc in Locales do on loc {
-      const ref numBytesReceivedByLoc = numBytesReceivingByLocale[here.id];
-      const ref numStringsReceivedByLoc = numStringsReceivingByLocale[here.id];
-      const ref myRecvOffsets = recvOffsets[here.id];
-      const ref myRecvBytes = recvBytes[here.id];
-      var numBytesReceived = + reduce numBytesReceivedByLoc;
-      var numStringsReceived = + reduce numStringsReceivedByLoc;
-      var myOffsets: [0..#numStringsReceived] int = 0;
-      var myBytes: [0..#numBytesReceived] uint(8) = 0;
-      var byteOffsetAdjuster = (+ scan numBytesReceivedByLoc) - numBytesReceivedByLoc;
-      var idxOffsetAdjuster = (+ scan numStringsReceivedByLoc) - numStringsReceivedByLoc;
+      recvBytes[here.id] = new innerArray({0..#(+ reduce numBytesReceivingByLocale)}, uint(8));
+      recvOffsets[here.id] = new innerArray({0..#(+ reduce numStringsReceivingByLocale)}, int);
+      ref myRecvBytes = recvBytes[here.id].Arr;
+      ref myRecvOffsets = recvOffsets[here.id].Arr;
 
       for i in 0..#numLocales {
 
-        var byteOffsetThisLoc = byteOffsetAdjuster[i];
-        var idxOffsetThisLoc = idxOffsetAdjuster[i];
-        myOffsets[idxOffsetThisLoc..#numStringsReceivedByLoc[i]]
-          = myRecvOffsets[i][0..#numStringsReceivedByLoc[i]] + byteOffsetThisLoc;
-        myBytes[byteOffsetThisLoc..#numBytesReceivedByLoc[i]]
-          = myRecvBytes[i][0..#numBytesReceivedByLoc[i]];
+        myRecvOffsets[stringOffsetByLocale[i]..#numStringsReceivingByLocale[i]] = sendOffsets[i][here.id].Arr;
+        myRecvBytes[byteOffsetByLocale[i]..#numBytesReceivingByLocale[i]] = sendBytes[i][here.id].Arr;
 
       }
 
-      returnedOffsets[here.id] = myOffsets;
-      returnedBytes[here.id] = myBytes;
-
     }
 
-    return (returnedOffsets, returnedBytes);
+    return (recvOffsets, recvBytes);
 
   }
 
@@ -315,6 +299,104 @@ module Repartition
                            const ref vals: [] list(t))
   {
     type eltType = vals.eltType.eltType;
+
+    var maxValsPerLocale: int;
+    var numValsReceivingByLocale: [PrivateSpace] [0..#numLocales] int;
+
+    coforall loc in Locales 
+      with (max reduce maxValsPerLocale) 
+      do on loc
+    {
+      const ref myDestLocales = destLocales[here.id];
+      const ref myVals = vals[here.id];
+      var valsPerLocale: [0..#numLocales] int = 0;
+
+      forall idx in 0..#myDestLocales.size with (+ reduce valsPerLocale) {
+        var destLoc = myDestLocales[idx];
+        valsPerLocale[destLoc] += 1;
+      }
+
+      maxValsPerLocale = max reduce valsPerLocale;
+
+      forall i in 0..#numLocales {
+        numValsReceivingByLocale[i][here.id] = valsPerLocale[i];
+      }
+
+    }
+
+    var recvVals: [PrivateSpace] [0..#numLocales] [0..#maxValsPerLocale] eltType;
+
+    // Now we're going to fill the receiving buffers
+    // with the data that needs to get transferred from another locale
+
+    coforall loc in Locales do on loc {
+      const ref myDestLocales = destLocales[here.id];
+      const ref myVals = vals[here.id];
+      var idxInDestLoc: [0..#myDestLocales.size] int = 0;
+      var numValsPerLocale: [0..#numLocales] int = 0;
+
+      // First we need to figure out what the destination index will be for each value
+
+      for i in 0..#numLocales {
+        var onCurrLoc = [j in 0..#myDestLocales.size] if myDestLocales[j] == i then 1 else 0;
+        
+        var idxInCurrLoc = (+ scan onCurrLoc) - onCurrLoc;
+        idxInDestLoc = [j in 0..#myDestLocales.size] if myDestLocales[j] == i then idxInCurrLoc[j] 
+                                                     else idxInDestLoc[j];
+
+        numValsPerLocale[i] = + reduce onCurrLoc;
+      }
+
+      var sendVals: [0..#numLocales] [0..#maxValsPerLocale] eltType;
+
+      forall idx in 0..#myDestLocales.size {
+
+        var destLoc = myDestLocales[idx];
+        var idxInValArr = idxInDestLoc[idx];
+        
+        sendVals[destLoc][idxInValArr] = myVals[idx];
+
+      }
+
+      // Maybe could be a forall but I don't know how that plays with the bulk transfer.
+      for i in 0..#numLocales {
+        recvVals[i][here.id][0..#numValsPerLocale[i]] = sendVals[i][0..#numValsPerLocale[i]];
+      }
+
+    }
+
+    var returnedVals: [PrivateSpace] list(eltType);
+
+    // Now that the buffers have been filled, we're going to group them together into a single list.
+    // Strictly speaking, this probably isn't necessary, but it does make it more friendly to work with
+
+    coforall loc in Locales do on loc {
+      const ref numValsReceivedByLoc = numValsReceivingByLocale[here.id];
+      const ref myRecvVals = recvVals[here.id];
+      var numValsReceived = + reduce numValsReceivedByLoc;
+      var myVals: [0..#numValsReceived] eltType;
+      var idxOffsetAdjuster = (+ scan numValsReceivedByLoc) - numValsReceivedByLoc;
+
+      for i in 0..#numLocales {
+
+        var idxOffsetThisLoc = idxOffsetAdjuster[i];
+        myVals[idxOffsetThisLoc..#numValsReceivedByLoc[i]] = myRecvVals[i][0..#numValsReceivedByLoc[i]];
+
+      }
+
+      returnedVals[here.id] = new list(myVals);
+
+    }
+
+    return returnedVals;
+
+  }
+
+    proc repartitionByLocaleArray(type t,
+                                  const ref destLocales: [] innerArray(int),
+                                  const ref vals: [] innerArray(t))
+  {
+    type eltType = vals.eltType.t;
 
     var maxValsPerLocale: int;
     var numValsReceivingByLocale: [PrivateSpace] [0..#numLocales] int;

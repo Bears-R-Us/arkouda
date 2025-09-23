@@ -1010,7 +1010,6 @@ module SegmentedMsg {
                 // var myOrigIndices = strOrigIndices[here.id].toArray();
                 var myReqIndices = getIdx[here.id].toArray();
                 const baseIdx = strOrigIndices[here.id][0];
-
                 // writeln(here.id, " myStrOffsets: ", myStrOffsets);
                 // writeln(here.id, " myStrBytes: ", myStrBytes);
                 // writeln(here.id, " myReqIndices: ", myReqIndices);
