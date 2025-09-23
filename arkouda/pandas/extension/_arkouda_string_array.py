@@ -1,7 +1,8 @@
 import numpy as np
 from pandas.api.extensions import ExtensionArray
 
-import arkouda as ak
+from arkouda.numpy.pdarraycreation import array as ak_array
+from arkouda.numpy.strings import Strings
 
 from ._arkouda_extension_array import ArkoudaExtensionArray
 from ._dtypes import ArkoudaStringDtype
@@ -14,9 +15,17 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
     default_fill_value = ""
 
     def __init__(self, data):
-        if not isinstance(data, ak.Strings):
-            raise TypeError("Expected arkouda Strings")
-        self._data = data
+        if isinstance(data, np.ndarray):
+            from arkouda.numpy.pdarraycreation import array as ak_array
+
+            data = ak_array(data)
+
+        if isinstance(data, ArkoudaStringArray):
+            self._data = data._data
+        elif isinstance(data, Strings):
+            self._data = data
+        else:
+            raise TypeError(f"Expected arkouda Strings.  Instead recieved {type(data)}.")
 
     @property
     def dtype(self):
@@ -24,7 +33,7 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
 
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
-        return cls(ak.array(scalars))
+        return cls(ak_array(scalars))
 
     def __getitem__(self, key):
         result = self._data[key]
@@ -42,7 +51,9 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
         return self.to_ndarray().astype(dtype, copy=copy)
 
     def isna(self):
-        return ak.zeros(self._data.size, dtype=ak.bool)
+        from arkouda.numpy.pdarraycreation import zeros
+
+        return zeros(self._data.size, dtype="bool")
 
     def copy(self):
         return ArkoudaStringArray(self._data[:])
@@ -52,14 +63,3 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
 
     def __repr__(self):
         return f"ArkoudaStringArray({self._data})"
-
-    def factorize(self, *, sort=False, use_na_sentinel=True, **kwargs):
-        import numpy as np
-        import pandas as pd
-
-        codes, uniques = pd.factorize(
-            np.asarray(self.to_numpy()),
-            sort=sort,
-            use_na_sentinel=use_na_sentinel,
-        )
-        return codes, uniques
