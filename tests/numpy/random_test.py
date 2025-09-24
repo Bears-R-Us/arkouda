@@ -181,6 +181,8 @@ class TestRandom:
         permuted_p = rng.permutation(pda_p, method=method)
         assert check(ak.sort(pda_p), ak.sort(permuted_p), data_type)
 
+    #   The next three tests handle the uniform function found in legacy.py.
+
     def test_uniform(self):
         # verify same seed gives different but reproducible arrays
         rng = ak.random.default_rng(pytest.seed)
@@ -199,6 +201,46 @@ class TestRandom:
         bounded_arr = rng.uniform(-5, 5, 1000)
         assert all(bounded_arr.to_ndarray() >= -5)
         assert all(bounded_arr.to_ndarray() < 5)
+
+    @pytest.mark.skip_if_rank_not_compiled(2)
+    def test_uniform_2D(self):
+        # verify same seed gives different but reproducible arrays
+        rng = ak.random.default_rng(pytest.seed)
+        first = rng.uniform(-(2**32), 2**32, (5, 2))
+        second = rng.uniform(-(2**32), 2**32, (5, 2))
+        assert first.tolist() != second.tolist()
+
+        rng = ak.random.default_rng(pytest.seed)
+        same_seed_first = rng.uniform(-(2**32), 2**32, (5, 2))
+        same_seed_second = rng.uniform(-(2**32), 2**32, (5, 2))
+        assert np.allclose(first.tolist(), same_seed_first.tolist())
+        assert np.allclose(second.tolist(), same_seed_second.tolist())
+
+        # verify within bounds (lower inclusive and upper exclusive)
+        rng = ak.random.default_rng()
+        bounded_arr = rng.uniform(-5, 5, (10, 10))
+        assert (bounded_arr.to_ndarray() >= -5).all()
+        assert (bounded_arr.to_ndarray() < 5).all()
+
+    @pytest.mark.skip_if_rank_not_compiled(3)
+    def test_uniform_3D(self):
+        # verify same seed gives different but reproducible arrays
+        rng = ak.random.default_rng(pytest.seed)
+        first = rng.uniform(-(2**32), 2**32, (5, 3, 2))
+        second = rng.uniform(-(2**32), 2**32, (5, 3, 2))
+        assert first.tolist() != second.tolist()
+
+        rng = ak.random.default_rng(pytest.seed)
+        same_seed_first = rng.uniform(-(2**32), 2**32, (5, 3, 2))
+        same_seed_second = rng.uniform(-(2**32), 2**32, (5, 3, 2))
+        assert np.allclose(first.tolist(), same_seed_first.tolist())
+        assert np.allclose(second.tolist(), same_seed_second.tolist())
+
+        # verify within bounds (lower inclusive and upper exclusive)
+        rng = ak.random.default_rng()
+        bounded_arr = rng.uniform(-5, 5, (10, 10, 10))
+        assert (bounded_arr.to_ndarray() >= -5).all()
+        assert (bounded_arr.to_ndarray() < 5).all()
 
     def test_choice(self):
         # verify without replacement works
@@ -816,3 +858,38 @@ class TestRandom:
 
         for pda1, pda2 in zip(pda1list, pda2list):
             assert (pda1 != pda2).any()
+
+    def test_random_random(self):
+        ak.random.seed(1701)  # specific seed because we test for specific values
+        pda = ak.random.random(5)
+        expected = np.array(
+            [
+                0.011410423448327005,
+                0.73618171558685619,
+                0.12367222192448891,
+                0.95616789699591898,
+                0.36427886480971333,
+            ]
+        )
+        assert np.allclose(pda.to_ndarray(), expected)
+
+    @pytest.mark.skip_if_rank_not_compiled(2)
+    def test_random_random_2D(self):
+        ak.random.seed(1701)  # specific seed because we test for specific values
+        pda = ak.random.random((2, 2))
+        expected = np.array(
+            [[0.011410423448327005, 0.73618171558685619], [0.12367222192448891, 0.95616789699591898]]
+        )
+        assert np.allclose(pda.to_ndarray(), expected)
+
+    @pytest.mark.skip_if_rank_not_compiled(3)
+    def test_random_random_3D(self):
+        ak.random.seed(1701)  # specific seed because we test for specific values
+        pda = ak.random.random((2, 2, 2))
+        expected = np.array(
+            [
+                [[0.01141042, 0.73618172], [0.12367222, 0.9561679]],
+                [[0.36427886, 0.7148233], [0.66334928, 0.07164771]],
+            ]
+        )
+        assert np.allclose(pda.to_ndarray(), expected)

@@ -548,6 +548,8 @@ class TestPdarrayCreation:
         int_arr = ak.randint(1, 5, 10, seed=2)
         assert (uint_arr == int_arr).all()
 
+    #   The next three tests handle the uniform function in pdarraycreation.py
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_uniform(self, size):
         test_array = ak.uniform(size)
@@ -581,6 +583,112 @@ class TestPdarrayCreation:
         # Test that int_scalars covers uint8, uint16, uint32
         uint_arr = ak.uniform(low=np.uint8(0), high=np.uint16(5), size=np.uint32(100), seed=np.uint8(1))
         int_arr = ak.uniform(low=0, high=5, size=100, seed=1)
+        assert (uint_arr == int_arr).all()
+
+    @pytest.mark.skip_if_rank_not_compiled(2)
+    def test_uniform_2D(self):
+        test_array = ak.uniform((4, 4))
+        assert isinstance(test_array, ak.pdarray)
+        assert ak.float64 == test_array.dtype
+        assert ((4, 4)) == test_array.shape
+
+        u_array = ak.uniform(size=(3, 3), low=0, high=5, seed=0)
+        assert [
+            0.30013431967121934,
+            0.47383036230759112,
+            1.0441791878997098,
+            4.8614729022647323,
+            3.3350975917391743,
+            1.3542127655612139,
+            0.71961446966809384,
+            1.2128292351934404,
+            1.6304932878138119,
+        ] == u_array.flatten().tolist()
+
+        u_array = ak.uniform(
+            size=(np.int64(3), np.int64(3)), low=np.int64(0), high=np.int64(5), seed=np.int64(0)
+        )
+        assert [
+            0.30013431967121934,
+            0.47383036230759112,
+            1.0441791878997098,
+            4.8614729022647323,
+            3.3350975917391743,
+            1.3542127655612139,
+            0.71961446966809384,
+            1.2128292351934404,
+            1.6304932878138119,
+        ] == u_array.flatten().tolist()
+
+        with pytest.raises(TypeError):
+            ak.uniform(low="0", high=5, size=(3, 3))
+
+        with pytest.raises(TypeError):
+            ak.uniform(low=0, high="5", size=(3, 3))
+
+        with pytest.raises(TypeError):
+            ak.uniform(low=0, high=5, size="(3,3)")
+
+        # Test that int_scalars covers uint8, uint16, uint32
+        uint_arr = ak.uniform(
+            low=np.uint8(0), high=np.uint16(5), size=(np.uint32(10), np.uint32(10)), seed=np.uint8(1)
+        )
+        int_arr = ak.uniform(low=0, high=5, size=(10, 10), seed=1)
+        assert (uint_arr == int_arr).all()
+
+    @pytest.mark.skip_if_rank_not_compiled(3)
+    def test_uniform_3D(self):
+        test_array = ak.uniform((4, 4, 4))
+        assert isinstance(test_array, ak.pdarray)
+        assert ak.float64 == test_array.dtype
+        assert ((4, 4, 4)) == test_array.shape
+
+        u_array = ak.uniform(size=(2, 2, 2), low=0, high=5, seed=0)
+        assert [
+            0.30013431967121934,
+            0.47383036230759112,
+            1.0441791878997098,
+            4.8614729022647323,
+            3.3350975917391743,
+            1.3542127655612139,
+            0.71961446966809384,
+            1.2128292351934404,
+        ] == u_array.flatten().tolist()
+
+        u_array = ak.uniform(
+            size=(np.int64(2), np.int64(2), np.int64(2)),
+            low=np.int64(0),
+            high=np.int64(5),
+            seed=np.int64(0),
+        )
+        assert [
+            0.30013431967121934,
+            0.47383036230759112,
+            1.0441791878997098,
+            4.8614729022647323,
+            3.3350975917391743,
+            1.3542127655612139,
+            0.71961446966809384,
+            1.2128292351934404,
+        ] == u_array.flatten().tolist()
+
+        with pytest.raises(TypeError):
+            ak.uniform(low="0", high=5, size=(2, 2, 2))
+
+        with pytest.raises(TypeError):
+            ak.uniform(low=0, high="5", size=(2, 2, 2))
+
+        with pytest.raises(TypeError):
+            ak.uniform(low=0, high=5, size="(2,2,2)")
+
+        # Test that int_scalars covers uint8, uint16, uint32
+        uint_arr = ak.uniform(
+            low=np.uint8(0),
+            high=np.uint16(5),
+            size=(np.uint32(10), np.uint32(10), np.uint32(10)),
+            seed=np.uint8(1),
+        )
+        int_arr = ak.uniform(low=0, high=5, size=(10, 10, 10), seed=1)
         assert (uint_arr == int_arr).all()
 
     @pytest.mark.parametrize("size", pytest.prob_size)

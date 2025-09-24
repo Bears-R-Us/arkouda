@@ -69,10 +69,9 @@ def rand(*size: int_scalars, seed: Union[None, int_scalars] = None) -> Union[pda
         return uniform(1, seed=seed)[0]
     else:
         shape, ndim, full_size = _infer_shape_from_size(size)
-        if ndim == 1:
-            return uniform(full_size, seed=seed)
-        else:
-            return uniform(full_size, seed=seed).reshape(shape)
+        return (
+            uniform(full_size, seed=seed) if ndim == 1 else uniform(full_size, seed=seed).reshape(shape)
+        )
 
 
 @typechecked
@@ -283,7 +282,7 @@ def standard_normal(
 
 @typechecked
 def uniform(
-    size: int_scalars,
+    size: Union[int_scalars, Tuple[int_scalars, ...]],
     low: numeric_scalars = float(0.0),
     high: numeric_scalars = 1.0,
     seed: Union[None, int_scalars] = None,
@@ -330,7 +329,17 @@ def uniform(
     >>> ak.uniform(size=3,low=0,high=5,seed=0)
     array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
     """
-    return randint(low=low, high=high, size=size, dtype="float64", seed=seed)
+    from arkouda.numpy.util import _infer_shape_from_size
+
+    shape, ndim, full_size = _infer_shape_from_size(size)
+    if full_size < 0:
+        raise ValueError("The size parameter must be >= 0")
+
+    return (
+        randint(low=low, high=high, size=size, dtype="float64", seed=seed)
+        if ndim == 1
+        else randint(low=low, high=high, size=full_size, dtype="float64", seed=seed).reshape(shape)
+    )
 
 
 def globalGeneratorExists():

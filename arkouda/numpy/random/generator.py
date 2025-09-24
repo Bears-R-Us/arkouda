@@ -559,10 +559,15 @@ class Generator:
         array([0.8059711747202466 0.71958748004486961 0.72539618972095954])
 
         """
+        from arkouda.numpy.util import _infer_shape_from_size
+
         if size is None:
             # delegate to numpy when return size is 1
             return self._np_generator.random()
-        return self.uniform(size=size)
+        shape, ndim, full_size = _infer_shape_from_size(size)
+        if full_size < 0:
+            raise ValueError("The size parameter must be >= 0")
+        return self.uniform(size=size) if ndim == 1 else self.uniform(size=full_size).reshape(shape)
 
     def standard_gamma(self, shape, size=None):
         r"""
