@@ -56,6 +56,19 @@ def flip(
     -------
     pdarray, Strings, or Categorical
         An array with the entries of axis reversed.
+
+    Raises
+    ------
+    IndexError
+        Raised if operation fails server-side.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.arange(12)
+    >>> ak.flip(a)
+    array([11 10 9 8 7 6 5 4 3 2 1 0])
+
     Note
     ----
     This differs from numpy as it actually reverses the data, rather than presenting a view.
@@ -137,6 +150,20 @@ def repeat(
     pdarray
         Output array which has the same shape as `a`, except along the given axis.
 
+    Raises
+    ------
+    ValueError
+        Raised if repeats is not an int or a 1-dimensional array, or if it contains
+        negative values, if its size does not match the input arrays size along
+        axis.
+    RuntimeError
+        Raised if the operation fails server-side.
+    TypeError
+        Raised if axis anything but None or int, or if either a or repeats is invalid
+        (the a and repeat cases should be impossible).
+    IndexError
+        Raised if axis is invalid for the given rank.
+
     Examples
     --------
     >>> import arkouda as ak
@@ -151,6 +178,7 @@ def repeat(
     array([array([1 2]) array([3 4]) array([3 4])])
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.util import _integer_axis_validation
     from arkouda.pdarrayclass import any as akany
 
     if isinstance(repeats, int):
@@ -195,7 +223,12 @@ def repeat(
             return temp
         else:
             raise TypeError("Axis should have been None or an int")
-    if axis is None:
+
+    valid, axis_ = _integer_axis_validation(axis, a.ndim)
+    if not valid:
+        raise IndexError(f"Cannot repeat array of rank {a.ndim} along axis {axis}")
+
+    if axis_ is None:
         try:
             return create_pdarray(
                 cast(
@@ -226,7 +259,7 @@ def repeat(
                     args={
                         "eIn": a,
                         "reps": repeats,
-                        "axis": axis,
+                        "axis": axis_,
                     },
                 ),
             )
@@ -255,6 +288,11 @@ def squeeze(
     -------
     pdarray
         A copy of x with the dimensions specified in the axis argument removed.
+
+    Raises
+    ------
+    RuntimeError
+        Raised if operation fails server-side.
 
     Examples
     --------
