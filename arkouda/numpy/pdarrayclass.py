@@ -301,16 +301,6 @@ def parse_single_value(msg: str) -> Union[numpy_scalars, int]:
         if mydtype == akstr_:
             # String value will always be surrounded with double quotes, so remove them
             return mydtype.type(unescape(value[1:-1]))
-
-        #   This is a work-around to deal with the fact that the server
-        #   sometimes returns a negative value when it should return a uint.
-        #   It can be removed when issue #4157 is resolved.
-        if mydtype == akuint64:
-            if value.startswith("-"):
-                value = value.strip("-")
-                uint_value = np.uint64(np.iinfo(np.uint64).max) - akuint64(value) + akuint64(1)
-                return uint_value
-            return akuint64(value)
         return mydtype.type(value)
     except Exception:
         raise ValueError(f"unsupported value from server {mydtype.name} {value}")

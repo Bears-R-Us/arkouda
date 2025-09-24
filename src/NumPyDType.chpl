@@ -162,10 +162,10 @@ module NumPyDType
     }
 
     proc type2fmt(type t): string {
-      if t == uint(8) then return "%i";
-      if t == uint(16) then return "%i";
-      if t == uint(32) then return "%i";
-      if t == uint then return "%i";
+      if t == uint(8) then return "%u";
+      if t == uint(16) then return "%u";
+      if t == uint(32) then return "%u";
+      if t == uint then return "%u";
       if t == int(8) then return "%i";
       if t == int(16) then return "%i";
       if t == int(32) then return "%i";
