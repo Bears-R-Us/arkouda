@@ -5,7 +5,7 @@ import pytest
 import arkouda as ak
 from arkouda import numeric_and_bool_scalars
 from arkouda.numpy.pdarrayclass import pdarray
-from arkouda.pandas.extension._arkouda_array import ArkoudaArray, ArkoudaDtype
+from arkouda.pandas.extension._arkouda_array import ArkoudaArray
 from arkouda.testing import assert_equivalent
 
 SUPPORTED_TYPES = [ak.bool_, ak.uint64, ak.int64, ak.bigint, ak.float64]
@@ -93,8 +93,10 @@ class TestArkoudaArrayExtension:
 
     def test_dtype(self):
         arr = ArkoudaArray(ak.array([1]))
-        assert isinstance(arr.dtype, ArkoudaDtype)
-        assert arr.dtype.name == "arkouda"
+        from arkouda.pandas.extension._dtypes import _ArkoudaBaseDtype
+
+        assert isinstance(arr.dtype, _ArkoudaBaseDtype)
+        assert arr.dtype.name == "int64"
 
     def test_nbytes(self):
         ak_data = ak.arange(10)

@@ -363,11 +363,16 @@ from arkouda.pandas import (
     row,
     series,
     ArkoudaArray,
-    ArkoudaDtype,
     ArkoudaStringArray,
-    ArkoudaStringDtype,
     ArkoudaCategoricalArray,
+    ArkoudaBoolDtype,
     ArkoudaCategoricalDtype,
+    ArkoudaInt64Dtype,
+    ArkoudaUint64Dtype,
+    ArkoudaUint8Dtype,
+    ArkoudaBigintDtype,
+    ArkoudaStringDtype,
+    ArkoudaFloat64Dtype,
 )
 from arkouda.client import (
     connect,
