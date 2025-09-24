@@ -155,7 +155,9 @@ def repeat(
     ValueError
         Raised if repeats is not an int or a 1-dimensional array, or if it contains
         negative values, if its size does not match the input arrays size along
-        axis, or if the operation fails server-side.
+        axis.
+    RuntimeError
+        Raised if the operation fails server-side.
     TypeError
         Raised if axis anything but None or int, or if either a or repeats is invalid
         (the a and repeat cases should be impossible).
@@ -289,6 +291,7 @@ def squeeze(
 
     Raises
     ------
+    RuntimeError
         Raised if operation fails server-side.
 
     Examples
