@@ -10,7 +10,7 @@ Encapsulates a variety of arkouda apply test cases.
 
 
 def supports_apply():
-    return ak.pdarrayclass.parse_single_value(ak.client.generic_msg("isPythonModuleSupported"))
+    return ak.numpy.pdarrayclass.parse_single_value(ak.client.generic_msg("isPythonModuleSupported"))
 
 
 class TestApply:
