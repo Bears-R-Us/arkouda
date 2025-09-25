@@ -8,6 +8,7 @@ import pytest
 import arkouda as ak
 from arkouda.pandas.io import to_parquet
 
+
 TYPES = ("int64", "float64", "uint64", "str")
 FILETYPES = ("HDF5", "PARQUET")
 COMPRESSIONS = (None, "snappy", "gzip", "brotli", "zstd", "lz4")
@@ -225,7 +226,9 @@ def bench_read_hdf(benchmark, dtype):
     if pytest.io_read or (not pytest.io_write and not pytest.io_delete) and dtype in pytest.dtype:
         dataset = "strings_array" if dtype == "str" else "array"
         a = benchmark.pedantic(
-            ak.read_hdf, args=[pytest.io_path + f"_hdf_{dtype}*", dataset], rounds=pytest.trials
+            ak.read_hdf,
+            args=[pytest.io_path + f"_hdf_{dtype}*", dataset],
+            rounds=pytest.trials,
         )
 
         num_bytes = calc_num_bytes(a)
@@ -249,7 +252,9 @@ def bench_read_parquet(benchmark, dtype, comp):
         and dtype in pytest.dtype
     ):
         a = benchmark.pedantic(
-            ak.read_parquet, args=[pytest.io_path + f"_par_{comp}_{dtype}_*"], rounds=pytest.trials
+            ak.read_parquet,
+            args=[pytest.io_path + f"_par_{comp}_{dtype}_*"],
+            rounds=pytest.trials,
         )
 
         num_bytes = calc_num_bytes(a)
@@ -267,7 +272,7 @@ def bench_read_parquet(benchmark, dtype, comp):
 @pytest.mark.parametrize("comp", COMPRESSIONS)
 def bench_read_parquet_multi(benchmark, dtype, comp):
     """
-    Read files written by parquet multicolumn and parquet append modes
+    Read files written by parquet multicolumn and parquet append modes.
     """
     if (
         pytest.io_read
@@ -276,7 +281,9 @@ def bench_read_parquet_multi(benchmark, dtype, comp):
         and dtype in pytest.dtype
     ):
         a = benchmark.pedantic(
-            ak.read_parquet, args=[pytest.io_path + f"_par_multi_{comp}_{dtype}_*"], rounds=pytest.trials
+            ak.read_parquet,
+            args=[pytest.io_path + f"_par_multi_{comp}_{dtype}_*"],
+            rounds=pytest.trials,
         )
 
         num_bytes = calc_num_bytes(a)
@@ -345,7 +352,7 @@ def _remove_files():
             else:
                 os.remove(f)
         except Exception as e:
-            print(f"Warning: Could not delete {f}: {e}")
+            raise RuntimeWarning(f"Warning: Could not delete {f}: {e}")
 
 
 def _remove_append_test_files(compression, dtype):

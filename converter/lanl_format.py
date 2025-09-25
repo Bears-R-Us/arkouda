@@ -2,6 +2,7 @@ import re
 
 import numpy as np
 
+
 splitter = re.compile(r"([a-zA-Z]*)(\d*)")
 
 

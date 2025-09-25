@@ -200,9 +200,7 @@ class TestArkoudaDtypesExtension:
 
     def test_series_with_categorical_dtype(self):
         import arkouda as ak
-        from arkouda.pandas.extension._arkouda_categorical_array import (
-            ArkoudaCategoricalArray,
-        )
+        from arkouda.pandas.extension._arkouda_categorical_array import ArkoudaCategoricalArray
 
         a = ak.Categorical(ak.array(["x", "y", "x"]))
         cea = ArkoudaCategoricalArray(a)

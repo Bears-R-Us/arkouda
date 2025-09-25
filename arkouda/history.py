@@ -47,6 +47,7 @@ from typing import List, Optional
 
 from IPython.core.history import HistoryAccessor
 
+
 __all__ = [
     "HistoryRetriever",
     "NotebookHistoryRetriever",
@@ -109,10 +110,10 @@ class ShellHistoryRetriever(HistoryRetriever):
 
         Parameters
         ----------
-        num_commands : int
-            The number of commands from history to retrieve
         command_filter : str
             String containing characters used to select a subset of command history.
+        num_commands : int
+            The number of commands from history to retrieve
 
         Returns
         -------
@@ -161,10 +162,10 @@ class NotebookHistoryRetriever(HistoryAccessor, HistoryRetriever):
 
         Parameters
         ----------
-        num_commands : int
-            The number of commands from history to retrieve
         command_filter : str
             String containing characters used to select a subset of command history.
+        num_commands : int
+            The number of commands from history to retrieve
 
         Returns
         -------

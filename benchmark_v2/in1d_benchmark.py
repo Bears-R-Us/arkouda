@@ -3,6 +3,7 @@ import pytest
 
 import arkouda as ak
 
+
 TYPES = ("int64", "uint64", "str")
 # Tied to src/In1d.chpl:threshold, which defaults to 2**23
 # This threshold is used to choose between in1d implementation strategies

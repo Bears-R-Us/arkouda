@@ -4,6 +4,7 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
+
 seed = pytest.seed
 
 DTYPES = [ak.int64, ak.float64, ak.uint64, ak.uint8]

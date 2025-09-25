@@ -59,6 +59,7 @@ from numpy.dtypes import (
     VoidDType,
 )
 
+
 if TYPE_CHECKING:
     from arkouda.pdarrayclass import pdarray
 

@@ -6,6 +6,7 @@ from coargsort import check_correctness, time_ak_coargsort, time_np_coargsort
 
 import arkouda as ak
 
+
 TYPES = ("str",)
 
 

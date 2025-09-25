@@ -6,6 +6,7 @@ import pytest
 import arkouda as ak
 from arkouda import client_dtypes
 
+
 INT_TYPES = [ak.int64, ak.uint64]
 
 

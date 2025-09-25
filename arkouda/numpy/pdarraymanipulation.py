@@ -10,6 +10,7 @@ from arkouda.numpy.dtypes import result_type as ak_result_type
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array
 
+
 __all__ = ["hstack", "vstack", "delete", "append"]
 
 

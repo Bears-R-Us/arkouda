@@ -16,6 +16,7 @@ from arkouda.numpy.pdarraycreation import array
 from arkouda.numpy.timeclass import Datetime
 from arkouda.testing import assert_arkouda_pdarray_equal
 
+
 _pd = importlib.import_module("pandas")
 pd_Timestamp = getattr(_pd, "Timestamp")
 pd_Series = getattr(_pd, "Series")

@@ -162,9 +162,7 @@ class TestErr:
         from arkouda.numpy import err as akerr
 
         # Use the exact logger the module uses
-        from arkouda.numpy.err import (
-            _logger as module_logger,  # test-only import of private symbol
-        )
+        from arkouda.numpy.err import _logger as module_logger  # test-only import of private symbol
 
         class ListHandler(logging.Handler):
             def __init__(self, level=logging.ERROR):

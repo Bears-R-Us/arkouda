@@ -6,6 +6,7 @@ from arkouda.numpy.dtypes import all_scalars, isSupportedDType
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.numpy.strings import Strings
 
+
 __all__ = ["shape"]
 
 

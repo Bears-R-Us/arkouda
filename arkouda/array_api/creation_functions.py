@@ -9,6 +9,7 @@ from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import resolve_scalar_dtype
 from arkouda.numpy.pdarrayclass import _to_pdarray, pdarray
 
+
 __all__ = [
     "arange",
     "asarray",

@@ -12,6 +12,7 @@ from arkouda.testing import assert_equal as ak_assert_equal
 from arkouda.testing import assert_equivalent
 from arkouda.testing import assert_equivalent as ak_assert_equivalent
 
+
 seed = 314159  # this hardcoded seed is retained because the sorted tests
 # require known results
 

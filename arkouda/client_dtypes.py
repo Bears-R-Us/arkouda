@@ -63,6 +63,7 @@ from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
 
+
 if TYPE_CHECKING:
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import where as akwhere
@@ -931,12 +932,7 @@ class IPv4(pdarray):
     def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
         """Override the pdarray implementation so that the special object type will be used."""
         from arkouda.client import generic_msg
-        from arkouda.pandas.io import (
-            _file_type_to_int,
-            _get_hdf_filetype,
-            _mode_str_to_int,
-            _repack_hdf,
-        )
+        from arkouda.pandas.io import _file_type_to_int, _get_hdf_filetype, _mode_str_to_int, _repack_hdf
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")

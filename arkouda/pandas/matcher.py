@@ -49,6 +49,7 @@ from arkouda.numpy.dtypes import str_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.pandas.match import Match, MatchType
 
+
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
 else:

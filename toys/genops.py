@@ -3,6 +3,7 @@
 import os
 from string import Template
 
+
 OPEQUAL = ["+=", "-=", "*=", "/="]
 BINOP = ["+", "-", "*", "/"]
 

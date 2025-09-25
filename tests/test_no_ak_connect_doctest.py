@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 from typing import Generator, List, Tuple
 
+
 # --- Heuristics that mirror the stripper script ---
 TRIPLE_QUOTE_RE = re.compile(r'(?P<q>"""|\'\'\')(?P<body>.*?)(?P=q)', re.DOTALL)
 SECTION_HEADER_RE = re.compile(

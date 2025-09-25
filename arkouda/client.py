@@ -74,14 +74,9 @@ import zmq  # for typechecking
 
 from arkouda import __version__, security
 from arkouda.logger import ArkoudaLogger, LogLevel, getArkoudaLogger
-from arkouda.message import (
-    MessageFormat,
-    MessageType,
-    ParameterObject,
-    ReplyMessage,
-    RequestMessage,
-)
+from arkouda.message import MessageFormat, MessageType, ParameterObject, ReplyMessage, RequestMessage
 from arkouda.pandas import io_util
+
 
 __all__ = [
     "connect",

@@ -10,13 +10,7 @@ from typeguard import typechecked
 
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.infoclass import list_registry
-from arkouda.numpy.dtypes import (
-    _is_dtype_in_union,
-    dtype,
-    float_scalars,
-    int_scalars,
-    numeric_scalars,
-)
+from arkouda.numpy.dtypes import _is_dtype_in_union, dtype, float_scalars, int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange
 from arkouda.numpy.pdarraysetops import unique
@@ -24,6 +18,7 @@ from arkouda.numpy.sorting import coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
 from arkouda.pandas.groupbyclass import GroupBy
+
 
 __all__ = [
     "attach",

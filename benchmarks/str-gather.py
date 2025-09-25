@@ -6,6 +6,7 @@ from gather import check_correctness, time_ak_gather, time_np_gather
 
 import arkouda as ak
 
+
 TYPES = ("str",)
 
 

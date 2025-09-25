@@ -2,6 +2,7 @@ import time
 
 import arkouda as ak
 
+
 ak.connect()
 
 start = time.time()
