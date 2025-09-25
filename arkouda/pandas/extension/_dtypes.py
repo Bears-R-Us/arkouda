@@ -46,7 +46,7 @@ from typing import Any
 import numpy as np
 
 from numpy import dtype as np_dtype
-from pandas.api.extensions import ExtensionDtype
+from pandas.api.extensions import ExtensionDtype, register_extension_dtype
 
 from arkouda.numpy.dtypes import bigint, float64, int64, str_, uint8, uint64
 from arkouda.numpy.dtypes import bool as ak_bool
@@ -80,49 +80,51 @@ class _ArkoudaBaseDtype(ExtensionDtype):
         """
         Construct an Arkouda ExtensionDtype from a string specifier.
 
-        This enables pandas-style dtype construction such as:
+        Supported Arkouda-prefixed forms include:
 
-        - ``pd.Series(..., dtype="arkouda.int64")``
-        - ``pd.Series(..., dtype="int64")``
-        - ``pd.Series(..., dtype="string")``
-        - ``pd.Series(..., dtype="category")``
+        - ``"ak.int64"``, ``"ak_int64"``, ``"akint64"``
+        - ``"ak.uint64"``, ``"ak_uint64"``, ``"akuint64"``
+        - ``"ak.float64"``, ``"ak_float64"``, ``"akfloat64"``
+        - ``"ak.bool"``, ``"ak_bool"``, ``"akbool"``
+        - ``"ak.string"``, ``"ak_string"``, ``"akstring"``
+        - ``"ak.category"``, ``"ak_category"``, ``"akcategory"``
+        - and the longer alias ``"arkouda.int64"`` etc.
 
-        Parameters
-        ----------
-        string : str
-            String representation of the dtype. Can be either a plain
-            numpy-style dtype name (e.g., ``"int64"``, ``"str_"``),
-            an Arkouda dtype alias (e.g., ``"arkouda.int64"``),
-            or special cases like ``"category"``.
-
-        Returns
-        -------
-        _ArkoudaBaseDtype
-            The matching Arkouda-backed dtype object, such as
-            :class:`ArkoudaInt64Dtype`, :class:`ArkoudaStringDtype`,
-            or :class:`ArkoudaCategoricalDtype`.
-
-        Raises
-        ------
-        TypeError
-            If the input string does not correspond to a known Arkouda dtype.
-
-        Examples
-        --------
-        >>> from arkouda.pandas.extension._dtypes import _ArkoudaBaseDtype
-        >>> _ArkoudaBaseDtype.construct_from_string("int64")
-        ArkoudaInt64Dtype('int64')
-
-        >>> _ArkoudaBaseDtype.construct_from_string("category")
-        ArkoudaCategoricalDtype('category')
-
-        >>> _ArkoudaBaseDtype.construct_from_string("str_")
-        ArkoudaStringDtype('string')
+        Plain names like ``"int64"`` or ``"float64"`` are *not* treated as
+        Arkouda dtypes and will fall back to pandas/NumPy.
         """
-        if string == "category":
-            return ArkoudaCategoricalDtype()
+        normalized = string.strip().lower()
 
-        dtype = ak_dtype(string)
+        # Recognize Arkouda-style prefixes
+        prefixes = ("ak.", "ak_", "arkouda.")
+        matched_prefix = None
+        for p in prefixes:
+            if normalized.startswith(p):
+                matched_prefix = p
+                break
+
+        # Extra: support compact forms like "akint64", "akstring", "akcategory"
+        if matched_prefix is None and normalized.startswith("ak") and len(normalized) > 2:
+            matched_prefix = "ak"
+
+        if matched_prefix is None:
+            # IMPORTANT: let pandas/NumPy handle bare "int64", "float64", etc.
+            raise TypeError(f"Cannot construct an Arkouda dtype from string {string!r}")
+
+        base = normalized[len(matched_prefix) :]
+
+        # Strip any accidental leading punctuation after the prefix (e.g. "ak..int64")
+        base = base.lstrip("._")
+
+        # Small alias tweaks: "string" -> "str_"
+        if base == "category":
+            return ArkoudaCategoricalDtype()
+        if base == "string":
+            base = "str_"
+
+        # Now interpret using Arkouda's dtype system
+        dtype = ak_dtype(base)
+
         registry = {
             ak_dtype(int64): ArkoudaInt64Dtype(),
             ak_dtype(ak_bool): ArkoudaBoolDtype(),
@@ -132,6 +134,7 @@ class _ArkoudaBaseDtype(ExtensionDtype):
             ak_dtype(bigint): ArkoudaBigintDtype(),
             ak_dtype(float64): ArkoudaFloat64Dtype(),
         }
+
         try:
             return registry[dtype]
         except KeyError:
@@ -200,11 +203,7 @@ class _ArkoudaBaseDtype(ExtensionDtype):
 # ---- Concrete dtypes --------------------------------------------------------
 
 
-#   TODO: register the dtypes
-#   Registering them could override default pandas behavior,
-#   so we should wait until the extension arrays are production ready and
-#   fully tested.
-# @register_extension_dtype
+@register_extension_dtype
 class ArkoudaInt64Dtype(_ArkoudaBaseDtype):
     """
     Extension dtype for Arkouda-backed 64-bit integers.
@@ -264,7 +263,7 @@ class ArkoudaInt64Dtype(_ArkoudaBaseDtype):
         return ArkoudaArray
 
 
-# @register_extension_dtype
+@register_extension_dtype
 class ArkoudaUint64Dtype(_ArkoudaBaseDtype):
     """
     Arkouda-backed unsigned 64-bit integer dtype.
@@ -324,7 +323,7 @@ class ArkoudaUint64Dtype(_ArkoudaBaseDtype):
         return ArkoudaArray
 
 
-# @register_extension_dtype
+@register_extension_dtype
 class ArkoudaUint8Dtype(_ArkoudaBaseDtype):
     """
     Arkouda-backed unsigned 8-bit integer dtype.
@@ -369,7 +368,7 @@ class ArkoudaUint8Dtype(_ArkoudaBaseDtype):
         return ArkoudaArray
 
 
-# @register_extension_dtype
+@register_extension_dtype
 class ArkoudaFloat64Dtype(_ArkoudaBaseDtype):
     """
     Arkouda-backed 64-bit floating-point dtype.
@@ -407,7 +406,7 @@ class ArkoudaFloat64Dtype(_ArkoudaBaseDtype):
         return ArkoudaArray
 
 
-# @register_extension_dtype
+@register_extension_dtype
 class ArkoudaBoolDtype(_ArkoudaBaseDtype):
     """
     Arkouda-backed boolean dtype.
@@ -446,7 +445,7 @@ class ArkoudaBoolDtype(_ArkoudaBaseDtype):
         return ArkoudaArray
 
 
-# @register_extension_dtype
+@register_extension_dtype
 class ArkoudaBigintDtype(_ArkoudaBaseDtype):
     """
     Arkouda-backed arbitrary-precision integer dtype.
@@ -484,7 +483,7 @@ class ArkoudaBigintDtype(_ArkoudaBaseDtype):
         return ArkoudaArray
 
 
-# @register_extension_dtype
+@register_extension_dtype
 class ArkoudaStringDtype(_ArkoudaBaseDtype):
     """
     Arkouda-backed string dtype.
@@ -522,7 +521,7 @@ class ArkoudaStringDtype(_ArkoudaBaseDtype):
         return ArkoudaStringArray
 
 
-# @register_extension_dtype
+@register_extension_dtype
 class ArkoudaCategoricalDtype(_ArkoudaBaseDtype):
     """
     Arkouda-backed categorical dtype.
