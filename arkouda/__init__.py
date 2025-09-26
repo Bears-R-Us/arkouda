@@ -489,3 +489,6 @@ from arkouda.testing import (
     assert_series_equivalent,
 )
 from arkouda.apply import apply
+
+from . import _version
+__version__ = _version.get_versions()['version']
