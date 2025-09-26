@@ -119,17 +119,25 @@ module StatsMsg {
     }
 
     @arkouda.registerCommand()
-    proc cumSum(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws {
+    proc cumSum(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
+        where t!= bool { // bool case was already converted to int python-side
+
       if d.rank == 1 {
-        var cs = makeDistArray(if includeInitial then x.size+1 else x.size, t);
-        cs[if includeInitial then 1.. else 0..] = (+ scan x):t;
-        return cs;
+
+          if !includeInitial {
+            return (+ scan x); 
+          } else {
+            var cs = makeDistArray(x.size+1, t);
+            cs[1..] = (+ scan x);
+            return cs;
+          }
+
       } else {
         var cs = makeDistArray(if includeInitial then expandedDomain(d, axis) else d, t);
 
         forall (slice, _) in axisSlices(d, new list([axis])) {
           const xSlice = removeDegenRanks(x[slice], 1),
-                csSlice = (+ scan xSlice):t;
+                csSlice = (+ scan xSlice); 
 
           for idx in slice {
             var csIdx = idx;
@@ -143,22 +151,25 @@ module StatsMsg {
 
     @arkouda.registerCommand()
     proc cumProd(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
-        where t != bool {
+        where t != bool { // bool case was already converted to int python-side
+
       if d.rank == 1 {
-        var cs = makeDistArray(if includeInitial then x.size+1 else x.size, t);
-        if includeInitial {
+
+          if !includeInitial {
+            return (* scan x);
+          } else {
+            var cs = makeDistArray(x.size+1, t);
+            cs[1..] = (* scan x);
             cs[0] = 1:t;
-            cs[1..] = (* scan x):t;
-        } else {
-            cs[0..] = (* scan x):t;
-        }
-        return cs;
+            return cs;
+          }
+
       } else {    // fill with 1s so that if includeInitial is set, answer starts with 1
         var cs = makeDistArray(if includeInitial then expandedDomain(d, axis) else d, 1:t);
 
         forall (slice, _) in axisSlices(d, new list([axis])) {
           const xSlice = removeDegenRanks(x[slice], 1),
-                csSlice = (* scan xSlice):t;
+                csSlice = (* scan xSlice);
 
           for idx in slice {
             var csIdx = idx;
@@ -169,6 +180,7 @@ module StatsMsg {
         return cs;
       }
     }
+
 
     private proc expandedDomain(d: domain(?), axis: int): domain(?) {
       var rngs: d.rank*range;
