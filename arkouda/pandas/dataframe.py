@@ -1330,6 +1330,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.client import generic_msg
+        from arkouda.pandas.categorical import Categorical
 
         self.update_nrows()
         idx = self._index
@@ -1784,6 +1785,9 @@ class DataFrame(UserDict):
         return self._index
 
     def _set_index(self, value):
+        from arkouda.numpy.strings import Strings
+
+
         if isinstance(value, Index) or value is None:
             self._index = value
         elif isinstance(value, (pdarray, Strings, pd.Index)):
