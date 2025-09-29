@@ -889,51 +889,74 @@ module SegmentedMsg {
         var newStringsName = "";
         var nBytes = 0;
         var strings = getSegString(objName, st);
-        const numOffsetsPerLocale = [i in 0..#numLocales] strings.offsets.a.domain.localSubdomain(Locales[i]).size;
-        const startOffsetIndexPerLocale = [i in 0..#numLocales] strings.offsets.a.domain.localSubdomain(Locales[i]).first;
-        const startOffsetPerLocale = [i in 0..#numLocales] strings.offsets.a.domain.localSubdomain(Locales[i])[startOffsetIndexPerLocale[i]];
-        const numBytesPerLocale = [i in 0..#numLocales] if i == numLocales - 1 then string.offsets.a.size - startOffsetPerLocale[i]
-                                                                               else startOffsetPerLocale[i + 1] - startOffsetPerLocale[i];
-        const numOffsetAlloc = max reduce numOffsetsPerLocale;
-        const numByteAlloc = max reduce numBytesPerLocale;
-        var strOffsetInLocale: [PrivateSpace] [0..#(numOffsetAlloc)] int;
-        var strBytesInLocale: [PrivateSpace] [0..#(numByteAlloc)] uint(8);
-        var strOrigIndices: [PrivateSpace] [0..#(numOffsetAlloc)] int;
-        const arrSize = strings.offsets.a.size;
-
-        coforall loc in Locales do on loc {
-          
-          ref globalOffsets = strings.offsets.a;
-          const offsetsDom = strings.offsets.a.domain.localSubdomain();
-          const size = offsetsDom.size;
-          const offsets = strings.offsets.a.localSlice[offsetsDom].reindex(0..#size);
-          const topEnd = if offsetsDom.high >= strings.offsets.a.domain.high
-                              then strings.values.a.size
-                              else globalOffsets[offsetsDom.high + 1];
-          const start = offsets[0];
-          const end = topEnd;
-          const slice = strings.values.a[start..<end];
-
-          // Avoid remote slice: copy into local array
-          var myBytes: [0..#slice.size] uint(8);
-          myBytes = slice;
-
-          const offsetsRelative = offsets - offsets[0];
-          const origIndices: [0..#offsets.size] int = offsetsDom.low..;
-
-          strOffsetInLocale[here.id][0..] = offsetsRelative;
-          strBytesInLocale[here.id][0..] = myBytes;
-          strOrigIndices[here.id][0..] = origIndices;
-
-          // writeln(here.id, " strOffsetInLocale: ", offsetsRelative);
-          // writeln(here.id, " strBytesInLocale: ", myBytes);
-          // writeln(here.id, " strOrigIndices: ", origIndices);
-
-        }
 
         try {
           select gIV.dtype {
             when DType.Int64 {
+
+              const locDom = 0..#numLocales;
+
+              // Cache per-locale local subdomains once
+              const localDomPerLoc = [i in locDom] strings.offsets.a.domain.localSubdomain(Locales[i]);
+
+              // How many offsets on each locale?
+              const numOffsetsPerLocale = [i in locDom] localDomPerLoc[i].size;
+              const hasData = [i in locDom] numOffsetsPerLocale[i] > 0;
+
+              // Safe start index/offset (don’t touch .first when empty)
+              const startIndexPerLocale  = [i in locDom]
+                if hasData[i] then localDomPerLoc[i].first else 0;
+
+              const startOffsetPerLocale = [i in locDom]
+                if hasData[i] then strings.offsets.a[startIndexPerLocale[i]] else 0;
+
+              // Compute the "next start" for each i: the start of the next *non-empty* locale,
+              // or the total size if none. Do this with a simple reverse pass.
+              var nextStartOffsetPerLocale: [locDom] startOffsetPerLocale.eltType;
+              var nextStart = strings.offsets.a.size;
+              for i in (numLocales-1)..-1{
+                nextStartOffsetPerLocale[i] = nextStart;
+                if hasData[i] then nextStart = startOffsetPerLocale[i];
+              }
+
+              // Finally: bytes per locale, zero for empty locales
+              const numBytesPerLocale = [i in locDom]
+                if hasData[i] then
+                  nextStartOffsetPerLocale[i] - startOffsetPerLocale[i]
+                else
+                  0;
+
+
+              var strOffsetInLocale: [PrivateSpace] innerArray(int);
+              var strBytesInLocale: [PrivateSpace] innerArray(uint(8));
+              var strOrigIndices: [PrivateSpace] innerArray(int);
+              const arrSize = strings.offsets.a.size;
+
+              coforall loc in Locales do on loc {
+                
+                ref globalOffsets = strings.offsets.a;
+                const offsetsDom = strings.offsets.a.domain.localSubdomain();
+                const size = offsetsDom.size;
+
+                if size > 0 {
+                  strOffsetInLocale[here.id] = new innerArray({0..#size}, int);
+                  ref offsets = strOffsetInLocale[here.id].Arr;
+                  offsets[0..#size] = strings.offsets.a.localSlice[offsetsDom];
+                  const end = if offsetsDom.high >= strings.offsets.a.domain.high
+                                      then strings.values.a.size
+                                      else globalOffsets[offsetsDom.high + 1];
+                  const start = offsets[0];
+                  strBytesInLocale[here.id] = new innerArray({0..#(end - start)}, uint(8));
+                  strBytesInLocale[here.id].Arr[0..#(end - start)] = strings.values.a[start..<end];
+
+                  offsets = offsets - offsets[0];
+
+                  strOrigIndices[here.id] = new innerArray({0..#offsets.size}, int);
+                  strOrigIndices[here.id].Arr[0..#offsets.size] = offsetsDom.low..;
+                }
+
+              }
+
               var iv = toSymEntry(gIV, int);
               ref iva = iv.a;
               var newSegs = makeDistArray(iva.size, int);
@@ -944,11 +967,17 @@ module SegmentedMsg {
               var sendBackLoc: [PrivateSpace] list(int);
               var sendBackIdx: [PrivateSpace] list(int);
               var baselineIndices: [PrivateSpace] int;
-              */
+
               var destLocales: [PrivateSpace] [0..#numOffsetAlloc] int;
               var sendIdx: [PrivateSpace] [0..#numOffsetAlloc] int;
               var sendBackLoc: [PrivateSpace] [0..#numOffsetAlloc] int;
               var sendBackIdx: [PrivateSpace] [0..#numOffsetAlloc] int;
+              var baselineIndices: [PrivateSpace] int;
+              */
+              var destLocales: [PrivateSpace] innerArray(int);
+              var sendIdx: [PrivateSpace] innerArray(int);
+              var sendBackLoc: [PrivateSpace] innerArray(int);
+              var sendBackIdx: [PrivateSpace] innerArray(int);
               var baselineIndices: [PrivateSpace] int;
 
               coforall loc in Locales do on loc {
@@ -958,12 +987,19 @@ module SegmentedMsg {
                     if rr.contains(gIdx) then return i;
                   return numLocales-1;
                 }
+
                 const indicesDom = iva.domain.localSubdomain();
                 const myIndices = iva.localSlice[indicesDom];
-                var mySendIdx: [0..#myIndices.size] int;
-                var myDestLocales: [0..#myIndices.size] int;
-                var mySendBackLoc: [0..#myIndices.size] int = here.id;
-                var mySendBackIdx: [0..#myIndices.size] int;
+
+                destLocales[here.id] = new innerArray({0..#indicesDom.size}, int);
+                sendIdx[here.id] = new innerArray({0..#indicesDom.size}, int);
+                sendBackLoc[here.id] = new innerArray({0..#indicesDom.size}, int);
+                sendBackIdx[here.id] = new innerArray({0..#indicesDom.size}, int);
+
+                ref myDestLocales = destLocales[here.id].Arr;
+                ref mySendIdx = sendIdx[here.id].Arr;
+                sendBackLoc[here.id].Arr = here.id;
+                ref mySendBackIdx = sendBackIdx[here.id].Arr;
 
                 forall (i, j, idx) in zip(indicesDom, 0.., myIndices) {
                   var tempIdx = if idx < 0 then idx + arrSize else idx;
@@ -977,120 +1013,98 @@ module SegmentedMsg {
                   }
                 }
 
-                destLocales[here.id] = new list(myDestLocales);
-                sendIdx[here.id] = new list(mySendIdx);
-                sendBackLoc[here.id] = new list(mySendBackLoc);
-                sendBackIdx[here.id] = new list(mySendBackIdx);
                 baselineIndices[here.id] = indicesDom.low;
-
-                // writeln(here.id, " destLocales: ", myDestLocales);
-                // writeln(here.id, " sendIdx: ", mySendIdx);
-                // writeln(here.id, " sendBackLoc: ", mySendBackLoc);
-                // writeln(here.id, " sendBackIdx: ", mySendBackIdx);
-                // writeln(here.id, " baselineIndices: ", indicesDom.low);
               }
 
-              var getIdx = repartitionByLocale(int,
-                                               destLocales,
-                                               sendIdx);
-              var newDestLocales = repartitionByLocale(int,
-                                                       destLocales,
-                                                       sendBackLoc);
-              var destIndices = repartitionByLocale(int,
+              var getIdx = repartitionByLocaleArray(int,
                                                     destLocales,
-                                                    sendBackIdx);
+                                                    sendIdx);
+              var newDestLocales = repartitionByLocaleArray(int,
+                                                            destLocales,
+                                                            sendBackLoc);
+              var destIndices = repartitionByLocaleArray(int,
+                                                         destLocales,
+                                                         sendBackIdx);
 
-              var tempOffsetsByLoc: [PrivateSpace] list(int);
-              var tempBytesByLoc: [PrivateSpace] list(uint(8));
+              var tempOffsetsByLoc: [PrivateSpace] innerArray(int);
+              var tempBytesByLoc: [PrivateSpace] innerArray(uint(8));
 
               coforall loc in Locales do on loc {
 
-                var myStrOffsets = strOffsetInLocale[here.id].toArray();
-                var myStrBytes = strBytesInLocale[here.id].toArray();
-                // var myOrigIndices = strOrigIndices[here.id].toArray();
-                var myReqIndices = getIdx[here.id].toArray();
-                const baseIdx = strOrigIndices[here.id][0];
-                // writeln(here.id, " myStrOffsets: ", myStrOffsets);
-                // writeln(here.id, " myStrBytes: ", myStrBytes);
-                // writeln(here.id, " myReqIndices: ", myReqIndices);
-                // writeln(here.id, " baseIdx: ", baseIdx);
-                
-                var tempSizes: [0..#myReqIndices.size] int;
+                if strOrigIndices[here.id].Arr.size > 0 {
 
-                forall i in 0..#myReqIndices.size {
-                  const adjustedInd = myReqIndices[i] - baseIdx;
-                  const upperEnd = if adjustedInd == myStrOffsets.size - 1 then myStrBytes.size else myStrOffsets[adjustedInd + 1];
-                  // writeln(here.id, " i: ", i, ", adjustedInd: ", adjustedInd, ", upperEnd: ", upperEnd);
-                  tempSizes[i] = upperEnd - myStrOffsets[adjustedInd];
-                  // writeln(here.id, " i: ", i, ", tempSizes[i]: ", tempSizes[i]);
+                  ref myStrOffsets = strOffsetInLocale[here.id].Arr;
+                  ref myStrBytes = strBytesInLocale[here.id].Arr;
+                  // var myOrigIndices = strOrigIndices[here.id].toArray();
+                  ref myReqIndices = getIdx[here.id].Arr;
+                  const baseIdx = strOrigIndices[here.id].Arr[0];
+
+                  tempOffsetsByLoc[here.id] = new innerArray({0..#myReqIndices.size}, int);
+                  ref tempOffsets = tempOffsetsByLoc[here.id].Arr;
+                  
+                  var tempSizes: [0..#myReqIndices.size] int;
+
+                  forall i in 0..#myReqIndices.size {
+                    const adjustedInd = myReqIndices[i] - baseIdx;
+                    const upperEnd = if adjustedInd == myStrOffsets.size - 1 then myStrBytes.size else myStrOffsets[adjustedInd + 1];
+                    // writeln(here.id, " i: ", i, ", adjustedInd: ", adjustedInd, ", upperEnd: ", upperEnd);
+                    tempSizes[i] = upperEnd - myStrOffsets[adjustedInd];
+                    // writeln(here.id, " i: ", i, ", tempSizes[i]: ", tempSizes[i]);
+                  }
+
+                  tempOffsets = (+ scan tempSizes) - tempSizes;
+
+                  var totalBytes = + reduce tempSizes;
+                  tempBytesByLoc[here.id] = new innerArray({0..#totalBytes}, uint(8));
+                  ref tempBytes = tempBytesByLoc[here.id].Arr;
+
+                  forall i in 0..#myReqIndices.size {
+                    const adjustedInd = myReqIndices[i] - baseIdx;
+                    tempBytes[tempOffsets[i]..#tempSizes[i]] = myStrBytes[myStrOffsets[adjustedInd]..#tempSizes[i]];
+                  }
+
                 }
-
-                var tempOffsets = (+ scan tempSizes) - tempSizes;
-                var totalBytes = + reduce tempSizes;
-                var tempBytes: [0..#totalBytes] uint(8);
-                // writeln(here.id, " tempOffsets: ", tempOffsets);
-                // writeln(here.id, " totalBytes: ", totalBytes);
-
-                forall i in 0..#myReqIndices.size {
-                  const adjustedInd = myReqIndices[i] - baseIdx;
-                  tempBytes[tempOffsets[i]..#tempSizes[i]] = myStrBytes[myStrOffsets[adjustedInd]..#tempSizes[i]];
-                }
-
-                tempOffsetsByLoc[here.id] = new list(tempOffsets);
-                tempBytesByLoc[here.id] = new list(tempBytes);
-
-                // writeln(here.id, " tempOffsetsByLoc: ", tempOffsets);
-                // writeln(here.id, " tempBytesByLoc: ", tempBytes);
 
               }
 
-              var (recvOffsets, recvBytes) = repartitionByLocaleString(newDestLocales,
-                                                                       tempOffsetsByLoc,
-                                                                       tempBytesByLoc);
+              var (recvOffsets, recvBytes) = repartitionByLocaleStringArray(newDestLocales,
+                                                                            tempOffsetsByLoc,
+                                                                            tempBytesByLoc);
 
-              var finIndices = repartitionByLocale(int, newDestLocales, destIndices);
+              var finIndices = repartitionByLocaleArray(int, newDestLocales, destIndices);
               
               var bytesByLocale: [PrivateSpace] int;
-              bytesByLocale = [i in recvBytes.domain] recvBytes[i].size;
+              bytesByLocale = [i in recvBytes.domain] recvBytes[i].Arr.size;
               var baseOffsetByLocale = (+ scan bytesByLocale) - bytesByLocale;
               var numBytes = + reduce bytesByLocale;
               var newVals = makeDistArray(numBytes, uint(8));
 
               coforall loc in Locales do on loc {
 
-                var myOffsets = recvOffsets[here.id].toArray();
-                var myBytes = recvBytes[here.id].toArray();
-                var myIndices = finIndices[here.id].toArray();
+                ref myOffsets = recvOffsets[here.id].Arr;
+                ref myBytes = recvBytes[here.id].Arr;
+                ref myIndices = finIndices[here.id].Arr;
                 var currSizes: [0..#myOffsets.size] int;
                 var endSizes: [0..#myOffsets.size] int;
                 const baseIdx = baselineIndices[here.id];
-                const baseOffset = baseOffsetByLocale[here.id];
-                const myNumBytes = bytesByLocale[here.id];
-
                 const baseOffsetByLocaleCopy = baseOffsetByLocale;
-
-                // writeln(here.id, " myOffsets: ", myOffsets);
-                // writeln(here.id, " myBytes: ", myBytes);
-                // writeln(here.id, " myIndices: ", myIndices);
-                // writeln(here.id, " baseIdx: ", baseIdx);
-                // writeln(here.id, " baseOffset: ", baseOffset);
-                // writeln(here.id, " myNumBytes: ", myNumBytes);
+                const baseOffset = baseOffsetByLocaleCopy[here.id];
+                const myNumBytes = bytesByLocale[here.id];
 
                 if myNumBytes > 0 {
 
                   forall i in 0..#myOffsets.size {
-                    var start = myOffsets[i];
-                    var end = if i == myOffsets.size - 1 then myBytes.size else myOffsets[i + 1];
+                    const start = myOffsets[i];
+                    const end = if i == myOffsets.size - 1 then myBytes.size else myOffsets[i + 1];
                     currSizes[i] = end - start;
                     endSizes[myIndices[i] - baseIdx] = end - start;
                   }
-
-                  // writeln(here.id, " currSizes: ", currSizes);
-                  // writeln(here.id, " endSizes: ", endSizes);
                   
                   var newByteOffsets = (+ scan endSizes) - endSizes;
-                  // writeln(here.id, " newByteOffsets: ", newByteOffsets);
                   newSegs[baseIdx..#myOffsets.size] = newByteOffsets + baseOffset;
+
+                  // This is unfortunately kind of necessary because newVals is a distArray, so one
+                  // bulk transfer is probably best.
                   var tempBytes: [0..#myNumBytes] uint(8);
 
                   forall i in 0..#myOffsets.size {
@@ -1100,7 +1114,6 @@ module SegmentedMsg {
                   }
 
                   newVals[baseOffset..#myNumBytes] = tempBytes[0..#myNumBytes];
-                  // writeln(here.id, " tempBytes: ", tempBytes);
 
                 }
 

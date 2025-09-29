@@ -20,6 +20,10 @@ module Repartition
       this.t = t;
       this.Dom = Dom;
     }
+
+    proc init(type t) {
+      this.t = t;
+    }
   }
 
   // Note, the arrays passed here must have PrivateSpace domains.
@@ -219,7 +223,7 @@ module Repartition
       var stringsPerLocale: [0..#numLocales] int = 0;
       allStrSizes[here.id] = new innerArray(myDestLocales.domain, int);
       ref sizes = allStrSizes[here.id].Arr;
-      const topEnd = myDestLocales.high;
+      const topEnd = myDestLocales.domain.high;
 
       forall idx in myDestLocales.domain with (+ reduce bytesPerLocale, + reduce stringsPerLocale) {
         var destLoc = myDestLocales[idx];
@@ -237,6 +241,9 @@ module Repartition
 
       var currLocIndAllLocales: [myDestLocales.domain] int;
       var currLocOffsetAllLocales: [myDestLocales.domain] int;
+
+      /*
+      // It would be very cool if we could do things this way:
 
       for i in 0..#numLocales {
         sendOffsets[here.id][i] = new innerArray({0..#stringsPerLocale[i]}, int);
@@ -258,6 +265,36 @@ module Repartition
         const currSize = sizes[j];
         currSendOffsets[dl][currLocIndAllLocales[j]] = currLocOffsetAllLocales[j];
         currSendBytes[dl][currLocOffsetAllLocales[j]..#currSize] = myStrBytes[myStrOffsets[j]..#currSize];
+      }
+
+      // Notice that there's only one forall at the end. This would potentially be faster.
+      // But because we can't do an array of refs (currently, at least), there's going to be a forall
+      // inside the for, and we do a forall for each of the locales. With all the vectorized stuff
+      // we're kind of already doing that so I'm not convinced what follows is significantly slower.
+      */
+
+      for i in 0..#numLocales {
+        sendOffsets[here.id][i] = new innerArray({0..#stringsPerLocale[i]}, int);
+        sendBytes[here.id][i] = new innerArray({0..#bytesPerLocale[i]}, uint(8));
+
+        const doCurrLoc = [j in myDestLocales.domain] myDestLocales[j] == i;
+        const currLocInd = (+ scan doCurrLoc) - doCurrLoc;
+        const currLocSizes = doCurrLoc * sizes;
+        const currLocOffsets = (+ scan currLocSizes) - currLocSizes;
+
+        currLocIndAllLocales += doCurrLoc * currLocInd;
+        currLocOffsetAllLocales += doCurrLoc * currLocOffsets;
+
+        ref currSendOffsets = sendOffsets[here.id][i].Arr;
+        ref currSendBytes = sendBytes[here.id][i].Arr;
+
+        forall (j, dl) in zip(myDestLocales.domain, myDestLocales) {
+          if dl == i {
+            const currSize = sizes[j];
+            currSendOffsets[currLocIndAllLocales[j]] = currLocOffsetAllLocales[j];
+            currSendBytes[currLocOffsetAllLocales[j]..#currSize] = myStrBytes[myStrOffsets[j]..#currSize];
+          }
+        }
       }
       
     }
@@ -282,7 +319,7 @@ module Repartition
 
       for i in 0..#numLocales {
 
-        myRecvOffsets[stringOffsetByLocale[i]..#numStringsReceivingByLocale[i]] = sendOffsets[i][here.id].Arr;
+        myRecvOffsets[stringOffsetByLocale[i]..#numStringsReceivingByLocale[i]] = sendOffsets[i][here.id].Arr + byteOffsetByLocale[i];
         myRecvBytes[byteOffsetByLocale[i]..#numBytesReceivingByLocale[i]] = sendBytes[i][here.id].Arr;
 
       }
@@ -392,101 +429,97 @@ module Repartition
 
   }
 
-    proc repartitionByLocaleArray(type t,
-                                  const ref destLocales: [] innerArray(int),
-                                  const ref vals: [] innerArray(t))
+  proc repartitionByLocaleArray(type t,
+                                const ref destLocales: [] innerArray(int),
+                                const ref vals: [] innerArray(t))
   {
     type eltType = vals.eltType.t;
 
-    var maxValsPerLocale: int;
-    var numValsReceivingByLocale: [PrivateSpace] [0..#numLocales] int;
+    var numValsSendingByLocale: [PrivateSpace] [0..#numLocales] int;
+    var sendVals: [PrivateSpace] [0..#numLocales] innerArray(t);
 
-    coforall loc in Locales 
-      with (max reduce maxValsPerLocale) 
-      do on loc
+    coforall loc in Locales do on loc
     {
-      const ref myDestLocales = destLocales[here.id];
-      const ref myVals = vals[here.id];
+
+      const ref myDestLocales = destLocales[here.id].Arr;
+      const ref myVals = vals[here.id].Arr;
       var valsPerLocale: [0..#numLocales] int = 0;
 
-      forall idx in 0..#myDestLocales.size with (+ reduce valsPerLocale) {
+      forall idx in myDestLocales.domain with (+ reduce valsPerLocale) {
         var destLoc = myDestLocales[idx];
         valsPerLocale[destLoc] += 1;
       }
 
-      maxValsPerLocale = max reduce valsPerLocale;
+      numValsSendingByLocale[here.id] = valsPerLocale;
+      
+      var currLocIndAllLocales: [myDestLocales.domain] int;
 
-      forall i in 0..#numLocales {
-        numValsReceivingByLocale[i][here.id] = valsPerLocale[i];
+      /*
+      // It would be very cool if we could do things this way:
+
+      for i in 0..#numLocales {
+        sendVals[here.id][i] = new innerArray({0..#valsPerLocale[i]}, eltType);
+
+        const doCurrLoc = [j in myDestLocales.domain] myDestLocales[j] == i;
+        const currLocInd = (+ scan doCurrLoc) - doCurrLoc;
+        
+        currLocIndAllLocales += doCurrLoc * currLocInd;
+      }
+
+      ref currSendVals = [i in 0..#numLocales] sendVals[here.id][i].Arr;
+
+      forall (j, dl) in zip(myDestLocales.domain, myDestLocales) {
+        currSendVals[dl][currLocIndAllLocales[j]] = myVals[j];
+      }
+
+      // Notice that there's only one forall at the end. This would potentially be faster.
+      // But because we can't do an array of refs (currently, at least), there's going to be a forall
+      // inside the for, and we do a forall for each of the locales. With all the vectorized stuff
+      // we're kind of already doing that so I'm not convinced what follows is significantly slower.
+      */
+
+      for i in 0..#numLocales {
+        sendVals[here.id][i] = new innerArray({0..#valsPerLocale[i]}, eltType);
+
+        const doCurrLoc = [j in myDestLocales.domain] myDestLocales[j] == i;
+        const currLocInd = (+ scan doCurrLoc) - doCurrLoc;
+        
+        currLocIndAllLocales += doCurrLoc * currLocInd;
+
+        ref currSendVals = sendVals[here.id][i].Arr;
+
+        forall (j, dl) in zip(myDestLocales.domain, myDestLocales) {
+          if dl == i {
+            currSendVals[currLocIndAllLocales[j]] = myVals[j];
+          }
+        }
       }
 
     }
 
-    var recvVals: [PrivateSpace] [0..#numLocales] [0..#maxValsPerLocale] eltType;
+    var recvVals: [PrivateSpace] innerArray(eltType);
 
     // Now we're going to fill the receiving buffers
     // with the data that needs to get transferred from another locale
 
     coforall loc in Locales do on loc {
-      const ref myDestLocales = destLocales[here.id];
-      const ref myVals = vals[here.id];
-      var idxInDestLoc: [0..#myDestLocales.size] int = 0;
-      var numValsPerLocale: [0..#numLocales] int = 0;
+      
+      const numValsReceivingByLocale = [i in 0..#numLocales] numValsSendingByLocale[i][here.id];
+      const valOffsetByLocale = (+ scan numValsReceivingByLocale) - numValsReceivingByLocale;
 
-      // First we need to figure out what the destination index will be for each value
+      recvVals[here.id] = new innerArray({0..#(+ reduce numValsReceivingByLocale)}, eltType);
+
+      ref myRecvVals = recvVals[here.id].Arr;
 
       for i in 0..#numLocales {
-        var onCurrLoc = [j in 0..#myDestLocales.size] if myDestLocales[j] == i then 1 else 0;
+
+        myRecvVals[valOffsetByLocale[i]..#numValsReceivingByLocale[i]] = sendVals[i][here.id].Arr;
         
-        var idxInCurrLoc = (+ scan onCurrLoc) - onCurrLoc;
-        idxInDestLoc = [j in 0..#myDestLocales.size] if myDestLocales[j] == i then idxInCurrLoc[j] 
-                                                     else idxInDestLoc[j];
-
-        numValsPerLocale[i] = + reduce onCurrLoc;
-      }
-
-      var sendVals: [0..#numLocales] [0..#maxValsPerLocale] eltType;
-
-      forall idx in 0..#myDestLocales.size {
-
-        var destLoc = myDestLocales[idx];
-        var idxInValArr = idxInDestLoc[idx];
-        
-        sendVals[destLoc][idxInValArr] = myVals[idx];
-
-      }
-
-      // Maybe could be a forall but I don't know how that plays with the bulk transfer.
-      for i in 0..#numLocales {
-        recvVals[i][here.id][0..#numValsPerLocale[i]] = sendVals[i][0..#numValsPerLocale[i]];
       }
 
     }
 
-    var returnedVals: [PrivateSpace] list(eltType);
-
-    // Now that the buffers have been filled, we're going to group them together into a single list.
-    // Strictly speaking, this probably isn't necessary, but it does make it more friendly to work with
-
-    coforall loc in Locales do on loc {
-      const ref numValsReceivedByLoc = numValsReceivingByLocale[here.id];
-      const ref myRecvVals = recvVals[here.id];
-      var numValsReceived = + reduce numValsReceivedByLoc;
-      var myVals: [0..#numValsReceived] eltType;
-      var idxOffsetAdjuster = (+ scan numValsReceivedByLoc) - numValsReceivedByLoc;
-
-      for i in 0..#numLocales {
-
-        var idxOffsetThisLoc = idxOffsetAdjuster[i];
-        myVals[idxOffsetThisLoc..#numValsReceivedByLoc[i]] = myRecvVals[i][0..#numValsReceivedByLoc[i]];
-
-      }
-
-      returnedVals[here.id] = new list(myVals);
-
-    }
-
-    return returnedVals;
+    return recvVals;
 
   }
 }
