@@ -1475,8 +1475,8 @@ def uniform(
         The low value (inclusive) of the range, defaults to 0.0
     high : float_scalars
         The high value (inclusive) of the range, defaults to 1.0
-    size : int_scalars
-        The length of the returned array
+    size : Union[int_scalars, Tuple[int_scalars]
+        The length or shape of the returned array
     seed : int_scalars, optional
         Value used to initialize the random number generator
 
