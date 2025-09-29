@@ -1230,7 +1230,11 @@ def register_commands(config, source_files):
 
     count = 0
 
+    registered_files = set()
+
     for filename, ctx in chapel.files_with_contexts(source_files):
+        if filename in registered_files: continue
+
         file_stamps = []
         found_annotation = False
 
@@ -1345,6 +1349,8 @@ def register_commands(config, source_files):
 
         if found_annotation:
             stamps.extend(file_stamps)
+
+        registered_files.add(filename)
 
     stamps.append("}  // module Commands")
 
