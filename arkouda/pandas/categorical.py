@@ -80,6 +80,7 @@ if TYPE_CHECKING:
     from arkouda.numpy import where
     from arkouda.numpy.pdarraycreation import arange, array, ones, zeros, zeros_like
     from arkouda.numpy.strings import Strings
+    from arkouda.numpy.sorting import SortingAlgorithm
 
 else:
     generic_msg = TypeVar("generic_msg")
@@ -92,6 +93,10 @@ else:
     zeros_like = TypeVar("zeros_like")
     Strings = TypeVar("Strings")
 
+    from enum import Enum
+
+    class SortingAlgorithm(Enum):
+        RadixSortLSD = "RadixSortLSD"
 
 __all__ = ["Categorical"]
 
