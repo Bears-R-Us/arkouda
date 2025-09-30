@@ -319,7 +319,9 @@ module Repartition
 
       for i in 0..#numLocales {
 
-        myRecvOffsets[stringOffsetByLocale[i]..#numStringsReceivingByLocale[i]] = sendOffsets[i][here.id].Arr + byteOffsetByLocale[i];
+        // myRecvOffsets[stringOffsetByLocale[i]..#numStringsReceivingByLocale[i]] = sendOffsets[i][here.id].Arr + byteOffsetByLocale[i];
+        myRecvOffsets[stringOffsetByLocale[i]..#numStringsReceivingByLocale[i]] = sendOffsets[i][here.id].Arr;
+        myRecvOffsets[stringOffsetByLocale[i]..#numStringsReceivingByLocale[i]] += byteOffsetByLocale[i];
         myRecvBytes[byteOffsetByLocale[i]..#numBytesReceivingByLocale[i]] = sendBytes[i][here.id].Arr;
 
       }
