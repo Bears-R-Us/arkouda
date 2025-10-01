@@ -524,4 +524,96 @@ module Repartition
     return recvVals;
 
   }
+
+  proc repartitionByLocaleMultiArray(type t,
+                                    const ref destLocales: [] innerArray(int),
+                                    const ref vals: [] [] innerArray(t))
+  {
+    // Notes:
+    // - We assume `vals` is indexed as [field][PrivateSpace], i.e., vals[k][here.id]
+    // - `innerArray(t)` is your existing wrapper with `.Arr` and a ctor like new innerArray(dom, eltType)
+
+    type eltType = t;
+
+    const Fields = vals.domain.dim(0);        // range over the "multi" dimension
+    const LocaleRange = 0..#numLocales;       // 0..numLocales-1
+
+    var numValsSendingByLocale: [PrivateSpace] [LocaleRange] int;
+    var sendVals: [Fields] [PrivateSpace] [LocaleRange] innerArray(eltType);
+
+    // 1) Build per-locale send buffers on each locale (for all fields)
+    coforall loc in Locales do on loc {
+
+      const ref myDestLocales = destLocales[here.id].Arr;
+
+      // Count how many elements this locale will send to each destination locale.
+      var valsPerLocale: [LocaleRange] int = 0;
+
+      forall idx in myDestLocales.domain with (+ reduce valsPerLocale) {
+        const destLoc = myDestLocales[idx];
+        valsPerLocale[destLoc] += 1;
+      }
+
+      numValsSendingByLocale[here.id] = valsPerLocale;
+
+      // We'll reuse the computed positions for each destination locale.
+      var currLocIndAllLocales: [myDestLocales.domain] int = 0;
+
+      // For each destination locale, compute its local indices and fill all fields.
+      for i in LocaleRange {
+        // Allocate one send buffer per (field, destLocale)
+        for k in Fields {
+          sendVals[k][here.id][i] = new innerArray({0..#valsPerLocale[i]}, eltType);
+        }
+
+        // Boolean mask of entries headed to locale i; then 0-based indices within that subset.
+        const doCurrLoc = [j in myDestLocales.domain] myDestLocales[j] == i;
+        const currLocInd = (+ scan doCurrLoc) - doCurrLoc;
+
+        // Accumulate the per-position index (same for all fields)
+        currLocIndAllLocales += doCurrLoc * currLocInd;
+
+        // Fill every field's send buffer for this dest locale
+        for k in Fields {
+          const ref myValsK = vals[k][here.id].Arr;
+          ref currSendValsK = sendVals[k][here.id][i].Arr;
+
+          forall (j, dl) in zip(myDestLocales.domain, myDestLocales) {
+            if dl == i {
+              currSendValsK[currLocIndAllLocales[j]] = myValsK[j];
+            }
+          }
+        }
+      }
+    }
+
+    // 2) Build per-locale receive buffers and splice in segments from every source locale
+    var recvVals: [Fields] [PrivateSpace] innerArray(eltType);
+
+    coforall loc in Locales do on loc {
+      // For this receiving locale, how many values will arrive from each source locale?
+      const numValsReceivingByLocale = [i in LocaleRange] numValsSendingByLocale[i][here.id];
+      const valOffsetByLocale = (+ scan numValsReceivingByLocale) - numValsReceivingByLocale;
+      const totalIncoming = + reduce numValsReceivingByLocale;
+
+      // Allocate one receive buffer per field
+      for k in Fields {
+        recvVals[k][here.id] = new innerArray({0..#totalIncoming}, eltType);
+      }
+
+      // Splice in, locale by locale, for every field
+      for i in LocaleRange {
+        const count = numValsReceivingByLocale[i];
+        const off   = valOffsetByLocale[i];
+
+        for k in Fields {
+          ref myRecvValsK = recvVals[k][here.id].Arr;
+          myRecvValsK[off..#count] = sendVals[k][i][here.id].Arr;
+        }
+      }
+    }
+
+    return recvVals;
+  }
+
 }
