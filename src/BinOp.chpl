@@ -10,6 +10,7 @@ module BinOp
   use BitOps;
   use BigInteger;
   use Set;
+  use Math;
 
 
   private config const logLevel = ServerConfig.logLevel;
@@ -98,16 +99,38 @@ module BinOp
   /*
     Helper function to ensure that floor division cases are handled in accordance with numpy
   */
-  inline proc floorDivisionHelper(numerator: ?t, denom: ?t2): real {
+
+  inline proc floorDivisionHelper(numerator: real(64), denom: real(64)): real(64) {
     if (numerator == 0 && denom == 0) || (isInf(numerator) && (denom != 0 || isInf(denom))){
       return nan;
     }
     else if (numerator > 0 && denom == -inf) || (numerator < 0 && denom == inf){
       return -1:real;
     }
-    else {
-      return floor(numerator/denom);
+    else if denom == 0 || isInf(denom) {
+      return numerator / denom;
     }
+
+    const q  = numerator / denom;
+    const fq = floor(q);
+    if q != fq then return fq;
+
+    // fma does (-q * denom) + numerator and stores that in r
+    // From https://en.cppreference.com/w/c/numeric/math/fma.html
+    // Computes (x * y) + z as if to infinite precision and rounded only once to fit the result type.
+    const r = fma(-q, denom, numerator);
+    if r == 0.0 then return q;
+
+    // This next part may seem a little weird, but if r = -q * denom + numerator
+    // Then numerator / denom = q + r / denom (This should remind you of the division algorithm)
+    // r should be small, it's basically the floating point error when we calculated q.
+    // At this point, q is an integer because we already returned if q != fq.
+    // If r / denom is negative then we need to actually round down. If r / denom is positive, then q
+    // is the correct floor division.
+    // Rather than actually dividing the values, we only need to check if the signs differ or are the
+    // same. If they differ, then r / denom is negative, otherwise it is positive.
+    const qIsBelow = ((r > 0.0) != (denom > 0.0));
+    return if qIsBelow then (q - 1.0) else q;
   }
 
   /*
