@@ -1317,11 +1317,7 @@ def linspace(
     from arkouda import newaxis
     from arkouda.numeric import transpose
     from arkouda.numpy.manipulation_functions import tile
-    from arkouda.numpy.util import (
-        _integer_axis_validation,
-        broadcast_shapes,
-        broadcast_to,
-    )
+    from arkouda.numpy.util import _integer_axis_validation, broadcast_shapes, broadcast_to
 
     if dtype not in (None, float64):
         raise TypeError("dtype must be None or float64")
