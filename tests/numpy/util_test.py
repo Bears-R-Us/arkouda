@@ -4,8 +4,8 @@ import pytest
 import arkouda as ak
 from arkouda.numpy import util
 from arkouda.numpy.util import may_share_memory, shares_memory
-from arkouda.util import is_float, is_int, is_numeric, map
 from arkouda.testing import assert_arkouda_array_equivalent
+from arkouda.util import is_float, is_int, is_numeric, map
 
 
 class TestUtil:

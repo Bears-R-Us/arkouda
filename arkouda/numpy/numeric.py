@@ -3164,7 +3164,7 @@ def vecdot(
     of matching shape.
 
     """
-    from arkouda.numpy.util import broadcast_to, broadcast_shapes
+    from arkouda.numpy.util import broadcast_shapes, broadcast_to
 
     #  axis handling in vecdot is unique, and doesn't use one of the standard
     #  validation functions.

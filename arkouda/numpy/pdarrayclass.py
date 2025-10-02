@@ -5040,7 +5040,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
 
 @typechecked
 def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, bool, bool]:
-    from arkouda.numpy.util import broadcast_to, broadcast_shapes
+    from arkouda.numpy.util import broadcast_shapes, broadcast_to
 
     if x1.shape == x2.shape:
         return (x1, x2, False, False)

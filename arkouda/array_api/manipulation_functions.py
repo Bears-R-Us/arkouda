@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import List, Optional, Tuple, Union, cast
 
-from typeguard import typechecked
-
 import numpy as np
+from typeguard import typechecked
 
 from arkouda.numpy.dtypes import bool as akbool
 from arkouda.numpy.dtypes import dtype as akdtype

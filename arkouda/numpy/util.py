@@ -586,7 +586,7 @@ def broadcast_shapes(*shapes: Tuple[int, ...]) -> Tuple[int, ...]:
 
     Parameters
     ----------
-    shapes :
+    shapes : Tuple[int, ...]
         a list or tuple of the shapes to be broadcast
 
     Returns
@@ -621,7 +621,7 @@ def broadcast_arrays(*arrays: pdarray) -> List[pdarray]:
 
     Parameters
     ----------
-    arrays : list or tuple of pdarrays
+    arrays : pdarray
         The arrays to broadcast. Must be broadcastable to a common shape.
 
     Returns
