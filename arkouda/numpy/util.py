@@ -25,6 +25,8 @@ __all__ = [
     "attach_all",
     "_axis_validation",
     "broadcast_dims",
+    "broadcast_shapes",
+    "broadcast_arrays",
     "convert_bytes",
     "convert_if_categorical",
     "copy",
@@ -567,6 +569,134 @@ def sparse_sum_help(
     return create_pdarray(inds), create_pdarray(vals)
 
 
+@typechecked
+def broadcast_shapes(*shapes: Tuple[int, ...]) -> Tuple[int, ...]:
+    """
+    Determine a broadcasted shape, given an arbitary number of shapes.
+
+    This function implements the broadcasting rules from the Array API standard
+    to compute the shape resulting from broadcasting two arrays together.
+
+    See: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
+
+    Parameters
+    ----------
+    shapes : Tuple[int, ...]
+        a list or tuple of the shapes to be broadcast
+
+    Returns
+    -------
+    Tuple[int, ...]
+        The broadcasted shape
+
+    Raises
+    ------
+    ValueError
+        If the shapes are not compatible for broadcasting.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.broadcast_shapes((1,2,3),(4,1,3),(4,2,1))
+    (4, 2, 3)
+
+    """
+    from numpy import broadcast_shapes as b_shapes
+
+    try:
+        return b_shapes(*shapes)
+    except ValueError:
+        raise ValueError(f"Found no common broadcast shape for: {shapes}")
+
+
+@typechecked
+def broadcast_arrays(*arrays: pdarray) -> List[pdarray]:
+    """
+    Broadcast arrays to a common shape.
+
+    Parameters
+    ----------
+    arrays : pdarray
+        The arrays to broadcast. Must be broadcastable to a common shape.
+
+    Returns
+    -------
+    List
+        A list whose elements are the given Arrays broadcasted to the common shape.
+
+    Raises
+    ------
+    ValueError
+        Raised by broadcast_to if a common shape cannot be determined.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.arange(10).reshape(1,2,5)
+    >>> b = ak.arange(20).reshape(4,1,5)
+    >>> c = ak.broadcast_arrays(a,b)
+    >>> c[0][0,:,:]
+    array([array([0 1 2 3 4]) array([5 6 7 8 9])])
+    >>> c[1][:,0,0]
+    array([0 5 10 15])
+
+    """
+    shapes = [a.shape for a in arrays]
+    bcShape = broadcast_shapes(*shapes)
+    return [broadcast_to(a, shape=bcShape) for a in arrays]
+
+
+@typechecked
+def broadcast_to(x: pdarray, shape: Tuple[int, ...]) -> pdarray:
+    """
+    Broadcast the array to the specified shape.
+
+    Parameters
+    ----------
+    x: pdarray
+        The array to be broadcast.
+    shape: Tuple[int, ...]
+        The shape to which the array is to be broadcast.
+
+    Returns
+    -------
+    pdarray
+        A new array which is x broadcast to the provided shape.
+
+    Raises
+    ------
+    ValueError
+        Raised server-side if the broadcast fails.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.arange(5)
+    >>> ak.broadcast_to(a,(2,5))
+    array([array([0 1 2 3 4]) array([0 1 2 3 4])])
+
+
+    """
+    from arkouda.client import generic_msg
+
+    try:
+        return create_pdarray(
+            cast(
+                str,
+                generic_msg(
+                    cmd=f"broadcast<{x.dtype},{x.ndim},{len(shape)}>",
+                    args={
+                        "name": x,
+                        "shape": shape,
+                    },
+                ),
+            )
+        )
+    except RuntimeError as e:
+        raise ValueError(f"Failed to broadcast array: {e}")
+
+
+@typechecked
 def broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]:
     """
     Determine the broadcasted shape of two arrays given their shapes.
