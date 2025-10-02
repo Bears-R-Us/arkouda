@@ -25,7 +25,7 @@ from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.numpy.pdarrayclass import broadcast_to_shape, create_pdarray, pdarray
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.strings import Strings
 
 
@@ -1308,7 +1308,7 @@ def linspace(
     from arkouda import newaxis
     from arkouda.numeric import transpose
     from arkouda.numpy.manipulation_functions import tile
-    from arkouda.numpy.util import _integer_axis_validation, broadcast_dims
+    from arkouda.numpy.util import _integer_axis_validation, broadcast_shapes, broadcast_to
 
     if dtype not in (None, float64):
         raise TypeError("dtype must be None or float64")
@@ -1335,9 +1335,9 @@ def linspace(
     if isinstance(start_, pdarray) and isinstance(stop_, pdarray):
         #  they must be broadcast to a matching shape
         if start_.shape != stop_.shape:
-            newshape = broadcast_dims(start_.shape, stop_.shape)
-            start_ = broadcast_to_shape(start_, newshape)
-            stop_ = broadcast_to_shape(stop_, newshape)
+            newshape = broadcast_shapes(start_.shape, stop_.shape)
+            start_ = broadcast_to(start_, newshape)
+            stop_ = broadcast_to(stop_, newshape)
 
     #   If one is a scalar and other a vector, we use full_like to "promote" the scalar one.
 

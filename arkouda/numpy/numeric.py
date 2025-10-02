@@ -3153,15 +3153,14 @@ def vecdot(
     -----
     This matches the behavior of numpy vecdot, but as commented above, it is not the
     behavior of the deprecated vecdot, which calls the chapel-side vecdot function.
-    This function only uses broadcast_dims, broadcast_to_shape, ak.sum, and the
+    This function only uses broadcast_to, broadcast_shapes, ak.sum, and the
     binops pdarray multiplication function.  The last dimension of x1 and x2 must
     match, and it must be possible to broadcast them to a compatible shape.
     The deprecated vecdot can be computed via ak.vecdot(a,b,axis=0) on pdarrays
     of matching shape.
 
     """
-    from arkouda.numpy.pdarrayclass import broadcast_to_shape
-    from arkouda.numpy.util import broadcast_dims
+    from arkouda.numpy.util import broadcast_shapes, broadcast_to
 
     #  axis handling in vecdot is unique, and doesn't use one of the standard
     #  validation functions.
@@ -3182,8 +3181,8 @@ def vecdot(
         else:
             axis = -1
 
-    ns = broadcast_dims(x1.shape, x2.shape)
-    return sum((broadcast_to_shape(x1, ns) * broadcast_to_shape(x2, ns)), axis=axis)
+    ns = broadcast_shapes(x1.shape, x2.shape)
+    return sum((broadcast_to(x1, ns) * broadcast_to(x2, ns)), axis=axis)
 
 
 def quantile(

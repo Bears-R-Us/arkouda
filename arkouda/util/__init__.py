@@ -4,6 +4,7 @@ from arkouda.numpy.util import (
     attach,
     attach_all,
     broadcast_dims,
+    broadcast_to,
     convert_bytes,
     convert_if_categorical,
     generic_concat,

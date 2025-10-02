@@ -1686,8 +1686,7 @@ class TestNumeric:
         ak_assert_almost_equivalent(np_vecdot, ak_vecdot_f)
         ak_assert_almost_equivalent(ak_vecdot_f, ak_vecdot_r)
 
-    #   The error test sends incompatible shapes to vecdot, which passes them to
-    #   ak.broadcast_dims, which is where the error is raised.
+    #   The error test sends incompatible shapes to vecdot.
 
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("dtype", NO_BOOL)
