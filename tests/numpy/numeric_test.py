@@ -1559,6 +1559,21 @@ class TestNumeric:
         anp_taken = np.take(anp, indices_np)
 
         assert np.array_equal(a_taken.to_ndarray(), anp_taken)
+        assert np.array_equal(a.take(indices).to_ndarray(), anp_taken)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_take_strings(self, size):
+        a = ak.random_strings_uniform(1, 3, size, seed=pytest.seed)
+        anp = a.to_ndarray()
+
+        indices = ak.randint(0, size, size // 2, dtype="int64", seed=pytest.seed)
+        indices_np = indices.to_ndarray()
+
+        a_taken = ak.take(a, indices)
+        anp_taken = np.take(anp, indices_np)
+
+        assert np.array_equal(a_taken.to_ndarray(), anp_taken)
+        assert np.array_equal(a.take(indices).to_ndarray(), anp_taken)
 
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
     @pytest.mark.skip_if_rank_not_compiled([3])
@@ -1577,6 +1592,7 @@ class TestNumeric:
         anp_taken = np.take(anp, indices_np, axis=axis)
 
         assert np.array_equal(a_taken.to_ndarray(), anp_taken)
+        assert np.array_equal(a.take(indices, axis=axis).to_ndarray(), anp_taken)
 
     @pytest.mark.parametrize("dtype", NO_BOOL)
     @pytest.mark.parametrize("size", pytest.prob_size)

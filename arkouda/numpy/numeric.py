@@ -3445,7 +3445,9 @@ def percentile(
     return quantile(a, q_ / 100.0, axis, method, keepdims)  # type: ignore
 
 
-def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[int] = None) -> pdarray:
+def take(
+    a: Union[pdarray, Strings], indices: Union[numeric_scalars, pdarray], axis: Optional[int] = None
+) -> pdarray:
     """
     Take elements from an array along an axis.
 
@@ -3478,6 +3480,12 @@ def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[in
     """
     from arkouda.client import generic_msg
     from arkouda.numpy.util import _integer_axis_validation
+
+    if isinstance(a, Strings):
+        from arkouda.numpy.pdarraycreation import arange
+
+        idx = arange(a.size)
+        return a[take(idx, indices=indices, axis=axis)]
 
     if axis is None:
         axis_ = 0
