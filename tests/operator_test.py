@@ -800,28 +800,23 @@ class TestOperator:
 
         op_fcn = OP_MAP[op]
 
-        if op in {"/", "//", "%"} and ak.all(other_arr > 0) or op not in {"/", "//", "%"}:
-            # ak_result = eval(f"bigint_arr {op} other_arr")
-            # np_result = eval(f"np_bigint {op} np_other")
-            ak_result = op_fcn(bigint_arr, other_arr)
-            np_result = op_fcn(np_bigint, np_other)
+        ak_result = op_fcn(bigint_arr, other_arr)
+        np_result = op_fcn(np_bigint, np_other)
 
-            if ak.all(ak_result >= 0) and np.all(np_result >= 0):
-                if op == "/":
-                    np_result = ak.array(np_result, dtype="float64")
-                    assert_almost_equivalent(ak_result, np_result)
-                else:
-                    assert_arkouda_array_equivalent(ak_result, np_result)
+        if op == "/":
+            np_result = ak.array(np_result, dtype="float64")
+            assert_almost_equivalent(ak_result, np_result)
+        else:
+            assert_arkouda_array_equivalent(ak_result, np_result)
 
         ak_result = op_fcn(bigint_arr, other_arr)
         np_result = op_fcn(np_bigint, np_other)
 
-        if ak.all(ak_result > 0) and np.all(np_result > 0):
-            if op == "/":
-                np_result = ak.array(np_result, dtype="float64")
-                assert_almost_equivalent(ak_result, np_result)
-            else:
-                assert_arkouda_array_equivalent(ak_result, np_result)
+        if op == "/":
+            np_result = ak.array(np_result, dtype="float64")
+            assert_almost_equivalent(ak_result, np_result)
+        else:
+            assert_arkouda_array_equivalent(ak_result, np_result)
 
     @pytest.mark.parametrize("op", ARITHMETIC_OPS)
     @pytest.mark.parametrize("size", pytest.prob_size)
