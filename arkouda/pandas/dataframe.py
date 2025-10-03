@@ -68,11 +68,9 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import numeric_scalars
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
-from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, full, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d, intersect1d
 from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.sorting import sort as aksort
-from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
 from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.pandas.join import inner_join
@@ -83,16 +81,22 @@ if TYPE_CHECKING:
     from arkouda.categorical import Categorical
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import cumsum, where
+    from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, full, zeros
     from arkouda.numpy.segarray import SegArray
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.series import Series
 else:
-    Series = TypeVar("Series")
-    SegArray = TypeVar("SegArray")
     akcast = TypeVar("akcast")
     cumsum = TypeVar("cumsum")
     where = TypeVar("where")
-    Categorical = TypeVar("Categorical")
-
+    arange = TypeVar("arange")
+    array = TypeVar("array")
+    create_pdarray = TypeVar("create_pdarray")
+    full = TypeVar("full")
+    zeros = TypeVar("zeros")
+    Series = TypeVar("Series")
+    Strings = TypeVar("Strings")
+    SegArray = TypeVar("SegArray")
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -1326,6 +1330,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.client import generic_msg
+        from arkouda.pandas.categorical import Categorical
 
         self.update_nrows()
         idx = self._index
@@ -1780,6 +1785,9 @@ class DataFrame(UserDict):
         return self._index
 
     def _set_index(self, value):
+        from arkouda.numpy.strings import Strings
+
+
         if isinstance(value, Index) or value is None:
             self._index = value
         elif isinstance(value, (pdarray, Strings, pd.Index)):

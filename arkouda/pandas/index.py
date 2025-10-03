@@ -71,11 +71,9 @@ from typeguard import typechecked
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.manipulation_functions import flip as ak_flip
-from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import array, ones
+from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraysetops import argsort, in1d
-from arkouda.numpy.strings import Strings
+from arkouda.numpy.sorting import coargsort
 from arkouda.numpy.util import convert_if_categorical, generic_concat, get_callback
 from arkouda.pandas.groupbyclass import GroupBy, unique
 from arkouda.sorting import coargsort
@@ -87,13 +85,19 @@ __all__ = [
 ]
 
 if TYPE_CHECKING:
-    from arkouda import cast as akcast
-    from arkouda.categorical import Categorical
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, ones
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.series import Series
 else:
     Series = TypeVar("Series")
     akcast = TypeVar("akcast")
-    Categorical = TypeVar("Categorical")
+    arange = TypeVar("arange")
+    array = TypeVar("array")
+    create_pdarray = TypeVar("create_pdarray")
+    ones = TypeVar("ones")
+    Strings = TypeVar("Strings")
+    Series = TypeVar("Series")
 
 
 class Index:

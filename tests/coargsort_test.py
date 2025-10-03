@@ -138,7 +138,7 @@ class TestCoargsort:
     @pytest.mark.parametrize("dtype1", NUMERIC_TYPES)
     @pytest.mark.parametrize("dtype2", NUMERIC_TYPES)
     def test_coargsort_numeric(self, ascending, dtype1, dtype2):
-        from arkouda.alignment import is_cosorted
+        from arkouda.numpy.alignment import is_cosorted
         from arkouda.numpy.manipulation_functions import flip
 
         size = 100

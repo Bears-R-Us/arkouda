@@ -43,7 +43,7 @@ array([100 200 200])
 """
 
 import functools
-from typing import TYPE_CHECKING, Sequence, TypeVar
+from typing import Sequence
 from warnings import warn
 
 import numpy as np
@@ -57,15 +57,8 @@ from arkouda.numpy.pdarraycreation import arange, full, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.strings import Strings
+from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GroupBy, broadcast, unique
-
-
-if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
-
-else:
-    Categorical = TypeVar("Categorical")
-
 
 __all__ = [
     "NonUniqueError",
@@ -84,30 +77,6 @@ __all__ = [
 
 
 def unsqueeze(p):
-    """
-    Ensure that the input is returned as a list.
-
-    If the input is a single pdarray, Strings, or Categorical object, wrap it in a list.
-    Otherwise, return the input unchanged.
-
-    Parameters
-    ----------
-    p : pdarray, Strings, Categorical, or Sequence
-        The input object to be wrapped or returned as-is.
-
-    Returns
-    -------
-    Sequence
-        A list containing the input, or the input itself if it is already a sequence.
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.array([1, 2, 3])
-    >>> unsqueeze(a)
-    [array([1 2 3])]
-
-    """
     if isinstance(p, pdarray) or isinstance(p, Strings) or isinstance(p, Categorical):
         return [p]
     else:
@@ -203,22 +172,6 @@ def left_align(left, right):
 
 
 class NonUniqueError(ValueError):
-    """
-    Exception raised when duplicate values are found in a set of keys that are expected to be unique.
-
-    This is typically raised in lookup and alignment operations that assume
-    a one-to-one mapping between keys and values.
-
-    Examples
-    --------
-    >>> from arkouda.alignment import NonUniqueError
-    >>> raise NonUniqueError("Duplicate values found in key array.")
-    Traceback (most recent call last):
-        ...
-    arkouda.alignment.NonUniqueError: Duplicate values found in key array.
-
-    """
-
     pass
 
 
@@ -279,7 +232,7 @@ def find(query, space, all_occurrences=False, remove_missing=False):
     Set both remove_missing and all_occurrences to True, missing values
     will be empty segments
 
-    >>> ak.find(arr1, arr2, remove_missing=True, all_occurrences=True).tolist()
+    >>> ak.find(arr1, arr2, remove_missing=True, all_occurrences=True).to_list()
     [[],
      [],
      [],
@@ -304,8 +257,6 @@ def find(query, space, all_occurrences=False, remove_missing=False):
     """
     from arkouda.client import generic_msg
     from arkouda.numpy import cumsum, where
-    from arkouda.numpy.strings import Strings
-    from arkouda.pandas.categorical import Categorical
 
     # Concatenate the space and query in fast (block interleaved) mode
     if isinstance(query, (pdarray, Strings, Categorical)):
@@ -430,14 +381,12 @@ def lookup(keys, values, arguments, fillvalue=-1):
     >>> revkeys = values
     >>> revindices = ak.arange(values.size)
     >>> revargs = ak.array([24, 21, 22])
-    >>> indx = ak.lookup(revkeys, revindices, revargs)
-    >>> keys1[indx], keys2[indx]
+    >>> idx = ak.lookup(revkeys, revindices, revargs)
+    >>> keys1[idx], keys2[idx]
     (array(['twenty', 'twenty', 'twenty']),
     array(['four', 'one', 'two']))
 
     """
-    from arkouda.pandas.categorical import Categorical
-
     if isinstance(values, Categorical):
         codes = lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
         return Categorical.from_codes(codes, values.categories, NAvalue=values.NAvalue)
@@ -851,8 +800,6 @@ def interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None, hierar
         in any interval.
 
     """
-    from arkouda.categorical import Categorical
-
     if isinstance(values, Categorical):
         codes = interval_lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
         return Categorical.from_codes(codes, values.categories, NAvalue=values.NAvalue)

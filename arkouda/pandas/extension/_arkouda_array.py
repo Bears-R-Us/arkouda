@@ -1,12 +1,10 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import numpy as np
 from numpy import ndarray
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.dtypes import dtype as ak_dtype
-from arkouda.numpy.pdarraycreation import array as ak_array
-from arkouda.numpy.pdarraycreation import full as ak_full
 from arkouda.numpy.pdarraycreation import pdarray
 
 from ._arkouda_base_array import ArkoudaBaseArray
@@ -20,6 +18,13 @@ from ._dtypes import (
     _ArkoudaBaseDtype,
 )
 
+if TYPE_CHECKING:
+    from arkouda.numpy.pdarraycreation import array as ak_array
+    from arkouda.numpy.pdarraycreation import full as ak_full
+
+else:
+    ak_array = TypeVar("ak_array")
+    ak_full = TypeVar("ak_full")
 
 __all__ = ["ArkoudaArray"]
 

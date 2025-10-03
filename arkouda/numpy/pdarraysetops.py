@@ -13,18 +13,27 @@ from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import array, ones, zeros, zeros_like
 from arkouda.numpy.sorting import argsort
-from arkouda.numpy.strings import Strings
-from arkouda.pandas.groupbyclass import GroupBy, groupable, groupable_element_type, unique
-
+from arkouda.pandas.groupbyclass import (
+    GroupBy,
+    groupable,
+    groupable_element_type,
+    unique,
+)
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarraycreation import array, ones, zeros, zeros_like
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
 else:
-    Categorical = TypeVar("Categorical")
     generic_msg = TypeVar("generic_msg")
+    array = TypeVar("array")
+    ones = TypeVar("ones")
+    zeros = TypeVar("zeros")
+    zeros_like = TypeVar("zeros_like")
+    Strings = TypeVar("Strings")
+    Categorical = TypeVar("Categorical")
 
 __all__ = ["in1d", "concatenate", "union1d", "intersect1d", "setdiff1d", "setxor1d", "indexof1d"]
 
@@ -207,7 +216,7 @@ def in1d(
 
     ak.in1d is not supported for bool or float64 pdarrays
     """
-    from arkouda.alignment import NonUniqueError
+    from arkouda.numpy.alignment import NonUniqueError
     from arkouda.pandas.categorical import Categorical as Categorical_
 
     ua: groupable
@@ -333,7 +342,7 @@ def indexof1d(query: groupable, space: groupable) -> pdarray:
         elif isinstance(query, pdarray) and not isinstance(space, pdarray):
             raise TypeError("If query is pdarray, space must also be pdarray")
 
-    from arkouda.alignment import find as akfind
+    from arkouda.numpy.alignment import find as akfind
 
     found = akfind(query, space, all_occurrences=True, remove_missing=True)
     return found if isinstance(found, pdarray) else found.values
