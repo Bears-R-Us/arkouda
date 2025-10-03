@@ -27,11 +27,11 @@ class ArkoudaCategoricalArray(ArkoudaBaseArray, ExtensionArray):
 
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
-        import arkouda as ak
+        from arkouda import Categorical, array
 
         # if 'scalars' are raw labels (strings), build ak.Categorical
-        if not isinstance(scalars, ak.Categorical):
-            scalars = ak.Categorical(ak.array(scalars))
+        if not isinstance(scalars, Categorical):
+            scalars = Categorical(array(scalars))
         return cls(scalars)
 
     def __getitem__(self, idx):
@@ -39,8 +39,8 @@ class ArkoudaCategoricalArray(ArkoudaBaseArray, ExtensionArray):
             return self._data[idx]
         return ArkoudaCategoricalArray(self._data[idx])
 
-    def __len__(self):
-        return int(self._data.size)
+    def astype(self, x, dtype):
+        raise NotImplementedError("array_api.astype is not implemented in Arkouda yet")
 
     def isna(self):
         return ak.zeros(self._data.size, dtype=ak.bool)
@@ -51,9 +51,6 @@ class ArkoudaCategoricalArray(ArkoudaBaseArray, ExtensionArray):
     @property
     def dtype(self):
         return ArkoudaCategoricalDtype()
-
-    def to_numpy(self, dtype=None, copy=False, na_value=None):
-        return self._data.to_ndarray()
 
     def __eq__(self, other):
         return self._data == (other._data if isinstance(other, ArkoudaCategoricalArray) else other)

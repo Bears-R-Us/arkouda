@@ -9,7 +9,7 @@ import arkouda as ak
 from arkouda.numpy.pdarraycreation import array
 from arkouda.pandas import io, io_util
 from arkouda.pandas.categorical import Categorical
-from arkouda.testing import assert_categorical_equal, assert_equivalent
+from arkouda.testing import assert_categorical_equal, assert_equal, assert_equivalent
 
 
 SEED = 12345
@@ -551,3 +551,86 @@ class TestCategorical:
         result = cat.argsort()
         sorted_values = strings[result].tolist()
         assert sorted_values == sorted(strings.tolist())
+
+    def basic_cat(self):
+        # categories: ["a", "b", "c"], codes map to labels
+        categories = ak.array(["a", "b", "c"])  # Strings
+        codes = ak.array([0, 1, 2, 1, 0])  # pdarray[int64]
+        return Categorical.from_codes(codes, categories)
+
+    def cat_with_perm_segments(self):
+        # Build a small example with explicit permutation/segments metadata.
+        categories = ak.array(["red", "green", "blue"])
+        codes = ak.array([2, 0, 2, 1, 1, 0])  # labels: blue, red, blue, green, green, red
+        # Example permutation/segments (shape/meaning may vary by impl;
+        # these are just nontrivial, valid-length pdarrays to pass through)
+        permutation = ak.array([1, 5, 3, 4, 0, 2])  # some reordering indices
+        segments = ak.array([0, 2, 4])  # example segment starts
+        return Categorical.from_codes(codes, categories, permutation=permutation, segments=segments)
+
+    def empty_cat(self):
+        return Categorical(ak.array([], dtype="str"))
+
+    # ------------------------------ Basic copy behavior ------------------------------
+
+    def test_copy_returns_new_instance(self):
+        c = self.basic_cat()
+        c2 = c.copy()
+        assert isinstance(c2, Categorical)
+        assert c2 is not c
+        assert len(c2) == len(c)
+        assert_equal(c, c2)
+
+    def test_copy_is_deep_for_internal_arrays(self):
+        c = self.basic_cat()
+        c2 = c.copy()
+
+        # Internals should be distinct objects with equal contents
+        assert c is not c2
+        assert_categorical_equal(c, c2, check_category_order=True)
+
+        # permutation/segments might be None; if present, they should also be deep-copied
+        for name in ("permutation", "segments"):
+            a = getattr(c, name, None)
+            b = getattr(c2, name, None)
+            assert (a is None) == (b is None)
+            if a is not None:
+                assert_equal(b, a)
+
+    # ------------------------------ Metadata preserved ------------------------------
+
+    def test_copy_preserves_metadata_when_present(self):
+        c = self.cat_with_perm_segments()
+        c2 = c.copy()
+
+        # Distinct instances
+        assert c2 is not c
+        assert c2.codes is not c.codes
+        assert c2.categories is not c.categories
+        assert c2.segments is not c.segments
+        assert c2.permutation is not c.permutation
+
+        # Distinct internals; equal contents
+        assert_equal(c2.permutation, c.permutation)
+        assert_equal(c2.segments, c.segments)
+        assert_categorical_equal(c, c2, check_category_order=True)
+
+    # ------------------------------ Empty case ------------------------------
+
+    def test_copy_empty_categorical(self):
+        empty_cat = self.empty_cat()
+        c2 = empty_cat.copy()
+        assert len(c2) == 0
+        assert c2.categories is not empty_cat.categories
+        assert c2.codes is not empty_cat.codes
+
+        assert_categorical_equal(empty_cat, c2, check_category_order=True)
+
+        # permutation/segments may be None or empty; only check distinctness if present
+        for name in ("permutation", "segments"):
+            a = getattr(empty_cat, name, None)
+            b = getattr(c2, name, None)
+            assert (a is None) == (b is None)
+            if a is not None:
+                assert a is not b
+                assert_equal(a, b)
