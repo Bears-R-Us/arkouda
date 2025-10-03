@@ -42,6 +42,8 @@ def bench_find(benchmark, dtype):
         kwargs={"all_occurrences": True},
         rounds=pytest.trials,
     )
+    del query
+    del space
 
     benchmark.extra_info["description"] = "Measures the performance of ak.find with all_occurrences=True"
     benchmark.extra_info["problem_size"] = N
