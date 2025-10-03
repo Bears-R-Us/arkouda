@@ -308,9 +308,7 @@ def parse_single_value(msg: str) -> Union[numpy_scalars, int]:
 
 
 def _create_scalar_array(value):
-    """
-    Create a pdarray from a single scalar value.
-    """
+    """Create a pdarray from a single scalar value."""
     from arkouda.client import generic_msg
 
     return create_pdarray(
@@ -324,9 +322,7 @@ def _create_scalar_array(value):
 
 
 def _slice_index(array: pdarray, starts: List[int], stops: List[int], strides: List[int]):
-    """
-    Slice a pdarray with a set of start, stop and stride values.
-    """
+    """Slice a pdarray with a set of start, stop and stride values."""
     from arkouda.client import generic_msg
 
     return create_pdarray(
@@ -1020,9 +1016,7 @@ class pdarray:
 
     @property
     def inferred_type(self) -> Union[str, None]:
-        """
-        Return a string of the type inferred from the values.
-        """
+        """Return a string of the type inferred from the values."""
         from arkouda.numpy.dtypes import float_scalars, int_scalars
         from arkouda.numpy.util import _is_dtype_in_union
 
@@ -2275,34 +2269,38 @@ class pdarray:
         return std(self, ddof=ddof, axis=axis, keepdims=keepdims)
 
     def cov(self, y: pdarray) -> np.float64:
-        """
-        Compute the covariance between self and y.
-        """
+        """Compute the covariance between self and y."""
         return cov(self, y)
 
     def corr(self, y: pdarray) -> np.float64:
         """
         Compute the correlation between self and y using pearson correlation coefficient.
+
         See ``arkouda.corr`` for details.
         """
         return corr(self, y)
 
     def mink(self, k: int_scalars) -> pdarray:
         """
-        Compute the minimum "k" values.  See ``arkouda.mink`` for details.
+        Compute the minimum "k" values.
+
+        See ``arkouda.mink`` for details.
         """
         return mink(self, k)
 
     @typechecked
     def maxk(self, k: int_scalars) -> pdarray:
         """
-        Compute the maximum "k" values.  See ``arkouda.maxk`` for details.
+        Compute the maximum "k" values.
+
+        See ``arkouda.maxk`` for details.
         """
         return maxk(self, k)
 
     def argmink(self, k: int_scalars) -> pdarray:
         """
         Finds the indices corresponding to the `k` minimum values of an array.
+
         See ``arkouda.argmink`` for details.
         """
         return argmink(self, k)
@@ -2310,44 +2308,49 @@ class pdarray:
     def argmaxk(self, k: int_scalars) -> pdarray:
         """
         Finds the indices corresponding to the `k` maximum values of an array.
+
         See ``arkouda.argmaxk`` for details.
         """
         return argmaxk(self, k)
 
     def popcount(self) -> pdarray:
         """
-        Find the population (number of bits set) in each element. See `ak.popcount`.
+        Find the population (number of bits set) in each element.
+
+        See `ak.popcount`.
         """
         return popcount(self)
 
     def parity(self) -> pdarray:
         """
-        Find the parity (XOR of all bits) in each element. See `ak.parity`.
+        Find the parity (XOR of all bits) in each element.
+
+        See `ak.parity`.
         """
         return parity(self)
 
     def clz(self) -> pdarray:
         """
-        Count the number of leading zeros in each element. See `ak.clz`.
+        Count the number of leading zeros in each element.
+
+        See `ak.clz`.
         """
         return clz(self)
 
     def ctz(self) -> pdarray:
         """
-        Count the number of trailing zeros in each element. See `ak.ctz`.
+        Count the number of trailing zeros in each element.
+
+        See `ak.ctz`.
         """
         return ctz(self)
 
     def rotl(self, other) -> pdarray:
-        """
-        Rotate bits left by <other>.
-        """
+        """Rotate bits left by <other>."""
         return rotl(self, other)
 
     def rotr(self, other) -> pdarray:
-        """
-        Rotate bits right by <other>.
-        """
+        """Rotate bits right by <other>."""
         return rotr(self, other)
 
     def value_counts(self):

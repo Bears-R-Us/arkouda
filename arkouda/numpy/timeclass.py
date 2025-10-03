@@ -232,9 +232,7 @@ class _AbstractBaseTime(pdarray):
         mode: str = "truncate",
         file_type: str = "distribute",
     ):
-        """
-        Override of the pdarray to_hdf to store the special dtype.
-        """
+        """Override of the pdarray to_hdf to store the special dtype."""
         from typing import cast as typecast
 
         from arkouda.client import generic_msg
@@ -257,9 +255,7 @@ class _AbstractBaseTime(pdarray):
         )
 
     def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
-        """
-        Override the pdarray implementation so that the special object type will be used.
-        """
+        """Override the pdarray implementation so that the special object type will be used."""
         from arkouda.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _get_hdf_filetype, _mode_str_to_int, _repack_hdf
 
@@ -900,9 +896,7 @@ class Timedelta(_AbstractBaseTime):
         axis: Optional[Union[None, int, tuple]] = None,
         keepdims: Optional[bool] = False,
     ):
-        """
-        Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std.
-        """
+        """Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std."""
         return self._scalar_callback(self.values.std(ddof, axis, keepdims))
 
     def sum(self):

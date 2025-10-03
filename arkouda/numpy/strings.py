@@ -402,16 +402,12 @@ class Strings:
 
     @property
     def dtype(self) -> npdtype:
-        """
-        Return the dtype object of the underlying data.
-        """
+        """Return the dtype object of the underlying data."""
         return npdtype("<U")
 
     @property
     def inferred_type(self) -> str:
-        """
-        Return a string of the type inferred from the values.
-        """
+        """Return a string of the type inferred from the values."""
         return "string"
 
     def copy(self) -> Strings:
@@ -1260,16 +1256,12 @@ class Strings:
 
     @typechecked
     def cached_regex_patterns(self) -> List:
-        """
-        Returns the regex patterns for which Match objects have been cached.
-        """
+        """Returns the regex patterns for which Match objects have been cached."""
         return list(self._regex_dict.keys())
 
     @typechecked
     def purge_cached_regex_patterns(self) -> None:
-        """
-        Purges cached regex patterns.
-        """
+        """Purges cached regex patterns."""
         self._regex_dict = dict()
 
     def _empty_pattern_verification(self, pattern):
@@ -1281,9 +1273,7 @@ class Strings:
             )
 
     def _get_matcher(self, pattern: Union[bytes, str_scalars], create: bool = True):
-        """
-        Internal function to fetch cached Matcher objects.
-        """
+        """Internal function to fetch cached Matcher objects."""
         from arkouda.pandas.matcher import Matcher
 
         if isinstance(pattern, bytes):

@@ -61,9 +61,7 @@ def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
 
 
 def nonzero(x: Array, /) -> Tuple[Array, ...]:
-    """
-    Return a tuple of arrays containing the indices of the non-zero elements of the input array.
-    """
+    """Return a tuple of arrays containing the indices of the non-zero elements of the input array."""
     from arkouda.client import generic_msg
 
     resp = cast(
