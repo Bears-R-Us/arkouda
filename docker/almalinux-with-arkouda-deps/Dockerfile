@@ -24,7 +24,7 @@ RUN echo 'source ~/.bashrc.chpl' >> ~/.bashrc
 
 #  Install dependencies
 RUN dnf update -y && dnf install -y ca-certificates wget python3-pip && dnf update -y && dnf -y upgrade
-RUN dnf install -y gcc gcc-c++ m4 perl python3.12 python3.12-devel bash make gawk git cmake which diffutils llvm-devel clang clang-devel libcurl-devel
+RUN dnf install -y gcc gcc-c++ m4 perl python3.12 python3.12-pip python3.12-venv python3.12-devel bash make gawk git cmake which diffutils llvm-devel clang clang-devel libcurl-devel
 
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
 
