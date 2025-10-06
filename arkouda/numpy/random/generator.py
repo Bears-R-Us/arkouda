@@ -981,8 +981,8 @@ class Generator:
             Upper boundary of the output interval. All values generated will be less than high.
             high must be greater than or equal to low. The default value is 1.0.
 
-        size: numeric_scalars, optional
-            Output shape. Default is None, in which case a single value is returned.
+        size: int, tuple(int), None, optional
+            Output size or shape. Default is None, in which case a single value is returned.
 
         Returns
         -------
