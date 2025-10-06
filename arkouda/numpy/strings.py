@@ -14,7 +14,7 @@ from arkouda.logger import ArkoudaLogger, getArkoudaLogger
 import arkouda.numpy.dtypes
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, bool_scalars
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_scalars
+from arkouda.numpy.dtypes import int_scalars, numeric_scalars, resolve_scalar_dtype, str_scalars
 from arkouda.numpy.pdarrayclass import RegistrationError
 from arkouda.numpy.pdarrayclass import all as akall
 from arkouda.numpy.pdarrayclass import create_pdarray, parse_single_value, pdarray
@@ -3064,3 +3064,38 @@ class Strings:
 
         sorted_array = create_pdarray(cast(str, repMsg))
         return sorted_array if ascending else flip(sorted_array)
+
+    def take(self, indices: Union[numeric_scalars, pdarray], axis: Optional[int] = None) -> pdarray:
+        """
+        Take elements from the array along an axis.
+
+        When axis is not None, this function does the same thing as “fancy” indexing (indexing arrays
+        using arrays); however, it can be easier to use if you need elements along a given axis.
+        A call such as ``np.take(arr, indices, axis=3)`` is equivalent to ``arr[:,:,:,indices,...]``.
+
+        Parameters
+        ----------
+        indices : numeric_scalars or pdarray
+            The indices of the values to extract. Also allow scalars for indices.
+        axis : int, optional
+            The axis over which to select values. By default, the flattened input array is used.
+
+        Returns
+        -------
+        pdarray
+            The returned array has the same type as `a`.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> a = ak.array(["a","b","c"])
+        >>> indices = [0, 1]
+        >>> a.take(indices)
+        array(['a', 'b'])
+
+        """
+        from arkouda.numpy.numeric import take
+        from arkouda.numpy.pdarraycreation import arange
+
+        idx = arange(self.size)
+        return self[take(idx, indices=indices, axis=axis)]
