@@ -45,9 +45,6 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
     def isna(self):
         return ak.zeros(self._data.size, dtype=ak.bool)
 
-    def copy(self):
-        return ArkoudaCategoricalArray(self._data[:])
-
     @property
     def dtype(self):
         return ArkoudaCategoricalDtype()
