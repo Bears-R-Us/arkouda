@@ -1583,7 +1583,6 @@ class Series:
 
         """
         from arkouda.numpy import isnan, where
-        from arkouda.numpy.segarray import SegArray
 
         value_: Union[supported_scalars, pdarray, Strings, Categorical, SegArray]
 

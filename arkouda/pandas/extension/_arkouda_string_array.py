@@ -56,9 +56,6 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
 
         return zeros(self._data.size, dtype="bool")
 
-    def copy(self):
-        return ArkoudaStringArray(self._data[:])
-
     def __eq__(self, other):
         return self._data == (other._data if isinstance(other, ArkoudaStringArray) else other)
 
