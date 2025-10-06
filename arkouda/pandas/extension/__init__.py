@@ -22,6 +22,7 @@ from ._arkouda_array import ArkoudaArray
 from ._arkouda_categorical_array import ArkoudaCategoricalArray
 from ._arkouda_extension_array import ArkoudaExtensionArray
 from ._arkouda_string_array import ArkoudaStringArray
+from ._dataframe_accessor import ArkoudaDataFrameAccessor, from_ak_legacy
 from ._dtypes import (
     ArkoudaBigintDtype,
     ArkoudaBoolDtype,
@@ -47,4 +48,6 @@ __all__ = [
     "ArkoudaStringArray",
     "ArkoudaCategoricalArray",
     "ArkoudaExtensionArray",
+    "ArkoudaDataFrameAccessor",
+    "from_ak_legacy",
 ]
