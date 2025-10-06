@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.5.0']
+        chpl-version: ['2.6.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.5.0']
+        chpl-version: ['2.6.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -135,7 +135,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.5.0']
+        chpl-version: ['2.6.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -176,7 +176,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.5.0']
+        chpl-version: ['2.6.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -212,7 +212,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13']
-        chpl-version: ['2.5.0']
+        chpl-version: ['2.6.0']
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
@@ -359,7 +359,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.5.0']
+        chpl-version: ['2.6.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -454,7 +454,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.4.0','2.5.0']
+        chpl-version: ['2.4.0','2.5.0','2.6.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -493,7 +493,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.4.0','2.5.0']
+        chpl-version: ['2.4.0','2.5.0','2.6.0']
       max-parallel: 3
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
@@ -548,7 +548,7 @@ jobs:
       CHPL_RT_NUM_THREADS_PER_LOCALE: 2
     strategy:
       matrix:
-        chpl-version: ['2.5.0']
+        chpl-version: ['2.6.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -597,7 +597,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.5.0']
+        chpl-version: ['2.6.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
