@@ -2374,10 +2374,7 @@ class pdarray:
         """
         from arkouda.numpy import value_counts
 
-        if self.ndim > 1:
-            raise ValueError(f"value_counts is only implemented for 1D arrays; got {self.ndim}")
-
-        return value_counts(self)
+        return value_counts(self.flatten()) if self.ndim > 1 else value_counts(self)
 
     def astype(self, dtype) -> pdarray:
         """
