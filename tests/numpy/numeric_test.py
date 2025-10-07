@@ -632,6 +632,24 @@ class TestNumeric:
         assert ak.array([1]) == result[0]
         assert ak.array([100]) == result[1]
 
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("num_type", NO_FLOAT)
+    def test_value_counts_2D(self, num_type):
+        pda = ak.ones((10, 10), dtype=num_type)
+        result = ak.value_counts(pda)
+
+        assert ak.array([1]) == result[0]
+        assert ak.array([100]) == result[1]
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("num_type", NO_FLOAT)
+    def test_value_counts_3D(self, num_type):
+        pda = ak.ones((5, 5, 5), dtype=num_type)
+        result = ak.value_counts(pda)
+
+        assert ak.array([1]) == result[0]
+        assert ak.array([125]) == result[1]
+
     def test_value_counts_error(self):
         with pytest.raises(TypeError):
             ak.value_counts([0])
