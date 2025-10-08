@@ -3198,6 +3198,39 @@ class pdarray:
         else:
             raise TypeError("Grouping is only supported on numeric data (integral types) and bools.")
 
+    def take(self, indices: Union[numeric_scalars, pdarray], axis: Optional[int] = None) -> pdarray:
+        """
+        Take elements from the array along an axis.
+
+        When axis is not None, this function does the same thing as “fancy” indexing (indexing arrays
+        using arrays); however, it can be easier to use if you need elements along a given axis.
+        A call such as ``np.take(arr, indices, axis=3)`` is equivalent to ``arr[:,:,:,indices,...]``.
+
+        Parameters
+        ----------
+        indices : numeric_scalars or pdarray
+            The indices of the values to extract. Also allow scalars for indices.
+        axis : int, optional
+            The axis over which to select values. By default, the flattened input array is used.
+
+        Returns
+        -------
+        pdarray
+            The returned array has the same type as `a`.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> a = ak.array([4, 3, 5, 7, 6, 8])
+        >>> indices = [0, 1, 4]
+        >>> a.take(indices)
+        array([4 3 6])
+
+        """
+        from arkouda.numpy.numeric import take
+
+        return take(self, indices=indices, axis=axis)
+
 
 # end pdarray class def
 
