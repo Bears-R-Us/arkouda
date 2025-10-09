@@ -3067,6 +3067,19 @@ def transpose(pda: pdarray, axes: Optional[Tuple[int_scalars, ...]] = None) -> p
     )
 
 
+@typechecked
+def expandedmatmul (pdaLeft: pdarray, pdaRight: pdarray) -> Union[numeric_scalars,pdarray]:
+    """
+    Compute the product of two matrices following the rules of numpy.
+    Expand this later.
+    """
+    if x1.ndim == 1 and x2.dim == 1 :
+        return matmul(pdaLeft, pdaRight)
+        # that was the simple case
+
+    else :
+        if x1.ndim == 1 and x2.ndim == 1 :
+@typechecked
 def matmul(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
     """
     Compute the product of two matrices.
