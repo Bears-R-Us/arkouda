@@ -3970,7 +3970,7 @@ def dot(
     """
     from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy import cast as akcast
-    from arkouda.numpy.numeric import matmul as akmatmul
+    from arkouda.numpy.numeric import _matmul2D as akmatmul2D
 
     specialCase = int_uint_case(pda1, pda2)  # used to handle the (int,uint)->(float) case
 
@@ -3990,14 +3990,14 @@ def dot(
 
         #   Second case is two 2D arrays.
 
-        elif pda1.ndim == 2 and pda2.ndim == 2:  # matmul will do the shape check
-            return ship(akmatmul(pda1, pda2), specialCase)  # type: ignore
+        elif pda1.ndim == 2 and pda2.ndim == 2:  # matmul2D will do the shape check
+            return ship(akmatmul2D(pda1, pda2), specialCase)  # type: ignore
 
-        #   Third and fourth cases involve a left argument of N-dimensions, and a right argument
-        #   of 1 or more.  The 1-D right argument is handled by reshaping it to 2-D and then
-        #   reshaping the answer to remove the extra dimension.
+        #   Third and fourth cases involve left or right argument of N-dimensions, and right
+        #   or left argument of 1 or more.  The 1-D  argument is handled by reshaping it to 2-D,
+        #   and squeezing the answer to remove the extra dimension.
 
-        elif pda1.ndim > 1 and pda2.ndim >= 1:
+        elif pda1.ndim >= 1 and pda2.ndim >= 1:
             s3 = _compute_dot_result_shape(pda1.shape, pda2.shape)
             if len(s3) not in get_array_ranks():
                 raise ValueError(
@@ -4005,18 +4005,27 @@ def dot(
                 )
             else:
                 d1_case = pda2.ndim == 1
+                d2_case = pda1.ndim == 1
                 temp_pda2 = pda2.reshape(pda2.size, 1) if d1_case else pda2  # type: ignore
+                temp_pda1 = pda1.reshape(1, pda1.size) if d2_case else pda1
                 repMsg = generic_msg(
-                    cmd=f"dot<{pda1.dtype},{pda1.ndim},{pda2.dtype},{temp_pda2.ndim}>",
+                    cmd=f"dot<{pda1.dtype},{temp_pda1.ndim},{pda2.dtype},{temp_pda2.ndim}>",
                     args={
-                        "a": pda1,
+                        "a": temp_pda1,
                         "b": temp_pda2,
                     },
                 )
+
                 if d1_case:
                     temp_ans = create_pdarray(repMsg)
                     newshape = list(temp_ans.shape)  # these steps remove
                     del newshape[-1]  # the padded 1 from
+                    temp_ans = temp_ans.reshape(tuple(newshape))  # the shape of result
+                    return ship(temp_ans, specialCase)
+                elif d2_case:
+                    temp_ans = create_pdarray(repMsg)
+                    newshape = list(temp_ans.shape)  # these steps remove
+                    del newshape[0]  # the padded 1 from
                     temp_ans = temp_ans.reshape(tuple(newshape))  # the shape of result
                     return ship(temp_ans, specialCase)
                 else:
