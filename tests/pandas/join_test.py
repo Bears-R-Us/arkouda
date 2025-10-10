@@ -212,10 +212,10 @@ class TestJoin:
         ans = [-1, 30, 10, 40, 20, 30, 10, 0]
         # Simple lookup with int keys
         # Also test shortcut for unique-ordered keys
-        res = ak.lookup(keys, values, args, fillvalue=-1)
+        res = ak.numpy.alignment.lookup(keys, values, args, fillvalue=-1)
         assert res.tolist() == ans
         # Compound lookup with (str, int) keys
-        res2 = ak.lookup(
+        res2 = ak.numpy.alignment.lookup(
             (ak.cast(keys, ak.str_), keys),
             values,
             (ak.cast(args, ak.str_), args),
@@ -223,13 +223,13 @@ class TestJoin:
         )
         assert res2.tolist() == ans
         # Keys not in uniqued order
-        res3 = ak.lookup(keys[::-1], values[::-1], args, fillvalue=-1)
+        res3 = ak.numpy.alignment.lookup(keys[::-1], values[::-1], args, fillvalue=-1)
         assert res3.tolist() == ans
         # Non-unique keys should raise error
         with pytest.warns(UserWarning):
             keys = ak.arange(10) % 5
             values = 10 * keys
-            ak.lookup(keys, values, args)
+            ak.numpy.alignment.lookup(keys, values, args)
 
     def test_error_handling(self):
         """

@@ -44,17 +44,23 @@ array([ 1, 99,  3])
 
 """
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional, TypeVar
 
 import numpy as np
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.dtypes import all_scalars
 from arkouda.numpy.pdarrayclass import pdarray
-from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.numpy.pdarraysetops import concatenate as ak_concat
-from arkouda.numpy.strings import Strings
 
+
+if TYPE_CHECKING:
+    from arkouda.numpy.pdarraycreation import array as ak_array
+    from arkouda.numpy.strings import Strings
+
+else:
+    ak_array = TypeVar("ak_array")
+    Strings = TypeVar("Strings")
 
 __all__ = ["_ensure_numpy", "ArkoudaBaseArray"]
 
@@ -167,6 +173,7 @@ class ArkoudaBaseArray(ExtensionArray):
 
         import arkouda as ak
         from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraycreation import array as ak_array
 
         # Normalize indexer to ak int64
         if not isinstance(indexer, pdarray):

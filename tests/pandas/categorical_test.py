@@ -478,7 +478,7 @@ class TestCategorical:
         keys = ak.array([1, 2, 3])
         values = ak.Categorical(ak.array(["A", "B", "C"]))
         args = ak.array([3, 2, 1, 0])
-        ret = ak.lookup(keys, values, args)
+        ret = ak.numpy.alignment.lookup(keys, values, args)
         assert ret.tolist() == ["C", "B", "A", "N/A"]
 
     def test_deletion(self):
