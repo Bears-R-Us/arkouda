@@ -358,9 +358,7 @@ def globalGeneratorExists():
 
 
 def getGlobalGenerator() -> Generator:
-    """
-    Used to simplify the boilerplate code for each function.
-    """
+    """Used to simplify the boilerplate code for each function."""
     seed() if not globalGeneratorExists() else None
 
     if theGenerator:

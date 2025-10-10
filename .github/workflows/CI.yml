@@ -106,11 +106,8 @@ jobs:
 
   mypy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        chpl-version: ['2.6.0']
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.6.0:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -133,11 +130,8 @@ jobs:
 
   docs:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        chpl-version: ['2.6.0']
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.6.0:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -178,7 +172,7 @@ jobs:
       matrix:
         chpl-version: ['2.6.0']
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.6.0:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -216,7 +210,7 @@ jobs:
     env:
       CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.6.0:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -271,6 +265,7 @@ jobs:
         dnf install -y zlib-devel gcc gcc-c++ make zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl openssl-devel libffi-devel xz-devel zlib-devel
 
     # TODO: why does this need to build its own Python when the container has its own?
+    # almalinux's python is old, so we build from source. But can we move this into the container build?
     # Download and install Python from source (updated URL for Python 3.13)
     - name: Download Python ${matrix.python-version} source
       run: |

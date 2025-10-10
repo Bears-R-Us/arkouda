@@ -282,9 +282,7 @@ class SegArray:
             )
 
     def copy(self):
-        """
-        Return a deep copy.
-        """
+        """Return a deep copy."""
         return SegArray(self.segments[:], self.values[:])
 
     def __eq__(self, other):
