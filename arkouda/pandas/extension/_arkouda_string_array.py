@@ -1,7 +1,6 @@
 import numpy as np
 from pandas.api.extensions import ExtensionArray
-
-import arkouda as ak
+from arkouda.numpy.strings import Strings
 
 from ._arkouda_base_array import ArkoudaBaseArray
 from ._dtypes import ArkoudaStringDtype
@@ -14,9 +13,17 @@ class ArkoudaStringArray(ArkoudaBaseArray, ExtensionArray):
     default_fill_value = ""
 
     def __init__(self, data):
-        if not isinstance(data, ak.Strings):
-            raise TypeError("Expected arkouda Strings")
-        self._data = data
+        if isinstance(data, np.ndarray):
+            from arkouda.numpy.pdarraycreation import array as ak_array
+            data = ak_array(data)
+
+        if isinstance(data,ArkoudaStringArray):
+            self._data = data._data
+        elif isinstance(data,Strings):
+            self._data = data
+        else:
+            raise TypeError(f"Expected arkouda Strings.  Instead recieved {type(data)}.")
+
 
     @property
     def dtype(self):
@@ -45,7 +52,9 @@ class ArkoudaStringArray(ArkoudaBaseArray, ExtensionArray):
         return self.to_ndarray().astype(dtype, copy=copy)
 
     def isna(self):
-        return ak.zeros(self._data.size, dtype=ak.bool)
+        from arkouda.numpy.pdarraycreation import zeros
+        from arkouda.numpy.dtypes import bool
+        return zeros(self._data.size, dtype="bool")
 
     def copy(self):
         return ArkoudaStringArray(self._data[:])
