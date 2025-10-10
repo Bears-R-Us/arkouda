@@ -17,9 +17,8 @@ on:
         default: '.'
       CHPL_VERSION:
         description: 'Chapel version to install'
-        required: false
+        required: true
         type: string
-        default: '2.5.0'
       VERSION:
         description: 'Version tag for the Docker image'
         required: false

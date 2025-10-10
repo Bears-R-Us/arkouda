@@ -23,8 +23,10 @@ ENV CHPL_HOME=/chapel-$CHPL_VERSION \
 RUN echo 'source ~/.bashrc.chpl' >> ~/.bashrc
 
 #  Install dependencies
-RUN dnf update -y && dnf install -y ca-certificates wget python3-pip && dnf update -y && dnf -y upgrade
-RUN dnf install -y gcc gcc-c++ m4 perl python3.12 python3-devel bash make gawk git cmake which diffutils llvm-devel clang clang-devel libcurl-devel
+RUN dnf update -y && dnf install -y ca-certificates wget && dnf update -y && dnf -y upgrade
+RUN dnf install -y gcc gcc-c++ m4 perl python3.12 python3.12-pip python3.12-devel bash make gawk git cmake which diffutils llvm-devel clang clang-devel libcurl-devel
+
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
 
 #   Download Chapel source
 RUN wget https://github.com/chapel-lang/chapel/releases/download/$CHPL_VERSION/chapel-$CHPL_VERSION.tar.gz && tar -xvf chapel-$CHPL_VERSION.tar.gz
