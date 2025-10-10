@@ -207,4 +207,4 @@ class TestArkoudaDtypesExtension:
         s = pd.Series(cea)
         assert isinstance(s.dtype, ArkoudaCategoricalDtype)
         # categories round-trip to Python scalars on materialization
-        assert list(s.astype(object)) == ["x", "y", "x"]
+        assert list(s.to_numpy()) == ["x", "y", "x"]

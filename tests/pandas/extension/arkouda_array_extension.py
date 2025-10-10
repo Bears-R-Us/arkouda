@@ -188,7 +188,7 @@ class TestArkoudaArrayExtension:
         [
             lambda: [0, 2, 4],  # Python list
             lambda: np.array([0, 2, 4], dtype=np.int64),  # NumPy int64
-            lambda: np.array([0, 2, 4], dtype=np.int32),  # NumPy int32 (upcast to int64)
+            lambda: np.array([0, 2, 4], dtype=np.int32),  # NumPy int32
             lambda: ak.array(np.array([0, 2, 4], dtype=np.int64)),  # Arkouda pdarray
         ],
     )

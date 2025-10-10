@@ -11,7 +11,6 @@ class TestIndexExtension:
         assert len(idx) == 3
         assert idx.name == "foo"
         assert idx[0] == 10
-        # assert list(idx[:2]._data.to_ndarray()) == [10, 20]
         assert list(idx[:2].to_numpy()) == [10, 20]
 
     def test_index_equality(self):
