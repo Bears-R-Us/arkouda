@@ -117,9 +117,7 @@ def _dispatch(kind: str, message: str) -> None:
 
 
 def handle(kind: str, message: str) -> None:
-    """
-    Public hook so other modules (or users) can route an error through the policy.
-    """
+    """Public hook so other modules (or users) can route an error through the policy."""
     if kind not in _default_errstate:
         raise ValueError(f"Unknown error type: {kind!r}")
     _dispatch(kind, message)

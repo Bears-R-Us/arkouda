@@ -1704,3 +1704,10 @@ class TestNumeric:
         arr = ak.array([], dtype="str_")
         assert isinstance(arr, ak.Strings)
         assert arr.size == 0
+
+    def test_idiv_edge_case(self):
+        a = ak.array([-1])
+        b = ak.array([1 / 3])
+        assert (a // b)[0] == -4.0
+        a = ak.array([1])
+        assert (a // b)[0] == 3.0

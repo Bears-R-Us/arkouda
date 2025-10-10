@@ -50,7 +50,7 @@ quote-style = "double"
 # E501  - enforces maximum line length
 select = ["E", "F", "D", "W", "A", "B", "C4", "EM", "ERA", "I", "N", "PGH", "PIE", "PL", "PT", "PTH", "RET","RUF", "SIM", "SLF", "T20", "UP", "YTT", "E501"] 
 fixable = ["I","D"]
-ignore = ["D100","D101","D102","D103","D104","D105","D200","D205","D401",
+ignore = ["D100","D101","D102","D103","D105","D205","D401",
 "A004","A002","A001",
 "B905","B904","B028","B006","B007","B009","B010","B012","B033",
 "C409","C419","C408","C416","C417","C401","EM102","EM101","EM103",

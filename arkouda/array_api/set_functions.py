@@ -113,9 +113,7 @@ def unique_inverse(x: Array, /) -> UniqueInverseResult:
 
 
 def unique_values(x: Array, /) -> Array:
-    """
-    Return an array containing the unique values from `x`.
-    """
+    """Return an array containing the unique values from `x`."""
     from arkouda.client import generic_msg
 
     return Array._new(

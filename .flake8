@@ -2,8 +2,10 @@
 max-line-length = 105
 application-import-names = arkouda
 extend-select = F403
+
+# E203 whitespace before ':': intentionally ignored to prevent conflicts with ruff/black
 extend-ignore =
-    E203,E302,
+    E203,
     DOC001,DOC101,DOC102,DOC103,DOC105,DOC106,DOC107,DOC109,DOC110,DOC201,DOC203,DOC301,DOC302,DOC501,DOC502,DOC503,DOC601,DOC603,
 per-file-ignores =
     tests/operator_test.py: E501
