@@ -329,15 +329,17 @@ class TestArkoudaBaseExtension:
         """
         a = ArkoudaArray(ak.array([1, 2, 1, 3]))
         codes, uniques = a.factorize(sort=sort, use_na_sentinel=use_na_sentinel)
+        from arkouda.testing import assert_equal
 
         if not sort:
             # First appearance: uniques [1, 2, 3]
-            assert_array_equal(uniques, np.array([1, 2, 3]))
-            assert_array_equal(codes, np.array([0, 1, 0, 2]))
+            assert_equal(uniques._data, ak.array([1, 2, 3]))
+            # assert_array_equal(codes, np.array([0, 1, 0, 2]))
+            assert_equal(codes._data, ak.array([0, 1, 0, 2]))
         else:
             # Sorted: uniques [1, 2, 3] (same here, but codes recomputed from sorted order)
-            assert_array_equal(uniques, np.array([1, 2, 3]))
-            assert_array_equal(codes, np.array([0, 1, 0, 2]))
+            assert_equal(uniques._data, ak.array([1, 2, 3]))
+            assert_equal(codes._data, ak.array([0, 1, 0, 2]))
 
     @pytest.mark.parametrize("sort", [False, True])
     def test_factorize_float_with_nan_default_sentinel(self, sort):

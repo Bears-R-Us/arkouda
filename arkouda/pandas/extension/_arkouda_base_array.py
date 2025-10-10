@@ -50,6 +50,7 @@ import numpy as np
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.dtypes import all_scalars
+from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.numpy.pdarraysetops import concatenate as ak_concat
 from arkouda.numpy.strings import Strings
@@ -191,7 +192,7 @@ class ArkoudaBaseArray(ExtensionArray):
 
     def factorize(
         self, use_na_sentinel=True, sort=False, **kwargs
-    ) -> Tuple[np.ndarray, "ArkoudaBaseArray"]:
+    ) -> Tuple[pdarray, "ArkoudaBaseArray"]:
         """
         Encode the values of this array as integer codes and uniques,
         similar to :func:`pandas.factorize`, but implemented with Arkouda.
@@ -302,8 +303,20 @@ class ArkoudaBaseArray(ExtensionArray):
         sentinel = -1 if use_na_sentinel else uniques_ak.size
         codes_ak = full(n, sentinel, dtype=int64)
         codes_ak[non_na] = codes_nn
+        from ._arkouda_array import ArkoudaArray
 
-        return codes_ak.to_ndarray(), type(self)(uniques_ak)
+        return ArkoudaArray(codes_ak), type(self)(uniques_ak)
+
+    # In each EA
+    def _values_for_factorize(self):
+        # Return a small NumPy "codes-like" view + na_value
+        # If you can't return codes here, still return a compact NumPy representation.
+        return self.to_factorize_view(), np.nan  # both NumPy
+
+    @classmethod
+    def _from_factorized(cls, values, original):
+        # Build EA back from factorized NumPy values
+        return cls._from_numpy(values)
 
     def to_numpy(self, dtype=None, copy=False, na_value=None):
         """
@@ -350,6 +363,22 @@ class ArkoudaBaseArray(ExtensionArray):
         materialization step.
         """
         return self._data.to_ndarray()
+
+    def argsort(
+        self,
+        *,
+        ascending: bool = True,
+        kind="quicksort",
+        na_position: str = "last",
+        **kwargs,
+    ):  # -> np.ndarray:
+        """
+        Return NumPy indices that would sort the array.
+        Pandas calls this with no args and expects a numpy.intp/int64 array.
+        """
+        # NOTE: our numeric/bool arrays have no NA; float NaNs are left to server implementation.
+        perm = self._data.argsort(ascending=ascending)
+        return perm
 
     def broadcast_arrays(self, *arrays):
         raise NotImplementedError("ArkoudaBaseArray.broadcast_arrays is not implemented in Arkouda yet")
