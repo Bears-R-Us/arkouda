@@ -8,7 +8,6 @@ from arkouda.numpy.pdarrayclass import (
     argmaxk,
     argmin,
     argmink,
-    broadcast_to_shape,
     clear,
     clz,
     corr,
