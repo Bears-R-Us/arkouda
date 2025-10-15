@@ -105,6 +105,7 @@ module StatsMsg {
       return (+ reduce ((x:real - mx) * (y:real - my))) / (dx.size - 1):real;
     }
 
+    @arkouda.registerCommand()
     proc allclose(const ref a: [?da] ?ta, const ref b: [?db] ?tb, rtol: real, atol: real): bool throws
       where da.rank == db.rank
     {
@@ -134,6 +135,29 @@ module StatsMsg {
       }
       return true;
     }
+
+    // @arkouda.registerCommand()
+    // proc allclose(const ref a: [?da] ?ta, const ref b: [?db] ?tb,
+    //               rtol: real, atol: real): bool throws
+    //   where da.rank == db.rank
+    // {
+    //   if da.shape != db.shape then
+    //     throw new Error("a and b must have the same shape");
+
+    //   // Convert to real arrays if needed (to avoid abs() bigint issues)
+    //   const a_real = if isIntegral(ta) then a: [da] real else a;
+    //   const b_real = if isIntegral(tb) then b: [db] real else b;
+
+    //   // Compute elementwise difference and tolerance
+    //   const diff = abs(a_real - b_real);
+    //   const tol  = atol + rtol * abs(b_real);
+
+    //   // Vectorized comparison: create a boolean array
+    //   const cmp = diff <= tol;
+
+    //   // Return true if all elements satisfy the tolerance
+    //   return (&reduce cmp);
+    // }
 
     @arkouda.registerCommand()
     proc corr(const ref x: [?dx] ?tx, const ref y: [?dy] ?ty): real throws
