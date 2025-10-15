@@ -36,6 +36,7 @@ jobs:
       run: |
         make doc
     - name: Install rsync (needed by deploy action)
+      if: github.repository_owner == 'Bears-R-Us' && ((github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push'))
       run: |
         apt-get update
         apt-get install -y rsync
