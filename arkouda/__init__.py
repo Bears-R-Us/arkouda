@@ -95,6 +95,7 @@ from arkouda.numpy import (
     add_docstring,
     add_newdoc,
     all,
+    allclose,
     all_scalars,
     any,
     append,
