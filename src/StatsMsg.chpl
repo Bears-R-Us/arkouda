@@ -92,6 +92,30 @@ module StatsMsg {
       }
     }
 
+
+    @arkouda.registerCommand("allclose")
+    proc allcloseMsg(cmd: string, args: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+      // Parse arguments
+      var aName = args.getValueOf("a");
+      var bName = args.getValueOf("b");
+      var rtol = args.get("rtol", real, default=1e-5);
+      var atol = args.get("atol", real, default=1e-8);
+      var equal_nan = args.get("equal_nan", bool, default=false);
+
+      // Lookup arrays
+      var a = getGenericArray(aName, st);
+      var b = getGenericArray(bName, st);
+
+      // Compute isclose elementwise
+      var iscloseArr = isclose(a, b, rtol, atol, equal_nan);
+
+      // Reduce to a single boolean
+      var result: bool = && reduce iscloseArr;
+
+      // return new MsgTuple("bool", result:string);
+      return result;
+    }
+
     @arkouda.registerCommand()
     proc cov(const ref x: [?dx] ?tx, const ref y: [?dy] ?ty): real throws
       where dx.rank == dy.rank

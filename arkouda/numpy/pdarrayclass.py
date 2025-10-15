@@ -194,6 +194,7 @@ __all__ = [
     "rotl",
     "rotr",
     "cov",
+    "allclose"
     "corr",
     "divmod",
     "sqrt",
@@ -4090,6 +4091,36 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
     return parse_single_value(
         generic_msg(cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
     )
+
+
+@typechecked
+def allclose(a: pdarray, b: pdarray, rtol: float=1e-05, atol: float=1e-08, equal_nan: bool=False) -> bool:
+    """
+    Returns True if two arrays are element-wise equal within a tolerance.
+    Mirrors numpy.allclose.
+    
+    Parameters
+    ----------
+    a, b : pdarray or scalar
+        Input arrays or scalars to compare.
+    rtol : float, optional
+        Relative tolerance.
+    atol : float, optional
+        Absolute tolerance.
+    equal_nan : bool, optional
+        If True, NaNs are considered equal.
+
+    Returns
+    -------
+    bool
+    """
+    from arkouda.client import generic_msg
+
+    if not (isinstance(a, pdarray) or isinstance(b, pdarray)):
+        raise TypeError("at least one argument must be a pdarray")
+
+    repMsg = generic_msg(cmd="allclose", args={"a": a, "b": b, "rtol": rtol, "atol": atol, "equal_nan": equal_nan})
+    return parse_single_value(repMsg)
 
 
 @typechecked

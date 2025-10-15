@@ -12,6 +12,7 @@ from arkouda.numpy.pdarrayclass import (
     clear,
     clz,
     corr,
+    allclose,
     cov,
     ctz,
     divmod,

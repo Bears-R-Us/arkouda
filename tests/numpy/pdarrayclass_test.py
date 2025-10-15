@@ -690,3 +690,8 @@ class TestPdarrayClass:
 
         expected_delta = (4 - 2) * N * limb_bytes
         assert (bytes_a - bytes_b) == expected_delta
+
+def test_allclose(self):
+    a = ak.arange(10)
+    ak.pdarrayclass.allclose(a, a)
+    
