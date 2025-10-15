@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import List, Optional, Tuple, Union, cast
 
 import numpy as np
+from typeguard import typechecked
 
 from arkouda.numpy.dtypes import bool as akbool
 from arkouda.numpy.dtypes import dtype as akdtype
@@ -11,7 +12,6 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
 from arkouda.numpy.pdarraycreation import scalar_array
-from arkouda.numpy.util import broadcast_dims
 
 from .array_object import Array, implements_numpy
 
@@ -34,6 +34,7 @@ __all__ = [
 ]
 
 
+@typechecked
 def broadcast_arrays(*arrays: Array) -> List[Array]:
     """
     Broadcast arrays to a common shape.
@@ -43,20 +44,32 @@ def broadcast_arrays(*arrays: Array) -> List[Array]:
     arrays : Array
         The arrays to broadcast. Must be broadcastable to a common shape.
 
-    Raises
-    ------
-    ValueError
-        Raised by broadcast_dims if a common shape cannot be determined.
-
     Returns
     -------
     List
         A list whose elements are the given Arrays broadcasted to the common shape.
+
+    Raises
+    ------
+    ValueError
+        Raised by broadcast_to if a common shape cannot be determined.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import arkouda.array_api as xp
+    >>> a = xp.asarray(ak.arange(10).reshape(1,2,5))
+    >>> b = xp.asarray(ak.arange(20).reshape(4,1,5))
+    >>> c = xp.broadcast_arrays(a,b)
+    >>> c[0][0,:,:]
+    Arkouda Array ((2, 5), int64)[[0 1 2 3 4] [5 6 7 8 9]]
+    >>> c[1][:,0,0]
+    Arkouda Array ((4,), int64)[0 5 10 15]
     """
+    from arkouda.numpy.util import broadcast_shapes
+
     shapes = [a.shape for a in arrays]
-    bcShape = shapes[0]
-    for shape in shapes[1:]:
-        bcShape = broadcast_dims(bcShape, shape)
+    bcShape = broadcast_shapes(*shapes)
 
     return [broadcast_to(a, shape=bcShape) for a in arrays]
 
@@ -73,35 +86,30 @@ def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
     shape: Tuple[int, ...]
         The shape to which the array is to be broadcast.
 
-    Raises
-    ------
-    ValueError
-        Raised server-side if the broadcast fails.
-
     Returns
     -------
     Array
         A new array which is x broadcast to the provided shape.
 
+    Raises
+    ------
+    ValueError
+        Raised server-side if the broadcast fails.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import arkouda.array_api as xp
+    >>> a = xp.asarray(ak.arange(5))
+    >>> xp.broadcast_to(a,(2,5))
+    Arkouda Array ((2, 5), int64)[[0 1 2 3 4] [0 1 2 3 4]]
+
     See: https://data-apis.org/array-api/latest/API_specification/broadcasting.html for details.
     """
-    from arkouda.client import generic_msg
+    from arkouda.numpy.util import broadcast_to as bcast_to
 
     try:
-        return Array._new(
-            create_pdarray(
-                cast(
-                    str,
-                    generic_msg(
-                        cmd=f"broadcast<{x.dtype},{x.ndim},{len(shape)}>",
-                        args={
-                            "name": x._array,
-                            "shape": shape,
-                        },
-                    ),
-                )
-            )
-        )
+        return Array._new(bcast_to(x._array, shape))
     except RuntimeError as e:
         raise ValueError(f"Failed to broadcast array: {e}")
 

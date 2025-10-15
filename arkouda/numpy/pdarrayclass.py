@@ -201,7 +201,6 @@ __all__ = [
     "mod",
     "fmod",
     "RegistrationError",
-    "broadcast_to_shape",
     "_to_pdarray",
     "diff",
 ]
@@ -5070,7 +5069,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
 
 @typechecked
 def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, bool, bool]:
-    from arkouda.numpy.util import broadcast_dims
+    from arkouda.numpy.util import broadcast_shapes, broadcast_to
 
     if x1.shape == x2.shape:
         return (x1, x2, False, False)
@@ -5079,7 +5078,7 @@ def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, boo
         tmp_x2 = False
         try:
             # determine common shape for broadcasting
-            bc_shape = broadcast_dims(x1.shape, x2.shape)
+            bc_shape = broadcast_shapes(x1.shape, x2.shape)
         except ValueError:
             raise ValueError(
                 f"Incompatible array shapes for broadcasted operation: {x1.shape} and {x2.shape}"
@@ -5087,82 +5086,18 @@ def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, boo
 
         # broadcast x1 if needed
         if bc_shape != x1.shape:
-            x1b = broadcast_to_shape(x1, bc_shape)
+            x1b = broadcast_to(x1, bc_shape)
             tmp_x1 = True
         else:
             x1b = x1
 
         # broadcast x2 if needed
         if bc_shape != x2.shape:
-            x2b = broadcast_to_shape(x2, bc_shape)
+            x2b = broadcast_to(x2, bc_shape)
             tmp_x2 = True
         else:
             x2b = x2
         return (x1b, x2b, tmp_x1, tmp_x2)
-
-
-@typechecked
-def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
-    r"""
-    Create a "broadcasted" array (of rank 'nd') by copying an array into an
-    array of the given shape.
-
-    E.g., given the following broadcast:\n
-    pda    (3d array):  1 x 4 x 1\n
-    shape  ( shape  ):  7 x 4 x 2\n
-    Result (3d array):  7 x 4 x 2
-
-    When copying from a singleton dimension, the value is repeated along
-    that dimension (e.g., pda's 1st and 3rd above).
-    For non singleton dimensions, the size of the two arrays must match,
-    and the values are copied into the result array.
-
-    When prepending a new dimension to increase an array's rank, the
-    values from the other dimensions are repeated along the new dimension.
-
-
-    Parameters
-    ----------
-    pda : pdarray
-        the input to be broadcast
-    shape: tuple of int
-        the shape to which pda is to be broadcast
-
-    Returns
-    -------
-    pdarray
-        the result of the broadcast operation
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.arange(2).reshape(1,2,1)
-    >>> ak.broadcast_to_shape(a,(2,2,2))
-    array([array([array([0 0]) array([1 1])]) array([array([0 0]) array([1 1])])])
-    >>> a = ak.array([5,19]).reshape(1,2)
-    >>> ak.broadcast_to_shape(a,(2,2,2))
-    array([array([array([5 19]) array([5 19])]) array([array([5 19]) array([5 19])])])
-
-    Raises
-    ------
-    RuntimeError
-        raised if the pda can't be broadcast to the given shape
-
-    """
-    from arkouda.client import generic_msg
-
-    return create_pdarray(
-        cast(
-            str,
-            generic_msg(
-                cmd=f"broadcast<{pda.dtype},{pda.ndim},{len(shape)}>",
-                args={
-                    "name": pda,
-                    "shape": shape,
-                },
-            ),
-        )
-    )
 
 
 def diff(a: pdarray, n: int = 1, axis: int = -1, prepend=None, append=None) -> pdarray:
