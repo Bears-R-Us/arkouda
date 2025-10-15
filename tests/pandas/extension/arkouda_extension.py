@@ -4,6 +4,7 @@ import pytest
 import arkouda as ak
 from arkouda.pandas.extension import ArkoudaArray, ArkoudaCategoricalArray, ArkoudaStringArray
 from arkouda.pandas.extension._arkouda_extension_array import ArkoudaExtensionArray
+from arkouda.pdarrayclass import pdarray
 from arkouda.testing import assert_equal
 
 
@@ -318,3 +319,97 @@ class TestArkoudaExtensionArray:
         assert out[999] == 999
         assert out[1000] == 1000
         assert out[-1] == 1499
+
+    def assert_indices(self, perm: pdarray, expected_py_indices):
+        """Compare returned indices to expected Python list, staying server-side where possible."""
+        assert isinstance(perm, pdarray)
+        # Arkouda uses int64 for indices; accept any int dtype but verify it's integer
+        assert np.issubdtype(perm.dtype, np.integer)
+        exp = ak.array(expected_py_indices)
+        assert ak.all(perm == exp)
+
+    # ---------- pdarray (float) with NaN handling ----------
+
+    @pytest.mark.parametrize(
+        "na_position, expected",
+        [
+            ("last", [2, 3, 0, 1]),  # [1.0, 2.0, 3.0, nan]
+            ("first", [1, 2, 3, 0]),  # [nan, 1.0, 2.0, 3.0]
+        ],
+    )
+    def test_argsort_pdarray_float_ascending_nan_positions(self, na_position, expected):
+        a = ak.array([3.0, float("nan"), 1.0, 2.0])
+        ea = ArkoudaExtensionArray(a)
+        perm = ea.argsort(ascending=True, na_position=na_position)
+        self.assert_indices(perm, expected)
+
+    @pytest.mark.parametrize(
+        "na_position, expected",
+        [
+            ("last", [0, 3, 2, 1]),  # [3.0, 2.0, 1.0, nan]
+            ("first", [1, 0, 3, 2]),  # [nan, 3.0, 2.0, 1.0]
+        ],
+    )
+    def test_argsort_pdarray_float_descending_nan_positions(self, na_position, expected):
+        a = ak.array([3.0, float("nan"), 1.0, 2.0])
+        ea = ArkoudaExtensionArray(a)
+        perm = ea.argsort(ascending=False, na_position=na_position)
+        self.assert_indices(perm, expected)
+
+    # ---------- Strings ----------
+
+    def test_argsort_strings_basic(self):
+        s = ak.array(["b", "a", "c", "a"])
+        ea = ArkoudaExtensionArray(s)
+        # Ascending: ["a","a","b","c"] -> indices [1,3,0,2]
+        perm_asc = ea.argsort(ascending=True)
+        self.assert_indices(perm_asc, [1, 3, 0, 2])
+
+        # Descending: ["c","b","a","a"] -> indices [2,0,3,1]
+        perm_desc = ea.argsort(ascending=False)
+        self.assert_indices(perm_desc, [2, 0, 3, 1])
+
+    # ---------- Categorical ----------
+
+    def test_argsort_categorical_basic(self):
+        from arkouda.pandas.categorical import Categorical
+
+        vals = ak.array(["b", "a", "b", "c"])
+        cat = Categorical(vals)  # default category order is lexicographic in Arkouda
+        ea = ArkoudaExtensionArray(cat)
+
+        # Ascending: ["a","b","b","c"] -> [1,0,2,3]
+        perm_asc = ea.argsort(ascending=True)
+        self.assert_indices(perm_asc, [1, 0, 2, 3])
+
+        # Descending: ["c","b","b","a"] -> [3,0,2,1]
+        perm_desc = ea.argsort(ascending=False)
+        self.assert_indices(perm_desc, [3, 2, 0, 1])
+
+    # ---------- API-compat arguments ----------
+
+    def test_argsort_ignores_kind_and_kwargs(self):
+        a = ak.array([2, 1, 3])
+        ea = ArkoudaExtensionArray(a)
+        # kind is accepted but ignored; extra kwargs ignored as well
+        perm = ea.argsort(kind="quicksort", foo="bar")
+        self.assert_indices(perm, [1, 0, 2])
+
+    # ---------- Error handling ----------
+
+    def test_argsort_invalid_na_position_raises(self):
+        a = ak.array([1.0, 2.0])
+        ea = ArkoudaExtensionArray(a)
+        with pytest.raises(ValueError):
+            ea.argsort(na_position="middle")
+
+    def test_argsort_unsupported_dtype_raises(self):
+        # Build an EA around an unsupported dtype to trigger the TypeError path.
+        # Here we use a boolean mask array wrapped in something not in (Strings, Categorical, pdarray)
+        class Dummy:
+            pass
+
+        ea = type("WeirdEA", (), {"_data": Dummy(), "argsort": ArkoudaExtensionArray.argsort})()
+        with pytest.raises(TypeError):
+            # noinspection PyUnresolvedReferences
+            ea.argsort()
