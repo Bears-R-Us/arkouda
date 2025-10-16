@@ -296,7 +296,7 @@ module Repartition
           }
         }
       }
-      
+
     }
 
     var recvOffsets: [PrivateSpace] innerArray(int);
@@ -306,7 +306,7 @@ module Repartition
     // with the data that needs to get transferred from another locale
 
     coforall loc in Locales do on loc {
-      
+
       const numStringsReceivingByLocale = [i in 0..#numLocales] numStringsSendingByLocale[i][here.id];
       const numBytesReceivingByLocale = [i in 0..#numLocales] numBytesSendingByLocale[i][here.id];
       const stringOffsetByLocale = (+ scan numStringsReceivingByLocale) - numStringsReceivingByLocale;
@@ -455,7 +455,7 @@ module Repartition
       }
 
       numValsSendingByLocale[here.id] = valsPerLocale;
-      
+
       var currLocIndAllLocales: [myDestLocales.domain] int;
 
       /*
@@ -466,7 +466,7 @@ module Repartition
 
         const doCurrLoc = [j in myDestLocales.domain] myDestLocales[j] == i;
         const currLocInd = (+ scan doCurrLoc) - doCurrLoc;
-        
+
         currLocIndAllLocales += doCurrLoc * currLocInd;
       }
 
@@ -487,7 +487,7 @@ module Repartition
 
         const doCurrLoc = [j in myDestLocales.domain] myDestLocales[j] == i;
         const currLocInd = (+ scan doCurrLoc) - doCurrLoc;
-        
+
         currLocIndAllLocales += doCurrLoc * currLocInd;
 
         ref currSendVals = sendVals[here.id][i].Arr;
@@ -507,7 +507,7 @@ module Repartition
     // with the data that needs to get transferred from another locale
 
     coforall loc in Locales do on loc {
-      
+
       const numValsReceivingByLocale = [i in 0..#numLocales] numValsSendingByLocale[i][here.id];
       const valOffsetByLocale = (+ scan numValsReceivingByLocale) - numValsReceivingByLocale;
 
@@ -518,7 +518,7 @@ module Repartition
       for i in 0..#numLocales {
 
         myRecvVals[valOffsetByLocale[i]..#numValsReceivingByLocale[i]] = sendVals[i][here.id].Arr;
-        
+
       }
 
     }
