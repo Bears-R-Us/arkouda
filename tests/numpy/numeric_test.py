@@ -1166,6 +1166,41 @@ class TestNumeric:
             npProduct = np.matmul(ndaLeft, ndaRight)
             assert check(npProduct, akProduct.to_ndarray(), akProduct.dtype)
 
+    @pytest.mark.skip_if_rank_not_compiled((2, 3))
+    @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
+    @pytest.mark.parametrize("data_type2", INT_FLOAT_BOOL)
+    def test_matmulmultidim(self, data_type1, data_type2):
+        check = lambda a, b, t: (  # noqa: E731
+            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
+        )
+
+        # datatypes are swapped around a bit in the below tests, so that the left
+        # argument to matmul will always be data_type1, and the right always data_type2.
+
+        nda_1d = np.arange(10).astype(data_type2)  # using .astype avoids a TypeError when this is bool
+        pda_1d = ak.array(nda_1d)
+        nda_nd = np.arange(60).reshape(2, 3, 10).astype(data_type1)  # ditto
+        pda_nd = ak.array(nda_nd)
+        akProduct = ak.matmul(pda_nd, pda_1d)
+        npProduct = np.matmul(nda_nd, nda_1d)
+        assert check(npProduct, akProduct.to_ndarray(), akProduct.dtype)
+
+        nda_1d = np.arange(10).astype(data_type1)  # using .astype avoids a TypeError when this is bool
+        nda_nd = np.arange(60).reshape(2, 10, 3).astype(data_type2)  # ditto
+        pda_1d = ak.array(nda_1d)
+        pda_nd = ak.array(nda_nd)
+        akProduct = ak.matmul(pda_1d, pda_nd)
+        npProduct = np.matmul(nda_1d, nda_nd)
+        assert check(npProduct, akProduct.to_ndarray(), akProduct.dtype)
+
+        nda_nd = np.arange(60).reshape(2, 10, 3).astype(data_type1)  # ditto
+        pda_nd = ak.array(nda_nd)
+        nda_md = np.arange(15).astype(data_type2).reshape(1, 3, 5)  # see above comments re .astype
+        pda_md = ak.array(nda_md)
+        akProduct = ak.matmul(pda_nd, pda_md)
+        npProduct = np.matmul(nda_nd, nda_md)
+        assert check(npProduct, akProduct.to_ndarray(), akProduct.dtype)
+
     # Notes about array_equal:
     #   Strings compared to non-strings are always not equal.
     #   nan handling is (of course) unique to floating point
